@@ -625,10 +625,7 @@ async function _generateAndDownloadFlow(toolCallsLog) {
         text: 'Starter',
         left: '50px',
         top: TOP_OFFSET + 'px',
-        // Vacío a propósito: el canvas resuelve la descripción con
-        // getAgentPurposeForName() desde agents_descriptions.es.md (una sola fuente
-        // de verdad, en español). Ver también result_to_flw.py, que ya escribe ''.
-        agentPurpose: '',
+        agentPurpose: 'Entry point, launches first agents',
         configData: { target_agents: [poolNames[0]] }
     });
 
@@ -649,7 +646,7 @@ async function _generateAndDownloadFlow(toolCallsLog) {
             text: call.canonical,
             left: (50 + (idx + 1) * HORIZONTAL_GAP) + 'px',
             top: TOP_OFFSET + 'px',
-            agentPurpose: '',
+            agentPurpose: _agentPurpose(call.canonical),
             configData: configData
         });
     });
@@ -658,7 +655,7 @@ async function _generateAndDownloadFlow(toolCallsLog) {
         text: 'Ender',
         left: (50 + (successfulCalls.length + 1) * HORIZONTAL_GAP) + 'px',
         top: TOP_OFFSET + 'px',
-        agentPurpose: '',
+        agentPurpose: 'Terminates all agents, launches Cleaners',
         configData: {
             // Ender's target_agents is the list of ALL agents to terminate
             // (every pool name, not just the last one).
@@ -2012,12 +2009,6 @@ function _toPoolName(displayName) {
 /**
  * Return a short purpose string for well-known agent types.
  * Keys are canonical DB agentDescription names.
- *
- * YA NO SE USA para generar el .flw (los nodos escriben agentPurpose: '' y el
- * canvas resuelve la descripción en español desde agents_descriptions.es.md).
- * NO BORRAR esta función sin borrar en el mismo commit el test
- * agent/test_agent_display_names.py::test_agent_purpose_map_keys_match_live_display_names,
- * que exige encontrar la cadena 'function _agentPurpose' en este archivo.
  */
 function _agentPurpose(canonicalName) {
     const purposes = {

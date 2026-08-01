@@ -137,7 +137,7 @@ async function runFlowValidation() {
         }
     } catch (error) {
         console.error('--- [Validate] Error fetching pool agents:', error);
-        showValidationResultDialog(false, ['No se pudieron leer las configuraciones de los agents: ' + error.message]);
+        showValidationResultDialog(false, ['Failed to read agent configurations: ' + error.message]);
         return;
     }
 
@@ -248,7 +248,7 @@ async function runFlowValidation() {
     }
     if (enderParallelCleanupErrors.length > 0) {
         errors.push({
-            message: 'Los Ender agents no deben lanzar Cleaner directamente cuando también lanzan FlowBacker. Enruta Cleaner sólo desde FlowBacker para que el backup termine antes de que se borren los logs',
+            message: 'Ender agents must not launch Cleaner directly when they also launch FlowBacker. Route Cleaner only from FlowBacker so backup completes before logs are deleted',
             agents: enderParallelCleanupErrors
         });
     }
@@ -272,13 +272,13 @@ async function runFlowValidation() {
     }
     if (cleanerInputErrors.length > 0) {
         errors.push({
-            message: 'Los Cleaner agents solo pueden conectarse desde source_agents de tipo Ender o FlowBacker',
+            message: 'Cleaner agents can only be connected from source_agents of type Ender or FlowBacker',
             agents: cleanerInputErrors
         });
     }
     if (cleanerMixedInputErrors.length > 0) {
         errors.push({
-            message: 'Los Cleaner agents deben ser disparados por Ender o por FlowBacker, pero nunca por ambos en la misma rama del Flow',
+            message: 'Cleaner agents must be triggered by either Ender or FlowBacker, but never by both in the same flow branch',
             agents: cleanerMixedInputErrors
         });
     }
@@ -296,7 +296,7 @@ async function runFlowValidation() {
     }
     if (flowBackerInputErrors.length > 0) {
         errors.push({
-            message: 'Los FlowBacker agents solo pueden conectarse desde source_agents de tipo Starter, Ender, Forker o Asker',
+            message: 'FlowBacker agents can only be connected from Starter, Ender, Forker, or Asker source_agents',
             agents: flowBackerInputErrors
         });
     }
@@ -328,7 +328,7 @@ async function runFlowValidation() {
     }
     if (selfLoopErrors.length > 0) {
         errors.push({
-            message: 'Ningún output de un agent debe conectarse a sí mismo',
+            message: "All of the agent's outputs must not connect to itself",
             agents: selfLoopErrors
         });
     }
@@ -370,9 +370,9 @@ async function runFlowValidation() {
         for (const targetName of outputs) {
             const j = nameToIndex[targetName];
             if (j === undefined) {
-                missingTargetErrors.push(`${agentNames[i]} referencia el target "${targetName}", que no está en el Flow`);
+                missingTargetErrors.push(`${agentNames[i]} references target "${targetName}" which is not present in the flow`);
             } else if (TYPES_WITHOUT_INPUT.includes(agentTypes[j])) {
-                noInputTriErrors.push(`${agentNames[i]} referencia el target "${targetName}", que es un agent de tipo ${agentTypes[j]} (sin input)`);
+                noInputTriErrors.push(`${agentNames[i]} references target "${targetName}" which is a ${agentTypes[j]} agent (no input)`);
             }
         }
 
@@ -382,7 +382,7 @@ async function runFlowValidation() {
             for (const targetName of config.target_agents) {
                 const j = nameToIndex[targetName];
                 if (j === undefined) {
-                    missingTargetErrors.push(`${agentNames[i]} referencia el kill target "${targetName}", que no está en el Flow`);
+                    missingTargetErrors.push(`${agentNames[i]} references kill target "${targetName}" which is not present in the flow`);
                 }
             }
         }
@@ -391,7 +391,7 @@ async function runFlowValidation() {
         const sources = extractSourceConnections(config);
         for (const sourceName of sources) {
             if (nameToIndex[sourceName] === undefined) {
-                missingSourceErrors.push(`${agentNames[i]} referencia el source "${sourceName}", que no está en el Flow`);
+                missingSourceErrors.push(`${agentNames[i]} references source "${sourceName}" which is not present in the flow`);
             }
         }
     }
@@ -403,7 +403,7 @@ async function runFlowValidation() {
     }
     if (noInputTriErrors.length > 0) {
         errors.push({
-            message: 'Hay agents que referencian target agents que no tienen input (p. ej. los Starter agents no pueden ser targets)',
+            message: 'Some agents reference target agents that do not have an input (e.g. Starter agents cannot be targets)',
             agents: noInputTriErrors
         });
     }
@@ -447,8 +447,8 @@ function showValidationResultDialog(isValid, errors) {
     if (isValid) {
         contentEl.innerHTML = `
             <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
-            <h4 style="color: #10B981; margin-bottom: 10px;">El Flow es válido</h4>
-            <p style="color: #ccc;">Todas las verificaciones pasaron correctamente. La estructura del Flow es correcta.</p>
+            <h4 style="color: #10B981; margin-bottom: 10px;">Flow is Valid</h4>
+            <p style="color: #ccc;">All verification checks passed successfully. The flow structure is correct.</p>
         `;
     } else {
         let errorHtml = '';
@@ -467,7 +467,7 @@ function showValidationResultDialog(isValid, errors) {
 
         contentEl.innerHTML = `
             <div style="font-size: 48px; margin-bottom: 15px;">❌</div>
-            <h4 style="color: #e74c3c; margin-bottom: 10px;">La validación falló</h4>
+            <h4 style="color: #e74c3c; margin-bottom: 10px;">Validation Failed</h4>
             <div style="text-align: left; max-height: 300px; overflow-y: auto; margin-top: 10px;">
                 ${errorHtml}
             </div>
@@ -528,14 +528,14 @@ function showStartValidationCheckDialog(status, proceedCallback) {
     if (status === VALIDATION_STATE.INVALID) {
         contentEl.innerHTML = `
             <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
-            <h4 style="color: #F59E0B; margin-bottom: 10px;">Se encontraron errores de validación</h4>
-            <p style="color: #ccc;">Se encontraron errores durante la validación del Flow. ¿Seguro que quieres empezar a ejecutarlo?</p>
+            <h4 style="color: #F59E0B; margin-bottom: 10px;">Validation Errors Found</h4>
+            <p style="color: #ccc;">Some errors were found during flow validation. Are you sure you want to start running it?</p>
         `;
     } else {
         contentEl.innerHTML = `
             <div style="font-size: 48px; margin-bottom: 15px;">ℹ️</div>
-            <h4 style="color: #3B82F6; margin-bottom: 10px;">El Flow no ha sido validado</h4>
-            <p style="color: #ccc;">No se ha ejecutado ninguna validación para el Flow actual. ¿Quieres verificarlo o empezar a ejecutarlo sin verificación?</p>
+            <h4 style="color: #3B82F6; margin-bottom: 10px;">Flow Not Validated</h4>
+            <p style="color: #ccc;">No validation has been executed for the present flow. Would you like to verify it or start running without verification?</p>
         `;
     }
 
@@ -558,7 +558,7 @@ function showStartValidationCheckDialog(status, proceedCallback) {
         },
         buttons: [
             {
-                text: "Ejecutar",
+                text: "Run",
                 click: function () {
                     $(this).dialog("close");
                     proceedCallback();
@@ -577,7 +577,7 @@ function showStartValidationCheckDialog(status, proceedCallback) {
 
     // Style the buttons
     const buttonPane = $dialog.parent().find('.ui-dialog-buttonpane');
-    buttonPane.find('button:contains("Ejecutar")').css({
+    buttonPane.find('button:contains("Run")').css({
         'background-color': status === VALIDATION_STATE.INVALID ? '#e74c3c' : '#3B82F6',
         'color': 'white', 'border': 'none', 'border-radius': '6px',
         'font-size': '1em', 'padding': '8px 30px', 'cursor': 'pointer', 'min-width': '100px'

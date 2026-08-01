@@ -35,7 +35,7 @@
 <p align="center">
   <a href="https://xaiht.org">🌐 Website</a> ·
   <a href="https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s">▶️ One-minute teaser</a> ·
-  <a href="https://github.com/XAIHT/Tlamatini/blob/main/BookOfTlamatini.md">📖 Full docs</a> ·
+  <a href="BookOfTlamatini.md">📖 Full docs</a> ·
   <a href="https://discord.gg/WFQsrskgc">💬 Discord</a>
 </p>
 
@@ -285,7 +285,7 @@ Turn it off with `"binary_context_detection": false` in `config.json`; tune it w
 
 ## Installation
 
-See **[the full docs](https://github.com/XAIHT/Tlamatini/blob/main/BookOfTlamatini.md)** for complete setup — cloud models (Ollama Pro/Max, Claude API), the visual workflow designer, and building a frozen Windows distribution with PyInstaller. In short: install Ollama → clone, venv, `pip install -r requirements.txt`, `migrate` → `runserver` (`--noreload` optional since 2026-07-11) → open `http://127.0.0.1:8000/`.
+See **[the full docs](BookOfTlamatini.md)** for complete setup — cloud models (Ollama Pro/Max, Claude API), the visual workflow designer, and building a frozen Windows distribution with PyInstaller. In short: install Ollama → clone, venv, `pip install -r requirements.txt`, `migrate` → `runserver` (`--noreload` optional since 2026-07-11) → open `http://127.0.0.1:8000/`.
 
 ---
 

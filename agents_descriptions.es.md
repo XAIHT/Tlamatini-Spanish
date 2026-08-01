@@ -1,4 +1,4 @@
-# Descripciones de los Workflow Agents (ESPANOL)
+# Descripciones de los Workflow Agents (ESPAÑOL)
 
 Este archivo es la CAPA DE IDIOMA de `agents_descriptions.md`.
 `agent/views.py::_load_agent_purpose_map` carga el ingles como base y
@@ -18,11 +18,11 @@ dialogo Descripcion al hacer clic derecho sobre un nodo del canvas.
 
 ## Workflow Agents
 
-The visual workflow designer ships with **86 agent types**, grouped below by their role in a flow. Drag any of them onto the canvas, wire connections between them, and press *Start* — the agents run as separate, log-emitting processes that talk to each other through their `config.yaml` files.
+El diseñador visual de workflows trae **86 tipos de agent**, agrupados abajo según su papel dentro de un flow. Arrastra el que quieras al canvas, conéctalos entre sí y presiona *Iniciar*: los agents corren como procesos aparte, cada uno escribiendo su log, y se hablan entre ellos a través de sus archivos `config.yaml`.
 
-### Control Agents
+### Agents de control
 
-These agents shape the lifecycle of a flow: when it begins, when it ends, and what gets cleaned up afterward.
+Estos agents le dan forma al ciclo de vida de un flow: cuándo empieza, cuándo termina y qué se limpia al final.
 
 | Agent | Description |
 |-------|-------------|
@@ -33,9 +33,9 @@ These agents shape the lifecycle of a flow: when it begins, when it ends, and wh
 | **Sleeper** | Una pausa cronometrada. Espera un número configurado de milisegundos y luego arranca todo lo que esté en `target_agents`. Útil para limitar la tasa de los ciclos de sondeo, darle tiempo a un servicio externo para estabilizarse, o construir ciclos de "cada N segundos" cuando se combina con un Raiser. |
 | **Croner** | Un disparador manejado por el reloj. Despierta a la `HH:MM` configurada todos los días y arranca sus `target_agents`. Bueno para respaldos nocturnos, reportes programados o cualquier flow de "corre esto todos los días a las 3 de la mañana". Combínalo con Gatewayer si además quieres disparadores por evento dentro del mismo flow. |
 
-### Routing Agents
+### Agents de ruteo
 
-These agents decide WHERE the flow goes next based on what they observe in upstream logs or user input.
+Estos agents deciden HACIA DÓNDE sigue el flow, según lo que ven en los logs de arriba o en lo que responde la usuaria.
 
 | Agent | Description |
 |-------|-------------|
@@ -44,9 +44,9 @@ These agents decide WHERE the flow goes next based on what they observe in upstr
 | **Asker** | Un selector interactivo A/B. Cuando se ejecuta, abre un diálogo en la interfaz del chat pidiéndole al usuario que elija la Ruta A o la Ruta B (con leyendas opcionales como "Aprobar" / "Rechazar"). Se lanzan los `target_agents` de la ruta elegida y la ruta rechazada se queda intacta. Tiene un timeout de 5 minutos. Perfecto para aprobaciones con un humano en el circuito o para experimentos a/b. |
 | **Counter** | Un conteo persistente con ruteo basado en umbral. Cada vez que se ejecuta incrementa un contador guardado y lo compara contra un `threshold_value`. Si el contador está por debajo del umbral dispara `target_agents_l` (menor); si alcanzó o pasó el umbral dispara `target_agents_g` (mayor). La cuenta sobrevive a los reinicios del flow gracias a los archivos reanim, así que puede manejar ciclos de "haz esto 5 veces y luego aquello". |
 
-### Logic Gates
+### Compuertas lógicas
 
-These agents hold the flow until specific upstream conditions are met — they are pure synchronization primitives.
+Estos agents detienen el flow hasta que se cumplen ciertas condiciones más arriba: son primitivas puras de sincronización.
 
 | Agent | Description |
 |-------|-------------|
@@ -54,9 +54,9 @@ These agents hold the flow until specific upstream conditions are met — they a
 | **OR** | Una compuerta OR de dos entradas. Dispara sus `target_agents` cuando CUALQUIERA de las dos, `source_1` O `source_2`, produzca su patrón, lo que ocurra primero. Úsala para patrones del tipo "gana el primero", por ejemplo continuar en cuanto termine cualquiera de dos fuentes de datos redundantes. |
 | **Barrier** | Una barrera de N entradas (un AND generalizado). Espera hasta que TODOS los `source_agents` configurados hayan arrancado, y entonces dispara sus `target_agents`. El primer source en llegar se vuelve el vigilante que hace el polling; cada llegada posterior deja un archivo bandera y la compuerta se libera cuando todas las banderas están presentes. Diseñada para sincronización de convergencia entre muchas ramas paralelas, sin ninguna condición de carrera. |
 
-### Action Agents
+### Agents de acción
 
-These are the agents that *do real work* — running commands, hitting APIs, producing files, calling LLMs, automating the desktop.
+Estos son los agents que *hacen el trabajo de verdad*: ejecutan comandos, llaman APIs, producen archivos, invocan LLMs y automatizan el escritorio.
 
 | Agent | Description |
 |-------|-------------|
@@ -114,9 +114,9 @@ These are the agents that *do real work* — running commands, hitting APIs, pro
 | **Windower** | El administrador de ventanas del trío de UI de escritorio (Windower = la ventana misma, Mouser = los clics dentro de ella, Keyboarder = escribir en ella). Localiza la ventana de una aplicación por su título y ejecuta UNA operación de ciclo de vida sobre ella — `focus`/traer al frente, `minimize`, `maximize`, `restore`, `move`, `resize`, `move_resize`, `close`, `topmost`/`untopmost`, o `arrange` (acomodar/mosaico en una región de la pantalla) — o `list`a todas las ventanas abiertas con su posición, tamaño y estado. El emparejamiento es por `substring` (por defecto), `exact` o `regex`, con `match_index` para elegir entre ventanas del mismo título. Implementado de forma autocontenida con la API Win32 (pywin32), incluyendo la transferencia confiable de foco entre procesos (AttachThreadInput) portada del Windows-MCP de Microsoft. Emite un bloque `INI_SECTION_WINDOWER` (`action`, `window_title`, `matched`, `match_count`, `state`, `left`, `top`, `width`, `height`) para que un Forker más abajo pueda ramificar según `{matched}`/`{state}` y Parametrizer pueda pasar la geometría adelante; siempre dispara sus `target_agents`. **Usa Windower — no Mouser — siempre que la meta sea la ventana como un todo (traerla al frente, acomodarla, redimensionarla, cerrarla por título); Mouser sólo hace clic en controles dentro de una ventana.** Contraparte visual en el canvas del tool `chat_agent_windower` de Multi-Turn. |
 | **Keyboarder** | Control programático del teclado vía PyAutoGUI. Envía una secuencia de pulsaciones que mezcla texto literal (entre comillas simples o dobles), nombres de teclas sueltos (p. ej. `enter`, `tab`, `f5`) y combinaciones unidas con `+` (p. ej. `ctrl+s`, `ctrl+shift+t`), con un retardo configurable entre pulsaciones. Combínalo con Mouser y Shoter para automatizar cualquier app con interfaz gráfica que no tenga una interfaz de scripting. **Reservado para automatización genuina del teclado pedida explícitamente por la usuaria (demos de tecleo en el Bloc de notas, inyección de atajos en apps de terceros, repeticiones de GUI). Nunca uses Keyboarder para escribir código fuente, scripts, configuraciones ni el contenido de ningún archivo — usa File-Creator (escribe el archivo de forma atómica), Pythonxer (ejecuta Python en línea) o Executer (ejecuta un comando de shell / de build) en su lugar.** |
 
-### Notification Agents
+### Agents de notificación
 
-These are *terminal* agents — they react to upstream events but do NOT start anything else. Their job is to tell the outside world that something happened.
+Estos son agents *terminales*: reaccionan a lo que pasa más arriba pero NO arrancan nada después. Su trabajo es avisarle al mundo de afuera que algo ocurrió.
 
 | Agent | Description |
 |-------|-------------|
@@ -130,9 +130,9 @@ These are *terminal* agents — they react to upstream events but do NOT start a
 | **Monitor Netstat** | La versión de puertos de red de Monitor-Log. Sondea las conexiones TCP/UDP abiertas del sistema, se las pasa al LLM y emite `TARGET_FOUND` cuando la condición de red configurada coincide. Úsalo para "avísame si se abre el puerto X" o "dispara si no hay conexión al host Y durante N segundos". |
 | **FlowHypervisor** | El watchdog propio del flow. Un agent administrado por el sistema que observa el log de cada uno de los demás agents en un intervalo de sondeo configurable, le pregunta a un modelo de Ollama si el flow como conjunto está sano, y escribe `OK` o `ATTENTION NEEDED { explanation }` en su propio log. La UI del chat lee esas entradas y expone los problemas como alertas ATTENTION!. Se detiene automáticamente cuando no hay otros agents corriendo, y se auto-detiene después de 3 ciclos inactivos como red de seguridad. |
 
-### Utility Agents
+### Agents de utilería
 
-Glue and infrastructure agents — they do not directly produce output but make the rest of the canvas easier to wire.
+Agents de pegamento e infraestructura: no producen output directamente, pero hacen que el resto del canvas sea más fácil de conectar.
 
 | Agent | Description |
 |-------|-------------|
@@ -143,9 +143,9 @@ Glue and infrastructure agents — they do not directly produce output but make 
 | **Gateway Relayer** | Un relay determinista y sin LLM que traduce formatos de webhook de terceros (por ejemplo el `X-Hub-Signature-256` de GitHub) al esquema HMAC de `timestamp + body` que espera Gatewayer. Valida la firma del proveedor de origen, transforma el payload, lo firma para Gatewayer y lo reenvía. Úsalo cuando quieras que un flow reciba webhooks nativos de GitHub / GitLab / Stripe / Shopify sin tener que parchar Gatewayer. |
 | **NodeManager** | Un registro de infraestructura de larga duración. Mantiene un inventario vivo de nodos locales y remotos, sondea la salud de cada uno (ping, TCP, SSH, WinRM, HTTP), clasifica el estado (`ONLINE` / `OFFLINE` / `DEGRADED` / `UNKNOWN`), detecta cambios de capacidades, persiste el estado entre reinicios, exporta manifiestos filtrados a demanda y dispara sus `target_agents` ante los eventos de nodo configurados. Es el agent torre de control para flotas de máquinas. |
 
-### Cryptography Agents
+### Agents de criptografía
 
-Post-quantum cryptography primitives, deterministic and short-running.
+Primitivas de criptografía post-cuántica, deterministas y de vida corta.
 
 | Agent | Description |
 |-------|-------------|
@@ -153,17 +153,17 @@ Post-quantum cryptography primitives, deterministic and short-running.
 | **Kyber-Cipher** | Cifra un buffer de texto plano con una llave pública de CRYSTALS-Kyber. Internamente usa **encapsulación** Kyber para derivar un secreto compartido y AES-256-CTR para cifrar el buffer; el agent registra en el log la encapsulación, el IV y el texto cifrado en base64, todo cableado para que Parametrizer pueda canalizarlos hacia Kyber-DeCipher. |
 | **Kyber-DeCipher** | El inverso de Kyber-Cipher. Descifra un texto cifrado en base64 usando la **llave privada** CRYSTALS-Kyber correspondiente más la encapsulación y el IV que emitió Kyber-Cipher. Emite el texto plano recuperado en su log, listo para File-Creator u otro consumidor. |
 
-### Multi-Channel Bridges
+### Puentes multicanal
 
-Long-running listeners that bridge external messaging platforms into the full Multi-Turn Tlamatini chat (with tools, context, ACPX, and Exec Report).
+Listeners de larga vida que conectan plataformas de mensajería externas con el chat completo de Tlamatini en Multi-Turn (con tools, context, ACPX y Exec Report).
 
 | Agent | Description |
 |-------|-------------|
 | **TeleTlamatini** | Un bot de Telegram de larga duración que conecta a los usuarios de Telegram autorizados con el **chat completo de Tlamatini con Multi-Turn + Exec Report**. Cada mensaje del usuario se trata como un turno de chat; la respuesta (incluyendo las llamadas a tools, las corridas de ACPX y las tablas del Exec Report) se dibuja de vuelta dentro de Telegram. La autorización es por ID de usuario de Telegram. El agent de "usa Tlamatini desde tu celular, lejos del teclado". |
 
-### External Coding-Agent Driver
+### Driver de coding agents externos
 
-The visual canvas counterpart of the 12 LLM-facing `acp_*` ACPX tools.
+La contraparte visual en el canvas de los 12 tools `acp_*` de ACPX que ve el LLM.
 
 | Agent | Description |
 |-------|-------------|
