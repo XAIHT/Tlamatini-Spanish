@@ -1,0 +1,376 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# UV
+#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#uv.lock
+
+# poetry
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+#poetry.lock
+#poetry.toml
+
+# pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
+#   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
+#pdm.lock
+#pdm.toml
+.pdm-python
+.pdm-build/
+
+# pixi
+#   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
+#pixi.lock
+#   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
+#   in the .venv directory. It is recommended not to include this directory in version control.
+.pixi
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+#  and can be added to the global gitignore or merged into this file.  For a more nuclear
+#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+#.idea/
+
+# Abstra
+# Abstra is an AI-powered process automation framework.
+# Ignore directories containing user credentials, local state, and settings.
+# Learn more at https://abstra.io/docs
+.abstra/
+
+# Visual Studio Code
+#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
+#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
+#  you could uncomment the following to ignore the entire vscode folder
+# .vscode/
+
+# Ruff stuff:
+.ruff_cache/
+
+# PyPI configuration file
+.pypirc
+
+# Cursor
+#  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
+#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
+#  refer to https://docs.cursor.com/context/ignore-files
+.cursorignore
+.cursorindexingignore
+
+# Marimo
+marimo/_static/
+marimo/_lsp/
+__marimo__/
+
+#Static files 
+Tlamatini/staticfiles/
+
+#Keys
+key.txt
+# Any provider API-key file dropped at the repo root (e.g. open_router.key).
+# NEVER commit a key: this repo's history is append-only and can never be
+# rewritten, so a committed secret can only be rotated, never scrubbed.
+*.key
+open_router.key
+
+#L
+
+#Executables
+*.exe
+
+#Varios additionals...
+# .claude/ assets (hooks, settings.json, skills, memories) ARE tracked and
+# uploaded to GitHub. ONLY settings.local.json stays ignored — it holds
+# machine-local permission rules that embed live API-key fragments.
+.claude/settings.local.json
+.codex
+.vscode
+*.pos
+*.log
+
+# Node.js (ESLint)
+node_modules/
+
+# PyInstaller
+*.spec
+
+# Zip files
+*.zip
+
+# External applications
+applications/
+
+# Content generated
+content_generated/
+
+# Context files
+context_files/
+
+# Telethon
+*.session
+
+# Tlamatini agent runtime state (WhatsApp Web Chromium profile, Telegram
+# session, ACPX/skill scratch). Regenerated on use; contains live login
+# credentials/cookies — NEVER commit.
+Tlamatini/agent/.tlamatini/
+
+# Building process logs
+*_log.txt
+*_log.log
+
+# package-lock
+package-lock.json
+
+# Jenkins automation
+cookie.txt
+crumb.json
+
+# Agent pools (runtime state — incl. _chat_runs_ throwaway agent copies)
+agent/agents/pools/*
+Tlamatini/agent/agents/pools/*
+
+# Applications
+applications/*
+# Local secrets vault used by regen_secrets.py — NEVER commit
+data.keys
+
+# External MCP catalog — USER STATE, may hold live API tokens — NEVER commit
+Tlamatini/agent/external_mcps.json
+
+# Versioning — generated by build.py from git tags; see VERSIONING.md.
+# _version.py is regenerated on every build and embedded in the frozen
+# bundle; the three *.version.txt files are transient PyInstaller inputs
+# that the build scripts clean up themselves, but ignore them anyway in
+# case a build aborts mid-run.
+Tlamatini/agent/_version.py
+
+# Companion-app discovery: the agents manifest is generated on first launch
+# (agent_manifest.publish_discovery) in source mode — a build/runtime artifact,
+# shipped inside frozen builds but never committed from the source tree.
+Tlamatini/agent/agents/_tlamatini_agents_manifest.json
+
+Tlamatini.version.txt
+Installer.version.txt
+Uninstaller.version.txt
+
+# Build concurrency lock (build.py)
+.build.lock
+
+# Source-tree build Python — a standalone, writable Python 3.12.10 kept at
+# <repo>/python, auto-provisioned by build.py (ensure_local_build_python) as the
+# CARRIED-Python source: deps install into ITS writable prefix (never Program Files)
+# and bundle_carried_python copytrees it into <dist>/python complete. Large, local,
+# regenerable build artifact — never commit. Delete it to force a clean re-provision.
+/python/
+
+# Tlamatini Temp directory — the SOLE runtime temporary dir (pinned by
+# manage.py / settings.py to <app-root>/Temp). Created on demand at the repo
+# root (source mode) and next to the .exe (frozen). Pure transient state —
+# never commit its contents. See agent/path_guard.py + prompt.pmt Rule 15.
+/Temp/
+Tlamatini/Temp/
+
+# Tlamatini Templates directory — the DEFAULT home for template/firmware/engine
+# projects the STM32er/ESP32er/Arduiner/Unrealer agents scaffold (exported as
+# TLAMATINI_TEMPLATES; ships empty next to the .exe). Generated project trees
+# are user output, not repo content — never commit them. See prompt.pmt Rule 16.
+/Templates/
+Tlamatini/Templates/
+
+# ══════════════════════════════════════════════════════════════════════════════
+# GO TOOLCHAIN — DENIED ENTIRELY. It must NEVER appear in Source Control.
+# Discoverer self-provisions a private Go toolchain (the ~150 MB Go compiler + the
+# module cache + the ProjectDiscovery tool binaries) on first use. It now installs to
+# %LOCALAPPDATA%\Tlamatini\Go (OUTSIDE the repo); these rules deny it ANYWHERE in the
+# tree as a hard backstop. Enforced + verified by git_deny_go.py (which also installs a
+# pre-commit hook that blocks committing any Go-toolchain path). See discoverer.py.
+# ══════════════════════════════════════════════════════════════════════════════
+/Go/
+Tlamatini/Go/
+**/Go/
+**/bin-tools/
+**/go-build/
+**/pkg/mod/
+go[0-9]*.windows-*.zip
+go[0-9]*.*.tar.gz
+# Private contacts book (names / phone numbers / messaging handles).
+# PII — must NEVER be committed. Scrubbed from history 2026-06-25.
+Tlamatini/agent/contacts.json
+/Tlamatini/agent/contacts.json
+contacts.json
+
+# Private-data audit artifacts — may contain personal data; never commit
+personal_info_audit_report.md
+private_data_audit_report.json
+.private_targets.json
+contacts.private.json
+public_release_verify_report.json
+
+# Transient build / run / scratch artifacts — stop them cluttering git status
+*.out
+/output/
+done-*.flag
+
+# Clipboard screenshot paste-duplicates (the originally committed image.png,
+# image copy.png and image copy 2.png stay tracked; new paste duplicates are noise)
+image copy *.png
+
+# Orphan/experimental Telegram dir (real app api_hash + an old receiver) — never ship
+Tlamatini/agent/telegram/
+
+# NEPANTLA per-model Spanish capability verdicts (agent/i18n/model_caps.py).
+# Runtime state, machine-specific and re-learnable: it records what each
+# model scored on the Spanish probe. The RULES live in model_caps.py and
+# terms.csv, which ARE tracked - only the learned cache is ignored.
+model_caps.json
+Tlamatini/agent/model_caps.json
+
+# Database BACKUPS written by backup_db.py (db_<timestamp>.sqlite3 + its log).
+# They carry the user's private chat history — NEVER commit, anywhere in the tree.
+/Backups/
+Tlamatini/Backups/
+db_*.sqlite3
