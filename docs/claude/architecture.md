@@ -1,0 +1,333 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# Tlamatini — Architecture & Core Systems
+
+## Configuration
+
+Main config: `Tlamatini/agent/config.json`
+
+Key settings:
+- `embeding-model`: Embedding model for RAG. **Default**: `Nomic-Embed-Text:latest` (~600 MB resident VRAM, low-footprint baseline that works on 8 GB consumer GPUs). For higher-detail retrieval on dense technical corpora, users can switch to `qwen3-embedding:8b` from the **Config → Models** menu — **with caution**, since that model needs roughly **10× more VRAM** (~6.24 GB resident on Q4_K_M) and will trip the embedding-memory pre-flight guard on smaller GPUs.
+- `chained-model`: Primary chat model
+- `unified_agent_model`: Model for multi-turn tool loop
+- `ollama_base_url`: Ollama server URL
+- `django_port`: **TCP port the web UI + chat WebSocket bind** (default `8000`). See *Configurable web port* below — it is honoured on every launch path, an explicit CLI port still wins, and resolution is fail-open.
+- `ANTHROPIC_API_KEY`: Claude API key
+- `enable_unified_agent`: Enable tool-calling agent
+- `unified_agent_max_iterations`: Max tool-call turns (default 4096)
+- `unified_agent_llm_step_max_tactics` / `unified_agent_llm_step_timeout_seconds`: Self-healing model-step invoker budgets (default **4096** distinct recovery tactics / **80 s** per-attempt watchdog). Govern `agent/self_healing.py::SelfHealingInvoker`, which wraps every model `.invoke()` in the Multi-Turn executor so a transient model failure never hangs, never discards work already done, and never produces a silent/untruthful answer. See `docs/claude/multi-turn.md` → *Self-healing model steps*.
+- `chat_agent_limit_runs`: Wrapped-run listing limit
+- `binary_context_detection`: **Master switch for the binary-content guard on the context loader** (default `true`). See *Binary-content guard* below.
+- `binary_detection_sample_bytes` / `binary_detection_control_ratio` / `binary_detection_log_each_file` / `binary_detection_extra_binary_extensions` / `binary_detection_force_text_extensions`: Binary-guard tuning knobs (8192 / 0.30 / true / [] / []).
+- `stm32_mcp_server_script` / `stm32_mcp_repo_url` / `stm32_mcp_install_dir`: STM32er template-MCP globals (seeded by `tools._seed_global_agent_defaults`). `stm32_mcp_server_script` now defaults to `""` — empty means the STM32er agent **self-provisions** the STM32 Template Project MCP on first use (zero-config auto-bootstrap: shallow `git clone`, GitHub-zip fallback when git is absent, into `%LOCALAPPDATA%/Tlamatini/STM32TemplateProjectMCP`), so the user installs only STM32CubeIDE + Tlamatini. **Since Phase 1, STM32er is DUAL-backend (Blue Pill → F7/G/L/H7/U5/WB): `stm32_backend`=`auto` also routes to a PlatformIO `ststm32` backend that SHARES ESP32er's `pio_executable` / `pio_core_dir` globals (one PlatformIO install for both firmware agents).** See `docs/claude/agents.md` (STM32er entry).
+
+Frozen builds resolve config from the install directory next to the executable. Source mode resolves from `Tlamatini/agent/config.json`. `CONFIG_PATH` env var overrides both.
+
+---
+
+## Binary-content guard for context loading (`agent/rag/binary_guard.py`)
+
+Every file that enters the RAG chain is now screened for **binary content** before it is read as text, split, embedded and indexed. Binary files are dropped exactly the way a user-configured omission is dropped — and **every drop is named in `tlamatini.log`**.
+
+### Why it exists
+
+Until this landed, the only way to keep a file out of the embedding chain was to name it (or its extension) in **Context ▸ Set file type omissions**. That list is manual and name-based, so it structurally cannot know about the `.bin` blob, the stray `.pyc`, the vendored `.so`, the `.faiss` index, or the screenshot someone dropped into a project folder. Those files were read as "text", decoded into mojibake, chunked and embedded — poisoning FAISS/BM25 with megabytes of noise, burning embedding VRAM and wall-clock, and diluting every real retrieval hit.
+
+The guard is the **content-based** counterpart of that name-based list. Both survive; they are complementary:
+
+| | Decides on | Configured in | Catches |
+|---|---|---|---|
+| **File type omissions** (pre-existing) | the NAME (`*.doc`, `package-lock.json`) | Context ▸ Set file type omissions | what the user chooses to ignore |
+| **Binary guard** (this) | the BYTES | `config.json` (on by default) | what is binary regardless of its name |
+
+### The cascade — cheapest test first, at most ONE read
+
+A directory load can sweep tens of thousands of files across 12 worker threads, so per-file cost is the whole game. Every stage that can answer without I/O runs before any stage that touches the disk, and **at most one `read()` of one block (8 KiB) ever happens** — sampling a 4 GB video costs exactly what sampling a README costs.
+
+| # | Stage | I/O | Verdict |
+|---|---|---|---|
+| 1 | **EXTENSION** — O(1) frozenset lookup against 192 known-binary extensions | **none** | BINARY (short-circuit; a `.exe` is never opened) |
+| 2 | **SAMPLE** — one `open()`, one `read(sample_bytes)` | 1 read | — (every later stage reuses this buffer) |
+| 3 | **EMPTY** — zero bytes | — | TEXT (nothing to embed, no evidence of binary) |
+| 4 | **BOM** — UTF-8 / UTF-16 / UTF-32 byte-order mark | — | **TEXT** |
+| 5 | **SIGNATURE** — 45 magic numbers (PE, ELF, Mach-O, ZIP, PNG, JPEG, PDF, SQLite, gzip, GGUF, WASM, OLE2, …) | — | BINARY (beats a lying extension) |
+| 6 | **NUL** — a `0x00` in the sample | — | BINARY (the classic git / `file(1)` heuristic) |
+| 7 | **CONTROL RATIO** — share of non-text control bytes via `bytes.translate` (single C-speed pass) | — | BINARY above `binary_detection_control_ratio` |
+| 8 | **UTF-8 DECODE** — undecodable **and** control-dirty | — | BINARY |
+| — | default | — | TEXT |
+
+**⚠️ STAGE 4 MUST PRECEDE STAGE 6 — do NOT reorder.** UTF-16/UTF-32 text is legitimately full of `0x00` bytes. If the NUL test ran first, every UTF-16 document on the user's disk would silently vanish from the context. `test_utf16_bom_beats_the_nul_test` pins this, and `test_bom_table_is_ordered_longest_prefix_first` pins that the UTF-32-LE BOM is tested before its UTF-16-LE prefix `\xff\xfe`.
+
+Two deliberate non-decisions keep false positives near zero: **all high bytes (0x80-0xFF) count as text** (so accented UTF-8 and legacy cp1252/latin-1 files pass — Angela's Spanish sources must never be stripped), and a sample below `MIN_RATIO_SAMPLE` (32 B) skips the ratio stage entirely (one stray byte cannot condemn a tiny file).
+
+### FAIL-OPEN CONTRACT (do NOT weaken)
+
+A detector that crashes — or that guesses "binary" when unsure — is **worse than no detector**, because it silently deletes the user's real context. Therefore:
+
+- Every failure path resolves to **TEXT** (load it): unreadable file, permission error, a race with a deleted file, a directory passed as a path, a `None` argument. `classify_file()` **never raises**.
+- The module is **stdlib-only** and imports nothing from `agent.*`, so it behaves identically in source and frozen mode.
+- `binary_detection_force_text_extensions` always **beats** the built-in denylist, so the user can rescue any file the tables get wrong.
+- A malformed value in `config.json` falls back to the default rather than disabling the loader.
+
+### Logging — visible in `tlamatini.log`, frozen AND source
+
+`manage.py` tees `stdout`/`stderr` into `tlamatini.log` before Django initializes, so the guard simply `print()`s and the lines land in the log in **both** modes. Every line carries the grep-able prefix `--- [BINARY-GUARD]`, sitting right beside the existing `--- Excluded filenames:` / `--- Excluded extensions:` banner:
+
+```
+--- [BINARY-GUARD] ENABLED - sampling 8192 bytes/file, control-byte limit 0.3
+--- Loading all files with exclusions:
+--- Excluded filenames: ['package-lock.json', 'yarn.lock', ...]
+--- [BINARY-GUARD] ══════════════════════════════════════════════
+--- [BINARY-GUARD] 3 binary file(s) OMITTED from the context / embedding chain
+--- [BINARY-GUARD] Detected by: extension=2, signature=1
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\assets\logo.png  [extension: known binary extension .png]
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\build\core.pyc   [extension: known binary extension .pyc]
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\notes.md         [signature: PNG image]
+--- [BINARY-GUARD] ══════════════════════════════════════════════
+```
+
+A clean load prints `--- [BINARY-GUARD] No binary content detected (…) - nothing omitted`, so the log always proves the guard ran. The listing is capped at 200 entries but **the total is always truthful** (`… and N more`).
+
+Because `DirectoryLoader` fans out over 12 threads, drops are accumulated in a lock-protected `BinaryOmissionRecorder` and printed as one coherent block after `loader.load()` returns — never interleaved mid-line.
+
+### Wiring
+
+`agent/rag/factory.py` resolves the settings once per load (`binary_guard.resolve_settings(config)`), passes them into `loader_kwargs` at **all three** `DirectoryLoader` call sites, and the hook lives in `CustomTextLoader.__init__`: on a binary verdict it records the drop and `raise`s `ValueError`, which `DirectoryLoader(silent_errors=True)` swallows — **the exact mechanism the name-based omissions already used**, so a binary drop is indistinguishable downstream from a user omission.
+
+| Entry point | Path | Guarded |
+|---|---|---|
+| `setup_llm_with_context` | a chosen directory (Context ▸ Set directory as context) | ✅ |
+| `setup_llm_with_context` | a single chosen file | ✅ |
+| `setup_llm` | the `application/` directory | ✅ |
+
+**Miss one call site and that context path silently loads binaries again** — `test_all_three_directory_loaders_receive_the_settings` asserts the count is exactly 3.
+
+### Configuration
+
+```jsonc
+"binary_context_detection": true,            // master switch
+"binary_detection_sample_bytes": 8192,       // head bytes sampled per file
+"binary_detection_control_ratio": 0.3,       // non-text byte share that condemns a file
+"binary_detection_log_each_file": true,      // false = count-only summary
+"binary_detection_extra_binary_extensions": [],  // e.g. [".myblob"]
+"binary_detection_force_text_extensions": []     // e.g. [".dat"] - always wins
+```
+
+Setting `binary_context_detection: false` restores the exact pre-guard behaviour (the log then says `DISABLED`).
+
+Coverage: `agent/test_binary_guard.py` (45 tests — the cascade, every signature, fail-open, the recorder under 12 threads, the one-read efficiency contract, the factory wiring, table sanity, and a documentation check).
+
+---
+
+## Configurable web port (`django_port`) — v1.40.1, 2026-07-13
+
+The port Tlamatini's web UI + chat WebSocket bind is **no longer hardcoded to 8000** — `8000` is now only the *default*. Set **`django_port`** in `config.json` and restart; no rebuild, no code edit.
+
+**Why it exists.** On a machine where Windows/Hyper-V has **reserved** port 8000 (the dynamic-port exclusion ranges — `netsh interface ipv4 show excludedportrange protocol=tcp`), Daphne cannot bind it and Tlamatini dies at startup with **`WinError 10013`** — *"an attempt was made to access a socket in a way forbidden by its access permissions"*. Before this, a frozen install had **no escape** from that: the port was baked into `manage.py` and only a rebuild could move it. Now it is one line of `config.json`.
+
+**The two helpers (both in `Tlamatini/manage.py`, stdlib-only on purpose — they run BEFORE Django is imported):**
+
+| Helper | Role |
+|---|---|
+| `_resolve_config_path()` | Absolute path to `config.json`. `CONFIG_PATH` env wins; else next to the frozen `Tlamatini.exe`; else `agent/config.json` in source mode. |
+| `_resolve_django_port(default_port=8000)` | Reads `django_port`, validates `1 ≤ port ≤ 65535`, returns it. **Fail-open** on anything wrong. |
+| `_apply_configured_port(argv)` | Injects the resolved port into `sys.argv` for `runserver` / `startserver` **when the command line omitted one**. Called once from `main()`. |
+
+**Coverage — every launch path honours the key** (this was the 2026-07-13 completion; the original commit only covered the frozen paths):
+
+- frozen bare double-click → `runserver --noreload 0.0.0.0:<port>`
+- frozen `.flw` file association → same
+- frozen browser auto-open → `http://localhost:<port>/`
+- **source `python manage.py runserver`** ← was still binding 8000 before
+- **`python manage.py startserver`** ← was still binding 8000 before (its `addrport` is forwarded verbatim to `runserver`)
+
+**Contract — do NOT weaken either half:**
+
+1. **Fail-open, always.** A missing key / missing file / unparseable JSON / non-numeric / out-of-range value falls back to **8000** and prints a `--- [PORT] …` line. A config typo must never stop the server from starting. (`utf-8-sig` read, so a BOM is tolerated.)
+2. **An explicit CLI port always wins.** `runserver 9100` or `runserver 127.0.0.1:9100` is never second-guessed, and the injector never double-appends onto the frozen `0.0.0.0:<port>` rewrite. Detection is "any non-flag token after the command".
+
+**Not covered (by design):** a direct `daphne` / `uvicorn` launch bypasses `manage.py` entirely — pass the port on that CLI yourself. The two MCP helper listeners are a separate axis with their own keys (`mcp_system_server_port` → `:8765`, Files-Search gRPC → `:50051`). If you run the **TeleTlamatini** bridge, point its `tlamatini.base_url` at the same port.
+
+Coverage: `agent/test_django_port_config.py` (24 tests — fail-open matrix, CLI-wins matrix, and a source contract pinning the wiring; `manage.py` cannot be imported in a test process, so the helpers are AST-lifted, the same trick `test_temp_dir_policy.py` uses).
+
+---
+
+## System Prompt & Identity
+
+The chat LLM system prompt lives in `Tlamatini/agent/prompt.pmt`. The LLM is given the identity **"Tlamatini"** (Nahuatl for "one who knows"). When users address "Tlamatini" in their prompts, the LLM understands they are speaking to the system itself. The bot username in chat messages and DB records is `Tlamatini`.
+
+Key rules:
+
+1. Referenced rephrases must be ignored
+2. System context (MCP metrics) is real-time
+3. Files context (MCP file search) is real-time
+4. Code blocks use `BEGIN-CODE<<<FILENAME>>>` / `END-CODE` format (NOT markdown fences)
+5. Context usage: if tools are available (Multi-Turn), use them for ANY request
+6. Tables must use HTML, not markdown pipe syntax
+7. Responses must end with `END-RESPONSE`
+8. Tool-usage rule: in Multi-Turn, the LLM is an OPERATOR, not just an advisor
+9. Up to 4096 multi-turn iterations available (`unified_agent_max_iterations`; bumped 256 → 4096 in commit `1f36217`. Not to be confused with the tool-call quota hard-stop of 256, which is a separate cap.)
+10. Identity rule: the LLM IS Tlamatini — it responds to its name and can describe its own capabilities
+
+---
+
+## Self-Knowledge & Self-Modification (2026-05-25)
+
+Two related capabilities let Tlamatini describe — and potentially rewrite — herself.
+
+### Self-knowledge injection (`Tlamatini.md` → `{self_knowledge}`)
+
+`Tlamatini/agent/Tlamatini.md` is the LLM's **first-person self-reference file** — an authoritative map of *what she is*: who/what she is, the two runtime modes (frozen vs source) and how to detect which one she is in, the ports she opens (8000 / 8765 / 50051), her main pages, her tech stack, her capability surface, and how to improve herself. Its audience is the LLM alone, so it **deliberately does NOT follow `prompt.pmt`'s HTML/contrast styling rules** — it is private self-reference, not text rendered to a user.
+
+It is injected into `prompt.pmt`'s `<self_knowledge>{self_knowledge}</self_knowledge>` block **at prompt-build time** by `agent/rag/config.py`:
+
+- Constants `SELF_KNOWLEDGE_FILENAME = 'Tlamatini.md'` and `SELF_KNOWLEDGE_PLACEHOLDER = '{self_knowledge}'`.
+- `_load_self_knowledge_block(application_path)` reads the file, **brace-escapes** it (`{` → `{{`, `}` → `}}`) so code snippets inside it don't collide with the f-string template variables (`{system_context}`, `{files_context}`, `{context}`), and **fails open** — a missing / empty / unreadable file yields a short literal notice instead of raising, so it can never break the system prompt.
+- `load_config_and_prompt()` performs the `.replace()` at the **single prompt-load site**, so the injection covers **every chain** (basic, history-aware, unified, prompt-only) without adding a new input variable.
+- Resolved from the **application directory** exactly like `prompt.pmt` / `config.json` (install root next to the `.exe` in frozen mode, `Tlamatini/agent/` in source mode — the same `application_path` `rag/factory.py` uses). `build.py` ships it via `--add-data=…/Tlamatini.md;agent` **and** copies it to the install root (`optional_file_copies`) so the frozen "next to the exe" resolution works.
+- `prompt.pmt`'s identity rules point the LLM at `Tlamatini.md` and tell her to read it whenever a prompt concerns who/what she is, her architecture / modes / ports / pages / internals, or improving herself.
+
+### Self-modification (`TlamatiniSourceCode/`)
+
+`Tlamatini/agent/TlamatiniSourceCode/` is an **OPTIONAL** directory that, when present, holds Tlamatini's own source code so she can read/inspect/modify herself. It is a **second capability axis, independent of frozen vs source**:
+
+- **Present** → a **self-able-modify** build; **absent** → a **not-self-able-modify** build.
+- Bundled **only** when `build.py` is invoked with the new **`--self-modify`** flag (`self_modify = "--self-modify" in sys.argv`): the build **generates the tree fresh** via `copy_source_assets.py` (repo root, 2026-06-12) straight into `dist/manage/TlamatiniSourceCode` — a complete rebuildable snapshot of the live repo (all source + build scripts + .ps1 + build-required .ico/.wav/.svg; media/.pdf/.pptx/jd-cli.jar/secrets omitted, config secrets redacted to `<KEY goes here>` placeholders; ships `_SOURCE_SNAPSHOT_MANIFEST.json` + `_REBUILD_INSTRUCTIONS.md` with the restore-from-install steps for the omitted binaries). On any generation failure it falls back to the legacy static copy of `Tlamatini/agent/TlamatiniSourceCode/`. Prints `Self-modify build : YES/no`. Without the flag the directory is omitted entirely.
+- `prompt.pmt` instructs the LLM to **always verify the directory's presence** (e.g. a Multi-Turn directory listing) before claiming she can read or edit her own code; if absent, she must say so and fall back to the injected self-knowledge + the docs.
+
+Commits: `a927f5c` (self-knowledge file + injection + `prompt.pmt` identity rules), `2aab751` (`build.py --self-modify`), `1f36217` (4096 iterations). Authored by "Tlamatini's-AutoBot".
+
+### Loaded-context priority (the user's project beats self-knowledge)
+
+Because `{self_knowledge}` is **always** present and authoritative, a generic prompt like *"summarize the project's source code in the provided context"* used to make her summarize **herself**. The fix gives the **user-loaded `<context>` priority** over `<self_knowledge>` for generic "the project / the source code / the provided context / this codebase / the loaded files" requests (she only describes herself when the user *explicitly* names Tlamatini / you / this-system / yourself). It is enforced two ways: a `prompt.pmt` Rule 5 **"Loaded-context priority"** clause + a **"CRITICAL SCOPE"** clause on the `<self_knowledge>` block, and a deterministic, model-agnostic scope header — `agent/rag/utils.py::prepend_loaded_context_scope()` — prefixed onto the loaded context blob in all four chains (`history_aware.py`, both chains in `unified.py`, `basic.py`). See `docs/claude/recent-fixes.md` (2026-05-25) for the full contract.
+
+---
+
+## Self-Update (in-app) & Post-Update DB Migration
+
+Tlamatini updates herself from **About ▸ Check for updates** (`agent/self_update.py`): she checks the latest `XAIHT/Tlamatini` GitHub release, downloads + stages it, and hands off to the external `apply_update.ps1` (run from OUTSIDE the install so it can replace locked files — `Tlamatini.exe`, `python\`, `jre\`, `git\`). The swapper kills the running app's process tree (sparing its own PID), renames `agents → agents_backup` (one generation kept), deletes the old install except the preserved set, moves the new build in except the preserved set, and relaunches. **Preserved across the swap:** `config.json`, `DB`, `Temp`, `Templates`, `application(s)`, the `*_generated` / `context_files` dirs, and `Uninstaller.exe` (built separately, never inside `pkg.zip`).
+
+**Post-update DB migration (2026-06-15, v1.23.0).** The live `db.sqlite3` sits inside `_internal/` (PyInstaller `_MEIPASS`), which is replaced wholesale on update — so it cannot be protected by the top-level preserve set. To keep the user's chat history + custom toggles AND still deliver new migrations (new agent / tool / prompt rows), `apply_update.ps1` (step 3b) copies the user's DB into the preserved `DB/ToLoad/` and drops `DB/post_update_migrate.flag`. On the next launch `manage.py::_apply_pending_db_swap()` swaps that DB back over the freshly-shipped one and `_run_post_update_migrate_if_flagged()` runs `migrate` in a **child process** — safe because `agent/apps.py::AgentConfig.ready()` only starts the MCP servers for `runserver`/`startserver`/`daphne`/`asgi`, so a child `migrate` neither starts a second server nor recurses. The two preserve lists (`apply_update.ps1 $Preserve` and the `self_update.py` docstring) must stay byte-coherent; the `tlamatini-self-update-inclusion` sweep enforces it. See `docs/claude/recent-fixes.md` (2026-06-15).
+
+---
+
+## Companion-App Discovery — `HKCU\Software\XAIHT\Tlamatini` + agents manifest (2026-07-12)
+
+So XAIHT **companion apps** (e.g. **Tlamatini-FlowPills**) can find Tlamatini's agent-template catalog **without importing Python, running Tlamatini, or scanning drives**, Tlamatini publishes three read-only, **HKCU-only, fail-open** surfaces (engine: `agent/agent_manifest.py`):
+
+- **Registry key** `HKCU\Software\XAIHT\Tlamatini` (`windows_app_registration.register_discovery_entry`) — values `InstallLocation`, `AgentsRoot` (the exact root, read FIRST), `SourceAgentsRoot`, `AgentManifestPath`, `Version`, `AgentCatalogVersion` (`<count>-<sha8>`). Written by `install.py`; refreshed by `agent_manifest.publish_discovery()` on **every launch** (background thread in `apps.ready()`), so a source checkout that has run once is discoverable too.
+- **Agents manifest** `<agents_root>\_tlamatini_agents_manifest.json` — complete templates only (`<type>.py` + `config.yaml`; `pools`/`__pycache__` excluded), each with `sha256`. Generated at build (`build.py`) and refreshed on launch: **every complete agent file body is hashed on each background check** and the manifest is **rewritten only when meaningful content differs** (the volatile `generated_at` alone never rewrites; an edit to any agent file refreshes its `sha256`). `read_manifest` reads `utf-8-sig` (BOM-tolerant). Gitignored in source mode.
+- **Preserved marker** `<install>\agents\.tlamatini-preserved-agents.json` — left by `uninstall.py` when it preserves `agents/`; the discovery key is intentionally **kept** so companion apps still find the preserved agents.
+
+Contract (do NOT weaken): HKCU only, never admin, every writer fail-open, read-only w.r.t. Tlamatini **except our own manifest file + our own registry key**. Implements `Tlamatini-FlowPills-Lookup.md` §15 (PROP-001…004). Full contract + companion lookup sequence: `docs/companion-app-discovery.md`.
+
+---
+
+## The Five Layers of the System
+
+### Layer 1: Persisted Toggles (Database)
+- `Mcp` model rows: UI toggles for MCP context providers
+- `Tool` model rows: UI toggles for unified-agent tools
+- `Agent` model rows: Agent type registry (sidebar list)
+- Loaded by `consumers.py`, converted to status flags in `factory.py`
+
+### Layer 2: Runtime MCP Services
+- **System-Metrics**: `mcp_system_server.py` (WebSocket JSON)
+- **Files-Search**: `mcp_files_search_server.py` (gRPC)
+- Started from `apps.py` and `management/commands/startserver.py`
+
+### Layer 3: Context Fetcher Chains (Sidecars)
+- `SystemRAGChain` in `chain_system_lcel.py`
+- `FileSearchRAGChain` in `chain_files_search_lcel.py`
+- These inject `system_context` / `files_context` into the payload
+
+### Layer 4: Main Answer Chains
+- `basic.py`: BasicPromptOnlyChain (no docs)
+- `history_aware.py`: History-aware RAG with reranking
+- `unified.py`: Tool-enabled agent chains (LangGraph)
+- `factory.py` monkey-patches `invoke()` to inject context from sidecars
+
+### Layer 5: Unified-Agent Tools
+- Defined in `tools.py` as synchronous `@tool` functions
+- Returned by `get_mcp_tools()` (misnamed - returns LangChain tools, NOT MCP services)
+- Only active when unified-agent chain is selected
+- Includes: execute_command, agent_parametrizer, agent_starter, agent_stopper, agent_stat_getter, launch_view_image, unzip_file, decompile_java, googler, + 63 wrapped chat-agent launchers (see `chat_agent_registry.CHAT_AGENT_TOOLS`; the newest is `chat_agent_flowcreator` — turns a plain-language objective into a real, canvas-loadable `.flw` file, after the media-playback pair `chat_agent_audioplayer` / `chat_agent_videoplayer`)
+- Googler tool must run Playwright inside a `ThreadPoolExecutor` — `sync_playwright()` is incompatible with Django Channels' running event loop
+
+---
+
+## External MCPs (universal MCP client) — distinct from the `Mcp`-model context providers
+
+`agent/external_mcp_manager.py` is a **config-driven generic MCP CLIENT**: it connects Tlamatini to ANY external MCP server declared in a JSON catalog and exposes that server's tools to the LLM. It is a **separate axis** from the two runtime context providers above — `System-Metrics` / `Files-Search` are servers Tlamatini *hosts* (Layer 2) and toggles via `Mcp`-model rows; the External MCPs are servers Tlamatini *consumes* as a client, with no `Mcp` row, no `factory.py` wiring, and no prompt-context injection.
+
+- **Catalog = user state.** `agent/external_mcps.json` holds the standard `mcpServers` shape (identical to a Claude Desktop / VS Code config) plus an `active` list. It is resolved **next to `config.json`** with the same precedence (`CONFIG_PATH` env > frozen install root > source `agent/`), so it is user state that survives a self-update.
+- **Four connect transports.** The client speaks `stdio`, `streamable-http`, `sse`, and `websocket` (the normalizer also recognizes `tcp` / `named-pipe` labels). A `_NetworkMcpClientBase` (httpx + websockets) duck-types the `_StdioMcpClient`, so the supervisor tools treat every transport uniformly.
+- **LLM surface = 8 supervisor tools + lazily-bound remote tools.** The LLM drives the manager with `external_mcp_status` / `external_mcp_reconnect` / `external_mcp_doctor` / `external_mcp_list_tools` / `external_mcp_call` / `external_mcp_import` / `external_mcp_set_active` / `external_mcp_wait`. Each active server's remote tools are wrapped as `ext__<server>__<tool>` (the catalog can hold hundreds of servers; at most **5** are active at once so the bound surface stays small). The browser surface is the **External ▸ MCPs** navbar dialog (`docs/claude/frontend.md`).
+- **NOT ACPX.** The `external_mcp_*` and `ext__*` tools are **not** part of ACPX — not in `ACPX_TOOL_NAMES`, not gated by the ACPX checkbox — they are gated only by Multi-Turn. See `docs/claude/acpx.md`.
+- **Static triage counterpart.** The **MCP Doctor** workflow agent (`chat_agent_mcp_doctor`) reads the same catalog WITHOUT connecting — the offline, on-paper sibling of the live `external_mcp_doctor` tool (`docs/claude/agents.md`).
+
+---
+
+## Application Log (tlamatini.log)
+
+`Tlamatini/manage.py` defines a `_TeeStream` wrapper that replaces `sys.stdout` and `sys.stderr` **before Django initializes**. Every print, every Django logger (they all use `StreamHandler`), and every tool's stdout/stderr lands in both the console and a single file:
+
+- **Source mode**: `Tlamatini/tlamatini.log` (next to `manage.py`)
+- **Frozen mode**: next to the executable (e.g. `C:\Program Files\Tlamatini\tlamatini.log`)
+
+Characteristics:
+
+- **Truncate-on-start**: the file is opened with mode `'w'`, so each run begins with a fresh log
+- **No rotation / no size cap**: long sessions grow unbounded — copy or rename before restart if you need to preserve the history
+- **Not a Django LOGGING handler**: the tee is stream-level, upstream of Django's logging config, so it picks up print() calls and third-party stdout as well
+
+When asked to debug an issue, `Tlamatini/tlamatini.log` is the first artifact to consult.
+
+---
+
+## Doc Generation (agent/doc_generation)
+
+- `refresh_project_docs.py` — Pipeline that regenerates `tlamatini_app_summary.pdf` (the repository-root PDF overview) from the current source tree. Invoked manually during documentation passes
+- `mardown_to_pdf.py` *(sic, typo preserved)* — Markdown → PDF helper used by `refresh_project_docs.py`
+
+Output artifact: `tlamatini_app_summary.pdf` in the repository root.
+
+---
+
+## Services Layer (agent/services)
+
+The `agent/services/` package owns cross-cutting backend logic that does not fit cleanly into a chain, a tool, or an agent script. As of May 2026 it groups three concerns:
+
+**Answer / response post-processing**
+- `response_parser.py` — strips the `END-RESPONSE` sentinel and miscellaneous LLM-output artifacts; renders the per-agent **Exec Report** HTML and appends it to the answer in the order documented in `docs/claude/exec-report.md`
+- *(removed 2026-07-06)* `answer_analizer.py` used to hold an LLM-based SUCCESS/FAILURE answer classifier that gated the Multi-Turn Create-Flow button. It was **dropped entirely**: the button now appears whenever Multi-Turn ran with ≥1 successfully-executed agent, and the generated flow contains only the successful agents — so no whole-answer verdict is computed.
+- `filesystem.py` — filesystem helpers shared across views and tools
+
+**Agent contracts & flow compilation** (commit `0bea21d`, May 2026)
+- `agent_paths.py` — Frozen/source-aware resolution of `agents/` root and the per-session pool, plus canvas-id ↔ pool-name normalization (handles `Node Manager` → `node_manager`, `Gateway-Relayer` → `gateway_relayer`, `(2)` cardinal stripping)
+- `agent_contracts.py` — `AgentContract` registry: per-agent connection-field shape (`input_field_by_slot` / `output_field_by_slot`), `parametrizer_fields`, `secret_paths`, plus `singleton` / `long_running` / `never_starts_targets` / `exclude_from_validation` flags. Discovers contracts from disk and merges builtin overrides; lru-cached and alias-normalized
+- `flow_spec.py` — `FlowNode` / `FlowConnection` / `FlowSpec` dataclasses + `normalize_flow_payload()` / `flow_spec_to_legacy_json()`. The `schemaVersion: 2` in-memory representation that both surfaces (canvas snapshot from `acp-flow-snapshot.js` AND chat tool-call log from `agent_page_chat.js`) compile through
+- `flow_compiler.py` — `compile_flow_spec()` / `compile_flow_payload()` (called from `views.compile_flow_view` and `views.flow_from_tool_calls_view`) and `list_pool_agents_for_validation()` (the new ground-truth replacement for the legacy `os.listdir` loop in Validate). Wires every connection per its contract, clears stale connection fields before re-writing, redacts `secret_paths` from `.flw` exports, and writes both `config.yaml` and `interconnection-scheme.csv` to the session pool when called with `write=True`. Coverage: `agent/test_flow_contracts.py`
+
+The frontend reaches this layer over three new endpoints: `POST /agent/compile_flow/`, `POST /agent/flow_from_tool_calls/`, and `GET /agent/agent_contracts/` — all wired in `agent/urls.py`.
+
+---
+
+## Database Models (13 models in agent/models.py)
+
+Key models:
+- `Agent` - Agent type registry (idAgent, agentName, agentDescription, agentContent). **⚠️ This table is DELETED and rebuilt from the `agents/` folder listing on EVERY startup** by `apps.py::AgentConfig.ready()`, so `agentDescription` is derived, not authored: the boot resolver `_canonical_agent_display_name()` reads `services/agent_paths.py::display_name_from_agent_type`, which is the real source of truth for a display name (a migration's value survives only until the next launch). See `docs/claude/recent-fixes.md` (2026-07-26).
+- `Mcp` - MCP UI toggle rows (enable/disable context providers)
+- `Tool` - Tool UI toggle rows (enable/disable unified-agent tools)
+- `Skill` - SKILL.md registry mirror (name, description, runtime, acpx_agent, **enabled**, frontmatter_json, body_sha256, last_loaded_at). Created in migration `0071_acpx_skills.py`; auto-seeded from `agent/skills_pkg/*/SKILL.md` by `agent/acpx/service.py::boot_skills()` (called on a background thread from `apps.AgentConfig.ready()`). The **ACPX-Skills navbar dropdown** (Browse / Configure / Diagnostics / Reload — added 2026-05-17) is the only user-facing edit surface and only ever touches the `enabled` boolean; all other fields are owned by `boot_skills()` and refreshed from disk on every reload. The disk-derived cache fields are NOT used by the admin UI (it reads fresh from `skill_registry`); they exist so historical revisions could surface frontmatter snapshots without an extra disk read.
+- `AcpAgent` - Mirror of the ACPX agent registry (agent_id, command, description, enabled, healthy)
+- `AcpSession` - One row per ACP child-process session
+- `SkillInvocation` - Append-only audit row for each `SkillHarness.invoke()` call
+- `ChatHistory` - Chat message history
+- Plus session, context, and configuration models

@@ -1,0 +1,992 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+from typing import List, Dict, Any, Optional
+import httpx
+import hashlib
+import re
+import time
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import SystemMessage
+from langchain_community.vectorstores import FAISS
+from langchain_core.documents import Document
+from ...cancellation import is_run_cancelled
+from ...chat_history_loader import DBChatHistoryLoader
+from ...global_state import global_state
+from ...mcp_agent import create_unified_agent
+from ..config import apply_conditional_rule_blocks
+from ..utils import _approx_tokens, _sanitize_rewritten_question, _sanitize_and_redact, _normalize_text, _unique_filenames_from_split, _pack_context, prepend_loaded_context_scope
+from ..interaction import show_rephrased_question, save_context_blob
+from ..retrieval import retrieve_documents
+from agent.rag_enhancements import expand_query_with_context, allocate_context_budget, add_cross_references
+from .base import Callbacks
+from .history_aware import _is_list_files_query, _CODE_BLOCK_RE
+
+
+_FILE_LISTING_CONTEXT_RE = re.compile(
+    r"(^FILE MANIFEST\b|^Allowed Directories:\b|^Found \d+ files matching\b|^No files found matching\b)",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _non_tool_system_prompt(prompt_template_string: str) -> str:
+    """System prompt for the tool-LESS fallback QA path. No tools are bound
+    here, so the feature-gated ACPX (Rule 12) / Templates (Rule 16) rule blocks
+    are never relevant — strip them both so the fallback prompt stays lean and
+    no sentinel markers leak to the model."""
+    return apply_conditional_rule_blocks(
+        prompt_template_string, include_acpx=False, include_templates=False)
+
+
+# Transient-error fingerprints that warrant retrying the unified-agent call
+# before falling back to the tool-less basic-LLM path. Cloud Ollama in
+# particular returns 500 / 502 / forcibly-closed sockets under load; when that
+# happens, dropping Multi-Turn without retrying silently demotes the user's
+# tool-calling request to a plain chat answer.
+#
+# NOTE on 500: for the ollama.com cloud relay a bare "Internal Server Error
+# (ref: <uuid>) (status code: 500)" is a SERVER-SIDE blip, not a malformed
+# request (the relay uses 400/422 for those). It is therefore as retryable as
+# a 502/503/504 — verified by reproducing the exact failing request (full
+# system prompt + the 25 bound tool schemas + the user prompt), which the cloud
+# model answers with HTTP 200 once the blip clears.
+_UNIFIED_AGENT_TRANSIENT_PATTERNS = (
+    "status code: 500",
+    "status code: 502",
+    "status code: 503",
+    "status code: 504",
+    "forcibly closed",
+    "connection reset",
+    "read tcp",
+    "EOF occurred in violation of protocol",
+    "Read timed out",
+    "ConnectTimeout",
+    "RemoteProtocolError",
+)
+
+
+def _is_transient_agent_error(exc: Exception) -> bool:
+    message = str(exc)
+    if not message:
+        return False
+    lowered = message.lower()
+    for pattern in _UNIFIED_AGENT_TRANSIENT_PATTERNS:
+        if pattern.lower() in lowered:
+            return True
+    return False
+
+
+def _log_fallback_exception(where: str, exc) -> None:
+    """Print the FULL real exception + traceback for a tool-less fallback.
+
+    The 'Agent invocation failed ()' incident (2026-07-25) swallowed the true
+    cause behind an empty message, so nobody could see WHY tools stopped. This
+    makes the real cause impossible to hide again. Never raises. (Angela)
+    """
+    import traceback as _tb
+    try:
+        etype = type(exc).__name__ if exc is not None else "None"
+        emsg = str(exc or "").strip() or "<empty message>"
+        print(f"--- [{where}] REAL fallback cause: {etype}: {emsg}")
+        if exc is not None and getattr(exc, "__traceback__", None) is not None:
+            print("".join(_tb.format_exception(type(exc), exc, exc.__traceback__)))
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _fallback_notice_for(agent_exception, user_request: str, *, with_context: bool = False) -> str:
+    """Build a TRUTHFUL system notice for the tool-less fallback.
+
+    NEVER claims a 'transient network error' unless the error actually IS one — it
+    names what really happened (network blip / oversized request / internal error)
+    so the user is not lied to, and it tells them RESEND works. (Angela, 2026-07-26,
+    replacing the fabricated 'the tool-calling backend is unavailable' message.)
+    """
+    etype = type(agent_exception).__name__ if agent_exception is not None else "InternalError"
+    emsg = str(agent_exception or "").strip()
+    low = f"{etype} {emsg}".lower()
+    oversized = any(m in low for m in (
+        "request body too large", "body too large", "request entity too large",
+        "payload too large", "413", "context length", "maximum context",
+        "too many tokens", "string too long"))
+    transient = any(m in low for m in (
+        "timed out", "timeout", "connection", "reset", "502", "503", "504",
+        "overloaded", "rate limit", "429", "temporarily", "remotedisconnected",
+        "bad gateway", "service unavailable"))
+    if oversized:
+        reason = ("the request grew too large for the model in a single step. I now trim "
+                  "my running context automatically, so please RESEND and I will shrink "
+                  "the context and carry the task through WITH my tools")
+    elif transient:
+        reason = ("the model backend had a transient network problem. Please RESEND and I "
+                  "will run the tools")
+    else:
+        detail = (": " + emsg[:200]) if emsg else ""
+        reason = ("an internal error interrupted my tool run (" + etype + detail + "). No "
+                  "tools were executed — please RESEND so I can try again WITH my tools")
+    ctx = " and the provided context" if with_context else ""
+    return (
+        "SYSTEM NOTICE: Multi-Turn tool execution was requested but " + reason + ". "
+        "Answer the following request using only the model's own knowledge" + ctx +
+        ", and clearly state at the END that TOOLS WERE NOT EXECUTED (reason: " + etype +
+        ") so the user can retry.\n\nUser request: " + user_request
+    )
+
+
+def _invoke_unified_agent_with_retry(unified_agent, payload, *, max_attempts: int = 3):
+    """Invoke the unified agent with bounded retry on transient 5xx / socket errors.
+
+    Returns ``(result, last_exception)`` — ``result`` is None if every attempt
+    failed. Non-transient errors short-circuit immediately so real bugs surface.
+    """
+    # THIS run's cancellation identity. Without these two lines the retry loop below
+    # is a SECOND way a cancelled run comes back to life: it re-invokes the ENTIRE
+    # executor (re-executing tools, with a brand-new self-healing invoker and a fresh
+    # 4096-tactic budget) for any error its own transient list matches — and that list
+    # does NOT overlap self_healing's, so errors the healer deliberately re-raises land
+    # right here. (Angela, 2026-07-14)
+    _uid = payload.get("ask_execs_user_id")
+    _epoch = payload.get("cancel_run_epoch")
+
+    last_exception: Optional[Exception] = None
+    for attempt in range(1, max_attempts + 1):
+        if is_run_cancelled(_uid, _epoch):
+            print("--- [UnifiedAgent] user cancelled — not starting another executor run ---")
+            return None, last_exception
+        try:
+            result = unified_agent.invoke(payload)
+            if attempt > 1:
+                print(
+                    f"--- [UnifiedAgent] Recovered on attempt {attempt}/{max_attempts} ---"
+                )
+            return result, None
+        except Exception as exc:
+            last_exception = exc
+            if is_run_cancelled(_uid, _epoch):
+                # A cancel-adjacent error must NEVER trigger a full executor re-run.
+                print("--- [UnifiedAgent] user cancelled — abandoning retries ---")
+                return None, exc
+            try:
+                from ...self_healing import ModelStepUnrecoverable as _MSU
+            except Exception:  # noqa: BLE001
+                _MSU = ()  # type: ignore[assignment]
+            if _MSU and isinstance(exc, _MSU):
+                # The self-healing invoker already exhausted every recovery
+                # tactic (or the user cancelled) for the model step. Re-running
+                # the whole executor would just repeat that expensive ladder —
+                # bubble straight to the fallback (this only happens when NO
+                # agent ran; a run with work is finished gracefully inside the
+                # executor and never reaches here).
+                return None, exc
+            if not _is_transient_agent_error(exc):
+                # Non-transient → bubble up to the caller's fallback path.
+                return None, exc
+            if attempt >= max_attempts:
+                print(
+                    f"--- [UnifiedAgent] Transient error persisted after "
+                    f"{max_attempts} attempts: {exc}"
+                )
+                return None, exc
+            backoff = 0.5 * (2 ** (attempt - 1))  # 0.5s, 1s, 2s
+            print(
+                f"--- [UnifiedAgent] Transient error on attempt {attempt}/{max_attempts} "
+                f"({exc}); retrying in {backoff:.1f}s ---"
+            )
+            time.sleep(backoff)
+    return None, last_exception
+
+
+def _should_include_file_manifest(question: str, q_rewritten: str) -> bool:
+    return _is_list_files_query(question) or _is_list_files_query(q_rewritten)
+
+
+def _has_explicit_file_listing_context(context_blob: str) -> bool:
+    return bool(context_blob and _FILE_LISTING_CONTEXT_RE.search(context_blob))
+
+class UnifiedAgentChain:
+    """
+    Chain wrapper that uses the unified agent (with tool support) while maintaining
+    compatibility with the existing chain interface.
+    Contract: .invoke(payload) -> {"answer": str}
+    """
+    def __init__(
+        self,
+        llm,
+        prompt_template_string: str,
+        history_summary_cfg: Dict[str, Any],
+        loaded_context: str = "",
+    ):
+        self.llm = llm
+        self.prompt_template_string = prompt_template_string
+        self.history_summary_cfg = history_summary_cfg
+        self.last_programs_name: List[str] = []
+        self.httpx_client_instance = None
+        self.unified_agent = None
+        self.loaded_context = loaded_context or ""
+        self._initialize_agent()
+
+    def _initialize_agent(self):
+        """Initialize the unified agent with the prompt template."""
+        try:
+            self.unified_agent = create_unified_agent(self.llm, self.prompt_template_string)
+            print("--- UnifiedAgentChain: Tool-enabled agent initialized successfully ---")
+        except Exception as e:
+            print(f"--- UnifiedAgentChain: Failed to initialize agent ({e}), falling back to basic LLM ---")
+            self.unified_agent = None
+
+    def setHttpxClientInstance(self, httpx_client_instance: httpx.Client):
+        self.httpx_client_instance = httpx_client_instance
+
+    def getHttpxClientInstance(self):
+        return self.httpx_client_instance
+
+    def abort_connection(self):
+        """
+        AGGRESSIVELY abort the httpx connection - close immediately without waiting.
+        This forcibly terminates any pending HTTP requests to Ollama.
+        """
+        if self.httpx_client_instance:
+            try:
+                print("--- [ABORT] Forcibly closing httpx transport ---")
+                # First, try to close the underlying transport (socket level)
+                if hasattr(self.httpx_client_instance, '_transport') and self.httpx_client_instance._transport:
+                    try:
+                        self.httpx_client_instance._transport.close()
+                        print("--- [ABORT] Transport closed ---")
+                    except Exception as te:
+                        print(f"--- [ABORT] Transport close error (expected): {te}")
+                
+                # Then close the client itself
+                try:
+                    self.httpx_client_instance.close()
+                    print("--- [ABORT] Client closed ---")
+                except Exception as ce:
+                    print(f"--- [ABORT] Client close error (expected): {ce}")
+                
+            except Exception as e:
+                print(f"--- [ABORT] Error during abort (connection may already be closed): {e}")
+            finally:
+                self.httpx_client_instance = None
+                print("--- [ABORT] Connection reference cleared ---")
+
+    def setLastProgramName(self, name):
+        self.last_programs_name.append(name)
+
+    def getLastProgramName(self):
+        return self.last_programs_name[-1] if self.last_programs_name else None
+
+    def _summarize_history_if_needed(self, chat_history: List[Any], question: str) -> List[Any]:
+        """Summarize chat history if it exceeds token limits."""
+        mh = self.history_summary_cfg
+        if not mh.get("enable", False) or not chat_history:
+            return chat_history
+
+        est_tokens = sum(_approx_tokens(getattr(m, "content", str(m))) for m in chat_history)
+        if est_tokens <= mh.get("trigger_tokens", 800):
+            return chat_history
+
+        sum_prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a conversation summarizer. Create **JUST ONCE** concise, factual summary of the dialogue that captures information relevant to answering the user's current question.\n\n"
+                       "STRICT GUIDELINES:\n"
+                       "a. Focus on: key facts, decisions made, technical details, entity names, constraints, and ongoing context\n"
+                       "b. Exclude: pleasantries, acknowledgments, clarifying questions, and redundant information\n"
+                       "c. Format: Single paragraph, factual statements only, no conversational markers\n"
+                       "d. Length: Maximum 120 words\n"
+                       "e. Style: Neutral, technical documentation tone\n\n"
+                       "f. Return ONLY the summary content - no prefixes, role indicators, or meta-commentary."),
+            MessagesPlaceholder("chat_history"),
+            ("human", "Current user question: {q}\n\nGenerate summary focusing on information relevant to this question:")
+        ])
+        msgs = sum_prompt.format_messages(chat_history=chat_history, q=question)
+        out = self.llm.with_config({"callbacks": [Callbacks()]}).invoke(msgs)
+        summary = getattr(out, "content", str(out))
+        keep_last = mh.get("keep_last_turns", 6)
+        tail = chat_history[-keep_last:] if keep_last > 0 else []
+        return [SystemMessage(content=f"CHAT HISTORY SUMMARY:\n{summary}")] + tail
+
+    def invoke(self, payload: dict):
+        """Invoke the unified agent with tool support."""
+        print("--- UnifiedAgentChain: Processing request with tool-enabled agent ---")
+        
+        payload = {
+            "input": payload.get("input", ""),
+            "chat_history": payload.get("chat_history", []),
+            "external_context": payload.get("external_context", ""),
+            "external_sources": payload.get("external_sources", []),
+            "system_context": payload.get("system_context", ""),
+            "files_context": payload.get("files_context", ""),
+            "context": payload.get("context", ""),
+            "multi_turn_enabled": bool(payload.get("multi_turn_enabled", False)),
+            "exec_report_enabled": bool(payload.get("exec_report_enabled", False)),
+            # acpx_enabled defaults to False so a missing key drops back to
+            # the legacy Multi-Turn / one-shot behavior; only an explicit True
+            # opts the request into the ACPX tool surface.
+            "acpx_enabled": bool(payload.get("acpx_enabled", False)),
+            # Ask-Execs (per-tool permission prompt) + the user id used to find
+            # the request's permission broker. Both MUST stay in this whitelist
+            # or they are silently dropped at the chain boundary (the same
+            # drop-on-rebuild bug class that once broke exec_report_enabled).
+            "ask_execs_enabled": bool(payload.get("ask_execs_enabled", False)),
+            "step_by_step_enabled": bool(payload.get("step_by_step_enabled", False)),
+            "conversation_user_id": payload.get("conversation_user_id"),
+            # This run's CANCELLATION EPOCH. It MUST stay in this whitelist — drop it
+            # and the executor gets run_epoch=None, every cancel guard silently
+            # becomes a no-op, and a cancelled Multi-Turn run resurrects itself and
+            # keeps flipping the Send button back to "Cancel" forever. Same
+            # drop-on-rebuild bug class that once broke exec_report_enabled.
+            "cancel_run_epoch": payload.get("cancel_run_epoch"),
+            "global_execution_plan": payload.get("global_execution_plan"),
+            "planner_summary": payload.get("planner_summary", ""),
+        }
+
+        if not payload["chat_history"]:
+            payload["chat_history"] = DBChatHistoryLoader.load(limit=8)
+
+        # Summarize history if needed
+        hist = self._summarize_history_if_needed(payload["chat_history"], payload["input"])
+
+        # Build enhanced input with context
+        original_input = payload["input"]
+        loaded_context = payload.get("context", "") or self.loaded_context
+        
+        # Incorporate system context and files context into the input if available
+        enhanced_input = original_input
+        
+        # Add files context first (from FileSearchRAGChain)
+        if payload.get("files_context"):
+            enhanced_input = f"""Files Context (file system search results):
+{payload['files_context']}
+
+User Question: {enhanced_input}"""
+        
+        # Add system context
+        if payload.get("system_context"):
+            enhanced_input = f"System Context: {payload['system_context']}\n\n{enhanced_input}"
+
+        # Add loaded-document fallback context if retrieval/embeddings failed but documents were loaded.
+        if loaded_context:
+            enhanced_input = (
+                "Loaded Context from Knowledge Base Fallback:\n"
+                f"{loaded_context}\n\n"
+                "IMPORTANT: The loaded context above is the USER'S OWN project/files (NOT Tlamatini's own "
+                "source code or self-knowledge), already provided even though vector retrieval is unavailable. "
+                "Use it directly to answer the user's question; for any request to summarize, explain, or analyze "
+                "\"the project\", \"the source code\", or \"the provided context\", answer from THIS content — never "
+                "with a description of Tlamatini herself.\n\n"
+                f"User Question: {enhanced_input}"
+            )
+        
+        # Incorporate external web context
+        ext_raw = payload.get("external_context", "")
+        ext_srcs = payload.get("external_sources", []) or []
+        if isinstance(ext_raw, str) and ext_raw.strip():
+            ext = _sanitize_and_redact(_normalize_text(ext_raw), redact=False)
+            if len(ext) > 6000:
+                ext = ext[:6000] + "…"
+            sources_str = ""
+            if isinstance(ext_srcs, list) and ext_srcs:
+                safe_sources = [str(s) for s in ext_srcs[:8]]
+                sources_str = "\n\nSources:\n" + "\n".join(f"- {s}" for s in safe_sources)
+            enhanced_input = f"Web Context: {ext}{sources_str}\n\n{enhanced_input}"
+
+        # Use unified agent if available, otherwise fall back to basic LLM
+        exec_report_entries: list = []
+        exec_report_denied = None
+        exec_report_enabled = bool(payload.get("exec_report_enabled", False))
+        if self.unified_agent is not None:
+            tool_calls_log = []
+            print(f"--- UnifiedAgentChain: Invoking unified agent with input length: {len(enhanced_input)} chars")
+            result, agent_exception = _invoke_unified_agent_with_retry(
+                self.unified_agent,
+                {
+                    "input": enhanced_input,
+                    "multi_turn_enabled": payload.get("multi_turn_enabled", False),
+                    "exec_report_enabled": exec_report_enabled,
+                    "acpx_enabled": bool(payload.get("acpx_enabled", False)),
+                    "ask_execs_enabled": bool(payload.get("ask_execs_enabled", False)),
+                    "step_by_step_enabled": bool(payload.get("step_by_step_enabled", False)),
+                    "chat_history": hist,
+                    "ask_execs_user_id": payload.get("conversation_user_id"),
+                    # Cancellation identity — required by the executor's cancel guards.
+                    "cancel_run_epoch": payload.get("cancel_run_epoch"),
+                    "global_execution_plan": payload.get("global_execution_plan"),
+                    "planner_summary": payload.get("planner_summary", ""),
+                },
+            )
+            if result is not None:
+                print(f"--- UnifiedAgentChain: Agent returned result type: {type(result)}")
+                if isinstance(result, dict):
+                    print(f"--- UnifiedAgentChain: Result keys: {list(result.keys())}")
+                    print(f"--- UnifiedAgentChain: output value: '{result.get('output', '<NOT PRESENT>')}' (length: {len(result.get('output', ''))})")
+                answer = result.get("output", str(result)) if isinstance(result, dict) else str(result)
+                tool_calls_log = result.get("tool_calls_log", []) if isinstance(result, dict) else []
+                if isinstance(result, dict):
+                    exec_report_entries = result.get("exec_report_entries", []) or []
+                    exec_report_denied = result.get("exec_report_denied")
+                if not answer or not answer.strip():
+                    print(f"--- UnifiedAgentChain: WARNING - Empty answer received! Full result: {result}")
+            elif is_run_cancelled(payload.get("conversation_user_id"), payload.get("cancel_run_epoch")):
+                # ── The USER cancelled (Angela, 2026-07-14) ──
+                # Do NOT run the fallback below: it fires ANOTHER, uncancellable LLM
+                # call and tells the user "the tool-calling backend is currently
+                # unavailable (transient network error)" — after a Cancel that is a
+                # LIE, and the fabricated answer is one more voice from a run that is
+                # supposed to be dead.
+                print("--- UnifiedAgentChain: user cancelled — no fallback answer ---")
+                answer = (
+                    "🛑 Cancelaste esta petición. Detuve la ejecución — no se ejecutó ningún "
+                    "tool más."
+                )
+            else:
+                print(
+                    f"--- UnifiedAgentChain: Agent invocation failed ({agent_exception!r}), "
+                    "falling back to basic LLM ---"
+                )
+                _log_fallback_exception("UnifiedAgentChain", agent_exception)
+                # Fallback to basic LLM call. When the user enabled Multi-Turn,
+                # prepend a TRUTHFUL notice (never a fabricated "network error")
+                # so the answer isn't silently demoted to a tool-less response.
+                multi_turn_was_requested = bool(payload.get("multi_turn_enabled", False))
+                fallback_input = original_input
+                if multi_turn_was_requested:
+                    fallback_input = _fallback_notice_for(
+                        agent_exception, original_input, with_context=False
+                    )
+                answer_payload = {
+                    "input": fallback_input,
+                    "chat_history": hist,
+                    "system_context": payload.get("system_context", ""),
+                    "files_context": payload.get("files_context", ""),
+                    "context": loaded_context,
+                }
+                qa_prompt = ChatPromptTemplate.from_messages([
+                    ("system", _non_tool_system_prompt(self.prompt_template_string)),
+                    MessagesPlaceholder("chat_history"),
+                    ("human", "{input}"),
+                ])
+                answer_chain = (qa_prompt | self.llm).with_config({"callbacks": [Callbacks()]})
+                answered = answer_chain.invoke(answer_payload)
+                answer = getattr(answered, "content", str(answered))
+        else:
+            tool_calls_log = []
+            # Fallback to basic LLM call
+            answer_payload = {
+                "input": original_input,
+                "chat_history": hist,
+                "system_context": payload.get("system_context", ""),
+                "files_context": payload.get("files_context", ""),
+                "context": loaded_context,
+            }
+            qa_prompt = ChatPromptTemplate.from_messages([
+                ("system", _non_tool_system_prompt(self.prompt_template_string)),
+                MessagesPlaceholder("chat_history"),
+                ("human", "{input}"),
+            ])
+            answer_chain = (qa_prompt | self.llm).with_config({"callbacks": [Callbacks()]})
+            answered = answer_chain.invoke(answer_payload)
+            answer = getattr(answered, "content", str(answered))
+
+        invokes_counter = global_state.get_state('chat_hist_summarizer_counter', 0)
+        global_state.set_state('chat_hist_summarizer_counter', invokes_counter + 1)
+        result_dict = {"answer": answer}
+        if tool_calls_log:
+            result_dict["tool_calls_log"] = tool_calls_log
+        if payload.get("multi_turn_enabled"):
+            result_dict["multi_turn_used"] = True
+        # Forward Exec report entries only when the user toggled the
+        # checkbox on. The downstream renderer bails out on empty input,
+        # so the buffer is passed through verbatim.
+        if exec_report_enabled:
+            result_dict["exec_report_enabled"] = True
+            result_dict["exec_report_entries"] = exec_report_entries
+        # The denial banner always surfaces when the user denied a tool —
+        # independent of the Exec report toggle.
+        if exec_report_denied:
+            result_dict["exec_report_denied"] = exec_report_denied
+        print(
+            f"--- UnifiedAgentChain: returning result_dict with exec_report_enabled="
+            f"{result_dict.get('exec_report_enabled')} "
+            f"exec_report_entries_count={len(exec_report_entries)} "
+            f"exec_report_denied={bool(exec_report_denied)}"
+        )
+        return result_dict
+
+class UnifiedAgentRAGChain:
+    """
+    RAG chain that combines document retrieval with tool-enabled unified agent.
+    Performs all RAG operations (retrieval, compression, context packing) but uses
+    the unified agent for final answer generation with tool support.
+    Contract: .invoke({"input": str, "chat_history": list}) -> {"answer": str}
+    """
+    def __init__(
+        self,
+        llm,
+        prompt_template_string: str,
+        contextualize_q_prompt: ChatPromptTemplate,
+        vector_store: FAISS,
+        split_docs: List[Document],
+        retrieval_cfg: Dict[str, Any],
+        compression_cfg: Dict[str, Any],
+        history_summary_cfg: Dict[str, Any],
+        bm25: Optional[Any] = None
+    ):
+        self.llm = llm
+        self.prompt_template_string = prompt_template_string
+        self.contextualize_q_prompt = contextualize_q_prompt
+        self.vector_store = vector_store
+        self.split_docs = split_docs
+        self.retrieval_cfg = retrieval_cfg
+        self.compression_cfg = compression_cfg
+        self.history_summary_cfg = history_summary_cfg
+        self.bm25 = bm25
+        self.last_programs_name: List[str] = []
+        self.detected_oversized_docs = False
+        self.httpx_client_instance = None
+        self.unified_agent = None
+        self._initialize_agent()
+        
+        # Build contextualize chain for history-aware rewrite
+        self.contextualize_chain = (contextualize_q_prompt | llm).with_config({"callbacks": [Callbacks()]})
+
+    def _initialize_agent(self):
+        """Initialize the unified agent with the prompt template."""
+        try:
+            self.unified_agent = create_unified_agent(self.llm, self.prompt_template_string)
+            print("--- UnifiedAgentRAGChain: Tool-enabled agent initialized successfully ---")
+        except Exception as e:
+            print(f"--- UnifiedAgentRAGChain: Failed to initialize agent ({e}), will fall back to basic LLM ---")
+            self.unified_agent = None
+
+    def setHttpxClientInstance(self, httpx_client_instance: httpx.Client):
+        self.httpx_client_instance = httpx_client_instance
+
+    def getHttpxClientInstance(self):
+        return self.httpx_client_instance
+
+    def abort_connection(self):
+        """
+        AGGRESSIVELY abort the httpx connection - close immediately without waiting.
+        This forcibly terminates any pending HTTP requests to Ollama.
+        """
+        if self.httpx_client_instance:
+            try:
+                print("--- [ABORT] Forcibly closing httpx transport ---")
+                # First, try to close the underlying transport (socket level)
+                if hasattr(self.httpx_client_instance, '_transport') and self.httpx_client_instance._transport:
+                    try:
+                        self.httpx_client_instance._transport.close()
+                        print("--- [ABORT] Transport closed ---")
+                    except Exception as te:
+                        print(f"--- [ABORT] Transport close error (expected): {te}")
+                
+                # Then close the client itself
+                try:
+                    self.httpx_client_instance.close()
+                    print("--- [ABORT] Client closed ---")
+                except Exception as ce:
+                    print(f"--- [ABORT] Client close error (expected): {ce}")
+                
+            except Exception as e:
+                print(f"--- [ABORT] Error during abort (connection may already be closed): {e}")
+            finally:
+                self.httpx_client_instance = None
+                print("--- [ABORT] Connection reference cleared ---")
+
+    def setDetectedOversizedDocs(self, detected_oversized_docs: bool):
+        self.detected_oversized_docs = detected_oversized_docs
+
+    def getDetectedOversizedDocs(self):
+        return self.detected_oversized_docs
+
+    def setLastProgramName(self, name):
+        self.last_programs_name.append(name)
+
+    def getLastProgramName(self):
+        return self.last_programs_name[-1] if self.last_programs_name else None
+
+    def _to_text(self, response) -> str:
+        if isinstance(response, str):
+            return response
+        return getattr(response, "content", str(response))
+
+    def _summarize_history_if_needed(self, chat_history: List[Any], question: str) -> List[Any]:
+        mh = self.history_summary_cfg
+        if not mh.get("enable", False) or not chat_history:
+            return chat_history
+        est_tokens = sum(_approx_tokens(getattr(m, "content", str(m))) for m in chat_history)
+        if est_tokens <= mh.get("trigger_tokens", 800):
+            return chat_history
+        sum_prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a conversation summarizer. Create **JUST ONCE** a concise, factual summary of the dialogue that captures information relevant to answering the user's current question.\n\n"
+                       "STRICT GUIDELINES:\n"
+                       "a. Focus on: key facts, decisions made, technical details, entity names, constraints, and ongoing context\n"
+                       "b. Exclude: pleasantries, acknowledgments, clarifying questions, and redundant information\n"
+                       "c. Format: Single paragraph, factual statements only, no conversational markers\n"
+                       "d. Length: Maximum 120 words\n"
+                       "e. Style: Neutral, technical documentation tone\n\n"
+                       "f. Return ONLY the summary content - no prefixes, role indicators, or meta-commentary."),
+            MessagesPlaceholder("chat_history"),
+            ("human", "Current user question: {q}\n\nGenerate summary focusing on information relevant to this question:")
+        ])
+        msgs = sum_prompt.format_messages(chat_history=chat_history, q=question)
+        out = self.llm.with_config({"callbacks": [Callbacks()]}).invoke(msgs)
+        summary = getattr(out, "content", str(out))
+        keep_last = mh.get("keep_last_turns", 6)
+        tail = chat_history[-keep_last:] if keep_last > 0 else []
+        return [SystemMessage(content=f"CHAT HISTORY SUMMARY:\n{summary}")] + tail
+
+    def _retrieve(self, q: str) -> List[Document]:
+        return retrieve_documents(q, self.vector_store, self.bm25, self.retrieval_cfg, self.split_docs)
+
+    def _compress_and_reorder(self, docs: List[Document]) -> List[Document]:
+        ccfg = self.compression_cfg
+        if not docs:
+            return []
+        # Early soft filter by size per doc
+        max_doc_chars = int(ccfg.get("max_doc_chars", 8000))
+        for d in docs:
+            if d.page_content and len(d.page_content) > max_doc_chars:
+                d.page_content = d.page_content[:max_doc_chars] + "…"
+
+        # If no compression components available, return quickly
+        try:
+            from langchain.retrievers.document_compressors import (
+                LLMChainExtractor,
+                EmbeddingsFilter,
+                LongContextReorder,
+                DocumentCompressorPipeline,
+            )
+            from langchain.retrievers import ContextualCompressionRetriever
+        except ImportError:
+            return docs
+
+        compressors = []
+
+        # Extractive compressor (LLM-driven)
+        if ccfg.get("use_llm_extractor", True) and LLMChainExtractor is not None:
+            compressors.append(LLMChainExtractor.from_llm(self.llm))
+
+        # Embedding-based semantic filter (keeps only on-topic chunks)
+        if ccfg.get("use_embeddings_filter", False) and EmbeddingsFilter is not None:
+            compressors.append(EmbeddingsFilter(embeddings=self.vector_store.embedding_function, similarity_threshold=0.3))
+
+        # Long-context reorder to move the most relevant lines toward the end of each chunk
+        if ccfg.get("use_long_context_reorder", True) and LongContextReorder is not None:
+            compressors.append(LongContextReorder())
+
+        pipeline = DocumentCompressorPipeline(compressors=compressors)
+
+        # Wrap a dummy retriever that returns our already-retrieved docs
+        class _FixedRetriever:
+            def __init__(self, docs): self._docs = docs
+            def get_relevant_documents(self, _): return self._docs
+
+        retr = _FixedRetriever(docs)
+        comp = ContextualCompressionRetriever(base_compressor=pipeline, base_retriever=retr)
+        try:
+            return comp
+        except Exception:
+            return docs
+
+    def invoke(self, payload: dict):
+        """Invoke the RAG chain with unified agent for final answer."""
+        print(f"\n--- UnifiedAgentRAGChain::invoke(): >>>>>>>>>>{payload}<<<<<<<<<<")
+        print("--- UnifiedAgentRAGChain: Processing request with document retrieval and tool support ---")
+        question = payload.get("input", "")
+        original_input = question
+        chat_history = payload.get("chat_history", [])
+        external_context_raw = payload.get("external_context", "")
+        external_sources = payload.get("external_sources", [])
+        
+        if not payload["chat_history"]:
+            payload["chat_history"] = DBChatHistoryLoader.load(limit=8)
+            chat_history = payload.get("chat_history", [])
+        
+        # 1) History summarization (optional) + keep last few turns
+        hist = self._summarize_history_if_needed(chat_history, question)
+
+        # 2) History-aware rewrite of the question (only if there's meaningful chat history)
+        if hist and len(hist) > 0:
+            rewritten = self.contextualize_chain.invoke({
+                "input": original_input, 
+                "chat_history": hist
+            })
+            q_rewritten = _sanitize_rewritten_question(self._to_text(rewritten))
+            print("--- Conversation context available, proceeding with added history ---")
+            show_rephrased_question(q_rewritten, payload.get("conversation_user_id"))
+        else:
+            q_rewritten = original_input
+            print("--- No conversation context available, proceeding with original query ---")
+        
+        # NEW: Expand query with technical context if enabled
+        if self.retrieval_cfg.get("enable_query_expansion", False):
+            try:
+                q_rewritten = expand_query_with_context(q_rewritten, hist)
+                print(f"--- Expanded query: {q_rewritten}")
+            except Exception as e:
+                print(f"Warning: Query expansion failed: {e}")
+
+        # SPECIAL CASE: corpus catalog (bypass retrieval)
+        files_ctx = payload.get("files_context", "")
+        multi_turn_enabled = bool(payload.get("multi_turn_enabled", False))
+        
+        # Check if user explicitly asks for "provided context" - if so, prioritize knowledge base
+        explicit_kb_request = "provided context" in question.lower() or "provided context" in q_rewritten.lower()
+        
+        if explicit_kb_request:
+            print("--- User explicitly requested 'provided context', ignoring FileSearchRAGChain results ---")
+            files_ctx = "" # Clear it so we proceed to knowledge base check
+        
+        # In Multi-Turn mode, NEVER short-circuit with a file listing.
+        # Multi-Turn is LLM-free thinking: the user's request (e.g. "Make a .js
+        # file…") must always reach the LLM / agent pipeline, even if the
+        # regex accidentally matches an extension pattern in the prompt.
+        if not multi_turn_enabled and (_is_list_files_query(question) or _is_list_files_query(q_rewritten)) and not files_ctx:
+            self.retrieval_cfg["k_fused"] = max(30, int(self.retrieval_cfg.get("k_fused", 10)))
+            files = _unique_filenames_from_split(self.split_docs)
+            if not files:
+                return {"answer": "Actualmente no hay archivos cargados en el knowledge base. Carga documentos para habilitar el listado de archivos."}
+            
+            # Check if user is asking for files with a specific extension
+            # Strip code blocks first to avoid matching extensions inside embedded code
+            cleaned_question = _CODE_BLOCK_RE.sub("", question)
+            extension_match = re.search(r'\*\.(\w+)|(?<!\w)\.(\w+)(?:\s+files?|$)|(\w+)\s+files?\s+(?:with|ending|extension)', cleaned_question, flags=re.IGNORECASE)
+            if extension_match:
+                # Extract extension (prioritize *.ext format, then .ext, then "ext files")
+                ext = extension_match.group(1) or extension_match.group(2) or extension_match.group(3)
+                if ext:
+                    # Normalize extension (remove * if present, ensure it starts with .)
+                    ext = ext.lower().replace('*', '').lstrip('.')
+                    # Validate it's a reasonable extension (not common words like "the", "all", etc.)
+                    common_words = {'the', 'all', 'with', 'file', 'files', 'name', 'named', 'search', 'find', 'locate'}
+                    if ext not in common_words and len(ext) <= 10:  # Extensions are usually short
+                        # Filter files by extension
+                        filtered_files = [f for f in files if f.lower().endswith(f'.{ext}')]
+                        if filtered_files:
+                            listing = f"Archivos con extensión .{ext} en el knowledge base ({len(filtered_files)} en total):\n" + "\n".join(f"• {f}" for f in filtered_files)
+                            return {"answer": listing}
+                        else:
+                            return {"answer": f"No se encontraron archivos con extensión .{ext} en el knowledge base."}
+
+            # No extension filter - return all files
+            listing = f"Archivos disponibles en el knowledge base ({len(files)} en total):\n" + "\n".join(f"• {f}" for f in files)
+            return {"answer": listing}
+        elif multi_turn_enabled and (_is_list_files_query(question) or _is_list_files_query(q_rewritten)):
+            print("--- Multi-Turn mode: file-listing detection triggered but BYPASSED → request goes to LLM ---")
+
+        # 3) Retrieve
+        #docs = self._retrieve(original_input)
+        docs = self._retrieve(q_rewritten)
+
+        # 4) Contextual compression (optional)
+        comp = self._compress_and_reorder(docs)
+        if isinstance(comp, list):
+            focused_docs = comp
+        else:
+            # comp is a ContextualCompressionRetriever -> compress using query
+            try:
+                #focused_docs = comp.get_relevant_documents(original_input)
+                focused_docs = comp.get_relevant_documents(q_rewritten)
+            except Exception:
+                focused_docs = docs
+        
+        # NEW: Apply context budget allocation if enabled
+        if self.retrieval_cfg.get("enable_context_budget_allocation", False):
+            try:
+                max_tokens = int(self.compression_cfg.get("max_context_chars", 32000)) // 4
+                focused_docs = allocate_context_budget(focused_docs, max_tokens)
+            except Exception as e:
+                print(f"Warning: Context budget allocation failed: {e}")
+        
+        # 5) Build compact, labeled CONTEXT
+        max_ctx_chars = int(self.compression_cfg.get("max_context_chars", 24000))
+        redact = bool(self.compression_cfg.get("redact_secrets_in_context", False))
+        
+        # NEW: Add cross-references if enabled
+        if self.retrieval_cfg.get("enable_cross_references", True):
+            try:
+                focused_docs = add_cross_references(focused_docs)
+            except Exception as e:
+                print(f"Warning: Cross-reference addition failed: {e}")
+        
+        # NEW: Use hierarchical context if enabled
+        use_hierarchical = self.retrieval_cfg.get("enable_hierarchical_context", True)
+        context_blob = _pack_context(focused_docs, max_ctx_chars, redact, use_hierarchical)
+
+        # Optionally merge external web context if provided
+        if isinstance(external_context_raw, str) and external_context_raw.strip():
+            ext = _sanitize_and_redact(_normalize_text(external_context_raw), redact)
+            ext_header = "WEB CONTEXT (summarized from live search):\n"
+            if len(ext) > max(1000, max_ctx_chars // 2):
+                ext = ext[: max(1000, max_ctx_chars // 2)] + "…"
+            sources_str = ""
+            if isinstance(external_sources, list) and external_sources:
+                safe_sources = [str(s) for s in external_sources[:8]]
+                sources_str = "\n\nSources:\n" + "\n".join(f"- {s}" for s in safe_sources)
+            merged = f"{ext_header}{ext}{sources_str}\n\nLOCAL CONTEXT:\n{context_blob}" if context_blob else f"{ext_header}{ext}{sources_str}"
+            if len(merged) > max_ctx_chars:
+                merged = merged[: max_ctx_chars] + "…"
+            context_blob = merged
+
+        if multi_turn_enabled:
+            should_include_manifest = _should_include_file_manifest(question, q_rewritten)
+        else:
+            should_include_manifest = (
+                _is_list_files_query(question)
+                or _is_list_files_query(q_rewritten)
+                or bool(payload.get("files_context", ""))
+            )
+
+        # Only include the global file manifest for explicit file-listing requests in multi-turn mode.
+        if should_include_manifest:
+            manifest = _unique_filenames_from_split(self.split_docs)
+            if manifest:
+                header = "FILE MANIFEST (all loaded files in knowledge base):\n" + "\n".join(f"- {f}" for f in manifest)
+                if "FILE MANIFEST" not in context_blob:
+                    context_blob = header + "\n\n" + context_blob if context_blob else header
+
+        print(f"\n--- Original input: {original_input}")
+        print(f"\n--- Rewritten input: {q_rewritten}")
+        print(f"\n--- History: {hist}")
+        
+        # 6) Build enhanced input with all context for unified agent
+        sys_ctx = payload.get("system_context", "")
+        files_ctx = payload.get("files_context", "")
+
+        # Deterministic loaded-context scope header (mirrors prompt.pmt's
+        # loaded-context-priority rule and the history-aware RAG chain): the
+        # loaded directory/file is the USER'S project, never Tlamatini's own
+        # self-knowledge. Bound to the agent input / fallback prompt only; the
+        # blob saved by save_context_blob() below stays the raw retrieved text.
+        scoped_context_blob = prepend_loaded_context_scope(context_blob)
+
+        # Construct enhanced input with all context
+        #enhanced_input = original_input
+        enhanced_input = q_rewritten
+
+        # Add files context first (highest priority - from FileSearchRAGChain)
+        if files_ctx:
+            enhanced_input = f"""Files Context (file system search results):
+{files_ctx}
+
+User Question: {enhanced_input}"""
+
+        # Add retrieved context (contains file information from knowledge base)
+        if context_blob:
+            enhanced_input = f"Retrieved Context from Knowledge Base:\n{scoped_context_blob}\n\nUser Question: {enhanced_input}"
+        
+        # Add system context
+        if sys_ctx:
+            enhanced_input = f"System Context: {sys_ctx}\n\n{enhanced_input}"
+
+        # Save context blob (for compatibility)
+        hash_object = hashlib.sha256(original_input.encode())
+        hex_dig = hash_object.hexdigest()
+        save_context_blob(hex_dig, context_blob)
+        print("--- Context blob saved with hash: " + hex_dig + " ---")
+
+        # 7) Use unified agent if available, otherwise fall back to basic LLM
+        tool_calls_log = []
+        exec_report_entries: list = []
+        exec_report_denied = None
+        exec_report_enabled = bool(payload.get("exec_report_enabled", False))
+        if self.unified_agent is not None:
+            result, agent_exception = _invoke_unified_agent_with_retry(
+                self.unified_agent,
+                {
+                    "input": enhanced_input,
+                    "multi_turn_enabled": bool(payload.get("multi_turn_enabled", False)),
+                    "exec_report_enabled": exec_report_enabled,
+                    "acpx_enabled": bool(payload.get("acpx_enabled", False)),
+                    "ask_execs_enabled": bool(payload.get("ask_execs_enabled", False)),
+                    "step_by_step_enabled": bool(payload.get("step_by_step_enabled", False)),
+                    "chat_history": hist,
+                    "ask_execs_user_id": payload.get("conversation_user_id"),
+                    # Cancellation identity — required by the executor's cancel guards.
+                    "cancel_run_epoch": payload.get("cancel_run_epoch"),
+                    "global_execution_plan": payload.get("global_execution_plan"),
+                    "planner_summary": payload.get("planner_summary", ""),
+                },
+            )
+            if result is not None:
+                answer = result.get("output", str(result)) if isinstance(result, dict) else str(result)
+                tool_calls_log = result.get("tool_calls_log", []) if isinstance(result, dict) else []
+                if isinstance(result, dict):
+                    exec_report_entries = result.get("exec_report_entries", []) or []
+                    exec_report_denied = result.get("exec_report_denied")
+            elif is_run_cancelled(payload.get("conversation_user_id"), payload.get("cancel_run_epoch")):
+                # Same contract as UnifiedAgentChain above: after a user Cancel, never
+                # fabricate a "transient network error" fallback answer. (2026-07-14)
+                print("--- UnifiedAgentRAGChain: user cancelled — no fallback answer ---")
+                answer = (
+                    "🛑 Cancelaste esta petición. Detuve la ejecución — no se ejecutó ningún "
+                    "tool más."
+                )
+            else:
+                print(
+                    f"--- UnifiedAgentRAGChain: Agent invocation failed ({agent_exception!r}), "
+                    "falling back to basic LLM ---"
+                )
+                _log_fallback_exception("UnifiedAgentRAGChain", agent_exception)
+                # Fallback to basic LLM call with context. When Multi-Turn was
+                # requested, prepend a TRUTHFUL notice (never a fabricated
+                # "network error") so the answer isn't silently demoted.
+                multi_turn_was_requested = bool(payload.get("multi_turn_enabled", False))
+                fallback_input = q_rewritten
+                if multi_turn_was_requested:
+                    fallback_input = _fallback_notice_for(
+                        agent_exception, q_rewritten, with_context=True
+                    )
+                qa_prompt = ChatPromptTemplate.from_messages([
+                    ("system", _non_tool_system_prompt(self.prompt_template_string)),
+                    MessagesPlaceholder("chat_history"),
+                    ("human", "{input}"),
+                ])
+                answer_payload = {
+                    "input": fallback_input,
+                    "chat_history": hist,
+                    "system_context": sys_ctx or "",
+                    "files_context": files_ctx or "",
+                    "context": scoped_context_blob,
+                }
+                answer_chain = (qa_prompt | self.llm).with_config({"callbacks": [Callbacks()]})
+                answered = answer_chain.invoke(answer_payload)
+                answer = getattr(answered, "content", str(answered))
+        else:
+            # Fallback to basic LLM call with context
+            qa_prompt = ChatPromptTemplate.from_messages([
+                ("system", _non_tool_system_prompt(self.prompt_template_string)),
+                MessagesPlaceholder("chat_history"),
+                ("human", "{input}"),
+            ])
+            answer_payload = {
+                #"input": original_input,
+                "input": q_rewritten,
+                "chat_history": hist,
+                "system_context": sys_ctx or "",
+                "files_context": files_ctx or "",
+                "context": scoped_context_blob,
+            }
+            answer_chain = (qa_prompt | self.llm).with_config({"callbacks": [Callbacks()]})
+            answered = answer_chain.invoke(answer_payload)
+            answer = getattr(answered, "content", str(answered))
+
+        invokes_counter = global_state.get_state('chat_hist_summarizer_counter', 0)
+        global_state.set_state('chat_hist_summarizer_counter', invokes_counter + 1)
+        result_dict = {"answer": answer}
+        if tool_calls_log:
+            result_dict["tool_calls_log"] = tool_calls_log
+        if multi_turn_enabled:
+            result_dict["multi_turn_used"] = True
+        if exec_report_enabled:
+            result_dict["exec_report_enabled"] = True
+            result_dict["exec_report_entries"] = exec_report_entries
+        if exec_report_denied:
+            result_dict["exec_report_denied"] = exec_report_denied
+        return result_dict

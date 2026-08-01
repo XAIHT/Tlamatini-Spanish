@@ -1,0 +1,694 @@
+\section{The Model May Not Speak Spanish}
+\label{sec:model-may-not-speak-spanish}
+
+This section answers the question the whole design exists for: \textbf{the operator
+can bind any model, including one with no useful Spanish at all. How is correctness
+still guaranteed?}
+
+\subsection{A taxonomy of model deficiency}
+\label{sec:taxonomy-of-model-deficiency}
+
+``Not Spanish-capable'' is not one condition. It is four, and they fail in different
+places.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Four classes of model deficiency and where each one surfaces.}
+\label{tab:deficiency-taxonomy}
+\begin{tabular}{@{}p{0.16\textwidth}p{0.45\textwidth}p{0.27\textwidth}@{}}
+\toprule
+\textbf{Class} & \textbf{Description} & \textbf{Where it shows up} \\
+\midrule
+\textbf{C1 --- Weak generation} &
+Understands Spanish; writes it awkwardly or drifts into English mid-answer &
+Presentation channel only \\
+\addlinespace
+\textbf{C2 --- Weak comprehension} &
+Misreads the Spanish request; chooses a plausible-but-wrong tool &
+Execution channel --- tool selection \\
+\addlinespace
+\textbf{C3 --- Literal infidelity} &
+Understands the request but ``helpfully'' normalizes a path, strips an accent,
+translates a flag, re-formats a number &
+Execution channel --- arguments \\
+\addlinespace
+\textbf{C4 --- Protocol damage} &
+Emits a malformed sentinel under a non-English instruction (\code{VEREDICTO:}
+instead of \code{VERDICT:}) &
+Downstream routing --- silently \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+C3 and C4 are the dangerous ones precisely because they are \emph{silent}: the action
+looks well-formed and executes successfully against the wrong target.
+
+\subsection{How each class is neutralized}
+\label{sec:how-each-class-is-neutralized}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Detection, recovery and residual risk for each deficiency class.}
+\label{tab:deficiency-neutralization}
+\begin{tabular}{@{}p{0.09\textwidth}p{0.25\textwidth}p{0.31\textwidth}p{0.19\textwidth}@{}}
+\toprule
+\textbf{Class} & \textbf{Caught by} & \textbf{Recovered by} & \textbf{Residual risk} \\
+\midrule
+\textbf{C1} &
+Read-only guard (line-pass-rate on masked prose) &
+Stage 4 renderer --- delegated verbalization or catalog fallback &
+None to correctness; Proposition 1 \\
+\addlinespace
+\textbf{C2} &
+\textbf{V7} (prose where an action was expected) and \textbf{V1/V2} (invalid or
+hallucinated tool) &
+Escalation to R2 --- the English gloss carries the intent; then R3 = baseline &
+Inherited from the baseline \\
+\addlinespace
+\textbf{C3} &
+\textbf{V3 argument provenance} --- the emitted literal is not in $\Sigma$ &
+R1's explicit anchor table; then R2/R3 &
+\textbf{Zero} by Proposition 2 \\
+\addlinespace
+\textbf{C4} &
+\textbf{V6 sentinel integrity} --- byte comparison &
+Escalation; and the operator route is pinned to English for that model &
+Zero on the checked families \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Note what is \emph{not} in the recovery column: nowhere does the system rely on the
+model becoming better at Spanish. \textbf{Spanish competence is an accelerant, not a
+dependency.} A model that has none simply spends more rungs, and the operator notices
+only a slightly slower answer.
+
+\subsection{The capability profile}
+\label{sec:the-capability-profile}
+
+Corollary 1 makes the profile safe; \S5.9 makes it necessary. Folding and
+boundary-matching are free and unconditional, but \textbf{canonical-key
+expansion is not free in the sense that matters}: appending English hint tokens
+to a Spanish request raises the correct tool's score for a model whose Spanish
+is thin, and \emph{lowers signal-to-noise} for a model that already understood
+the sentence. Both directions are correctness failures. Something must decide,
+per model, which of those two mistakes to risk --- and that is the entire job of
+the capability profile.
+
+The obvious design is a lookup. It is impossible, and establishing that is the
+premise of everything else in this section.
+
+\textbf{There is nothing to look up.}
+
+\begin{keyinsight}
+\textbf{Observation 1 (No Language Oracle).} No major model provider exposes
+supported languages programmatically. Verified against primary sources,
+2026-07-28 --- see Table~\ref{tab:no-language-oracle}.
+\end{keyinsight}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Observation 1 --- no provider model-listing endpoint declares
+language. Verified against primary sources, 2026-07-28.}
+\label{tab:no-language-oracle}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\textwidth}
+                  >{\raggedright\arraybackslash}p{0.19\textwidth}
+                  >{\raggedright\arraybackslash}p{0.35\textwidth}
+                  >{\raggedright\arraybackslash}p{0.13\textwidth}@{}}
+\toprule
+\textbf{Provider} & \textbf{Endpoint} & \textbf{Fields returned} &
+\textbf{Language field} \\
+\midrule
+\textbf{Anthropic} & \code{GET /v1/models} &
+  \code{id}, \code{display\_name}, \code{created\_at}, \code{type},
+  \code{max\_input\_tokens}, \code{max\_tokens},
+  \code{capabilities\{batch, citations, code\_execution,
+  context\_management, effort, image\_input, pdf\_input,
+  structured\_outputs, thinking\}} &
+  \textbf{none} \\
+\addlinespace[2pt]
+\textbf{OpenAI} & \code{GET /v1/models} &
+  \code{id}, \code{object}, \code{created}, \code{owned\_by} --- that is the
+  complete schema &
+  \textbf{none} \\
+\addlinespace[2pt]
+\textbf{Google} & \code{models.list} &
+  \code{name}, \code{version}, \code{displayName}, \code{description},
+  \code{inputTokenLimit}, \code{outputTokenLimit},
+  \code{supportedGenerationMethods} &
+  \textbf{none} \\
+\addlinespace[2pt]
+\textbf{Ollama} & \code{/api/show} \textrightarrow{} \code{capabilities[]} &
+  exactly eight values: \code{completion}, \code{tools}, \code{insert},
+  \code{vision}, \code{embedding}, \code{thinking}, \code{image},
+  \code{audio} &
+  \textbf{none}, and no member planned in the enum \\
+\addlinespace[2pt]
+\textbf{OpenRouter} & \code{GET /api/v1/models} &
+  the richest cross-provider schema in existence --- \code{architecture},
+  \code{tokenizer}, \code{pricing}, \code{modalities} &
+  \textbf{none}, confirmed by direct inspection \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pattern is not an oversight of one vendor. Capability enums are real,
+actively maintained and genuinely useful --- Ollama's eight values are
+load-bearing elsewhere in this system --- and language is simply not among the
+things a provider is willing to assert about a model. It is the one capability
+nobody will certify.
+
+The consequence is structural, and it is worth stating as a constraint rather
+than a preference:
+
+\begin{keyinsight}
+No lookup can replace a hardcoded model-name table. The replacement must be a
+measurement.
+\end{keyinsight}
+
+This is the finding that disposes of the design an earlier revision of this work
+actually shipped: a regex over the model id deciding the tier outright. That is
+the hardcoded table wearing a different hat. It survives here only in the
+demoted role described below, hedged by three invariants, because the evidence
+forbids it any authority.
+
+\textbf{The one declaration that exists is worse than nothing.}
+
+There is a single structured language field anywhere in the stack: the GGUF
+metadata key \code{general.languages}. It is optional and author-supplied, and
+measured across fifteen real model files it fails in all three ways a field can
+fail.
+
+\begin{itemize}
+  \item \textbf{Absent} from 7 of 15 --- including \code{qwen3},
+        \code{gemma3}, \code{gemma-2-9b}, \code{Mistral-7B-v0.3} and
+        \code{Llama-2}, all strongly multilingual.
+  \item \textbf{Wrong} where present: \code{Qwen2.5-7B-Instruct} declares
+        exactly \code{["en"]}; \code{Phi-4} declares \code{["en"]}.
+  \item \textbf{Inverted by the transport.} Ollama's \code{server/routes.go}
+        blanks any metadata array longer than five entries unless
+        \code{verbose: true} is passed. Llama 3.1's real eight-language list
+        --- \emph{containing} \code{es} --- therefore reads as \code{[]}, while
+        Phi-4's misleading one-element \code{["en"]} survives intact.
+\end{itemize}
+
+The third failure is the decisive one, because it is not noise but \emph{sign
+reversal}. A naive reader of this field concludes ``no languages declared'' for
+the Spanish-capable model and ``English only'' for the model that is not.
+Absence and \code{["en"]} are equally worthless as evidence against Spanish, and
+a system that consumed this field would be confidently wrong in exactly the
+direction that hurts. The implemented profile therefore reads \textbf{no
+language metadata at all}.
+
+\textbf{Tokenizer fertility is not a language signal --- a negative result.}
+
+The attractive cheap measurement is the token tax: tokens spent on Spanish
+relative to tokens spent on equivalent English. It is genuinely measurable ---
+Ollama returns \code{prompt\_eval\_count} --- it requires no provider
+cooperation, and it is genuinely useless for this decision. We tested it and
+rejected it, and the paper records the rejection rather than the omission.
+
+Measured on this project's own models (2026-07-28), Spanish-per-character
+efficiency --- chars/token in Spanish over chars/token in English, same meaning,
+baseline-subtracted --- is given in Table~\ref{tab:fertility-efficiency}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Spanish-per-character tokenizer efficiency, measured on this project's
+own models (2026-07-28). Every value lies inside a band 0.09 wide.}
+\label{tab:fertility-efficiency}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.32\textwidth}
+                  >{\raggedleft\arraybackslash}p{0.14\textwidth}@{}}
+\toprule
+\textbf{Model} & \textbf{Efficiency} \\
+\midrule
+\code{glm-5.2:cloud}  & \textbf{0.76} \\
+\code{qwen3.5:cloud}  & 0.83 \\
+\code{gemma4:cloud}   & 0.83 \\
+\code{gpt-oss:120b}   & 0.83 \\
+\code{qwen3-vl:8b}    & 0.74 \\
+\code{qwen3-vl:4b}    & 0.74 \\
+\code{Orpheus-3b}     & 0.74 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Everything lies in $[0.74, 0.83]$. Any threshold that separates that band
+mislabels \code{glm-5.2:cloud} --- a 756B frontier model with excellent Spanish,
+and this operator's \emph{primary configured model} --- as English-biased. There
+is no cut point that survives its own first user.
+
+The literature explains why, and it does not contradict itself; it is a
+statement about range. Fertility predicts accuracy where the range is
+\textbf{huge}: across 10 LLMs and 16 African languages, regression slopes run
+from $-0.08$ to $-0.18$ accuracy per additional token per word, explaining
+20--50\% of variance (\code{arXiv:2509.05486}). It fails where the range is
+\textbf{narrow}: a Ukrainian zero-shot study reports $\rho = -0.43$ at
+$p = 0.34$ --- not significant (\code{arXiv:2605.14890}). Spanish is decisively
+the narrow case: across 24 European languages and six tokenizers, English
+averages 1.23 tokens per word and Spanish 1.46, an 8--29\% band
+(\code{arXiv:2605.24718}). The metric is itself contested as a multilingual
+evaluation instrument on independent grounds \citep{nayeem2025strr}.
+
+Two further facts finish it, and they are not statistical but structural.
+
+\textbf{The structural ceiling.} Every model in a family shares one tokenizer
+and therefore one fertility number, while differing enormously in Spanish output
+quality. Fertility cannot discriminate \emph{within} a family by construction
+--- and within-family discrimination is most of what this profile is asked to
+do.
+
+\textbf{The counterexamples run backwards.} \code{Phi-4} has a
+100{,}352-entry vocabulary and declares itself English-only;
+\code{Mistral-7B-v0.3} has 32{,}768 and handles Spanish. The metric orders them
+the wrong way round.
+
+\begin{keyinsight}
+\textbf{Observation 2.} Tokenizer fertility measures \textbf{cost}, not
+competence. It remains useful for context budgeting and pricing. It does not
+gate language routing.
+\end{keyinsight}
+
+One incidental result deserves a sentence and no more. Measuring an ``accent
+surcharge'' --- the same words with diacritics added --- came out
+\textbf{negative} for every real multilingual model: correctly-accented Spanish
+tokenizes \emph{more cheaply}, because \code{cuánto} is one vocabulary entry
+while the misspelled \code{cuanto} splits. It came out positive only for
+\code{Orpheus-3b}, a 3B English fine-tune. That is suggestive of a byte-fallback
+detector, and it is one data point against six. It is recorded, not relied upon.
+
+\textbf{The resolution ladder.}
+
+What remains is a measurement, arranged as three levels, cheapest first, none of
+them on the request path.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The three-level resolution ladder. Only L1 has affirmative authority;
+L0 orders, L2 demotes.}
+\label{tab:resolution-ladder}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}
+                  >{\raggedright\arraybackslash}p{0.44\textwidth}
+                  >{\raggedright\arraybackslash}p{0.24\textwidth}@{}}
+\toprule
+\textbf{Level} & \textbf{What it is} & \textbf{Authority} \\
+\midrule
+\textbf{L0 \textperiodcentered{} SEED} &
+  A name-shaped prior over the model id &
+  \textbf{None.} Ordering only. \\
+\addlinespace[2pt]
+\textbf{L1 \textperiodcentered{} PROBE} &
+  Four graded tasks with known answers, run once per identity &
+  \textbf{The authority.} \\
+\addlinespace[2pt]
+\textbf{L2 \textperiodcentered{} OBSERVE} &
+  The same graders run free on real production responses &
+  \textbf{Demotion only.} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{L0 --- the seed, and why it has no authority.} The seed exists for
+exactly one purpose: to avoid assisting a model that is almost certainly fluent
+during the seconds between binding it and its first probe returning. It is not
+evidence. Because it is a regex over a model name --- the very artifact
+Observation 1 forbids trusting --- it is constrained by three invariants rather
+than described by a policy, and each is pinned by a test.
+
+\begin{keyinsight}
+\textbf{S1.} A probe verdict \textbf{always} overrides the seed.\\
+\textbf{S2.} The seed may \textbf{never} emit \code{WEAK}. Demotion by regex is
+the unrecoverable direction: a false \emph{``cannot do Spanish''} means the
+model is never tried without assistance again, and the user sees silent
+degradation with no error anywhere.\\
+\textbf{S3.} Absence from the seed table means \code{UNKNOWN}, \textbf{never}
+``no Spanish''.
+\end{keyinsight}
+
+S2 is the invariant that distinguishes this design from the hardcoded table it
+replaces. A name-shaped prior is permitted to say \emph{``probably fine, don't
+help yet''} and is forbidden from ever saying \emph{``this one is bad''}.
+
+\textbf{L1 --- the probe.} Four tasks, weighted, with pure-Python graders:
+language (weight 1.0 --- asked in Spanish, did it answer in Spanish or drift to
+English), register (1.5 --- Angela's rule that verbs stay Spanish while American
+technical nouns stay English, which grades \emph{instruction-following in
+Spanish}, not vocabulary), semantic (2.0 --- Spanish intent to the correct tool
+name, graded strictly: naming the right tool \textbf{and no other}), and charset
+(1.0 --- do the diacritics survive the round trip, or return as mojibake).
+Thresholds: $\geq 0.85$ \textrightarrow{} \code{FLUENT},
+$\geq 0.45$ \textrightarrow{} \code{ASSIST}, otherwise \code{WEAK}.
+
+Three properties of the probe matter more than its contents.
+
+\emph{No model judges another model.} Every grader is a pure function of the
+response string, so a verdict cannot drift between runs the way an
+LLM-as-judge verdict does --- the same hazard \S8.5 gates the evaluation judge
+against, avoided here by construction rather than by measurement.
+
+\emph{The raw features are persisted, not just the verdict.} Per-check scores
+and the model's own answers are stored alongside the tier, so thresholds can be
+retuned \textbf{without re-probing anything}, and a human can audit or override
+a verdict rather than merely observe it. A \code{PROBE\_VERSION} counter
+invalidates verdicts whose features are no longer comparable; an older verdict
+is treated as absent rather than trusted.
+
+\emph{A transport failure is not evidence.} If more than one probe is
+unreachable, the run returns \code{INCONCLUSIVE} and \textbf{is never cached}. A
+dead connection says nothing about Spanish, and caching it would convert an
+outage into a permanent verdict.
+
+\textbf{L2 --- passive verification.} The same graders run free on real
+production responses whenever the user's request was Spanish: zero tokens,
+microseconds of CPU. Its authority is deliberately one-directional.
+
+\begin{keyinsight}
+\textbf{O1.} Observation may \textbf{demote} a standing verdict. It may
+\textbf{never} promote one --- promotion requires a probe, because a run of easy
+answers is not evidence.\\
+\textbf{O2.} Demotion requires a \emph{sustained} failure rate (below 0.60) over
+a \emph{real} sample (at least 12), within a bounded window (200, halved on
+overflow) --- so neither does an old run of failures hold a model down forever,
+nor does a good model bank credit against a later collapse.
+\end{keyinsight}
+
+The asymmetry between L1 and L2 also repairs a tension the earlier draft of this
+section left open. Probes run at temperature 0 with a fixed seed where the
+transport supports it, because a verdict that cannot be reproduced cannot be
+audited or retuned --- but probing at temperature 0 systematically measures the
+model's \textbf{best} case, which biases the profile optimistic, and optimism is
+precisely the harmful direction. The resolution is not to abandon
+reproducibility; it is to let the two levels compensate. L1 is reproducible and
+optimistic, and is held to a deliberately high \code{FLUENT} threshold for that
+reason. L2 runs at production temperature on production traffic, and carries the
+demote authority. The one that can be trusted to be exact is not allowed to be
+generous; the one that sees reality is not allowed to be flattering.
+
+\textbf{Identity --- the cache key.}
+
+A verdict is cached against an identity that changes if and only if the artifact
+changes: the \textbf{GGUF blob sha256 digest} for a local model, which moves
+when the weights or the tokenizer move and not otherwise; and the \textbf{exact
+model id} for a cloud model, including the \code{:cloud} suffix and any size
+tag.
+
+Never the family name. An earlier revision collapsed \code{glm-5.2:cloud} and
+\code{glm-5.2} to a single key, so a local artifact and a cloud endpoint that
+merely share a family name would have shared one verdict --- a measurement of
+one thing attributed to another. This is pinned by a test. It also subsumes part
+of the freshness problem: a local model that is re-quantized or re-tokenized
+gets a new identity automatically, and a cloud alias that is silently swapped
+behind a stable id is caught not by a version string but by L2's demotion
+authority, which does not care \emph{why} the answers got worse.
+
+\textbf{Fail-open, and the direction of the asymmetry.}
+
+Every failure path resolves to \code{ASSIST} --- the safe middle --- and never
+to \code{FLUENT}. Nothing in the module raises into a caller and nothing blocks
+a request. The direction is not a default; it is an argument.
+
+A wrong \code{ASSIST} costs some hint tokens and slightly noisier scoring on a
+request the model would have handled unaided, and it is corrected by the next
+probe. A wrong \code{FLUENT} silently withholds the help a weak model needed,
+produces \emph{``no tool matched''} on a request the system could have routed,
+and reads to the operator as Tlamatini simply failing in Spanish --- with no
+error, no log line and no way for the user to attribute the failure. The two
+errors are not symmetric in cost, in detectability, or in recoverability, so the
+fail-open direction is fixed by the one that is cheap and self-correcting rather
+than by the one that is silent and durable.
+
+\code{UNKNOWN} is therefore not a fourth behaviour. It is \code{ASSIST} under a
+different name, and the name is kept only so that the operator-facing profile
+can distinguish \emph{``measured as adequate''} from \emph{``never measured''}.
+
+\textbf{What the profile emits.}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{What the profile emits. Folding is unconditional; expansion is what the
+tier actually decides.}
+\label{tab:profile-emits}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\textwidth}
+                  >{\raggedright\arraybackslash}p{0.48\textwidth}
+                  >{\raggedright\arraybackslash}p{0.20\textwidth}@{}}
+\toprule
+\textbf{Tier} &
+\textbf{Stage 2 policy (fold \textperiodcentered{} expand
+\textperiodcentered{} boost)} &
+\textbf{Intended ladder start} \\
+\midrule
+\code{FLUENT}  & fold only & R0 \\
+\addlinespace[2pt]
+\code{ASSIST}  & fold + expand & R1 \\
+\addlinespace[2pt]
+\code{UNKNOWN} & fold + expand --- \emph{identical to} \code{ASSIST},
+                 \emph{deliberately} & R1 \\
+\addlinespace[2pt]
+\code{WEAK}    & fold + expand + boost & R1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Folding (N1) is free and always on: it is the identity on ASCII, so it costs
+nothing and is never gated. Expansion (N3) is what the tier actually decides.
+Embedding models are excluded from the ladder entirely --- they never produce
+prose, \code{/api/generate} rejects them outright, and probing them is
+meaningless.
+
+The module is \textbf{stdlib-only and never calls an LLM}: \code{run\_probe}
+takes an \code{invoke(prompt) -> str} callable supplied by the caller. It is
+therefore importable from a pool subprocess, testable against a fake, and
+\emph{structurally} incapable of stalling the application --- which is the
+mechanical form of \S6.11's rule that the profile is computed out of band, one
+global worker, never on the request path, refusing to run while a generation is
+in flight.
+
+\textbf{Honest limits.}
+
+Four, stated plainly, because a measurement section that reported only its
+successes would be the thing this paper argues against.
+
+\textbf{The thresholds are unvalidated.} $0.85$, $0.45$, $0.60$ and the sample
+floor of $12$ encode the failure modes described above --- they do \textbf{not}
+encode a measured correlation with MMLU-es or any other external Spanish
+benchmark. No such validation has been performed. They are defensible choices,
+not calibrated ones, and \S8's instrumentation is where they would first be
+tested against outcomes.
+
+\textbf{Four tasks is a smoke test, not a benchmark.} The battery detects gross
+deficiency across four axes. It does not measure long-form, hard, or
+domain-specific Spanish, and a model that passes it has demonstrated only that
+it does not fail in the four ways that break this system first.
+
+\textbf{The probe conflates instruction-following with language ability.} A
+model that ignores \foreignlanguage{spanish}{\emph{``responde en español''}}
+fails the language check, and it is arguable that what has been measured there
+is compliance rather than competence. For this system's purposes the conflation
+is tolerable --- an operator system needs a model that \emph{does what it is
+told in Spanish}, not one that could in principle --- but it is a conflation,
+and a verdict of \code{WEAK} should not be read as a claim about the model's
+Spanish in general.
+
+\textbf{The gate is implemented and tested, and not yet firing.}
+\code{agent/i18n/model\_caps.py} and its 45 tests are complete, but every
+production call site of \code{normalize\_request} --- four of them, across
+\code{capability\_registry.py}, \code{global\_execution\_planner.py} and
+\code{mcp\_agent.py} --- still invokes it with no model name, so today every
+request takes the legacy path and the tier is never consulted. Threading the
+model identity through the planner and the executor is a core change that
+remains pending. Relatedly, the module emits a \textbf{tier and a Stage-2
+policy}, not a ladder start rung: the tier-to-rung column in
+Table~\ref{tab:profile-emits} is \emph{specified} here as the intended binding
+of \S6.7's \code{profile.start\_rung}, and is not yet code. Nothing in \S6's
+guarantee depends on this --- by Corollary 1 an unconsulted profile is simply a
+profile that always starts at the conservative rung --- but the cost model of
+\S6.11 is a projection until it does.
+
+\subsection{Three worked traces}
+\label{sec:three-worked-traces}
+
+\textbf{Trace A --- a Spanish-competent model.}
+
+\begin{quote}
+$u$ = \foreignlanguage{spanish}{``Crea un archivo en
+\code{C:\textbackslash{}Tlamatini\textbackslash{}Temp\textbackslash{}notas.txt} con el
+texto `hola mundo' y luego muéstrame las últimas 5 líneas del log''}
+\end{quote}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Trace A --- a Spanish-competent model.}
+\label{tab:trace-a-competent-model}
+\begin{tabular}{@{}p{0.14\textwidth}p{0.68\textwidth}@{}}
+\toprule
+\textbf{Step} & \textbf{What happens} \\
+\midrule
+Freeze &
+$\Sigma$ = \{ \code{C:\textbackslash{}Tlamatini\textbackslash{}Temp\textbackslash{}notas.txt},
+\code{hola mundo}, \code{5} \} \\
+\addlinespace
+Profile &
+competent \textrightarrow{} start at \textbf{R0} \\
+\addlinespace
+R0 proposal &
+\code{chat\_agent\_file\_creator(file\_path='C:\textbackslash{}Tlamatini\textbackslash{}Temp\textbackslash{}notas.txt',}
+\code{content='hola mundo')}, then a read of the log tail \\
+\addlinespace
+Verify &
+V1 $\surd$ \quad V2 $\surd$ \quad V3 $\surd$ (both literals trace to $\Sigma$) \quad
+V4 $\surd$ \quad V5 $\surd$ \quad V6 $\surd$ \quad V7 $\surd$ \\
+\addlinespace
+Execute &
+file created at the exact path \\
+\addlinespace
+Render &
+model already answered in Spanish; \textbf{File-Creator} appears verbatim in the Exec
+Report caption \\
+\addlinespace
+\textbf{Cost} &
+\textbf{1 model call --- identical to English} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Trace B --- a Spanish-blind model, and the provenance check earning its place.}
+
+Same utterance, a small English-centric local model.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Trace B --- a Spanish-blind model, and the provenance check earning its place.}
+\label{tab:trace-b-spanish-blind-model}
+\begin{tabular}{@{}p{0.14\textwidth}p{0.68\textwidth}@{}}
+\toprule
+\textbf{Step} & \textbf{What happens} \\
+\midrule
+Freeze &
+$\Sigma$ = \{ \code{C:\textbackslash{}Tlamatini\textbackslash{}Temp\textbackslash{}notas.txt},
+\code{hola mundo}, \code{5} \} \\
+\addlinespace
+Profile &
+unknown/weak \textrightarrow{} start at \textbf{R1} \\
+\addlinespace
+R1 proposal &
+\code{chat\_agent\_file\_creator(file\_path='C:\textbackslash{}Tlamatini\textbackslash{}Temp\textbackslash{}\textbf{notes}.txt',}
+\code{content='hello world')} \\
+\addlinespace
+Verify &
+\textbf{V3 REJECTS.} \code{\ldots\textbackslash{}notes.txt}
+$\notin \Sigma \cup \mathcal{R} \cup \mathcal{D}$, and \code{hello world}
+$\notin \Sigma$. The model translated a \emph{filename} and a \emph{content literal} \\
+\addlinespace
+--- &
+\emph{Without NEPANTLA this executes successfully and creates the wrong file with the
+wrong contents, reporting success.} \\
+\addlinespace
+Escalate &
+\textbf{R2} --- Spanish original + English gloss (literals masked and re-injected) +
+anchor table \\
+\addlinespace
+R2 proposal &
+correct path, correct content \\
+\addlinespace
+Verify &
+all checks pass \\
+\addlinespace
+Execute &
+correct file created \\
+\addlinespace
+Render &
+model cannot write Spanish \textrightarrow{} \textbf{delegated verbalization}; Exec
+Report chrome from the Spanish catalog; \textbf{File-Creator} verbatim \\
+\addlinespace
+\textbf{Cost} &
+\textbf{2 model calls; correct outcome; user reads Spanish} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Trace C --- a destructive request with no path, which today fails silently.}
+
+\begin{quote}
+$u$ = \foreignlanguage{spanish}{``Borra los archivos temporales de esa carpeta''}
+\end{quote}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Trace C --- a destructive request with no path, which today fails silently.}
+\label{tab:trace-c-destructive-no-path}
+\begin{tabular}{@{}p{0.14\textwidth}p{0.68\textwidth}@{}}
+\toprule
+\textbf{Step} & \textbf{What happens} \\
+\midrule
+Freeze &
+$\Sigma = \emptyset$ --- \textbf{there is no path literal};
+\foreignlanguage{spanish}{``esa carpeta''} is anaphoric \\
+\addlinespace
+Neutralize &
+N1/N2/N3 lift the request into canonical keys \textrightarrow{} planner expects a
+\textbf{destructive file operation} \\
+\addlinespace
+--- &
+\emph{Today: the scorer returns zero positives, the planner emits ``Selected
+tools/agents: none'', and the model is told no tool stage is needed --- for a delete.} \\
+\addlinespace
+R1 proposal &
+\code{chat\_agent\_deleter(target\_path='C:\textbackslash{}Tlamatini\textbackslash{}Temp')}
+--- a path the model \textbf{invented} \\
+\addlinespace
+Verify &
+\textbf{V3 REJECTS.} The path has no provenance: not in $\Sigma$, not in $\mathcal{H}$,
+not a declared default \\
+\addlinespace
+Escalate &
+R2, R3 --- each proposal that fabricates a target is rejected for the same reason \\
+\addlinespace
+\textbf{R4} &
+\textbf{Honest stop, in Spanish:}
+\foreignlanguage{spanish}{\emph{``No puedo ejecutar el borrado: no me diste la ruta de
+la carpeta y no hay ninguna en el historial de esta conversación. Dime la ruta exacta
+y lo hago.''}} \\
+\addlinespace
+Execute &
+\textbf{nothing} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trace~C (Table~\ref{tab:trace-c-destructive-no-path}) is the strongest argument for the
+architecture. The alternative behaviours are all worse: today's system tells the user
+no tool is needed; a naive Spanish port would let a model guess a directory and delete
+it. NEPANTLA refuses, explains, and asks --- because a literal with no provenance is
+treated as an emergency rather than as a detail.
+
+Note also that if the folder \emph{had} been established in a prior turn, it would be
+in $\mathcal{H}$, provenance would pass, and V5 would route the action through the
+Ask-Execs permission prompt --- rendered in Spanish, naming \textbf{Deleter} in English.
+
+\subsection{The guarantee, restated for a hostile model}
+\label{sec:guarantee-restated-hostile-model}
+
+Take the worst admissible case: a model with no Spanish comprehension, no Spanish
+generation, and a tendency to normalize literals. NEPANTLA's behaviour is then:
+
+\begin{itemize}
+  \item Execution: escalates to R3, which \emph{is} the English pipeline, with
+        byte-exact literals. \textbf{$\theta \approx \theta_{EN}$.}
+  \item Arguments: protected absolutely by V3. \textbf{Zero corruption.}
+  \item Protocol: protected by V6; operator route pinned English for that model.
+        \textbf{Zero silent routing damage.}
+  \item Presentation: Spanish via the renderer, or Spanish-by-template as a floor.
+        \textbf{The user never sees English.}
+  \item Cost: 2--4 model calls instead of 1.
+\end{itemize}
+
+The user pays latency. They do not pay correctness, and they do not pay language.

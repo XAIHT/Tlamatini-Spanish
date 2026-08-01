@@ -1,0 +1,100 @@
+# TeleTlamatini — pure Telegram-bot bridge to Tlamatini.
+#
+# Only the keys below are needed. The agent reads legacy keys (telegram.listen_chat,
+# access.welcome_message / rejection_message / password_prompt / unclear_request_prompt /
+# awaiting_info_intro / processing_message / completed_prefix / error_prefix, llm.*,
+# poll_interval) for backward compatibility but ignores them — they were dead weight
+# from the old user-account-mode design. Telegrammer covers short-lived
+# Telegram send/receive; TeleTlamatini is bot-bridge-only by design.
+
+# ── Connection fields (auto-populated via canvas connections) ──────────────
+source_agents: []
+target_agents: []
+
+# ── Telegram bot credentials ───────────────────────────────────────────────
+# api_id / api_hash:  https://my.telegram.org → "API development tools"
+# bot_token:          @BotFather → /newbot
+telegram:
+  api_id: <TELETLAMATINI_API_ID goes here>
+  api_hash: <TELETLAMATINI_API_HASH goes here>
+  bot_token: <TELETLAMATINI_BOT_TOKEN goes here>
+
+# ── Access gate ────────────────────────────────────────────────────────────
+# Single password the Telegram user must send on first contact. Leave empty
+# to disable the gate (NOT recommended for a bot exposed on the public Telegram
+# network).
+password: <TELETLAMATINI_PASSWORD goes here>
+
+# ── Tlamatini chat backend ─────────────────────────────────────────────────
+# ws_url is auto-derived from base_url if omitted.
+#
+# ⚠️ EXECUTION-AUTHORITY MODEL (read this):
+#   TeleTlamatini is FULLY AUTHORIZED by design. The chat "Ask Execs" gate
+#   (the per-tool Proceed/Deny prompt) is a BROWSER modal — a Telegram user
+#   cannot answer it — so the bot intentionally does NOT expose it and
+#   hard-pins `ask_execs_enabled: false` on every request. Consequently every
+#   state-changing tool the LLM chooses (shell via Executer, Deleter, Kalier
+#   offensive tooling, file writes, ...) runs UNATTENDED. Treat the `password`
+#   below as full execution access to THIS machine — keep it strong and
+#   private. (The Telegram network is public; the password is the only gate.)
+#
+# ⚠️ RUN THE BOT ON A DEDICATED TLAMATINI ACCOUNT (recommended):
+#   The chat backend keys its WebSocket room group, its global request state,
+#   AND the new per-user Ask-Execs broker all by Tlamatini USER ID. If the bot
+#   logs in with the SAME account a human uses in the browser, their requests
+#   share that room/state — a browser user enabling Ask Execs can even leak
+#   permission-prompt frames onto the bot's socket. Give the bot its own
+#   `username`/`password` (create one via `manage.py createsuperuser` or the
+#   admin) so the two never collide.
+#
+# The three feature flags below mirror the chat toolbar checkboxes
+# (Multi-Turn, Exec Report, ACPX). Each Telegram message TeleTlamatini
+# forwards to Tlamatini carries these flags verbatim, so a Telegram user
+# gets exactly the same operational surface as a browser user.
+#
+#   * multi_turn_enabled  — request-scoped global execution plan, dynamic
+#                            tool binding, up to 256 tool-call iterations,
+#                            wrapped chat-agent dedup. Required for ACPX.
+#   * exec_report_enabled — appends per-agent execution tables (Executer,
+#                            Pythonxer, ACPx, Skill, ...) to the answer.
+#   * acpx_enabled        — exposes the 12 ACPX/Skill tools (acp_doctor,
+#                            acp_spawn, acp_send, acp_send_and_wait, acp_kill,
+#                            acp_relay, acp_transcript, acp_session_status,
+#                            acp_list_sessions, list_acp_agents, list_skills,
+#                            invoke_skill) so the LLM can run the COMPLETE
+#                            ACPX scheme — spawn external coding-agent CLIs
+#                            (claude / codex / cursor / gemini / qwen / ...),
+#                            relay between them, harvest transcripts, and
+#                            invoke SKILL.md packages — directly from a
+#                            Telegram message. When false, those tool names
+#                            are filtered out of the planner's bound tool list
+#                            (legacy Multi-Turn / one-shot behavior).
+#                            Practical pairing is `multi_turn_enabled: true`
+#                            + `exec_report_enabled: true` + `acpx_enabled:
+#                            true`, which gives the Telegram user the full
+#                            "Tlamatini-as-operator" experience over the bot.
+tlamatini:
+  base_url: "http://127.0.0.1:8000"
+  username: <TLAMATINI_USERNAME goes here>
+  password: <TLAMATINI_PASSWORD goes here>
+  multi_turn_enabled: true
+  exec_report_enabled: true
+  acpx_enabled: true
+  total_timeout: 1800              # hard ceiling for one request (seconds)
+  response_idle_timeout: 8         # WS-silence after first frame to call it done
+
+# ── OPTIONAL: LLM-aided clarification gate (off by default) ────────────────
+# When enabled, every Telegram message is first sent to a local Ollama model
+# that decides whether the request is "complete enough" to forward to
+# Tlamatini, and if not, asks a follow-up question. Adds 2-30 s of latency
+# per message. Leave disabled for OpenClaw-style fire-and-go behavior.
+completeness_check:
+  enabled: false
+  host: "http://localhost:11434"
+  model: "glm-5.2:cloud"
+  instruction: |
+    You are an intent-completeness classifier. Decide whether the user's last
+    message (combined with prior conversation if any) expresses a clear and
+    complete actionable request that Tlamatini could begin working on right
+    now. Respond ONLY with a single JSON object: {"complete": true|false,
+    "ask": "<question to ask the user if not complete, else empty>"}.

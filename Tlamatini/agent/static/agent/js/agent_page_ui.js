@@ -1,0 +1,463 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+// ============================================================
+// agent_page_ui.js  –  UI state helpers (enable/disable, busy, spinner)
+// ============================================================
+
+function setContextText(txt) {
+    const full = txt || "";
+
+    if (contextDataSpan) {
+        contextDataSpan.textContent = full;
+        contextDataSpan.title = full;
+    }
+    if (contextMobile) {
+        contextMobile.title = full;
+        if (window.bootstrap) {
+            const tip = bootstrap.Tooltip.getInstance(contextMobile);
+            if (tip) tip.dispose();
+            new bootstrap.Tooltip(contextMobile);
+        }
+    }
+}
+
+function updateViewContextDirMenuState() {
+    if (viewContextDirInCanvasMenu) {
+        if (actualContextDir !== null && actualContextDir !== '') {
+            viewContextDirInCanvasMenu.parentElement.style.display = 'block';
+        } else {
+            viewContextDirInCanvasMenu.parentElement.style.display = 'none';
+        }
+    }
+    updateOpenInMenuState();
+}
+
+function syncClearContextMenuState() {
+    if (!clearContextButton) {
+        return;
+    }
+
+    if (clearContextEnabled) {
+        clearContextButton.removeAttribute('style');
+    } else {
+        clearContextButton.setAttribute('style', 'display: none !important;');
+    }
+}
+
+function resolveContextDirectory(contextPath, contextType, contextFilename) {
+    if (!contextPath) {
+        return null;
+    }
+
+    if (contextType === 'directory') {
+        return contextPath;
+    }
+
+    if (contextType === 'file') {
+        const fullPath = String(contextPath);
+        const safeFilename = contextFilename ? String(contextFilename) : '';
+
+        if (safeFilename) {
+            const fullPathLower = fullPath.toLowerCase();
+            const safeFilenameLower = safeFilename.toLowerCase();
+            if (fullPathLower.endsWith(`\\${safeFilenameLower}`) || fullPathLower.endsWith(`/${safeFilenameLower}`)) {
+                const lastSlash = Math.max(fullPath.lastIndexOf('\\'), fullPath.lastIndexOf('/'));
+                return lastSlash >= 0 ? fullPath.slice(0, lastSlash) : null;
+            }
+        }
+
+        return fullPath;
+    }
+
+    return null;
+}
+
+function applyContextUiState(contextPath, contextType, contextFilename = null) {
+    if (!contextPath) {
+        return;
+    }
+
+    setContextText(`<<< ${contextPath} >>>`);
+    if (contextInfoDiv) {
+        contextInfoDiv.classList.remove('context-info-invisible');
+        contextInfoDiv.classList.add('context-info-visible');
+    }
+
+    clearContextEnabled = true;
+    actualContextDir = resolveContextDirectory(contextPath, contextType, contextFilename);
+    syncClearContextMenuState();
+    updateViewContextDirMenuState();
+}
+
+// --- SVG icon data for "Open in..." menu items ---
+const openInAppIcons = {
+    explorer: '<svg viewBox="0 0 16 16" class="open-in-app-icon" fill="#FFD75E"><path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h3.879a1.5 1.5 0 0 1 1.06.44l.44.439a.5.5 0 0 0 .354.146H13.5A1.5 1.5 0 0 1 15 4.5v1H1V3.5zM1 6h14v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5V6z"/></svg>',
+    vscode: '<svg viewBox="0 0 100 100" class="open-in-app-icon"><path d="M74.9 97.3l20.1-9.7V12.4L74.9 2.7 34.8 38.8 14.3 23.5 5 27v46l9.3 3.5 20.5-15.3 40.1 36.1zm-4.7-73.9L45.6 44.2l24.6 20.8V23.4zM24.3 50l-8.4 6.3V43.7L24.3 50z" fill="#007ACC"/></svg>',
+    antigravity: '<svg viewBox="0 0 16 16" class="open-in-app-icon"><circle cx="8" cy="8" r="7" fill="none" stroke="#A78BFA" stroke-width="1.2"/><path d="M8 2C5 5 4 8 5 11c1 3 5 3 6 0 1-3 0-6-3-9z" fill="#A78BFA" opacity="0.85"/><circle cx="8" cy="7" r="1.5" fill="#E0D4FC"/></svg>'
+};
+
+/**
+ * Update the "Open in..." dropdown visibility.
+ * Only visible when a directory is loaded as context and apps have been detected.
+ */
+function updateOpenInMenuState() {
+    if (!openInDropdownItem) return;
+
+    if (installedApps.length > 0 && actualContextDir !== null && actualContextDir !== '') {
+        openInDropdownItem.style.display = '';
+    } else {
+        openInDropdownItem.style.display = 'none';
+    }
+}
+
+/**
+ * Fetch installed apps from the server and populate the "Open in..." dropdown.
+ */
+function detectInstalledApps() {
+    fetch('/agent/detect_installed_apps/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && Array.isArray(data.apps)) {
+                installedApps = data.apps.filter(app => app.available);
+                renderOpenInMenu();
+                updateOpenInMenuState();
+            }
+        })
+        .catch(err => {
+            console.error('Failed to detect installed apps:', err);
+        });
+}
+
+/**
+ * Render the "Open in..." dropdown menu items based on detected apps.
+ */
+function renderOpenInMenu() {
+    if (!openInMenuList) return;
+    openInMenuList.innerHTML = '';
+
+    installedApps.forEach(app => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.className = 'dropdown-item menu-entry open-in-menu-item';
+        a.href = '#';
+
+        const iconHtml = openInAppIcons[app.id] || '';
+        a.innerHTML = iconHtml + '<span>' + app.name + '</span>';
+
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!actualContextDir) return;
+            openDirectoryInApp(app.id);
+        });
+
+        li.appendChild(a);
+        openInMenuList.appendChild(li);
+    });
+}
+
+/**
+ * Send POST request to open the context directory in the given app.
+ */
+function openDirectoryInApp(appId) {
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', getCsrfToken());
+    formData.append('app_id', appId);
+    formData.append('directory', actualContextDir);
+
+    fetch('/agent/open_in_app/', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error opening in app:', data.error);
+            } else {
+                console.log('--- Opened directory in ' + appId);
+            }
+        })
+        .catch(err => {
+            console.error('Failed to open in app:', err);
+        });
+}
+
+function setTitleBusy(isBusy) {
+    titleBusyPrefix = isBusy ? "⏳ " : "";
+}
+
+function isBusyMessageRequest(message) {
+    if (!message) return false;
+    const m = String(message);
+    return (
+        // First-person wording (2026-07-29) FIRST, older forms kept after it.
+        // This gates the Send button: miss the busy banner and the user can
+        // fire a second request while she is still working on the first.
+        m.includes("Estoy procesando tu request.")
+        || m.includes("Tlamatini está procesando tu request.")
+        || m.includes("Tlamatini está procesando tu petición.")
+        || m.includes("Your request is being processed by Tlamatini")
+    );
+}
+
+function isBusyMessageContext(message) {
+    if (!message) return false;
+    const m = String(message);
+    return (
+        m.includes("Estoy cargando el context.")
+        || m.includes("Me estoy cargando.")
+        || m.includes("Tlamatini está cargando el context.")
+        || m.includes("Tu agent está cargando el contexto.")
+        || m.includes("Your agent is loading the context")
+    );
+}
+
+// Matches the two welcome-back banners the consumer sends right after a
+// browser refresh restores a saved session (with or without a custom
+// context). They are purely informational — the loading lifecycle is
+// driven by MSG_AGENT_LOADING_CONTEXT / MSG_AGENT_READY, so callers use
+// this check to keep the input disabled while ``lapseLoadingContext`` is
+// true and skip re-enabling for a banner that does not change state.
+function isSessionRestoredInfoMessage(message) {
+    if (!message) return false;
+    const m = String(message).toLowerCase();
+    return (
+        // Current wording (agent/constants.py MSG_SESSION_RESTORED /
+        // MSG_SESSION_AND_CONTEXT_RESTORED): "Qué bueno que volviste, ya
+        // restauré tu sesión[ y tu context]." This one substring covers both.
+        // It was MISSING: the backend moved to first person ("ya restauré")
+        // while this matcher still only knew "se restauró", so the banner was
+        // treated as a normal answer and re-enabled the input too early.
+        m.includes("qué bueno que volviste, ya restauré tu sesión")
+        || m.includes("qué bueno que volviste, se restauraron tu sesión")
+        || m.includes("qué bueno que volviste, se restauró tu sesión")
+        || m.includes("qué bueno verte de nuevo, sesión y contexto restaurados")
+        || m.includes("qué bueno verte de nuevo, sesión restaurada")
+        || m.includes("welcome back, session")
+    );
+}
+
+// Matches the LIVE self-healing recovery status lines that SelfHealingInvoker
+// (agent/self_healing.py) streams to the chat WHILE a multi-turn run is still
+// executing (the "Tactica #2 ... solo tu puedes detenerme (con el boton Cancelar)."
+// retry line, the "Tactica '...' topo con un error de red transitorio - cambio a
+// otra tactica." notice, and the "Tactica '...' funciono - continuo justo donde me
+// quede." success line). They arrive as ordinary agent_message
+// frames -- identical in shape to the final answer -- so without this the
+// catch-all branch in appendChatMessage would re-enable the controls (flip the
+// button back to 'Send') on EVERY status line while Tlamatini is STILL working.
+// The run is NOT finished, so callers use this to KEEP the controls disabled
+// (button stays 'Cancel') until the real final answer arrives.
+//
+// The test is ANCHORED to the start of the message on purpose: the final
+// answer prepends a "SELF-HEALING NOTE -" banner that quotes these same tactic
+// lines (as "- <line>" list items), so a naive substring match would wrongly
+// hold the button on 'Cancel' forever. Anchoring to a leading "Tactica #" /
+// "Tactica '" (after stripping the leading emoji/symbol) matches only a
+// standalone status frame, never the final answer. The "Cancelaste" line is
+// deliberately NOT matched -- after a cancel the controls SHOULD return.
+//
+// KEEP THIS IN LOCKSTEP WITH agent/self_healing.py: this matcher and the four
+// _announce() strings there are ONE coupled pair. The accent is on the SECOND
+// character on purpose -- the /^[^A-Za-z]+/ strip halts at the 'T', so "Tactica"
+// survives it. A word starting with an accented capital ("Ultima") would be
+// EATEN by that strip, so never reword the announce lines to start with one.
+// The English forms are still accepted so an older backend (a frozen install
+// that has not been rebuilt yet) keeps holding the button correctly.
+function isSelfHealingStatusMessage(message) {
+    if (!message) return false;
+    const stripped = String(message).trimStart().replace(/^[^A-Za-z]+/, '');
+    return stripped.startsWith('Táctica #') || stripped.startsWith("Táctica '")
+        || stripped.startsWith('Tactic #') || stripped.startsWith("Tactic '");
+}
+
+function debounce(func, wait = 250) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => { func.apply(this, args); }, wait);
+    };
+}
+
+function genericTokenCounting(text) {
+    return text.length / 4;
+}
+
+function updateLineNumbers() {
+    const lines = textEditorCode.textContent.split('\n');
+    lineNumbers.value = lines.map((_, i) => i + 1).join('\n');
+}
+
+/**
+ * Disable all interactive controls during a long operation.
+ */
+function disableControlsDuringOperation() {
+    chatInput.readOnly = true;
+    chatInput.style.backgroundColor = 'gray';
+    if (!document.getElementById(spinnerId)) {
+        const waitWidget = document.createElement('img');
+        waitWidget.id = spinnerId;
+        waitWidget.src = '/static/agent/img/spinner.svg';
+        waitWidget.style.width = '100px';
+        waitWidget.style.height = '100px';
+        waitWidget.style.position = 'absolute';
+        waitWidget.style.top = '50%';
+        waitWidget.style.left = '50%';
+        waitWidget.style.transform = 'translate(-50%, -50%)';
+        waitWidget.style.zIndex = '1000';
+        chatLog.appendChild(waitWidget);
+    }
+    contextButton.disabled = true;
+    openEnabled = false;
+    contextEnabled = false;
+    cleanCanvasEnabled = false;
+    reConnectEnabled = false;
+    reConnectButton.disabled = true;
+    cleanHistoryButton.disabled = true;
+    cleanHistoryButton.style.backgroundColor = "#808080";
+    cleanHistoryEnabled = false;
+    contextMenuButton.setAttribute('disabled', 'disabled');
+    contextMenuButton.removeAttribute('data-bs-toggle');
+    mcpsMenuButton.setAttribute('disabled', 'disabled');
+    mcpsMenuButton.removeAttribute('data-bs-toggle');
+    if (configMenuButton) {
+        configMenuButton.setAttribute('disabled', 'disabled');
+        configMenuButton.removeAttribute('data-bs-toggle');
+    }
+    if (openInDropdownItem) {
+        openInDropdownItem.style.display = 'none';
+    }
+    // Keep agentsMenuButton enabled so "Agentic Control Panel" remains accessible
+    // Only disable the "Configure Agents" entry
+    const configureAgentsItem = document.getElementById('enable-agents');
+    if (configureAgentsItem) {
+        configureAgentsItem.classList.add('disabled');
+        configureAgentsItem.style.pointerEvents = 'none';
+        configureAgentsItem.style.opacity = '0.5';
+    }
+    chatSubmitButton.textContent = 'Cancelar';
+    cleanCanvasButton.style.backgroundColor = "#808080";
+    cleanCanvasButton.disabled = true;
+    reopenOpenCanvasButton.style.backgroundColor = "#808080";
+    reopenOpenCanvasButton.disabled = true;
+    copyCanvasButton.style.backgroundColor = "#808080";
+    copyCanvasButton.disabled = true;
+    contextButton.style.backgroundColor = "#808080";
+    contextButton.disabled = true;
+    inLongOperation = true;
+}
+
+/**
+ * Re-enable all controls after an operation completes.
+ */
+function enableControlsAfterOperation() {
+    setTitleBusy(false);
+    contextEnabled = true;
+    contextButton.style.backgroundColor = "darkgreen";
+    contextButton.disabled = false;
+    contextButtonClicked = false;
+    contextButton.textContent = "Usar como contexto";
+    chatInput.readOnly = false;
+    chatInput.style.backgroundColor = '#40414F';
+    const existingSpinner = document.getElementById(spinnerId);
+    if (existingSpinner && existingSpinner.parentNode) {
+        existingSpinner.parentNode.removeChild(existingSpinner);
+    }
+
+    if (canvasSettedAsContext) {
+        contextButton.textContent = "Usado como contexto";
+        contextButton.style.backgroundColor = "#808080";
+    } else {
+        if (canvasLoaded) {
+            contextButton.textContent = "Usar como contexto";
+            contextButton.style.backgroundColor = "darkgreen";
+        } else {
+            contextButton.textContent = "Usar como contexto";
+            contextButton.style.backgroundColor = "#808080";
+        }
+    }
+
+    openEnabled = true;
+    reConnectEnabled = true;
+    contextEnabled = true;
+    cleanCanvasEnabled = true;
+    reConnectButton.disabled = false;
+    cleanHistoryButton.disabled = false;
+    cleanHistoryButton.style.backgroundColor = "darkgreen";
+    cleanHistoryEnabled = true;
+    contextMenuButton.removeAttribute('disabled', 'disabled');
+    contextMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+    mcpsMenuButton.removeAttribute('disabled', 'disabled');
+    mcpsMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+    if (configMenuButton) {
+        configMenuButton.removeAttribute('disabled');
+        configMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+    }
+    updateOpenInMenuState();
+    // Re-enable the "Configure Agents" entry
+    const configureAgentsItem = document.getElementById('enable-agents');
+    if (configureAgentsItem) {
+        configureAgentsItem.classList.remove('disabled');
+        configureAgentsItem.style.pointerEvents = '';
+        configureAgentsItem.style.opacity = '';
+    }
+
+    if (canvasLoaded === true) {
+        cleanCanvasButton.style.backgroundColor = "darkgreen";
+        cleanCanvasButton.disabled = false;
+        reopenOpenCanvasButton.style.backgroundColor = "darkgreen";
+        reopenOpenCanvasButton.disabled = false;
+        copyCanvasButton.style.backgroundColor = "darkgreen";
+        copyCanvasButton.disabled = false;
+        contextButton.disabled = false;
+    } else {
+        cleanCanvasButton.style.backgroundColor = "#808080";
+        cleanCanvasButton.disabled = true;
+        reopenOpenCanvasButton.style.backgroundColor = "#808080";
+        reopenOpenCanvasButton.disabled = true;
+        copyCanvasButton.style.backgroundColor = "#808080";
+        copyCanvasButton.disabled = true;
+        contextButton.disabled = true;
+    }
+
+    chatSubmitButton.textContent = 'Enviar';
+    inLongOperation = false;
+    lapseLoadingContext = false;
+}
+
+/**
+ * Enable canvas-related buttons (after canvas load).
+ */
+function enableCanvasButtons() {
+    cleanCanvasButton.style.backgroundColor = "darkgreen";
+    cleanCanvasButton.disabled = false;
+    reopenOpenCanvasButton.style.backgroundColor = "darkgreen";
+    reopenOpenCanvasButton.disabled = false;
+    copyCanvasButton.style.backgroundColor = "darkgreen";
+    copyCanvasButton.disabled = false;
+    contextButton.style.backgroundColor = "darkgreen";
+    contextButton.disabled = false;
+}
+
+/**
+ * Disable canvas-related buttons (after canvas clean).
+ */
+function disableCanvasButtons() {
+    cleanCanvasButton.style.backgroundColor = "#808080";
+    cleanCanvasButton.disabled = true;
+    reopenOpenCanvasButton.style.backgroundColor = "#808080";
+    reopenOpenCanvasButton.disabled = true;
+    copyCanvasButton.style.backgroundColor = "#808080";
+    copyCanvasButton.disabled = true;
+    contextButton.style.backgroundColor = "#808080";
+    contextButton.disabled = true;
+}

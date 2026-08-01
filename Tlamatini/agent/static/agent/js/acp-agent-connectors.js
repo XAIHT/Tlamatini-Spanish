@@ -1,0 +1,1717 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+// Agentic Control Panel - Agent Connection Updaters
+// LOAD ORDER: #4 - Depends on: acp-session.js (getHeaders), acp-globals.js (ACP.connections)
+//
+// Contains all update*Connection functions that call the backend API to update
+// agent config.yaml files when connections are added/removed on the canvas.
+// Also contains graph traversal helpers (getAllUpstreamAgents, findDownstreamEnders).
+
+// ========================================
+// GRAPH TRAVERSAL HELPERS
+// ========================================
+
+/**
+ * Get all upstream agents connected to a node by traversing the connection graph backwards.
+ * Performs a breadth-first search through all connections to find every agent
+ * that is upstream (connected via source -> target chains).
+ *
+ * @param {HTMLElement} startNode - The starting node to traverse from
+ * @returns {Array<HTMLElement>} Array of all upstream nodes (including startNode)
+ */
+function getAllUpstreamAgents(startNode) {
+    const visited = new Set();
+    const queue = [startNode];
+    const result = [];
+
+    while (queue.length > 0) {
+        const currentNode = queue.shift();
+        const nodeId = currentNode.id;
+
+        if (visited.has(nodeId)) {
+            continue;
+        }
+        visited.add(nodeId);
+        result.push(currentNode);
+
+        // Find all connections where currentNode is the TARGET (i.e., find sources)
+        for (const conn of ACP.connections) {
+            if (conn.target === currentNode && !visited.has(conn.source.id)) {
+                queue.push(conn.source);
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Find all Ender agents that are downstream from a given node.
+ * Traverses the connection graph forward (source -> target) to find
+ * any Ender nodes that this node eventually connects to.
+ *
+ * @param {HTMLElement} startNode - The starting node to traverse from
+ * @returns {Array<HTMLElement>} Array of Ender nodes found downstream
+ */
+function findDownstreamEnders(startNode) {
+    const visited = new Set();
+    const queue = [startNode];
+    const enders = [];
+
+    while (queue.length > 0) {
+        const currentNode = queue.shift();
+        const nodeId = currentNode.id;
+
+        if (visited.has(nodeId)) {
+            continue;
+        }
+        visited.add(nodeId);
+
+        // Check if this is an Ender
+        const agentName = currentNode.dataset.agentName || '';
+        if (agentName.toLowerCase() === 'ender') {
+            enders.push(currentNode);
+            continue; // Don't traverse past Ender
+        }
+
+        // Find all connections where currentNode is the SOURCE (i.e., find targets)
+        for (const conn of ACP.connections) {
+            if (conn.source === currentNode && !visited.has(conn.target.id)) {
+                queue.push(conn.target);
+            }
+        }
+    }
+
+    return enders;
+}
+
+// ========================================
+// AGENT-SPECIFIC CONNECTION UPDATERS
+// ========================================
+// Each function calls the backend API to update a specific agent's config.yaml
+// when connections are added or removed on the canvas.
+
+async function updateRaiserConnection(raiserAgentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_raiser_connection/${raiserAgentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Raiser ${raiserAgentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update raiser ${raiserAgentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating raiser ${raiserAgentId}:`, error);
+    }
+}
+
+async function updateEmailerConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_emailer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Emailer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Emailer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Emailer ${agentId}:`, error);
+    }
+}
+
+async function updateMonitorLogConnection(monitorLogAgentId, sourceAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_monitor_log_connection/${monitorLogAgentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ source_agent: sourceAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Monitor Log ${monitorLogAgentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update monitor log ${monitorLogAgentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating monitor log ${monitorLogAgentId}:`, error);
+    }
+}
+
+async function updateStarterConnection(starterAgentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_starter_connection/${starterAgentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Starter ${starterAgentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update starter ${starterAgentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating starter ${starterAgentId}:`, error);
+    }
+}
+
+/**
+ * Update Ender agent's config.yaml when connections are made/removed.
+ *
+ * Ender has three connection lists:
+ *   - source_agents:  graphical input connections only (never killed, never started)
+ *   - target_agents:  ALL upstream agents to KILL (populated via BFS traversal)
+ *   - output_agents:  agents to LAUNCH after killing (typically Cleaners)
+ *
+ * When connecting TO Ender (Input):
+ *   1. Adds the directly connected agent to source_agents (graphical metadata)
+ *   2. Traverses ALL upstream agents and adds each to target_agents (kill list)
+ * When connecting FROM Ender (Output):
+ *   Adds the target agent to output_agents
+ *
+ * @param {string} enderAgentId - The ender agent's ID (e.g., 'ender-1')
+ * @param {HTMLElement} connectedNode - The node connected to Ender
+ * @param {string} action - 'add' or 'remove'
+ * @param {string} connectionType - 'input' or 'output' (default: 'input')
+ */
+async function updateEnderConnection(enderAgentId, connectedNode, action, connectionType = 'input') {
+    if (connectionType === 'output') {
+        // Output connection: add the cleaner to output_agents
+        console.log(`--- Ender ${enderAgentId}: Updating output connection to ${connectedNode.id}`);
+        await _sendEnderUpdate(enderAgentId, connectedNode.id, action, 'output');
+    } else {
+        // Input connection:
+        // 1. Add the directly connected agent to source_agents (graphical only)
+        console.log(`--- Ender ${enderAgentId}: Adding ${connectedNode.id} to source_agents (graphical)`);
+        await _sendEnderUpdate(enderAgentId, connectedNode.id, action, 'input');
+
+        // 2. Traverse ALL upstream agents and add each to target_agents (kill list)
+        const upstreamAgents = getAllUpstreamAgents(connectedNode);
+        console.log(`--- Ender ${enderAgentId}: Found ${upstreamAgents.length} upstream agent(s) for kill list:`, upstreamAgents.map(n => n.id));
+
+        for (const agentNode of upstreamAgents) {
+            const agentName = agentNode.dataset.agentName || '';
+            if (agentName.toLowerCase() === 'cleaner') {
+                console.warn(`--- Ender ${enderAgentId}: SKIPPING Cleaner ${agentNode.id} for kill list.`);
+                continue;
+            }
+            await _sendEnderUpdate(enderAgentId, agentNode.id, action, 'target');
+        }
+    }
+}
+
+/**
+ * Send a single ender connection update to the backend.
+ * @param {string} enderAgentId - The ender agent's ID
+ * @param {string} agentId - The connected agent's ID
+ * @param {string} action - 'add' or 'remove'
+ * @param {string} connectionType - 'input', 'target', or 'output'
+ */
+async function _sendEnderUpdate(enderAgentId, agentId, action, connectionType) {
+    try {
+        const response = await fetch(`/agent/update_ender_connection/${enderAgentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ source_agent: agentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Ender ${enderAgentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update ender ${enderAgentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating ender ${enderAgentId}:`, error);
+    }
+}
+
+async function updateCleanerConnection(cleanerAgentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_cleaner_connection/${cleanerAgentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Cleaner ${cleanerAgentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Cleaner ${cleanerAgentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Cleaner ${cleanerAgentId}:`, error);
+    }
+}
+
+async function updateOrAgentConnection(agentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_or_agent_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- OR ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update OR ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating OR ${agentId}:`, error);
+    }
+}
+
+async function updateAndAgentConnection(agentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_and_agent_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- AND ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update AND ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating AND ${agentId}:`, error);
+    }
+}
+
+async function updateCronerConnection(agentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_croner_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Croner ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Croner ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Croner ${agentId}:`, error);
+    }
+}
+
+async function updateMoverConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_mover_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Mover ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Mover ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Mover ${agentId}:`, error);
+    }
+}
+
+async function updateSleeperConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_sleeper_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Sleeper ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Sleeper ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Sleeper ${agentId}:`, error);
+    }
+}
+
+async function updateShoterConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_shoter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Shoter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Shoter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Shoter ${agentId}:`, error);
+    }
+}
+
+async function updateEditorConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_editor_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Editor ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Editor ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Editor ${agentId}:`, error);
+    }
+}
+
+async function updateGrepperConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_grepper_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Grepper ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Grepper ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Grepper ${agentId}:`, error);
+    }
+}
+
+async function updateGlobberConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_globber_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Globber ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Globber ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Globber ${agentId}:`, error);
+    }
+}
+
+async function updateCamcorderConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_camcorder_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Camcorder ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Camcorder ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Camcorder ${agentId}:`, error);
+    }
+}
+
+async function updateRecorderConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_recorder_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Recorder ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Recorder ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Recorder ${agentId}:`, error);
+    }
+}
+
+async function updateWhispererConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_whisperer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Whisperer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Whisperer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Whisperer ${agentId}:`, error);
+    }
+}
+
+async function updateAudioPlayerConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_audioplayer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- AudioPlayer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update AudioPlayer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating AudioPlayer ${agentId}:`, error);
+    }
+}
+
+async function updateTalkerConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_talker_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Talker ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Talker ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Talker ${agentId}:`, error);
+    }
+}
+
+async function updateVideoPlayerConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_videoplayer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- VideoPlayer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update VideoPlayer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating VideoPlayer ${agentId}:`, error);
+    }
+}
+
+async function updateDeleterConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_deleter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Deleter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Deleter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Deleter ${agentId}:`, error);
+    }
+}
+
+async function updateExecuterConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_executer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Executer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Executer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Executer ${agentId}:`, error);
+    }
+}
+
+async function updateScperConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_scper_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Scper ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Scper ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Scper ${agentId}:`, error);
+    }
+}
+
+async function updateSsherConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_ssher_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Ssher ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Ssher ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Ssher ${agentId}:`, error);
+    }
+}
+
+async function updateNotifierConnection(agentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_notifier_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Notifier ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Notifier ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Notifier ${agentId}:`, error);
+    }
+}
+
+async function updateStopperConnection(stopperAgentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_stopper_connection/${stopperAgentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Stopper ${stopperAgentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update stopper ${stopperAgentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating stopper ${stopperAgentId}:`, error);
+    }
+}
+
+async function updateWhatsapperConnection(agentId, targetAgentId, action, type = 'target') {
+    try {
+        const response = await fetch(`/agent/update_whatsapper_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Whatsapper ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Whatsapper ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Whatsapper ${agentId}:`, error);
+    }
+}
+
+async function updatePythonxerConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_pythonxer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Pythonxer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Pythonxer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Pythonxer ${agentId}:`, error);
+    }
+}
+
+async function updateAskerConnection(agentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_asker_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Asker ${agentId} config updated (${connectionType}):`, result.message);
+        } else {
+            console.error(`--- Failed to update Asker ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Asker ${agentId}:`, error);
+    }
+}
+
+async function updateForkerConnection(agentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_forker_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Forker ${agentId} config updated (${connectionType}):`, result.message);
+        } else {
+            console.error(`--- Failed to update Forker ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Forker ${agentId}:`, error);
+    }
+}
+
+async function updateCounterConnection(agentId, connectionType, connectedAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_counter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connection_type: connectionType, connected_agent: connectedAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Counter ${agentId} config updated (${connectionType}):`, result.message);
+        } else {
+            console.error(`--- Failed to update Counter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Counter ${agentId}:`, error);
+    }
+}
+
+async function updateTeletlamatiniConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_teletlamatini_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- TeleTlamatini ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update TeleTlamatini ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating TeleTlamatini ${agentId}:`, error);
+    }
+}
+
+async function updateAcpxerConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_acpxer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- ACPXer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update ACPXer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating ACPXer ${agentId}:`, error);
+    }
+}
+
+async function updateTelegrammerConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_telegrammer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Telegrammer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Telegrammer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Telegrammer ${agentId}:`, error);
+    }
+}
+
+async function updateRecmailerConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_recmailer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Recmailer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Recmailer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Recmailer ${agentId}:`, error);
+    }
+}
+
+async function updateSqlerConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_sqler_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Sqler ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Sqler ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Sqler ${agentId}:`, error);
+    }
+}
+
+// FlowCreator has no inputs/outputs, so this is a no-op stub for completeness
+async function updateFlowcreatorConnection() { // eslint-disable-line no-unused-vars
+    // FlowCreator does not connect to or from other agents
+}
+
+async function updatePrompterConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_prompter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Prompter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Prompter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Prompter ${agentId}:`, error);
+    }
+}
+
+async function updateGitterConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_gitter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Gitter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Gitter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Gitter ${agentId}:`, error);
+    }
+}
+
+async function updateDockererConnection(agentId, connectedAgentId, action, connectionType = 'source') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_dockerer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Dockerer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Dockerer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Dockerer ${agentId}:`, error);
+    }
+}
+
+async function updateMcpDoctorConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_mcp_doctor_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- MCP Doctor ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update MCP Doctor ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating MCP Doctor ${agentId}:`, error);
+    }
+}
+
+async function updateInstantMessagingDoctorConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_instant_messaging_doctor_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Instant Messaging Doctor ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Instant Messaging Doctor ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Instant Messaging Doctor ${agentId}:`, error);
+    }
+}
+
+async function updatePserConnection(agentId, connectedAgentId, action, connectionType = 'source') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_pser_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Pser ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Pser ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Pser ${agentId}:`, error);
+    }
+}
+
+async function updateKuberneterConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_kuberneter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Kuberneter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Kuberneter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Kuberneter ${agentId}:`, error);
+    }
+}
+
+async function updateApirerConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_apirer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Apirer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Apirer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Apirer ${agentId}:`, error);
+    }
+}
+
+async function updateUnrealerConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_unrealer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Unrealer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Unrealer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Unrealer ${agentId}:`, error);
+    }
+}
+
+async function updateBlendererConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_blenderer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Blenderer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Blenderer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Blenderer ${agentId}:`, error);
+    }
+}
+
+async function updatePlaywrighterConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_playwrighter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Playwrighter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Playwrighter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Playwrighter ${agentId}:`, error);
+    }
+}
+
+async function updateReviewerConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_reviewer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Reviewer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Reviewer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Reviewer ${agentId}:`, error);
+    }
+}
+
+async function updateAnalyzerConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_analyzer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Analyzer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Analyzer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Analyzer ${agentId}:`, error);
+    }
+}
+
+async function updateJenkinserConnection(agentId, connectedAgentId, action, connectionType = 'target') {
+    try {
+        const response = await fetch(`/agent/update_jenkinser_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Jenkinser ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Jenkinser ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Jenkinser ${agentId}:`, error);
+    }
+}
+
+async function updateCrawlerConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_crawler_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Crawler ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Crawler ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Crawler ${agentId}:`, error);
+    }
+}
+
+async function updateSummarizerConnection(agentId, connectedAgentId, action, connectionType = 'source') {
+    try {
+        const response = await fetch(`/agent/update_summarizer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ connected_agent: connectedAgentId, action: action, connection_type: connectionType })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Summarizer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Summarizer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Summarizer ${agentId}:`, error);
+    }
+}
+
+async function updateMouserConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_mouser_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Mouser ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Mouser ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Mouser ${agentId}:`, error);
+    }
+}
+
+async function updateWindowerConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_windower_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Windower ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Windower ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Windower ${agentId}:`, error);
+    }
+}
+
+async function updateDiscovererConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_discoverer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Discoverer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Discoverer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Discoverer ${agentId}:`, error);
+    }
+}
+
+async function updateNmapperConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_nmapper_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Nmapper ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Nmapper ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Nmapper ${agentId}:`, error);
+    }
+}
+
+async function updatePdferConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_pdfer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- PDFer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update PDFer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating PDFer ${agentId}:`, error);
+    }
+}
+
+async function updateKalierConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_kalier_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Kalier ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Kalier ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Kalier ${agentId}:`, error);
+    }
+}
+
+async function updateZavuererConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_zavuerer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Zavuerer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Zavuerer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Zavuerer ${agentId}:`, error);
+    }
+}
+
+async function updateStm32erConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_stm32er_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- STM32er ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update STM32er ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating STM32er ${agentId}:`, error);
+    }
+}
+
+async function updateEsp32erConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_esp32er_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- ESP32er ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update ESP32er ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating ESP32er ${agentId}:`, error);
+    }
+}
+
+async function updateEsphomerConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_esphomer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- ESPHomer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update ESPHomer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating ESPHomer ${agentId}:`, error);
+    }
+}
+
+async function updateArduinerConnection(agentId, targetAgentId, action) {
+    try {
+        const response = await fetch(`/agent/update_arduiner_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Arduiner ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Arduiner ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Arduiner ${agentId}:`, error);
+    }
+}
+
+async function updateFileInterpreterConnection(agentId, targetAgentId, action, type = 'target') {
+    try {
+        const response = await fetch(`/agent/update_file_interpreter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- FileInterpreter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update FileInterpreter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating FileInterpreter ${agentId}:`, error);
+    }
+}
+
+async function updateImageInterpreterConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_image_interpreter_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- ImageInterpreter ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update ImageInterpreter ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating ImageInterpreter ${agentId}:`, error);
+    }
+}
+
+async function updateVideoAnalyzerConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_video_analyzer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- VideoAnalyzer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update VideoAnalyzer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating VideoAnalyzer ${agentId}:`, error);
+    }
+}
+
+async function updateGatewayerConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_gatewayer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Gatewayer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Gatewayer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Gatewayer ${agentId}:`, error);
+    }
+}
+
+async function updateGatewayRelayerConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_gateway_relayer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- GatewayRelayer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update GatewayRelayer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating GatewayRelayer ${agentId}:`, error);
+    }
+}
+
+async function updateFileCreatorConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_file_creator_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- File-Creator ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update File-Creator ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating File-Creator ${agentId}:`, error);
+    }
+}
+
+async function updateFileExtractorConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_file_extractor_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- File-Extractor ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update File-Extractor ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating File-Extractor ${agentId}:`, error);
+    }
+}
+
+async function updateNodeManagerConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_node_manager_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- NodeManager ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update NodeManager ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating NodeManager ${agentId}:`, error);
+    }
+}
+
+async function updateKyberKeygenConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_kyber_keygen_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Kyber-KeyGen ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Kyber-KeyGen ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Kyber-KeyGen ${agentId}:`, error);
+    }
+}
+
+async function updateKyberCipherConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_kyber_cipher_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Kyber-Cipher ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Kyber-Cipher ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Kyber-Cipher ${agentId}:`, error);
+    }
+}
+
+async function updateKyberDecipherConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_kyber_decipher_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Kyber-DeCipher ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Kyber-DeCipher ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Kyber-DeCipher ${agentId}:`, error);
+    }
+}
+
+async function updateParametrizerConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_parametrizer_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Parametrizer ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Parametrizer ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Parametrizer ${agentId}:`, error);
+    }
+}
+
+async function updateFlowBackerConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_flowbacker_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- FlowBacker ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update FlowBacker ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating FlowBacker ${agentId}:`, error);
+    }
+}
+
+async function updateBarrierConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_barrier_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Barrier ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Barrier ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Barrier ${agentId}:`, error);
+    }
+}
+
+async function updateJDecompilerConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_j_decompiler_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- J-Decompiler ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update J-Decompiler ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating J-Decompiler ${agentId}:`, error);
+    }
+}
+
+async function updateDeCompresserConnection(agentId, targetAgentId, action, type = 'target') { // eslint-disable-line no-unused-vars
+    try {
+        const response = await fetch(`/agent/update_de_compresser_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- De-Compresser ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update De-Compresser ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating De-Compresser ${agentId}:`, error);
+    }
+}
+
+async function updateKeyboarderConnection(agentId, targetAgentId, action, type = 'target') {
+    try {
+        const response = await fetch(`/agent/update_keyboarder_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Keyboarder ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Keyboarder ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Keyboarder ${agentId}:`, error);
+    }
+}
+
+async function updateGooglerConnection(agentId, targetAgentId, action, type = 'target') {
+    try {
+        const response = await fetch(`/agent/update_googler_connection/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ target_agent: targetAgentId, action: action, type: type })
+        });
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`--- Googler ${agentId} config updated:`, result.message);
+        } else {
+            console.error(`--- Failed to update Googler ${agentId}:`, response.statusText);
+        }
+    } catch (error) {
+        console.error(`--- Error updating Googler ${agentId}:`, error);
+    }
+}

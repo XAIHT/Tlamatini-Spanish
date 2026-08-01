@@ -1,0 +1,57 @@
+{% load static %}  
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <title>Entrar - Tlamatini</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="{% static 'agent/img/Tlamatini.ico' %}?v={{ STATIC_VERSION }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'agent/img/Tlamatini.ico' %}?v={{ STATIC_VERSION }}">
+    <link rel="apple-touch-icon" href="{% static 'agent/img/Tlamatini.ico' %}?v={{ STATIC_VERSION }}">
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="{% static 'agent/css/login.css' %}?v={{ STATIC_VERSION }}">
+</head>
+<body>
+    <div class="container">
+        <div class="row login-container">
+            <div class="col-md-6 col-lg-4">
+                <div class="card login-card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4 big-white-text">Entrar a Tlamatini</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            {% if form.errors %}
+                            <div class="login-error-panel" role="alert">
+                                {% for error in form.non_field_errors %}
+                                <div class="login-error-line">{{ error }}</div>
+                                {% endfor %}
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                <div class="login-error-line">{{ field.label }}: {{ error }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label white-text">Usuario</label>
+                                <input type="text" name="username" class="form-control" placeholder="Escribe tu usuario" required id="id_username" value="{{ form.username.value|default_if_none:'' }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_password" class="form-label white-text">Contraseña</label>
+                                <input type="password" name="password" class="form-control" placeholder="Escribe tu contraseña" required id="id_password">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary big-white-text-button">Entrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

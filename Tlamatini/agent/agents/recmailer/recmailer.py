@@ -1,0 +1,393 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+import os
+import sys
+
+# FIX: Disable Intel Fortran runtime Ctrl+C handler
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
+
+import time
+import yaml
+import logging
+import imaplib
+import email
+from email.header import decode_header
+from typing import TypedDict, Literal, List, Any
+from langchain_ollama import ChatOllama
+from langchain_core.messages import HumanMessage, SystemMessage
+from langgraph.graph import StateGraph, START, END
+
+# --- Logging Setup ---
+try:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+except Exception as e:
+    sys.stderr.write(f"Critical Error: Failed to set working directory: {e}\n")
+
+CURRENT_DIR_NAME = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+LOG_FILE_PATH = f"{CURRENT_DIR_NAME}.log"
+
+# Reanimation detection: AGENT_REANIMATED=1 means resume from pause
+_IS_REANIMATED = os.environ.get('AGENT_REANIMATED') == '1'
+if not _IS_REANIMATED:
+    open(LOG_FILE_PATH, 'w').close()
+
+class FlushingFileHandler(logging.FileHandler):
+    def emit(self, record):
+        super().emit(record)
+        self.flush()
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+file_handler = FlushingFileHandler(LOG_FILE_PATH, encoding='utf-8')
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(file_handler)
+
+# --- Configuration ---
+def load_config(path="config.yaml"):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        logging.error("❌ Error: config.yaml not found.")
+        sys.exit(1)
+
+CONFIG = load_config()
+
+# Maximum number of mailbox-check cycles before the agent exits.
+# 0 (default) = run indefinitely (canvas / monitoring use). A positive value
+# turns RecMailer into a one-shot check (e.g. max_checks: 1 for a chat
+# "check my mailbox once") that does N passes and then terminates cleanly.
+try:
+    MAX_CHECKS = int(CONFIG.get('max_checks', 0) or 0)
+except (TypeError, ValueError):
+    MAX_CHECKS = 0
+
+# --- State Definition ---
+class RecmailerState(TypedDict):
+    messages: List[Any]
+    loop_count: int
+    emails_processed: int
+
+# --- Email Functions ---
+def connect_imap():
+    """Connect to IMAP server."""
+    imap_config = CONFIG.get('imap', {})
+    host = imap_config.get('host', 'imap.gmail.com')
+    port = imap_config.get('port', 993)
+    user = imap_config.get('username')
+    password = imap_config.get('password')
+
+    if not user or not password:
+        logging.error("❌ IMAP credentials missing in config.")
+        return None
+
+    # Gmail IMAP login requires the FULL address as the username — a config
+    # username that omits the domain (e.g. "alice") silently fails auth.
+    host_l = (host or '').strip().lower()
+    if user and '@' not in user and ('gmail.com' in host_l or 'googlemail.com' in host_l):
+        user = f"{user}@gmail.com"
+        logging.info(f"ℹ️ IMAP username had no domain; using '{user}' for Gmail login.")
+
+    try:
+        # Bound the socket so a black-holed IMAP host (half-open firewall / slow or
+        # hung server) can't freeze the agent FOREVER mid-login/search/fetch — which
+        # also strands one-shot mode (PID never removed) and any upstream
+        # wait_for_agents_to_stop(). The timeout persists for every later socket op on
+        # this connection. Mirrors emailer.py's 30s default. (2026-07-11 audit [10])
+        imap_timeout = int(imap_config.get('timeout', 30) or 30)
+        mail = imaplib.IMAP4_SSL(host, port, timeout=imap_timeout)
+        mail.login(user, password)
+        return mail
+    except Exception as e:
+        logging.error(f"❌ IMAP Connection failed: {e}")
+        return None
+
+def fetch_latest_email(mail):
+    """Fetch the latest unread email."""
+    try:
+        mail.select(CONFIG['imap'].get('folder', 'INBOX'))
+        # Search for UNSEEN emails
+        status, messages = mail.search(None, 'UNSEEN')
+        
+        if status != 'OK':
+            return None
+            
+        email_ids = messages[0].split()
+        if not email_ids:
+            return None
+            
+        # Get the latest one
+        latest_id = email_ids[-1]
+        status, msg_data = mail.fetch(latest_id, '(RFC822)')
+        
+        if status != 'OK':
+            return None
+            
+        for response_part in msg_data:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                
+                # Decode Subject
+                subject, encoding = decode_header(msg["Subject"])[0]
+                if isinstance(subject, bytes):
+                    subject = subject.decode(encoding if encoding else "utf-8")
+                
+                # Extract Body
+                body = ""
+                if msg.is_multipart():
+                    for part in msg.walk():
+                        content_type = part.get_content_type()
+                        content_disposition = str(part.get("Content-Disposition"))
+                        try:
+                            if content_type == "text/plain" and "attachment" not in content_disposition:
+                                body = _decode_mail_text(
+                                    part.get_payload(decode=True), part)
+                                break # Prioritize plain text
+                        except Exception:
+                            pass
+                else:
+                    body = _decode_mail_text(
+                        msg.get_payload(decode=True), msg)
+                
+                return {
+                    "subject": subject,
+                    "body": body,
+                    "sender": msg.get("From")
+                }
+        return None
+
+    except Exception as e:
+        logging.error(f"⚠️ Error fetching email: {e}")
+        return None
+
+
+def _decode_mail_text(payload, part):
+    """Decode an email body without ever losing the message.
+
+    Spanish mail from Outlook / Exchange in Mexico is routinely sent as
+    ISO-8859-1 or Windows-1252, NOT utf-8. The old code called
+    ``.decode()`` with no argument - that is utf-8 STRICT and it ignores the
+    charset the message itself declares. A body saying
+    "El pinguino ya esta listo" (with the dieresis and the accents) in
+    ISO-8859-1 contains byte 0xFC, which is not valid utf-8, so the decode
+    raised. In the single-part branch that exception escaped to the outer
+    handler and the ENTIRE EMAIL WAS SILENTLY DROPPED - RecMailer behaved as
+    though no mail had arrived at all.
+
+    So: honour the declared charset first, then try the encodings Spanish mail
+    actually uses, and finally fall back to latin-1, which cannot fail because
+    it maps all 256 byte values. Losing an accent is bad; losing the message
+    is unacceptable.
+    """
+    if payload is None:
+        return ""
+    if isinstance(payload, str):
+        return payload
+
+    declared = None
+    try:
+        declared = part.get_content_charset()
+    except Exception:
+        declared = None
+
+    for enc in (declared, "utf-8", "cp1252", "iso-8859-1"):
+        if not enc:
+            continue
+        try:
+            return payload.decode(enc)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    # latin-1 decodes any byte sequence, so this line always succeeds.
+    return payload.decode("latin-1", errors="replace")
+
+
+# --- Graph Nodes ---
+
+def check_email_node(state: RecmailerState):
+    """Check for new emails."""
+    logging.info("\n--- 📧 CHECKING FOR EMAILS ---")
+
+    # When this is the final allowed check (one-shot mode), skip the inter-poll
+    # sleep so the agent returns a result promptly instead of idling.
+    is_last = bool(MAX_CHECKS) and (state['loop_count'] + 1) >= MAX_CHECKS
+
+    mail = connect_imap()
+    if not mail:
+        logging.warning("⚠️ Could not connect to IMAP. Retrying later.")
+        if not is_last:
+            time.sleep(5)
+        return {"messages": [], "loop_count": state['loop_count'] + 1}
+
+    email_data = fetch_latest_email(mail)
+    try:
+        mail.logout()
+    except Exception:
+        pass
+
+    if not email_data:
+        logging.info("📭 No new emails found.")
+        if not is_last:
+            interval = CONFIG.get('poll_interval', 10)
+            time.sleep(interval)
+        return {"messages": [], "loop_count": state['loop_count'] + 1}
+        
+    logging.info(f"📨 New Email Found:\nSubject: {email_data['subject']}\nSender: {email_data['sender']}")
+    
+    # Store email content in message for LLM
+    content = f"Subject: {email_data['subject']}\nBody: {email_data['body']}\nSender: {email_data['sender']}"
+    return {
+        "messages": [HumanMessage(content=content)],
+        "loop_count": state['loop_count'] + 1
+    }
+
+def analyze_email_node(state: RecmailerState):
+    """Analyze email content using LLM."""
+    messages = state.get('messages', [])
+    if not messages:
+        return {} # Should not happen if routed correctly
+        
+    logging.info("\n--- 🤖 ANALYZING EMAIL ---")
+    
+    try:
+        llm = ChatOllama(
+            base_url=CONFIG['llm']['base_url'],
+            model=CONFIG['llm']['model'],
+            temperature=CONFIG['llm']['temperature']
+        )
+        
+        system_prompt = CONFIG.get('system_prompt', "Analyze this email.")
+        
+        # Prepare dynamic values for prompt
+        keywords_list = CONFIG.get('keywords_or_phrases', [])
+        # If it's a list, join it; otherwise use as string
+        if isinstance(keywords_list, list):
+            keywords_str = ", ".join(keywords_list)
+        else:
+            keywords_str = str(keywords_list)
+            
+        outcome_word = CONFIG.get('outcome_word', 'PROCESSED')
+        
+        # Prepare context
+        email_content = messages[-1].content
+        formatted_prompt = system_prompt.format(
+            subject=messages[-1].content.split('\n')[0], # Rough extraction for prompt config
+            body=messages[-1].content,
+            keywords_or_phrases=keywords_str,
+            outcome_word=outcome_word
+        )
+        
+        response = llm.invoke([
+            SystemMessage(content=formatted_prompt),
+            HumanMessage(content=email_content)
+        ])
+        
+        logging.info(f"\n[LLM ANALYSIS]:\n{response.content}")
+        
+        return {
+            "messages": [], # Clear messages to save memory? Or keep history?
+            "emails_processed": state.get('emails_processed', 0) + 1
+        }
+        
+    except Exception as e:
+        logging.error(f"❌ LLM Error: {e}")
+        return {}
+
+def router(state: RecmailerState) -> Literal["analyze", "loop", "end"]:
+    """Decide whether to analyze, loop back, or terminate (one-shot mode)."""
+    messages = state.get('messages', [])
+    if messages and isinstance(messages[-1], HumanMessage):
+        return "analyze"
+    if MAX_CHECKS and state.get('loop_count', 0) >= MAX_CHECKS:
+        return "end"
+    return "loop"
+
+
+def after_analyze(state: RecmailerState) -> Literal["loop", "end"]:
+    """After processing an email, terminate in one-shot mode or keep watching."""
+    if MAX_CHECKS and state.get('loop_count', 0) >= MAX_CHECKS:
+        return "end"
+    return "loop"
+
+# --- Workflow Setup ---
+workflow = StateGraph(RecmailerState)
+
+workflow.add_node("check_email", check_email_node)
+workflow.add_node("analyze_email", analyze_email_node)
+
+workflow.add_edge(START, "check_email")
+
+workflow.add_conditional_edges(
+    "check_email",
+    router,
+    {
+        "analyze": "analyze_email",
+        "loop": "check_email",
+        "end": END
+    }
+)
+
+workflow.add_conditional_edges(
+    "analyze_email",
+    after_analyze,
+    {
+        "loop": "check_email",  # keep watching (monitoring mode)
+        "end": END              # one-shot: stop after processing
+    }
+)
+
+app = workflow.compile()
+
+# --- PID & Main ---
+PID_FILE = "agent.pid"
+
+def write_pid_file():
+    try:
+        with open(PID_FILE, "w") as f:
+            f.write(str(os.getpid()))
+    except Exception as e:
+        logging.error(f"❌ Failed to write PID file: {e}")
+
+def remove_pid_file():
+    for attempt in range(5):
+        try:
+            if os.path.exists(PID_FILE):
+                os.remove(PID_FILE)
+            return
+        except PermissionError:
+            time.sleep(0.1)
+        except Exception as e:
+            logging.error(f"❌ Failed to remove PID file: {e}")
+            return
+
+if __name__ == "__main__":
+    write_pid_file()
+    if _IS_REANIMATED:
+        logging.info(f"🔄 {CURRENT_DIR_NAME} REANIMATED (resuming from pause)")
+        logging.info("=" * 60)
+    try:
+        logging.info("🚀 RECMAILER AGENT STARTED")
+        logging.info(f"📧 Monitoring: {CONFIG.get('imap', {}).get('username', 'Not Configured')}")
+        
+        initial_state = {
+            "messages": [],
+            "loop_count": 0,
+            "emails_processed": 0
+        }
+        
+        # Run indefinitely
+        app.invoke(initial_state, config={"recursion_limit": 100000}) 
+        
+    except KeyboardInterrupt:
+        logging.info("\n⛔ Recmailer agent stopped by user.")
+    except Exception as e:
+        logging.error(f"\n❌ PROGRAM STOPPED: {e}")
+    finally:
+        remove_pid_file()

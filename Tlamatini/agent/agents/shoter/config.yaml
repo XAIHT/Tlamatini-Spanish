@@ -1,0 +1,6 @@
+# Where to save screenshots. "" = <app>/Temp (screenshots are TEMPORARY assets,
+# per Ángela López Mendoza 2026-06-09). An absolute path is honored; a relative path resolves
+# against the agent's runtime directory.
+output_dir: ""
+
+target_agents: []

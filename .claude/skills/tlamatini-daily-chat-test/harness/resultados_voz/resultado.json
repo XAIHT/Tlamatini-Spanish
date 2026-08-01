@@ -1,0 +1,17 @@
+{
+  "voces_navegador": [
+    "Microsoft David - English (United States) [en-US]",
+    "Microsoft Mark - English (United States) [en-US]",
+    "Microsoft Zira - English (United States) [en-US]",
+    "Microsoft Raul - Spanish (Mexico) [es-MX]",
+    "Microsoft Sabina - Spanish (Mexico) [es-MX]"
+  ],
+  "voces_es": [
+    "Microsoft Raul - Spanish (Mexico) [es-MX]",
+    "Microsoft Sabina - Spanish (Mexico) [es-MX]"
+  ],
+  "llamadas_tts": [],
+  "fallos": [
+    "avatar.js nunca llamó a /agent/tts/"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "voz_elegida": {
+    "name": "Microsoft Sabina - Spanish (Mexico)",
+    "lang": "es-MX"
+  },
+  "llamadas_tts": [
+    {
+      "status": 200,
+      "bytes": 0,
+      "es_wav": false
+    }
+  ],
+  "fallos": [
+    "/agent/tts/ no devolvió WAV: [{'status': 200, 'bytes': 0, 'es_wav': False}]"
+  ]
+}

@@ -1,0 +1,668 @@
+\appendix
+
+\section{What Is Queryable About a Model's Language Support: An Empirical
+Survey}
+\label{sec:appendix-capabilities}
+
+\S\ref{sec:the-capability-profile} specifies a capability profile and asserts,
+without much ceremony, that it must be \emph{measured}. That assertion is not
+free. It commits the system to spending model calls, maintaining a cache,
+versioning a battery of graded tasks, and defending a set of thresholds --- all
+to answer a question that, on the face of it, an API ought to answer for
+nothing. This appendix establishes that no API answers it, that no model file
+answers it reliably, and that the cheapest plausible proxy does not survive
+contact with the data. The measurement in \S\ref{sec:the-capability-profile} is
+therefore a \textbf{forced move}, not a design preference.
+
+The result is negative, and the negative result is the contribution. What
+follows is the survey we would have wanted to read before building the profile,
+so that the next system does not have to rediscover it.
+
+\subsection{Motivation --- the design that should have worked}
+\label{sec:appendix-motivation}
+
+The naive architecture is a lookup, and it is the obvious first choice for good
+reasons. Every other capability NEPANTLA depends on is already declared:
+whether a model accepts images, whether it supports tool calling, how large its
+context window is, whether it emits structured output. These are read from a
+registry at startup, cost nothing, never drift, and require no probe. Language
+support is \emph{the same kind of property} --- a static fact about a model
+artifact, fixed at training time, of obvious interest to anyone integrating it.
+If context length is queryable, supported languages should be queryable.
+
+Under that design \S\ref{sec:the-capability-profile} collapses to three lines:
+read the model's declared language list, test for \code{es}, and route. There is
+no battery, no cache, no threshold, no \code{PROBE\_VERSION}, no risk of a stale
+verdict, no tokens spent, and no possibility that the profile itself becomes a
+source of error. Corollary 1 would still hold, but it would be defending against
+nothing.
+
+The design was rejected because it cannot be implemented. Not ``is currently
+awkward'' --- \textbf{cannot be implemented against any interface that exists.}
+Establishing that took a survey of five provider APIs, a parse of fifteen model
+files, a live interrogation of a thirteen-model local host, and a measurement of
+the leading proxy metric on seven of those models. Each step is reported below,
+with the queries, so that a reader can rerun it and either confirm the finding
+or refute it on their own hardware.
+
+A second motivation deserves stating. The alternative to a lookup is not a probe
+--- it is a \textbf{hardcoded table of model names}, which is what most systems
+ship. Such a table is a maintenance liability that silently rots: it cannot know
+about a model released after the table was written, it cannot distinguish two
+artifacts that share a family name, and it fails in the unrecoverable direction,
+because a model absent from the table is indistinguishable from a model known to
+be bad. Every argument below against a lookup is \emph{also} an argument against
+the table. If the fact cannot be read and cannot be listed, it must be measured.
+
+\subsection{Method}
+\label{sec:appendix-method}
+
+\textbf{Provider schemas.} For each of five providers, the model-enumeration
+endpoint was queried against primary documentation and, where an endpoint was
+reachable, against a live response. The recorded artifact is the complete field
+list the endpoint returns --- not a summary --- because the claim being tested
+is an absence, and an absence is only credible against an exhaustive field list.
+
+\textbf{Ollama \code{/api/show}, twice.} The local host at
+\code{127.0.0.1:11434} served thirteen models at the time of measurement.
+\code{POST /api/show} was issued against two deliberately contrasting cases: a
+\textbf{cloud-served} model (\code{gemma4:cloud}), where Ollama brokers a remote
+artifact it does not hold weights for, and a \textbf{locally-weighted} model
+(\code{qwen3-vl:8b}), where the GGUF blob is on disk and every metadata key is in
+principle readable. The two responses were compared key-by-key. This contrast is
+the load-bearing part of the method: a metadata channel that works only for local
+models is not a channel a system can route on, because the operator may bind
+either.
+
+\textbf{GGUF \code{general.languages}.} Fifteen model files were parsed at the
+header level and the \code{general.languages} key extracted where present. Both
+the \emph{presence} and the \emph{contents} were recorded, because the two fail
+differently and the second failure is the more dangerous one.
+
+\textbf{Token accounting.} Because \code{/api/show} returns
+\code{tokenizer.ggml.tokens} as \code{None}
+(\S\ref{sec:appendix-api-show-cloud-local}), the vocabulary is not available for
+local tokenization, and fertility must be measured \textbf{behaviourally} --- by
+submitting text and reading the prompt token count the server reports back.
+Three controls were applied:
+
+\begin{enumerate}
+  \item \textbf{Same meaning, both languages.} English and Spanish renderings of
+        identical content, so that the comparison is not confounded by the two
+        texts saying different things.
+  \item \textbf{Baseline subtraction.} A fixed carrier is measured on its own and
+        subtracted, so that the chat-template and system-prefix overhead --- which
+        is per-model and has nothing to do with the language under test --- does
+        not enter the ratio.
+  \item \textbf{A diacritics-only control.} The \emph{same Spanish words} were
+        submitted twice, once correctly accented and once with the diacritics
+        stripped. Because the word sequence is identical, any difference in token
+        count isolates the tokenizer's handling of accented characters from
+        Spanish's ordinary verbosity relative to English. This control is what
+        separates ``Spanish is longer'' from ``Spanish is badly segmented'', and
+        the two are routinely conflated.
+\end{enumerate}
+
+The reported statistic is Spanish-per-character efficiency: chars/token in
+Spanish divided by chars/token in English, baseline-subtracted. A value of 1.0
+means the tokenizer is as efficient on Spanish as on English; lower values mean
+Spanish costs more tokens per unit of meaning.
+
+\textbf{What was not done.} No external Spanish benchmark was run, and no
+correlation between any of these signals and downstream Spanish task accuracy
+was established on this hardware. That limit is load-bearing for
+\S\ref{sec:appendix-threats} and is not softened here.
+
+\subsection{Results}
+\label{sec:appendix-results}
+
+\subsubsection{No provider exposes supported languages}
+\label{sec:appendix-no-provider}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The complete field set returned by the model-enumeration endpoint of
+five providers. The claim under test is an absence, so each field list is
+exhaustive rather than summarized.}
+\label{tab:provider-language-fields}
+\begin{tabular}{@{}p{0.13\linewidth}p{0.19\linewidth}p{0.42\linewidth}p{0.17\linewidth}@{}}
+\toprule
+\textbf{Provider} & \textbf{Endpoint} & \textbf{Complete field set returned} &
+\textbf{Language field} \\
+\midrule
+\textbf{Anthropic} &
+\code{GET /v1/models} &
+\code{id}, \code{display\_name}, \code{created\_at}, \code{type},
+\code{max\_input\_tokens}, \code{max\_tokens},
+\code{capabilities\{batch, citations, code\_execution, context\_management,
+effort, image\_input, pdf\_input, structured\_outputs, thinking\}} &
+\textbf{none} \\
+\addlinespace
+\textbf{OpenAI} &
+\code{GET /v1/models} &
+\code{id}, \code{object}, \code{created}, \code{owned\_by} &
+\textbf{none} \\
+\addlinespace
+\textbf{Google} &
+\code{models.list} &
+\code{name}, \code{version}, \code{displayName}, \code{description},
+\code{inputTokenLimit}, \code{outputTokenLimit},
+\code{supportedGenerationMethods} &
+\textbf{none} \\
+\addlinespace
+\textbf{Ollama} &
+\code{/api/show} \textrightarrow{} \code{capabilities[]} &
+exactly 8 values: \code{completion}, \code{tools}, \code{insert}, \code{vision},
+\code{embedding}, \code{thinking}, \code{image}, \code{audio} &
+\textbf{none}, and no language member in the enum \\
+\addlinespace
+\textbf{OpenRouter} &
+\code{GET /api/v1/models} &
+the richest cross-provider schema in existence --- \code{architecture},
+\code{tokenizer}, \code{pricing}, \code{modalities} &
+\textbf{none}, confirmed by direct inspection \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The OpenAI row is worth pausing on: four fields, one of which is a literal type
+tag and one a timestamp. That is the \emph{complete} schema. The OpenRouter row
+is the decisive one, because OpenRouter's entire commercial function is to
+normalize heterogeneous model metadata across providers into one comparable
+surface --- it publishes tokenizer family, modality lists and per-token pricing.
+If any aggregator had a language field to expose, it would be this one. It does
+not.
+
+The Anthropic row demonstrates that this is not an artifact of immature APIs.
+Anthropic's \code{capabilities} object is \emph{granular} --- it distinguishes
+PDF input from image input, and structured outputs from tool use. A schema with
+that resolution has clearly been designed rather than defaulted. Language is
+simply not in the design.
+
+\begin{keyinsight}
+\textbf{Finding 1.} Across five providers, including the aggregator whose
+business is metadata normalization, the number of endpoints exposing supported
+languages is \textbf{zero}. No lookup can replace a hardcoded model-name table,
+because there is nothing to look up.
+\end{keyinsight}
+
+\subsubsection{The one metadata field that exists is unusable}
+\label{sec:appendix-general-languages}
+
+\code{general.languages} is a real GGUF metadata key, and it is the single most
+tempting signal in this entire survey, because it is precisely the field the
+naive design wants.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Measured behaviour of the GGUF \code{general.languages} key across a
+fifteen-file corpus. Both failure modes --- omission and misdeclaration --- are
+present simultaneously.}
+\label{tab:general-languages-corpus}
+\begin{tabular}{@{}p{0.22\linewidth}p{0.68\linewidth}@{}}
+\toprule
+\textbf{Property} & \textbf{Measurement} \\
+\midrule
+Present &
+\textbf{8 of 15} model files parsed \\
+\addlinespace
+Absent from &
+\code{qwen3}, \code{gemma3}, \code{gemma-2-9b}, \code{Mistral-7B-v0.3},
+\code{Llama-2} --- all strongly multilingual \\
+\addlinespace
+Wrong where present &
+\code{Qwen2.5-7B-Instruct} declares exactly \code{["en"]}; \code{Phi-4} declares
+\code{["en"]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both failure modes are present simultaneously, and they compound. Nearly half the
+files simply omit the key, and the omissions are not random --- they are
+concentrated in models that unambiguously handle Spanish, so \emph{absence
+correlates with nothing}. Where the key is present it can still be flatly wrong:
+Qwen2.5-7B-Instruct declaring a single language is not a marginal call, it is a
+declaration contradicted by the model's own behaviour.
+
+The reading path makes it worse. Ollama's \code{server/routes.go} blanks any
+metadata array longer than five entries unless the request sets
+\code{verbose: true}. The consequence is not degradation but
+\textbf{inversion}:
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{The truncation inversion. Ollama's five-entry blanking rule
+preferentially destroys long language lists, and long lists are exactly the
+multilingual ones.}
+\label{tab:truncation-inversion}
+\begin{tabular}{@{}p{0.13\linewidth}p{0.24\linewidth}p{0.30\linewidth}p{0.24\linewidth}@{}}
+\toprule
+\textbf{Model} & \textbf{True \code{general.languages}} &
+\textbf{As read through Ollama, default} & \textbf{Naive conclusion} \\
+\midrule
+Llama 3.1 &
+8 entries, \textbf{containing \code{es}} &
+\code{[]} --- blanked for exceeding 5 &
+``declares no languages'' \\
+\addlinespace
+Phi-4 &
+\code{["en"]} --- misleading &
+\code{["en"]} --- survives, 1 entry &
+``declares English only'' \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A reader who takes the field at face value concludes \emph{``no declared
+languages''} for the model that genuinely speaks Spanish and \emph{``English
+only''} for the model that does not, because the truncation rule preferentially
+destroys long lists and long lists are exactly the multilingual ones. The signal
+is not merely noisy; \textbf{its noise is anti-correlated with the truth.}
+
+\begin{keyinsight}
+\textbf{Finding 2.} \code{general.languages} is absent from half the corpus,
+wrong where present, and read through a truncation rule that systematically
+deletes multilingual declarations while preserving monolingual ones. It cannot
+be used, and using it naively is worse than ignoring it.
+\end{keyinsight}
+
+\subsubsection{What \code{/api/show} actually returns --- cloud versus local}
+\label{sec:appendix-api-show-cloud-local}
+
+Both queries were issued against the same host, seconds apart.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{\code{/api/show} on the same host, seconds apart: a cloud-served model
+against a locally-weighted one. The metadata channel functions in both cases and
+carries no language fact in either.}
+\label{tab:api-show-cloud-vs-local}
+\begin{tabular}{@{}p{0.26\linewidth}p{0.34\linewidth}p{0.34\linewidth}@{}}
+\toprule
+ & \code{gemma4:cloud} (cloud-served) & \code{qwen3-vl:8b} (local weights) \\
+\midrule
+\code{model\_info} keys & \textbf{4} & \textbf{39} \\
+\addlinespace
+The keys &
+\code{gemma4.context\_length}, \code{gemma4.embedding\_length},
+\code{general.architecture}, \code{general.parameter\_count} &
+architecture, tokenizer and dimension metadata \\
+\addlinespace
+\code{tokenizer.\allowbreak ggml.\allowbreak tokens} & absent &
+present but \textbf{\code{None}} --- payload omitted \\
+\addlinespace
+\code{general.languages} & \textbf{absent} & \textbf{absent} \\
+\addlinespace
+\code{general.tags}      & \textbf{absent} & \textbf{absent} \\
+\addlinespace
+\code{general.datasets}  & \textbf{absent} & \textbf{absent} \\
+\addlinespace
+\code{capabilities[]} &
+\code{["completion",\allowbreak"thinking",\allowbreak"tools",\allowbreak"vision"]} &
+\code{["completion",\allowbreak"thinking",\allowbreak"tools",\allowbreak"vision"]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three things follow. First, the cloud path returns \textbf{four keys and no
+tokenizer data at all} --- a system that routes on model metadata is blind for
+every cloud-served model, which on Angela's host is the majority and includes the
+primary configured model. Second, even the local path withholds the vocabulary:
+\code{tokenizer.ggml.tokens} is present as a key with a \code{None} value, so
+vocabulary size is not derivable without \code{verbose: true}, and any fertility
+computation must therefore be behavioural rather than local. Third --- and this
+is the honest positive finding of the survey ---
+\textbf{\code{capabilities[]} is real, dynamic, and returned identically for
+cloud and local artifacts.} The channel works. It carries \code{vision},
+\code{tools}, \code{thinking}. It is simply, and deliberately, silent about
+language.
+
+\begin{keyinsight}
+\textbf{Finding 3.} The metadata channel is not broken. It is complete,
+functioning, and does not contain the fact. This is why the absence is
+structural rather than incidental: language support is not a field anyone forgot
+to add.
+\end{keyinsight}
+
+\subsubsection{Tokenizer fertility, measured and rejected}
+\label{sec:appendix-fertility}
+
+Fertility is the best available proxy: it is cheap, it is objective, it requires
+no judgement, and there is real literature relating it to accuracy. It was
+measured on seven models.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Behavioural fertility on seven models. Every measurement falls inside a
+nine-point band, and the band's most English-biased entry is the frontier model
+with the best Spanish.}
+\label{tab:fertility-seven-models}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Model} &
+\textbf{Spanish-per-character efficiency (ES \(\div\) EN, baseline-subtracted)} \\
+\midrule
+\code{glm-5.2:cloud}  & \textbf{0.76} \\
+\code{qwen3.5:cloud}  & 0.83 \\
+\code{gemma4:cloud}   & 0.83 \\
+\code{gpt-oss:120b}   & 0.83 \\
+\code{qwen3-vl:8b}    & 0.74 \\
+\code{qwen3-vl:4b}    & 0.74 \\
+\code{Orpheus-3b}     & 0.74 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Every model lies in \textbf{0.74--0.83} --- a nine-point band, on a scale where
+the theoretical range is unbounded below and 1.0 above. There is no threshold
+that partitions this band usefully. Any cut placed inside it separates models
+that differ by three hundredths, and the specific damage is immediate and
+disqualifying: \textbf{any threshold that separates this band mislabels
+\code{glm-5.2:cloud} --- a 756B frontier model with excellent Spanish, and
+Angela's primary configured model --- as the most English-biased artifact
+measured.} The metric orders the corpus with its best Spanish model last.
+
+The diacritics-only control produced one incidental observation, recorded here
+for completeness and relied upon for nothing. The ``accent surcharge'' --- the
+token-count difference between correctly accented Spanish and the same words
+with diacritics stripped --- came out \textbf{negative for every real
+multilingual model}: correctly accented Spanish tokenizes \emph{more cheaply},
+because \code{cuánto} is a single vocabulary entry while the misspelled
+\code{cuanto} splits. It was positive only for \code{Orpheus-3b}, a 3B English
+fine-tune, where the accented forms fall back to bytes. That is suggestive of a
+byte-fallback detector, and it is one data point against six. It is not a signal
+this system routes on.
+
+\subsection{Analysis --- why each candidate fails, and what the literature
+predicts}
+\label{sec:appendix-analysis}
+
+\textbf{The provider APIs fail by design, not by omission.} Language support is
+not a discrete capability of the kind an API can honestly advertise.
+\code{vision} is binary: the model either accepts image tokens or it does not.
+\code{tools} is binary: the schema is either supported or rejected. Spanish is a
+\textbf{continuum crossed with a task}, and it is not even one continuum --- a
+model can write fluent Spanish prose and still mangle a
+\code{chat\_agent\_stm32er} argument list, which is exactly the C1/C3 split of
+\S\ref{sec:taxonomy-of-model-deficiency}. A provider asked to publish a language
+list would have to pick a threshold and a task, and would be wrong for every
+consumer whose threshold or task differed. Publishing nothing is the defensible
+engineering choice. It is also, for our purposes, fatal.
+
+\textbf{\code{general.languages} fails because it is a training-time annotation,
+not a measurement.} It records what the model card's author chose to write down,
+propagated through whatever conversion tool produced the GGUF. Nothing validates
+it, nothing updates it, and no downstream consumer's complaint reaches it.
+Qwen2.5-7B-Instruct declaring \code{["en"]} is not a bug in a system; it is a
+field nobody had a reason to be careful about. Metadata that is never read is
+never corrected.
+
+\textbf{Fertility fails for a reason the literature already documents: it
+discriminates across wide ranges and not within narrow ones.}
+
+\begin{itemize}
+  \item In a wide range it genuinely works. Across 10 LLMs and 16 African
+        languages, regression slopes of $-0.08$ to $-0.18$ accuracy per
+        additional token per word explain 20--50\% of variance
+        \citep{anon2025fertilityafrican}. That is a real effect, and it is why
+        fertility is a reasonable first hypothesis.
+  \item In a narrow range it does not. A Ukrainian zero-shot study reports
+        $\rho = -0.43$ at \textbf{$p = 0.34$} --- not significant
+        \citep{anon2026ukrainianfertility}. The point estimate looks like a
+        relationship; the interval says it is indistinguishable from noise.
+  \item \textbf{Spanish is decisively the narrow case.} Across 24 European
+        languages and six tokenizers, English averages 1.23 tokens per word and
+        Spanish 1.46 \citep{anon2026europeantokenizers} --- an 8--29\% band.
+        Spanish is a Latin-script, low-inflection, high-resource language that
+        every major tokenizer has seen abundantly. It sits at the easy end of the
+        very distribution in which fertility is known to lose its discriminating
+        power. Our own 0.74--0.83 measurement reproduces that band on independent
+        hardware.
+\end{itemize}
+
+Two further objections are structural rather than statistical, and either alone
+would be sufficient.
+
+\textbf{The family ceiling.} Every model in a family shares one tokenizer and
+therefore exactly one fertility number, while differing enormously in Spanish
+output quality --- a 4B and a 235B sibling are indistinguishable to this metric
+by construction. \code{qwen3-vl:8b} and \code{qwen3-vl:4b} both measure 0.74 in
+our table, which is not a coincidence but a demonstration. A metric that cannot
+discriminate \emph{within} a family cannot support per-model routing, because
+per-model routing is largely a within-family problem.
+
+\textbf{The counterexamples run backwards.} \code{Phi-4} carries a
+100{,}352-entry vocabulary and declares itself English-only.
+\code{Mistral-7B-v0.3} carries 32{,}768 entries and handles Spanish. Vocabulary
+size --- the crudest fertility proxy --- orders these two exactly the wrong way
+round.
+
+\begin{keyinsight}
+\textbf{Finding 4.} Fertility measures \textbf{cost}, and measures it well. It is
+the correct input to context budgeting and to per-token pricing, and NEPANTLA
+uses it for nothing else. It does not gate language routing, because within the
+range Spanish occupies it does not carry the signal, and because it is constant
+across a family whose members differ.
+\end{keyinsight}
+
+That leaves exactly one route, and \S\ref{sec:the-capability-profile} takes it:
+\textbf{run four short graded tasks and read the answers.} The ladder in
+\code{agent/i18n/model\_caps.py} is the direct consequence of this appendix ---
+L0 is a name-shaped prior that can never demote, L1 is the probe and the
+authority, L2 is passive verification that can demote but never promote. The
+reason every grader is a pure Python function rather than a model judging another
+model is the same reason this survey exists: a verdict that depends on an
+unmeasured capability is not evidence, it is a restatement of the question.
+
+\subsection{Threats to validity}
+\label{sec:appendix-threats}
+
+\textbf{The English figures are degenerate, and this weakens
+\S\ref{sec:appendix-fertility} substantially.} Characters-per-token for English
+came out \textbf{identical --- 5.77 --- across all seven models}, and Spanish
+took \textbf{only two distinct values}. For tokenizers from genuinely different
+families (GLM, Qwen, Gemma, GPT-OSS, and a Llama-derived 3B fine-tune) that is
+implausible on its face. Different byte-pair merge tables trained on different
+corpora do not segment the same English paragraph into the same number of
+tokens. The most likely explanation is that Ollama does not apply the true
+per-model tokenizer for \code{:cloud} models, and possibly applies a shared or
+approximate accounting path more broadly --- which would mean the measurement is
+partly of Ollama's accounting rather than of the models' tokenizers.
+
+We record two consequences rather than reconciling them. First, the ratios
+reported in \S\ref{sec:appendix-fertility} are baseline-subtracted and are
+therefore not a naive quotient of the two raw figures, which is why three
+distinct ratios can coexist with two distinct Spanish values; but that arithmetic
+does not rescue the underlying raw numbers, which remain degenerate. Second, and
+more important, \textbf{this cuts in the same direction as the conclusion.} If
+the fertility figures are partly an artifact of the serving layer, then fertility
+is \emph{even less} usable as a routing signal than the narrow band alone
+suggests --- a system routing on it would be routing on a property of Ollama. Had
+the discrepancy pointed the other way, toward a signal we were discarding, it
+would have obliged us to re-measure before rejecting. It does not, and we state
+it plainly rather than omitting a result that makes our own measurement look
+worse.
+
+\textbf{Single-host, single-day.} All live measurements come from one machine on
+2026-07-28 with thirteen models. The provider-schema results are from primary
+documentation and generalize; the \code{/api/show} and fertility results are one
+host's behaviour at one version of one server, and a different Ollama build could
+return a different key set.
+
+\textbf{Fifteen files is a small GGUF corpus} and was not sampled randomly --- it
+is what was on disk. The specific proportion (8 of 15) should not be read as a
+population estimate. The \emph{pattern} --- omitted in multilingual models, wrong
+when present --- is the finding, and it does not depend on the proportion.
+
+\textbf{Absence of a field is not absence of the fact.} A provider could expose
+language support through documentation, a model card, or a future endpoint. The
+claim here is narrowly that it is not \emph{programmatically queryable through
+the model-enumeration endpoint}, which is the only channel a runtime router can
+use.
+
+\textbf{The thresholds this appendix motivates are themselves unvalidated.}
+Rejecting fertility establishes that a probe is necessary; it does not establish
+that our probe is correct. The cut points in \code{model\_caps.py} (0.85 fluent,
+0.45 assist, 0.60 observed-failure demotion, minimum sample 12) encode the
+failure modes catalogued in \S\ref{sec:taxonomy-of-model-deficiency},
+\textbf{not a measured correlation with MMLU-es or any other external Spanish
+benchmark}. A four-task battery is a smoke test, not a benchmark: it does not
+measure long, hard, or domain-specific Spanish, and it conflates
+instruction-following with language ability, since a model that ignores
+\foreignlanguage{spanish}{\emph{``responde en español''}} fails the language
+check for a reason that is arguably not linguistic. This is why the raw
+per-check features and the model's own answers are persisted --- so thresholds
+can be retuned against a real benchmark without re-probing, and so a human can
+audit and override a verdict.
+
+\textbf{And the gate is not yet firing.} The module is implemented and passing 45
+tests, but the three existing callers still invoke
+\code{normalize\_request(text)} with no model name, so every request currently
+takes the legacy path. Threading the model name through the planner and the
+executor is a core change still pending. Nothing in this appendix should be read
+as reporting production behaviour.
+
+\subsection{Conclusion}
+\label{sec:appendix-conclusion}
+
+The question \emph{``does this model speak Spanish?''} has no answer in any
+interface that exists. Five providers --- including the aggregator whose entire
+product is metadata normalization --- expose zero language fields. The one
+metadata key that nominally carries the answer is missing from half of a real
+corpus, wrong in the half where it is present, and read through a truncation rule
+that deletes multilingual declarations while preserving monolingual ones,
+inverting the evidence. The leading cheap proxy measures cost rather than
+competence, sits inside a nine-point band on Spanish, is constant across a model
+family by construction, orders its own counterexamples backwards, and on our
+hardware is partly confounded with the serving layer.
+
+That is the whole of it, and it is a negative result: \textbf{the fact is not
+discoverable, it is only observable.} Anything a system claims to know about a
+backend model's Spanish must therefore be something the system went and found out
+--- by sending it Spanish and grading what comes back, deterministically, with
+the raw features kept so the thresholds can be argued with later.
+
+This is not a satisfying answer. A lookup would have been three lines and no
+tokens. But the alternative to measurement is not a lookup; it is a hardcoded
+table of model names that ages badly, cannot see a model released after it was
+written, and fails silently in the direction that hurts --- because a model
+absent from the table looks exactly like a model known to be bad.
+\textbf{Every argument in this appendix against querying the fact is equally an
+argument against listing it.} Corollary 1 is what makes the resulting probe safe
+to be wrong about, and \S\ref{sec:the-capability-profile}'s fail-open-to-ASSIST
+asymmetry is what makes it safe to be wrong about \emph{in one direction only}.
+The measurement is the price of not guessing.
+
+\subsection{Reproduction recipe}
+\label{sec:appendix-reproduction}
+
+Every result above is reproducible in under an hour with an API key per provider
+and a local Ollama. Model identifiers below are the ones measured; substitute
+your own.
+
+\textbf{1 --- Provider schemas.} Capture the complete field set, not a summary;
+the claim is an absence.
+
+\begin{lstlisting}[caption={Provider model-enumeration schemas: capture the
+complete field list from each endpoint.},label={lst:appendix-provider-schemas}]
+curl -s https://api.anthropic.com/v1/models \
+  -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" \
+  | python -c "import json,sys; d=json.load(sys.stdin)['data'][0]; print(sorted(d))"
+
+curl -s https://api.openai.com/v1/models \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  | python -c "import json,sys; print(sorted(json.load(sys.stdin)['data'][0]))"
+
+curl -s "https://generativelanguage.googleapis.com/v1beta/models?key=$GOOGLE_API_KEY" \
+  | python -c "import json,sys; print(sorted(json.load(sys.stdin)['models'][0]))"
+
+curl -s https://openrouter.ai/api/v1/models \
+  | python -c "import json,sys; print(sorted(json.load(sys.stdin)['data'][0]))"
+\end{lstlisting}
+
+Grep each field list for \code{lang}. Expect no hits. The OpenRouter call needs
+no key and is the fastest single check in this appendix.
+
+\textbf{2 --- Ollama \code{/api/show}, cloud versus local.} Run both; the
+contrast is the point.
+
+\begin{lstlisting}[caption={The cloud-versus-local \code{/api/show} contrast.},label={lst:appendix-api-show}]
+for M in gemma4:cloud qwen3-vl:8b; do
+  curl -s http://127.0.0.1:11434/api/show -d "{\"model\":\"$M\"}" \
+  | python -c "
+import json,sys
+d=json.load(sys.stdin); mi=d.get('model_info',{})
+print('$M', 'model_info keys:', len(mi))
+print('  capabilities:', d.get('capabilities'))
+print('  general.languages:', mi.get('general.languages','ABSENT'))
+print('  tokenizer.ggml.tokens:', type(mi.get('tokenizer.ggml.tokens')).__name__)"
+done
+\end{lstlisting}
+
+Expect 4 keys for the cloud model and 39 for the local one;
+\code{general.languages} absent from both; \code{tokenizer.ggml.tokens} of type
+\code{NoneType} on the local model; identical \code{capabilities[]} on both.
+
+\textbf{3 --- The verbose-blanking inversion.} Same model, two calls.
+
+\begin{lstlisting}[caption={The verbose-blanking inversion: an 8-entry list
+containing \code{es} reads as empty by default.},label={lst:appendix-verbose-blanking}]
+curl -s http://127.0.0.1:11434/api/show -d '{"model":"llama3.1"}' \
+  | python -c "import json,sys; print('default:', json.load(sys.stdin)['model_info'].get('general.languages'))"
+curl -s http://127.0.0.1:11434/api/show -d '{"model":"llama3.1","verbose":true}' \
+  | python -c "import json,sys; print('verbose:', json.load(sys.stdin)['model_info'].get('general.languages'))"
+\end{lstlisting}
+
+The default call returns \code{[]} for an 8-entry list containing \code{es}; the
+verbose call returns the list. Repeat against a model whose declaration has
+$\leq 5$ entries (Phi-4) and observe that the misleading \code{["en"]} survives
+both calls. The truncation rule is in \code{server/routes.go}.
+
+\textbf{4 --- GGUF \code{general.languages} across a corpus.} Parse the header KV
+block of every \code{.gguf} on disk and record presence \emph{and} contents
+separately. The two failure modes are independent: absence in \code{qwen3} /
+\code{gemma3} / \code{gemma-2-9b} / \code{Mistral-7B-v0.3} / \code{Llama-2}, and
+a wrong \code{["en"]} in \code{Qwen2.5-7B-Instruct} and \code{Phi-4}.
+
+\textbf{5 --- Behavioural fertility.} Because \code{tokenizer.ggml.tokens} is
+\code{None}, do not tokenize locally --- read the prompt-token count the server
+reports.
+
+\begin{lstlisting}[caption={Behavioural fertility: read the server's reported
+prompt-token count rather than tokenizing locally.},label={lst:appendix-fertility-recipe}]
+count () {  # $1 = model, $2 = text  -> prompt tokens
+  curl -s http://127.0.0.1:11434/api/generate \
+    -d "$(python -c "import json,sys;print(json.dumps({'model':sys.argv[1],'prompt':sys.argv[2],'stream':False,'options':{'num_predict':0}}))" "$1" "$2")" \
+  | python -c "import json,sys; print(json.load(sys.stdin)['prompt_eval_count'])"
+}
+\end{lstlisting}
+
+Then, per model: measure an empty carrier and subtract it from every reading;
+measure the English and Spanish renderings of the \emph{same content}; report
+chars/token for each and their ratio. Finally run the diacritics-only control ---
+the identical Spanish word sequence with and without accents --- which is the
+only measurement that separates accent handling from Spanish verbosity.
+
+\textbf{Record the raw chars/token figures, not only the ratios.} That is how the
+degeneracy in \S\ref{sec:appendix-threats} surfaced: identical 5.77 for English
+across seven unrelated tokenizers, and two distinct Spanish values. Reporting
+ratios alone would have hidden it.
+
+\bigskip
+
+\noindent\emph{Sources cited in this appendix by arXiv identifier only, pending
+independent verification of title and authorship:}
+\citet{anon2025fertilityafrican} --- 10 LLMs \(\times\) 16 African languages;
+regression of task accuracy on tokens-per-word, slopes $-0.08$ to $-0.18$,
+20--50\% of variance explained. \citet{anon2026ukrainianfertility} --- Ukrainian
+zero-shot evaluation; fertility--accuracy correlation $\rho = -0.43$,
+$p = 0.34$. \citet{anon2026europeantokenizers} --- 24 European languages across
+six tokenizers; English 1.23 and Spanish 1.46 tokens per word.
+\emph{These complement, and are consistent with, the tokenization-cost
+references already carried in the main bibliography}
+\citep{petrov2023tokenizerunfairness,nayeem2025strr}.

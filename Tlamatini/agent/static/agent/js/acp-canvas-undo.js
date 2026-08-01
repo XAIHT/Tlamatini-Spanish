@@ -1,0 +1,1144 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+// Agentic Control Panel - Canvas Undo/Redo Helpers & Keyboard Handler
+// LOAD ORDER: #8 - Depends on: acp-globals.js, acp-session.js, acp-undo-manager.js,
+//                              acp-agent-connectors.js, acp-canvas-core.js
+/* global updateMouserConnection, updateFileInterpreterConnection, updateImageInterpreterConnection, updateGatewayerConnection, updateGatewayRelayerConnection, updateNodeManagerConnection, updateFileCreatorConnection, updateFileExtractorConnection, updateKyberKeygenConnection, updateKyberCipherConnection, updateKyberDecipherConnection, updateParametrizerConnection, updateFlowBackerConnection, updateBarrierConnection, updateJDecompilerConnection, updateDeCompresserConnection, updateKeyboarderConnection, updateGooglerConnection, updateTeletlamatiniConnection, updateAcpxerConnection, updatePlaywrighterConnection, updateWindowerConnection, updateKalierConnection, updateZavuererConnection, updateStm32erConnection, updateEsp32erConnection, updateEsphomerConnection, updateArduinerConnection, updateMcpDoctorConnection, updateInstantMessagingDoctorConnection, updateCamcorderConnection, updateVideoAnalyzerConnection, updateEditorConnection, updateGrepperConnection, updateGlobberConnection, updateRecorderConnection, updateWhispererConnection, updateAudioPlayerConnection, updateVideoPlayerConnection, updateTalkerConnection, updateWhatsapperConnection, getAgentPurposeForName, setCanvasItemMetadata */
+
+// ========================================
+// CAPTURE HELPERS (read-only snapshots)
+// ========================================
+
+/**
+ * Capture the state of a canvas item for undo/redo.
+ * @param {HTMLElement} item - The canvas item DOM element
+ * @returns {Object} Serializable state object
+ */
+function captureItemState(item) {
+    return {
+        id: item.id,
+        agentName: item.dataset.agentName || '',
+        agentPurpose: item.dataset.agentPurpose || '',
+        displayText: item.textContent.trim(),
+        position: {
+            x: parseFloat(item.style.left) || 0,
+            y: parseFloat(item.style.top) || 0
+        },
+        classes: Array.from(item.classList)
+    };
+}
+
+/**
+ * Capture the state of a connection for undo/redo.
+ * @param {Object} conn - Connection object with source, target, path, etc.
+ * @returns {Object} Serializable state object
+ */
+function captureConnectionState(conn) {
+    return {
+        sourceId: conn.source.id,
+        targetId: conn.target.id,
+        inputSlot: conn.inputSlot || 0,
+        outputSlot: conn.outputSlot || 0
+    };
+}
+
+/**
+ * Find all connections related to a set of items being deleted.
+ * @param {Array<HTMLElement>} items - Canvas items being deleted
+ * @returns {Array<Object>} Connection state objects
+ */
+function captureRelatedConnections(items) {
+    const itemIds = new Set(items.map(item => item.id));
+    const capturedConns = [];
+    for (const conn of ACP.connections) {
+        if (itemIds.has(conn.source.id) || itemIds.has(conn.target.id)) {
+            capturedConns.push(captureConnectionState(conn));
+        }
+    }
+    return capturedConns;
+}
+
+// ========================================
+// ITEM RESTORATION (Undo Delete)
+// ========================================
+
+/**
+ * Recreate a canvas item from captured state (for undo delete).
+ * @param {Object} state - The captured item state
+ * @returns {HTMLElement} The recreated DOM element
+ */
+async function recreateCanvasItem(state) {
+    const newItem = document.createElement('div');
+    newItem.className = state.classes.join(' ');
+    newItem.id = state.id;
+    newItem.textContent = state.displayText;
+    setCanvasItemMetadata(
+        newItem,
+        state.agentName,
+        state.agentPurpose || getAgentPurposeForName(state.agentName)
+    );
+
+    const agentName = state.agentName.toLowerCase();
+    appendInputTriangles(newItem, agentName);
+    appendOutputTriangles(newItem, agentName);
+    appendLedIndicator(newItem);
+
+    newItem.style.left = state.position.x + 'px';
+    newItem.style.top = state.position.y + 'px';
+
+    canvasContent.appendChild(newItem);
+    makeDraggable(newItem);
+    updateCanvasContentSize();
+
+    try {
+        const response = await fetch(`/agent/deploy_agent_template/${state.id}/`, {
+            method: 'POST',
+            headers: getHeaders(),
+            credentials: 'same-origin'
+        });
+        if (response.ok) {
+            console.log(`[Undo] Re-deployed pool directory for ${state.id}`);
+        }
+    } catch (error) {
+        console.error(`[Undo] Failed to re-deploy ${state.id}:`, error);
+    }
+
+    return newItem;
+}
+
+// ========================================
+// ITEM/CONNECTION DELETION WITHOUT UNDO
+// ========================================
+
+/**
+ * Delete a canvas item without recording undo (used during redo).
+ * @param {string} itemId - The ID of the item to delete
+ */
+async function deleteCanvasItemWithoutUndo(itemId) {
+    const item = document.getElementById(itemId);
+    if (!item) return;
+
+    for (let i = ACP.connections.length - 1; i >= 0; i--) {
+        const conn = ACP.connections[i];
+        if (conn.source === item || conn.target === item) {
+            conn.path.remove();
+            ACP.connections.splice(i, 1);
+            ACP.selectedItems.delete(conn);
+        }
+    }
+
+    item.remove();
+    ACP.selectedItems.delete(item);
+
+    try {
+        await fetch(`/agent/delete_agent_pool_dir/${itemId}/`, {
+            method: 'POST',
+            headers: getHeaders(),
+            credentials: 'same-origin'
+        });
+        console.log(`[Redo] Deleted pool directory for ${itemId}`);
+    } catch (error) {
+        console.error(`[Redo] Failed to delete pool dir ${itemId}:`, error);
+    }
+}
+
+/**
+ * Remove a connection without recording undo (used during redo).
+ * Fires all relevant backend config updates.
+ * @param {string} sourceId - Source node ID
+ * @param {string} targetId - Target node ID
+ */
+async function removeConnectionWithoutUndo(sourceId, targetId) {
+    for (let i = ACP.connections.length - 1; i >= 0; i--) {
+        const conn = ACP.connections[i];
+        if (conn.source.id === sourceId && conn.target.id === targetId) {
+            const sourceAgentName = conn.source.dataset.agentName || '';
+            const targetAgentName = conn.target.dataset.agentName || '';
+
+            if (targetAgentName.toLowerCase() === 'raiser') {
+                await updateRaiserConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'raiser') {
+                await updateRaiserConnection(sourceId, 'target', targetId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'monitor-log') {
+                await updateMonitorLogConnection(targetId, sourceId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'emailer') {
+                await updateEmailerConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'starter') {
+                await updateStarterConnection(sourceId, targetId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'croner') {
+                await updateCronerConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'croner') {
+                await updateCronerConnection(sourceId, 'target', targetId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'ender') {
+                await updateEnderConnection(targetId, conn.source, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'sleeper') {
+                await updateSleeperConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'sleeper') {
+                await updateSleeperConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (sourceAgentName.toLowerCase() === 'keyboarder') {
+                    await updateKeyboarderConnection(sourceId, targetId, 'remove', 'target');
+                }
+            if (targetAgentName.toLowerCase() === 'googler') {
+                await updateGooglerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'googler') {
+                await updateGooglerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'teletlamatini') {
+                await updateTeletlamatiniConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'teletlamatini') {
+                await updateTeletlamatiniConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'acpxer') {
+                await updateAcpxerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'acpxer') {
+                await updateAcpxerConnection(sourceId, targetId, 'remove', 'target');
+            }
+                if (sourceAgentName.toLowerCase() === 'shoter') {
+                await updateShoterConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'camcorder') {
+                await updateCamcorderConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'globber') {
+                await updateGlobberConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'grepper') {
+                await updateGrepperConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'editor') {
+                await updateEditorConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'recorder') {
+                await updateRecorderConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'whisperer') {
+                await updateWhispererConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'audioplayer') {
+                await updateAudioPlayerConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'videoplayer') {
+                await updateVideoPlayerConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'talker') {
+                await updateTalkerConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'whatsapper') {
+                await updateWhatsapperConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'cleaner') {
+                await updateCleanerConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'cleaner') {
+                await updateCleanerConnection(sourceId, 'target', targetId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'stopper') {
+                await updateStopperConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'stopper') {
+                await updateStopperConnection(sourceId, 'output', targetId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'whatsapper') {
+                await updateWhatsapperConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'pythonxer') {
+                await updatePythonxerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'pythonxer') {
+                await updatePythonxerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'asker') {
+                await updateAskerConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'asker') {
+                if (conn.outputSlot === 1) {
+                    await updateAskerConnection(sourceId, 'target_a', targetId, 'remove');
+                } else if (conn.outputSlot === 2) {
+                    await updateAskerConnection(sourceId, 'target_b', targetId, 'remove');
+                }
+            }
+            if (targetAgentName.toLowerCase() === 'forker') {
+                await updateForkerConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'forker') {
+                if (conn.outputSlot === 1) {
+                    await updateForkerConnection(sourceId, 'target_a', targetId, 'remove');
+                } else if (conn.outputSlot === 2) {
+                    await updateForkerConnection(sourceId, 'target_b', targetId, 'remove');
+                }
+            }
+            if (targetAgentName.toLowerCase() === 'counter') {
+                await updateCounterConnection(targetId, 'source', sourceId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'counter') {
+                if (conn.outputSlot === 1) {
+                    await updateCounterConnection(sourceId, 'target_l', targetId, 'remove');
+                } else if (conn.outputSlot === 2) {
+                    await updateCounterConnection(sourceId, 'target_g', targetId, 'remove');
+                }
+            }
+            if (targetAgentName.toLowerCase() === 'gitter') {
+                await updateGitterConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'gitter') {
+                await updateGitterConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'dockerer') {
+                await updateDockererConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'dockerer') {
+                await updateDockererConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'mcp doctor') {
+                await updateMcpDoctorConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'mcp doctor') {
+                await updateMcpDoctorConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'instant messaging doctor') {
+                await updateInstantMessagingDoctorConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'instant messaging doctor') {
+                await updateInstantMessagingDoctorConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'pser') {
+                await updatePserConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'pser') {
+                await updatePserConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'kuberneter') {
+                await updateKuberneterConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'kuberneter') {
+                await updateKuberneterConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'apirer') {
+                await updateApirerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'apirer') {
+                await updateApirerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'unrealer') {
+                await updateUnrealerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'unrealer') {
+                await updateUnrealerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'blenderer') {
+                await updateBlendererConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'blenderer') {
+                await updateBlendererConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'playwrighter') {
+                await updatePlaywrighterConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'playwrighter') {
+                await updatePlaywrighterConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'reviewer') {
+                await updateReviewerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'reviewer') {
+                await updateReviewerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'analyzer') {
+                await updateAnalyzerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'analyzer') {
+                await updateAnalyzerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'jenkinser') {
+                await updateJenkinserConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'jenkinser') {
+                await updateJenkinserConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'crawler') {
+                await updateCrawlerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'crawler') {
+                await updateCrawlerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'summarizer') {
+                await updateSummarizerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'summarizer') {
+                await updateSummarizerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (sourceAgentName.toLowerCase() === 'mouser') {
+                await updateMouserConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'windower') {
+                await updateWindowerConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'discoverer') {
+                await updateDiscovererConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'nmapper') {
+                await updateNmapperConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'pdfer') {
+                await updatePdferConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'kalier') {
+                await updateKalierConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'zavuerer') {
+                await updateZavuererConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'stm32er') {
+                await updateStm32erConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'esp32er') {
+                await updateEsp32erConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'esphomer') {
+                await updateEsphomerConnection(sourceId, targetId, 'remove');
+            }
+            if (sourceAgentName.toLowerCase() === 'arduiner') {
+                await updateArduinerConnection(sourceId, targetId, 'remove');
+            }
+            if (targetAgentName.toLowerCase() === 'file-interpreter') {
+                await updateFileInterpreterConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'file-interpreter') {
+                await updateFileInterpreterConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'image-interpreter') {
+                await updateImageInterpreterConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'image-interpreter') {
+                await updateImageInterpreterConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'video-analyzer') {
+                await updateVideoAnalyzerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'video-analyzer') {
+                await updateVideoAnalyzerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'gatewayer') {
+                await updateGatewayerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'gatewayer') {
+                await updateGatewayerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'gateway relayer') {
+                await updateGatewayRelayerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'gateway relayer') {
+                await updateGatewayRelayerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'node manager') {
+                await updateNodeManagerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'node manager') {
+                await updateNodeManagerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'file-creator') {
+                await updateFileCreatorConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'file-creator') {
+                await updateFileCreatorConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'file-extractor') {
+                await updateFileExtractorConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'file-extractor') {
+                await updateFileExtractorConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'kyber-keygen') {
+                await updateKyberKeygenConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'kyber-keygen') {
+                await updateKyberKeygenConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'kyber-cipher') {
+                await updateKyberCipherConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'kyber-cipher') {
+                await updateKyberCipherConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'kyber-decipher') {
+                await updateKyberDecipherConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'kyber-decipher') {
+                await updateKyberDecipherConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'parametrizer') {
+                await updateParametrizerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'parametrizer') {
+                await updateParametrizerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'flowbacker') {
+                await updateFlowBackerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'flowbacker') {
+                await updateFlowBackerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'barrier') {
+                await updateBarrierConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'barrier') {
+                await updateBarrierConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'j-decompiler') {
+                await updateJDecompilerConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'j-decompiler') {
+                await updateJDecompilerConnection(sourceId, targetId, 'remove', 'target');
+            }
+            if (targetAgentName.toLowerCase() === 'de-compresser') {
+                await updateDeCompresserConnection(targetId, sourceId, 'remove', 'source');
+            }
+            if (sourceAgentName.toLowerCase() === 'de-compresser') {
+                await updateDeCompresserConnection(sourceId, targetId, 'remove', 'target');
+            }
+
+            conn.path.remove();
+            ACP.connections.splice(i, 1);
+            ACP.selectedItems.delete(conn);
+            console.log(`[Redo] Removed connection: ${sourceId} -> ${targetId}`);
+            return;
+        }
+    }
+}
+
+// ========================================
+// CONNECTION RECREATION (Undo Delete)
+// ========================================
+
+/**
+ * Recreate a connection from captured state (for undo delete).
+ * Re-fires all relevant backend configuration updates.
+ * @param {Object} state - The captured connection state
+ */
+async function recreateConnection(state) {
+    const sourceNode = document.getElementById(state.sourceId);
+    const targetNode = document.getElementById(state.targetId);
+
+    if (!sourceNode || !targetNode) {
+        console.error('[Undo] Cannot recreate connection: source or target not found');
+        return;
+    }
+
+    const { group, visiblePath, hitPath } = createConnectionGroup();
+
+    const newConn = {
+        source: sourceNode,
+        target: targetNode,
+        path: group,
+        visiblePath: visiblePath,
+        hitPath: hitPath,
+        inputSlot: state.inputSlot || 0,
+        outputSlot: state.outputSlot || 0
+    };
+
+    ACP.connections.push(newConn);
+    updateAttachedConnections(targetNode);
+
+    const sourceAgentName = (sourceNode.dataset.agentName || '').toLowerCase();
+    const targetAgentName = (targetNode.dataset.agentName || '').toLowerCase();
+    const sourceId = sourceNode.id;
+    const targetId = targetNode.id;
+
+    if (targetAgentName === 'raiser') {
+        updateRaiserConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'raiser') {
+        await updateRaiserConnection(sourceId, 'target', targetId, 'add');
+    }
+    if (targetAgentName === 'monitor-log') {
+        await updateMonitorLogConnection(targetId, sourceId, 'add');
+    }
+    if (targetAgentName === 'emailer') {
+        await updateEmailerConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'starter') {
+        await updateStarterConnection(sourceId, targetId, 'add');
+    }
+    if (targetAgentName === 'croner') {
+        await updateCronerConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'croner') {
+        await updateCronerConnection(sourceId, 'target', targetId, 'add');
+    }
+    if (targetAgentName === 'sleeper') {
+        await updateSleeperConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'sleeper') {
+        await updateSleeperConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (sourceAgentName === 'keyboarder') {
+                await updateKeyboarderConnection(sourceId, targetId, 'add', 'target');
+            }
+    if (targetAgentName === 'googler') {
+        await updateGooglerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'googler') {
+        await updateGooglerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'teletlamatini') {
+        await updateTeletlamatiniConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'teletlamatini') {
+        await updateTeletlamatiniConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'acpxer') {
+        await updateAcpxerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'acpxer') {
+        await updateAcpxerConnection(sourceId, targetId, 'add', 'target');
+    }
+            if (sourceAgentName === 'shoter') {
+        await updateShoterConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'camcorder') {
+        await updateCamcorderConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'globber') {
+        await updateGlobberConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'grepper') {
+        await updateGrepperConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'editor') {
+        await updateEditorConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'recorder') {
+        await updateRecorderConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'whisperer') {
+        await updateWhispererConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'audioplayer') {
+        await updateAudioPlayerConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'videoplayer') {
+        await updateVideoPlayerConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'talker') {
+        await updateTalkerConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'whatsapper') {
+        await updateWhatsapperConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'cleaner') {
+        await updateCleanerConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'cleaner') {
+        await updateCleanerConnection(sourceId, 'target', targetId, 'add');
+    }
+    if (targetAgentName === 'ender') {
+        await updateEnderConnection(targetId, sourceNode, 'add');
+    }
+    if (targetAgentName === 'or') {
+        const slot = state.inputSlot === 1 ? 'source_1' : (state.inputSlot === 2 ? 'source_2' : null);
+        if (slot) await updateOrAgentConnection(targetId, slot, sourceId, 'add');
+    }
+    if (targetAgentName === 'and') {
+        const slot = state.inputSlot === 1 ? 'source_1' : (state.inputSlot === 2 ? 'source_2' : null);
+        if (slot) await updateAndAgentConnection(targetId, slot, sourceId, 'add');
+    }
+    if (sourceAgentName === 'or') {
+        await updateOrAgentConnection(sourceId, 'target', targetId, 'add');
+    }
+    if (sourceAgentName === 'and') {
+        await updateAndAgentConnection(sourceId, 'target', targetId, 'add');
+    }
+    if (targetAgentName === 'stopper') {
+        await updateStopperConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'stopper') {
+        await updateStopperConnection(sourceId, 'output', targetId, 'add');
+    }
+    if (targetAgentName === 'whatsapper') {
+        await updateWhatsapperConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (targetAgentName === 'pythonxer') {
+        await updatePythonxerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'pythonxer') {
+        await updatePythonxerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'asker') {
+        await updateAskerConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'asker') {
+        if (state.outputSlot === 1) {
+            await updateAskerConnection(sourceId, 'target_a', targetId, 'add');
+        } else if (state.outputSlot === 2) {
+            await updateAskerConnection(sourceId, 'target_b', targetId, 'add');
+        }
+    }
+    if (targetAgentName === 'forker') {
+        await updateForkerConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'forker') {
+        if (state.outputSlot === 1) {
+            await updateForkerConnection(sourceId, 'target_a', targetId, 'add');
+        } else if (state.outputSlot === 2) {
+            await updateForkerConnection(sourceId, 'target_b', targetId, 'add');
+        }
+    }
+    if (targetAgentName === 'counter') {
+        await updateCounterConnection(targetId, 'source', sourceId, 'add');
+    }
+    if (sourceAgentName === 'counter') {
+        if (state.outputSlot === 1) {
+            await updateCounterConnection(sourceId, 'target_l', targetId, 'add');
+        } else if (state.outputSlot === 2) {
+            await updateCounterConnection(sourceId, 'target_g', targetId, 'add');
+        }
+    }
+    if (targetAgentName === 'gitter') {
+        await updateGitterConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'gitter') {
+        await updateGitterConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'dockerer') {
+        await updateDockererConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'dockerer') {
+        await updateDockererConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'mcp doctor') {
+        await updateMcpDoctorConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'mcp doctor') {
+        await updateMcpDoctorConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'instant messaging doctor') {
+        await updateInstantMessagingDoctorConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'instant messaging doctor') {
+        await updateInstantMessagingDoctorConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'pser') {
+        await updatePserConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'pser') {
+        await updatePserConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'kuberneter') {
+        await updateKuberneterConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'kuberneter') {
+        await updateKuberneterConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'apirer') {
+        await updateApirerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'apirer') {
+        await updateApirerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'unrealer') {
+        await updateUnrealerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'unrealer') {
+        await updateUnrealerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'blenderer') {
+        await updateBlendererConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'blenderer') {
+        await updateBlendererConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'playwrighter') {
+        await updatePlaywrighterConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'playwrighter') {
+        await updatePlaywrighterConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'reviewer') {
+        await updateReviewerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'reviewer') {
+        await updateReviewerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'analyzer') {
+        await updateAnalyzerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'analyzer') {
+        await updateAnalyzerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'jenkinser') {
+        await updateJenkinserConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'jenkinser') {
+        await updateJenkinserConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'crawler') {
+        await updateCrawlerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'crawler') {
+        await updateCrawlerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'summarizer') {
+        await updateSummarizerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'summarizer') {
+        await updateSummarizerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (sourceAgentName === 'mouser') {
+        await updateMouserConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'windower') {
+        await updateWindowerConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'discoverer') {
+        await updateDiscovererConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'nmapper') {
+        await updateNmapperConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'pdfer') {
+        await updatePdferConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'kalier') {
+        await updateKalierConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'zavuerer') {
+        await updateZavuererConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'stm32er') {
+        await updateStm32erConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'esp32er') {
+        await updateEsp32erConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'esphomer') {
+        await updateEsphomerConnection(sourceId, targetId, 'add');
+    }
+    if (sourceAgentName === 'arduiner') {
+        await updateArduinerConnection(sourceId, targetId, 'add');
+    }
+    if (targetAgentName === 'file-interpreter') {
+        await updateFileInterpreterConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'file-interpreter') {
+        await updateFileInterpreterConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'image-interpreter') {
+        await updateImageInterpreterConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'image-interpreter') {
+        await updateImageInterpreterConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'video-analyzer') {
+        await updateVideoAnalyzerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'video-analyzer') {
+        await updateVideoAnalyzerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'gatewayer') {
+        await updateGatewayerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'gatewayer') {
+        await updateGatewayerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'gateway relayer') {
+        await updateGatewayRelayerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'gateway relayer') {
+        await updateGatewayRelayerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'node manager') {
+        await updateNodeManagerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'node manager') {
+        await updateNodeManagerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'file-creator') {
+        await updateFileCreatorConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'file-creator') {
+        await updateFileCreatorConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'file-extractor') {
+        await updateFileExtractorConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'file-extractor') {
+        await updateFileExtractorConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'kyber-keygen') {
+        await updateKyberKeygenConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'kyber-keygen') {
+        await updateKyberKeygenConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'kyber-cipher') {
+        await updateKyberCipherConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'kyber-cipher') {
+        await updateKyberCipherConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'kyber-decipher') {
+        await updateKyberDecipherConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'kyber-decipher') {
+        await updateKyberDecipherConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'parametrizer') {
+        await updateParametrizerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'parametrizer') {
+        await updateParametrizerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'flowbacker') {
+        await updateFlowBackerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'flowbacker') {
+        await updateFlowBackerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'barrier') {
+        await updateBarrierConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'barrier') {
+        await updateBarrierConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'j-decompiler') {
+        await updateJDecompilerConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'j-decompiler') {
+        await updateJDecompilerConnection(sourceId, targetId, 'add', 'target');
+    }
+    if (targetAgentName === 'de-compresser') {
+        await updateDeCompresserConnection(targetId, sourceId, 'add', 'source');
+    }
+    if (sourceAgentName === 'de-compresser') {
+        await updateDeCompresserConnection(sourceId, targetId, 'add', 'target');
+    }
+
+    console.log(`[Undo] Recreated connection: ${state.sourceId} -> ${state.targetId}`);
+}
+
+// ========================================
+// KEYBOARD HANDLER: Ctrl+Z / Ctrl+Y / Delete
+// ========================================
+
+window.addEventListener('keydown', async (e) => {
+    const tag = e.target.tagName.toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) {
+        return;
+    }
+
+    // Ctrl+Z - Undo
+    if (e.ctrlKey && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
+        e.preventDefault();
+        const undone = await undoManager.undo();
+        if (undone) {
+            console.log('--- Undo performed');
+            updateSaveButtonState();
+            markDirty();
+        }
+        return;
+    }
+
+    // Ctrl+Y or Ctrl+Shift+Z - Redo
+    if ((e.ctrlKey && (e.key === 'y' || e.key === 'Y')) ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'z' || e.key === 'Z'))) {
+        e.preventDefault();
+        const redone = await undoManager.redo();
+        if (redone) {
+            console.log('--- Redo performed');
+            updateSaveButtonState();
+            markDirty();
+        }
+        return;
+    }
+
+    // Delete key - delete selected items and connections
+    if ((e.key === 'Delete' || e.key === 'Del') && ACP.selectedItems.size > 0) {
+        const canvasItemsToDelete = [];
+        const connectionsToDelete = [];
+
+        for (const item of ACP.selectedItems) {
+            if (item.classList && item.classList.contains('canvas-item')) {
+                canvasItemsToDelete.push(item);
+            } else if (item.path && item.path.classList.contains('connection-group')) {
+                connectionsToDelete.push(item);
+            }
+        }
+
+        const deletingNodes = new Set(canvasItemsToDelete);
+
+        // STEP 0: Capture state for undo (before any modifications)
+        const undoState = {
+            items: canvasItemsToDelete.map(captureItemState),
+            itemConnections: captureRelatedConnections(canvasItemsToDelete),
+            standaloneConnections: connectionsToDelete.map(captureConnectionState)
+        };
+
+        // STEP 1: Collect all config updates BEFORE removing connections
+        // (graph traversal needs connections intact)
+        const configUpdates = [];
+
+        for (const item of canvasItemsToDelete) {
+            for (const conn of ACP.connections) {
+                if (conn.source === item || conn.target === item) {
+                    const sourceAgentName = conn.source.dataset.agentName || '';
+                    const targetAgentName = conn.target.dataset.agentName || '';
+                    const sourceId = conn.source.id;
+                    const targetId = conn.target.id;
+
+                    const sourceBeingDeleted = deletingNodes.has(conn.source);
+                    const targetBeingDeleted = deletingNodes.has(conn.target);
+
+                    if (targetAgentName.toLowerCase() === 'raiser' && !targetBeingDeleted) {
+                        configUpdates.push({ type: 'raiser', id: targetId, role: 'source', agentId: sourceId, action: 'remove' });
+                    }
+                    if (sourceAgentName.toLowerCase() === 'raiser' && !sourceBeingDeleted) {
+                        configUpdates.push({ type: 'raiser', id: sourceId, role: 'target', agentId: targetId, action: 'remove' });
+                    }
+                    if (targetAgentName.toLowerCase() === 'monitor-log' && !targetBeingDeleted) {
+                        configUpdates.push({ type: 'monitor-log', id: targetId, sourceId: sourceId, action: 'remove' });
+                    }
+                    if (targetAgentName.toLowerCase() === 'ender' && !targetBeingDeleted) {
+                        const allUpstream = getAllUpstreamAgents(conn.source);
+                        for (const upstreamNode of allUpstream) {
+                            configUpdates.push({ type: 'ender', enderId: targetId, agentId: upstreamNode.id, action: 'remove' });
+                        }
+                    }
+                    if (sourceAgentName.toLowerCase() === 'starter' && !sourceBeingDeleted) {
+                        configUpdates.push({ type: 'starter', id: sourceId, targetId: targetId, action: 'remove' });
+                    }
+                    if (targetAgentName.toLowerCase() === 'mover' && !targetBeingDeleted) {
+                        configUpdates.push({ type: 'mover', id: targetId, sourceId: sourceId, action: 'remove', connType: 'source' });
+                    }
+                    if (sourceAgentName.toLowerCase() === 'mover' && !sourceBeingDeleted) {
+                        configUpdates.push({ type: 'mover', id: sourceId, targetId: targetId, action: 'remove', connType: 'target' });
+                    }
+                }
+            }
+        }
+
+        // STEP 2: Execute all config updates in parallel
+        const configUpdatePromises = configUpdates.map(async (update) => {
+            try {
+                if (update.type === 'raiser') {
+                    await updateRaiserConnection(update.id, update.role, update.agentId, 'remove');
+                } else if (update.type === 'monitor-log') {
+                    await updateMonitorLogConnection(update.id, update.sourceId, 'remove');
+                } else if (update.type === 'ender') {
+                    const response = await fetch(`/agent/update_ender_connection/${update.enderId}/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', ...getHeaders() },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ source_agent: update.agentId, action: 'remove' })
+                    });
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log(`--- Ender ${update.enderId} config updated:`, result.message);
+                    }
+                } else if (update.type === 'starter') {
+                    await updateStarterConnection(update.id, update.targetId, 'remove');
+                } else if (update.type === 'mover') {
+                    const connected = update.connType === 'target' ? update.targetId : update.sourceId;
+                    await updateMoverConnection(update.id, connected, 'remove', update.connType);
+                }
+                return { success: true };
+            } catch (err) {
+                console.error('Config update failed:', err);
+                return { success: false };
+            }
+        });
+        await Promise.all(configUpdatePromises);
+
+        // STEP 3: Delete all pool directories
+        const deletePromises = canvasItemsToDelete.map(async (item) => {
+            if (item.id) {
+                try {
+                    const response = await fetch(`/agent/delete_agent_pool_dir/${item.id}/`, {
+                        method: 'POST',
+                        headers: getHeaders(),
+                        credentials: 'same-origin'
+                    });
+                    const result = await response.json();
+                    if (result.deleted) {
+                        console.log(`Deleted pool directory for ${item.id}: ${result.message}`);
+                    }
+                    return { agentId: item.id, success: true };
+                } catch (err) {
+                    console.error(`Could not delete pool directory for ${item.id}:`, err);
+                    return { agentId: item.id, success: false };
+                }
+            }
+            return { agentId: item.id, success: true };
+        });
+        await Promise.all(deletePromises);
+
+        // STEP 4: Remove canvas items and their connections from DOM
+        for (const item of canvasItemsToDelete) {
+            for (let i = ACP.connections.length - 1; i >= 0; i--) {
+                const conn = ACP.connections[i];
+                if (conn.source === item || conn.target === item) {
+                    conn.path.remove();
+                    ACP.connections.splice(i, 1);
+                    ACP.selectedItems.delete(conn);
+                }
+            }
+            item.remove();
+        }
+
+        // Remove selected standalone connections (with config updates)
+        for (const conn of connectionsToDelete) {
+            removeConnection(conn);
+        }
+
+        // STEP 5: Record undo action
+        undoManager.record({
+            type: 'DELETE_BATCH',
+            data: undoState,
+            undo: async function () {
+                for (const itemState of this.data.items) {
+                    await recreateCanvasItem(itemState);
+                }
+                for (const connState of this.data.itemConnections) {
+                    await recreateConnection(connState);
+                }
+                for (const connState of this.data.standaloneConnections) {
+                    await recreateConnection(connState);
+                }
+            },
+            redo: async function () {
+                for (const itemState of this.data.items) {
+                    await deleteCanvasItemWithoutUndo(itemState.id);
+                }
+                for (const connState of this.data.standaloneConnections) {
+                    await removeConnectionWithoutUndo(connState.sourceId, connState.targetId);
+                }
+            }
+        });
+
+        ACP.selectedItems.clear();
+        updateSaveButtonState();
+        markDirty();
+    }
+});

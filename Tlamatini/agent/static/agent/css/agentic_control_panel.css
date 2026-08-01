@@ -1,0 +1,2751 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+/* Existing styles */
+.html-general {
+    max-height: -webkit-fill-available;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #343541;
+    color: #ececf1;
+    overflow: hidden;
+    /* Prevent global scroll */
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body.resizing {
+    user-select: none !important;
+    cursor: col-resize !important;
+}
+
+#navbar-container {
+    height: 5vh;
+    min-height: 40px;
+    width: 100%;
+    min-width: 0;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 2rem;
+    outline: none;
+    top: 0;
+    z-index: 1030;
+}
+
+#navbar-content {
+    padding: 0px;
+    margin-right: 3rem;
+    min-width: 0;
+}
+
+#navbarMenu {
+    background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+}
+
+#agents-container {
+    position: relative;
+    --bs-gutter-x: 0;
+    --bs-gutter-y: 0;
+    overflow: hidden;
+    display: flex;
+    flex-grow: 1;
+    height: 95vh;
+    justify-items: end;
+    margin: 0px;
+    border: 0px;
+    outline: 0px;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#main-agents-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    outline-offset: -2px;
+    outline: 2px solid #FFFFFF !important;
+    height: 100%;
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+    min-height: 360px;
+    background-color: #2d2d2d;
+    overflow-y: scroll !important;
+}
+
+#agents-header {
+    margin-right: 5px !important;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 0px;
+    height: 25px !important;
+    flex-shrink: 0;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+#monitor-header {
+    margin-right: 5px !important;
+    padding-left: 8px;
+    padding-right: 0px;
+    margin-left: 0px;
+    height: 28px !important;
+    min-height: 28px;
+    flex-shrink: 0;
+    background-color: black;
+    color: white;
+    text-align: center;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100%;
+    overflow: visible;
+}
+
+.header-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    text-align: start;
+}
+
+#agents-header-title {
+    text-align: start;
+}
+
+#monitor-header-title {
+    text-align: start;
+}
+
+#monitor-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+#filename {
+    color: #10B981;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 0.9em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#monitor-controls {
+    display: flex;
+    gap: 4px;
+    padding-right: 8px;
+}
+
+.control-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    height: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: antiquewhite;
+    background-color: darkgreen;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.control-btn:hover {
+    background-color: #228B22;
+}
+
+.control-btn:disabled {
+    background-color: #808080;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.control-btn svg {
+    flex-shrink: 0;
+}
+
+/* Validate button - yellow when active, grey when disabled */
+.control-btn-validate {
+    background-color: #EAB308;
+    color: #1a1a1a;
+}
+
+.control-btn-validate:hover:not(:disabled) {
+    background-color: #FACC15;
+}
+
+.control-btn-validate:disabled {
+    background-color: #808080;
+    color: antiquewhite;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+#monitor-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    outline-offset: -2px;
+    outline: 2px solid #FFFFFF !important;
+    height: 100%;
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+    min-height: 360px;
+    background-color: #2d2d2d;
+    border: ridge;
+}
+
+/* Submonitor Container - scrollable viewport over the canvas content layer */
+#submonitor-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #1e1e1e;
+    overflow: auto;
+    /* Scroll horizontally/vertically when canvas content exceeds viewport */
+}
+
+/* Canvas Content Layer - absolute-positioned items live here.
+   Auto-grows beyond the viewport; min 100% keeps drop targets usable when empty. */
+#canvas-content {
+    position: relative;
+    min-width: 100%;
+    min-height: 100%;
+    width: 100%;
+    height: 100%;
+}
+
+/* Dark, unobtrusive scrollbars that match the ACP theme (WebKit/Chromium/Edge). */
+#submonitor-container::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+#submonitor-container::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border: 1px solid #2b2b2b;
+}
+
+#submonitor-container::-webkit-scrollbar-thumb {
+    background: #4a4a55;
+    border: 2px solid #1a1a1a;
+    border-radius: 6px;
+}
+
+#submonitor-container::-webkit-scrollbar-thumb:hover {
+    background: #6a6a7a;
+}
+
+#submonitor-container::-webkit-scrollbar-corner {
+    background: #1a1a1a;
+}
+
+/* Firefox scrollbar styling. */
+#submonitor-container {
+    scrollbar-color: #4a4a55 #1a1a1a;
+    scrollbar-width: thin;
+}
+
+.navbar-margin {
+    margin-left: 1rem;
+    margin-right: 3rem;
+    font-style: italic;
+    font-weight: 700;
+    min-width: 0;
+}
+
+.dropdown-entry {
+    background-color: #343541;
+    color: #35353b;
+    outline-style: auto;
+}
+
+#drag-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: col-resize;
+    z-index: 10;
+    background: transparent;
+}
+
+#drag-divider::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 3px;
+    width: 2px;
+    background: #8a8c98;
+    opacity: 0.8;
+}
+
+#vertical-drag-divider {
+    position: relative;
+    left: 0;
+    right: 0;
+    height: 8px;
+    cursor: row-resize;
+    z-index: 10;
+    background: transparent;
+    flex-shrink: 0;
+}
+
+#vertical-drag-divider::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 3px;
+    height: 2px;
+    background: #8a8c98;
+    opacity: 0.8;
+}
+
+body.resizing-vertical {
+    user-select: none !important;
+    cursor: row-resize !important;
+}
+
+#menu-editor {
+    flex-wrap: nowrap;
+}
+
+#menu-editor .nav-link {
+    padding-left: .5rem;
+    padding-right: .5rem;
+}
+
+#navbar-content {
+    gap: .25rem;
+}
+
+@media (max-width: 1199.98px) {
+    #navbar-container {
+        height: auto;
+        padding-right: 0.75rem;
+    }
+
+    #navbar-content {
+        flex-wrap: wrap;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .navbar-margin {
+        max-width: calc(100% - 64px);
+        margin-right: 0.5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #navbar-container .navbar-toggler {
+        display: block;
+        margin-left: auto;
+    }
+
+    #navbarMenu.collapse:not(.show) {
+        display: none !important;
+    }
+
+    #navbarMenu.collapse.show,
+    #navbarMenu.collapsing {
+        display: block !important;
+        flex-basis: 100%;
+        width: 100%;
+        max-height: calc(100dvh - 44px);
+        overflow: auto;
+    }
+
+    #menu-editor {
+        align-items: flex-start !important;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        padding: 6px 0;
+    }
+
+    #menu-editor .nav-link {
+        width: 100%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+@media (max-width: 700px) {
+    #monitor-header {
+        gap: 6px;
+        padding-left: 6px;
+    }
+
+    #monitor-header-left {
+        flex: 1 1 0;
+        gap: 6px;
+    }
+
+    #monitor-header-title {
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #monitor-controls {
+        flex: 0 0 auto;
+        gap: 2px !important;
+        min-width: 0;
+        overflow: visible;
+        padding-right: 2px !important;
+    }
+
+    .control-btn {
+        width: 24px;
+        min-width: 24px;
+        justify-content: center;
+        gap: 0;
+        padding: 2px 4px;
+        font-size: 0;
+    }
+
+    .control-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+.ui-dialog {
+    background-color: #4a4f5c;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    padding: 0;
+    overflow: hidden;
+    min-width: min(600px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    z-index: 10000;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    background-color: #444853;
+    border: none;
+    padding: 12px 20px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    font-weight: 700;
+    color: #e0e0e0;
+    position: relative;
+    cursor: move;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    background: none;
+    border: none;
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s ease-in-out;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FFFFFF'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+    background-size: 14px 14px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-dialog .ui-dialog-titlebar-close:hover {
+    opacity: 1;
+}
+
+.ui-dialog .ui-dialog-content {
+    background: none;
+    color: #e0e0e0;
+    text-align: center;
+    padding: 30px 50px;
+    overflow: auto;
+    /* Allow scrolling if content is too long */
+    max-height: min(70vh, calc(100dvh - 160px));
+    /* Safety fallback */
+}
+
+#dialog-message h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 10px;
+}
+
+#dialog-message p {
+    font-size: 16px;
+    margin: 0;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+    background: #4a4f5c;
+    /* Match dialog background to prevent transparent overlap */
+    border: none;
+    padding: 10px 50px 20px;
+    margin-top: 0;
+    /* Remove margin to sit flush */
+    z-index: 20;
+    position: relative;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow separator */
+}
+
+.ui-dialog .ui-dialog-buttonset {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    float: none;
+}
+
+.ui-dialog .ui-button {
+    background-color: #626978;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    padding: 10px 24px;
+}
+
+@media (max-width: 640px) {
+    .ui-dialog {
+        border-radius: 8px;
+    }
+
+    .ui-dialog .ui-dialog-titlebar {
+        padding: 10px 42px 10px 14px;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        padding: 18px 16px;
+    }
+
+    .ui-dialog .ui-dialog-buttonpane {
+        padding: 10px 16px 18px;
+    }
+
+    .ui-dialog .ui-dialog-buttonset {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .ui-dialog .ui-button {
+        flex: 1 1 120px;
+        min-width: 0;
+        padding: 9px 14px;
+    }
+}
+
+/* Agents List Toolbar Styles */
+#agents-list {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+}
+
+.agent-tool-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #3e3e3e;
+    border: 1px solid #555;
+    border-radius: 5px;
+    cursor: grab;
+    transition: background-color 0.2s;
+}
+
+.agent-tool-item:hover {
+    background-color: #4e4e4e;
+}
+
+.agent-tool-item:active {
+    cursor: grabbing;
+}
+
+#agent-purpose-tooltip {
+    display: none;
+    position: fixed;
+    max-width: min(420px, calc(100vw - 24px));
+    padding: 12px 14px;
+    background-color: rgba(30, 30, 30, 0.98);
+    border: 1px solid #555;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    color: #d4d4d4;
+    font-size: 0.88em;
+    line-height: 1.5;
+    z-index: 21000;
+    pointer-events: none;
+    white-space: normal;
+}
+
+#agent-purpose-tooltip code {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 1px 4px;
+    color: #f3f4f6;
+}
+
+.agent-tool-icon {
+    width: 20px;
+    height: 20px;
+    background-color: #7289da;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+}
+
+/* Canvas Item Styles */
+.canvas-item {
+    position: absolute;
+    width: 100px;
+    height: 60px;
+    background-color: #7289da;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    cursor: move;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.input-triangle {
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 10px solid white;
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    margin-left: -10px;
+    transform: translateY(-50%);
+}
+
+.input-triangle.input-1 {
+    top: 33%;
+}
+
+.input-triangle.input-2 {
+    top: 66%;
+}
+
+.output-triangle {
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 10px solid white;
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: crosshair;
+    /* Indicate connectability */
+    pointer-events: auto;
+    /* Ensure specific interaction */
+    z-index: 101;
+    /* Above item body */
+}
+
+/* Dual output triangles for Asker agent (A = upper, B = lower) */
+.output-triangle.output-1 {
+    top: 33%;
+}
+
+.output-triangle.output-2 {
+    top: 66%;
+}
+
+/* Output labels (A/B text) beside dual output triangles */
+.output-label {
+    position: absolute;
+    right: 6px;
+    font-size: 9px;
+    font-weight: bold;
+    color: white;
+    pointer-events: none;
+    z-index: 102;
+    transform: translateY(-50%);
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+}
+
+.output-label.label-a {
+    top: 33%;
+}
+
+.output-label.label-b {
+    top: 66%;
+}
+
+/* SVG Layer for Connections */
+#connections-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass through to canvas/items */
+    z-index: 0;
+    /* Behind items */
+}
+
+/* Connection Styles */
+/* .connection-group {} */
+
+/* The actual visible line */
+.connection-path {
+    fill: none;
+    stroke: white;
+    stroke-width: 2px;
+    pointer-events: none;
+    /* Hit area handles events */
+}
+
+/* The invisible hit area */
+.connection-hit-area {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 10px;
+    /* Wide hit area */
+    cursor: pointer;
+    pointer-events: stroke;
+    /* Interact only on the stroke path */
+}
+
+.connection-group:hover .connection-path {
+    stroke: #ffcc00;
+    /* Highlight on hover */
+}
+
+.connection-group.selected .connection-path {
+    stroke: #ffcc00;
+    /* Keep highlight when selected */
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 4px rgba(255, 204, 0, 0.8));
+}
+
+.canvas-item.selected {
+    border: 2px solid #ffcc00;
+    /* Distinct highlight color */
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+    z-index: 1000;
+    /* Ensure selected item is on top if needed */
+}
+
+/* Rubberband Selection Box */
+#selection-box {
+    position: absolute;
+    border: 1px solid rgba(0, 120, 215, 0.7);
+    background-color: rgba(0, 120, 215, 0.2);
+    display: none;
+    /* Hidden by default */
+    pointer-events: none;
+    /* Click-through */
+    z-index: 9999;
+}
+
+.canvas-item.selected {
+    border: 2px solid #ffcc00;
+    /* Distinct highlight color */
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+    z-index: 1000;
+    /* Ensure selected item is on top if needed */
+}
+
+/* Ender Agent Styles - Terminal node (input only, purple color) */
+.canvas-item.ender-agent {
+    background-color: #8B5CF6;
+    /* Purple color for Ender */
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    /* Gradient for premium look */
+}
+
+.canvas-item.ender-agent:hover {
+    background: linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%);
+}
+
+/* Optional: Ender agent icon in assets list */
+.agent-tool-item[data-content="Ender"] .agent-tool-icon,
+.agent-tool-item:has(span:contains("Ender")) .agent-tool-icon {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+}
+
+/* Starter Agent Styles - Initiator node (output only, green color) */
+.canvas-item.starter-agent {
+    background-color: #10B981;
+    /* Green color for Starter */
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    /* Gradient for premium look */
+}
+
+.canvas-item.starter-agent:hover {
+    background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+}
+
+/* Optional: Starter agent icon in assets list */
+.agent-tool-item[data-content="Starter"] .agent-tool-icon,
+.agent-tool-item:has(span:contains("Starter")) .agent-tool-icon {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.agent-tool-item[data-content="Croner"] .agent-tool-icon,
+.agent-tool-item:has(span:contains("Croner")) .agent-tool-icon {
+    background: linear-gradient(135deg, #F87171 0%, #EF4444 100%);
+}
+
+/* OR Agent Styles - Processing node (orange color) */
+.canvas-item.or-agent {
+    background-color: #F59E0B;
+    /* Orange color for OR */
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.canvas-item.or-agent:hover {
+    background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+}
+
+/* AND Agent Styles - Processing node (cyan color) */
+.canvas-item.and-agent {
+    background-color: #06b6d4;
+    /* Cyan color for AND */
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.canvas-item.and-agent:hover {
+    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+    box-shadow: 0 6px 15px rgba(6, 182, 212, 0.5);
+}
+
+
+/* Croner Agent Styles - Time-gated trigger (light-red color) */
+.canvas-item.croner-agent {
+    background-color: #F87171;
+    /* Light red */
+    background: linear-gradient(135deg, #F87171 0%, #EF4444 100%);
+}
+
+.canvas-item.croner-agent:hover {
+    background: linear-gradient(135deg, #FCA5A5 0%, #F87171 100%);
+    box-shadow: 0 6px 15px rgba(248, 113, 113, 0.5);
+}
+
+/* Mover Agent Styles - File Operations (Brown color) */
+.canvas-item.mover-agent {
+    background-color: #795548;
+    /* Brown */
+    background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%);
+}
+
+.canvas-item.mover-agent:hover {
+    background: linear-gradient(135deg, #A1887F 0%, #795548 100%);
+    box-shadow: 0 6px 15px rgba(121, 85, 72, 0.5);
+}
+
+/* Sleeper Agent Styles - Wait Operation (Blue Grey color) */
+.canvas-item.sleeper-agent {
+    background-color: #607d8b;
+    /* Blue Grey */
+    background: linear-gradient(135deg, #78909c 0%, #455a64 100%);
+}
+
+.canvas-item.sleeper-agent:hover {
+    background: linear-gradient(135deg, #90a4ae 0%, #607d8b 100%);
+    box-shadow: 0 6px 15px rgba(96, 125, 139, 0.5);
+}
+
+/* Deleter Agent Styles - File Deletion (Red color) */
+.canvas-item.deleter-agent {
+    background-color: #DC2626;
+    /* Red */
+    background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+}
+
+.canvas-item.notifier-agent {
+    background-color: #F472B6;
+    /* Pink */
+    background: linear-gradient(135deg, #F472B6 0%, #DB2777 100%);
+}
+
+.canvas-item.notifier-agent:hover {
+    background: linear-gradient(135deg, #F9A8D4 0%, #F472B6 100%);
+    box-shadow: 0 6px 15px rgba(244, 114, 182, 0.5);
+}
+
+/* Notifier agent icon in sidebar */
+.agent-tool-item[data-content="Notifier"] .agent-tool-icon {
+    background: linear-gradient(135deg, #F472B6 0%, #DB2777 100%);
+}
+
+.canvas-item.deleter-agent:hover {
+    background: linear-gradient(135deg, #F87171 0%, #DC2626 100%);
+    box-shadow: 0 6px 15px rgba(220, 38, 38, 0.5);
+}
+
+/* Executer Agent Styles - Command Execution (Bright Yellow color) */
+.canvas-item.executer-agent {
+    background-color: #FACC15;
+    /* Bright Yellow */
+    background: linear-gradient(135deg, #FDE047 0%, #EAB308 100%);
+}
+
+.canvas-item.executer-agent:hover {
+    background: linear-gradient(135deg, #FEF08A 0%, #FACC15 100%);
+    box-shadow: 0 6px 15px rgba(250, 204, 21, 0.5);
+}
+
+/* Stopper Agent Styles - Process Terminator (Grey color) */
+.canvas-item.stopper-agent {
+    background-color: #6B7280;
+    /* Grey */
+    background: linear-gradient(135deg, #9CA3AF 0%, #4B5563 100%);
+}
+
+.canvas-item.stopper-agent:hover {
+    background: linear-gradient(135deg, #D1D5DB 0%, #6B7280 100%);
+    box-shadow: 0 6px 15px rgba(107, 114, 128, 0.5);
+}
+
+/* Stopper agent icon in sidebar */
+.agent-tool-item[data-content="Stopper"] .agent-tool-icon {
+    background: linear-gradient(135deg, #9CA3AF 0%, #4B5563 100%);
+}
+
+/* Recmailer Agent Styles - Email Monitor (Sky Blue color) */
+.canvas-item.recmailer-agent {
+    background-color: #38BDF8;
+    /* Sky Blue */
+    background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
+}
+
+.canvas-item.recmailer-agent:hover {
+    background: linear-gradient(135deg, #7DD3FC 0%, #38BDF8 100%);
+    box-shadow: 0 6px 15px rgba(56, 189, 248, 0.5);
+}
+
+/* RecMailer agent icon in sidebar. The lower-cased "Recmailer" twin that used to
+   sit here was DEAD: data-content carries the exact display name and the boot
+   resolver produces "RecMailer" (agent_paths.display_name_from_agent_type), so
+   the old value could never match. Pinned by test_agent_display_names.py. */
+.agent-tool-item[data-content="RecMailer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
+}
+
+/* Cleaner Agent Styles */
+.canvas-item.cleaner-agent {
+    background-color: #00008B;
+    color: white;
+}
+
+/* Target Agent Styles */
+.canvas-item.target-agent {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Source Agent Styles */
+.canvas-item.source-agent {
+    background-color: #17a2b8;
+    color: white;
+}
+
+/* Sqler Agent Styles - SQL Server Connector (Orange to Green gradient) */
+.canvas-item.sqler-agent {
+    background-color: #f97316;
+    color: white;
+    background: linear-gradient(135deg, #f97316 0%, #10b981 100%);
+}
+
+.canvas-item.sqler-agent:hover {
+    box-shadow: 0 6px 15px rgba(249, 115, 22, 0.5);
+    background: linear-gradient(135deg, #fb923c 0%, #34d399 100%);
+}
+
+/* Sqler agent icon in sidebar */
+.agent-tool-item[data-content="SQLer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #f97316 0%, #10b981 100%);
+}
+
+/* Whatsapper Agent Styles */
+.canvas-item.whatsapper-agent {
+    background-color: #006400;
+    /* DarkGreen */
+    color: white;
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+}
+
+.canvas-item.whatsapper-agent:hover {
+    box-shadow: 0 6px 15px rgba(0, 100, 0, 0.5);
+    background: linear-gradient(135deg, #008000 0%, #006400 100%);
+}
+
+/* Whatsapper agent icon in sidebar */
+.agent-tool-item[data-content="Whatsapper"] .agent-tool-icon {
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+}
+
+/* Telegrammer Agent Styles - Telegram Sender/Receiver (Dark-Blue to Green gradient) */
+.canvas-item.telegrammer-agent {
+    background-color: #1a237e;
+    color: white;
+    background: linear-gradient(135deg, #1a237e 0%, #10B981 100%);
+}
+
+.canvas-item.telegrammer-agent:hover {
+    box-shadow: 0 6px 15px rgba(26, 35, 126, 0.5);
+    background: linear-gradient(135deg, #283593 0%, #34D399 100%);
+}
+
+/* Telegrammer agent icon in sidebar */
+.agent-tool-item[data-content="Telegrammer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #1a237e 0%, #10B981 100%);
+}
+
+
+
+
+/* Pythonxer Agent Styles - Python Script Execution (Blue-to-Yellow gradient) */
+.canvas-item.pythonxer-agent {
+    background-color: #306998;
+    color: white;
+    background: linear-gradient(135deg, #306998 0%, #FFD43B 100%);
+}
+
+.canvas-item.pythonxer-agent:hover {
+    box-shadow: 0 6px 15px rgba(48, 105, 152, 0.5);
+    background: linear-gradient(135deg, #4B8BBE 0%, #FFD43B 100%);
+}
+
+/* Pythonxer agent icon in sidebar */
+.agent-tool-item[data-content="Pythonxer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #306998 0%, #FFD43B 100%);
+}
+
+/* Asker Agent Styles - Decision node (Red-to-Blue gradient) */
+.canvas-item.asker-agent {
+    background-color: #EF4444;
+    color: white;
+    background: linear-gradient(135deg, #EF4444 0%, #3B82F6 100%);
+}
+
+.canvas-item.asker-agent:hover {
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
+    background: linear-gradient(135deg, #F87171 0%, #60A5FA 100%);
+}
+
+/* Asker agent icon in sidebar */
+.agent-tool-item[data-content="Asker"] .agent-tool-icon {
+    background: linear-gradient(135deg, #EF4444 0%, #3B82F6 100%);
+}
+
+/* Forker Agent Styles - Automatic decision node (Black-to-White gradient) */
+.canvas-item.forker-agent {
+    background-color: #333333;
+    color: white;
+    background: linear-gradient(135deg, #000000 0%, #FFFFFF 100%);
+}
+
+.canvas-item.forker-agent:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, #333333 0%, #FFFFFF 100%);
+}
+
+/* Forker agent icon in sidebar */
+.agent-tool-item[data-content="Forker"] .agent-tool-icon {
+    background: linear-gradient(135deg, #000000 0%, #FFFFFF 100%);
+}
+
+/* Counter Agent Styles - Persistent counter with L/G routing (Amber-to-Teal gradient) */
+.canvas-item.counter-agent {
+    background-color: #FF8F00;
+    color: white;
+    background: linear-gradient(135deg, #FF8F00 0%, #00695C 100%);
+}
+
+.canvas-item.counter-agent:hover {
+    box-shadow: 0 6px 15px rgba(255, 143, 0, 0.5);
+    background: linear-gradient(135deg, #FFA726 0%, #00897B 100%);
+}
+
+/* Counter agent icon in sidebar */
+.agent-tool-item[data-content="Counter"] .agent-tool-icon {
+    background: linear-gradient(135deg, #FF8F00 0%, #00695C 100%);
+}
+
+/* Kuberneter Agent Styles - Kubernetes executor (Black-to-DarkBlue gradient) */
+.canvas-item.kuberneter-agent {
+    background-color: #000000;
+    color: white;
+    background: linear-gradient(135deg, #000000 0%, #00008B 100%);
+}
+
+.canvas-item.kuberneter-agent:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 139, 0.5);
+    background: linear-gradient(135deg, #111111 0%, #00008B 100%);
+}
+
+/* Kuberneter agent icon in sidebar */
+.agent-tool-item[data-content="Kuberneter"] .agent-tool-icon {
+    background: linear-gradient(135deg, #000000 0%, #00008B 100%);
+}
+
+/* Apirer Agent Styles - HTTP/REST API agent (DarkPurple-to-LightGreen gradient) */
+.canvas-item.apirer-agent {
+    background-color: #3B0764;
+    color: white;
+    background: linear-gradient(135deg, #3B0764 0%, #86EFAC 100%);
+}
+
+.canvas-item.apirer-agent:hover {
+    box-shadow: 0 6px 15px rgba(134, 239, 172, 0.5);
+    background: linear-gradient(135deg, #4C1D95 0%, #A7F3D0 100%);
+}
+
+/* Apirer agent icon in sidebar */
+.agent-tool-item[data-content="Apirer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #3B0764 0%, #86EFAC 100%);
+}
+
+/* Unrealer Agent — drives Unreal Engine 5 via the Unreal MCP TCP protocol.
+   "Engine Aurora" gradient: void black → UE5 cobalt → viewport emerald →
+   gizmo cyan. Distinct from Apirer (purple→green) and Jenkinser (white→blue)
+   so it reads cleanly in the sidebar / canvas / Exec Report. */
+.canvas-item.unrealer-agent {
+    background-color: #0B1220;
+    color: white;
+    background: linear-gradient(135deg, #0B1220 0%, #1F3A8A 33%, #10B981 66%, #22D3EE 100%);
+}
+
+.canvas-item.unrealer-agent:hover {
+    box-shadow: 0 6px 15px rgba(34, 211, 238, 0.55);
+    background: linear-gradient(135deg, #18233A 0%, #2D4FB8 33%, #34D399 66%, #67E8F9 100%);
+}
+
+/* Unrealer agent icon in sidebar */
+.agent-tool-item[data-content="Unrealer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #0B1220 0%, #1F3A8A 33%, #10B981 66%, #22D3EE 100%);
+}
+
+/* Blenderer Agent — drives Blender via the official Blender MCP add-on socket.
+   "Blender Forge" gradient: deep blue → Blender blue → Blender orange → warm
+   amber. Distinct from Unrealer (cobalt→cyan) so the two engine agents read
+   cleanly apart in the sidebar / canvas / Exec Report. */
+.canvas-item.blenderer-agent {
+    background-color: #15334F;
+    color: white;
+    background: linear-gradient(135deg, #15334F 0%, #2A6FB3 33%, #EA7600 66%, #F7B733 100%);
+}
+
+.canvas-item.blenderer-agent:hover {
+    box-shadow: 0 6px 15px rgba(247, 183, 51, 0.55);
+    background: linear-gradient(135deg, #1D4A72 0%, #3A86D4 33%, #FF8C1A 66%, #FFD166 100%);
+}
+
+/* Blenderer agent icon in sidebar */
+.agent-tool-item[data-content="Blenderer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #15334F 0%, #2A6FB3 33%, #EA7600 66%, #F7B733 100%);
+}
+
+/* Reviewer Agent Styles - LLM code review (cool teal -> blue -> indigo -> violet) */
+.canvas-item.reviewer-agent {
+    background-color: #0E7490;
+    color: white;
+    background: linear-gradient(135deg, #0E7490 0%, #2563EB 33%, #4F46E5 66%, #7C3AED 100%);
+}
+
+.canvas-item.reviewer-agent:hover {
+    box-shadow: 0 6px 15px rgba(79, 70, 229, 0.55);
+    background: linear-gradient(135deg, #1597B5 0%, #3B82F6 33%, #6366F1 66%, #9333EA 100%);
+}
+
+/* Reviewer agent icon in sidebar */
+.agent-tool-item[data-content="Reviewer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #0E7490 0%, #2563EB 33%, #4F46E5 66%, #7C3AED 100%);
+}
+
+/* Analyzer Agent Styles - static/security scan (severity heatmap: dark-red -> red -> amber -> yellow) */
+.canvas-item.analyzer-agent {
+    background-color: #7F1D1D;
+    color: white;
+    background: linear-gradient(135deg, #7F1D1D 0%, #DC2626 33%, #F59E0B 66%, #FACC15 100%);
+}
+
+.canvas-item.analyzer-agent:hover {
+    box-shadow: 0 6px 15px rgba(220, 38, 38, 0.55);
+    background: linear-gradient(135deg, #991B1B 0%, #EF4444 33%, #FBBF24 66%, #FDE047 100%);
+}
+
+/* Analyzer agent icon in sidebar */
+.agent-tool-item[data-content="Analyzer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #7F1D1D 0%, #DC2626 33%, #F59E0B 66%, #FACC15 100%);
+}
+
+/* Playwrighter Agent Styles - scripted browser automation. "Theatre Spotlight"
+   palette (curtain-violet -> spotlight-magenta -> peacock-teal -> aqua-mint):
+   the crimson-magenta + teal pairing nods to Playwright's two-theatre-masks
+   logo, and the scheme is distinct from every other agent gradient. */
+.canvas-item.playwrighter-agent {
+    background-color: #3D1766;
+    color: white;
+    background: linear-gradient(135deg, #3D1766 0%, #D90368 33%, #0FA3B1 66%, #6EE7B7 100%);
+}
+
+.canvas-item.playwrighter-agent:hover {
+    box-shadow: 0 6px 15px rgba(217, 3, 104, 0.55);
+    background: linear-gradient(135deg, #532196 0%, #F0418A 33%, #19C7D6 66%, #A7F3D0 100%);
+}
+
+/* Playwrighter agent icon in sidebar */
+.agent-tool-item[data-content="Playwrighter"] .agent-tool-icon {
+    background: linear-gradient(135deg, #3D1766 0%, #D90368 33%, #0FA3B1 66%, #6EE7B7 100%);
+}
+
+/* Jenkinser Agent Styles - CI/CD Pipeline Trigger (White-to-Blue gradient) */
+.canvas-item.jenkinser-agent {
+    background-color: #FFFFFF;
+    color: #1565C0;
+    background: linear-gradient(135deg, #FFFFFF 0%, #1E88E5 100%);
+}
+
+.canvas-item.jenkinser-agent:hover {
+    box-shadow: 0 6px 15px rgba(30, 136, 229, 0.5);
+    background: linear-gradient(135deg, #F5F5F5 0%, #42A5F5 100%);
+}
+
+/* Jenkinser agent icon in sidebar */
+.agent-tool-item[data-content="Jenkinser"] .agent-tool-icon {
+    background: linear-gradient(135deg, #FFFFFF 0%, #1E88E5 100%);
+}
+
+/* Crawler Agent Styles - Web Crawler with LLM Analysis (Cyan-to-Magenta gradient) */
+.canvas-item.crawler-agent {
+    background-color: #00BCD4;
+    color: white;
+    background: linear-gradient(135deg, #00BCD4 0%, #E91E63 100%);
+}
+
+.canvas-item.crawler-agent:hover {
+    box-shadow: 0 6px 15px rgba(233, 30, 99, 0.5);
+    background: linear-gradient(135deg, #26C6DA 0%, #F06292 100%);
+}
+
+/* Crawler agent icon in sidebar */
+.agent-tool-item[data-content="Crawler"] .agent-tool-icon {
+    background: linear-gradient(135deg, #00BCD4 0%, #E91E63 100%);
+}
+
+/* Summarizer Agent Styles - Log monitoring with LLM event detection (Yellow-to-Magenta gradient) */
+.canvas-item.summarizer-agent {
+    background-color: #FFD600;
+    color: white;
+    background: linear-gradient(135deg, #FFD600 0%, #E91E63 100%);
+}
+
+.canvas-item.summarizer-agent:hover {
+    box-shadow: 0 6px 15px rgba(233, 30, 99, 0.5);
+    background: linear-gradient(135deg, #FFEA00 0%, #F06292 100%);
+}
+
+/* Summarizer agent icon in sidebar */
+.agent-tool-item[data-content="Summarizer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #FFD600 0%, #E91E63 100%);
+}
+
+/* FlowHypervisor Agent Styles - LLM-powered flow monitoring (Yellow-to-Magenta-to-Cyan gradient) */
+.canvas-item.flowhypervisor-agent {
+    background-color: #E91E63;
+    color: white;
+    background: linear-gradient(135deg, #FFD600 0%, #E91E63 50%, #00BCD4 100%) !important;
+    font-size: 12.8px !important;
+}
+
+.canvas-item.flowhypervisor-agent:hover {
+    box-shadow: 0 6px 15px rgba(233, 30, 99, 0.5);
+    background: linear-gradient(135deg, #FFEA00 0%, #F06292 50%, #26C6DA 100%);
+}
+
+/* FlowHypervisor agent icon in sidebar */
+.agent-tool-item[data-content="FlowHypervisor"] .agent-tool-icon {
+    background: linear-gradient(135deg, #FFD600 0%, #E91E63 50%, #00BCD4 100%);
+}
+
+/* Mouser Agent */
+.canvas-item.mouser-agent {
+    background-color: #FF1744;
+    background: linear-gradient(135deg, #FF1744 0%, #651FFF 50%, #00E676 100%);
+    color: white;
+}
+
+.canvas-item.mouser-agent:hover {
+    background: linear-gradient(135deg, #FF5252 0%, #7C4DFF 50%, #69F0AE 100%);
+    box-shadow: 0 6px 15px rgba(101, 31, 255, 0.5);
+}
+
+/* Windower Agent - window manager (4-color "frosted glass-pane" gradient:
+   deep-navy -> window-blue -> sky -> frost-white). Distinct from Mouser
+   (red/purple/green), Shoter (cyan/magenta) and ACPXer (navy/violet/magenta/
+   cyan): Windower is the cool monochrome-blue "pane of glass" so the user can
+   tell the window-manager apart from the pointer/key/screenshot agents. */
+.canvas-item.windower-agent {
+    background-color: #0F2C4D;
+    background: linear-gradient(135deg, #0F2C4D 0%, #1E6FB8 33%, #4FC3F7 66%, #E1F5FE 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.windower-agent:hover {
+    background: linear-gradient(135deg, #16406E 0%, #2E86C9 33%, #81D4FA 66%, #F0FAFF 100%);
+    box-shadow: 0 6px 15px rgba(30, 111, 184, 0.5);
+}
+
+/* Kalier Agent — MCP-Kali-Server bridge (AI-assisted penetration testing).
+   The ONLY MONOCHROMATIC gradient in the entire agent palette: a single-hue
+   green "matrix terminal" ramp from pure black up to neon hacker-green
+   (#39FF14). Every other one of the 67 agents uses a multi-hue gradient, so
+   this single-hue black→neon ramp is structurally unmistakable at a glance,
+   and the black-terminal / neon-green aesthetic is the canonical visual cliché
+   for a Kali Linux offensive-security agent. The deep-black base also
+   separates it from the mid-green agents (Starter emerald, Whatsapper forest,
+   Mongoxer olive, NodeManager lime) — none of which use black or a neon
+   top-stop — and from the red+green agents (Mouser / J-Decompiler /
+   FlowCreator) the previous Kalier palette resembled. */
+.canvas-item.kalier-agent {
+    background-color: #000000;
+    background: linear-gradient(135deg, #000000 0%, #00471B 33%, #00892A 66%, #39FF14 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.kalier-agent:hover {
+    background: linear-gradient(135deg, #0A0A0A 0%, #006626 33%, #00B032 66%, #6BFF52 100%);
+    box-shadow: 0 6px 15px rgba(57, 255, 20, 0.5);
+}
+
+/* Zavuerer Agent — Zavu unified-messaging bridge (ONE API for SMS / WhatsApp /
+   Telegram / Email / Voice). A four-channel "signal spectrum" ramp: teal →
+   royal-blue → violet → rose — four distinct hues for the four+ channels Zavu
+   unifies, sweeping cool-to-warm so it reads as a multi-channel broadcast. No
+   other agent uses this teal→blue→violet→rose sweep (Kalier is mono-green,
+   ACPXer is navy→magenta→cyan, the firmware agents are blue/red/charcoal). */
+.canvas-item.zavuerer-agent {
+    background-color: #14B8A6;
+    background: linear-gradient(135deg, #14B8A6 0%, #3B82F6 33%, #8B5CF6 66%, #F43F5E 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.zavuerer-agent:hover {
+    background: linear-gradient(135deg, #2DD4BF 0%, #60A5FA 33%, #A78BFA 66%, #FB7185 100%);
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.5);
+}
+
+/* STM32er Agent — STM32 Template Project MCP bridge (firmware scaffold/build/
+   flash/observe). A 4-stop "silicon" ramp in the requested blue / black / white /
+   gray palette: near-black -> vivid STM32 blue -> steel gray -> near-white. This
+   is the only black->blue->gray->white gradient in the palette (Windower is the
+   only other blue agent but it runs navy->cyan->sky->ice-white with NO black
+   base and NO neutral gray, so the two read distinctly). A text-shadow keeps the
+   white label legible across the light right-hand end of the ramp. */
+.canvas-item.stm32er-agent {
+    background-color: #0A0E17;
+    background: linear-gradient(135deg, #0A0E17 0%, #1E63FF 33%, #8A97A8 66%, #EEF3FB 100%);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    font-size: smaller;
+}
+.canvas-item.stm32er-agent:hover {
+    background: linear-gradient(135deg, #141C2B 0%, #4D86FF 33%, #AEBAC9 66%, #FFFFFF 100%);
+    box-shadow: 0 6px 15px rgba(30, 99, 255, 0.5);
+}
+
+/* ESP32er Agent — PlatformIO / Espressif. 4-color ramp distinct from STM32er's
+   blue: near-black charcoal -> Espressif red -> warm amber -> light cream. The
+   text-shadow keeps the white label legible across the light right-hand end. */
+.canvas-item.esp32er-agent {
+    background-color: #1A1A1A;
+    background: linear-gradient(135deg, #1A1A1A 0%, #E7352C 33%, #FF8A3D 66%, #FFE2C2 100%);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    font-size: smaller;
+}
+.canvas-item.esp32er-agent:hover {
+    background: linear-gradient(135deg, #2B2B2B 0%, #F0564E 33%, #FFA869 66%, #FFFFFF 100%);
+    box-shadow: 0 6px 15px rgba(231, 53, 44, 0.5);
+}
+
+/* ESPHomer Agent — ESPHome / smart home. 4-color GREEN ramp (no other agent uses
+   green), distinct from STM32er's blue, ESP32er's red/amber and Arduiner's teal/cyan:
+   deep forest green -> emerald -> spring green -> pale mint. The text-shadow keeps
+   the white label legible across the light mint right-hand end. */
+.canvas-item.esphomer-agent {
+    background-color: #06281C;
+    background: linear-gradient(135deg, #06281C 0%, #0E8A4F 33%, #36D399 66%, #D7FBE8 100%);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    font-size: smaller;
+}
+.canvas-item.esphomer-agent:hover {
+    background: linear-gradient(135deg, #0B3A2A 0%, #14A862 33%, #5FE6B5 66%, #FFFFFF 100%);
+    box-shadow: 0 6px 15px rgba(14, 138, 79, 0.5);
+}
+
+/* Arduiner Agent — Arduino CLI. 4-color teal->cyan ramp built around the Arduino
+   brand teal (#008184), distinct from STM32er's blue, ESP32er's red/amber, and
+   FlowBacker's teal+orange+amber: deep teal -> Arduino teal -> bright cyan -> pale aqua. */
+.canvas-item.arduiner-agent {
+    background-color: #00363A;
+    background: linear-gradient(135deg, #00363A 0%, #008184 33%, #00C4CC 66%, #C8F2F0 100%);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    font-size: smaller;
+}
+.canvas-item.arduiner-agent:hover {
+    background: linear-gradient(135deg, #0A4F54 0%, #009DA1 33%, #36DDE4 66%, #EAFBFA 100%);
+    box-shadow: 0 6px 15px rgba(0, 129, 132, 0.5);
+}
+
+/* FlowBacker Agent Styles - Infrastructure backup (3-color: Deep-Teal / Burnt-Orange / Amber gradient) */
+.canvas-item.flowbacker-agent {
+    background-color: #0F4C5C;
+    color: white;
+    background: linear-gradient(135deg, #0F4C5C 0%, #E36414 50%, #FB8B24 100%);
+}
+
+.canvas-item.flowbacker-agent:hover {
+    background: linear-gradient(135deg, #16697A 0%, #F57C1F 50%, #FDB14B 100%);
+    box-shadow: 0 6px 15px rgba(227, 100, 20, 0.5);
+}
+
+/* FlowBacker agent icon in sidebar */
+.agent-tool-item[data-content="FlowBacker"] .agent-tool-icon {
+    background: linear-gradient(135deg, #0F4C5C 0%, #E36414 50%, #FB8B24 100%);
+}
+
+/* Barrier Agent Styles - Flow synchronization barrier (3-color: Rose / Emerald / Marigold gradient) */
+.canvas-item.barrier-agent {
+    background-color: #E84393;
+    color: white;
+    background: linear-gradient(135deg, #E84393 0%, #00B894 50%, #FDCB6E 100%);
+    font-size: smaller;
+}
+
+.canvas-item.barrier-agent:hover {
+    background: linear-gradient(135deg, #FF6EB4 0%, #55EFC4 50%, #FFE082 100%);
+    box-shadow: 0 6px 15px rgba(0, 184, 148, 0.5);
+}
+
+/* Barrier agent icon in sidebar */
+.agent-tool-item[data-content="Barrier"] .agent-tool-icon {
+    background: linear-gradient(135deg, #E84393 0%, #00B894 50%, #FDCB6E 100%);
+}
+
+/* J-Decompiler Agent Styles - Java decompiler (3-color: Steel Blue / Burnt Sienna / Lime Green gradient) */
+.canvas-item.jdecompiler-agent {
+    background-color: #2C3E50;
+    color: white;
+    background: linear-gradient(135deg, #2C3E50 0%, #E74C3C 50%, #27AE60 100%);
+    font-size: smaller;
+}
+.canvas-item.jdecompiler-agent:hover {
+    background: linear-gradient(135deg, #3D566E 0%, #FF6B5A 50%, #2ECC71 100%);
+    box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
+}
+
+/* J-Decompiler agent icon in sidebar */
+.agent-tool-item[data-content="J-Decompiler"] .agent-tool-icon {
+    background: linear-gradient(135deg, #2C3E50 0%, #E74C3C 50%, #27AE60 100%);
+}
+
+/* ========================================
+   STARTER EXECUTION DIALOG STYLES
+   ======================================== */
+#starter-execution-dialog {
+    z-index: 10001;
+}
+
+#starter-execution-content {
+    padding: 20px;
+    text-align: center;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#starter-execution-title {
+    color: #fff;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+#starter-execution-spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+#starter-execution-spinner {
+    width: 80px;
+    height: 80px;
+}
+
+#starter-execution-result {
+    padding: 10px 0;
+}
+
+#starter-execution-icon {
+    font-size: 56px;
+    margin-bottom: 15px;
+}
+
+#starter-execution-icon.success {
+    color: #10B981;
+}
+
+#starter-execution-icon.error {
+    color: #e74c3c;
+}
+
+#starter-execution-message {
+    color: #ddd;
+    font-size: 1em;
+    margin-bottom: 10px;
+}
+
+#starter-execution-message.success {
+    color: #10B981;
+}
+
+#starter-execution-message.error {
+    color: #e74c3c;
+}
+
+#starter-execution-failed-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+    text-align: left;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+#starter-execution-failed-list li {
+    padding: 6px 12px;
+    margin: 4px 0;
+    background-color: rgba(231, 76, 60, 0.15);
+    border-left: 3px solid #e74c3c;
+    border-radius: 4px;
+    color: #ffaaaa;
+    font-size: 0.9em;
+}
+
+/* Full-page overlay to block interaction during dialog */
+.starter-execution-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    pointer-events: all;
+}
+
+/* ========================================
+   START BUTTON TOGGLE (PRESSED) STATE
+   ======================================== */
+.control-btn.pressed {
+    background-color: #155724;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    border: 1px solid #0d3d1a;
+    transform: translateY(1px);
+}
+
+.control-btn.pressed:hover {
+    background-color: #1a6b2e;
+}
+
+/* Pause button paused state (Orange) */
+.control-btn.paused {
+    background-color: #D97706;
+    clear: both;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    border: 1px solid #B45309;
+    transform: translateY(1px);
+}
+
+.control-btn.paused:hover {
+    background-color: #F59E0B;
+}
+
+/* ========================================
+   LED INDICATOR STYLES FOR CANVAS ITEMS
+   ======================================== */
+.canvas-item-led {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    top: 4px;
+    right: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    z-index: 102;
+}
+
+/* LED Off State (Agent not running - Red) */
+.canvas-item-led.led-off {
+    background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000);
+    box-shadow: 0 0 6px #cc0000, inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+/* LED On State (Agent running - Green with glow) */
+.canvas-item-led.led-on {
+    background: radial-gradient(circle at 30% 30%, #44ff44, #00cc00);
+    box-shadow: 0 0 8px #00ff00, 0 0 12px #00ff00, 0 0 4px rgba(0, 255, 0, 0.5);
+    animation: led-pulse 1.5s ease-in-out infinite alternate;
+}
+
+/* LED Idle State (System not running - Gray) */
+.canvas-item-led.led-idle {
+    background: radial-gradient(circle at 30% 30%, #888888, #555555);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* LED Paused State (Agent paused - Yellow with blinking glow) */
+.canvas-item-led.led-paused {
+    background: radial-gradient(circle at 30% 30%, #ffff44, #cccc00);
+    box-shadow: 0 0 8px #cccc00, 0 0 12px #cccc00, 0 0 4px rgba(204, 204, 0, 0.5);
+    animation: led-paused-blink 1s ease-in-out infinite;
+}
+
+@keyframes led-paused-blink {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 8px #cccc00, 0 0 12px #cccc00, 0 0 4px rgba(204, 204, 0, 0.5);
+    }
+    50% {
+        opacity: 0.35;
+        box-shadow: 0 0 2px #999900;
+    }
+}
+
+/* LED Pulse Animation for running state */
+@keyframes led-pulse {
+    0% {
+        box-shadow: 0 0 6px #00cc00, 0 0 10px #00cc00;
+    }
+
+    100% {
+        box-shadow: 0 0 10px #00ff00, 0 0 16px #00ff00, 0 0 6px rgba(0, 255, 0, 0.6);
+    }
+}
+
+/* ========================================
+   CONTEXT MENU STYLES
+   ======================================== */
+#agent-context-menu {
+    display: none;
+    position: fixed;
+    background-color: #2d2d2d;
+    border: 1px solid #555;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    min-width: 180px;
+    max-width: calc(100vw - 16px);
+    z-index: 20000;
+    padding: 4px 0;
+    font-size: 0.9em;
+    overflow: hidden;
+}
+
+.context-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.15s;
+}
+
+.context-menu-item:hover {
+    background-color: #4a5568;
+}
+
+.context-menu-item:active {
+    background-color: #5a6577;
+}
+
+.context-menu-icon {
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background-color: #555;
+    margin: 4px 0;
+}
+
+.context-menu-item-disabled {
+    color: #666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.5;
+}
+
+.context-menu-item-disabled:hover {
+    background-color: transparent !important;
+}
+
+/* ========================================
+   LOG VIEWER MODAL STYLES
+   ======================================== */
+#log-viewer-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 19000;
+}
+
+#log-viewer-dialog {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(900px, calc(100vw - 24px));
+    height: min(600px, calc(100dvh - 32px));
+    background-color: #1e1e1e;
+    border: 1px solid #555;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 19500;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#log-viewer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #2d2d2d;
+    border-bottom: 1px solid #444;
+    flex-shrink: 0;
+}
+
+#log-viewer-title {
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.1em;
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#log-viewer-close {
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+#log-viewer-close:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+#log-viewer-content {
+    flex: 1;
+    padding: 12px 16px;
+    overflow-y: auto;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.85em;
+    line-height: 1.5;
+    color: #d4d4d4;
+    background-color: #1e1e1e;
+    white-space: pre;
+    margin: 0;
+}
+
+#log-viewer-content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#log-viewer-content::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+#log-viewer-content::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+#log-viewer-content::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+#log-viewer-footer {
+    padding: 8px 16px;
+    background-color: #2d2d2d;
+    border-top: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 12px;
+}
+
+#log-viewer-status {
+    color: #888;
+    font-size: 0.8em;
+}
+
+.log-viewer-live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #10B981;
+    font-size: 0.8em;
+}
+
+.log-viewer-live-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10B981;
+    border-radius: 50%;
+    animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* Live indicator - Running state (green with animation) */
+.log-viewer-live-dot.live-running {
+    background-color: #10B981;
+    animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+.log-viewer-live-indicator.indicator-running {
+    color: #10B981;
+}
+
+/* Live indicator - Stopped state (gray, no animation) */
+.log-viewer-live-dot.live-stopped {
+    background-color: #666;
+    animation: none;
+}
+
+.log-viewer-live-indicator.indicator-stopped {
+    color: #888;
+}
+
+/* ========================================
+   AGENT DESCRIPTION MODAL STYLES
+   ======================================== */
+#agent-description-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.55);
+    z-index: 19000;
+}
+
+#agent-description-dialog {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(480px, calc(100vw - 32px));
+    max-height: min(360px, calc(100vh - 48px));
+    background-color: #1e1e1e;
+    border: 1px solid #555;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 19500;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#agent-description-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #2d2d2d;
+    border-bottom: 1px solid #444;
+    flex-shrink: 0;
+}
+
+#agent-description-title {
+    margin: 0;
+    color: #fff;
+    font-size: 1.05em;
+    font-weight: 600;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#agent-description-close {
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+#agent-description-close:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+#agent-description-content {
+    padding: 16px;
+    overflow-y: auto;
+    color: #d4d4d4;
+    line-height: 1.55;
+    font-size: 0.92em;
+    white-space: normal;
+}
+
+#agent-description-content code {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 1px 4px;
+    color: #f3f4f6;
+}
+
+/* Shoter Agent Styles - Screenshot capture (Cyan to Magenta gradient) */
+.canvas-item.shoter-agent {
+    background-color: #06b6d4;
+    background: linear-gradient(135deg, #06b6d4 0%, #d946ef 100%);
+}
+
+.canvas-item.shoter-agent:hover {
+    background: linear-gradient(135deg, #22d3ee 0%, #e879f9 100%);
+    box-shadow: 0 6px 15px rgba(217, 70, 239, 0.5);
+}
+
+/* Shoter agent icon in sidebar */
+.agent-tool-item[data-content="Shoter"] .agent-tool-icon {
+    background: linear-gradient(135deg, #06b6d4 0%, #d946ef 100%);
+}
+
+/* Camcorder Agent - Webcam photo / video capture (Cinematic charcoal -> REC-red -> amber -> gold) */
+.canvas-item.camcorder-agent {
+    background-color: #c1121f;
+    background: linear-gradient(135deg, #1a1a2e 0%, #c1121f 33%, #f08700 66%, #ffd60a 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.camcorder-agent:hover {
+    background: linear-gradient(135deg, #2a2a44 0%, #e63946 33%, #ffa733 66%, #ffe566 100%);
+    box-shadow: 0 6px 15px rgba(193, 18, 31, 0.5);
+}
+
+/* Camcorder agent icon in sidebar */
+.agent-tool-item[data-content="Camcorder"] .agent-tool-icon {
+    background: linear-gradient(135deg, #1a1a2e 0%, #c1121f 33%, #f08700 66%, #ffd60a 100%);
+}
+
+.canvas-item.editor-agent {
+    background-color: #10b981;
+    background: linear-gradient(135deg, #022c22 0%, #064e3b 33%, #10b981 66%, #6ee7b7 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.editor-agent:hover {
+    background: linear-gradient(135deg, #053b2f 0%, #0a6e52 33%, #14d49b 66%, #9af3c8 100%);
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+}
+
+/* Editor agent icon in sidebar */
+.agent-tool-item[data-content="Editor"] .agent-tool-icon {
+    background: linear-gradient(135deg, #022c22 0%, #064e3b 33%, #10b981 66%, #6ee7b7 100%);
+}
+
+.canvas-item.grepper-agent {
+    background-color: #3b82f6;
+    background: linear-gradient(135deg, #0b1d3a 0%, #1e3a8a 33%, #3b82f6 66%, #93c5fd 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.grepper-agent:hover {
+    background: linear-gradient(135deg, #11264a 0%, #2547a8 33%, #5a9bff 66%, #bcd9ff 100%);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.5);
+}
+
+/* Grepper agent icon in sidebar */
+.agent-tool-item[data-content="Grepper"] .agent-tool-icon {
+    background: linear-gradient(135deg, #0b1d3a 0%, #1e3a8a 33%, #3b82f6 66%, #93c5fd 100%);
+}
+
+.canvas-item.globber-agent {
+    background-color: #8b5cf6;
+    background: linear-gradient(135deg, #1e0a3c 0%, #4c1d95 33%, #8b5cf6 66%, #c4b5fd 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.globber-agent:hover {
+    background: linear-gradient(135deg, #2a1152 0%, #5d28b3 33%, #a47bf8 66%, #d8ccfd 100%);
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.5);
+}
+
+/* Globber agent icon in sidebar */
+.agent-tool-item[data-content="Globber"] .agent-tool-icon {
+    background: linear-gradient(135deg, #1e0a3c 0%, #4c1d95 33%, #8b5cf6 66%, #c4b5fd 100%);
+}
+
+/* Recorder Agent - Microphone / audio capture (Deep-ocean abyss -> teal -> seafoam soundwave) */
+.canvas-item.recorder-agent {
+    background-color: #0a9396;
+    background: linear-gradient(135deg, #001219 0%, #005f73 33%, #0a9396 66%, #94d2bd 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.recorder-agent:hover {
+    background: linear-gradient(135deg, #0a2a36 0%, #0b7d96 33%, #2bb9bc 66%, #b7e4d3 100%);
+    box-shadow: 0 6px 15px rgba(10, 147, 150, 0.5);
+}
+
+/* Recorder agent icon in sidebar */
+.agent-tool-item[data-content="Recorder"] .agent-tool-icon {
+    background: linear-gradient(135deg, #001219 0%, #005f73 33%, #0a9396 66%, #94d2bd 100%);
+}
+
+/* Whisperer Agent - Speech-to-text / voice recognition (Deep indigo -> royal blue -> sonar cyan -> ice mint) */
+.canvas-item.whisperer-agent {
+    background-color: #1747c4;
+    background: linear-gradient(135deg, #0a1a3f 0%, #1747c4 33%, #18b6c9 66%, #aef0e6 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.whisperer-agent:hover {
+    background: linear-gradient(135deg, #14275a 0%, #2a63e0 33%, #3fcfe0 66%, #c9f5ee 100%);
+    box-shadow: 0 6px 15px rgba(23, 71, 196, 0.5);
+}
+
+/* Whisperer agent icon in sidebar */
+.agent-tool-item[data-content="Whisperer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #0a1a3f 0%, #1747c4 33%, #18b6c9 66%, #aef0e6 100%);
+}
+
+/* AudioPlayer Agent - Audio playback to speakers (Deep indigo -> violet -> magenta -> amber sound-pulse) */
+.canvas-item.audioplayer-agent {
+    background-color: #6411ad;
+    background: linear-gradient(135deg, #1b1035 0%, #6411ad 33%, #e01e84 66%, #ffb700 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.audioplayer-agent:hover {
+    background: linear-gradient(135deg, #2a1a4d 0%, #7d2bc9 33%, #f23f9c 66%, #ffc933 100%);
+    box-shadow: 0 6px 15px rgba(224, 30, 132, 0.5);
+}
+
+/* AudioPlayer agent icon in sidebar */
+.agent-tool-item[data-content="AudioPlayer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #1b1035 0%, #6411ad 33%, #e01e84 66%, #ffb700 100%);
+}
+
+/* VideoPlayer Agent - Video playback on a screen (Cinema midnight -> royal blue -> crimson -> gold) */
+.canvas-item.videoplayer-agent {
+    background-color: #1f3a93;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1f3a93 33%, #e94560 66%, #f5d76e 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.videoplayer-agent:hover {
+    background: linear-gradient(135deg, #16162e 0%, #2d4fb8 33%, #f25b73 66%, #ffe48a 100%);
+    box-shadow: 0 6px 15px rgba(233, 69, 96, 0.5);
+}
+
+/* VideoPlayer agent icon in sidebar */
+.agent-tool-item[data-content="VideoPlayer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1f3a93 33%, #e94560 66%, #f5d76e 100%);
+}
+
+/* Talker Agent - Text-to-speech via Ollama (Vocal warmth: deep wine -> terracotta -> apricot -> cream) */
+.canvas-item.talker-agent {
+    background-color: #c1462e;
+    background: linear-gradient(135deg, #5b1d2e 0%, #c1462e 33%, #f2a35e 66%, #ffe3a3 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.talker-agent:hover {
+    background: linear-gradient(135deg, #74283c 0%, #d85a3f 33%, #ffb877 66%, #fff0c9 100%);
+    box-shadow: 0 6px 15px rgba(193, 70, 46, 0.5);
+}
+
+/* Talker agent icon in sidebar */
+.agent-tool-item[data-content="Talker"] .agent-tool-icon {
+    background: linear-gradient(135deg, #5b1d2e 0%, #c1462e 33%, #f2a35e 66%, #ffe3a3 100%);
+}
+
+/* Ssher Agent Styles - SSH remote execution (Dark Blue to Red gradient) */
+.canvas-item.ssher-agent {
+    background-color: #1a237e;
+    background: linear-gradient(135deg, #1a237e 0%, #e53935 100%);
+}
+
+.canvas-item.ssher-agent:hover {
+    background: linear-gradient(135deg, #283593 0%, #ef5350 100%);
+    box-shadow: 0 6px 15px rgba(229, 57, 53, 0.5);
+}
+
+/* Scper Agent Styles - SCP file transfer (Dark Grey to Red gradient) */
+.canvas-item.scper-agent {
+    background-color: #424242;
+    background: linear-gradient(135deg, #424242 0%, #e53935 100%);
+}
+
+.canvas-item.scper-agent:hover {
+    background: linear-gradient(135deg, #616161 0%, #ef5350 100%);
+    box-shadow: 0 6px 15px rgba(229, 57, 53, 0.5);
+}
+
+/* Prompter Agent Styles - LLM Prompt (Brown to Dark-Blue gradient) */
+.canvas-item.prompter-agent {
+    background-color: #795548;
+    color: white;
+    background: linear-gradient(135deg, #795548 0%, #1a237e 100%);
+}
+
+.canvas-item.prompter-agent:hover {
+    background: linear-gradient(135deg, #8D6E63 0%, #283593 100%);
+    box-shadow: 0 6px 15px rgba(121, 85, 72, 0.5);
+}
+
+/* Prompter agent icon in sidebar - matches canvas (brown to dark blue) */
+.agent-tool-item[data-content="Prompter"] .agent-tool-icon {
+    background: linear-gradient(135deg, #795548 0%, #1a237e 100%) !important;
+}
+
+/* FlowCreator Agent Styles - LLM Flow Designer (Blue to Red to Green gradient) */
+.canvas-item.flowcreator-agent {
+    background-color: #1565C0;
+    color: white;
+    background: linear-gradient(135deg, #1565C0 0%, #C62828 50%, #2E7D32 100%);
+}
+
+.canvas-item.flowcreator-agent:hover {
+    background: linear-gradient(135deg, #1E88E5 0%, #E53935 50%, #43A047 100%);
+    box-shadow: 0 6px 15px rgba(21, 101, 192, 0.5);
+}
+
+/* FlowCreator agent icon in sidebar */
+.agent-tool-item[data-content="FlowCreator"] .agent-tool-icon {
+    background: linear-gradient(135deg, #1565C0 0%, #C62828 50%, #2E7D32 100%);
+}
+
+/* Gitter Agent Styles - Git Operations (White to Black gradient) */
+.canvas-item.gitter-agent {
+    background-color: #333333;
+    color: white;
+    background: linear-gradient(135deg, #FFFFFF 0%, #000000 100%);
+}
+
+.canvas-item.gitter-agent:hover {
+    background: linear-gradient(135deg, #FFFFFF 0%, #333333 100%);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Dockerer Agent Styles - Docker Container Manager (Blue to White gradient) */
+.canvas-item.dockerer-agent {
+    background-color: #2496ED;
+    color: white;
+    background: linear-gradient(135deg, #2496ED 0%, #FFFFFF 100%);
+}
+
+.canvas-item.dockerer-agent:hover {
+    background: linear-gradient(135deg, #4AABE8 0%, #FFFFFF 100%);
+    box-shadow: 0 6px 15px rgba(36, 150, 237, 0.5);
+}
+
+/* MCP Doctor Agent - External MCP diagnostics and onboarding */
+/* Discoverer Agent — "Discovery Violet" (ProjectDiscovery recon suite) */
+.canvas-item.discoverer-agent {
+    background-color: #2E1065;
+    background: linear-gradient(135deg, #2E1065 0%, #7C3AED 33%, #C026D3 66%, #F0ABFC 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.discoverer-agent:hover {
+    background: linear-gradient(135deg, #4C1D95 0%, #9333EA 33%, #D946EF 66%, #F5D0FE 100%);
+    box-shadow: 0 6px 15px rgba(124, 58, 237, 0.5);
+}
+
+/* Nmapper Agent — "Radar Sweep" (local use-only nmap scanner) */
+.canvas-item.nmapper-agent {
+    background-color: #1A0A00;
+    background: linear-gradient(135deg, #1A0A00 0%, #B45309 33%, #F97316 66%, #FDE68A 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.nmapper-agent:hover {
+    background: linear-gradient(135deg, #3B1600 0%, #D97706 33%, #FB923C 66%, #FEF3C7 100%);
+    box-shadow: 0 6px 15px rgba(249, 115, 22, 0.5);
+}
+
+/* PDFer Agent Styles - Document composer (4-color "Crimson Parchment" gradient:
+   Ink-Black -> PDF-Crimson -> Parchment-Gold -> Paper-White). Chosen to read as
+   "a printed page": the dark ink edge burns through the classic PDF red into the
+   warm parchment cream of the paper itself. Unique in this file - no other agent
+   uses #C1272D / #E8A33D / #FDF6E3. The sidebar icon inherits this automatically
+   through applyAgentToolIconStyle(); never re-type the gradient in JS. */
+.canvas-item.pdfer-agent {
+    background-color: #2B0A0A;
+    background: linear-gradient(135deg, #2B0A0A 0%, #C1272D 33%, #E8A33D 66%, #FDF6E3 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.pdfer-agent:hover {
+    background: linear-gradient(135deg, #4A1212 0%, #D9433F 33%, #F5BE63 66%, #FFFDF5 100%);
+    box-shadow: 0 6px 15px rgba(193, 39, 45, 0.5);
+}
+
+.canvas-item.mcpdoctor-agent {
+    background-color: #0F3D3E;
+    color: white;
+    background: linear-gradient(135deg, #0F3D3E 0%, #1E7B73 33%, #E0A83A 66%, #FFF2C6 100%);
+}
+
+.canvas-item.mcpdoctor-agent:hover {
+    background: linear-gradient(135deg, #17615F 0%, #2AA39A 33%, #F0BC55 66%, #FFF7DA 100%);
+    box-shadow: 0 6px 15px rgba(30, 123, 115, 0.5);
+}
+
+/* Instant Messaging Doctor - cross-channel critical messaging triage */
+.canvas-item.instantmessagingdoctor-agent {
+    background-color: #12343B;
+    color: white;
+    background: linear-gradient(135deg, #12343B 0%, #2A9D8F 34%, #E76F51 68%, #F4D35E 100%);
+}
+
+.canvas-item.instantmessagingdoctor-agent:hover {
+    background: linear-gradient(135deg, #15515B 0%, #36C2AF 34%, #F28566 68%, #FFE680 100%);
+    box-shadow: 0 6px 15px rgba(231, 111, 81, 0.48);
+}
+
+/* Pser Agent Styles - Process Finder (Pink to Green gradient) */
+.canvas-item.pser-agent {
+    background-color: #E91E63;
+    color: white;
+    background: linear-gradient(135deg, #E91E63 0%, #4CAF50 100%);
+}
+
+.canvas-item.pser-agent:hover {
+    background: linear-gradient(135deg, #F06292 0%, #66BB6A 100%);
+    box-shadow: 0 6px 15px rgba(233, 30, 99, 0.5);
+}
+
+/* Gitter agent icon in sidebar */
+.agent-tool-item[data-content="Gitter"] .agent-tool-icon {
+    background: linear-gradient(135deg, #FFFFFF 0%, #000000 100%);
+}
+
+/* Mongoxer Agent Styles - MongoDB Operations (Olive Green) */
+.canvas-item.mongoxer-agent {
+    background-color: #558B2F;
+    color: white;
+    background: linear-gradient(135deg, #558B2F 0%, #33691E 100%);
+}
+
+.canvas-item.mongoxer-agent:hover {
+    background: linear-gradient(135deg, #689F38 0%, #558B2F 100%);
+    box-shadow: 0 6px 15px rgba(85, 139, 47, 0.5);
+}
+
+/* Mongoxer agent icon in sidebar */
+.agent-tool-item[data-content="Mongoxer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #558B2F 0%, #33691E 100%);
+}
+
+/* Monitor Log Agent Styles - Log Monitoring (Deep Orange) */
+.canvas-item.monitor-log-agent {
+    background-color: #FF6F00;
+    color: white;
+    background: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+}
+
+.canvas-item.monitor-log-agent:hover {
+    background: linear-gradient(135deg, #FF8F00 0%, #FF6F00 100%);
+    box-shadow: 0 6px 15px rgba(255, 111, 0, 0.5);
+}
+
+/* Monitor Log agent icon in sidebar */
+.agent-tool-item[data-content="Monitor-Log"] .agent-tool-icon {
+    background: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+}
+
+/* Monitor Netstat Agent Styles - Network Monitoring (Teal) */
+.canvas-item.monitor-netstat-agent {
+    background-color: #00897B;
+    color: white;
+    background: linear-gradient(135deg, #00897B 0%, #00695C 100%);
+}
+
+.canvas-item.monitor-netstat-agent:hover {
+    background: linear-gradient(135deg, #00BFA5 0%, #00897B 100%);
+    box-shadow: 0 6px 15px rgba(0, 137, 123, 0.5);
+}
+
+/* Monitor Netstat agent icon in sidebar */
+.agent-tool-item[data-content="Monitor Netstat"] .agent-tool-icon {
+    background: linear-gradient(135deg, #00897B 0%, #00695C 100%);
+}
+
+/* Raiser Agent Styles - Error/Exception Raiser (Dark Raspberry) */
+.canvas-item.raiser-agent {
+    background-color: #AD1457;
+    color: white;
+    background: linear-gradient(135deg, #AD1457 0%, #880E4F 100%);
+}
+
+.canvas-item.raiser-agent:hover {
+    background: linear-gradient(135deg, #C2185B 0%, #AD1457 100%);
+    box-shadow: 0 6px 15px rgba(173, 20, 87, 0.5);
+}
+
+/* Raiser agent icon in sidebar */
+.agent-tool-item[data-content="Raiser"] .agent-tool-icon {
+    background: linear-gradient(135deg, #AD1457 0%, #880E4F 100%);
+}
+
+/* Emailer Agent Styles - Email Sender (Indigo) */
+.canvas-item.emailer-agent {
+    background-color: #5C6BC0;
+    color: white;
+    background: linear-gradient(135deg, #5C6BC0 0%, #3949AB 100%);
+}
+
+.canvas-item.emailer-agent:hover {
+    background: linear-gradient(135deg, #7986CB 0%, #5C6BC0 100%);
+    box-shadow: 0 6px 15px rgba(92, 107, 192, 0.5);
+}
+
+/* File-Interpreter Agent */
+.canvas-item.file-interpreter-agent {
+    background-color: #FF9A00;
+    background: linear-gradient(135deg, #FF9A00 0%, #1B1464 50%, #00FFC8 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.file-interpreter-agent:hover {
+    background: linear-gradient(135deg, #FFB347 0%, #2D2493 50%, #33FFD8 100%);
+    box-shadow: 0 6px 15px rgba(27, 20, 100, 0.5);
+}
+
+/* Image-Interpreter Agent */
+.canvas-item.image-interpreter-agent {
+    background-color: #C2185B;
+    background: linear-gradient(135deg, #C2185B 0%, #FFC107 50%, #009688 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.image-interpreter-agent:hover {
+    background: linear-gradient(135deg, #E91E63 0%, #FFD54F 50%, #26A69A 100%);
+    box-shadow: 0 6px 15px rgba(194, 24, 91, 0.5);
+}
+
+/* Video-Analyzer Agent — "Cybernetic Vision": violet-black -> electric purple
+   -> cyan scan -> verdict-lime. Deliberately distinct from Image-Interpreter
+   (crimson/amber/teal); the lime terminus reads as the PASS/verdict signal of
+   the Robotic-Loop-Training "eye". */
+.canvas-item.video-analyzer-agent {
+    background-color: #12043A;
+    background: linear-gradient(135deg, #12043A 0%, #7B2FF7 33%, #00E5FF 66%, #39FF14 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.video-analyzer-agent:hover {
+    background: linear-gradient(135deg, #1E0A5A 0%, #9B5CFF 33%, #5CF2FF 66%, #7BFF5C 100%);
+    box-shadow: 0 6px 15px rgba(123, 47, 247, 0.5);
+}
+
+/* Gatewayer Agent */
+.canvas-item.gatewayer-agent {
+    background-color: #FF006E;
+    background: linear-gradient(135deg, #FF006E 0%, #8338EC 33%, #3A86FF 66%, #00F5D4 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.gatewayer-agent:hover {
+    background: linear-gradient(135deg, #FF3D8E 0%, #9B59F5 33%, #5DA3FF 66%, #33FFE0 100%);
+    box-shadow: 0 6px 15px rgba(131, 56, 236, 0.5);
+}
+
+/* GatewayRelayer Agent */
+.canvas-item.gateway-relayer-agent {
+    background-color: #264653;
+    background: linear-gradient(135deg, #264653 0%, #2A9D8F 33%, #E9C46A 66%, #E76F51 100%);
+    color: white;
+    font-size: smaller;
+}
+
+.canvas-item.gateway-relayer-agent:hover {
+    background: linear-gradient(135deg, #2F5D70 0%, #36B4A5 33%, #F2D382 66%, #F0916C 100%);
+    box-shadow: 0 6px 15px rgba(42, 157, 143, 0.5);
+}
+
+/* NodeManager Agent */
+.canvas-item.nodemanager-agent {
+    background-color: #0D4F4F;
+    background: linear-gradient(135deg, #0D4F4F 0%, #00ACC1 33%, #76FF03 66%, #FFB300 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.nodemanager-agent:hover {
+    background: linear-gradient(135deg, #15696A 0%, #26C6DA 33%, #9EFF5A 66%, #FFC93C 100%);
+    box-shadow: 0 6px 15px rgba(0, 172, 193, 0.5);
+}
+
+/* File-Creator Agent Styles - File creation utility (Teal-to-Coral gradient) */
+.canvas-item.filecreator-agent {
+    background-color: #00897B;
+    color: white;
+    background: linear-gradient(135deg, #00897B 0%, #FF7043 100%);
+}
+
+.canvas-item.filecreator-agent:hover {
+    background: linear-gradient(135deg, #26A69A 0%, #FF8A65 100%);
+    box-shadow: 0 6px 15px rgba(0, 137, 123, 0.5);
+}
+
+/* File-Extractor Agent Styles - File extraction utility (Indigo-to-Amber gradient) */
+.canvas-item.fileextractor-agent {
+    background-color: #3F51B5;
+    color: white;
+    background: linear-gradient(135deg, #3F51B5 0%, #FFB300 100%);
+}
+
+.canvas-item.fileextractor-agent:hover {
+    background: linear-gradient(135deg, #5C6BC0 0%, #FFC107 100%);
+    box-shadow: 0 6px 15px rgba(63, 81, 181, 0.5);
+}
+
+/* Kyber-KeyGen Agent */
+.canvas-item.kyberkeygen-agent {
+    background-color: #7B2FBE;
+    background: linear-gradient(135deg, #7B2FBE 0%, #00BFA5 50%, #FFD740 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.kyberkeygen-agent:hover {
+    background: linear-gradient(135deg, #9C4DCC 0%, #26D9B8 50%, #FFE57F 100%);
+    box-shadow: 0 6px 15px rgba(123, 47, 190, 0.5);
+}
+
+/* Kyber-Cipher Agent */
+.canvas-item.kybercipher-agent {
+    background-color: #D35400;
+    background: linear-gradient(135deg, #D35400 0%, #1ABC9C 50%, #8E44AD 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.kybercipher-agent:hover {
+    background: linear-gradient(135deg, #E67E22 0%, #48D1CC 50%, #9B59B6 100%);
+    box-shadow: 0 6px 15px rgba(26, 188, 156, 0.5);
+}
+
+/* Kyber-DeCipher Agent */
+.canvas-item.kyberdecipher-agent {
+    background-color: #4A90D9;
+    background: linear-gradient(135deg, #4A90D9 0%, #D94F7A 50%, #82C91E 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.kyberdecipher-agent:hover {
+    background: linear-gradient(135deg, #6AADE4 0%, #E8749A 50%, #A3D944 100%);
+    box-shadow: 0 6px 15px rgba(217, 79, 122, 0.5);
+}
+
+/* Parametrizer Agent */
+.canvas-item.parametrizer-agent {
+    background-color: #311B92;
+    background: linear-gradient(135deg, #311B92 0%, #AA00FF 33%, #FF6D00 66%, #00E5FF 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.parametrizer-agent:hover {
+    background: linear-gradient(135deg, #4527A0 0%, #D500F9 33%, #FF9100 66%, #18FFFF 100%);
+    box-shadow: 0 6px 15px rgba(170, 0, 255, 0.5);
+}
+
+/* Emailer agent icon in sidebar */
+.agent-tool-item[data-content="Emailer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #5C6BC0 0%, #3949AB 100%);
+}
+
+/* Dockerer agent icon in sidebar */
+.agent-tool-item[data-content="Dockerer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #2496ED 0%, #FFFFFF 100%);
+}
+
+/* Pser agent icon in sidebar */
+.agent-tool-item[data-content="PSer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #E91E63 0%, #4CAF50 100%);
+}
+
+/* Ssher agent icon in sidebar */
+.agent-tool-item[data-content="SSHer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #1a237e 0%, #e53935 100%);
+}
+
+/* Scper agent icon in sidebar */
+.agent-tool-item[data-content="SCPer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #424242 0%, #e53935 100%);
+}
+
+/* Cleaner agent icon in sidebar */
+.agent-tool-item[data-content="Cleaner"] .agent-tool-icon {
+    background-color: #00008B;
+}
+
+/* Executer agent icon in sidebar */
+.agent-tool-item[data-content="Executer"] .agent-tool-icon {
+    background: linear-gradient(135deg, #FDE047 0%, #EAB308 100%);
+}
+
+/* Mover agent icon in sidebar */
+.agent-tool-item[data-content="Mover"] .agent-tool-icon {
+    background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%);
+}
+
+/* Sleeper agent icon in sidebar */
+.agent-tool-item[data-content="Sleeper"] .agent-tool-icon {
+    background: linear-gradient(135deg, #78909c 0%, #455a64 100%);
+}
+
+/* Deleter agent icon in sidebar */
+.agent-tool-item[data-content="Deleter"] .agent-tool-icon {
+    background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+}
+
+/* AND agent icon in sidebar */
+.agent-tool-item[data-content="AND"] .agent-tool-icon {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+/* OR agent icon in sidebar */
+.agent-tool-item[data-content="OR"] .agent-tool-icon {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+/* Keyboarder Agent */
+.canvas-item.keyboarder-agent {
+    background-color: #F44336;
+    background: linear-gradient(135deg, #F44336 0%, #FF9800 33%, #FFEB3B 66%, #4CAF50 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.keyboarder-agent:hover {
+    background: linear-gradient(135deg, #FF6659 0%, #FFB74D 33%, #FFF59D 66%, #81C784 100%);
+    box-shadow: 0 6px 15px rgba(255, 152, 0, 0.5);
+}
+
+/* Googler Agent - Google brand-inspired 4-color gradient */
+.canvas-item.googler-agent {
+    background-color: #D32F2F;
+    background: linear-gradient(135deg, #D32F2F 0%, #F9A825 33%, #388E3C 66%, #1565C0 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.googler-agent:hover {
+    background: linear-gradient(135deg, #EF5350 0%, #FDD835 33%, #66BB6A 66%, #42A5F5 100%);
+    box-shadow: 0 6px 15px rgba(66, 165, 245, 0.5);
+}
+
+/* TeleTlamatini Agent - Telegram-Blue -> Sky -> Amber -> Crimson 4-color gradient
+   (unique combination not used by any other agent) */
+.canvas-item.teletlamatini-agent {
+    background-color: #0088CC;
+    background: linear-gradient(135deg, #0088CC 0%, #29B6F6 33%, #FFA000 66%, #C2185B 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.teletlamatini-agent:hover {
+    background: linear-gradient(135deg, #29A4D9 0%, #4FC3F7 33%, #FFB74D 66%, #E91E63 100%);
+    box-shadow: 0 6px 15px rgba(0, 136, 204, 0.5);
+}
+
+/* Skill Agent — purple/indigo/cyan/teal — distinct from every existing
+   visual agent. Used for nodes that invoke a SKILL.md via invoke_skill. */
+.canvas-item.skill-agent {
+    background-color: #4527A0;
+    background: linear-gradient(135deg, #4527A0 0%, #6A1B9A 33%, #00838F 66%, #00BFA5 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.skill-agent:hover {
+    background: linear-gradient(135deg, #5E35B1 0%, #8E24AA 33%, #00ACC1 66%, #1DE9B6 100%);
+    box-shadow: 0 6px 15px rgba(106, 27, 154, 0.5);
+}
+
+/* ACPx Agent — fire-orange/coral/violet/black — visually loud because the
+   node spawns an EXTERNAL coding-agent CLI as a child process. The "this
+   leaves the Tlamatini sandbox" warning should be visually obvious. */
+.canvas-item.acpx-agent {
+    background-color: #BF360C;
+    background: linear-gradient(135deg, #BF360C 0%, #E64A19 33%, #6A1B9A 66%, #212121 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.acpx-agent:hover {
+    background: linear-gradient(135deg, #D84315 0%, #FF7043 33%, #8E24AA 66%, #424242 100%);
+    box-shadow: 0 6px 15px rgba(191, 54, 12, 0.5);
+}
+
+/* ACPXer Agent — Aurora Conduit gradient: cosmic-navy -> electric-violet ->
+   luminous-magenta -> cyan-radiance. Reads as "AI portal / multi-CLI conduit"
+   — visually distinct from .acpx-agent (the LLM-driven exec-report row,
+   fire-orange) so the user can tell at a glance "this node is the visual
+   workflow driver of one ACPX session, not an exec-report stamp". The four
+   stops mirror the four phases of the lifecycle this agent owns:
+       cosmic-navy  -> spawn (depth of multi-CLI orchestration)
+       violet       -> conduit (pipes between LLMs, the stdin/stdout bridge)
+       magenta      -> transmission (text flowing across the wire)
+       cyan         -> external intelligence (the spawned CLI's voice). */
+.canvas-item.acpxer-agent {
+    background-color: #0B1F3A;
+    background: linear-gradient(135deg, #0B1F3A 0%, #5A1FB8 33%, #EC4899 66%, #22D3EE 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.acpxer-agent:hover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 33%, #F472B6 66%, #67E8F9 100%);
+    box-shadow: 0 6px 15px rgba(124, 58, 237, 0.55);
+}
+
+/* De-Compresser Agent — "Vault Unsealed" 4-color gradient:
+   slate-indigo -> archival-bronze -> sealing-wax-red -> spring-mint.
+   The four stops mirror the four phases of the agent's lifecycle:
+       slate-indigo (#1F2A56)  -> vault depth / encrypted archive at rest
+       archival-bronze (#B07A2B) -> hinge / mechanical extraction
+       sealing-wax-red (#D7263D) -> the seal being broken (password gate)
+       spring-mint (#7CF6B5)    -> contents released / next stage triggered
+   Each stop is in a distinct hue family from every other canvas-item
+   gradient in this file: not the navy/violet/magenta/cyan of acpxer,
+   not the dark-teal/cyan/lime/amber of node_manager, not the
+   pink/purple/blue/cyan of gatewayer, not the dark-teal/teal/gold/orange
+   of gateway-relayer, not the orange/coral/violet/black of acpx,
+   not the red/orange/yellow/green of keyboarder, not the
+   crimson/amber/forest/blue of mouser, and not the cyan/sky/amber/crimson of
+   teletlamatini.
+   Verified by inspecting agentic_control_panel.css lines 1870-2138. */
+.canvas-item.decompresser-agent {
+    background-color: #1F2A56;
+    background: linear-gradient(135deg, #1F2A56 0%, #B07A2B 33%, #D7263D 66%, #7CF6B5 100%);
+    color: white;
+    font-size: smaller;
+}
+.canvas-item.decompresser-agent:hover {
+    background: linear-gradient(135deg, #2E3B70 0%, #C68B3D 33%, #E84A60 66%, #A6FBCE 100%);
+    box-shadow: 0 6px 15px rgba(215, 38, 61, 0.5);
+}
+
+/* Barra de conexion del ACP - identica a la del chat (agent_page.css) para
+   que la usuaria vea el MISMO aviso en las dos paginas. */
+.connection-status { min-height: 2.5rem; padding: .55rem 1rem; font-size: .95rem; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.connection-status-hidden { display: none; }
+.connection-status-warning { display: block; background-color: #5c2b29; color: #ffe0de; }
+.connection-status-ok { display: block; background-color: #21413d; color: #d8fffa; }

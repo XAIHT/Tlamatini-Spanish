@@ -1,0 +1,421 @@
+﻿english,spanish,policy,domain,note
+Agent,Agent,KEEP,ai,American technical term; Mexican devs say the English word
+Chain,Chain,KEEP,ai,American technical term; Mexican devs say the English word
+Checkpoint,Checkpoint,KEEP,ai,American technical term; Mexican devs say the English word
+Context,contexto,TRANSLATE,ai,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Embedding,Embedding,KEEP,ai,American technical term; Mexican devs say the English word
+Fine-tuning,Fine-tuning,KEEP,ai,American technical term; Mexican devs say the English word
+Inference,Inference,KEEP,ai,American technical term; Mexican devs say the English word
+LLM,LLM,KEEP,ai,American technical term; Mexican devs say the English word
+Model,Model,KEEP,ai,American technical term; Mexican devs say the English word
+Multi-Turn,Multi-Turn,KEEP,ai,American technical term; Mexican devs say the English word
+RAG,RAG,KEEP,ai,American technical term; Mexican devs say the English word
+Temperature,Temperature,KEEP,ai,American technical term; Mexican devs say the English word
+Tool,Tool,KEEP,ai,American technical term; Mexican devs say the English word
+Vision,Vision,KEEP,ai,American technical term; Mexican devs say the English word
+ACPXer,ACPXer,ASSET,asset,agent display name; case and hyphenation are functional
+Analyzer,Analyzer,ASSET,asset,agent display name; case and hyphenation are functional
+AND,AND,ASSET,asset,agent display name; case and hyphenation are functional
+Apirer,Apirer,ASSET,asset,agent display name; case and hyphenation are functional
+Arduiner,Arduiner,ASSET,asset,agent display name; case and hyphenation are functional
+Asker,Asker,ASSET,asset,agent display name; case and hyphenation are functional
+AudioPlayer,AudioPlayer,ASSET,asset,agent display name; case and hyphenation are functional
+Barrier,Barrier,ASSET,asset,agent display name; case and hyphenation are functional
+Blenderer,Blenderer,ASSET,asset,agent display name; case and hyphenation are functional
+Camcorder,Camcorder,ASSET,asset,agent display name; case and hyphenation are functional
+Cleaner,Cleaner,ASSET,asset,agent display name; case and hyphenation are functional
+Counter,Counter,ASSET,asset,agent display name; case and hyphenation are functional
+Crawler,Crawler,ASSET,asset,agent display name; case and hyphenation are functional
+Croner,Croner,ASSET,asset,agent display name; case and hyphenation are functional
+De-Compresser,De-Compresser,ASSET,asset,agent display name; case and hyphenation are functional
+Deleter,Deleter,ASSET,asset,agent display name; case and hyphenation are functional
+Discoverer,Discoverer,ASSET,asset,agent display name; case and hyphenation are functional
+Dockerer,Dockerer,ASSET,asset,agent display name; case and hyphenation are functional
+Editor,Editor,ASSET,asset,agent display name; case and hyphenation are functional
+Emailer,Emailer,ASSET,asset,agent display name; case and hyphenation are functional
+Ender,Ender,ASSET,asset,agent display name; case and hyphenation are functional
+ESP32er,ESP32er,ASSET,asset,agent display name; case and hyphenation are functional
+ESPHomer,ESPHomer,ASSET,asset,agent display name; case and hyphenation are functional
+Executer,Executer,ASSET,asset,agent display name; case and hyphenation are functional
+File-Creator,File-Creator,ASSET,asset,agent display name; case and hyphenation are functional
+File-Extractor,File-Extractor,ASSET,asset,agent display name; case and hyphenation are functional
+File-Interpreter,File-Interpreter,ASSET,asset,agent display name; case and hyphenation are functional
+FlowBacker,FlowBacker,ASSET,asset,agent display name; case and hyphenation are functional
+FlowCreator,FlowCreator,ASSET,asset,agent display name; case and hyphenation are functional
+FlowHypervisor,FlowHypervisor,ASSET,asset,agent display name; case and hyphenation are functional
+Forker,Forker,ASSET,asset,agent display name; case and hyphenation are functional
+Gateway Relayer,Gateway Relayer,ASSET,asset,agent display name; case and hyphenation are functional
+Gatewayer,Gatewayer,ASSET,asset,agent display name; case and hyphenation are functional
+Gitter,Gitter,ASSET,asset,agent display name; case and hyphenation are functional
+Globber,Globber,ASSET,asset,agent display name; case and hyphenation are functional
+Googler,Googler,ASSET,asset,agent display name; case and hyphenation are functional
+Grepper,Grepper,ASSET,asset,agent display name; case and hyphenation are functional
+Image-Interpreter,Image-Interpreter,ASSET,asset,agent display name; case and hyphenation are functional
+Instant Messaging Doctor,Instant Messaging Doctor,ASSET,asset,agent display name; case and hyphenation are functional
+J-Decompiler,J-Decompiler,ASSET,asset,agent display name; case and hyphenation are functional
+Jenkinser,Jenkinser,ASSET,asset,agent display name; case and hyphenation are functional
+Kalier,Kalier,ASSET,asset,agent display name; case and hyphenation are functional
+Keyboarder,Keyboarder,ASSET,asset,agent display name; case and hyphenation are functional
+Kuberneter,Kuberneter,ASSET,asset,agent display name; case and hyphenation are functional
+Kyber Cipher,Kyber Cipher,ASSET,asset,agent display name; case and hyphenation are functional
+Kyber Deciph,Kyber Deciph,ASSET,asset,agent display name; case and hyphenation are functional
+Kyber Keygen,Kyber Keygen,ASSET,asset,agent display name; case and hyphenation are functional
+Kyber-Cipher,Kyber-Cipher,ASSET,asset,agent display name; case and hyphenation are functional
+Kyber-DeCipher,Kyber-DeCipher,ASSET,asset,agent display name; case and hyphenation are functional
+Kyber-KeyGen,Kyber-KeyGen,ASSET,asset,agent display name; case and hyphenation are functional
+MCP Doctor,MCP Doctor,ASSET,asset,agent display name; case and hyphenation are functional
+Mongoxer,Mongoxer,ASSET,asset,agent display name; case and hyphenation are functional
+Monitor Netstat,Monitor Netstat,ASSET,asset,agent display name; case and hyphenation are functional
+Monitor-Log,Monitor-Log,ASSET,asset,agent display name; case and hyphenation are functional
+Mouser,Mouser,ASSET,asset,agent display name; case and hyphenation are functional
+Move File,Move File,ASSET,asset,agent display name; case and hyphenation are functional
+Mover,Mover,ASSET,asset,agent display name; case and hyphenation are functional
+Nmapper,Nmapper,ASSET,asset,agent display name; case and hyphenation are functional
+Node Manager,Node Manager,ASSET,asset,agent display name; case and hyphenation are functional
+Notifier,Notifier,ASSET,asset,agent display name; case and hyphenation are functional
+OR,OR,ASSET,asset,agent display name; case and hyphenation are functional
+Parametrizer,Parametrizer,ASSET,asset,agent display name; case and hyphenation are functional
+PDFer,PDFer,ASSET,asset,agent display name; case and hyphenation are functional
+Playwrighter,Playwrighter,ASSET,asset,agent display name; case and hyphenation are functional
+Prompter,Prompter,ASSET,asset,agent display name; case and hyphenation are functional
+PSer,PSer,ASSET,asset,agent display name; case and hyphenation are functional
+Pythonxer,Pythonxer,ASSET,asset,agent display name; case and hyphenation are functional
+Raiser,Raiser,ASSET,asset,agent display name; case and hyphenation are functional
+RecMailer,RecMailer,ASSET,asset,agent display name; case and hyphenation are functional
+Recorder,Recorder,ASSET,asset,agent display name; case and hyphenation are functional
+Reviewer,Reviewer,ASSET,asset,agent display name; case and hyphenation are functional
+SCPer,SCPer,ASSET,asset,agent display name; case and hyphenation are functional
+Send Email,Send Email,ASSET,asset,agent display name; case and hyphenation are functional
+Shoter,Shoter,ASSET,asset,agent display name; case and hyphenation are functional
+Sleeper,Sleeper,ASSET,asset,agent display name; case and hyphenation are functional
+SQLer,SQLer,ASSET,asset,agent display name; case and hyphenation are functional
+SSHer,SSHer,ASSET,asset,agent display name; case and hyphenation are functional
+Starter,Starter,ASSET,asset,agent display name; case and hyphenation are functional
+STM32er,STM32er,ASSET,asset,agent display name; case and hyphenation are functional
+Stopper,Stopper,ASSET,asset,agent display name; case and hyphenation are functional
+Summarize Text,Summarize Text,ASSET,asset,agent display name; case and hyphenation are functional
+Summarizer,Summarizer,ASSET,asset,agent display name; case and hyphenation are functional
+Talker,Talker,ASSET,asset,agent display name; case and hyphenation are functional
+Telegrammer,Telegrammer,ASSET,asset,agent display name; case and hyphenation are functional
+TeleTlamatini,TeleTlamatini,ASSET,asset,agent display name; case and hyphenation are functional
+Unrealer,Unrealer,ASSET,asset,agent display name; case and hyphenation are functional
+Video-Analyzer,Video-Analyzer,ASSET,asset,agent display name; case and hyphenation are functional
+VideoPlayer,VideoPlayer,ASSET,asset,agent display name; case and hyphenation are functional
+Whatsapper,Whatsapper,ASSET,asset,agent display name; case and hyphenation are functional
+Whisperer,Whisperer,ASSET,asset,agent display name; case and hyphenation are functional
+Windower,Windower,ASSET,asset,agent display name; case and hyphenation are functional
+Zavuerer,Zavuerer,ASSET,asset,agent display name; case and hyphenation are functional
+Artifact,Artifact,KEEP,build,American technical term; Mexican devs say the English word
+Build,Build,KEEP,build,American technical term; Mexican devs say the English word
+CD,CD,KEEP,build,American technical term; Mexican devs say the English word
+CI,CI,KEEP,build,American technical term; Mexican devs say the English word
+Deploy,Deploy,KEEP,build,American technical term; Mexican devs say the English word
+Installer,Installer,KEEP,build,American technical term; Mexican devs say the English word
+Job,Job,KEEP,build,American technical term; Mexican devs say the English word
+Package,Package,KEEP,build,American technical term; Mexican devs say the English word
+Pipeline,Pipeline,KEEP,build,American technical term; Mexican devs say the English word
+Release,Release,KEEP,build,American technical term; Mexican devs say the English word
+Rollback,Rollback,KEEP,build,American technical term; Mexican devs say the English word
+Runner,Runner,KEEP,build,American technical term; Mexican devs say the English word
+Stage,Stage,KEEP,build,American technical term; Mexican devs say the English word
+Cluster,Cluster,KEEP,containers,American technical term; Mexican devs say the English word
+Compose,Compose,KEEP,containers,American technical term; Mexican devs say the English word
+Container,Container,KEEP,containers,American technical term; Mexican devs say the English word
+container image,imagen de container,TRANSLATE,containers,cognate head takes Spanish; the English modifier stays
+Deployment,Deployment,KEEP,containers,American technical term; Mexican devs say the English word
+Docker,Docker,KEEP,containers,American technical term; Mexican devs say the English word
+Docker image,imagen de Docker,TRANSLATE,containers,cognate head takes Spanish; the English modifier stays
+Helm,Helm,KEEP,containers,American technical term; Mexican devs say the English word
+Image,imagen,TRANSLATE,containers,"Angela: 'vamos a poner una imagen en Docker' - cognate, assimilates"
+Images,imágenes,TRANSLATE,containers,plural of the same cognate
+Ingress,Ingress,KEEP,containers,American technical term; Mexican devs say the English word
+Kubernetes,Kubernetes,KEEP,containers,American technical term; Mexican devs say the English word
+LPAR,LPAR,KEEP,containers,American technical term; Mexican devs say the English word
+Namespace,Namespace,KEEP,containers,American technical term; Mexican devs say the English word
+Node,Node,KEEP,containers,American technical term; Mexican devs say the English word
+Orchestration,Orchestration,KEEP,containers,American technical term; Mexican devs say the English word
+Pod,Pod,KEEP,containers,American technical term; Mexican devs say the English word
+Registry,Registry,KEEP,containers,American technical term; Mexican devs say the English word
+Sidecar,Sidecar,KEEP,containers,American technical term; Mexican devs say the English word
+Backup,Backup,KEEP,data,American technical term; Mexican devs say the English word
+Batch,Batch,KEEP,data,American technical term; Mexican devs say the English word
+Chunk,Chunk,KEEP,data,American technical term; Mexican devs say the English word
+Data mining,Data mining,KEEP,data,American technical term; Mexican devs say the English word
+Dataset,Dataset,KEEP,data,American technical term; Mexican devs say the English word
+Dump,Dump,KEEP,data,American technical term; Mexican devs say the English word
+Index,Index,KEEP,data,American technical term; Mexican devs say the English word
+Migration,Migration,KEEP,data,American technical term; Mexican devs say the English word
+Record,Record,KEEP,data,American technical term; Mexican devs say the English word
+Row,Row,KEEP,data,American technical term; Mexican devs say the English word
+Schema,Schema,KEEP,data,American technical term; Mexican devs say the English word
+Transaction,Transaction,KEEP,data,American technical term; Mexican devs say the English word
+Binary,Binary,KEEP,files_os,American technical term; Mexican devs say the English word
+Byte,Byte,KEEP,files_os,American technical term; Mexican devs say the English word
+Gigabyte,Gigabyte,KEEP,files_os,American technical term; Mexican devs say the English word
+Glob,Glob,KEEP,files_os,American technical term; Mexican devs say the English word
+Hardware,Hardware,KEEP,files_os,American technical term; Mexican devs say the English word
+Input,Input,KEEP,files_os,American technical term; Mexican devs say the English word
+Kilobyte,Kilobyte,KEEP,files_os,American technical term; Mexican devs say the English word
+Megabyte,Megabyte,KEEP,files_os,American technical term; Mexican devs say the English word
+Mount,Mount,KEEP,files_os,American technical term; Mexican devs say the English word
+Output,Output,KEEP,files_os,American technical term; Mexican devs say the English word
+Path,Path,KEEP,files_os,American technical term; Mexican devs say the English word
+Pipe,Pipe,KEEP,files_os,American technical term; Mexican devs say the English word
+Prompt,Prompt,KEEP,files_os,American technical term; Mexican devs say the English word
+Router,Router,KEEP,files_os,American technical term; Mexican devs say the English word
+Screenshot,Screenshot,KEEP,files_os,American technical term; Mexican devs say the English word
+Script,Script,KEEP,files_os,American technical term; Mexican devs say the English word
+Shell,Shell,KEEP,files_os,American technical term; Mexican devs say the English word
+Software,Software,KEEP,files_os,American technical term; Mexican devs say the English word
+Spam,Spam,KEEP,files_os,American technical term; Mexican devs say the English word
+Symlink,Symlink,KEEP,files_os,American technical term; Mexican devs say the English word
+Terabyte,Terabyte,KEEP,files_os,American technical term; Mexican devs say the English word
+Wildcard,Wildcard,KEEP,files_os,American technical term; Mexican devs say the English word
+Baud,Baud,KEEP,firmware,American technical term; Mexican devs say the English word
+Board,Board,KEEP,firmware,American technical term; Mexican devs say the English word
+Bootloader,Bootloader,KEEP,firmware,American technical term; Mexican devs say the English word
+Chip,Chip,KEEP,firmware,American technical term; Mexican devs say the English word
+Debugger,Debugger,KEEP,firmware,American technical term; Mexican devs say the English word
+Firmware,Firmware,KEEP,firmware,American technical term; Mexican devs say the English word
+Flash,Flash,KEEP,firmware,American technical term; Mexican devs say the English word
+Monitor,Monitor,KEEP,firmware,American technical term; Mexican devs say the English word
+Pin,Pin,KEEP,firmware,American technical term; Mexican devs say the English word
+Port,puerto,TRANSLATE,firmware,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Probe,Probe,KEEP,firmware,American technical term; Mexican devs say the English word
+Serial,Serial,KEEP,firmware,American technical term; Mexican devs say the English word
+Sketch,Sketch,KEEP,firmware,American technical term; Mexican devs say the English word
+Toolchain,Toolchain,KEEP,firmware,American technical term; Mexican devs say the English word
+Upload,Upload,KEEP,firmware,American technical term; Mexican devs say the English word
+Access Keys Wizard,Access Keys Wizard,KEEP,product,American technical term; Mexican devs say the English word
+ACPX,ACPX,KEEP,product,American technical term; Mexican devs say the English word
+Angela Lopez Mendoza,Angela Lopez Mendoza,KEEP,product,American technical term; Mexican devs say the English word
+Angela López Mendoza,Angela López Mendoza,KEEP,product,American technical term; Mexican devs say the English word
+Ángela López Mendoza,Ángela López Mendoza,KEEP,product,Creator of Tlamatini - a PERSON's name; the accented spelling Angela asked for in the Spanish edition. Never translated, never dropped.
+Ask Execs,Ask Execs,KEEP,product,American technical term; Mexican devs say the English word
+Catalogo de Prompts,Catalogo de Prompts,KEEP,product,American technical term; Mexican devs say the English word
+Create Flow,Create Flow,KEEP,product,American technical term; Mexican devs say the English word
+Exec,Exec,KEEP,product,American technical term; Mexican devs say the English word
+Exec report,Exec report,KEEP,product,American technical term; Mexican devs say the English word
+External MCPs,MCPs Externos,TRANSLATE,product,Angela renamed the navbar 2026-07-28; 'MCPs' alone still KEEP
+Files-Search,Files-Search,KEEP,product,American technical term; Mexican devs say the English word
+Flow,Flow,KEEP,product,American technical term; Mexican devs say the English word
+MCP,MCP,KEEP,product,American technical term; Mexican devs say the English word
+MCPs,MCPs,KEEP,product,American technical term; Mexican devs say the English word
+Prompt Catalog,Prompt Catalog,KEEP,product,American technical term; Mexican devs say the English word
+Skill,Skill,KEEP,product,American technical term; Mexican devs say the English word
+Skills,Skills,KEEP,product,American technical term; Mexican devs say the English word
+Step-by-Step,Paso-a-Paso,TRANSLATE,product,Angela renamed the toolbar checkbox 2026-07-28; the GUI detector accepts BOTH hyphenated forms
+System-Metrics,System-Metrics,KEEP,product,American technical term; Mexican devs say the English word
+Tlamatini,Tlamatini,KEEP,product,American technical term; Mexican devs say the English word
+Wizard,Wizard,KEEP,product,American technical term; Mexican devs say the English word
+XAIHT,XAIHT,KEEP,product,American technical term; Mexican devs say the English word
+Buffer,Buffer,KEEP,runtime,American technical term; Mexican devs say the English word
+Cache,Cache,KEEP,runtime,American technical term; Mexican devs say the English word
+Callback,Callback,KEEP,runtime,American technical term; Mexican devs say the English word
+Core dump,Core dump,KEEP,runtime,American technical term; Mexican devs say the English word
+Crash,Crash,KEEP,runtime,American technical term; Mexican devs say the English word
+Daemon,Daemon,KEEP,runtime,American technical term; Mexican devs say the English word
+Deadlock,Deadlock,KEEP,runtime,American technical term; Mexican devs say the English word
+Debug,Debug,KEEP,runtime,American technical term; Mexican devs say the English word
+Handler,Handler,KEEP,runtime,American technical term; Mexican devs say the English word
+Heap,Heap,KEEP,runtime,American technical term; Mexican devs say the English word
+Log,Log,KEEP,runtime,American technical term; Mexican devs say the English word
+Overhead,Overhead,KEEP,runtime,American technical term; Mexican devs say the English word
+Pattern,Pattern,KEEP,runtime,American technical term; Mexican devs say the English word
+Process,Process,KEEP,runtime,American technical term; Mexican devs say the English word
+Runtime,Runtime,KEEP,runtime,American technical term; Mexican devs say the English word
+Stack,Stack,KEEP,runtime,American technical term; Mexican devs say the English word
+Thread,Thread,KEEP,runtime,American technical term; Mexican devs say the English word
+Timeout,Timeout,KEEP,runtime,American technical term; Mexican devs say the English word
+Trace,Trace,KEEP,runtime,American technical term; Mexican devs say the English word
+Worker,Worker,KEEP,runtime,American technical term; Mexican devs say the English word
+Certificate,Certificate,KEEP,security,American technical term; Mexican devs say the English word
+Cracker,Cracker,KEEP,security,American technical term; Mexican devs say the English word
+Credential,Credential,KEEP,security,American technical term; Mexican devs say the English word
+Exploit,Exploit,KEEP,security,American technical term; Mexican devs say the English word
+Firewall,Firewall,KEEP,security,American technical term; Mexican devs say the English word
+Hacker,Hacker,KEEP,security,American technical term; Mexican devs say the English word
+Hash,Hash,KEEP,security,American technical term; Mexican devs say the English word
+Key,Key,KEEP,security,American technical term; Mexican devs say the English word
+Malware,Malware,KEEP,security,American technical term; Mexican devs say the English word
+Pentest,Pentest,KEEP,security,American technical term; Mexican devs say the English word
+Scan,Scan,KEEP,security,American technical term; Mexican devs say the English word
+Scope,Scope,KEEP,security,American technical term; Mexican devs say the English word
+Secret,Secret,KEEP,security,American technical term; Mexican devs say the English word
+Vulnerability,Vulnerability,KEEP,security,American technical term; Mexican devs say the English word
+<!--TLAMATINI_EXEC_REPORT_BOUNDARY-->,<!--TLAMATINI_EXEC_REPORT_BOUNDARY-->,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+acp_doctor,acp_doctor,MACHINE,sentinel,tool identifier
+acp_kill,acp_kill,MACHINE,sentinel,tool identifier
+acp_list_sessions,acp_list_sessions,MACHINE,sentinel,tool identifier
+acp_relay,acp_relay,MACHINE,sentinel,tool identifier
+acp_send,acp_send,MACHINE,sentinel,tool identifier
+acp_send_and_wait,acp_send_and_wait,MACHINE,sentinel,tool identifier
+acp_session_status,acp_session_status,MACHINE,sentinel,tool identifier
+acp_spawn,acp_spawn,MACHINE,sentinel,tool identifier
+acp_transcript,acp_transcript,MACHINE,sentinel,tool identifier
+agent_parametrizer,agent_parametrizer,MACHINE,sentinel,tool identifier
+agent_starter,agent_starter,MACHINE,sentinel,tool identifier
+agent_stat_getter,agent_stat_getter,MACHINE,sentinel,tool identifier
+agent_stopper,agent_stopper,MACHINE,sentinel,tool identifier
+ANALYSIS_ERROR,ANALYSIS_ERROR,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+APPROVE,APPROVE,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+BEGIN-CODE,BEGIN-CODE,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+chat_agent_apirer,chat_agent_apirer,MACHINE,sentinel,tool identifier
+chat_agent_arduiner,chat_agent_arduiner,MACHINE,sentinel,tool identifier
+chat_agent_asker,chat_agent_asker,MACHINE,sentinel,tool identifier
+chat_agent_audioplayer,chat_agent_audioplayer,MACHINE,sentinel,tool identifier
+chat_agent_blenderer,chat_agent_blenderer,MACHINE,sentinel,tool identifier
+chat_agent_camcorder,chat_agent_camcorder,MACHINE,sentinel,tool identifier
+chat_agent_crawler,chat_agent_crawler,MACHINE,sentinel,tool identifier
+chat_agent_de_compresser,chat_agent_de_compresser,MACHINE,sentinel,tool identifier
+chat_agent_deleter,chat_agent_deleter,MACHINE,sentinel,tool identifier
+chat_agent_discoverer,chat_agent_discoverer,MACHINE,sentinel,tool identifier
+chat_agent_dockerer,chat_agent_dockerer,MACHINE,sentinel,tool identifier
+chat_agent_editor,chat_agent_editor,MACHINE,sentinel,tool identifier
+chat_agent_esp32er,chat_agent_esp32er,MACHINE,sentinel,tool identifier
+chat_agent_esphomer,chat_agent_esphomer,MACHINE,sentinel,tool identifier
+chat_agent_executer,chat_agent_executer,MACHINE,sentinel,tool identifier
+chat_agent_file_creator,chat_agent_file_creator,MACHINE,sentinel,tool identifier
+chat_agent_file_extractor,chat_agent_file_extractor,MACHINE,sentinel,tool identifier
+chat_agent_file_interpreter,chat_agent_file_interpreter,MACHINE,sentinel,tool identifier
+chat_agent_flowcreator,chat_agent_flowcreator,MACHINE,sentinel,tool identifier
+chat_agent_gitter,chat_agent_gitter,MACHINE,sentinel,tool identifier
+chat_agent_globber,chat_agent_globber,MACHINE,sentinel,tool identifier
+chat_agent_grepper,chat_agent_grepper,MACHINE,sentinel,tool identifier
+chat_agent_image_interpreter,chat_agent_image_interpreter,MACHINE,sentinel,tool identifier
+chat_agent_instant_messaging_doctor,chat_agent_instant_messaging_doctor,MACHINE,sentinel,tool identifier
+chat_agent_j_decompiler,chat_agent_j_decompiler,MACHINE,sentinel,tool identifier
+chat_agent_jenkinser,chat_agent_jenkinser,MACHINE,sentinel,tool identifier
+chat_agent_kalier,chat_agent_kalier,MACHINE,sentinel,tool identifier
+chat_agent_keyboarder,chat_agent_keyboarder,MACHINE,sentinel,tool identifier
+chat_agent_kuberneter,chat_agent_kuberneter,MACHINE,sentinel,tool identifier
+chat_agent_kyber_cipher,chat_agent_kyber_cipher,MACHINE,sentinel,tool identifier
+chat_agent_kyber_deciph,chat_agent_kyber_deciph,MACHINE,sentinel,tool identifier
+chat_agent_kyber_keygen,chat_agent_kyber_keygen,MACHINE,sentinel,tool identifier
+chat_agent_mcp_doctor,chat_agent_mcp_doctor,MACHINE,sentinel,tool identifier
+chat_agent_mongoxer,chat_agent_mongoxer,MACHINE,sentinel,tool identifier
+chat_agent_monitor_log,chat_agent_monitor_log,MACHINE,sentinel,tool identifier
+chat_agent_monitor_netstat,chat_agent_monitor_netstat,MACHINE,sentinel,tool identifier
+chat_agent_mouser,chat_agent_mouser,MACHINE,sentinel,tool identifier
+chat_agent_move_file,chat_agent_move_file,MACHINE,sentinel,tool identifier
+chat_agent_nmapper,chat_agent_nmapper,MACHINE,sentinel,tool identifier
+chat_agent_notifier,chat_agent_notifier,MACHINE,sentinel,tool identifier
+chat_agent_pdfer,chat_agent_pdfer,MACHINE,sentinel,tool identifier
+chat_agent_playwrighter,chat_agent_playwrighter,MACHINE,sentinel,tool identifier
+chat_agent_prompter,chat_agent_prompter,MACHINE,sentinel,tool identifier
+chat_agent_pser,chat_agent_pser,MACHINE,sentinel,tool identifier
+chat_agent_pythonxer,chat_agent_pythonxer,MACHINE,sentinel,tool identifier
+chat_agent_recmailer,chat_agent_recmailer,MACHINE,sentinel,tool identifier
+chat_agent_recorder,chat_agent_recorder,MACHINE,sentinel,tool identifier
+chat_agent_run_list,chat_agent_run_list,MACHINE,sentinel,tool identifier
+chat_agent_run_log,chat_agent_run_log,MACHINE,sentinel,tool identifier
+chat_agent_run_status,chat_agent_run_status,MACHINE,sentinel,tool identifier
+chat_agent_run_stop,chat_agent_run_stop,MACHINE,sentinel,tool identifier
+chat_agent_run_wait,chat_agent_run_wait,MACHINE,sentinel,tool identifier
+chat_agent_scper,chat_agent_scper,MACHINE,sentinel,tool identifier
+chat_agent_send_email,chat_agent_send_email,MACHINE,sentinel,tool identifier
+chat_agent_shoter,chat_agent_shoter,MACHINE,sentinel,tool identifier
+chat_agent_sleeper,chat_agent_sleeper,MACHINE,sentinel,tool identifier
+chat_agent_sqler,chat_agent_sqler,MACHINE,sentinel,tool identifier
+chat_agent_ssher,chat_agent_ssher,MACHINE,sentinel,tool identifier
+chat_agent_stm32er,chat_agent_stm32er,MACHINE,sentinel,tool identifier
+chat_agent_summarize_text,chat_agent_summarize_text,MACHINE,sentinel,tool identifier
+chat_agent_talker,chat_agent_talker,MACHINE,sentinel,tool identifier
+chat_agent_telegrammer,chat_agent_telegrammer,MACHINE,sentinel,tool identifier
+chat_agent_unrealer,chat_agent_unrealer,MACHINE,sentinel,tool identifier
+chat_agent_video_analyzer,chat_agent_video_analyzer,MACHINE,sentinel,tool identifier
+chat_agent_videoplayer,chat_agent_videoplayer,MACHINE,sentinel,tool identifier
+chat_agent_whatsapper,chat_agent_whatsapper,MACHINE,sentinel,tool identifier
+chat_agent_whisperer,chat_agent_whisperer,MACHINE,sentinel,tool identifier
+chat_agent_windower,chat_agent_windower,MACHINE,sentinel,tool identifier
+chat_agent_zavuerer,chat_agent_zavuerer,MACHINE,sentinel,tool identifier
+COMMENT,COMMENT,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+completed,completed,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+CONFIDENCE,CONFIDENCE,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+decompile_java,decompile_java,MACHINE,sentinel,tool identifier
+END-CODE,END-CODE,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+END-RESPONSE,END-RESPONSE,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+END_SECTION_,END_SECTION_,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+execute_command,execute_command,MACHINE,sentinel,tool identifier
+execute_file,execute_file,MACHINE,sentinel,tool identifier
+execute_netstat,execute_netstat,MACHINE,sentinel,tool identifier
+FAIL_NO_MOTION,FAIL_NO_MOTION,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+FAIL_WRONG_MOTION,FAIL_WRONG_MOTION,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+failed,failed,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+FAILURE,FAILURE,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+FINAL_VERDICT,FINAL_VERDICT,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+FRAME_VERDICT,FRAME_VERDICT,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+get_current_time,get_current_time,MACHINE,sentinel,tool identifier
+INI_SECTION_,INI_SECTION_,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+invoke_skill,invoke_skill,MACHINE,sentinel,tool identifier
+launch_view_image,launch_view_image,MACHINE,sentinel,tool identifier
+list_acp_agents,list_acp_agents,MACHINE,sentinel,tool identifier
+list_skills,list_skills,MACHINE,sentinel,tool identifier
+PASS_OK,PASS_OK,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+REQUEST_CHANGES,REQUEST_CHANGES,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+running,running,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+stopped,stopped,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+SUCCESS,SUCCESS,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+TLM_VERDICT::,TLM_VERDICT::,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+UNCLEAR,UNCLEAR,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+unzip_file,unzip_file,MACHINE,sentinel,tool identifier
+VERDICT:,VERDICT:,MACHINE,sentinel,literal the machine reads back; translating it breaks the protocol
+window_present,window_present,MACHINE,sentinel,tool identifier
+Cancel,Cancelar,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Close,Cerrar,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Command,comando,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Continue,Continuar,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Date,fecha,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Delete,Eliminar,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Directory,directorio,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+File,archivo,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Folder,carpeta,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Help,Ayuda,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Line,línea,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Name,nombre,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Network,red,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Open,Abrir,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Page,página,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Password,contraseña,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Save,Guardar,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Screen,pantalla,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Search,Buscar,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Send,Enviar,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Size,tamaño,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+User,usuario,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Version,versión,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Window,ventana,TRANSLATE,ui,everyday Spanish equivalent; verbs and common nouns stay Spanish
+Branch,Branch,KEEP,vcs,American technical term; Mexican devs say the English word
+Checkout,Checkout,KEEP,vcs,American technical term; Mexican devs say the English word
+Commit,Commit,KEEP,vcs,American technical term; Mexican devs say the English word
+Diff,Diff,KEEP,vcs,American technical term; Mexican devs say the English word
+Fork,Fork,KEEP,vcs,American technical term; Mexican devs say the English word
+Merge,Merge,KEEP,vcs,American technical term; Mexican devs say the English word
+Pull,Pull,KEEP,vcs,American technical term; Mexican devs say the English word
+Pull Request,Pull Request,KEEP,vcs,American technical term; Mexican devs say the English word
+Push,Push,KEEP,vcs,American technical term; Mexican devs say the English word
+Rebase,Rebase,KEEP,vcs,American technical term; Mexican devs say the English word
+Remote,Remote,KEEP,vcs,American technical term; Mexican devs say the English word
+Repo,Repo,KEEP,vcs,American technical term; Mexican devs say the English word
+Repository,Repository,KEEP,vcs,American technical term; Mexican devs say the English word
+Stash,Stash,KEEP,vcs,American technical term; Mexican devs say the English word
+Tag,Tag,KEEP,vcs,American technical term; Mexican devs say the English word
+Upstream,Upstream,KEEP,vcs,American technical term; Mexican devs say the English word
+API,API,KEEP,web,American technical term; Mexican devs say the English word
+Endpoint,Endpoint,KEEP,web,American technical term; Mexican devs say the English word
+Gateway,Gateway,KEEP,web,American technical term; Mexican devs say the English word
+Header,Header,KEEP,web,American technical term; Mexican devs say the English word
+Payload,Payload,KEEP,web,American technical term; Mexican devs say the English word
+Polling,Polling,KEEP,web,American technical term; Mexican devs say the English word
+Proxy,Proxy,KEEP,web,American technical term; Mexican devs say the English word
+Query,Query,KEEP,web,American technical term; Mexican devs say the English word
+Rate limit,Rate limit,KEEP,web,American technical term; Mexican devs say the English word
+Request,Request,KEEP,web,American technical term; Mexican devs say the English word
+Response,Response,KEEP,web,American technical term; Mexican devs say the English word
+REST,REST,KEEP,web,American technical term; Mexican devs say the English word
+Socket,Socket,KEEP,web,American technical term; Mexican devs say the English word
+Status code,Status code,KEEP,web,American technical term; Mexican devs say the English word
+Streaming,Streaming,KEEP,web,American technical term; Mexican devs say the English word
+Token,Token,KEEP,web,American technical term; Mexican devs say the English word
+Webhook,Webhook,KEEP,web,American technical term; Mexican devs say the English word
+WebSocket,WebSocket,KEEP,web,American technical term; Mexican devs say the English word

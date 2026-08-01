@@ -1,0 +1,88 @@
+# Nmapper Agent Configuration
+#
+# Nmapper is Tlamatini's LOCAL, USE-ONLY nmap bridge for pentesters / CTF recon.
+# It runs the real `nmap` CLI already present on THIS machine — it NEVER bundles or
+# redistributes nmap (nmap's NPSL forbids embedding it in a product without a paid OEM
+# licence), so Nmapper only ever RUNS an nmap the user installed themselves. It is
+# fully self-contained (stdlib only: subprocess + shutil + urllib + xml.etree) so it
+# runs identically in source and frozen builds and never imports from agent.*.
+#
+# USE-ONLY BINARY RESOLUTION (no bundling, no redistribution):
+#   1. nmap_executable (explicit override)      2. nmap on PATH
+#   3. C:\Program Files (x86)\Nmap\nmap.exe / C:\Program Files\Nmap\nmap.exe
+#   4. %LOCALAPPDATA%\Tlamatini\nmap            (a portable copy the user opted into)
+# If none resolve, Nmapper REFUSES gracefully with one-time install guidance; the
+# `install` action (or auto_install) downloads + launches the OFFICIAL FREE nmap
+# self-installer from nmap.org — the user's OWN download + admin install (which also
+# brings Npcap, unlocking SYN / -O / UDP). That is "use, not redistribution".
+#
+# DEFAULT = an UNPRIVILEGED TCP CONNECT SCAN (-sT), which needs NO Npcap and NO admin,
+# so a fresh install can scan immediately. AUTHORIZED TARGETS ONLY.
+
+# -- action -- one capability per run ----------------------------------------
+#   quick          : -sT -sV -sC -Pn -T4 --top-ports 1000   (the CTF opener)
+#   full           : -sT -sV -Pn -T4 -p- --host-timeout 15m   (all 65535 TCP ports; time-bounded, no -sC)
+#   top_ports      : -sT -Pn --top-ports <top_ports>         (fast surface map)
+#   version        : -sT -sV -Pn -p <ports>                  (service/version ID)
+#   scripts        : -sT -Pn --script <nse_scripts> -p <ports> (targeted NSE)
+#   host_discovery : -sn                                     (who is up)
+#   udp            : -sU --top-ports <top_ports>             (needs Npcap + admin)
+#   custom         : the safe base + <custom_args> (validated; no shell metacharacters)
+#   validate       : report nmap resolution + Npcap presence (no scan)
+#   install        : download + launch the OFFICIAL free nmap installer (consent; admin)
+action: "quick"
+
+# -- Target & scope ----------------------------------------------------------
+target: ""             # host / IP / hostname / CIDR  (e.g. scanme.nmap.org)
+targets_file: ""       # OR a file with one target per line; overrides `target`
+
+# -- Ports & timing ----------------------------------------------------------
+ports: ""              # "" = action default; "22,80,443" or "1-1000"
+top_ports: 1000        # for quick / top_ports / udp
+timing: "T4"           # T0..T5  (T4 = aggressive, the CTF norm)
+min_rate: 0            # 0 = unset; else --min-rate N
+
+# -- Scan mode / privileges --------------------------------------------------
+scan_technique: "connect"  # connect (-sT, default, no Npcap) | syn (-sS, needs Npcap; auto-downgrades)
+version_detect: true       # -sV service/version detection
+default_scripts: true      # -sC default NSE scripts (quick only; full skips -sC — too slow on -p-)
+nse_scripts: ""            # action=scripts: "http-title,ssl-cert" or "default,safe"
+os_detect: false           # -O OS detection (needs Npcap; dropped + warned if absent)
+skip_host_discovery: true  # -Pn treat host as up (recommended on Windows / no Npcap)
+
+# -- Custom escape hatch -----------------------------------------------------
+custom_args: ""        # action=custom: extra flags appended after the safe base
+                       #   (validated -- shell metacharacters ; | & ` $ < > are rejected)
+
+# -- Binary resolution / install (USE-ONLY -- never bundled) -----------------
+nmap_executable: ""    # "" = auto-resolve (PATH -> Program Files -> LOCALAPPDATA cache)
+auto_install: false    # if nmap is absent, download + launch the official installer (admin/UAC)
+nmap_install_url: ""   # "" = https://nmap.org/dist/nmap-<nmap_version>-setup.exe
+nmap_version: "7.99"   # version used for the installer download
+
+# -- Execution controls ------------------------------------------------------
+preflight: true        # fail-safe checks; REFUSE (never crash) rather than misfire
+command_timeout: 900   # hard cap (seconds) — a backstop that always sits ABOVE host_timeout
+host_timeout: ""       # per-host budget, nmap syntax ("15m" / "900s" / "1h"). "" = a default
+                       #   only for the SLOW actions (full=15m, udp/scripts=10m): nmap self-
+                       #   terminates with PARTIAL -oX results instead of hanging, and
+                       #   command_timeout is auto-raised to stay above it. Fast actions unaffected.
+output_dir: ""         # results dir; empty = <app>/Temp/Nmapper
+
+# -- OOB_shift_reaper (Angela's design, 2026-07-19) --------------------------
+# Nmapper, Discoverer and Kalier are the THREE GODS: a long, legitimate scan is NEVER
+# killed merely for being slow. The scan runs FREE and WATCHED, under three rules:
+#   1. WORKING (still producing output)  -> runs FREE. Never killed at any elapsed time.
+#   2. HANGED (no output for `hang_detect_idle_seconds`) but still INSIDE the
+#      `OOB_shift_reaper` window -> only LOGS A BANNER to the log, and KEEPS RUNNING.
+#   3. HANGED *and* PAST the window (second 3601+ by default) -> KILLED effectively
+#      (whole process tree), with whatever partial output it produced preserved.
+# NAMU (Tier-3, the god of gods) OVERRIDES all of the above: when the Tlamatini process
+# shuts down (Ctrl+C / SIGINT / SIGBREAK / exit), every Nmapper / Discoverer / Kalier
+# child is hunted down and killed IMMEDIATELY -- no matter how long it has run.
+OOB_shift_reaper: 3600        # seconds of FREE run before a HANGED scan may be reaped
+hang_detect_idle_seconds: 120 # no output for this long = "possibly hanged" (banner only inside the window)
+
+# -- Connection fields ----------------------------------------------------
+source_agents: []      # upstream agents (canvas connection tracking)
+target_agents: []      # downstream agents to start after the run (ALWAYS triggered)

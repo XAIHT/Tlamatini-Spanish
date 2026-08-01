@@ -1,0 +1,559 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.catalog-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 100;
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; 
+    z-index: 12000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    background-color: rgba(0,0,0,0.4);
+    transition: background-color 0.3s ease-in-out;
+}
+
+.modal.show {
+    display: block; /* Show when 'show' class is added */
+}
+
+.modal-content {
+    background: linear-gradient(160deg, #1f2233 0%, #2a2d44 55%, #1a1c2c 100%);
+    border-radius: 18px;
+    box-sizing: border-box;
+    padding: 22px 22px 18px 22px;
+    width: min(760px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    /* Geometry is 100% CSS-driven and pinned to the VIEWPORT, never to the
+       "Catalog of prompts" button — so the panel is completely independent of
+       the chat input's height. Anchored at the top, it grows DOWNWARD and is
+       capped at the viewport, so the header + search bar are always on screen
+       however large the catalog gets; only .modal-body scrolls.
+       Do NOT re-introduce JS positioning (see tools_dialog.js). */
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    bottom: auto;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 24px);
+
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: top left;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+@media (max-width: 520px) {
+    .modal-content {
+        border-radius: 12px;
+        padding: 16px 14px 14px;
+    }
+
+    .prompt-card-header,
+    .prompt-card-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .prompt-card-modes {
+        flex-wrap: wrap;
+        margin-left: 0;
+    }
+}
+
+/* NEW: Active state for the modal content */
+.modal.show .modal-content {
+    opacity: 1;
+    transform: scale(1);
+}
+
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: white;
+    text-decoration: none;
+}
+
+.modal-header {
+    flex: 0 0 auto;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #555;
+    margin-bottom: 15px;
+}
+
+.modal-header p {
+    margin: 5px 0;
+    color: #bbb;
+}
+
+.modal-body {
+    flex: 1 1 auto;
+    /* min-height:0 is what lets THIS list scroll instead of stretching the
+       panel past its max-height (a flex item's default min-height:auto would
+       refuse to shrink below its content). */
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.text-box {
+    background-color: #343644;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    color: #eee;
+    font-size: 14px;
+}
+
+.text-box a {
+    color: #8cafff;
+    text-decoration: none;
+}
+
+.text-box a:hover {
+    text-decoration: underline;
+}
+
+/* ── Prompt catalog cards ────────────────────────────────────────────── */
+.prompt-card {
+    background: linear-gradient(135deg, #2c2f44 0%, #353954 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px 18px 12px 18px;
+    margin-bottom: 12px;
+    color: #f0f1f7;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.18s ease-out, box-shadow 0.18s ease-out, border-color 0.18s ease-out;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.prompt-card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #ff5f3a 0%, #9d3bff 50%, #13c2e0 100%);
+    opacity: 0.85;
+}
+
+.prompt-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+    border-color: rgba(157,59,255,0.55);
+}
+
+/* ── Category section headers (Angela, 2026-07-14 grouped catalog) ──────────
+   The Catalog of Prompts is grouped into sections; each header is STICKY so the
+   category name stays on screen while you scroll through its cards. Hidden during
+   an active search (the catalog flattens to rank matches best-first). */
+.prompt-category-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 16px 0 9px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(109, 40, 217, 0.94) 0%, rgba(37, 99, 235, 0.94) 100%);
+    box-shadow: 0 2px 9px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.prompt-category-header:first-child {
+    margin-top: 2px;
+}
+
+.prompt-category-header-hidden {
+    display: none !important;
+}
+
+.prompt-category-label {
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.prompt-category-count {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.30);
+    padding: 2px 8px;
+    border-radius: 999px;
+    min-width: 22px;
+    text-align: center;
+}
+
+.prompt-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.prompt-card-badge {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #fff;
+    background: linear-gradient(135deg, #6d28d9 0%, #2563eb 100%);
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.prompt-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffe9c4;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+    flex-grow: 1;
+}
+
+/* ── Mode indicator badges ───────────────────────────────────────────────
+   Little squares on each catalog card that tell the user which toolbar
+   checkboxes the prompt needs (and which get set automatically when the card
+   is clicked): One-Shot (both OFF), Multi-turn (Multi-Turn ON), ACPX (ACPX +
+   Multi-Turn ON). A prompt can carry more than one badge. */
+.prompt-card-modes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.prompt-mode-badge {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    cursor: help;
+}
+
+/* Multi-turn — teal/cyan (mirrors the reference image). */
+.prompt-mode-badge-multiturn {
+    background: linear-gradient(135deg, #0e7490 0%, #22d3ee 100%);
+    color: #06222b;
+}
+
+/* ACPX — fire-orange → violet (the ACPX brand colours used across the UI). */
+.prompt-mode-badge-acpx {
+    background: linear-gradient(135deg, #b91c1c 0%, #f97316 55%, #9d3bff 100%);
+}
+
+/* One-Shot — muted slate (no toolbar modifiers needed; both get unchecked). */
+.prompt-mode-badge-oneshot {
+    background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+    color: #eef3ff;
+}
+
+/* Exec-report — green "verification" (rides along with Multi-turn; ticks the Exec Report box). */
+.prompt-mode-badge-execreport {
+    background: linear-gradient(135deg, #15803d 0%, #4ade80 100%);
+    color: #052e16;
+}
+
+/* Step-by-Step - amber "pacing" (one action at a time; ticks the Step-by-Step box, alongside Multi-Turn). */
+.prompt-mode-badge-stepbystep {
+    background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+    color: #2b1500;
+}
+
+.prompt-card-preview {
+    margin: 0 0 10px 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #c8cbe0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.prompt-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255,255,255,0.08);
+}
+
+.prompt-card-chip {
+    font-size: 11px;
+    color: #8a8fa8;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    letter-spacing: 0.4px;
+}
+
+.prompt-card-chip-action {
+    color: #7dd3fc;
+    font-weight: 600;
+    transition: color 0.18s ease-out, transform 0.18s ease-out;
+}
+
+.prompt-card:hover .prompt-card-chip-action {
+    color: #ffe9c4;
+    transform: translateX(3px);
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+.modal-body::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6d28d9 0%, #2563eb 100%);
+    border-radius: 4px;
+}
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #7c3aed 0%, #3b82f6 100%);
+}
+
+.modal-footer {
+    flex: 0 0 auto;
+    padding-top: 15px;
+    border-top: 1px solid #555;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+}
+
+/* The catalog's footer carries no controls — don't spend 31px of the card
+   list's height drawing a stray divider under it. */
+.modal-footer:empty {
+    display: none;
+}
+
+.message-input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #666;
+    background-color: #666;
+    color: white;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.message-input::placeholder {
+    color: #bbb;
+}
+
+.cancel-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#modal-header-title {
+    color: antiquewhite
+}
+
+.tool-box-entry {
+    cursor: pointer;
+}
+
+/* ── Prompt catalog live search bar ──────────────────────────────────────
+   Sits between the "Pre-established prompts..." header and the card list;
+   drives the ranked fuzzy search in tools_dialog.js. */
+.prompt-search-bar {
+    /* Never shrink, never scroll away: it sits above the scrolling card list
+       in the bounded flex column, so it stays reachable at any catalog size. */
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px 0;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(45,49,74,0.92) 0%, rgba(30,33,52,0.92) 100%);
+    border: 1px solid rgba(157,59,255,0.35);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 10px rgba(0,0,0,0.35);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.prompt-search-bar:focus-within {
+    border-color: rgba(34,211,238,0.7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07),
+                0 0 0 3px rgba(34,211,238,0.18),
+                0 4px 18px rgba(13,194,224,0.25);
+}
+
+.prompt-search-icon {
+    flex-shrink: 0;
+    font-size: 15px;
+    line-height: 1;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 4px rgba(34,211,238,0.4));
+}
+
+.prompt-search-icon::before {
+    content: "\1F50D";
+}
+
+.prompt-search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #f2f3fb;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    padding: 4px 0;
+}
+
+.prompt-search-input::placeholder {
+    color: #8a8fac;
+    font-style: italic;
+}
+
+.prompt-search-clear {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: #cdd0e6;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.prompt-search-clear.is-visible {
+    display: inline-flex;
+}
+
+.prompt-search-clear:hover {
+    background: rgba(249,115,22,0.9);
+    color: #fff;
+    transform: scale(1.08);
+}
+
+.prompt-search-count {
+    flex-shrink: 0;
+    min-width: 62px;
+    text-align: right;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: #7dd3fc;
+    white-space: nowrap;
+}
+
+.prompt-search-count.is-zero {
+    color: #f87171;
+}
+
+/* Non-matching cards are pulled out of the flow entirely. */
+.prompt-card-hidden {
+    display: none !important;
+}
+
+/* The single best match gets a cyan halo so the eye lands on it first. */
+.prompt-card-top {
+    border-color: rgba(34,211,238,0.7) !important;
+    box-shadow: 0 0 0 1px rgba(34,211,238,0.45), 0 10px 26px rgba(13,194,224,0.3) !important;
+}
+
+/* Matched letters highlighted inside a card's title/preview. */
+mark.prompt-search-hit {
+    background: linear-gradient(135deg, rgba(250,204,21,0.95) 0%, rgba(249,115,22,0.95) 100%);
+    color: #201200;
+    border-radius: 3px;
+    padding: 0 1px;
+    font-weight: 700;
+    box-shadow: 0 0 6px rgba(250,204,21,0.35);
+}
+
+/* Shown inside the list when nothing matches the query. */
+.prompt-search-empty {
+    text-align: center;
+    color: #b8bcd6;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 26px 16px;
+}
+
+.prompt-search-empty b {
+    color: #ffe9c4;
+}

@@ -1,0 +1,1069 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+import os
+import sys
+from asgiref.sync import async_to_sync
+from langchain_community.document_loaders import DirectoryLoader, TextLoader
+from langchain_ollama import OllamaLLM, OllamaEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from ..global_state import global_state
+from ..llm_timing import llm_timing_callbacks
+from agent.rag_enhancements import enrich_documents_with_metadata, get_project_summary
+from .config import load_config_and_prompt, apply_conditional_rule_blocks
+from .loaders import report_oversized_docs
+from . import binary_guard
+from .splitters import get_text_splitter
+from .prompts import get_contextualize_q_prompt
+from .chains.basic import BasicPromptOnlyChain
+from .chains.history_aware import HistoryAwareNoDocsChain, OptimizedHistoryAwareRAGChain
+from .chains.unified import UnifiedAgentChain, UnifiedAgentRAGChain
+from ..capability_registry import select_context_capabilities_for_request
+from ..global_execution_planner import (
+    build_global_execution_plan,
+    selected_contexts_from_plan,
+    summarize_global_execution_plan,
+)
+from ..tools import get_mcp_tools
+from ..acpx import filter_acpx_tools
+from .utils import _pack_context, _unique_filenames_from_split
+
+# Try to import SystemRAGChain for system resource integration
+try:
+    from ..chain_system_lcel import SystemRAGChain
+except (ImportError, ModuleNotFoundError):
+    # Fallback for legacy path
+    try:
+        from ..applications.chain_system_lcel import SystemRAGChain
+    except (ImportError, ModuleNotFoundError) as e:
+        SystemRAGChain = None
+        print(f"Warning: SystemRAGChain not available: {e}")
+
+# Try to import FileSearchRAGChain for file search integration
+try:
+    from ..chain_files_search_lcel import FileSearchRAGChain
+except (ImportError, ModuleNotFoundError) as e:
+    FileSearchRAGChain = None
+    print(f"Warning: FileSearchRAGChain not available: {e}")
+
+try:
+    from langchain_community.retrievers import BM25Retriever
+except Exception:
+    BM25Retriever = None
+
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+else:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to get to the root of the agent app
+    application_path = os.path.dirname(application_path)
+
+
+# ── L1 (3X-speed plan): Ollama keep-alive + warm embeddings handle ──────────
+# Mirror of mcp_agent.py's keep_alive resolution so the basic/retrieval chains
+# also pin the model resident (the Multi-Turn executor + gpu_perf already do).
+# Behavior-neutral: same model/params, only resident + connection-reused.
+def _resolve_keep_alive():
+    raw = os.environ.get("OLLAMA_KEEP_ALIVE", "-1").strip()
+    try:
+        return int(raw)
+    except (ValueError, TypeError):
+        return raw or -1
+
+
+# Warm, reused embeddings handle keyed by (model, base_url, token). Recreating
+# OllamaEmbeddings per chain build cost a fresh httpx client (and a cold model
+# reload). Switching the embedding model (Config -> Models) changes the key and
+# misses, so a model switch still takes effect.
+_EMBEDDINGS_CACHE = {}
+
+
+def _get_cached_embeddings(config, client_kwargs):
+    model = config.get('embeding-model')
+    base_url = config.get('ollama_base_url')
+    token = config.get('ollama_token')
+    key = (model, base_url, token)
+    cached = _EMBEDDINGS_CACHE.get(key)
+    if cached is not None:
+        return cached
+    # NOTE: OllamaEmbeddings does NOT accept a keep_alive kwarg (verified
+    # against the installed langchain_ollama); the embedding model is kept
+    # resident via the OLLAMA_KEEP_ALIVE env var + gpu_perf.pin_ollama_model.
+    emb = OllamaEmbeddings(
+        model=model,
+        base_url=base_url,
+        client_kwargs=client_kwargs,
+    )
+    _EMBEDDINGS_CACHE[key] = emb
+    return emb
+
+
+# Helper functions for context fetching
+def get_system_context_sync(payload):
+    """Synchronously fetch system context using SystemRAGChain."""
+    if SystemRAGChain is None:
+        return payload
+    
+    try:
+        # Instantiate chain (could be optimized to reuse instance)
+        chain = SystemRAGChain()
+        # Wrap async call
+        async_fetch = async_to_sync(chain.intelligent_context_fetch)
+        # Call with payload (expects 'question' key, payload has 'input')
+        input_data = {"question": payload.get("input", "")}
+        result = async_fetch(input_data)
+        
+        # Merge result into payload
+        # SystemRAGChain returns {'context': ..., 'question': ...}
+        # We want to add 'system_context' to payload
+        new_payload = payload.copy()
+        new_payload["system_context"] = result.get("context", "")
+        return new_payload
+    except Exception as e:
+        print(f"Error fetching system context: {e}")
+        return payload
+
+def get_files_context_sync(payload):
+    """Synchronously fetch files context using FileSearchRAGChain."""
+    if FileSearchRAGChain is None:
+        return payload
+    
+    try:
+        chain = FileSearchRAGChain()
+        async_fetch = async_to_sync(chain.intelligent_context_fetch)
+        input_data = {
+            "question": payload.get("input", ""),
+            "multi_turn_enabled": bool(payload.get("multi_turn_enabled", False)),
+        }
+        result = async_fetch(input_data)
+        
+        # FileSearchRAGChain returns {..., 'files_context': ...}
+        new_payload = payload.copy()
+        new_payload["files_context"] = result.get("files_context", "")
+        return new_payload
+    except Exception as e:
+        print(f"Error fetching files context: {e}")
+        return payload
+
+
+def _system_context_enabled() -> bool:
+    return SystemRAGChain is not None and global_state.get_state('mcp_system_status') == 'enabled'
+
+
+def _files_context_enabled() -> bool:
+    return FileSearchRAGChain is not None and global_state.get_state('mcp_files_search_status') == 'enabled'
+
+
+def _extract_chat_history_text(payload: dict) -> str:
+    """Extract text from recent chat history for planner context boost."""
+    chat_history = payload.get("chat_history", [])
+    if not chat_history:
+        try:
+            from ..chat_history_loader import DBChatHistoryLoader
+            chat_history = DBChatHistoryLoader.load(limit=8)
+        except Exception:
+            return ""
+    parts = []
+    for msg in chat_history:
+        content = getattr(msg, "content", "") if hasattr(msg, "content") else str(msg.get("content", ""))
+        if content:
+            parts.append(content)
+    return " ".join(parts[-4:])  # Last 4 messages max
+
+
+def _ensure_global_execution_plan(payload: dict) -> dict:
+    if not bool(payload.get("multi_turn_enabled", False)):
+        return payload
+
+    existing_plan = payload.get("global_execution_plan")
+    if existing_plan:
+        return payload
+
+    try:
+        chat_history_text = _extract_chat_history_text(payload)
+        # When the user has unticked the toolbar "ACPX" checkbox, strip every
+        # ACPX/Skill tool BEFORE the planner sees the candidate set so the
+        # generated plan can never reference an acp_* tool. This also keeps
+        # the planner's keyword-based scoring from boosting ACPX rows on
+        # requests that mention "acpx" verbatim while ACPX is disabled.
+        acpx_enabled = bool(payload.get("acpx_enabled", False))
+        candidate_tools = filter_acpx_tools(get_mcp_tools(), acpx_enabled)
+        plan = build_global_execution_plan(
+            str(payload.get("input", "") or ""),
+            candidate_tools,
+            system_enabled=_system_context_enabled(),
+            files_enabled=_files_context_enabled(),
+            chat_history_text=chat_history_text,
+        )
+        enhanced_payload = payload.copy()
+        enhanced_payload["global_execution_plan"] = plan.to_dict()
+        enhanced_payload["planner_summary"] = summarize_global_execution_plan(plan)
+        print("--- [Phase3 Planner] Global execution plan built ---")
+        print(enhanced_payload["planner_summary"])
+        return enhanced_payload
+    except Exception as exc:
+        print(f"--- [Phase3 Planner] Failed to build global execution plan: {exc} ---")
+        return payload
+
+
+def _apply_legacy_context_prefetch(payload: dict, warning_suffix: str) -> dict:
+    if _system_context_enabled():
+        print("--- [SystemRAGChain] Integration enabled - system context will be fetched when needed")
+        enhanced_payload = get_system_context_sync(payload)
+    else:
+        print(f"--- [SystemRAGChain] **WARNING({warning_suffix})** Integration disabled - SystemRAGChain not available")
+        enhanced_payload = payload
+
+    if _files_context_enabled():
+        print("--- [FileSearchRAGChain] Integration enabled - file search context will be fetched when needed")
+        enhanced_payload = get_files_context_sync(enhanced_payload)
+    else:
+        print(f"--- [FileSearchRAGChain] **WARNING({warning_suffix})** Integration disabled - FileSearchRAGChain not available")
+
+    return enhanced_payload
+
+
+def _apply_phase2_context_prefetch(payload: dict) -> dict:
+    planned_payload = _ensure_global_execution_plan(payload)
+    selected_contexts = selected_contexts_from_plan(planned_payload.get("global_execution_plan", {}))
+    if not selected_contexts:
+        request_text = str(planned_payload.get("input", "") or "")
+        selected_contexts = select_context_capabilities_for_request(
+            request_text,
+            system_enabled=_system_context_enabled(),
+            files_enabled=_files_context_enabled(),
+        )
+
+    if not selected_contexts:
+        print("--- [Phase2] No MCP-backed context capabilities selected for this request ---")
+        return planned_payload
+
+    print(f"--- [Phase2] Selected context capabilities: {list(selected_contexts)}")
+    enhanced_payload = planned_payload
+
+    if "system_context" in selected_contexts:
+        print("--- [Phase2] Fetching system context ---")
+        enhanced_payload = get_system_context_sync(enhanced_payload)
+    else:
+        print("--- [Phase2] Skipping system context for this request ---")
+
+    if "files_context" in selected_contexts:
+        print("--- [Phase2] Fetching files context ---")
+        enhanced_payload = get_files_context_sync(enhanced_payload)
+    else:
+        print("--- [Phase2] Skipping files context for this request ---")
+
+    return enhanced_payload
+
+
+def _apply_context_prefetch(payload: dict, warning_suffix: str) -> dict:
+    if bool(payload.get("multi_turn_enabled", False)):
+        return _apply_phase2_context_prefetch(payload)
+    return _apply_legacy_context_prefetch(payload, warning_suffix)
+
+
+def _wrap_chain_with_context_prefetch(chain, warning_suffix: str):
+    original_invoke = chain.invoke
+
+    def invoke_with_system_context(payload: dict):
+        enhanced_payload = _apply_context_prefetch(payload, warning_suffix)
+        return original_invoke(enhanced_payload)
+
+    chain.invoke = invoke_with_system_context
+    return chain
+
+
+def _build_loaded_documents_fallback_context(documents, config):
+    if not documents:
+        return ""
+
+    try:
+        docs_list = list(documents)
+    except TypeError:
+        docs_list = [documents]
+
+    docs_list = [doc for doc in docs_list if getattr(doc, "page_content", None)]
+    if not docs_list:
+        return ""
+
+    max_ctx_chars = int(config.get("max_context_chars", 24000))
+    redact = bool(config.get("redact_secrets_in_context", False))
+    use_hierarchical = bool(config.get("retrieval_strategy", {}).get("enable_hierarchical_context", True))
+
+    try:
+        packed_context = _pack_context(docs_list, max_ctx_chars, redact, use_hierarchical)
+    except Exception as exc:
+        print(f"Warning: failed to build loaded-documents fallback context ({exc})")
+        return ""
+
+    manifest = _unique_filenames_from_split(docs_list)
+    if manifest:
+        manifest_block = "FILE MANIFEST (loaded files):\n" + "\n".join(f"- {name}" for name in manifest)
+        if packed_context:
+            return f"{manifest_block}\n\n{packed_context}"
+        return manifest_block
+
+    return packed_context
+
+def build_prompt_only_chain(config, prompt_template_string, documents=None):
+    """Builds a simple prompt-only chain with the same interface as the retrieval chain.
+
+    Returns None on failure, exactly like ``build_retrieval_chain`` — every
+    caller already handles None.
+
+    This is the LAST-RESORT fallback: it is what runs when the retrieval chain
+    could not be built. It was also the only builder with NO exception handling
+    at all, so a raise here escaped into ``setup_llm`` and (before that got its
+    own ``finally``) stranded the chat's readiness latch. The degradation path
+    must be the most defensive code in the file, not the least.
+    """
+    try:
+        return _build_prompt_only_chain_impl(config, prompt_template_string, documents)
+    except Exception as e:
+        print(f"Error building prompt-only chain: {e}")
+        return None
+
+
+def _build_prompt_only_chain_impl(config, prompt_template_string, documents=None):
+    token = config.get('ollama_token')
+    client_kwargs = {'timeout': 120.0}
+    if token:
+        client_kwargs['headers'] = {'Authorization': f'Bearer {token}'}
+
+    stop_tokens = [
+        "<|endoftext|>", "<|im_start|>", "<|im_end|>",
+        "\nHuman:", "\nUser:", "\nAssistant:", "\nSystem:", "\nAI:",
+        "\nEND-RESPONSE\n"
+    ]
+
+    llm = OllamaLLM(
+        model=config.get('chained-model'),
+        base_url=config.get('ollama_base_url'),
+        streaming=True,
+        stop=stop_tokens,
+        temperature=0.0,
+        top_k=20,
+        top_p=0.8,
+        repeat_penalty=1.9,
+        thinking=True,
+        context_window=128000,
+        handle_parsing_errors=True,
+        keep_alive=_resolve_keep_alive(),
+        client_kwargs=client_kwargs,
+        callbacks=llm_timing_callbacks(),
+    )
+
+    if llm is None:
+        print("Error: LLM model not found or Ollama is not running.")
+        return None
+
+    ollama_client_instance = llm._client
+    print(f"Found ollama.Client: {ollama_client_instance}")
+    httpx_client_instance = ollama_client_instance._client
+    print(f"Found httpx.Client: {httpx_client_instance}")
+   
+    history_summary_cfg = {
+        "enable": bool(config.get("history_summary_enable", False)),
+        "trigger_tokens": int(config.get("history_summary_trigger_tokens", 800)),
+        "keep_last_turns": int(config.get("history_keep_last_turns", 6)),
+    }
+
+    loaded_context = _build_loaded_documents_fallback_context(documents, config)
+    if loaded_context:
+        print(f"--- Loaded-documents fallback context prepared ({len(loaded_context)} chars) ---")
+
+    contextualize_q_prompt = get_contextualize_q_prompt()
+
+    # The non-tool (prompt-only) chain never has any tools bound, so the
+    # feature-gated ACPX (Rule 12) / Templates (Rule 16) blocks are always
+    # irrelevant there — strip both so a smaller model isn't handed them. The
+    # tool-enabled UnifiedAgentChain keeps the raw string (with sentinels) so
+    # _build_system_prompt can resolve the blocks per-request from its tool set.
+    non_tool_prompt_string = apply_conditional_rule_blocks(
+        prompt_template_string, include_acpx=False, include_templates=False)
+
+    # Create unified prompt that supports all contexts
+    final_qa_prompt = ChatPromptTemplate.from_messages([
+        ("system", non_tool_prompt_string),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}"),
+        ("system", "Apply all of the Rules only to the **CURRENT** human input ({input}); ignore chat_history for all of the Rules.")
+    ])
+
+    if SystemRAGChain is not None:
+        print("[SystemRAGChain] Integration enabled - system context will be fetched when needed")
+    else:
+        print("[SystemRAGChain] Integration disabled - SystemRAGChain not available")
+
+    if FileSearchRAGChain is not None:
+        print("[FileSearchRAGChain] Integration enabled - file search context will be fetched when needed")
+    else:
+        print("[FileSearchRAGChain] Integration disabled - FileSearchRAGChain not available")
+
+    use_unified_agent = bool(config.get("enable_unified_agent", False))
+
+    if use_unified_agent:
+        print("--- UnifiedAgentChain: Building tool-enabled chain ---")
+        chain = UnifiedAgentChain(llm, prompt_template_string, history_summary_cfg, loaded_context=loaded_context)
+    else:
+        chain = BasicPromptOnlyChain(
+            llm,
+            contextualize_q_prompt,
+            final_qa_prompt,
+            non_tool_prompt_string,
+            history_summary_cfg
+            ,loaded_context=loaded_context
+        )
+    
+    chain.setHttpxClientInstance(httpx_client_instance)
+
+    # Add system context preprocessing to the chain
+    if SystemRAGChain is not None or FileSearchRAGChain is not None:
+        chain = _wrap_chain_with_context_prefetch(chain, "1")
+
+    return chain
+
+def build_retrieval_chain(documents, config, prompt_template_string):
+    """Builds the retrieval chain."""
+    print("Building retrieval chain...")
+
+    try:
+        token = config.get('ollama_token')
+        client_kwargs = {'timeout': 120.0}
+        if token:
+            client_kwargs['headers'] = {'Authorization': f'Bearer {token}'}
+
+        stop_tokens = [
+            "<|endoftext|>", "<|im_start|>", "<|im_end|>",
+            "\nHuman:", "\nUser:", "\nAssistant:", "\nSystem:", "\nAI:",
+            "\nEND-RESPONSE\n"
+        ]
+
+        llm = OllamaLLM(
+            model=config.get('chained-model'),
+            base_url=config.get('ollama_base_url'),
+            streaming=True,
+            stop=stop_tokens,
+            temperature=0.0,
+            top_k=20,
+            top_p=0.8,
+            repeat_penalty=1.9,
+            thinking=True,
+            context_window=128000,
+            handle_parsing_errors=True,
+            keep_alive=_resolve_keep_alive(),
+            client_kwargs=client_kwargs,
+            callbacks=llm_timing_callbacks(),
+        )
+
+        if llm is None:
+            print("Error: LLM model not found or Ollama is not running.")
+            return None
+
+        ollama_client_instance = llm._client
+        print(f"Found ollama.Client: {ollama_client_instance}")
+        httpx_client_instance = ollama_client_instance._client
+        print(f"Found httpx.Client: {httpx_client_instance}")
+
+        contextualize_q_prompt = get_contextualize_q_prompt()
+
+        has_docs = True
+        docs_list = []
+        split_docs = []
+
+        if documents is None:
+            has_docs = False
+        else:
+            try:
+                docs_list = list(documents)
+            except TypeError:
+                docs_list = [documents]
+            docs_list = [d for d in docs_list if getattr(d, "page_content", None)]
+            if not docs_list:
+                has_docs = False
+
+        if has_docs:
+            chunk_size = int(config.get("chunk_size", 500))
+            chunk_overlap = int(config.get("chunk_overlap", 100))
+            text_splitter = get_text_splitter(chunk_size, chunk_overlap)
+
+            try:
+                split_docs = text_splitter.split_documents(docs_list)
+            except Exception as e:
+                print(f"Warning: failed to split documents ({e}); falling back to no-docs contextual chain.")
+                split_docs = []
+
+            if not split_docs:
+                has_docs = False
+
+        history_summary_cfg = {
+            "enable": bool(config.get("history_summary_enable", False)),
+            "trigger_tokens": int(config.get("history_summary_trigger_tokens", 800)),
+            "keep_last_turns": int(config.get("history_keep_last_turns", 6)),
+        }
+
+        if not has_docs:
+            # No-docs, non-tool path: strip the feature-gated ACPX/Templates
+            # rule blocks (no tools are ever bound on this chain).
+            non_tool_prompt_string = apply_conditional_rule_blocks(
+                prompt_template_string, include_acpx=False, include_templates=False)
+            final_qa_prompt = ChatPromptTemplate.from_messages([
+                ("system", non_tool_prompt_string),
+                MessagesPlaceholder("chat_history"),
+                ("human", "{input}"),
+                ("system", "Apply all of the Rules only to the **CURRENT** human input ({input}); ignore chat_history for all of the Rules.")
+            ])
+            
+            if SystemRAGChain is not None:
+                print("[SystemRAGChain] Integration enabled - system context will be fetched when needed")
+            else:
+                print("[SystemRAGChain] Integration disabled - SystemRAGChain not available")
+            
+            if FileSearchRAGChain is not None:
+                print("[FileSearchRAGChain] Integration enabled - file search context will be fetched when needed")
+            else:
+                print("[FileSearchRAGChain] Integration disabled - FileSearchRAGChain not available")
+
+            use_unified_agent = bool(config.get("enable_unified_agent", False))
+            
+            if use_unified_agent:
+                print("--- UnifiedAgentChain: Building tool-enabled chain (no docs path) ---")
+                chain = UnifiedAgentChain(llm, prompt_template_string, history_summary_cfg)
+            else:
+                chain = HistoryAwareNoDocsChain(
+                    llm, 
+                    contextualize_q_prompt, 
+                    final_qa_prompt,
+                    history_summary_cfg
+                )
+            
+            chain.setHttpxClientInstance(httpx_client_instance)
+
+            if SystemRAGChain is not None or FileSearchRAGChain is not None:
+                chain = _wrap_chain_with_context_prefetch(chain, "2")
+            return chain
+
+        embeddings = _get_cached_embeddings(config, client_kwargs)
+        if embeddings is None:
+            print("Error: Embeddings model not found or Ollama is not running.")
+            return None
+
+        vector_store = FAISS.from_documents(split_docs, embeddings)
+
+        bm25 = None
+        if bool(config.get("enable_bm25", False)) and BM25Retriever is not None:
+            try:
+                bm25 = BM25Retriever.from_documents(split_docs)
+            except Exception:
+                bm25 = None
+
+        # Helper to safely get nested config values
+        def get_cfg(key, default, parent_key=None):
+            if parent_key and parent_key in config and isinstance(config[parent_key], dict):
+                return config[parent_key].get(key, default)
+            return config.get(key, default)
+
+        retrieval_cfg = {
+            "use_mmr": bool(config.get("use_mmr", True)),
+            "k_vector": int(config.get("k_vector", 8)),
+            "fetch_k": int(config.get("fetch_k", 32)),
+            "mmr_lambda": float(config.get("mmr_lambda", 0.5)),
+            "k_bm25": int(config.get("k_bm25", 8)),
+            "rrf_k": int(config.get("rrf_k", 60)),
+            "k_fused": int(config.get("k_fused", 10)),
+            "max_chunks_per_file": int(config.get("max_chunks_per_file", 1)),
+            
+            # Read from retrieval_strategy section or fall back to root
+            "enable_multi_stage": bool(get_cfg("enable_multi_stage", False, "retrieval_strategy")),
+            "enable_query_expansion": bool(get_cfg("enable_query_expansion", False, "retrieval_strategy")),
+            "enable_context_budget_allocation": bool(get_cfg("enable_context_budget_allocation", False, "retrieval_strategy")),
+            "enable_hierarchical_context": bool(get_cfg("enable_hierarchical_context", True, "retrieval_strategy")),
+            
+            # Always enable cross references if not specified
+            "enable_cross_references": bool(get_cfg("enable_cross_references", True, "metadata_extraction"))
+        }
+
+        compression_cfg = {
+            "use_llm_extractor": bool(config.get("use_llm_extractor", True)),
+            "use_embeddings_filter": bool(config.get("use_embeddings_filter", False)),
+            "use_long_context_reorder": bool(config.get("use_long_context_reorder", True)),
+            "max_doc_chars": int(config.get("max_doc_chars", 8000)),
+            "max_context_chars": int(config.get("max_context_chars", 24000)),
+            "redact_secrets_in_context": bool(config.get("redact_secrets_in_context", False))
+        }
+
+        final_prompt_string = prompt_template_string
+        
+        if SystemRAGChain is not None:
+            print("[SystemRAGChain] Integration enabled - system context will be fetched when needed")
+        else:
+            print("[SystemRAGChain] Integration disabled - SystemRAGChain not available")
+        
+        if FileSearchRAGChain is not None:
+            print("[FileSearchRAGChain] Integration enabled - file search context will be fetched when needed")
+        else:
+            print("[FileSearchRAGChain] Integration disabled - FileSearchRAGChain not available")
+
+        use_unified_agent = bool(config.get("enable_unified_agent", False))
+        
+        if use_unified_agent:
+            print("--- UnifiedAgentRAGChain: Building tool-enabled RAG chain ---")
+            chain = UnifiedAgentRAGChain(
+                llm=llm,
+                prompt_template_string=final_prompt_string,
+                contextualize_q_prompt=contextualize_q_prompt,
+                vector_store=vector_store,
+                split_docs=split_docs,
+                retrieval_cfg=retrieval_cfg,
+                compression_cfg=compression_cfg,
+                history_summary_cfg=history_summary_cfg,
+                bm25=bm25,
+            )
+        else:
+            # Non-tool RAG chain: strip the feature-gated ACPX/Templates rule
+            # blocks (this chain never binds tools).
+            chain = OptimizedHistoryAwareRAGChain(
+                llm=llm,
+                prompt_template_string=apply_conditional_rule_blocks(
+                    final_prompt_string, include_acpx=False, include_templates=False),
+                contextualize_q_prompt=contextualize_q_prompt,
+                vector_store=vector_store,
+                split_docs=split_docs,
+                retrieval_cfg=retrieval_cfg,
+                compression_cfg=compression_cfg,
+                history_summary_cfg=history_summary_cfg,
+                bm25=bm25,
+            )
+        
+        chain.setHttpxClientInstance(httpx_client_instance)
+
+        if SystemRAGChain is not None or FileSearchRAGChain is not None:
+            chain = _wrap_chain_with_context_prefetch(chain, "3")
+        return chain
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+def _announce_binary_guard_settings(settings):
+    """Log the binary-guard configuration at the head of a context load.
+
+    Mirrors the existing "--- Excluded filenames/extensions" banner so the log
+    reads as one coherent story, and lands in tlamatini.log in BOTH frozen and
+    source mode (manage.py tees stdout/stderr into the log before Django boots).
+    """
+    if not settings.get('enabled', False):
+        print("--- [BINARY-GUARD] DISABLED (binary_context_detection=false) - "
+              "binary files will be loaded as text")
+        return
+    print(f"--- [BINARY-GUARD] ENABLED - sampling {settings.get('sample_bytes')} bytes/file, "
+          f"control-byte limit {settings.get('control_ratio')}")
+    extra = settings.get('extra_binary_extensions') or ()
+    forced = settings.get('force_text_extensions') or ()
+    if extra:
+        print(f"--- [BINARY-GUARD] Extra binary extensions: {sorted(extra)}")
+    if forced:
+        print(f"--- [BINARY-GUARD] Forced-text extensions: {sorted(forced)}")
+
+
+def _announce_binary_omissions(settings, scope):
+    """Print the per-load omission block, then reset the recorder.
+
+    Every dropped file is named with the stage and reason that condemned it, so
+    a user who wonders "why is my file not in the context?" gets a direct answer
+    from tlamatini.log instead of silence.
+    """
+    if not settings.get('enabled', False):
+        return
+    recorder = binary_guard.omission_recorder
+    dropped = len(recorder)
+    if dropped:
+        if settings.get('log_each_file', True):
+            print(recorder.format_report())
+        else:
+            print(f"--- [BINARY-GUARD] {dropped} binary file(s) OMITTED from the "
+                  f"context / embedding chain ({scope}) - per-file listing disabled")
+    else:
+        print(f"--- [BINARY-GUARD] No binary content detected ({scope}) - "
+              "nothing omitted")
+    recorder.reset()
+
+
+class CustomTextLoader(TextLoader):
+    def __init__(self, file_path, encoding=None, autodetect_encoding=False, exclusions=None,
+                 binary_guard_settings=None):
+        if exclusions:
+            base_name = os.path.basename(file_path)
+            # Check for exact filename matches
+            if base_name in exclusions.get('filenames', []):
+                raise ValueError(f"File {base_name} is excluded by filename.")
+            # Check for extension matches
+            for ext in exclusions.get('extensions', []):
+                if base_name.endswith(ext):
+                    raise ValueError(f"File {base_name} is excluded by extension {ext}.")
+
+        # ── Binary-content guard ──────────────────────────────────────────
+        # The exclusions above are NAME-based (what the user typed into
+        # Context > Set file type omissions). This is CONTENT-based: it drops a
+        # file whose bytes are binary no matter what it is called, using the
+        # same mechanism (raise -> DirectoryLoader silent_errors swallows it),
+        # so a binary drop is indistinguishable downstream from a user omission.
+        settings = binary_guard_settings or {}
+        if settings.get('enabled', False):
+            verdict = binary_guard.classify_file(
+                file_path,
+                sample_bytes=settings.get('sample_bytes', binary_guard.DEFAULT_SAMPLE_BYTES),
+                control_ratio=settings.get('control_ratio', binary_guard.DEFAULT_CONTROL_RATIO),
+                extra_binary_extensions=settings.get('extra_binary_extensions', ()),
+                force_text_extensions=settings.get('force_text_extensions', ()),
+            )
+            if verdict.is_binary:
+                binary_guard.omission_recorder.record(verdict)
+                raise ValueError(
+                    f"File {os.path.basename(file_path)} is excluded as binary content "
+                    f"[{verdict.stage}: {verdict.reason}]."
+                )
+
+        super().__init__(file_path, encoding=encoding, autodetect_encoding=autodetect_encoding)
+
+def setup_llm_with_context(path_only, agents=None, mcps=None, tools=None, omissions=None, filename=None):
+    """Build the contextual chain. ALWAYS reopens the lane on the way out.
+
+    ⚠️ THE ``finally`` IS THE FIX — do not remove it. See ``setup_llm`` below
+    for the full incident write-up; this function had the identical defect.
+    """
+    try:
+        return _setup_llm_with_context_impl(
+            path_only, agents, mcps, tools, omissions, filename)
+    finally:
+        # FAIL-OPEN: a build that failed must leave the lane OPEN so the next
+        # message can retry. Bricking the process is strictly worse than
+        # letting the user try again.
+        global_state.set_state('rag_chain_ready', True)
+
+
+def _setup_llm_with_context_impl(path_only, agents=None, mcps=None, tools=None, omissions=None, filename=None):
+    global_state.set_state('rag_chain_ready', False)
+    
+    if agents is not None:
+        for agent in agents:
+            descr = agent.get('agentDescription')
+            content = agent.get('agentContent')
+            global_state.set_state('agent_'+descr.lower()+'_status', 'enabled' if content == 'true' else 'disabled')
+            print(f"--- Agent: {descr} [agent_{descr.lower()}_status] - Status: {global_state.get_state('agent_'+descr.lower()+'_status')}")
+
+    if mcps is not None:
+        system_enabled = any(
+            (m.get('mcpDescription') == 'System-Metrics' and m.get('mcpContent') == 'true')
+            for m in mcps
+        )
+        files_enabled = any(
+            (m.get('mcpDescription') == 'Files-Search' and m.get('mcpContent') == 'true')
+            for m in mcps
+        )
+        global_state.set_state('mcp_system_status', 'enabled' if system_enabled else 'disabled')
+        global_state.set_state('mcp_files_search_status', 'enabled' if files_enabled else 'disabled')
+    print(f"--- MCP: System-Metrics - Status: {global_state.get_state('mcp_system_status')}")
+    print(f"--- MCP: Files-Search - Status: {global_state.get_state('mcp_files_search_status')}")
+
+    if tools is not None:
+        for tool in tools:
+            descr = tool.get('toolDescription')
+            content = tool.get('toolContent')
+            global_state.set_state('tool_'+descr.lower()+'_status', 'enabled' if content == 'true' else 'disabled')
+            print(f"--- Tool: {descr} [tool_{descr.lower()}_status] - Status: {global_state.get_state('tool_'+descr.lower()+'_status')}")
+
+    # Parse omissions
+    default_excluded_filenames = ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'bun.lockb']
+    excluded_filenames = list(default_excluded_filenames)
+    excluded_extensions = []
+    if omissions:
+        for o in omissions.split(','):
+            o = o.strip()
+            if o.startswith('*.'):
+                excluded_extensions.append(o[1:]) # Remove '*' to get '.doc'
+            else:
+                excluded_filenames.append(o)
+    
+    exclusions = {
+        'filenames': excluded_filenames,
+        'extensions': excluded_extensions
+    }
+
+    print("--- Loading all files with exclusions:")
+    if excluded_filenames:
+        print(f"--- Excluded filenames: {excluded_filenames}")
+    if excluded_extensions:
+        print(f"--- Excluded extensions: {['*' + ext for ext in excluded_extensions]}")
+
+    config, prompt_template, _ = load_config_and_prompt(application_path)
+    binary_settings = binary_guard.resolve_settings(config)
+    binary_guard.omission_recorder.reset()
+    _announce_binary_guard_settings(binary_settings)
+    oversizedDocs = False
+
+    if os.path.exists(path_only):
+        if os.path.isdir(path_only) and filename is None:
+            print(f"--- Detected directory path: {path_only}")
+            print("--- Scanning for documents (excluding specified patterns)...")
+            loader = DirectoryLoader(
+                path_only,
+                glob="**/*",
+                recursive=True,
+                use_multithreading=True,
+                max_concurrency=12,
+                load_hidden=bool(config.get("load_hidden", True)),
+                show_progress=True,
+                loader_cls=CustomTextLoader,
+                loader_kwargs={
+                    "autodetect_encoding": True,
+                    "exclusions": exclusions,
+                    "binary_guard_settings": binary_settings
+                },
+                silent_errors=True
+            )
+            documents = loader.load() if loader else None
+            _announce_binary_omissions(binary_settings, f"directory {path_only}")
+            if documents:
+                oversizedDocs = report_oversized_docs(documents, int(config.get("max_doc_chars", 8000)))
+        elif filename is not None and os.path.isfile(os.path.join(path_only, filename)):
+            print(f"--- Loading specific file: {os.path.join(path_only, filename)}")
+            print("--- Processing single document for context...")
+            loader = DirectoryLoader(
+                path_only,
+                glob=filename,
+                recursive=False,
+                use_multithreading=False,
+                load_hidden=bool(config.get("load_hidden", True)),
+                show_progress=True,
+                loader_cls=CustomTextLoader,
+                loader_kwargs={
+                    "autodetect_encoding": True,
+                    "exclusions": exclusions,
+                    "binary_guard_settings": binary_settings
+                },
+                silent_errors=True
+            )
+            documents = loader.load() if loader else None
+            _announce_binary_omissions(binary_settings, f"file {filename}")
+            if documents:
+                oversizedDocs = report_oversized_docs(documents, int(config.get("max_doc_chars", 8000)))
+        else:
+            print(f"--- Error: Target path '{os.path.join(path_only, (filename or ''))}' is not accessible.")
+            print("--- Please verify the file path and permissions.")
+            return None
+    else:
+        print(f"--- Error: Source path '{path_only}' does not exist.")
+        print("--- Please check the path and try again.")
+        return None
+
+    if documents:
+        for doc in documents:
+            full_path = doc.metadata["source"]
+            doc.metadata["filename"] = os.path.basename(full_path)
+            doc.metadata["file_extension"] = os.path.splitext(full_path)[1]
+            doc.metadata["directory"] = os.path.dirname(full_path)
+            try:
+                doc.metadata["file_size"] = os.path.getsize(full_path)
+                doc.metadata["last_modified_at"] = os.path.getmtime(full_path)
+                doc.metadata["created_at"] = os.path.getctime(full_path)
+            except Exception:
+                pass
+        print("--- Enriching documents with metadata...")
+        all_file_paths = [doc.metadata.get('source', '') for doc in documents]
+        documents = enrich_documents_with_metadata(documents, all_file_paths)
+    
+        project_summary = get_project_summary(documents)
+        print(f"--- Project summary: {project_summary['total_files']} files, "
+              f"{project_summary['total_lines']} lines across "
+              f"{len(project_summary['file_types'])} file types")
+
+    print(f"--- Document loading status: {'No documents loaded' if documents is None else f'{len(documents)} documents loaded successfully'}")
+    retrieval_chain = build_retrieval_chain(documents, config, prompt_template)
+    if retrieval_chain is None:
+        print("Error: RAG chain not built successfully; falling back to prompt-only mode.")
+        prompt_only_chain = build_prompt_only_chain(config, prompt_template, documents=documents)
+        if prompt_only_chain is None:
+            return None
+        print("--- Prompt-only chain ready (loaded-documents fallback mode).")
+        global_state.set_state('rag_chain_ready', True)
+        return prompt_only_chain
+    if isinstance(retrieval_chain, (OptimizedHistoryAwareRAGChain, UnifiedAgentRAGChain)):
+        retrieval_chain.setDetectedOversizedDocs(bool(oversizedDocs))
+    global_state.set_state('rag_chain_ready', True)
+    return retrieval_chain
+
+def setup_llm(agents=None, mcps=None, tools=None, omissions=None):
+    """Build the chat chain. ALWAYS reopens the lane on the way out.
+
+    ⚠️ THE ``finally`` IS THE FIX — do not remove it, and do not gate it.
+
+    THE OUTAGE (Angela, live run 2026-07-29). ``rag_chain_ready`` is the
+    process-global busy/free latch for the ONE chat lane. This function lowered
+    it on entry and raised it again ONLY on its success paths — every
+    ``return None`` and every exception escaping the heavy work (config load,
+    DirectoryLoader, embeddings, chain build, the prompt-only fallback) left it
+    DOWN FOREVER.
+
+    Why that was so hard to survive: the latch is PROCESS-GLOBAL but the
+    rebuild lock is PER-CONSUMER, so refreshing the browser made a new consumer
+    that inherited the dead global and never rebuilt. The user saw the server
+    alive and answering HTTP, Ollama healthy, the GPU idle, nothing computing —
+    and a chat that was dead forever, curable only by killing the process.
+
+    ``ask_rag`` already got this treatment; the REBUILD path never did, and
+    that asymmetry is the whole incident.
+    """
+    try:
+        return _setup_llm_impl(agents, mcps, tools, omissions)
+    finally:
+        # FAIL-OPEN: a failed build must leave the lane OPEN so the next
+        # message can retry. The consumer decides separately whether a usable
+        # chain actually exists — see setup_rag_chain's finally.
+        global_state.set_state('rag_chain_ready', True)
+
+
+def _setup_llm_impl(agents=None, mcps=None, tools=None, omissions=None):
+    global_state.set_state('rag_chain_ready', False)
+
+    if agents is not None:
+        for agent in agents:
+            descr = agent.get('agentDescription')
+            content = agent.get('agentContent')
+            global_state.set_state('agent_'+descr.lower()+'_status', 'enabled' if content == 'true' else 'disabled')
+            print(f"--- Agent: {descr} [agent_{descr.lower()}_status] - Status: {global_state.get_state('agent_'+descr.lower()+'_status')}")
+
+    if mcps is not None:
+        system_enabled = any(
+            (m.get('mcpDescription') == 'System-Metrics' and m.get('mcpContent') == 'true')
+            for m in mcps
+        )
+        files_enabled = any(
+            (m.get('mcpDescription') == 'Files-Search' and m.get('mcpContent') == 'true')
+            for m in mcps
+        )
+        global_state.set_state('mcp_system_status', 'enabled' if system_enabled else 'disabled')
+        global_state.set_state('mcp_files_search_status', 'enabled' if files_enabled else 'disabled')
+    print(f"--- MCP: System-Metrics - Status: {global_state.get_state('mcp_system_status')}")
+    print(f"--- MCP: Files-Search - Status: {global_state.get_state('mcp_files_search_status')}")
+
+    if tools is not None:
+        for tool in tools:
+            descr = tool.get('toolDescription')
+            content = tool.get('toolContent')
+            global_state.set_state('tool_'+descr.lower()+'_status', 'enabled' if content == 'true' else 'disabled')
+            print(f"--- Tool: {descr} [tool_{descr.lower()}_status] - Status: {global_state.get_state('tool_'+descr.lower()+'_status')}")
+
+    # Parse omissions
+    default_excluded_filenames = ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'bun.lockb']
+    excluded_filenames = list(default_excluded_filenames)
+    excluded_extensions = []
+    if omissions:
+        for o in omissions.split(','):
+            o = o.strip()
+            if o.startswith('*.'):
+                excluded_extensions.append(o[1:]) # Remove '*' to get '.doc'
+            else:
+                excluded_filenames.append(o)
+    
+    exclusions = {
+        'filenames': excluded_filenames,
+        'extensions': excluded_extensions
+    }
+
+    print("--- Loading all files with exclusions:")
+    if excluded_filenames:
+        print(f"--- Excluded filenames: {excluded_filenames}")
+    if excluded_extensions:
+        print(f"--- Excluded extensions: {['*' + ext for ext in excluded_extensions]}")
+
+    config, prompt_template, _ = load_config_and_prompt(application_path)
+    binary_settings = binary_guard.resolve_settings(config)
+    binary_guard.omission_recorder.reset()
+    _announce_binary_guard_settings(binary_settings)
+    application_context_path = os.path.join(application_path, 'application')
+    oversizedDocs = False
+
+    if os.path.isdir(application_context_path):
+        print(f"The directory '{application_context_path}' exists.\nLoading documents (excluding specified patterns)...")
+        loader = DirectoryLoader(
+            application_context_path,
+            glob="**/*",
+            recursive=True,
+            use_multithreading=True,
+            max_concurrency=12,
+            load_hidden=bool(config.get("load_hidden", True)),
+            show_progress=True,
+            loader_cls=CustomTextLoader,
+            loader_kwargs={
+                "autodetect_encoding": True,
+                "exclusions": exclusions,
+                "binary_guard_settings": binary_settings
+            },
+            silent_errors=True
+        )
+        documents = loader.load() if loader else None
+        _announce_binary_omissions(binary_settings, f"directory {application_context_path}")
+        if documents:
+            oversizedDocs = report_oversized_docs(documents, int(config.get("max_doc_chars", 8000)))
+            for doc in documents:
+                src = doc.metadata["source"]
+                doc.metadata["filename"] = os.path.basename(src)
+                doc.metadata["file_extension"] = os.path.splitext(src)[1]
+                doc.metadata["directory"] = os.path.dirname(src)
+                try:
+                    doc.metadata["file_size"] = os.path.getsize(src)
+                    doc.metadata["last_modified_at"] = os.path.getmtime(src)
+                    doc.metadata["created_at"] = os.path.getctime(src)
+                except Exception:
+                    pass
+            print("--- Enriching documents with metadata...")
+            all_file_paths = [doc.metadata.get('source', '') for doc in documents]
+            documents = enrich_documents_with_metadata(documents, all_file_paths)
+
+            project_summary = get_project_summary(documents)
+            print(f"--- Project summary: {project_summary['total_files']} files, "
+                  f"{project_summary['total_lines']} lines")
+        else:
+            documents = None
+            print(f"The directory '{application_context_path}' does not contain loadable files.")
+    else:
+        documents = None
+
+    if documents:
+        retrieval_chain = build_retrieval_chain(documents, config, prompt_template)
+        if retrieval_chain is None:
+            print("Error: RAG chain not built successfully; falling back to prompt-only mode.")
+            prompt_only_chain = build_prompt_only_chain(config, prompt_template, documents=documents)
+            if prompt_only_chain is None:
+                return None
+            print("--- Prompt-only chain ready (loaded-documents fallback mode).")
+            global_state.set_state('rag_chain_ready', True)
+            return prompt_only_chain
+        else:
+            if isinstance(retrieval_chain, (OptimizedHistoryAwareRAGChain, UnifiedAgentRAGChain)):
+                retrieval_chain.setDetectedOversizedDocs(bool(oversizedDocs))
+        print("--- RAG chain built successfully.")
+        global_state.set_state('rag_chain_ready', True)
+        return retrieval_chain
+    else:
+        print("No files found in ./application; starting in no-documents mode.")
+        prompted_chain = build_retrieval_chain(documents, config, prompt_template)
+        if prompted_chain is None:
+            prompt_only_chain = build_prompt_only_chain(config, prompt_template, documents=documents)
+            if prompt_only_chain is None:
+                return None
+            print("--- Prompt-only chain ready (no documents loaded).")
+            global_state.set_state('rag_chain_ready', True)
+            return prompt_only_chain
+        if isinstance(prompted_chain, (OptimizedHistoryAwareRAGChain, UnifiedAgentRAGChain)):
+            prompted_chain.setDetectedOversizedDocs(bool(oversizedDocs))
+        global_state.set_state('rag_chain_ready', True)
+        return prompted_chain

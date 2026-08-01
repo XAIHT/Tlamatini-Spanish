@@ -1,0 +1,16 @@
+llm:
+  base_url: http://localhost:11434
+  model: glm-5.2:cloud
+  temperature: 0.1
+target:
+  mode: ''
+  search_strings: '''demo'' and target.outcome_detail=''The end-to-end multi-turn
+    local document demo has finished successfully! Steps completed: File created,
+    content extracted, summary generated.'' and target.sound_enabled=true'
+  outcome_detail: ''
+  sound_enabled: false
+  shutdown_on_match: false
+  poll_interval: 2
+  recursion_limit: 1000
+source_agents: []
+target_agents: []

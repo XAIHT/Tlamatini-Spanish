@@ -1,0 +1,197 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+
+import os
+import sys
+import logging
+import yaml
+import subprocess
+# -- conhost.exe orphan guard ------------------------------------------
+# When Tlamatini's runtime launches us with DETACHED_PROCESS we have no
+# console attached. Any child we Popen WITHOUT CREATE_NO_WINDOW makes
+# Windows allocate a fresh console (and a companion conhost.exe) for the
+# child -- which lingers as an orphan bearing the Tlamatini icon if we
+# exit before the child detaches. Default every Popen to
+# CREATE_NO_WINDOW unless the caller explicitly asked for a console
+# (CREATE_NEW_CONSOLE) or detached the child themselves.
+if os.name == 'nt' and not getattr(subprocess, '_conhost_guard_applied', False):
+    _CHG_NO_WINDOW = subprocess.CREATE_NO_WINDOW
+    _CHG_RESPECT = (
+        _CHG_NO_WINDOW
+        | getattr(subprocess, 'CREATE_NEW_CONSOLE', 0)
+        | getattr(subprocess, 'DETACHED_PROCESS', 0)
+    )
+    _chg_orig_init = subprocess.Popen.__init__
+    def _chg_guarded_init(self, *args, **kwargs):
+        cf = kwargs.get('creationflags', 0) or 0
+        if not (cf & _CHG_RESPECT):
+            kwargs['creationflags'] = cf | _CHG_NO_WINDOW
+        return _chg_orig_init(self, *args, **kwargs)
+    subprocess.Popen.__init__ = _chg_guarded_init
+    subprocess._conhost_guard_applied = True
+import time
+from pymongo import MongoClient
+import traceback
+
+def get_agent_env(agent_name, pool_dir_name):
+    agent_dir = os.path.dirname(os.path.realpath(__file__))
+    
+    new_env = os.environ.copy()
+    new_env['PYTHON_HOME'] = f"{agent_dir};{os.path.join(agent_dir, '..')}"
+    new_env['POOL_DIR_NAME'] = pool_dir_name
+    return new_env
+
+def start_agent(agent_name, pool_dir_name):
+    agent_dir = os.path.dirname(os.path.realpath(__file__))
+    agent_script_path = os.path.join(agent_dir, '..', agent_name, f'{agent_name}.py')
+    
+    py_executable = sys.executable
+    
+    new_env = get_agent_env(agent_name, pool_dir_name)
+
+    # Use CREATE_NEW_CONSOLE for Windows to run the agent in a new console window
+    creationflags = subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0
+    
+    subprocess.Popen([py_executable, agent_script_path], env=new_env, creationflags=creationflags)
+
+
+def is_agent_running(agent_name: str) -> bool:
+    """Check if an agent is currently running by verifying its PID file and process."""
+    agent_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', agent_name)
+    pid_path = os.path.join(agent_dir, "agent.pid")
+
+    if not os.path.exists(pid_path):
+        return False
+
+    try:
+        with open(pid_path, "r") as f:
+            pid = int(f.read().strip())
+    except (ValueError, OSError):
+        return False
+
+    try:
+        import psutil
+        if not psutil.pid_exists(pid):
+            return False
+        proc = psutil.Process(pid)
+        if proc.status() == psutil.STATUS_ZOMBIE:
+            return False
+        return True
+    except Exception:
+        try:
+            os.kill(pid, 0)
+            return True
+        except OSError:
+            return False
+
+
+def wait_for_agents_to_stop(agent_names: list):
+    """
+    Wait until ALL specified agents have stopped running.
+    Logs ERROR every 10 seconds while waiting. Never proceeds until all have stopped.
+    """
+    if not agent_names:
+        return
+
+    waited = 0.0
+    poll_interval = 0.5
+
+    while True:
+        still_running = [name for name in agent_names if is_agent_running(name)]
+        if not still_running:
+            return
+
+        if waited >= 10.0:
+            logging.error(
+                f"❌ WAITING FOR AGENTS TO STOP: {still_running} still running "
+                f"after {int(waited)}s. Will keep waiting..."
+            )
+            waited = 0.0
+
+        time.sleep(poll_interval)
+        waited += poll_interval
+
+
+def main():
+    os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
+    
+    agent_dir = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(agent_dir)
+    
+    pool_dir_name = os.environ.get('POOL_DIR_NAME', agent_dir)
+    CURRENT_DIR_NAME = os.path.basename(agent_dir)
+    LOG_FILE_PATH = f'{pool_dir_name}.log'
+
+    # Reanimation detection: AGENT_REANIMATED=1 means resume from pause
+    _is_reanimated = os.environ.get('AGENT_REANIMATED') == '1'
+    if not _is_reanimated:
+        open(LOG_FILE_PATH, 'w').close()
+
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        filename=LOG_FILE_PATH,
+                        filemode='a', encoding='utf-8')
+
+    pid = os.getpid()
+    with open('agent.pid', 'w') as f:
+        f.write(str(pid))
+
+    if _is_reanimated:
+        logging.info(f"🔄 {CURRENT_DIR_NAME} REANIMATED (resuming from pause)")
+        logging.info("=" * 60)
+    logging.info(f"Agent started with PID: {pid}")
+
+    try:
+        with open("config.yaml", "r", encoding="utf-8") as _cfg:
+            config = yaml.safe_load(_cfg)
+        
+        mongo_config = config.get('mongo_connection', {})
+        
+        login = mongo_config.get('login', '')
+        password = mongo_config.get('password', '')
+        client_kwargs = {}
+        if login and password:
+            client_kwargs['username'] = login
+            client_kwargs['password'] = password
+            
+        client = MongoClient(mongo_config.get('connection_string'), **client_kwargs)
+        db = client[mongo_config.get('database')]
+        
+        script_to_execute = config.get('script')
+        
+        if script_to_execute:
+            logging.info(f"Executing script: {script_to_execute}")
+            try:
+                # The script is executed in an environment that has 'db' and 'logging' available.
+                exec_globals = {'db': db, 'logging': logging}
+                exec(script_to_execute, exec_globals)
+                logging.info("Script executed successfully.")
+            except Exception as e:
+                logging.error(f"Error executing script: {e}")
+                logging.error(traceback.format_exc())
+        
+        client.close()
+
+        target_agents = config.get('target_agents', [])
+        if target_agents:
+            wait_for_agents_to_stop(target_agents)
+        for agent_name in target_agents:
+            start_agent(agent_name, pool_dir_name)
+            
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+        logging.error(traceback.format_exc())
+    finally:
+        if os.path.exists('agent.pid'):
+            os.remove('agent.pid')
+        logging.info("Agent stopped.")
+
+if __name__ == "__main__":
+    main()
