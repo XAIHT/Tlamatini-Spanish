@@ -374,3 +374,13 @@ Tlamatini/agent/model_caps.json
 /Backups/
 Tlamatini/Backups/
 db_*.sqlite3
+
+# Respaldos que deja una edicion por lotes (archivo.py.antes_<algo>). Sirven
+# durante el cambio y despues son ruido: la version buena ya esta commiteada.
+*.antes_*
+
+# Salida de las pruebas visibles: capturas de PANTALLA COMPLETA, bitacoras y la
+# copia del agent Shoter que cada corrida arma. Son evidencia LOCAL de una
+# corrida, no codigo. Las capturas retratan el escritorio entero, asi que no
+# tienen nada que hacer en un repo publico.
+.claude/skills/tlamatini-daily-chat-test/harness/resultados/
