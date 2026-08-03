@@ -988,7 +988,7 @@ class PdferRegistryIntegrationTests(SimpleTestCase):
         from agent.views import PROMPT_CATEGORY_ORDER
         keys = [key for key, _label in PROMPT_CATEGORY_ORDER]
         self.assertIn('documents', keys)
-        self.assertEqual(dict(PROMPT_CATEGORY_ORDER)['documents'], 'Documents & PDF')
+        self.assertEqual(dict(PROMPT_CATEGORY_ORDER)['documents'], 'Documentos y PDF')
         # 'other' must stay last so unranked/unknown categories still fall through it.
         self.assertEqual(keys[-1], 'other')
 

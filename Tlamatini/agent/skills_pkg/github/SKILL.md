@@ -1,6 +1,6 @@
 ---
 name: github
-description: Use the gh CLI for GitHub issues, PR status, CI/logs, comments, reviews, releases, and API queries.
+description: Usa el CLI gh para trabajar con issues de GitHub, estado de PRs, CI y logs, comentarios, reviews, releases y consultas a la API.
 metadata:
   openclaw:
     emoji: "🐙"

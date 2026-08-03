@@ -1,6 +1,6 @@
 ---
 name: acp-router
-description: Route plain-language requests for Claude Code, Cursor, Codex, Gemini, Qwen, Pi, Kiro, Kimi, iFlow, Factory Droid, Kilocode, OpenCode, Copilot into ACPX child sessions via acp_spawn. Pick the right agentId for the user's intent.
+description: Enruta peticiones en lenguaje natural hacia sesiones hijas de ACPX con acp_spawn para Claude Code / Cursor / Codex / Gemini / Qwen / Pi / Kiro / Kimi / iFlow / Factory Droid / Kilocode / OpenCode / Copilot. Elige el agentId correcto según la intención del usuario.
 metadata:
   openclaw:
     emoji: "🧭"

@@ -1,6 +1,6 @@
 ---
 name: tlamatini-planner-trace-replay
-description: Replay the most recent global execution planner trace from tlamatini.log and explain why each capability got the score it did.
+description: Vuelve a reproducir el trace más reciente del global execution planner que quedó en tlamatini.log, y explica por qué cada capability sacó el score que sacó.
 metadata:
   openclaw:
     emoji: "🔁"

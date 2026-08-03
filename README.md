@@ -13,60 +13,60 @@
 <h1 align="center">Tlamatini</h1>
 
 <p align="center">
-  <b>The local-first AI developer assistant with a visual workflow designer — and the reach to touch hardware, 3D engines, and any external tool.</b><br/>
-  <i>"one who knows" — it doesn't just edit code. It flashes your board, drives your engine, and orchestrates whole agent workflows on a canvas. On your machine.</i>
+  <b>La asistente de desarrollo con IA local-first, con un diseñador visual de flows — y el alcance para tocar hardware, motores 3D y cualquier herramienta externa.</b><br/>
+  <i>"la que sabe" — no se limita a editar código. Flashea tu board, maneja tu motor y orquesta flows completos de agents sobre un canvas. En tu propia máquina.</i>
 </p>
 
 <p align="center">
-  <b>💰 About $200 a YEAR — not $200 a MONTH.</b><br/>
-  Frontier plans like GPT-5.4 or Claude Opus cost about <b>$200 per month</b>. <b>Tlamatini is free and open-source</b> — your only bill is <b>Ollama Pro (~$200 a <i>year</i>, paid to Ollama, not us)</b>, and on top of it she stacks <b>86 agent types and 75+ tools</b>: comparable power for about <b>one twelfth</b> the price, all on your own machine.
+  <b>💰 Unos $200 al AÑO — no $200 al MES.</b><br/>
+  Los planes frontera como GPT-5.4 o Claude Opus cuestan alrededor de <b>$200 al mes</b>. <b>Tlamatini es gratuita y de código abierto</b> — tu única factura es <b>Ollama Pro (~$200 al <i>año</i>, pagados a Ollama, no a nosotros)</b>, y encima de eso ella apila <b>86 agent types y 75+ tools</b>: potencia comparable por cerca de <b>una doceava parte</b> del precio, todo en tu propia máquina.
 </p>
 
 <p align="center">
-  <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-5865F2?style=for-the-badge&labelColor=2D2D2D&logo=discord&logoColor=white" alt="Join our Discord"/></a>
-  <a href="https://github.com/XAIHT/Tlamatini/releases/tag/v1.47.0"><img src="https://img.shields.io/badge/VERSION-v1.47.0-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Version"/></a>
+  <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-5865F2?style=for-the-badge&labelColor=2D2D2D&logo=discord&logoColor=white" alt="Únete a nuestro Discord"/></a>
+  <a href="https://github.com/XAIHT/Tlamatini/releases/tag/v1.47.0"><img src="https://img.shields.io/badge/VERSION-v1.47.0-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
   <a href="https://www.python.org/downloads/release/python-31210/"><img src="https://img.shields.io/badge/PYTHON-3.12.10-3776AB?style=for-the-badge&labelColor=2D2D2D&logo=python&logoColor=white" alt="Python"/></a>
-  <a href="#installation"><img src="https://img.shields.io/badge/PLATFORM-WIN%2010%20%7C%2011-0078D6?style=for-the-badge&labelColor=2D2D2D&logo=windows&logoColor=white" alt="Platform"/></a>
-  <a href="#-the-full-capability-list"><img src="https://img.shields.io/badge/AGENT%20TYPES-85-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="86 agent types"/></a>
-  <a href="#-the-full-capability-list"><img src="https://img.shields.io/badge/TOOLS-75-16A34A?style=for-the-badge&labelColor=2D2D2D" alt="75 tools"/></a>
-  <a href="https://github.com/XAIHT/Tlamatini/blob/main/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="License"/></a>
+  <a href="#instalación"><img src="https://img.shields.io/badge/PLATFORM-WIN%2010%20%7C%2011-0078D6?style=for-the-badge&labelColor=2D2D2D&logo=windows&logoColor=white" alt="Plataforma"/></a>
+  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/AGENT%20TYPES-85-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="86 agent types"/></a>
+  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/TOOLS-75-16A34A?style=for-the-badge&labelColor=2D2D2D" alt="75 tools"/></a>
+  <a href="https://github.com/XAIHT/Tlamatini/blob/main/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Licencia"/></a>
 </p>
 
 <p align="center">
-  <a href="https://xaiht.org">🌐 Website</a> ·
-  <a href="https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s">▶️ One-minute teaser</a> ·
-  <a href="BookOfTlamatini.md">📖 Full docs</a> ·
+  <a href="https://xaiht.org">🌐 Sitio web</a> ·
+  <a href="https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s">▶️ Teaser de un minuto</a> ·
+  <a href="BookOfTlamatini.md">📖 Documentación completa</a> ·
   <a href="https://discord.gg/WFQsrskgc">💬 Discord</a>
 </p>
 
 <p align="center">
-  <b>💬 <a href="https://discord.gg/WFQsrskgc">Join the Tlamatini community on Discord</a></b> — get help, show what you build, report bugs, and shape the roadmap.
+  <b>💬 <a href="https://discord.gg/WFQsrskgc">Únete a la comunidad de Tlamatini en Discord</a></b> — pide ayuda, muestra lo que construyes, reporta bugs y da forma al roadmap.
 </p>
 
 ---
 
-## 🚀 Get started — 5 steps to a cloud-powered Tlamatini
+## 🚀 Empieza aquí — 5 pasos para una Tlamatini con potencia en la nube
 
-The whole idea in one line: **don't pay $200 a month for a frontier model.** **Tlamatini is free** — your only cost is **Ollama Pro (~$200 a year, paid to Ollama, not us)**; point Tlamatini at it and drive **86 agent types and 75+ tools** from your own machine. Here's the full setup.
+La idea completa en una línea: **no pagues $200 al mes por un modelo frontera.** **Tlamatini es gratuita** — tu único costo es **Ollama Pro (~$200 al año, pagados a Ollama, no a nosotros)**; apunta Tlamatini hacia él y maneja **86 agent types y 75+ tools** desde tu propia máquina. Esta es la instalación completa.
 
-### 1 · Install Tlamatini
+### 1 · Instala Tlamatini
 
-Pick **one** of two paths. **Tlamatini itself is free** — you never pay us; the only cost is Ollama (Step 3).
+Elige **una** de las dos rutas. **Tlamatini en sí es gratuita** — a nosotros nunca nos pagas nada; el único costo es Ollama (Paso 3).
 
-#### 🟢 Option A — Release installer (recommended · no Python needed)
+#### 🟢 Opción A — Instalador de la release (recomendado · sin necesidad de Python)
 
-Best for most people. The installer bundles its own **Python 3.12.10** and every dependency, so you install nothing else.
+Lo mejor para la mayoría. El instalador trae su propio **Python 3.12.10** y todas las dependencias, así que no instalas nada más.
 
-1. Open the **[Releases page](https://github.com/XAIHT/Tlamatini/releases)** and download the latest installer (`.exe`).
-2. Run it and follow the wizard.
-3. Launch **Tlamatini** from the Start-menu shortcut.
-4. Your browser opens at **`http://127.0.0.1:8000/`** — log in with **user / changeme**. *(`8000` is the default port; if it's taken or Windows has reserved it, set `django_port` in `config.json` — see the port note below.)*
+1. Abre la **[página de Releases](https://github.com/XAIHT/Tlamatini/releases)** y descarga el instalador más reciente (`.exe`).
+2. Ejecútalo y sigue el asistente.
+3. Lanza **Tlamatini** desde el acceso directo del menú Inicio.
+4. Tu navegador se abre en **`http://127.0.0.1:8000/`** — inicia sesión con **user / changeme**. *(`8000` es el puerto por defecto; si está ocupado o si Windows lo tiene reservado, define `django_port` en `config.json` — mira la nota sobre el puerto más abajo.)*
 
-> 🔄 Updating later is one click: **About ▸ Check for updates** inside the app — it keeps your config, database, and keys.
+> 🔄 Actualizar después es un solo clic: **About ▸ Check for updates** dentro de la app — conserva tu config, tu base de datos y tus keys.
 
-#### 🔵 Option B — From source (for developers)
+#### 🔵 Opción B — Desde el código fuente (para desarrolladores)
 
-Best if you want to read, modify, or contribute to the code. Requires **Python 3.12.10** and **git** already installed.
+Lo mejor si quieres leer, modificar o contribuir al código. Requiere **Python 3.12.10** y **git** ya instalados.
 
 ```bash
 git clone https://github.com/XAIHT/Tlamatini.git
@@ -78,56 +78,56 @@ python Tlamatini/manage.py runserver --noreload
 # then open http://127.0.0.1:8000/   (default login: user / changeme)
 ```
 
-> **`--noreload` is optional (since 2026-07-11):** plain `python Tlamatini/manage.py runserver` now boots clean and auto-reloads on code edits. It used to double-start the MCP helper ports `:8765` / `:50051` and crash with `WinError 10048`; fixed by a reloader-aware gate in `agent/apps.py`.
+> **`--noreload` es opcional (desde 2026-07-11):** ahora `python Tlamatini/manage.py runserver` a secas arranca limpio y se recarga sola cuando editas el código. Antes levantaba dos veces los puertos auxiliares del MCP `:8765` / `:50051` y reventaba con `WinError 10048`; se corrigió con una compuerta consciente del reloader en `agent/apps.py`.
 
 <details>
-<summary><b>🔌 Port 8000 already taken? Tlamatini won't start? (<code>WinError 10013</code>) — change one line</b></summary>
+<summary><b>🔌 ¿El puerto 8000 ya está ocupado? ¿Tlamatini no arranca? (<code>WinError 10013</code>) — cambia una línea</b></summary>
 
 <br>
 
-**`8000` is only the default.** Since **v1.40.1** the web port lives in your **`config.json`**:
+**`8000` es solo el valor por defecto.** Desde **v1.40.1** el puerto web vive en tu **`config.json`**:
 
 ```jsonc
 "django_port": 8000     // ← put any free port here, e.g. 9000
 ```
 
-Restart Tlamatini and she comes up on the new port — **no rebuild, no code edit**. Every launch path follows it: the desktop shortcut, double-clicking a `.flw` file, the browser that auto-opens, and `runserver` / `startserver` from source.
+Reinicia Tlamatini y ella levanta en el puerto nuevo — **sin recompilar, sin editar código**. Todas las rutas de arranque lo respetan: el acceso directo del escritorio, el doble clic sobre un archivo `.flw`, el navegador que se abre solo, y `runserver` / `startserver` desde el código fuente.
 
-**Why you might need this.** If Windows (usually **Hyper-V / WSL / Docker**) has *reserved* port 8000, Tlamatini cannot bind it and dies at startup with:
+**Por qué podrías necesitarlo.** Si Windows (normalmente **Hyper-V / WSL / Docker**) tiene *reservado* el puerto 8000, Tlamatini no puede enlazarlo y muere al arrancar con:
 
 > `WinError 10013` — *an attempt was made to access a socket in a way forbidden by its access permissions*
 
-To confirm that's what happened, list the ports Windows has reserved:
+Para confirmar que eso fue lo que pasó, lista los puertos que Windows tiene reservados:
 
 ```powershell
 netsh interface ipv4 show excludedportrange protocol=tcp
 ```
 
-If `8000` falls inside one of those ranges, pick a port outside them (9000 is a common safe choice).
+Si `8000` cae dentro de alguno de esos rangos, elige un puerto fuera de ellos (9000 es una opción segura y común).
 
-**Good to know**
-- A port passed on the command line still wins: `python Tlamatini/manage.py runserver 9100`.
-- It's **fail-safe** — if you typo the value, Tlamatini falls back to 8000 and still starts (she prints a `--- [PORT] …` line explaining why).
-- Where's `config.json`? Next to `Tlamatini.exe` in an installed build; at `Tlamatini/agent/config.json` from source.
-- If you also run the **TeleTlamatini** Telegram bridge, point its `tlamatini.base_url` at the same port.
+**Bueno saberlo**
+- Un puerto pasado por línea de comandos sigue ganando: `python Tlamatini/manage.py runserver 9100`.
+- Es **fail-safe** — si escribes mal el valor, Tlamatini regresa a 8000 y arranca de todos modos (imprime una línea `--- [PORT] …` explicando por qué).
+- ¿Dónde está `config.json`? Junto a `Tlamatini.exe` en una build instalada; en `Tlamatini/agent/config.json` desde el código fuente.
+- Si además corres el puente de Telegram **TeleTlamatini**, apunta su `tlamatini.base_url` al mismo puerto.
 
 </details>
 
-### 2 · Install Ollama
+### 2 · Instala Ollama
 
-Install **[Ollama](https://ollama.com/download)** for Windows. Ollama is the engine that serves every model to Tlamatini — the local embedding model **and** the cloud chat models.
+Instala **[Ollama](https://ollama.com/download)** para Windows. Ollama es el motor que le sirve todos los modelos a Tlamatini — el modelo local de embeddings **y** los modelos de chat en la nube.
 
-### 3 · Subscribe to Ollama Pro (~$200 / year)
+### 3 · Suscríbete a Ollama Pro (~$200 / año)
 
-Go to **[ollama.com](https://ollama.com)**, sign in, and take the **Ollama Pro** plan (about **$200 per year**). Pro unlocks the **`:cloud` models** — frontier-class models that run on Ollama's servers — for a *yearly* price close to what one frontier subscription costs in a *single month*. Then connect your machine:
+Entra a **[ollama.com](https://ollama.com)**, inicia sesión y toma el plan **Ollama Pro** (unos **$200 al año**). Pro desbloquea los **modelos `:cloud`** — modelos de clase frontera que corren en los servidores de Ollama — por un precio *anual* cercano a lo que cuesta una sola suscripción frontera en un *único mes*. Después conecta tu máquina:
 
 ```bash
 ollama signin
 ```
 
-### 4 · Download the models
+### 4 · Descarga los modelos
 
-Pull the small local embedding model, plus the cloud chat models Tlamatini will use:
+Haz pull del pequeño modelo local de embeddings, más los modelos de chat en la nube que usará Tlamatini:
 
 ```bash
 # Local embedding model (small, runs on your own GPU/CPU)
@@ -138,52 +138,54 @@ ollama pull glm-5.2:cloud
 ollama pull qwen3.5:cloud
 ```
 
-Any cloud model works — these two are the current recommended pair (older screenshots below may still show earlier model names).
+Cualquier modelo en la nube funciona — estos dos son la pareja recomendada hoy (algunas capturas de más abajo pueden mostrar todavía nombres de modelos anteriores).
 
-### 5 · Point Tlamatini at the models
+### 5 · Apunta Tlamatini hacia los modelos
 
-In the Tlamatini navbar, open the **Config** menu:
+En la navbar de Tlamatini, abre el menú **Config**:
 
-<p align="center"><img src="Tlamatini/agent/images/MenuConfig.jpg" alt="Config menu — Models, URLs, Access Keys Wizard" width="420"/></p>
+<p align="center"><img src="Tlamatini/agent/images/MenuConfig.jpg" alt="Menú Config — Models, URLs, Access Keys Wizard" width="420"/></p>
 
-**a) Config ▸ Models** — set the Ollama model for each subsystem (each one must already exist in your Ollama catalog), then click **Save**:
+**a) Config ▸ Models** — define el modelo de Ollama para cada subsistema (cada uno debe existir ya en tu catálogo de Ollama), y luego haz clic en **Save**:
 
-<p align="center"><img src="Tlamatini/agent/images/ConfigureModels.jpg" alt="Configure Models dialog" width="480"/></p>
+<p align="center"><img src="Tlamatini/agent/images/ConfigureModels.jpg" alt="Diálogo Configure Models" width="480"/></p>
 
-**b) Config ▸ Access Keys Wizard** — whether you need an **Ollama token** depends on *where* Ollama runs:
+**b) Config ▸ Access Keys Wizard** — que necesites o no un **token de Ollama** depende de *dónde* corre Ollama:
 
-> - 🖥️ **Ollama on your own machine (localhost)?** Leave the token **blank** — a local Ollama needs no auth.
-> - ☁️ **Ollama on a remote server (e.g. [Vast.ai](https://vast.ai))?** Paste the **Ollama token** so Tlamatini can reach it.
+> - 🖥️ **¿Ollama en tu propia máquina (localhost)?** Deja el token **vacío** — un Ollama local no necesita autenticación.
+> - ☁️ **¿Ollama en un servidor remoto (por ejemplo [Vast.ai](https://vast.ai))?** Pega el **token de Ollama** para que Tlamatini pueda alcanzarlo.
 
-Add any cloud-CLI keys here too — plus the messaging keys, the Kali server URL, and the **OPTIONAL** ProjectDiscovery Cloud (PDCP) key under **"Security Recon (ProjectDiscovery)"**. Blank fields keep what's already configured; click **Save**:
+Agrega aquí también cualquier key de CLI en la nube — más las keys de mensajería, la URL del servidor Kali, y la key **OPCIONAL** de ProjectDiscovery Cloud (PDCP) bajo **"Security Recon (ProjectDiscovery)"**. Los campos vacíos conservan lo que ya está configurado; haz clic en **Save**:
 
 <p align="center"><img src="Tlamatini/agent/images/ACPXKeysConfigureWizard.jpg" alt="Access Keys Wizard" width="640"/></p>
 
-Done — tick **Multi-Turn** in the chat toolbar and put Tlamatini to work.
+Listo — marca **Multi-Turn** en la toolbar del chat y pon a Tlamatini a trabajar.
 
-## 💎 The jewels — what nothing else can do
+## 💎 Las joyas — lo que ningún otro puede hacer
 
-Claude Code, Codex, Cursor, Gemini — they edit text files. Tlamatini does that **and** reaches into the physical and creative world, then lets you *wire it all together visually*:
+Claude Code, Codex, Cursor, Gemini — editan archivos de texto. Tlamatini hace eso **y además** alcanza el mundo físico y creativo, y luego te deja *cablearlo todo visualmente*:
 
-| | Capability | Why it's rare |
+| | Capacidad | Por qué es rara |
 |---|---|---|
-| 🎮 | **Unreal Engine control** | Drive the engine/editor from chat — no other coding agent touches it. |
-| 🎬 | **Blender control** | Scene, object, render, and code execution over the official Blender MCP socket. |
-| 🔌 | **Universal External-MCP handling** | Connect to **any** external MCP server (stdio · streamable-http · sse · websocket), up to 5 at once, and use its tools instantly. One client for the whole MCP ecosystem. |
-| 🛠️ | **Modify entire software projects** | Read, grep, refactor, edit, and rebuild whole codebases — not just single files — with hybrid RAG grounding. |
-| 🛡️ | **Security assessments** | Authorized Kali Linux / pentest runbooks + code security-audit skills, driven from chat. |
-| 📟 | **STM32 · ESP32 · Arduino firmware** | Scaffold → build → **flash a real connected board** → read serial, with a safety preflight that refuses mis-targeted firmware. |
-| 🧩 | **A VISUAL WORKFLOW DESIGNER** | **85 drag-and-drop agent types** on a canvas you wire into runnable, savable `.flw` flows. *No other coding agent — Claude Code, Codex, none of them — gives you this.* This is the crown jewel. |
+| 🎮 | **Control de Unreal Engine** | Maneja el engine/editor desde el chat — ningún otro coding agent lo toca. |
+| 🎬 | **Control de Blender** | Escena, objetos, render y ejecución de código sobre el socket oficial del Blender MCP. |
+| 🔌 | **Manejo universal de MCPs externos** | Conéctate a **cualquier** servidor MCP externo (stdio · streamable-http · sse · websocket), hasta 5 a la vez, y usa sus tools al instante. Un solo client para todo el ecosistema MCP. |
+| 🛠️ | **Modificar proyectos de software enteros** | Lee, busca, refactoriza, edita y reconstruye codebases completas — no sólo archivos sueltos — con el grounding del RAG híbrido. |
+| 🛡️ | **Evaluaciones de seguridad** | Runbooks autorizados de Kali Linux / pentest + skills de auditoría de seguridad de código, dirigidos desde el chat. |
+| 📟 | **Firmware STM32 · ESP32 · Arduino** | Andamiaje → build → **flashear una tarjeta real conectada** → leer el serial, con un preflight de seguridad que se niega a grabar firmware mal dirigido. |
+| 🧩 | **UN DISEÑADOR VISUAL DE WORKFLOWS** | **85 tipos de agent** de arrastrar y soltar sobre un canvas que cableas hasta volverlo un flow ejecutable y guardable en `.flw`. *Ningún otro coding agent — ni Claude Code, ni Codex, ninguno — te da esto.* Ésta es la joya de la corona. |
 
-> **The headline no competitor can copy:** Tlamatini is the only local-first AI dev assistant where you *design the agent workflow visually*, then have it flash firmware, drive Unreal/Blender, run security tools, and command any external MCP — all from one machine.
+> **El titular que ningún competidor puede copiar:** Tlamatini es el único asistente de desarrollo con IA local-first donde *diseñas el workflow de agents visualmente*, y luego lo pones a flashear firmware, manejar Unreal/Blender, correr herramientas de seguridad y comandar cualquier MCP externo — todo desde una sola máquina.
 
 ---
 
-## 🔒 And it's yours alone
+## 🔒 Y es sólo tuya
 
-Embeddings and chat run on your local [Ollama](https://ollama.com) install. Cloud models (Claude API, Ollama Pro/Max) and delegation to cloud CLIs are **opt-in, per request, never the default.** Your code and firmware never leave the box unless you route them out yourself.
+Los embeddings y el chat corren en tu instalación local de [Ollama](https://ollama.com). Los modelos en la nube (Claude API, Ollama Pro/Max) y la delegación a CLIs en la nube son **opcionales, petición por petición, nunca lo predeterminado.** Tu código y tu firmware no salen de la máquina a menos que tú misma los saques.
 
 ## ⚠️ CLEAR DISCLAIMER — USER CONTROL, JURISDICTION, AND RESPONSIBILITY FOR AGENTS
+
+> **Nota / Note:** el texto en inglés que sigue es la versión **autoritativa** de este aviso. La traducción al español que aparece más abajo se ofrece **únicamente como cortesía** y no constituye el mismo instrumento legal. *The English text below is the **authoritative** version of this disclaimer; the Spanish rendering that follows it is a **courtesy translation only**.*
 
 Every agent in `Tlamatini/agent/agents/` is intentionally provided as a **plain-Python program** so its operating code can be read, audited, edited, restricted, or disabled by the user. This transparency is a user-control mechanism, **not a warranty that an agent is secure or suitable for a particular environment**. The agents do not have independent authority or jurisdiction: the user alone decides whether, where, how, and with which permissions they run.
 
@@ -191,116 +193,124 @@ When you enable, configure, modify, chain, or execute an agent, **that agent and
 
 **BY RUNNING AN AGENT, YOU ACCEPT RESPONSIBILITY FOR ITS ACTIONS AND CONSEQUENCES. TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, ANY SECURITY BREACH, DATA EXPOSURE OR LOSS, UNAUTHORIZED ACTION, CREDENTIAL LEAK, UNSAFE AUTOMATION, POLICY OR LEGAL VIOLATION, SYSTEM COMPROMISE, DEVICE DAMAGE, FINANCIAL LOSS, OR OTHER HARM ARISING FROM YOUR USE, CONFIGURATION, MODIFICATION, OR EXECUTION OF AN AGENT OR AGENT WORKFLOW IS THE RESPONSIBILITY OF THE USER WHO RUNS IT.** Tlamatini's orchestration, documentation, examples, and guardrails do not authorize access to third-party systems and cannot replace the user's own security review, permission controls, monitoring, or legal compliance.
 
----
+### 🇲🇽 Traducción de cortesía al español (no autoritativa)
 
-## 📋 The full capability list
+Cada agent de `Tlamatini/agent/agents/` se entrega deliberadamente como un **programa de Python plano**, para que el usuario pueda leer, auditar, editar, restringir o deshabilitar su código de operación. Esta transparencia es un mecanismo de control del usuario, **no una garantía de que un agent sea seguro o adecuado para un entorno determinado**. Los agents no tienen autoridad ni jurisdicción independiente: el usuario, y sólo el usuario, decide si se ejecutan, dónde, cómo y con qué permisos.
 
-Everything Tlamatini can do, grouped:
+Cuando habilitas, configuras, modificas, encadenas o ejecutas un agent, **ese agent y su ejecución quedan bajo tu control y tu jurisdicción**. Eres la única persona responsable de revisar su código y su configuración; de proteger y limitar sus secretos, credenciales y permisos; de seleccionar y autorizar cada archivo, carpeta, objetivo de red, browser, shell, API, servidor MCP externo, máquina, dispositivo de hardware y sistema posterior al que pueda acceder; de supervisar su salida; y de cumplir con toda ley, política, licencia, contrato y autorización que aplique a tu uso.
 
-**🧩 Orchestration & design**
-- **Visual Workflow Designer (ACP)** — 85 drag-and-drop agent types wired into runnable flows; save/load `.flw` files; Flow Compiler validates the canvas into `config.yaml`.
-- **Multi-Turn orchestration** — a tool-calling loop with **75 tools** and a global execution planner; **Step-by-Step** mode paces hands-on setup one action at a time; **self-healing model steps** mean a network/model hiccup never freezes her — she retries under a watchdog, finishes gracefully from work already done, and always tells you what happened.
-- **FlowCreator / FlowHypervisor** — let an LLM design a flow; a watchdog monitors flow health. FlowCreator is now also **callable from chat** (`chat_agent_flowcreator`): describe a flow in plain words and it writes a real, canvas-loadable `.flw` file to disk.
-- **Parametrizer / Gatewayer / Gateway-Relayer / Node Manager** — chain agent outputs into the next agent's config; trigger flows from webhooks, folder-drops, or GitHub/GitLab.
-- **ACPX** — spawn external coding-agent CLIs (Claude Code, Codex, Cursor, Gemini, Qwen, and more) as tools and relay between them.
-
-**📟 Firmware & hardware**
-- **STM32er** — zero-config STM32 build/flash/observe across the whole ST 32-bit line (Blue Pill → F7/G/L/H7/U5/WB) via a dual backend (PlatformIO `ststm32` + the STM32F407VG template MCP), with a critical-mission safety preflight.
-- **ESP32er** — direct PlatformIO build/flash/monitor, zero-config bootstrap.
-- **Arduiner** — direct `arduino-cli`, auto-installs binary + core, build/upload.
-- **ESPHomer** — ESPHome smart-home device configs (YAML, no C++), zero-config.
-
-**🎬 3D & creative engines**
-- **Unrealer** — Unreal Engine control from chat.
-- **Blenderer** — Blender scene/object/render/code over the official MCP socket.
-
-**🛠️ Code & projects**
-- **PDFer** — the **document composer**: turn Tlamatini's own answer, some Markdown/HTML, plain text, a folder of images, or several existing PDFs into ONE styled PDF — with a cover page, real tables, page numbers and an optional table of contents. It is the WRITE side of the document family (File-Extractor / File-Interpreter *read* documents; PDFer *authors* them). **Needs no installation** — every engine it uses already ships inside Tlamatini. Modes: `auto` (it sniffs the content for you) / `markdown` / `html` / `text` / `images` (one-per-page, fit, or grid) / `mixed` (prose + embedded figures) / `merge` / `info` / `validate`. Optionally let an Ollama model tidy the text into clean Markdown first (off by default; a failed tidy never loses your document). PDFs land in **Documents/TlamatiniPDF** with a collision-proof name, and a fail-safe preflight refuses rather than write an empty or wrong file.
-- **Editor / Grepper / Globber** — surgical find-and-replace, regex content search, filename glob (Claude-Edit/Grep/Glob equivalents).
-- **File-Creator / Mover / Deleter / File-Interpreter / File-Extractor** — create, move, delete, read-and-interpret, extract from PDF/DOCX.
-- **Executer / Pythonxer** — run shell commands and gated Python.
-- **Gitter** — full git control. **Googler** — web search + extract.
-- **Hybrid RAG** — FAISS + BM25 retrieval, metadata extraction, context budgeting, grounded in your codebase.
-- **Skills** — `SKILL.md` packages: code-review, security-audit, kali-pentest, flow-making, skill-creator, summarize, audit/lint/refactor helpers, and integration stubs (GitHub, Gmail, Slack, Jira, Notion, Todoist, Trello, Weather).
-
-**🛡️ Security**
-- **Kalier** — authorized Kali Linux / MCP-Kali-Server offensive-security assessments.
-- **Discoverer** — ProjectDiscovery recon suite (subfinder/httpx/naabu/katana/nuclei/cvemap — the CVE search runs ProjectDiscovery's `vulnx`, since cvemap's own API was retired Aug 2025) via a self-installing private Go toolchain in <install_dir>/Go; authorized recon, attack-surface mapping & vulnerability discovery. The **ProjectDiscovery Cloud (PDCP) key is OPTIONAL** (lifts cvemap/vulnx rate limits, enables nuclei `-ai`/cloud upload) — set it once in **Config ▸ Access Keys Wizard ▸ "Security Recon (ProjectDiscovery)"** (auto-injected into every run; redacted from `.flw` exports and by `regen_secrets.py` before a push).
-- **Nmapper** — LOCAL, **use-only** nmap bridge for pentesters / CTF: runs a real `nmap` the user installed themselves (Nmapper **NEVER bundles or redistributes nmap** — nmap's NPSL forbids embedding it in a product without a paid OEM licence), resolving it from PATH → `C:\Program Files\Nmap` → a `%LOCALAPPDATA%\Tlamatini\nmap` copy; if it's absent it refuses gracefully and `action='install'` fetches the OFFICIAL free nmap installer (admin/UAC; also brings Npcap). The default is an UNPRIVILEGED TCP connect scan (`-sT`, no Npcap, no admin) so a fresh install scans immediately; SYN / `-O` / UDP auto-downgrade to a connect scan on Windows without Npcap. Actions: `quick` / `full` / `top_ports` / `version` / `scripts` (NSE) / `host_discovery` / `udp` / `custom` / `validate` / `install`; emits `INI_SECTION_NMAPPER`. Distinct from **Kalier** (a remote Kali box) and **Discoverer** (ProjectDiscovery). **Authorized targets only.**
-- **Zavuerer** — **Zavu** unified messaging: SMS / WhatsApp / Telegram / Email / Voice from ONE API key (`channel: auto` smart-routes to the best channel with auto-fallback). Set the key once in **Config ▸ Access Keys Wizard ▸ "Unified Messaging (Zavu)"**; direct HTTP, fail-safe preflight, refuses safely when no key is set. **Zavu pricing:** sign-up is free (no card), but sending is pay-as-you-go — Zavu charges per message.
-- **security-audit / kali-pentest** skills.
-
-**🔌 External integration**
-- **Universal External-MCP client** — connect to any MCP server over 4 transports, up to 5 active, with 8 supervisor tools and an **MCP Doctor** agent that triages a server before you wire it.
-- **Companion-app discovery (Tlamatini-FlowPills)** — sister XAIHT apps locate Tlamatini's agent-template catalog instantly, with **no Python and no drive scan**: at install and on every launch Tlamatini publishes a per-user `HKCU\Software\XAIHT\Tlamatini` registry key + an `_tlamatini_agents_manifest.json` (each agent's `sha256`) next to the agents, and leaves a preserved-agents marker if you uninstall but keep the agents. HKCU-only, no admin, fail-open.
-
-**🖥️ Desktop & browser automation**
-- **Playwrighter** — scripted browser automation.
-- **Windower** — Win32 window manager (focus/move/resize/tile/close).
-- **Shoter / Mouser / Keyboarder** — screenshots, mouse, keyboard.
-
-**🎙️ Audio, video, vision & speech**
-- **Talker (TTS)** — text-to-speech via Ollama. **Whisperer (STT)** — speech-to-text (faster-whisper local + cloud fallback).
-- **Recorder / Camcorder** — microphone and webcam capture.
-- **AudioPlayer / VideoPlayer** — audio and video playback with volume/loop control.
-- **Image-Interpreter** — triple-model vision analysis: qwen3.5:cloud + gemma4:cloud interpret each image **in parallel** on two dedicated Ollama connections, then glm-5.2:cloud merges both interpretations into one definitive report (mockup/GUI inventories in % coordinates, full OCR, people described exhaustively with identity clues taken from the image file name).
-
-- **Screenshot → chat (paste or drop)** — hit Print Screen (or snip), Alt+Tab back to Tlamatini and press **Ctrl+V** — or drag image files onto the chat column. She saves the image into her own `Temp` folder as `image_<timestamp>.jpg`, shows a thumbnail above the input, and drops the **full path into your message at the cursor**, so you can finish the sentence — *"…what's wrong in this screenshot?"* — and send. The path is what Image-Interpreter reads.
-
-**📨 Messaging, bridges & platform**
-- **Telegrammer** — Telegram send/receive that can send under **two identities**, picked per message with `provider`: **as the bot** (`provider=bot`, Bot API + a `@BotFather` token) or **as your own account** (`provider=user`, official Telegram user session). Plain English works — say *"send it as me"* (→ your account) or *"as the bot"*. `auto` (the default) uses your account for private `@usernames`/`+phone` and the bot for numeric ids/channels. Sending as you needs a one-time login; human configs stay readable as `@username`.
-- **Whatsapper** — WhatsApp send/receive with a `provider` switch for **which number sends**: **`cloud`** (default, the official Meta WhatsApp Cloud API — business number, templates, System User) or **`web`** (say *"send it as me"* / *"from my own WhatsApp"*) which sends from **your own personal number** by automating WhatsApp Web after a one-time QR login — no templates, no System User. The `web` path is unofficial (it drives WhatsApp Web) and carries Meta-ban risk; the `cloud` path remains the official, supported route.
-- **Instant Messaging Doctor** — automatically diagnoses Telegrammer/Whatsapper failures and can be called directly before critical sends; validates official tokens, contacts, readable `@username` routing, Meta templates/webhooks, and emits Parametrizer-ready repair actions.
-- **TeleTlamatini** — Telegram bridge into the full chat.
-- **Multi-model** — Ollama (local), Anthropic Claude (cloud), Qwen (vision).
-- **Self-knowledge & self-modification** — can read, modify, and rebuild her own source.
-- **PyInstaller packaging** — ships as a standalone Windows `.exe`.
+**AL EJECUTAR UN AGENT, ACEPTAS LA RESPONSABILIDAD POR SUS ACCIONES Y SUS CONSECUENCIAS. EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY APLICABLE, CUALQUIER BRECHA DE SEGURIDAD, EXPOSICIÓN O PÉRDIDA DE DATOS, ACCIÓN NO AUTORIZADA, FUGA DE CREDENCIALES, AUTOMATIZACIÓN INSEGURA, VIOLACIÓN LEGAL O DE POLÍTICAS, COMPROMISO DEL SISTEMA, DAÑO A DISPOSITIVOS, PÉRDIDA FINANCIERA U OTRO PERJUICIO QUE SURJA DE TU USO, CONFIGURACIÓN, MODIFICACIÓN O EJECUCIÓN DE UN AGENT O DE UN WORKFLOW DE AGENTS ES RESPONSABILIDAD DEL USUARIO QUE LO EJECUTA.** La orquestación, la documentación, los ejemplos y las salvaguardas de Tlamatini no autorizan el acceso a sistemas de terceros y no pueden sustituir la revisión de seguridad, los controles de permisos, el monitoreo ni el cumplimiento legal del propio usuario.
 
 ---
 
-## 🧹 Your context stays clean — automatic binary detection
+## 📋 La lista completa de capacidades
 
-When you point Tlamatini at a folder (**Context ▸ Set directory as context**), real projects are full of files that are not text: compiled binaries, images, archives, model weights, databases, build artefacts. Feeding those into an embedding index is pure damage — it wastes VRAM and time, and it buries your real code under noise.
+Todo lo que Tlamatini puede hacer, agrupado:
 
-Tlamatini screens **every** file by its actual bytes before loading it, and silently skips the binary ones. It is on by default and needs no setup.
+**🧩 Orquestación y diseño**
+- **Diseñador Visual de Workflows (ACP)** — 85 tipos de agent de arrastrar y soltar, cableados en flows ejecutables; guarda y carga archivos `.flw`; el Flow Compiler valida el canvas y lo convierte en `config.yaml`.
+- **Orquestación Multi-Turn** — un loop de tool-calling con **75 tools** y un planificador global de ejecución; el modo **Step-by-Step** marca el ritmo de una instalación práctica, una acción a la vez; los **model steps auto-reparables** hacen que un tropiezo de red o del modelo nunca la congele — reintenta bajo un watchdog, termina con gracia a partir del trabajo ya hecho, y siempre te cuenta qué pasó.
+- **FlowCreator / FlowHypervisor** — deja que un LLM diseñe un flow; un watchdog vigila su salud. FlowCreator ahora también se **invoca desde el chat** (`chat_agent_flowcreator`): describe un flow con palabras normales y escribe en disco un archivo `.flw` real, cargable en el canvas.
+- **Parametrizer / Gatewayer / Gateway-Relayer / Node Manager** — encadena la salida de un agent hacia la configuración del siguiente; dispara flows desde webhooks, carpetas vigiladas o GitHub/GitLab.
+- **ACPX** — lanza CLIs externos de coding agents (Claude Code, Codex, Cursor, Gemini, Qwen y más) como tools, y hace de relevo entre ellos.
 
-- **Fast by design** — at most one 8 KiB read per file, and known binary extensions are never opened at all. Screening a 4 GB video costs the same as screening a README.
-- **Content-based, not name-based** — a PNG renamed `notes.md` is still caught. This works *alongside* **Context ▸ Set file type omissions**, which stays exactly as it was for the files *you* choose to ignore.
-- **Never silent** — every skipped file is listed in `tlamatini.log` with the reason it was skipped, so you always know why something is not in your context:
+**📟 Firmware y hardware**
+- **STM32er** — build/flash/observación STM32 sin configuración a lo largo de toda la línea de 32 bits de ST (Blue Pill → F7/G/L/H7/U5/WB) mediante un backend dual (PlatformIO `ststm32` + el template MCP del STM32F407VG), con un preflight de seguridad de misión crítica.
+- **ESP32er** — build/flash/monitor directo con PlatformIO, bootstrap sin configuración.
+- **Arduiner** — `arduino-cli` directo, instala solo el binario y el core, build/upload.
+- **ESPHomer** — configuraciones ESPHome para dispositivos de casa inteligente (YAML, sin C++), sin configuración.
+
+**🎬 Engines 3D y creativos**
+- **Unrealer** — control de Unreal Engine desde el chat.
+- **Blenderer** — escena/objetos/render/código de Blender sobre el socket MCP oficial.
+
+**🛠️ Código y proyectos**
+- **PDFer** — el **compositor de documentos**: convierte la propia respuesta de Tlamatini, algo de Markdown/HTML, texto plano, una carpeta de imágenes o varios PDFs existentes en UN solo PDF con estilo — con portada, tablas reales, números de página y un índice opcional. Es el lado de ESCRITURA de la familia documental (File-Extractor / File-Interpreter *leen* documentos; PDFer los *escribe*). **No necesita instalación** — todos los motores que usa ya vienen dentro de Tlamatini. Modos: `auto` (olfatea el contenido por ti) / `markdown` / `html` / `text` / `images` (uno por página, ajustado, o en cuadrícula) / `mixed` (prosa + figuras incrustadas) / `merge` / `info` / `validate`. Opcionalmente deja que un modelo de Ollama pula antes el texto a Markdown limpio (apagado por defecto; un pulido fallido nunca pierde tu documento). Los PDFs aterrizan en **Documents/TlamatiniPDF** con un nombre a prueba de colisiones, y un preflight a prueba de fallos prefiere negarse antes que escribir un archivo vacío o equivocado.
+- **Editor / Grepper / Globber** — búsqueda y reemplazo quirúrgico, búsqueda de contenido por regex, glob de nombres de archivo (equivalentes de Claude-Edit/Grep/Glob).
+- **File-Creator / Mover / Deleter / File-Interpreter / File-Extractor** — crear, mover, borrar, leer-e-interpretar, extraer de PDF/DOCX.
+- **Executer / Pythonxer** — ejecutan comandos de shell y Python con compuerta de validación.
+- **Gitter** — control total de git. **Googler** — búsqueda web + extracción.
+- **RAG híbrido** — recuperación con FAISS + BM25, extracción de metadatos, presupuesto de contexto, todo anclado a tu codebase.
+- **Skills** — paquetes `SKILL.md`: code-review, security-audit, kali-pentest, flow-making, skill-creator, summarize, ayudantes de auditoría/lint/refactor, y stubs de integración (GitHub, Gmail, Slack, Jira, Notion, Todoist, Trello, Weather).
+
+**🛡️ Seguridad**
+- **Kalier** — evaluaciones de seguridad ofensiva autorizadas con Kali Linux / MCP-Kali-Server.
+- **Discoverer** — la suite de reconocimiento de ProjectDiscovery (subfinder/httpx/naabu/katana/nuclei/cvemap — la búsqueda de CVEs corre el `vulnx` de ProjectDiscovery, ya que la API propia de cvemap fue retirada en agosto de 2025) mediante una toolchain privada de Go que se instala sola en `<install_dir>/Go`; reconocimiento autorizado, mapeo de superficie de ataque y descubrimiento de vulnerabilidades. La **llave de ProjectDiscovery Cloud (PDCP) es OPCIONAL** (levanta los límites de tasa de cvemap/vulnx, habilita `-ai`/subida a la nube de nuclei) — configúrala una sola vez en **Config ▸ Access Keys Wizard ▸ "Security Recon (ProjectDiscovery)"** (se inyecta sola en cada corrida; se redacta de los exports `.flw` y por `regen_secrets.py` antes de un push).
+- **Nmapper** — puente LOCAL, de **sólo uso**, hacia nmap para pentesters / CTF: ejecuta un `nmap` real que la usuaria instaló ella misma (Nmapper **NUNCA empaqueta ni redistribuye nmap** — la NPSL de nmap prohíbe incrustarlo en un producto sin una licencia OEM de paga), resolviéndolo desde PATH → `C:\Program Files\Nmap` → una copia en `%LOCALAPPDATA%\Tlamatini\nmap`; si no está, se niega con gracia y `action='install'` baja el instalador OFICIAL y gratuito de nmap (admin/UAC; también trae Npcap). El valor por defecto es un escaneo TCP connect SIN privilegios (`-sT`, sin Npcap, sin admin), así que una instalación recién hecha escanea de inmediato; SYN / `-O` / UDP se degradan solos a un connect scan en Windows sin Npcap. Acciones: `quick` / `full` / `top_ports` / `version` / `scripts` (NSE) / `host_discovery` / `udp` / `custom` / `validate` / `install`; emite `INI_SECTION_NMAPPER`. Distinto de **Kalier** (una caja Kali remota) y de **Discoverer** (ProjectDiscovery). **Sólo objetivos autorizados.**
+- **Zavuerer** — mensajería unificada **Zavu**: SMS / WhatsApp / Telegram / Email / Voz desde UNA sola llave de API (`channel: auto` enruta con inteligencia al mejor canal, con respaldo automático). Configura la llave una vez en **Config ▸ Access Keys Wizard ▸ "Unified Messaging (Zavu)"**; HTTP directo, preflight a prueba de fallos, se niega con seguridad cuando no hay llave. **Precios de Zavu:** el registro es gratis (sin tarjeta), pero el envío es de pago por uso — Zavu cobra por mensaje.
+- Skills de **security-audit / kali-pentest**.
+
+**🔌 Integración externa**
+- **Client universal de MCPs externos** — conéctate a cualquier servidor MCP sobre 4 transportes, hasta 5 activos, con 8 tools supervisores y un agent **MCP Doctor** que hace el triage de un servidor antes de que lo cablees.
+- **Descubrimiento de apps compañeras (Tlamatini-FlowPills)** — las apps hermanas de XAIHT localizan el catálogo de plantillas de agent de Tlamatini al instante, **sin Python y sin escanear el disco**: al instalar y en cada arranque, Tlamatini publica una llave de registro por usuario `HKCU\Software\XAIHT\Tlamatini` + un `_tlamatini_agents_manifest.json` (con el `sha256` de cada agent) junto a los agents, y deja una marca de agents preservados si desinstalas pero los conservas. Sólo HKCU, sin admin, a prueba de fallos.
+
+**🖥️ Automatización de escritorio y browser**
+- **Playwrighter** — automatización de browser por script.
+- **Windower** — gestor de ventanas Win32 (enfocar/mover/redimensionar/mosaico/cerrar).
+- **Shoter / Mouser / Keyboarder** — capturas de pantalla, mouse, teclado.
+
+**🎙️ Audio, video, visión y habla**
+- **Talker (TTS)** — texto a voz mediante Ollama. **Whisperer (STT)** — voz a texto (faster-whisper local + respaldo en la nube).
+- **Recorder / Camcorder** — captura de micrófono y de webcam.
+- **AudioPlayer / VideoPlayer** — reproducción de audio y video con control de volumen y de repetición.
+- **Image-Interpreter** — análisis de visión con triple modelo: qwen3.5:cloud + gemma4:cloud interpretan cada imagen **en paralelo** sobre dos conexiones Ollama dedicadas, y luego glm-5.2:cloud fusiona ambas interpretaciones en un solo informe definitivo (inventarios de mockup/GUI en coordenadas %, OCR completo, personas descritas exhaustivamente con pistas de identidad tomadas del nombre del archivo de imagen).
+
+- **Captura de pantalla → chat (pegar o soltar)** — presiona Impr Pant (o recorta), regresa a Tlamatini con Alt+Tab y oprime **Ctrl+V** — o arrastra archivos de imagen a la columna del chat. Ella guarda la imagen en su propia carpeta `Temp` como `image_<timestamp>.jpg`, muestra una miniatura arriba del campo de texto, y suelta la **ruta completa dentro de tu mensaje, justo en el cursor**, para que termines la frase — *"…¿qué está mal en esta captura?"* — y la envíes. Esa ruta es lo que lee Image-Interpreter.
+
+**📨 Mensajería, puentes y plataforma**
+- **Telegrammer** — envío/recepción de Telegram que puede mandar bajo **dos identidades**, elegidas mensaje por mensaje con `provider`: **como el bot** (`provider=bot`, Bot API + un token de `@BotFather`) o **como tu propia cuenta** (`provider=user`, sesión oficial de usuario de Telegram). El español normal funciona — di *"mándalo como yo"* (→ tu cuenta) o *"como el bot"*. `auto` (el valor por defecto) usa tu cuenta para `@usernames`/`+phone` privados y el bot para ids numéricos y canales. Mandar como tú requiere un login de una sola vez; las configuraciones para humanos se quedan legibles como `@username`.
+- **Whatsapper** — envío/recepción de WhatsApp con un interruptor `provider` para **qué número manda**: **`cloud`** (por defecto, la WhatsApp Cloud API oficial de Meta — número de negocio, plantillas, System User) o **`web`** (di *"mándalo como yo"* / *"desde mi propio WhatsApp"*), que manda desde **tu número personal** automatizando WhatsApp Web tras un login por QR de una sola vez — sin plantillas, sin System User. La ruta `web` es no oficial (maneja WhatsApp Web) y conlleva riesgo de baneo por parte de Meta; la ruta `cloud` sigue siendo la vía oficial y soportada.
+- **Instant Messaging Doctor** — diagnostica automáticamente las fallas de Telegrammer/Whatsapper y se puede llamar directamente antes de un envío crítico; valida tokens oficiales, contactos, el enrutamiento legible por `@username`, las plantillas y webhooks de Meta, y emite acciones de reparación listas para el Parametrizer.
+- **TeleTlamatini** — puente de Telegram hacia el chat completo.
+- **Multi-modelo** — Ollama (local), Anthropic Claude (nube), Qwen (visión).
+- **Autoconocimiento y automodificación** — puede leer, modificar y reconstruir su propio código fuente.
+- **Empaquetado con PyInstaller** — se distribuye como un `.exe` autónomo de Windows.
+
+---
+
+## 🧹 Tu contexto se mantiene limpio — detección automática de binarios
+
+Cuando le apuntas a Tlamatini una carpeta (**Context ▸ Set directory as context**), los proyectos reales están llenos de archivos que no son texto: binarios compilados, imágenes, archivos comprimidos, pesos de modelos, bases de datos, artefactos de build. Meter eso a un índice de embeddings es puro daño — desperdicia VRAM y tiempo, y entierra tu código real bajo el ruido.
+
+Tlamatini revisa **cada** archivo por sus bytes reales antes de cargarlo, y se salta en silencio los binarios. Viene encendido por defecto y no necesita configuración.
+
+- **Rápida por diseño** — como máximo una lectura de 8 KiB por archivo, y las extensiones binarias conocidas ni siquiera se abren. Revisar un video de 4 GB cuesta lo mismo que revisar un README.
+- **Basada en el contenido, no en el nombre** — un PNG renombrado a `notes.md` igual queda atrapado. Esto funciona *junto con* **Context ▸ Set file type omissions**, que sigue exactamente igual para los archivos que *tú* eliges ignorar.
+- **Nunca silenciosa** — cada archivo omitido queda listado en `tlamatini.log` con la razón por la que se omitió, así siempre sabes por qué algo no está en tu contexto:
 
 ```
 --- [BINARY-GUARD] 3 binary file(s) OMITTED from the context / embedding chain
 --- [BINARY-GUARD]   ✗ OMITTED C:\proj\assets\logo.png  [extension: known binary extension .png]
 ```
 
-- **Safe by default** — if anything is uncertain or unreadable, the file is loaded as text rather than dropped. Your context is never removed on a guess. Accented and legacy-encoded text files (Spanish, French, cp1252 …) are always kept.
+- **Segura por defecto** — si algo es incierto o ilegible, el archivo se carga como texto en vez de descartarse. Tu contexto nunca se elimina por una suposición. Los archivos de texto con acentos o codificaciones heredadas (español, francés, cp1252 …) siempre se conservan.
 
-Turn it off with `"binary_context_detection": false` in `config.json`; tune it with `binary_detection_control_ratio`, or rescue a specific extension with `binary_detection_force_text_extensions`.
+Apágala con `"binary_context_detection": false` en `config.json`; ajústala con `binary_detection_control_ratio`, o rescata una extensión concreta con `binary_detection_force_text_extensions`.
 
-## See it work
+## Mírala en acción
 
-- ▶️ **[One-minute teaser](https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s)** · 🎬 more demos on **[xaiht.org](https://xaiht.org)**.
-
----
-
-## Installation
-
-See **[the full docs](BookOfTlamatini.md)** for complete setup — cloud models (Ollama Pro/Max, Claude API), the visual workflow designer, and building a frozen Windows distribution with PyInstaller. In short: install Ollama → clone, venv, `pip install -r requirements.txt`, `migrate` → `runserver` (`--noreload` optional since 2026-07-11) → open `http://127.0.0.1:8000/`.
+- ▶️ **[Teaser de un minuto](https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s)** · 🎬 más demos en **[xaiht.org](https://xaiht.org)**.
 
 ---
 
-## Tech stack
+## Instalación
 
-Python 3.12 · Django 5.2.4 · Django Channels (Daphne ASGI) · LangChain / LangGraph · FAISS + rank-bm25 · Ollama / Anthropic Claude / Qwen vision · SQLite · PyInstaller. **Platform: Windows 10/11.**
-
----
-
-## Contributing
-
-Tested it on your board, in your engine, or on the canvas? **[Open an issue](https://github.com/XAIHT/Tlamatini/issues)** and tell me what worked and what didn't — that feedback is the most useful thing right now. PRs welcome.
+Consulta **[la documentación completa](BookOfTlamatini.md)** para la instalación completa — modelos en la nube (Ollama Pro/Max, Claude API), el diseñador visual de workflows, y cómo construir una distribución congelada de Windows con PyInstaller. En corto: instala Ollama → clona, venv, `pip install -r requirements.txt`, `migrate` → `runserver` (`--noreload` es opcional desde el 2026-07-11) → abre `http://127.0.0.1:8000/`.
 
 ---
 
-## License
+## Stack tecnológico
 
-[MIT](https://github.com/XAIHT/Tlamatini/blob/main/LICENSE) · Built by [@XAIHT](https://github.com/XAIHT) · [xaiht.org](https://xaiht.org)
+Python 3.12 · Django 5.2.4 · Django Channels (Daphne ASGI) · LangChain / LangGraph · FAISS + rank-bm25 · Ollama / Anthropic Claude / Qwen vision · SQLite · PyInstaller. **Plataforma: Windows 10/11.**
+
+---
+
+## Contribuir
+
+¿La probaste en tu tarjeta, en tu engine o en el canvas? **[Abre un issue](https://github.com/XAIHT/Tlamatini/issues)** y cuéntame qué funcionó y qué no — esa retroalimentación es lo más útil ahorita. Los PRs son bienvenidos.
+
+---
+
+## Licencia
+
+[MIT](https://github.com/XAIHT/Tlamatini/blob/main/LICENSE) · Hecho por [@XAIHT](https://github.com/XAIHT) · [xaiht.org](https://xaiht.org)

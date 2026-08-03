@@ -1,6 +1,6 @@
 ---
 name: trello
-description: Manage Trello boards, lists, and cards via the Trello REST API.
+description: Administra boards, listas y cards de Trello mediante el REST API de Trello.
 metadata:
   openclaw:
     emoji: "🟦"

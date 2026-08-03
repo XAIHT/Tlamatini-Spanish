@@ -1,6 +1,6 @@
 ---
 name: tlamatini-exec-report-row-adder
-description: Add a state-changing tool to _EXEC_REPORT_TOOLS in mcp_agent.py and the matching CSS rules so its operations appear in the chat-page Exec Report.
+description: Da de alta una tool que cambia el estado del sistema en _EXEC_REPORT_TOOLS dentro de mcp_agent.py, y agrega las reglas CSS que le corresponden, para que sus operaciones salgan en el Exec Report de la página de chat.
 metadata:
   openclaw:
     emoji: "📋"

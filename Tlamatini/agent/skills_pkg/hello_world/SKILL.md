@@ -1,6 +1,6 @@
 ---
 name: hello-world
-description: Smoke-test skill that echoes its inputs and confirms the SkillHarness wiring is alive end-to-end.
+description: Skill de humo que hace eco de sus inputs y confirma que el cableado del SkillHarness está vivo de punta a punta.
 metadata:
   openclaw:
     emoji: "👋"

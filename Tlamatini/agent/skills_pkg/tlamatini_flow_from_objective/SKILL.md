@@ -1,6 +1,6 @@
 ---
 name: tlamatini-flow-from-objective
-description: Turn a one-sentence objective into a downloadable .flw workflow that wires the right Tlamatini visual agents and connections.
+description: Convierte un objetivo de una sola frase en un workflow .flw descargable que arma los agents visuales de Tlamatini correctos con sus conexiones.
 metadata:
   openclaw:
     emoji: "🌊"

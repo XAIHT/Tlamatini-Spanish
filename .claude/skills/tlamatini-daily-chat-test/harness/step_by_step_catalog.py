@@ -30,7 +30,9 @@ sys.path.insert(0, HERE)
 import config as C          # noqa: E402
 import run_test as R        # noqa: E402
 
-from PIL import ImageGrab                       # noqa: E402
+# PROHIBIDO PIL.ImageGrab (Angela, 2026-08-02): las fotos las toma SHOTER,
+# el agent de Tlamatini. Ver shoter_foto.py.
+from shoter_foto import toma_foto            # noqa: E402
 from playwright.sync_api import sync_playwright  # noqa: E402
 
 DB = r'C:\Tlamatini\_internal\db.sqlite3'
@@ -179,11 +181,8 @@ def grab(page, path):
     except Exception:
         pass
     time.sleep(0.25)
-    try:
-        img = ImageGrab.grab(all_screens=True)
-    except TypeError:
-        img = ImageGrab.grab()
-    img.save(path)
+    # La foto la toma SHOTER, el agent de Tlamatini.
+    toma_foto(os.path.dirname(path), os.path.basename(path))
 
 
 def looks_final(ans):

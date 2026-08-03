@@ -222,7 +222,10 @@ class SelfHealingInvokerTests(unittest.TestCase):
     def test_recovery_preamble_render(self):
         self.assertEqual(recovery_preamble([]), "")
         p = recovery_preamble(["hit an error", "recovered"])
-        self.assertIn("SELF-HEALING NOTE", p)
+        # El banner se tradujo (edición en español). Se sigue fijando el texto
+        # a propósito: es lo primero que Angela lee cuando algo falló y se
+        # recuperó, así que si alguien lo borra o lo cambia, este test avisa.
+        self.assertIn("NOTA DE AUTO-SANACIÓN", p)
         self.assertIn("- hit an error", p)
 
     def test_transient_classification(self):

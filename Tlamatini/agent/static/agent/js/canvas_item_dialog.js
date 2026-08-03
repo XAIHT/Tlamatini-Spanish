@@ -12,6 +12,48 @@
 
 /* eslint-disable no-unused-vars */
 /* global setCanvasItemMetadata, getAgentPurposeForName */
+// ── Etiquetas de los botones de opción del diálogo Configurar ───────────────
+// La LLAVE es el valor que se guarda en config.yaml y que el agent lee en
+// Python: NO SE TRADUCE JAMÁS. El VALOR es sólo lo que se pinta en pantalla.
+// Si aquí falta una opción se cae al nombre derivado del valor (fail-open):
+// una opción nueva sale en inglés, pero nunca se queda sin etiqueta.
+// Los nombres de producto (kyber-512/768/1024) se quedan tal cual.
+const ETIQUETAS_DE_OPCION = {
+    // trigger_mode
+    'immediate': 'Inmediato',
+    'event': 'Por evento',
+    // operation (Mover)
+    'copy': 'Copiar',
+    'move': 'Mover',
+    // direction (mensajería)
+    'send': 'Enviar',
+    'receive': 'Recibir',
+    // crawl_type (Crawler)
+    'small-range': 'Alcance corto',
+    'medium-range': 'Alcance medio',
+    'large-range': 'Alcance amplio',
+    // movement_type (Mouser)
+    'random': 'Aleatorio',
+    'localized': 'Localizado',
+    'click': 'Clic',
+    'drag': 'Arrastrar',
+    'scroll': 'Desplazar',
+    'click_at_window': 'Clic en ventana',
+    'locate_image': 'Localizar imagen',
+    // reading_type (File-Interpreter) — concuerdan con "lectura", en femenino
+    'fast': 'Rápida',
+    'complete': 'Completa',
+    'summarized': 'Resumida',
+    // button_click (Mouser)
+    'none': 'Ninguno',
+    'left': 'Izquierdo',
+    'right': 'Derecho',
+    'middle': 'Central',
+    'double-left': 'Doble izquierdo',
+    'double-right': 'Doble derecho',
+    'double-middle': 'Doble central',
+};
+
 const canvasItemDialogMessage = document.getElementById('canvas-item-dialog-message');
 const canvasItemPrimaryDialogLegend = document.getElementById('canvas-item-primary-dialog-legend');
 const canvasItemList = document.getElementById('canvas-item-list');
@@ -145,10 +187,18 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
                     radioRes.style.accentColor = "#55BBAA";
 
                     const optLabel = document.createElement('label');
-                    optLabel.innerText = opt.charAt(0).toUpperCase() + opt.slice(1);
-                    if (opt.startsWith('double-')) {
-                        optLabel.innerText = opt.replace('-', ' ').replace(/^./, (char) => char.toUpperCase());
-                    }
+                    // La ETIQUETA se traduce; el VALOR (opt) NO se toca nunca:
+                    // es lo que se escribe en config.yaml y lo que el agent lee
+                    // en Python. Antes la etiqueta se DERIVABA del valor
+                    // (opt.charAt(0).toUpperCase() + ...), así que traducir lo
+                    // que se ve habría cambiado también lo que se guarda y el
+                    // agent dejaría de reconocer su propio modo. Por eso van
+                    // separados: aquí sólo se busca cómo MOSTRARLO.
+                    optLabel.innerText = ETIQUETAS_DE_OPCION[opt] || (
+                        opt.startsWith('double-')
+                            ? opt.replace('-', ' ').replace(/^./, (char) => char.toUpperCase())
+                            : opt.charAt(0).toUpperCase() + opt.slice(1)
+                    );
                     optLabel.htmlFor = radioRes.id;
                     optLabel.style.cursor = "pointer";
                     optLabel.style.color = "#fff";

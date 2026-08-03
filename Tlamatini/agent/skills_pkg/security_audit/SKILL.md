@@ -1,6 +1,6 @@
 ---
 name: security-audit
-description: Run whichever SAST, secret-scanning, and dependency-audit tools are installed (bandit, semgrep, ruff, eslint, gitleaks, pip-audit) over a path, then return aggregated findings, severity counts, and a prioritised remediation summary.
+description: Corre sobre un path las herramientas de SAST, de búsqueda de secretos y de auditoría de dependencias que estén instaladas (bandit, semgrep, ruff, eslint, gitleaks, pip-audit) y devuelve los hallazgos agregados, el conteo por severidad y un resumen de remediación priorizado.
 metadata:
   openclaw:
     emoji: "🛡️"

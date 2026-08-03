@@ -232,9 +232,9 @@ class PromptCatalogEndpointTests(TestCase):
         self.assertEqual(
             payload["categories"],
             [
-                {"key": "getting_started", "label": "Getting Started"},
-                {"key": "messaging", "label": "Messaging & Contacts"},
-                {"key": "other", "label": "More"},
+                {"key": "getting_started", "label": "Primeros pasos"},
+                {"key": "messaging", "label": "Mensajería y contactos"},
+                {"key": "other", "label": "Otros"},
             ],
         )
 

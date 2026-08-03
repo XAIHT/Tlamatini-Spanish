@@ -42,7 +42,7 @@ async function executeStartSequence() {
 
     if (starterAgents.length === 0) {
         console.log('--- No Starter agents found on canvas');
-        alert('No Starter agents found on the canvas. Add a Starter agent and connect it to other agents to begin.');
+        alert('No hay ningún Starter agent en el canvas. Agrega un Starter agent y conéctalo con los demás para poder empezar.');
         isBusyProcessing = false;
         updateControlButtonStates();
         return;
@@ -380,7 +380,7 @@ if (btnStop) {
 
         if (enderAgents.length === 0) {
             console.log('--- No Ender agents found on canvas');
-            alert('No Ender agents found on the canvas. Add an Ender agent and connect it to other agents to enable stop functionality.');
+            alert('No hay ningún Ender agent en el canvas. Agrega un Ender agent y conéctalo con los demás para poder detener el flow.');
             isBusyProcessing = false;
             updateControlButtonStates();
             return;

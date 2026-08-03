@@ -496,6 +496,6 @@ def recovery_preamble(events: List[str]) -> str:
         return ""
     lines = "\n".join(f"- {e}" for e in events)
     return (
-        "SELF-HEALING NOTE — I hit trouble during this run and worked through it:\n"
+        "NOTA DE AUTO-SANACIÓN — me topé con problemas en esta corrida y los fui resolviendo:\n"
         f"{lines}\n\n"
     )

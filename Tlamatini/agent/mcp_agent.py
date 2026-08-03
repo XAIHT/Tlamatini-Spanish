@@ -505,7 +505,7 @@ def _infer_execution_shell(tool_name: str, tool_input: Any) -> str:
     if name in _POWERSHELL_TOOLS:
         return "PowerShell"
     if name in _PYTHON_TOOLS:
-        return "Python interpreter"
+        return "intérprete de Python"
     if name in _OS_SHELL_TOOLS:
         return os_shell
     if name == "chat_agent_ssher":

@@ -1,6 +1,6 @@
 ---
 name: create-new-mcp
-description: The authoritative reference for adding a NEW tool, MCP context provider, or BOTH to Tlamatini. READ THIS BEFORE registering a `@tool` in `tools.py`, before creating an `mcp_*_server.py` + `chain_*_lcel.py` pair, before seeding a `Tool` or `Mcp` row in a migration, before extending `factory.py`, or before touching the MCP/Tool checkboxes. Covers the three classes (tool-only / MCP-backed context provider / both), the tool-vs-MCP terminology distinction (`get_mcp_tools()` returns LangChain tools, NOT MCP services), and the known hardcoded assumptions in `factory.py` and the frontend.
+description: La referencia autoritativa para agregar a Tlamatini una tool NUEVA, un MCP context provider, o AMBOS. LEE ESTO ANTES de registrar un `@tool` en `tools.py`, antes de crear el par `mcp_*_server.py` + `chain_*_lcel.py`, antes de sembrar una fila `Tool` o `Mcp` en una migración, antes de extender `factory.py`, o antes de tocar las casillas de MCP/Tool. Explica las tres clases (solo tool / context provider respaldado por MCP / ambos), la distinción de terminología entre tool y MCP (`get_mcp_tools()` devuelve LangChain tools, NO servicios MCP), y los supuestos hardcodeados que ya se conocen en `factory.py` y en el frontend.
 metadata:
   openclaw:
     emoji: "🧩"

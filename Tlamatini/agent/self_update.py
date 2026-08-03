@@ -227,7 +227,7 @@ def check_for_update(timeout: int = 15) -> dict:
         data = _github_latest(timeout=timeout)
     except Exception as exc:
         result["ok"] = False
-        result["error"] = f"Could not reach GitHub: {exc}"
+        result["error"] = f"No pude conectarme con GitHub: {exc}"
         return result
 
     tag = str(data.get("tag_name", "")).strip()
@@ -245,7 +245,7 @@ def check_for_update(timeout: int = 15) -> dict:
     )
     if result["update_available"] and not asset:
         result["ok"] = False
-        result["error"] = "A newer release exists but it has no downloadable .zip asset."
+        result["error"] = "Hay una versión más nueva, pero no trae un .zip que se pueda descargar."
     return result
 
 
@@ -259,7 +259,7 @@ def start_update() -> dict:
     with _lock:
         if _STATE["running"]:
             return {"ok": False, "error": "An update is already in progress."}
-        _STATE.update(running=True, phase="checking", percent=0, message="Checking latest release…",
+        _STATE.update(running=True, phase="checking", percent=0, message="Buscando la versión más reciente…",
                       error="", downloaded=0, total=0, version="")
     _worker = threading.Thread(target=_run_update, name="tlamatini-self-update", daemon=True)
     _worker.start()
@@ -273,7 +273,7 @@ def _run_update() -> None:
             raise RuntimeError(info.get("error") or "Update check failed.")
         if not info.get("update_available"):
             _set_state(running=False, phase="done", percent=100,
-                       message=f"Already on the latest version ({info.get('current')}).")
+                       message=f"Ya tienes la versión más reciente ({info.get('current')}).")
             return
         asset_url = info.get("_asset_url") or ""
         if not asset_url:
@@ -286,12 +286,12 @@ def _run_update() -> None:
 
         # 1) Download the release bundle zip.
         bundle = os.path.join(root, info.get("asset_name") or "release.zip")
-        _set_state(phase="downloading", percent=0, message=f"Downloading {info.get('latest')}…",
+        _set_state(phase="downloading", percent=0, message=f"Descargando {info.get('latest')}…",
                    total=int(info.get("asset_size") or 0))
         _download(asset_url, bundle)
 
         # 2) Extract the bundle (it contains Installer.exe / Uninstaller.exe / pkg.zip).
-        _set_state(phase="extracting", percent=0, message="Extracting release bundle…")
+        _set_state(phase="extracting", percent=0, message="Descomprimiendo el paquete…")
         bundle_dir = os.path.join(root, "bundle")
         _reset_dir(bundle_dir)
         with zipfile.ZipFile(bundle) as zf:
@@ -302,7 +302,7 @@ def _run_update() -> None:
             raise RuntimeError("Release bundle did not contain pkg.zip (the install payload).")
 
         # 3) Extract pkg.zip into the staging dir — this IS the new install tree.
-        _set_state(phase="staging", percent=0, message="Preparing the new version…")
+        _set_state(phase="staging", percent=0, message="Preparando la versión nueva…")
         staging = os.path.join(root, "staging")
         _reset_dir(staging)
         with zipfile.ZipFile(pkg_zip) as zf:
@@ -326,10 +326,10 @@ def _run_update() -> None:
         # 4) Hand off to the external PowerShell updater and let it swap + relaunch.
         log_path = _launch_updater(install_dir(), staging)
         _set_state(running=False, phase="handoff", percent=100,
-                   message="Update staged. Tlamatini will now close and reopen on the new version.",
+                   message="Actualización lista. Tlamatini se va a cerrar y a abrir de nuevo con la versión nueva.",
                    error="", **{"log_path": log_path})
     except Exception as exc:  # never let the worker thread die silently
-        _set_state(running=False, phase="error", message="Update failed.", error=str(exc))
+        _set_state(running=False, phase="error", message="La actualización falló.", error=str(exc))
 
 
 def _launch_updater(target_install: str, staging: str) -> str:
@@ -406,7 +406,7 @@ def _download(url: str, dest: str) -> None:
                     last = now
                     pct = int(done * 100 / total) if total else 0
                     _set_state(downloaded=done, percent=pct,
-                               message=f"Downloading… {_human(done)} / {_human(total)}")
+                               message=f"Descargando… {_human(done)} de {_human(total)}")
         _set_state(downloaded=done, percent=100 if total else 0)
 
 
@@ -442,7 +442,7 @@ def _free_space_warning(path: str) -> None:
     try:
         free = shutil.disk_usage(path).free
         if free < _MIN_FREE_BYTES:
-            _set_state(message=f"Warning: low free disk space ({_human(free)}). The update may fail.")
+            _set_state(message=f"Ojo: queda poco espacio libre en disco ({_human(free)}). La actualización podría fallar.")
     except Exception:
         pass
 

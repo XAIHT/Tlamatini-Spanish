@@ -1,6 +1,6 @@
 ---
 name: jira
-description: Read and write Jira issues, comments, transitions via the Jira REST API v3.
+description: Lee y escribe issues de Jira con sus comentarios y transiciones mediante el REST API v3 de Jira.
 metadata:
   openclaw:
     emoji: "🟦"

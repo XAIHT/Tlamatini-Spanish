@@ -317,25 +317,25 @@ def load_prompt_view(request, prompt_name):
 # a brand-new prompt added by a later migration before it is tagged), so nothing is
 # ever silently dropped from the catalog.
 PROMPT_CATEGORY_ORDER = [
-    ('getting_started', 'Getting Started'),
-    ('files_search', 'Files & Search'),
-    ('run_execute', 'Run & Execute'),
-    ('code_gen', 'Code & Project Generation'),
+    ('getting_started', 'Primeros pasos'),
+    ('files_search', 'Archivos y búsqueda'),
+    ('run_execute', 'Ejecución de comandos'),
+    ('code_gen', 'Código y generación de proyectos'),
     # Documents & PDF (2026-07-26, PDFer) — the AUTHORING side of the document
     # family. It sits after Code & Project Generation (both are "produce a
     # deliverable") and before Images & Vision, because a PDFer report often
     # EMBEDS the images the next section teaches you to capture/analyze.
-    ('documents', 'Documents & PDF'),
-    ('images', 'Images & Vision'),
-    ('agents_flows', 'Agents & Flows'),
-    ('acpx_skills', 'ACPX, Skills & MCPs'),
-    ('desktop_ui', 'Desktop Automation'),
-    ('games_3d', 'Games & 3D'),
-    ('firmware_iot', 'Firmware & IoT'),
-    ('security_recon', 'Security & Recon'),
-    ('messaging', 'Messaging & Contacts'),
-    ('media_voice', 'Media & Voice'),
-    ('other', 'More'),
+    ('documents', 'Documentos y PDF'),
+    ('images', 'Imágenes y visión'),
+    ('agents_flows', 'Agents y flows'),
+    ('acpx_skills', 'ACPX, Skills y MCPs'),
+    ('desktop_ui', 'Automatización del escritorio'),
+    ('games_3d', 'Juegos y 3D'),
+    ('firmware_iot', 'Firmware e IoT'),
+    ('security_recon', 'Seguridad y reconocimiento'),
+    ('messaging', 'Mensajería y contactos'),
+    ('media_voice', 'Multimedia y voz'),
+    ('other', 'Otros'),
 ]
 _PROMPT_CATEGORY_RANK = {key: i for i, (key, _label) in enumerate(PROMPT_CATEGORY_ORDER)}
 _PROMPT_CATEGORY_LABEL = dict(PROMPT_CATEGORY_ORDER)

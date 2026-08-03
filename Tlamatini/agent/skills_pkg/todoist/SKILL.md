@@ -1,6 +1,6 @@
 ---
 name: todoist
-description: Manage Todoist tasks and projects via the Todoist REST API v2.
+description: Administra tareas y proyectos de Todoist mediante el REST API v2 de Todoist.
 metadata:
   openclaw:
     emoji: "✅"

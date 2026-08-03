@@ -1,6 +1,6 @@
 ---
 name: slack
-description: Post messages, read channels, and manage threads via Slack Web API.
+description: Publica mensajes, lee canales y administra threads mediante el Web API de Slack.
 metadata:
   openclaw:
     emoji: "💬"

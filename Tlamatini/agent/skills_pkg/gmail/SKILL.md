@@ -1,6 +1,6 @@
 ---
 name: gmail
-description: Read and send Gmail messages and threads via Gmail API.
+description: Lee y envía mensajes y threads de Gmail mediante el API de Gmail.
 metadata:
   openclaw:
     emoji: "📧"

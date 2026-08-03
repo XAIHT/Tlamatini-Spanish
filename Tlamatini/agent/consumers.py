@@ -705,7 +705,7 @@ class AgentConsumer(AsyncWebsocketConsumer):
                 print("!!! ERROR: rag_chain is not initialized yet. Please wait for the agent to finish loading.")
                 await self.channel_layer.group_send(   # type: ignore
                     self.room_group_name,
-                    {'type': 'agent_message', 'message': 'The agent is still loading. Please wait a moment and try again.', 'username': 'Tlamatini'}
+                    {'type': 'agent_message', 'message': 'Todavía me estoy cargando. Espera un momento e inténtalo de nuevo.', 'username': 'Tlamatini'}
                 )
                 return
 

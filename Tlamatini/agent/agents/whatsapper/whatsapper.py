@@ -328,10 +328,23 @@ _WEB_PROVIDER_WORDS = frozenset((
     'web', 'me', 'myself', 'my_self', 'self', 'owner', 'my_account', 'myaccount',
     'personal', 'personal_account', 'my_personal_account', 'my_number',
     'my_phone', 'whatsapp_web', 'web_whatsapp', 'wa_web', 'my_whatsapp',
+    # ── ESPAÑOL (edición en español) ─────────────────────────────────
+    # 'web' = sale de TU PROPIO número. Sin estos, quien escribe
+    # "como yo" o "desde mi WhatsApp" cae en cloud y el mensaje sale
+    # desde el número del negocio — que es justo lo contrario de lo que
+    # pidió. El README en español promete que se puede decir así.
+    'yo', 'como_yo', 'mi', 'mi_whatsapp', 'mi_numero', 'mi_número',
+    'mi_telefono', 'mi_teléfono', 'mi_cuenta', 'desde_mi_whatsapp',
+    'desde_mi_numero', 'desde_mi_número', 'personal', 'mi_personal',
 ))
 _CLOUD_PROVIDER_WORDS = frozenset((
     'cloud', 'cloud_api', 'official', 'business', 'the_business', 'meta',
     'graph', 'api', 'bot', 'the_bot', 'a_bot', 'business_account', 'company',
+    # ── ESPAÑOL ──────────────────────────────────────────────────────
+    # 'cloud' = sale del número del NEGOCIO, por la API oficial de Meta.
+    'oficial', 'la_oficial', 'el_negocio', 'como_el_negocio',
+    'la_empresa', 'como_la_empresa', 'numero_del_negocio',
+    'número_del_negocio', 'cuenta_de_negocio', 'empresarial',
 ))
 
 
@@ -344,7 +357,7 @@ def _normalize_provider_word(value: str) -> str:
     prev = None
     while prev != word:
         prev = word
-        for pfx in ('send_', 'as_'):
+        for pfx in ('send_', 'as_', 'como_', 'desde_', 'con_'):
             if word.startswith(pfx):
                 word = word[len(pfx):]
     return word

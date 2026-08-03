@@ -3,4 +3,19 @@
 # against the agent's runtime directory.
 output_dir: ""
 
+# Captura el ESCRITORIO COMPLETO, no sólo el monitor principal. Default TRUE
+# (Ángela, 2026-08-02): el trabajo de Shoter es dejar constancia de lo que había
+# en pantalla, y con la captura del monitor principal a secas una máquina con dos
+# pantallas pierde la mitad SIN AVISAR — si la ventana que se documentaba estaba
+# en el segundo monitor, la foto sale vacía y parece que nada pasó.
+# Con una sola pantalla las dos formas dan exactamente lo mismo.
+all_screens: true
+
+# Nombre EXACTO del archivo. "" = el nombre con marca de tiempo de siempre,
+# dentro del subdirectorio numerado shoter_<n>. Con nombre, la imagen se guarda
+# DIRECTO en output_dir — para quien arma un reporte y necesita que la foto 3 se
+# llame igual que la revisión 3. Se le saca el basename: un nombre con ../ no
+# puede escribir fuera de output_dir.
+filename: ""
+
 target_agents: []

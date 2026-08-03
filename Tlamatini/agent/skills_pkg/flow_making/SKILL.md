@@ -1,6 +1,6 @@
 ---
 name: flow-making
-description: Turn a natural-language objective into a downloadable .flw workflow by driving the FlowCreator engine (full 83-agent catalog), then emit a canvas-loadable .flw.
+description: Convierte un objetivo en lenguaje natural en un workflow .flw descargable manejando el motor FlowCreator (catálogo completo de 83 agents) y emite un .flw que el canvas puede cargar.
 metadata:
   openclaw:
     emoji: "🌊"

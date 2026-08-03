@@ -142,8 +142,14 @@ UI_ES: Dict[str, str] = {
 
     # ── Ask Execs permission dialog ───────────────────────────────────────
     "Execution permission required": "Se requiere permiso de ejecución",
+    # PRIMERA PERSONA: es Tlamatini pidiéndole permiso a Angela, así que habla
+    # de sí misma como "yo", no como "Tlamatini". El inglés dice "Tlamatini
+    # wants to…" porque el diálogo se redactó desde afuera; en español, hablar
+    # de sí misma en tercera persona la vuelve un aparato del que alguien más
+    # informa. La MISMA frase está literal en agent_page.html:280 — las dos se
+    # cambian juntas o se separan sin que nadie lo note.
     "Tlamatini wants to run the following before continuing the Multi-Turn chain.":
-        "Tlamatini quiere ejecutar lo siguiente antes de continuar el chain de Multi-Turn.",
+        "Quiero ejecutar lo siguiente antes de continuar el chain de Multi-Turn.",
     "Review what is about to execute and choose":
         "Revisa lo que está a punto de ejecutarse y elige",
     "Proceed": "Continuar",

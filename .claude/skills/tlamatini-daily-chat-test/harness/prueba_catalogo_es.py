@@ -1,0 +1,271 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "la que sabe"
+#
+#   Creada por  Angela López Mendoza   ·   @angelahack1
+#   Desarrolladora · Arquitecta · Creadora de Tlamatini
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — no quitar
+r"""
+PRUEBA VISIBLE — los encabezados del Catálogo de prompts, en ESPAÑOL
+====================================================================
+
+QUÉ PRUEBA DE VERDAD
+    Que las 15 secciones que dividen el Catálogo de prompts ya no salen en
+    inglés encima de 113 tarjetas que SÍ están en español. Antes se leía una
+    sección "Firmware & IoT" llena de prompts en español: el contraste era lo
+    que más se notaba.
+
+    Abre el catálogo con el botón real y lee los encabezados de la PANTALLA.
+
+LO QUE ADEMÁS CUIDA
+    Que los slugs internos NO se hayan movido. El slug ('getting_started',
+    'firmware_iot'…) ordena las secciones y hace match contra la columna
+    `category` de la tabla Prompt; si alguien "traduce" el slug, las tarjetas
+    se caen todas al cajón "Otros" sin dar un solo error. Por eso la prueba
+    exige que cada sección visible traiga tarjetas adentro.
+
+SIEMPRE VISIBLE (regla de Angela)
+    Chrome real, con ventana. `--headless` PROHIBIDO. Captura de pantalla
+    completa con el reloj a la vista.
+
+USO
+    python prueba_catalogo_es.py
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import json
+import os
+import socket
+import subprocess
+import sys
+import time
+
+try:
+    from playwright.sync_api import sync_playwright
+except Exception as exc:  # pragma: no cover
+    print("!!! Hace falta Playwright: %s" % exc)
+    sys.exit(2)
+
+# PROHIBIDO PIL.ImageGrab (Angela, 2026-08-02): las fotos las toma
+# SHOTER, el agent de Tlamatini. Ver shoter_foto.py.
+from shoter_foto import toma_foto
+
+
+AQUI = os.path.dirname(os.path.abspath(__file__))
+DIR_DJANGO = r"C:\Development\Tlamatini-Spanish\Tlamatini"
+
+ESPERADOS = [
+    "Primeros pasos", "Archivos y búsqueda", "Ejecución de comandos",
+    "Código y generación de proyectos", "Documentos y PDF",
+    "Imágenes y visión", "Agents y flows", "ACPX, Skills y MCPs",
+    "Automatización del escritorio", "Juegos y 3D", "Firmware e IoT",
+    "Seguridad y reconocimiento", "Mensajería y contactos",
+    "Multimedia y voz", "Otros",
+]
+
+PROHIBIDOS = [
+    "Getting Started", "Files & Search", "Run & Execute",
+    "Code & Project Generation", "Documents & PDF", "Images & Vision",
+    "Agents & Flows", "ACPX, Skills & MCPs", "Desktop Automation",
+    "Games & 3D", "Firmware & IoT", "Security & Recon",
+    "Messaging & Contacts", "Media & Voice", "More",
+]
+
+RESULTADOS: list = []
+FOTOS: list = []
+SALIDA = ""
+_PAGINA = None
+
+
+def log(m: str) -> None:
+    print("[%s] %s" % (_dt.datetime.now().strftime("%H:%M:%S"), m), flush=True)
+
+
+def foto(nombre: str) -> None:
+    global _PAGINA
+    if _PAGINA is not None:
+        try:
+            _PAGINA.bring_to_front()
+            time.sleep(0.4)
+        except Exception:
+            pass
+    ruta = os.path.join(SALIDA, "%02d_%s.png" % (len(FOTOS), nombre))
+    toma_foto(os.path.dirname(ruta), os.path.basename(ruta))
+    FOTOS.append(os.path.basename(ruta))
+
+
+def revisa(nombre: str, ok: bool, detalle: str) -> None:
+    RESULTADOS.append({"revision": nombre, "pasa": bool(ok), "detalle": detalle})
+    log(("   PASA  " if ok else "   FALLA  ") + "%s — %s" % (nombre, detalle))
+
+
+def credenciales() -> tuple:
+    p = os.path.join(AQUI, ".creds.env")
+    u = c = ""
+    if os.path.isfile(p):
+        for ln in open(p, encoding="utf-8", errors="replace"):
+            if ln.strip().startswith("#") or "=" not in ln:
+                continue
+            k, v = ln.split("=", 1)
+            if k.strip() == "TLAMATINI_USER":
+                u = v.strip()
+            elif k.strip() == "TLAMATINI_PASS":
+                c = v.strip()
+    return u, c
+
+
+def puerto_abierto(p: int) -> bool:
+    s = socket.socket()
+    s.settimeout(1.5)
+    try:
+        s.connect(("127.0.0.1", p))
+        return True
+    except Exception:
+        return False
+    finally:
+        try:
+            s.close()
+        except Exception:
+            pass
+
+
+def arranca_server(p: int):
+    if puerto_abierto(p):
+        log("el server ya estaba arriba")
+        return None
+    log("arrancando el server…")
+    proc = subprocess.Popen(
+        [sys.executable, "manage.py", "runserver", "--noreload", "127.0.0.1:%d" % p],
+        cwd=DIR_DJANGO, creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
+    for _ in range(60):
+        time.sleep(1)
+        if puerto_abierto(p):
+            log("el server está arriba")
+            return proc
+    log("!! el server NO levantó")
+    return proc
+
+
+def main() -> int:
+    global SALIDA, _PAGINA
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--headless", action="store_true", help="PROHIBIDO")
+    args = ap.parse_args()
+
+    if args.headless:
+        print("!!! HEADLESS ESTÁ PROHIBIDO EN ESTE PROYECTO. "
+              "Las pruebas se ven o no se corren.")
+        return 2
+
+    sello = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+    SALIDA = os.path.join(AQUI, "reports", "catalogo_es_%s" % sello)
+    os.makedirs(SALIDA, exist_ok=True)
+
+    usuario, password = credenciales()
+    if not usuario or not password:
+        log("!! faltan credenciales en .creds.env")
+        return 2
+
+    print("=" * 74)
+    print("  PRUEBA VISIBLE — encabezados del Catálogo de prompts")
+    print("=" * 74)
+    print("  usuario : %s   (la contraseña NUNCA se imprime)" % usuario)
+    print("  reporte : %s" % SALIDA)
+    print("=" * 74)
+
+    srv = arranca_server(args.port)
+    if not puerto_abierto(args.port):
+        revisa("el server levanta", False, "no levantó")
+        return 1
+
+    base = "http://127.0.0.1:%d" % args.port
+    with sync_playwright() as pw:
+        nav = pw.chromium.launch(headless=False, channel="chrome",
+                                 args=["--start-maximized"])
+        ctx = nav.new_context(no_viewport=True)
+        page = ctx.new_page()
+        _PAGINA = page
+        try:
+            page.goto(base + "/", wait_until="domcontentloaded")
+            page.fill("#id_username", usuario)
+            page.fill("#id_password", password)
+            page.click("form button[type=submit]")
+            page.wait_for_load_state("domcontentloaded")
+            page.goto(base + "/agent/agent/", wait_until="domcontentloaded")
+            page.wait_for_selector("#prompts-catalog", timeout=25000)
+            time.sleep(1.2)
+
+            page.click("#prompts-catalog")
+            try:
+                page.wait_for_selector(".prompt-category-label", timeout=15000)
+            except Exception as exc:
+                log("(no aparecieron los encabezados: %s)" % str(exc)[:90])
+            time.sleep(1.0)
+            foto("00_catalogo_abierto")
+
+            datos = page.evaluate("""() => {
+                const secs = Array.from(
+                    document.querySelectorAll('.prompt-category-label'))
+                    .map(e => (e.textContent || '').trim());
+                const tarjetas = document.querySelectorAll(
+                    '.prompt-card, .prompt-item, [class*="prompt-card"]').length;
+                return {secciones: secs, tarjetas: tarjetas};
+            }""")
+            secs = datos.get("secciones") or []
+            log("secciones vistas: %s" % secs)
+
+            revisa("el catálogo abre y muestra secciones", len(secs) > 0,
+                   "%d secciones" % len(secs))
+
+            faltan = [e for e in ESPERADOS if e not in secs]
+            # 'Otros' sólo aparece si hay prompts sin categoría; no se exige.
+            faltan = [f for f in faltan if f != "Otros"]
+            revisa("todas las secciones salen en español", not faltan,
+                   "faltan=%s" % faltan)
+
+            colados = [p for p in PROHIBIDOS if p in secs]
+            revisa("no quedó ni un encabezado en inglés", not colados,
+                   "colados=%s" % colados)
+
+            # Si alguien hubiera tocado un slug, las tarjetas se caerían todas
+            # a 'Otros' y las demás secciones quedarían vacías.
+            revisa("las tarjetas siguen repartidas (los slugs no se movieron)",
+                   datos.get("tarjetas", 0) > 50 and len(secs) >= 10,
+                   "tarjetas=%s secciones=%d" % (datos.get("tarjetas"), len(secs)))
+
+            if srv is not None:
+                try:
+                    srv.kill()
+                except Exception:
+                    pass
+        except Exception as exc:
+            revisa("la prueba corrió sin reventar", False, str(exc)[:200])
+            foto("99_error")
+        finally:
+            try:
+                time.sleep(2)
+                ctx.close()
+                nav.close()
+            except Exception:
+                pass
+
+    fallas = [r for r in RESULTADOS if not r["pasa"]]
+    with open(os.path.join(SALIDA, "resultados.json"), "w", encoding="utf-8") as fh:
+        json.dump({"revisiones": RESULTADOS, "fotos": FOTOS}, fh,
+                  ensure_ascii=False, indent=2)
+
+    print("=" * 74)
+    print("  %d de %d revisiones PASAN" % (len(RESULTADOS) - len(fallas), len(RESULTADOS)))
+    for f in fallas:
+        print("   FALLA: %s — %s" % (f["revision"], f["detalle"]))
+    print("  fotos   : %d en %s" % (len(FOTOS), SALIDA))
+    print("  VEREDICTO: %s" % ("TODO BIEN" if not fallas else "HAY FALLAS"))
+    print("=" * 74)
+    return 1 if fallas else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

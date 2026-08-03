@@ -1676,7 +1676,7 @@ async function _saveSetDb() {
     if (!raw) {
         setDbSourcePathInput.classList.add('config-form-invalid');
         _setSetDbStatus('El path del archivo no puede estar vacío.', 'error');
-        alert('El path del archivo no puede estar vacío.\n\nEspecifica un archivo db.sqlite3 existente antes de presionar "Set".');
+        alert('El path del archivo no puede estar vacío.\n\nEspecifica un archivo db.sqlite3 existente antes de presionar "Establecer".');
         return false;
     }
 
@@ -1699,7 +1699,7 @@ async function _saveSetDb() {
     if (info.kind !== 'file') {
         setDbSourcePathInput.classList.add('config-form-invalid');
         _setSetDbStatus('El archivo no existe.', 'error');
-        alert('El archivo no existe:\n\n' + raw + '\n\nEspecifica un archivo db.sqlite3 existente antes de presionar "Set".');
+        alert('El archivo no existe:\n\n' + raw + '\n\nEspecifica un archivo db.sqlite3 existente antes de presionar "Establecer".');
         return false;
     }
 

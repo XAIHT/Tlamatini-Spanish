@@ -314,10 +314,21 @@ _USER_PROVIDER_WORDS = frozenset((
     'me', 'myself', 'my_self', 'self', 'owner', 'my_account', 'myaccount',
     'personal', 'personal_account', 'my_personal_account', 'account',
     'my_telegram', 'my_telegram_account', 'my_number', 'my_phone',
+    # ── ESPAÑOL (edición en español) ─────────────────────────────────
+    # Sin estos, quien escribe "mándalo como yo" o "desde mi cuenta" cae
+    # en 'auto' y el mensaje puede salir por el otro camino. El README en
+    # español promete que se puede decir así, y la promesa tiene que ser
+    # cierta. Van con y sin acento porque el normalizador no los quita.
+    'yo', 'como_yo', 'mi', 'mi_cuenta', 'micuenta', 'cuenta_personal',
+    'mi_cuenta_personal', 'mi_telegram', 'mi_numero', 'mi_número',
+    'mi_telefono', 'mi_teléfono', 'desde_mi_cuenta', 'con_mi_cuenta',
+    'mi_propia_cuenta', 'personal_mia', 'personal_mía',
 ))
 _BOT_PROVIDER_WORDS = frozenset((
     'bot', 'bot_api', 'botapi', 'telegram_bot', 'the_bot', 'a_bot',
     'bot_account', 'robot', 'botfather',
+    # ── ESPAÑOL ──────────────────────────────────────────────────────
+    'el_bot', 'como_el_bot', 'como_bot', 'desde_el_bot', 'con_el_bot',
 ))
 
 
@@ -331,7 +342,8 @@ def _normalize_provider_word(value: str) -> str:
     prev = None
     while prev != word:
         prev = word
-        for pfx in ('send_', 'as_'):
+        # 'como_' es el equivalente español de 'as_': "como yo" -> "yo".
+        for pfx in ('send_', 'as_', 'como_', 'desde_', 'con_'):
             if word.startswith(pfx):
                 word = word[len(pfx):]
     return word

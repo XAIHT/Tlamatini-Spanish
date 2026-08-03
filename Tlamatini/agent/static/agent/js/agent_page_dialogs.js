@@ -798,10 +798,10 @@ function renderBackupDbDialog() { // eslint-disable-line no-unused-vars
 function makeSetCancelButtons(asyncOnSet, onCancel) {  
     return [
         {
-            text: "Set",
+            text: "Establecer",
             click: function () {
                 const $dlg = $(this);
-                const setBtn = $dlg.parent().find('.ui-dialog-buttonpane button:contains("Set")');
+                const setBtn = $dlg.parent().find('.ui-dialog-buttonpane button:contains("Establecer")');
                 const cancelBtn = $dlg.parent().find('.ui-dialog-buttonpane button:contains("Cancelar")');
                 setBtn.prop('disabled', true);
                 cancelBtn.prop('disabled', true);
@@ -834,7 +834,7 @@ function makeSetCancelButtons(asyncOnSet, onCancel) {
 }
 
 function _styleSetCancelButtons() {
-    $('.ui-dialog-buttonpane button:contains("Set")').css(DIALOG_BUTTON_CSS);
+    $('.ui-dialog-buttonpane button:contains("Establecer")').css(DIALOG_BUTTON_CSS);
     $('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
 }
 
@@ -861,7 +861,7 @@ function preRenderSetDbDialog(message, primaryText, secondaryText) { // eslint-d
         open: function () { document.body.style.overflow = 'hidden'; },
         close: function () { document.body.style.overflow = ''; },
         create: function () {
-            $(this).parent().find('.ui-dialog-buttonpane button:contains("Set")').css(DIALOG_BUTTON_CSS);
+            $(this).parent().find('.ui-dialog-buttonpane button:contains("Establecer")').css(DIALOG_BUTTON_CSS);
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
         buttons: makeSetCancelButtons(typeof _saveSetDb === 'function' ? _saveSetDb : null, null)

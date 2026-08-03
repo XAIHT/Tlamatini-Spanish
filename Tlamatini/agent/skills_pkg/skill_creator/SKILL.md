@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Create, edit, validate, and package new Tlamatini skills (SKILL.md packages).
+description: Crea, edita, valida y empaqueta nuevos skills de Tlamatini (paquetes SKILL.md).
 metadata:
   openclaw:
     emoji: "🛠"

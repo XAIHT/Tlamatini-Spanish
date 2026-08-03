@@ -1,6 +1,6 @@
 ---
 name: tlamatini-static-version-bumper
-description: Bump STATIC_VERSION in tlamatini/settings.py so the chat / ACP frontend re-fetches CSS+JS bundles after a frontend change.
+description: Sube STATIC_VERSION en tlamatini/settings.py para que el frontend del chat y del ACP vuelva a descargar los bundles de CSS y JS después de un cambio de frontend.
 metadata:
   openclaw:
     emoji: "📦"

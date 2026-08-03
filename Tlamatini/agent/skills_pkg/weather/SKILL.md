@@ -1,6 +1,6 @@
 ---
 name: weather
-description: Look up current weather and short forecast for a location via Open-Meteo (no API key required).
+description: Consulta el clima actual y el pronóstico corto de una ubicación vía Open-Meteo (no requiere API key).
 metadata:
   openclaw:
     emoji: "🌤"

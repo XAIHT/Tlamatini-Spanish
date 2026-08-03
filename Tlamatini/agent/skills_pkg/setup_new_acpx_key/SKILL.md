@@ -1,6 +1,6 @@
 ---
 name: setup-new-acpx-key
-description: Configure the API key (or other credential) for a registered ACPX agent_id (claude/codex/cursor/gemini/qwen/copilot/pi/droid/iflow/kilocode/kimi/kiro/opencode/tlamatini) end-to-end across data.keys, config.json (top-level + acpx.agents.<id>.env), regen_secrets.py, and verification via acp_doctor.
+description: Configura de punta a punta la API key (u otra credencial) de un agent_id de ACPX ya registrado (claude/codex/cursor/gemini/qwen/copilot/pi/droid/iflow/kilocode/kimi/kiro/opencode/tlamatini) en data.keys y en config.json (nivel superior + acpx.agents.<id>.env) y en regen_secrets.py, con verificación mediante acp_doctor.
 metadata:
   openclaw:
     emoji: "🔑"

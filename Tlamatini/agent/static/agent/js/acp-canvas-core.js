@@ -425,7 +425,7 @@ function appendOutputTriangles(el, agentName) {
     } else if (agentName === 'counter') {
         const outputTri1 = document.createElement('div');
         outputTri1.classList.add('output-triangle', 'output-1');
-        outputTri1.title = "Output L (less than)";
+        outputTri1.title = "Output L (menor que)";
         el.appendChild(outputTri1);
         const labelL = document.createElement('div');
         labelL.classList.add('output-label', 'label-a');
@@ -433,7 +433,7 @@ function appendOutputTriangles(el, agentName) {
         el.appendChild(labelL);
         const outputTri2 = document.createElement('div');
         outputTri2.classList.add('output-triangle', 'output-2');
-        outputTri2.title = "Output G (greater/equal)";
+        outputTri2.title = "Output G (mayor o igual)";
         el.appendChild(outputTri2);
         const labelG = document.createElement('div');
         labelG.classList.add('output-label', 'label-b');
@@ -444,7 +444,7 @@ function appendOutputTriangles(el, agentName) {
         outputTri.classList.add('output-triangle');
         if (neverStarts) {
             outputTri.style.borderLeftColor = '#555';
-            outputTri.title = "This agent does not start downstream agents";
+            outputTri.title = "Este agent no arranca a los agents que siguen";
         }
         el.appendChild(outputTri);
     }
@@ -456,7 +456,7 @@ function appendOutputTriangles(el, agentName) {
 function appendLedIndicator(el) {
     const led = document.createElement('div');
     led.classList.add('canvas-item-led', 'led-idle');
-    led.title = 'Agent Status';
+    led.title = 'Estado del agent';
     el.appendChild(led);
 }
 

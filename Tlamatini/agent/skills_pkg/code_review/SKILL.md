@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Review a git diff (or working-tree changes) like a senior engineer — correctness, security, performance, readability — and return a verdict plus structured, line-anchored findings.
+description: Revisa un git diff (o los cambios del working tree) como lo haría una ingeniera senior — corrección, seguridad, rendimiento y legibilidad — y devuelve un veredicto más hallazgos estructurados y anclados a la línea.
 metadata:
   openclaw:
     emoji: "🔍"

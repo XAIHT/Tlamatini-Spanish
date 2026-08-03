@@ -22,7 +22,20 @@
             <div class="col-md-8 col-lg-6">
                 <div class="card welcome-card">
                     <div class="card-body">
-                        <h2 class="card-title mb-4 big-white-text">Bienvenida(o), {{ user.username }}!</h2>
+                        {% comment %}
+                        GÉNERO NEUTRO, por la regla que el propio catálogo ya
+                        declara en i18n/ui_es.py:47-48: "Te damos la bienvenida",
+                        NUNCA "Bienvenido" ni "Bienvenida", porque quien entra
+                        puede ser cualquiera.
+
+                        OJO: este bloque TIENE que ir con la etiqueta comment.
+                        La sintaxis CORTA de comentario de Django (llave-gato)
+                        es de UNA SOLA LÍNEA: si se reparte en varios renglones
+                        NO comenta nada — se IMPRIME en pantalla. Eso pasó justo
+                        aquí y Angela lo vio en la página de bienvenida.
+                        Guarda: agent/test_plantillas_sin_comentarios_filtrados.py
+                        {% endcomment %}
+                        <h2 class="card-title mb-4 big-white-text">¡Te damos la bienvenida, {{ user.username }}!</h2>
                         <p class="card-text white-text">Iniciaste sesión correctamente.</p>
                         <a href="{% url 'agent_page' %}" class="btn btn-primary mx-2 big-white-text-button">Ir al Chat</a>
                         <a href="{% url 'logout' %}" class="btn btn-secondary mx-2 big-white-text-button">Cerrar sesión</a>

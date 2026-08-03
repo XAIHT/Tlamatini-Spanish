@@ -166,7 +166,7 @@ async function loadCanvasFromFileInContentGenerated(filename) { // eslint-disabl
         input.click();
     } catch (error) {
         console.error('Error loading canvas from content_generated:', error);
-        alert('Error loading file: ' + filename);
+        alert('No pude cargar el archivo: ' + filename);
     }
 }
 
@@ -286,7 +286,7 @@ function copyCanvasToClipboard() {
         }, 1500);
     }).catch(err => {
         console.error("Failed to copy canvas content:", err);
-        alert("Failed to copy to clipboard");
+        alert("No pude copiar al portapapeles");
     });
 }
 
@@ -324,7 +324,7 @@ const loadFileContent = (reOpened = false, callback = null) => {
                     console.log('--- Opened .flw file in Agentic Control Panel: ' + file.name);
                 } catch (err) {
                     console.error('Failed to parse .flw file:', err);
-                    alert('Invalid .flw file format. The file could not be parsed as JSON.');
+                    alert('El formato del archivo .flw no es válido: no se pudo leer como JSON.');
                 }
             };
             flwReader.readAsText(file);

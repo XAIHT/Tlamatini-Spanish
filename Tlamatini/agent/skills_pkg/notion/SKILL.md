@@ -1,6 +1,6 @@
 ---
 name: notion
-description: Use the Notion API to create, read, update Notion pages, data sources (databases), and blocks.
+description: Usa el API de Notion para crear, leer y actualizar páginas de Notion, data sources (bases de datos) y bloques.
 metadata:
   openclaw:
     emoji: "📝"

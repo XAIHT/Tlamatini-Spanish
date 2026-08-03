@@ -1,6 +1,6 @@
 ---
 name: tlamatini-flw-doctor
-description: "Validate a .flw workflow file: check connection topology, terminal agents, Parametrizer single-lane queue, missing connectors, dangling target_agents."
+description: "Valida un archivo de workflow .flw: revisa la topología de conexiones, los agents terminales, la fila de un solo carril del Parametrizer, los conectores que faltan y los target_agents que quedaron colgando."
 metadata:
   openclaw:
     emoji: "🩺"

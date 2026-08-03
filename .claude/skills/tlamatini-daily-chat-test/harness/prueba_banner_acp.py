@@ -58,10 +58,10 @@ except Exception as exc:  # pragma: no cover
     print("!!! Hace falta Playwright: %s" % exc)
     sys.exit(2)
 
-try:
-    from PIL import ImageGrab
-except Exception:  # pragma: no cover
-    ImageGrab = None
+# PROHIBIDO PIL.ImageGrab (Angela, 2026-08-02): las fotos las toma
+# SHOTER, el agent de Tlamatini. Ver shoter_foto.py.
+from shoter_foto import toma_foto
+
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = r"C:\Development\Tlamatini-Spanish"
@@ -102,11 +102,7 @@ def foto(nombre: str) -> None:
         except Exception:
             pass
     ruta = os.path.join(SALIDA, "%02d_%s.png" % (len(FOTOS), nombre))
-    if ImageGrab is not None:
-        try:
-            ImageGrab.grab(all_screens=True).save(ruta)
-        except Exception as exc:
-            log("(no pude tomar la foto: %s)" % exc)
+    toma_foto(os.path.dirname(ruta), os.path.basename(ruta))
     FOTOS.append(os.path.basename(ruta))
 
 

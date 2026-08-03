@@ -1,6 +1,6 @@
 ---
 name: roblox-studio
-description: Build and edit in Roblox Studio via the Roblox Studio MCP the RIGHT way - preflight the Studio connection, do the whole build in a few big execute_luau scripts (not dozens of tiny calls), make REALISTIC terrain with the Terrain VOXEL api driven by Perlin noise (NEVER stacked Parts or concentric layers - those give ugly blocky stepped pyramids), poll generative jobs, check the console, and fail honestly. Invoke for ANY "in Roblox / Roblox Studio" request - terrain, mountains, parts, scripts, models, materials, assets.
+description: Construye y edita en Roblox Studio a través del Roblox Studio MCP de la forma CORRECTA - revisa primero que Studio esté conectado, arma toda la construcción en unos pocos scripts grandes de execute_luau (no en decenas de llamadas chiquitas), genera terreno REALISTA con la api VOXEL de Terrain manejada por ruido Perlin (NUNCA Parts apilados ni capas concéntricas - eso saca pirámides escalonadas feas y cuadradas), sondea los jobs generativos hasta que terminen, revisa la consola, y falla con honestidad. Invócalo para CUALQUIER petición que diga "en Roblox / Roblox Studio" - terreno, montañas, parts, scripts, models, materials, assets.
 metadata:
   openclaw:
     emoji: "🎮"

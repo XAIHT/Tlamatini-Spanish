@@ -1,6 +1,6 @@
 ---
 name: tlamatini-csrf-exempt-audit
-description: Enumerate every @csrf_exempt-decorated view in Tlamatini/agent/views.py and classify whether each one really needs the exemption.
+description: Enumera cada view decorada con @csrf_exempt en Tlamatini/agent/views.py y clasifica si de verdad necesita la exención.
 metadata:
   openclaw:
     emoji: "🛡"

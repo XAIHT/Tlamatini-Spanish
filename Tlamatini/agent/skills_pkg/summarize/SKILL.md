@@ -1,6 +1,6 @@
 ---
 name: summarize
-description: Summarize a long text or file into a tight, faithful brief at a target word count.
+description: Resume un texto largo o un archivo en un brief apretado y fiel, ajustado a un número de palabras dado.
 metadata:
   openclaw:
     emoji: "✂️"

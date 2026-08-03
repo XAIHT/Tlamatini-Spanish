@@ -1,6 +1,6 @@
 ---
 name: tlamatini-new-acp-agent
-description: Scaffold a new Tlamatini visual agent end-to-end across the 8 places the agent contract requires (script + config.yaml, view + url, migration, CSS gradient, 4 JS files, agentic_skill.md, README.md, lint).
+description: Genera de punta a punta un agent visual nuevo de Tlamatini en los 8 lugares que exige el contrato de agents (script + config.yaml, view + url, migración, gradiente CSS, 4 archivos JS, agentic_skill.md, README.md, lint).
 metadata:
   openclaw:
     emoji: "🧱"
