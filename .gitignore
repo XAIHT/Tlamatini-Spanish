@@ -384,3 +384,10 @@ db_*.sqlite3
 # corrida, no codigo. Las capturas retratan el escritorio entero, asi que no
 # tienen nada que hacer en un repo publico.
 .claude/skills/tlamatini-daily-chat-test/harness/resultados/
+
+# Local database health fingerprint written by agent/db_guard.py on each
+# healthy start. Machine-local state, never source: it carries THIS install's
+# own row counts, and shipping it would make every other install compare
+# itself against those numbers and false-alarm on every boot.
+Tlamatini/DB/db_health.json
+DB/db_health.json
