@@ -16,6 +16,32 @@
 
 ---
 
+## 2026-08-04 — SPACE-bar bulk check/uncheck over a text selection (`checkbox_bulk_toggle.js`)
+
+**What was wrong.** The Configure Mcps / Tools / Agents / Skills dialogs, the External-MCPs catalog and the ACP canvas agent-config dialogs list dozens of checkboxes each. Turning 20 of them off cost 20 precise clicks, and there was no way to act on a *range*. Every previous idea for fixing it (a "select all" button, shift-click ranges, a per-dialog helper) needed wiring in each dialog and would have to be re-added to every future one.
+
+**The fix.** One self-contained IIFE — `agent/static/agent/js/checkbox_bulk_toggle.js` — with **zero per-dialog wiring**. The user drags an ORDINARY TEXT SELECTION across several checkbox labels and presses **SPACE once**: every checkbox the selection overlaps flips.
+
+- **The rule is deliberately asymmetric so it is predictable**: if **ANY** selected checkbox is checked → uncheck them **ALL**; if all are already unchecked → check them **ALL**. So the first SPACE over a checked-or-mixed block always CLEARS it (what a human means by "unselect these"); press SPACE again to turn the same block back on.
+- **It is generic by construction.** It never enumerates dialogs — it asks *which checkboxes does the live selection overlap*. So Configure Mcps/Tools, Configure Agents, Configure Skills, External MCPs and the ACP canvas config dialogs all got it for free, and **every future checkbox dialog gets it with no code at all**.
+- It declares **NO cross-file globals** (the `chat_image_paste.js` shape), so it cannot trip the const-poison contract and needs no `eslint.config.mjs` globals entry. Every step is `try/catch`-wrapped: a failure degrades to "SPACE did nothing", never to a broken page.
+
+**DO NOT weaken these — each prevents a specific, silent failure:**
+
+1. **The `keydown` listener MUST stay on `document` in the CAPTURE phase** (`addEventListener('keydown', onKeyDown, true)`). Bubble phase is not a style preference, it is a **data-corrupting bug**: `external_mcps_dialog.js` already binds Space on `.emx-row` and only calls `preventDefault()`, so on the bubble path that handler would toggle the focused row FIRST and the bulk pass would toggle it AGAIN — netting that one row back to its original state while all its neighbours flipped. Capture phase runs us first, and we call `stopPropagation()` **only for a SPACE we actually consumed**, so Escape / Tab / Enter / Ctrl+Z and every other key still reach their handlers untouched.
+2. **It bails on `input` / `textarea` / `select` / `contenteditable`, testing BOTH `event.target` AND `document.activeElement`.** Checking only the target is not enough: after a mouse-drag the target is usually `<body>`, so a target-only guard would eat the space bar in every search box in the app.
+3. **It toggles with `checkbox.click()` — a REAL click**, never a bare `checked = !checked`. Every existing `click`/`change` handler must still run: state persistence over the WebSocket, the External-MCPs ≤5-active cap, the canvas dialogs' own bookkeeping. Setting `.checked` directly would flip the pixels and silently persist nothing.
+4. **Overlap is STRICT** (`r.start < node.end && r.end > node.start`) — a zero-length touch at a boundary does NOT count. Without this, selecting label A always drags in the first character of label B and toggles a row the user never highlighted.
+5. **A row must own EXACTLY ONE checkbox** to be accepted as that checkbox's text region (`querySelectorAll('input[type="checkbox"]').length !== 1` → stop climbing). Drop this and a whole list container can be mistaken for a single row, at which point *any* selection toggles the **entire dialog**.
+6. **Self-re-rendering lists are handled by re-resolving each checkbox immediately before clicking it** (`makeResolver`: by `id`, else by an ancestor `data-key`, else the live node). The External-MCPs catalog rebuilds every row from its model on each toggle, so the node collected during the scan is already detached by the time we reach the second one; a row that vanished is skipped, never clicked while detached.
+7. **The chat toolbar toggles (`#multi-turn-enabled`, Exec report, ACPX, Ask Execs, Step-by-Step) are UNREACHABLE by design** — `.toolbar-toggle` carries `user-select: none` in `agent_page.css`, so no text selection can ever be made over them and no bulk pass can reach them. Removing that `user-select: none` would silently expose the run-mode toggles to a stray SPACE.
+
+**Wired in**: `agent_page.html` and `agentic_control_panel.html` (a `<script>` tag with a `_bulktoggle` cache-buster on `STATIC_VERSION`) — it loads on BOTH pages.
+
+Coverage: `agent/test_checkbox_bulk_toggle.py` (15 tests — source contract + template wiring on both pages + collected-`staticfiles` sync). Author: Angela López Mendoza.
+
+---
+
 ## 2026-07-26 — Binary-content guard on the RAG context loader (`binary_guard.py`)
 
 **What was wrong.** The ONLY filter on the context/embedding chain was the name-based **Context ▸ Set file type omissions** list plus a 4-entry default denylist (`package-lock.json`, `yarn.lock`, …). Anything else — a `.png`, a `.pyc`, a vendored `.so`, a `.faiss` index, a 200 MB `.safetensors`, a `.mp4` — was opened by `CustomTextLoader` with `autodetect_encoding=True`, decoded into mojibake, chunked and **embedded**. That poisoned FAISS/BM25 with noise, burned embedding VRAM and wall-clock, and diluted real retrieval hits. A name-based list structurally cannot fix this: you cannot enumerate every binary extension a user's project will contain.
