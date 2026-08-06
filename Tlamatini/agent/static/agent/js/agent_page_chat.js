@@ -1513,6 +1513,50 @@ function _mapToolArgsToAgentConfig(canonicalName, rawArgs, _toolName) {
                 if (!Number.isNaN(n)) config[k] = n;
             }
         });
+    } else if (lower === 'latexer') {
+        set('action', pairs.action);
+        set('tex_path', pairs.tex_path);
+        set('project_dir', pairs.project_dir);
+        set('main_file', pairs.main_file);
+        set('input_text', pairs.input_text);
+        set('documentclass', pairs.documentclass);
+        set('class_options', pairs.class_options);
+        set('title', pairs.title);
+        set('author', pairs.author);
+        set('date', pairs.date);
+        set('packages', pairs.packages);
+        set('geometry', pairs.geometry);
+        set('content', pairs.content);
+        set('template', pairs.template);
+        set('document_language', pairs.document_language);
+        set('edit_mode', pairs.edit_mode);
+        set('find_text', pairs.find_text);
+        set('replace_text', pairs.replace_text);
+        set('engine', pairs.engine);
+        set('use_latexmk', pairs.use_latexmk);
+        set('bibliography', pairs.bibliography);
+        set('latex_executable', pairs.latex_executable);
+        set('output_dir', pairs.output_dir);
+        set('filename', pairs.filename);
+        set('projects_dir', pairs.projects_dir);
+        set('repair_rungs', pairs.repair_rungs);
+        set('repair_model', pairs.repair_model);
+        set('ollama_url', pairs.ollama_url);
+        set('ollama_token', pairs.ollama_token);
+        ['recursive', 'auto_preamble', 'replace_all', 'auto_install_packages',
+         'build_index', 'build_glossaries', 'shell_escape', 'overwrite', 'keep_aux',
+         'open_pdf', 'preflight', 'repair', 'repair_write_back'].forEach(function (k) {
+            if (pairs[k] !== undefined && pairs[k] !== '') {
+                config[k] = (String(pairs[k]).toLowerCase() === 'true');
+            }
+        });
+        ['max_passes', 'command_timeout', 'max_log_chars',
+         'repair_bisect_max_probes', 'repair_model_timeout'].forEach(function (k) {
+            if (pairs[k] !== undefined && pairs[k] !== '') {
+                const n = parseInt(pairs[k], 10);
+                if (!Number.isNaN(n)) config[k] = n;
+            }
+        });
     } else if (lower === 'nmapper') {
         set('action', pairs.action);
         set('target', pairs.target);
@@ -2037,6 +2081,7 @@ function _agentPurpose(canonicalName) {
         'Jenkinser': 'Jenkins job triggers',
         'SQLer': 'SQL queries',
         'Mongoxer': 'MongoDB operations',
+        'LaTeXer': 'LaTeX typesetting: .tex sources compiled to PDF',
         'Prompter': 'LLM prompt execution',
         'Summarizer': 'LLM text summarization',
         'File-Creator': 'Creates files with specified content',

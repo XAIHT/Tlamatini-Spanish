@@ -19,15 +19,15 @@
 
 <p align="center">
   <b>💰 Unos $200 al AÑO — no $200 al MES.</b><br/>
-  Los planes frontera como GPT-5.4 o Claude Opus cuestan alrededor de <b>$200 al mes</b>. <b>Tlamatini es gratuita y de código abierto</b> — tu única factura es <b>Ollama Pro (~$200 al <i>año</i>, pagados a Ollama, no a nosotros)</b>, y encima de eso ella apila <b>86 agent types y 75+ tools</b>: potencia comparable por cerca de <b>una doceava parte</b> del precio, todo en tu propia máquina.
+  Los planes frontera como GPT-5.4 o Claude Opus cuestan alrededor de <b>$200 al mes</b>. <b>Tlamatini es gratuita y de código abierto</b> — tu única factura es <b>Ollama Pro (~$200 al <i>año</i>, pagados a Ollama, no a nosotros)</b>, y encima de eso ella apila <b>87 agent types y 75+ tools</b>: potencia comparable por cerca de <b>una doceava parte</b> del precio, todo en tu propia máquina.
 </p>
 
 <p align="center">
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-5865F2?style=for-the-badge&labelColor=2D2D2D&logo=discord&logoColor=white" alt="Únete a nuestro Discord"/></a>
-  <a href="https://github.com/XAIHT/Tlamatini/releases/tag/v1.47.0"><img src="https://img.shields.io/badge/VERSION-v1.47.0-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
+  <a href="https://github.com/XAIHT/Tlamatini/releases/tag/v1.48.0"><img src="https://img.shields.io/badge/VERSION-v1.48.0-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
   <a href="https://www.python.org/downloads/release/python-31210/"><img src="https://img.shields.io/badge/PYTHON-3.12.10-3776AB?style=for-the-badge&labelColor=2D2D2D&logo=python&logoColor=white" alt="Python"/></a>
   <a href="#instalación"><img src="https://img.shields.io/badge/PLATFORM-WIN%2010%20%7C%2011-0078D6?style=for-the-badge&labelColor=2D2D2D&logo=windows&logoColor=white" alt="Plataforma"/></a>
-  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/AGENT%20TYPES-85-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="86 agent types"/></a>
+  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/AGENT%20TYPES-87-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="87 agent types"/></a>
   <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/TOOLS-75-16A34A?style=for-the-badge&labelColor=2D2D2D" alt="75 tools"/></a>
   <a href="https://github.com/XAIHT/Tlamatini/blob/main/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Licencia"/></a>
 </p>
@@ -47,7 +47,7 @@
 
 ## 🚀 Empieza aquí — 5 pasos para una Tlamatini con potencia en la nube
 
-La idea completa en una línea: **no pagues $200 al mes por un modelo frontera.** **Tlamatini es gratuita** — tu único costo es **Ollama Pro (~$200 al año, pagados a Ollama, no a nosotros)**; apunta Tlamatini hacia él y maneja **86 agent types y 75+ tools** desde tu propia máquina. Esta es la instalación completa.
+La idea completa en una línea: **no pagues $200 al mes por un modelo frontera.** **Tlamatini es gratuita** — tu único costo es **Ollama Pro (~$200 al año, pagados a Ollama, no a nosotros)**; apunta Tlamatini hacia él y maneja **87 agent types y 75+ tools** desde tu propia máquina. Esta es la instalación completa.
 
 ### 1 · Instala Tlamatini
 
@@ -173,7 +173,7 @@ Claude Code, Codex, Cursor, Gemini — editan archivos de texto. Tlamatini hace 
 | 🛠️ | **Modificar proyectos de software enteros** | Lee, busca, refactoriza, edita y reconstruye codebases completas — no sólo archivos sueltos — con el grounding del RAG híbrido. |
 | 🛡️ | **Evaluaciones de seguridad** | Runbooks autorizados de Kali Linux / pentest + skills de auditoría de seguridad de código, dirigidos desde el chat. |
 | 📟 | **Firmware STM32 · ESP32 · Arduino** | Andamiaje → build → **flashear una tarjeta real conectada** → leer el serial, con un preflight de seguridad que se niega a grabar firmware mal dirigido. |
-| 🧩 | **UN DISEÑADOR VISUAL DE WORKFLOWS** | **85 tipos de agent** de arrastrar y soltar sobre un canvas que cableas hasta volverlo un flow ejecutable y guardable en `.flw`. *Ningún otro coding agent — ni Claude Code, ni Codex, ninguno — te da esto.* Ésta es la joya de la corona. |
+| 🧩 | **UN DISEÑADOR VISUAL DE WORKFLOWS** | **87 tipos de agent** de arrastrar y soltar sobre un canvas que cableas hasta volverlo un flow ejecutable y guardable en `.flw`. *Ningún otro coding agent — ni Claude Code, ni Codex, ninguno — te da esto.* Ésta es la joya de la corona. |
 
 > **El titular que ningún competidor puede copiar:** Tlamatini es el único asistente de desarrollo con IA local-first donde *diseñas el workflow de agents visualmente*, y luego lo pones a flashear firmware, manejar Unreal/Blender, correr herramientas de seguridad y comandar cualquier MCP externo — todo desde una sola máquina.
 
@@ -208,7 +208,7 @@ Cuando habilitas, configuras, modificas, encadenas o ejecutas un agent, **ese ag
 Todo lo que Tlamatini puede hacer, agrupado:
 
 **🧩 Orquestación y diseño**
-- **Diseñador Visual de Workflows (ACP)** — 85 tipos de agent de arrastrar y soltar, cableados en flows ejecutables; guarda y carga archivos `.flw`; el Flow Compiler valida el canvas y lo convierte en `config.yaml`.
+- **Diseñador Visual de Workflows (ACP)** — 87 tipos de agent de arrastrar y soltar, cableados en flows ejecutables; guarda y carga archivos `.flw`; el Flow Compiler valida el canvas y lo convierte en `config.yaml`.
 - **Orquestación Multi-Turn** — un loop de tool-calling con **75 tools** y un planificador global de ejecución; el modo **Step-by-Step** marca el ritmo de una instalación práctica, una acción a la vez; los **model steps auto-reparables** hacen que un tropiezo de red o del modelo nunca la congele — reintenta bajo un watchdog, termina con gracia a partir del trabajo ya hecho, y siempre te cuenta qué pasó.
 - **FlowCreator / FlowHypervisor** — deja que un LLM diseñe un flow; un watchdog vigila su salud. FlowCreator ahora también se **invoca desde el chat** (`chat_agent_flowcreator`): describe un flow con palabras normales y escribe en disco un archivo `.flw` real, cargable en el canvas.
 - **Parametrizer / Gatewayer / Gateway-Relayer / Node Manager** — encadena la salida de un agent hacia la configuración del siguiente; dispara flows desde webhooks, carpetas vigiladas o GitHub/GitLab.
@@ -226,6 +226,15 @@ Todo lo que Tlamatini puede hacer, agrupado:
 
 **🛠️ Código y proyectos**
 - **PDFer** — el **compositor de documentos**: convierte la propia respuesta de Tlamatini, algo de Markdown/HTML, texto plano, una carpeta de imágenes o varios PDFs existentes en UN solo PDF con estilo — con portada, tablas reales, números de página y un índice opcional. Es el lado de ESCRITURA de la familia documental (File-Extractor / File-Interpreter *leen* documentos; PDFer los *escribe*). **No necesita instalación** — todos los motores que usa ya vienen dentro de Tlamatini. Modos: `auto` (olfatea el contenido por ti) / `markdown` / `html` / `text` / `images` (uno por página, ajustado, o en cuadrícula) / `mixed` (prosa + figuras incrustadas) / `merge` / `info` / `validate`. Opcionalmente deja que un modelo de Ollama pula antes el texto a Markdown limpio (apagado por defecto; un pulido fallido nunca pierde tu documento). Los PDFs aterrizan en **Documents/TlamatiniPDF** con un nombre a prueba de colisiones, y un preflight a prueba de fallos prefiere negarse antes que escribir un archivo vacío o equivocado.
+- **LaTeXer** — el **tipógrafo de LaTeX**, y el hermano tipográfico de PDFer: PDFer *compone* un PDF a partir de Markdown, HTML e imágenes; LaTeXer *tipografía* uno desde código `.tex` de verdad — matemáticas como Dios manda, una bibliografía real, referencias cruzadas numeradas, un índice analítico. Pásale una carpeta entera de archivos `.tex` y él solo encuentra el documento maestro, sigue cada `\input`, corre `biber`/`bibtex` y `makeindex`, y vuelve a correr el compilador las veces que haga falta hasta que las referencias cruzadas se estabilizan — y luego convierte el famoso log ilegible de LaTeX en una lista corta de errores reales. También puedes darle un fragmento pelón (aunque sea nada más `$E = mc^2$`) y él lo envuelve en un preámbulo completo por ti. Ocho templates incluidos (article, report, book, beamer, letter, cv, homework, spanish-article), más acciones de autoría para crear, editar, leer, listar, revisar y analizar archivos `.tex`. Los PDFs aterrizan en **Documents/TlamatiniLaTeX**.
+
+  > ### ⚠️ LaTeXer necesita **MiKTeX** — y eso es lo *único* que necesita
+  >
+  > Tlamatini **no** trae una distribución de TeX: una completa pesa varios gigabytes, y el release se mantiene chico a propósito. Así que instala **MiKTeX** una sola vez — **https://miktex.org/download** — y luego instala Tlamatini. Ya con eso: **MiKTeX + Tlamatini = LaTeXer funciona, para siempre, sin nada más que configurar.**
+  >
+  > **¿Por qué MiKTeX en específico?** Porque cuando un documento pide un package de LaTeX que nunca instalaste, **MiKTeX lo descarga e instala él solo, a media compilación** — así que el documento igual sale. Esa única característica es la que le permite a LaTeXer tipografiar *lo que sea* sin configuración previa. TeX Live y MacTeX se detectan y se usan si ya tienes alguno, pero ninguno de los dos puede hacer eso, así que tendrías que ir cazando los packages faltantes tú mismo. **MiKTeX es la opción recomendada.**
+  >
+  > ¿No tienes LaTeX instalado? LaTeXer te lo dice claramente y se niega — nunca truena ni finge que hizo un PDF. Pídele que corra `action: validate` para ver exactamente qué encontró, o `action: install` y él descarga y lanza el instalador oficial de **MiKTeX** por ti.
 - **Editor / Grepper / Globber** — búsqueda y reemplazo quirúrgico, búsqueda de contenido por regex, glob de nombres de archivo (equivalentes de Claude-Edit/Grep/Glob).
 - **File-Creator / Mover / Deleter / File-Interpreter / File-Extractor** — crear, mover, borrar, leer-e-interpretar, extraer de PDF/DOCX.
 - **Executer / Pythonxer** — ejecutan comandos de shell y Python con compuerta de validación.

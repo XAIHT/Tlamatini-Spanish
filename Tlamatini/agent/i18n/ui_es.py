@@ -149,7 +149,7 @@ UI_ES: Dict[str, str] = {
     # informa. La MISMA frase está literal en agent_page.html:280 — las dos se
     # cambian juntas o se separan sin que nadie lo note.
     "Tlamatini wants to run the following before continuing the Multi-Turn chain.":
-        "Quiero ejecutar lo siguiente antes de continuar el chain de Multi-Turn.",
+        "Tlamatini quiere ejecutar lo siguiente antes de continuar el chain de Multi-Turn.",
     "Review what is about to execute and choose":
         "Revisa lo que está a punto de ejecutarse y elige",
     "Proceed": "Continuar",
