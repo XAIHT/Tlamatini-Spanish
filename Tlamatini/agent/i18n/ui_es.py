@@ -110,16 +110,16 @@ UI_ES: Dict[str, str] = {
     "Exec report": "Exec report",
     "ACPX": "ACPX",
     "Ask Execs": "Ask Execs",
-    "Step-by-Step": "Paso-a-Paso",
+    "Step-by-Step": "Step-by-Step",
     "Add internet context": "Agregar contexto de internet",
     "Send": "Enviar",
     "Send a message...": "Escribe un mensaje...",
     "Append per-agent execution tables to the answer. Enabled only when Multi-Turn is on.":
         "Agrega al final de la respuesta una tabla de ejecución por cada Agent. "
-        "Solo se habilita cuando Multi-Turn esta activado.",
+        "Solo se habilita cuando Multi-Turn está activado.",
     "Ask permission before each Multi-Turn tool/agent execution. Enabled only when Multi-Turn is on.":
         "Pide permiso antes de cada ejecución de tool o Agent en Multi-Turn. "
-        "Solo se habilita cuando Multi-Turn esta activado.",
+        "Solo se habilita cuando Multi-Turn está activado.",
     "Guide setup and troubleshooting one user-confirmed step at a time.":
         "Guía el setup y el troubleshooting un paso a la vez, "
         "confirmando contigo antes de seguir.",

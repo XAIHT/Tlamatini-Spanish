@@ -24,7 +24,7 @@
 
 <p align="center">
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-5865F2?style=for-the-badge&labelColor=2D2D2D&logo=discord&logoColor=white" alt="Únete a nuestro Discord"/></a>
-  <a href="https://github.com/XAIHT/Tlamatini/releases/tag/v1.48.0"><img src="https://img.shields.io/badge/VERSION-v1.48.0-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
+  <a href="https://github.com/XAIHT/Tlamatini/releases/tag/v1.48.2s"><img src="https://img.shields.io/badge/VERSION-v1.48.2s-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
   <a href="https://www.python.org/downloads/release/python-31210/"><img src="https://img.shields.io/badge/PYTHON-3.12.10-3776AB?style=for-the-badge&labelColor=2D2D2D&logo=python&logoColor=white" alt="Python"/></a>
   <a href="#instalación"><img src="https://img.shields.io/badge/PLATFORM-WIN%2010%20%7C%2011-0078D6?style=for-the-badge&labelColor=2D2D2D&logo=windows&logoColor=white" alt="Plataforma"/></a>
   <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/AGENT%20TYPES-87-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="87 agent types"/></a>

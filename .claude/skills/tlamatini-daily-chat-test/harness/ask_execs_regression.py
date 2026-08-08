@@ -159,7 +159,9 @@ def shot(name: str) -> None:
         except Exception:
             pass
     p = OUT / f"{len(SHOTS):02d}_{name}.png"
-    toma_foto(os.path.dirname(path), os.path.basename(path))
+    # El local se llama `p`, no `path`: escribir `path` aqui era un NameError
+    # justo al tomar la foto, y una prueba sin foto no demuestra nada.
+    toma_foto(os.path.dirname(p), os.path.basename(p))
     SHOTS.append(p.name)
 
 
