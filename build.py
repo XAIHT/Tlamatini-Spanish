@@ -29,6 +29,20 @@ from versioning import (
 )
 
 
+# ── pip's "A new release of pip is available" nag: OFF for the whole build ──
+# It is pure noise in a long build log, and it is NOT fixable the obvious way:
+# the build Python is normally the SYSTEM one under Program Files, whose pip
+# lives in a READ-ONLY prefix, so `python -m pip install --upgrade pip` cannot
+# write there without admin — and upgrading a DIFFERENT interpreter's pip (e.g.
+# the carried <repo>/python, which is writable) does nothing for it. Even a
+# successful upgrade only buys silence until pip's next release. So the CHECK
+# itself is disabled: set here in the environment so EVERY child pip inherits
+# it (including nested ones we do not spawn directly), while each pip command
+# below ALSO passes --disable-pip-version-check explicitly — belt-and-braces,
+# so the silence survives a refactor that rebuilds env from scratch.
+# Pinned by Tlamatini/agent/test_build_pip_quiet.py.
+os.environ["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
+
 def find_package_data_paths(pypi_name, import_name):
     """Finds paths for a package's code and metadata."""
     paths_to_add = []
@@ -254,7 +268,8 @@ def _purge_numpy_environment(python_exe):
     # loop until pip reports nothing left.
     for _ in range(5):
         result = subprocess.run(
-            [python_exe, "-m", "pip", "uninstall", "-y", "numpy"],
+            [python_exe, "-m", "pip", "--disable-pip-version-check",
+             "uninstall", "-y", "numpy"],
             capture_output=True, text=True,
         )
         combined = (result.stdout or "") + (result.stderr or "")
@@ -600,13 +615,15 @@ def ensure_local_build_python():
     env["PYTHONNOUSERSITE"] = "1"
     print(f"--- Installing agent deps into the source-tree build Python: {local_exe} ---")
     subprocess.run(
-        [str(local_exe), "-m", "pip", "install", "--no-warn-script-location",
+        [str(local_exe), "-m", "pip", "--disable-pip-version-check",
+         "install", "--no-warn-script-location",
          "torch", "--index-url", "https://download.pytorch.org/whl/cpu"],
         env=env, check=False,
     )
     if req_file.exists():
         rc = subprocess.run(
-            [str(local_exe), "-m", "pip", "install", "--no-warn-script-location",
+            [str(local_exe), "-m", "pip", "--disable-pip-version-check",
+             "install", "--no-warn-script-location",
              "-r", str(req_file)],
             env=env, check=False,
         )
@@ -834,8 +851,11 @@ def main():
     # (Tlamatini/agent/TlamatiniSourceCode) next to the executable, making the
     # running app a "self-able-modify" version that can read and modify its own
     # code. WITHOUT the flag the directory is omitted from the package entirely
-    # (a "not-self-able-modify" build). See Tlamatini.md §9 / prompt.pmt.
-    self_modify = "--self-modify" in sys.argv
+    # (a "not-self-able-modify" build), AND so is Tlamatini.md — her source and
+    # her self-knowledge ship together, or not at all. See Tlamatini.md §9 /
+    # prompt.pmt. `--no-self-modify` is the EXPLICIT form of the default and
+    # always WINS over --self-modify, so a wrapper script can force it off.
+    self_modify = "--self-modify" in sys.argv and "--no-self-modify" not in sys.argv
     print(
         "Self-modify build : "
         + ("YES — bundling TlamatiniSourceCode" if self_modify
@@ -929,7 +949,8 @@ def main():
         # does NOT depend on this Python's prefix being writable or pre-populated.
         print(f"  -> Installing torch (CPU-only) for {target_python} ...")
         torch_cmd = [
-            target_python, "-m", "pip", "install", "--user", "torch",
+            target_python, "-m", "pip", "--disable-pip-version-check",
+            "install", "--user", "torch",
             "--index-url", "https://download.pytorch.org/whl/cpu",
         ]
         torch_result = subprocess.run(torch_cmd)
@@ -938,7 +959,8 @@ def main():
 
         # 1b) Install remaining dependencies from requirements.txt
         if req_file.exists():
-            pip_cmd = [target_python, "-m", "pip", "install", "--user", "-r", str(req_file)]
+            pip_cmd = [target_python, "-m", "pip", "--disable-pip-version-check",
+                       "install", "--user", "-r", str(req_file)]
             pip_result = subprocess.run(pip_cmd)
             if pip_result.returncode != 0:
                 print(f"ERROR: pip install -r requirements.txt failed for {target_python}. Aborting build.")
@@ -1009,7 +1031,9 @@ def main():
         import PyInstaller  # noqa: F401
     except Exception:
         print("\n--- Installing PyInstaller ---")
-        ensure_pyinstaller = subprocess.run([sys.executable, "-m", "pip", "install", "--user", "pyinstaller"])
+        ensure_pyinstaller = subprocess.run(
+            [sys.executable, "-m", "pip", "--disable-pip-version-check",
+             "install", "--user", "pyinstaller"])
         if ensure_pyinstaller.returncode != 0:
             print("ERROR: Failed to install PyInstaller. Aborting build.")
             sys.exit(1)
@@ -1061,6 +1085,20 @@ def main():
     else:
         print(f"WARNING: {icon_path} not found — Tlamatini.exe will have no embedded icon.")
 
+    # Self-knowledge (Tlamatini.md) ships ONLY under --self-modify, in lockstep
+    # with TlamatiniSourceCode/: a not-self-able-modify build carries neither her
+    # own source NOR her own self-description, and rag/config.py then replaces
+    # prompt.pmt's {self_knowledge} with a short "not bundled" notice.
+    self_knowledge_args = (
+        [f'--add-data=Tlamatini/agent/Tlamatini.md{separator}agent']
+        if self_modify else []
+    )
+    print(
+        "Self-knowledge    : "
+        + ("YES — bundling Tlamatini.md" if self_modify
+           else "no — Tlamatini.md omitted (no self-knowledge injected)")
+    )
+
     command = [
         sys.executable, '-m', 'PyInstaller', '--name', 'manage', '--console', '--noconfirm',
         f'--additional-hooks-dir={hooks_dir}',
@@ -1072,7 +1110,7 @@ def main():
         f'--add-data=Tlamatini/staticfiles{separator}staticfiles',
         f'--add-data=Tlamatini/agent/config.json{separator}agent',
         f'--add-data=Tlamatini/agent/prompt.pmt{separator}agent',
-        f'--add-data=Tlamatini/agent/Tlamatini.md{separator}agent',
+        *self_knowledge_args,
         # ACPX skill catalog — every SKILL.md package + its scripts/ + _meta/.
         # The skill registry (agent/skills/registry.py) discovers SKILL.md
         # under this tree at runtime; without this --add-data line, frozen
@@ -1192,11 +1230,10 @@ def main():
         optional_file_copies = {
             Path("Tlamatini") / "agent" / "config.json": dist_manage / "config.json",
             Path("Tlamatini") / "agent" / "prompt.pmt": dist_manage / "prompt.pmt",
-            # Tlamatini.md is the LLM's self-knowledge file, referenced by
-            # prompt.pmt. It is read from the application directory (next to the
-            # executable in frozen mode) exactly like prompt.pmt / config.json,
-            # so it must land at the install root — not only inside the bundle.
-            Path("Tlamatini") / "agent" / "Tlamatini.md": dist_manage / "Tlamatini.md",
+            # NOTE: Tlamatini.md (self-knowledge) is INTENTIONALLY NOT copied
+            # here — it is added just below, GATED on --self-modify, so that a
+            # not-self-able-modify build carries neither her source tree nor her
+            # own self-description.
             # external_mcps.json is the External ▸ MCPs catalog + active set.
             # external_mcp_manager resolves it next to config.json (install root
             # in frozen mode), so the seed must land at the install root. It is
@@ -1210,6 +1247,20 @@ def main():
             # (see "Ship a sanitized empty contacts.json"), so a fresh install gets a
             # valid, empty contacts book that the user fills in themselves.
         }
+
+        # Tlamatini.md is the LLM's self-knowledge file (prompt.pmt's
+        # {self_knowledge}). It is read from the application directory (next to
+        # the executable in frozen mode) exactly like prompt.pmt / config.json,
+        # so it must land at the install root — but ONLY for a self-modify
+        # build: her source tree and her self-description ship together, or not
+        # at all. Without it, rag/config.py injects a short "not bundled" notice.
+        if self_modify:
+            optional_file_copies[Path("Tlamatini") / "agent" / "Tlamatini.md"] = (
+                dist_manage / "Tlamatini.md"
+            )
+        else:
+            print("Self-knowledge file omitted (not-self-able-modify build): Tlamatini.md")
+
         for src, dst in optional_file_copies.items():
             if src.exists():
                 dst.parent.mkdir(parents=True, exist_ok=True)

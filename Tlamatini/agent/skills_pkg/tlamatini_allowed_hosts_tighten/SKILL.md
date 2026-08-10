@@ -1,6 +1,6 @@
 ---
 name: tlamatini-allowed-hosts-tighten
-description: Cierra el ALLOWED_HOSTS de Django: lo pasa del '*' abierto de fábrica a una lista específica, dejando respaldo de settings.py.
+description: "Cierra el ALLOWED_HOSTS de Django: lo pasa del '*' abierto de fábrica a una lista específica, dejando respaldo de settings.py."
 metadata:
   openclaw:
     emoji: "🔒"

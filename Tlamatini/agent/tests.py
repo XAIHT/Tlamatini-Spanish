@@ -6970,9 +6970,16 @@ class AskExecsHelperTests(TestCase):
         self.assertEqual(_classify_tool_kind('invoke_skill'), 'Skill')
 
     def test_infer_execution_shell(self):
+        # Esta etiqueta se LE MUESTRA a la usuaria en el dialogo de Ask Execs
+        # (la linea "shell"), asi que en esta edicion va en espanol. Ojo con la
+        # diferencia: "PowerShell" es un NOMBRE DE PRODUCTO y se queda en
+        # ingles; "interprete de Python" es prosa, y "Python" es el termino
+        # tecnico que no se traduce. La asercion de abajo estaba heredada del
+        # arbol ingles y llevaba tiempo en rojo.
         from agent.mcp_agent import _infer_execution_shell
         self.assertEqual(_infer_execution_shell('chat_agent_pser', {}), 'PowerShell')
-        self.assertEqual(_infer_execution_shell('execute_file', {}), 'Python interpreter')
+        self.assertEqual(_infer_execution_shell('execute_file', {}),
+                         'intérprete de Python')
         self.assertIn('SSH', _infer_execution_shell('chat_agent_ssher', {'host': '10.0.0.1'}))
         self.assertIn('10.0.0.1', _infer_execution_shell('chat_agent_ssher', {'host': '10.0.0.1'}))
         # Generic tools resolve to the platform shell (non-empty string).

@@ -84,7 +84,10 @@ PRODUCT_TERMS: Tuple[str, ...] = (
     # NOT product terms any more (Angela, 2026-07-28): she ordered these
     # translated in the GUI - External->Externos, External MCPs->MCPs
     # Externos, Config->Configuración, Admin->Administración,
-    # Step-by-Step->Paso-a-Paso, Catalog of Prompts->Catálogo de prompts.
+    # Catalog of Prompts->Catálogo de prompts.
+    # (Step-by-Step SALIO de esta lista el 2026-08-08: Angela lo devolvio al
+    # ingles junto con los otros tres toggles de la toolbar, y ahora vive
+    # abajo en PRODUCT_TERMS. Ver el comentario de esa fila.)
     # GUI column headers and control labels kept in English per
     # Angela's register rule (2026-07-28): American technical terms
     # and collocations stay English inside Spanish grammar.
@@ -102,7 +105,11 @@ PRODUCT_TERMS: Tuple[str, ...] = (
     "Image interpreter 1", "Image interpreter 2", "Image merger",
     # The two built-in MCP context providers, by name.
     "System-Metrics", "Files-Search",
-    "Multi-Turn", "Exec Report", "Ask Execs",
+    # Los cuatro toggles de la toolbar del chat. Angela (2026-08-08):
+    # "all the buttons/checkboxes with Multi-turn, Step-by-Step, Exec report,
+    # ACPX must stay in English". Van juntos a proposito: son UNA sola fila de
+    # controles y traducir uno solo se ve peor que no traducir ninguno.
+    "Multi-Turn", "Exec Report", "Ask Execs", "Step-by-Step",
     "Skill", "Skills", "SKILL.md",
     "Flow", "Flows", ".flw", "FlowCreator", "FlowHypervisor", "FlowBacker",
     "Canvas", "Starter", "Ender", "Stopper", "Cleaner", "Parametrizer",
