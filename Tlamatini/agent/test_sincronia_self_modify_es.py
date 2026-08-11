@@ -8,7 +8,7 @@
 #   Every line of this file was written by Angela López Mendoza.
 # ═══════════════════════════════════════════════════════════════════
 #   Tlamatini Author Banner — do not remove
-"""Guardas de la SINCRONÍA 2026-08-08 entre Tlamatini (inglés) y esta edición.
+"""Guardas de la SINCRONÍA entre Tlamatini (inglés) y esta edición.
 
 Qué se portó de la rama inglesa (commit `3ca135ad` y compañía) y qué prueba
 cada clase de aquí:
@@ -19,8 +19,11 @@ cada clase de aquí:
 2. **El parser de tool calls locales** — los models locales escriben la tool
    call como TEXTO en `.content` en vez de usar el campo estructurado. Sin la
    recuperación, ese JSON crudo se le mostraba al usuario como respuesta final.
-3. **Los models por defecto** pasaron de `glm-5.2:cloud` (cloud) a
-   `gpt-oss:20b` (local) — que es justo POR QUÉ existe el parser de arriba.
+3. **Los models por defecto** pasaron a `gpt-oss:20b` (local) — que es justo
+   POR QUÉ existe el parser de arriba — y después se regresaron a
+   `glm-5.2:cloud` en las DOS ediciones. El parser se queda: es fail-open (solo
+   entra cuando `tool_calls` viene vacío, cosa que un model cloud nunca hace),
+   así que no estorba y sigue cubriendo a quien apunte a un model local.
 4. **La ventana forked de Executer** dejó de usar `@pause` (un pool agent no
    tiene stdin de consola, así que `pause` ve EOF y regresa al instante: la
    ventana parpadeaba y desaparecía mientras el log cantaba éxito).
@@ -185,10 +188,34 @@ class ModelosPorDefectoTests(unittest.TestCase):
         with open(RUTA_CONFIG_JSON, encoding="utf-8-sig") as fh:
             self.cfg = json.load(fh)
 
-    def test_los_siete_models_apuntan_al_model_local(self):
+    # El model que ambas ediciones usan hoy. Angela lo cambió a mano el
+    # Los modelos deben ser glm-5.2:cloud, después de
+    # probar el local `gpt-oss:20b`. Si vuelve a cambiarlo, se ajusta AQUÍ, en
+    # un solo lugar.
+    MODEL_ESPERADO = "glm-5.2:cloud"
+
+    def test_los_siete_models_van_juntos(self):
+        """Los siete apuntan al MISMO model.
+
+        Esto es lo que de verdad se puede romper: cambiar unos cuantos y
+        olvidar el resto deja la edición medio migrada, y el síntoma (una
+        cadena respondiendo distinto a las demás) no se parece en nada a la
+        causa. Se comprueba la CONSISTENCIA antes que el nombre concreto.
+        """
+        valores = {clave: self.cfg.get(clave) for clave in self.MODELOS}
+        distintos = sorted(set(valores.values()))
+        self.assertEqual(
+            len(distintos), 1,
+            "los models no van juntos, hay %d valores distintos: %s"
+            % (len(distintos), valores))
+
+    def test_los_models_son_los_mismos_que_en_ingles(self):
+        """Y el valor es el que Angela eligió para las DOS ediciones."""
         for clave in self.MODELOS:
-            self.assertEqual(self.cfg.get(clave), "gpt-oss:20b",
-                             "%s no quedó en el model local" % clave)
+            self.assertEqual(
+                self.cfg.get(clave), self.MODEL_ESPERADO,
+                "%s quedó en %r; las dos ediciones deben usar %r"
+                % (clave, self.cfg.get(clave), self.MODEL_ESPERADO))
 
     def test_estan_las_perillas_de_ollama(self):
         self.assertEqual(self.cfg.get("ollama_repeat_penalty"), 1.9)
@@ -372,10 +399,32 @@ class VentanaForkedDeExecuterTests(unittest.TestCase):
         self.assertIn("sentinel_path", self.fuente)
 
     def test_se_lanza_con_c_y_no_con_k(self):
-        # `/k` deja la consola viva para siempre; bajo el host MCP la ventana
-        # es invisible, así que sería un cmd.exe huérfano por cada corrida.
-        self.assertIn("['cmd.exe', '/c', wrapper_path]", self.fuente)
-        self.assertNotIn("['cmd.exe', '/k', wrapper_path]", self.fuente)
+        """`/c`, nunca `/k`.
+
+        `/k` deja la consola viva para siempre; bajo el host MCP la ventana es
+        invisible, así que sería un cmd.exe huérfano por cada corrida.
+
+        Se mira la LISTA de argumentos con el AST, no el texto literal: la
+        versión anterior fijaba la cadena exacta
+        `['cmd.exe', '/c', wrapper_path]` y se puso roja en cuanto se añadió la
+        marca TLAMATINI_KEEP_CONSOLE_ALIVE — se quejaba de un cambio correcto.
+        Una prueba debe fijar la INTENCIÓN (`/c` sí, `/k` no), no el formato.
+        """
+        arbol = ast.parse(self.fuente)
+        lanzamientos = []
+        for nodo in ast.walk(arbol):
+            if not isinstance(nodo, ast.List):
+                continue
+            partes = [e.value for e in nodo.elts
+                      if isinstance(e, ast.Constant) and isinstance(e.value, str)]
+            if "cmd.exe" in partes:
+                lanzamientos.append(partes)
+        self.assertTrue(lanzamientos, "no encontré el lanzamiento de cmd.exe")
+        for partes in lanzamientos:
+            self.assertIn("/c", partes, "el lanzamiento perdió el /c: %s" % partes)
+            self.assertNotIn("/k", partes,
+                             "reapareció /k: la consola quedaría viva para "
+                             "siempre y bajo el host MCP ni se ve: %s" % partes)
 
     def test_el_archivo_compila(self):
         compile(self.fuente, RUTA_EXECUTER, "exec")
@@ -400,7 +449,7 @@ class ActivosDelSyncTests(unittest.TestCase):
         archivo (`assertIn("is_self_able_modify", fuente)`), y eso era inútil:
         el nombre existe en la DEFINICIÓN, así que la prueba seguía verde
         aunque nadie llamara a la función — que es exactamente el bug del
-        2026-08-08 que esto debía cuidar. Una prueba que no puede ponerse roja
+        que esto debía cuidar. Una prueba que no puede ponerse roja
         no cuida nada. Ahora se busca la LLAMADA dentro de
         `load_config_and_prompt`, con el AST (inmune a un reformateo).
         """

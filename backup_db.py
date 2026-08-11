@@ -5,40 +5,7 @@
 #   Developer · Architect · Creator of Tlamatini
 # ═══════════════════════════════════════════════════════════════════
 #   Tlamatini Author Banner — do not remove
-"""
-Respaldo diario de la base de datos de Tlamatini.
-
-POR QUÉ EXISTE
-    El 2026-08-01 la tabla ``auth_user`` amaneció VACÍA: la cuenta de Angela
-    había desaparecido y el login la rechazaba aunque escribiera bien su
-    contraseña. Todo lo demás estaba intacto (113 prompts, 95 tools, 209
-    migraciones) — o sea, la DB se había vuelto a crear, no se habían borrado
-    los usuarios. Y no se pudo recuperar NADA, porque no existía ni un solo
-    respaldo: ni .bak, ni DB/Older, ni nada en Temp.
-
-    Este script es para que eso no se repita.
-
-CÓMO RESPALDA (y por qué así)
-    Usa la API de BACKUP ONLINE de sqlite3 (``Connection.backup``), NO un
-    copy de archivo. El servidor de Tlamatini normalmente está corriendo y
-    tiene la DB abierta; copiar el archivo a pelo puede agarrar una escritura
-    a la mitad y dejar un respaldo CORRUPTO que se ve bien hasta el día que lo
-    necesitas. ``backup()`` toma una foto consistente aunque haya escrituras.
-
-    Y después ABRE el respaldo y lo verifica (``pragma integrity_check`` +
-    conteo de filas). Un respaldo sin verificar no es un respaldo.
-
-CÓMO RESTAURAR
-    Opción A: para el servidor y copia el .sqlite3 encima de
-              Tlamatini\\db.sqlite3
-    Opción B: déjalo en Tlamatini\\DB\\ToLoad\\db.sqlite3 y Tlamatini lo carga
-              solo en el siguiente arranque.
-
-USO
-    python backup_db.py                 # respalda, verifica y poda
-    python backup_db.py --keep 60       # conserva 60 respaldos (default 30)
-    python backup_db.py --check         # sólo revisa el último, no respalda
-"""
+"""Daily backup of Tlamatini's database."""
 from __future__ import annotations
 
 import argparse
@@ -116,6 +83,25 @@ def respaldar(keep: int) -> int:
         log("!! NO existe la DB viva: %s" % LIVE_DB)
         return 2
 
+    # Se niega a respaldar una DB rota: con retencion, guardar basura
+    # empuja fuera la ultima copia buena.
+    try:
+        tam = os.path.getsize(LIVE_DB)
+    except OSError as exc:
+        log("!! ME NIEGO: no puedo leer el tamaño de la DB viva: %s" % exc)
+        return 2
+    if tam <= 0:
+        log("!! ME NIEGO: la DB viva está vacía (0 bytes)")
+        return 2
+
+    ok_viva, conteos_viva = verificar(LIVE_DB)
+    if not ok_viva:
+        log("!! ME NIEGO: la DB viva no pasó la verificación")
+        return 2
+    if conteos_viva.get("auth_user", -1) == 0:
+        log("!! ME NIEGO: la DB viva tiene CERO usuarios - no es algo que se deba guardar")
+        return 2
+
     os.makedirs(DEST_DIR, exist_ok=True)
     stamp = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     dest = os.path.join(DEST_DIR, "db_%s.sqlite3" % stamp)
@@ -179,6 +165,27 @@ def revisar_ultimo() -> int:
     return 0 if ok else 1
 
 
+ALARMA_PATH = os.path.join(REPO, ".backup_status")
+
+
+def _prender_alarma(rc: int) -> None:
+    """Deja una marca mientras el respaldo falla; la borra al primer exito."""
+    try:
+        if rc == 0:
+            if os.path.exists(ALARMA_PATH):
+                os.remove(ALARMA_PATH)
+            return
+        with open(ALARMA_PATH, "w", encoding="utf-8") as fh:
+            fh.write(
+                "respaldo: no completado (codigo %d)\n"
+                "ultimo intento: %s\n"
+                "detalles: Backups/backup_db.log\n"
+                "se borra solo en el proximo respaldo exitoso\n"
+                % (rc, _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    except OSError:
+        pass
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Respaldo diario de la DB de Tlamatini")
     ap.add_argument("--keep", type=int, default=30,
@@ -188,7 +195,9 @@ def main() -> int:
     args = ap.parse_args()
     if args.check:
         return revisar_ultimo()
-    return respaldar(max(1, args.keep))
+    rc = respaldar(max(1, args.keep))
+    _prender_alarma(rc)
+    return rc
 
 
 if __name__ == "__main__":
