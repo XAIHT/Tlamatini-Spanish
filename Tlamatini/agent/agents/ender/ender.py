@@ -268,7 +268,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except yaml.YAMLError as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -426,9 +426,9 @@ def _write_pid_file(agent_dir: str, pid: int):
     try:
         with open(pid_file, "w") as f:
             f.write(str(pid))
-        logging.info(f"   📝 PID file created: {pid_file} (PID: {pid})")
+        logging.info(f"   📝 Archivo PID creado: {pid_file} (PID: {pid})")
     except Exception as e:
-        logging.error(f"   ❌ Failed to write PID file: {e}")
+        logging.error(f"   ❌ No se pudo escribir el archivo PID: {e}")
 
 
 def is_agent_running(agent_name: str) -> bool:
@@ -513,10 +513,10 @@ def launch_agent(agent_name: str):
         # KEY FIX: Write the PID file so the backend can detect it is running!
         _write_pid_file(agent_dir, process.pid)
         
-        logging.info(f"✅ Launch command sent for {agent_name} (PID: {process.pid})")
+        logging.info(f"✅ Se envió el arranque de {agent_name} (PID: {process.pid})")
         
     except Exception as e:
-        logging.error(f"❌ Failed to launch {agent_name}: {e}")
+        logging.error(f"❌ No se pudo lanzar {agent_name}: {e}")
 
 
 PID_FILE = "agent.pid"
@@ -526,7 +526,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 def remove_pid_file():
     for attempt in range(5):
@@ -537,7 +537,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 def main():
@@ -608,7 +608,7 @@ def main():
         # -----------------------------------
         
         logging.info("💀 ENDER AGENT STARTED")
-        logging.info(f"📁 Pool path: {get_pool_path()}")
+        logging.info(f"📁 Ruta del pool: {get_pool_path()}")
         if kill_agents:
             logging.info(f"🎯 Target agents to terminate: {kill_agents}")
         if output_agents:

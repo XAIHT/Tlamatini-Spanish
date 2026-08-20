@@ -109,7 +109,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -295,7 +295,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
 
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
 
     try:
@@ -314,9 +314,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
@@ -332,7 +332,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -344,7 +344,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -375,7 +375,7 @@ def _delete_all_flags(source_agents: list):
             if os.path.exists(fp):
                 os.remove(fp)
         except Exception as e:
-            logging.warning(f"⚠️ Could not remove flag {fp}: {e}")
+            logging.warning(f"⚠️ No se pudo borrar la bandera {fp}: {e}")
 
 
 def _detect_caller() -> str:
@@ -434,13 +434,13 @@ def main():
 
             logging.info("🚧 BARRIER AGENT STARTED (manual/direct)")
             logging.info(f"👀 Source agents (inputs): {source_agents}")
-            logging.info(f"🎯 Target agents (outputs): {target_agents}")
+            logging.info(f"🎯 Agentes destino (salidas): {target_agents}")
 
             # Clean up stale state from previous run
             if source_agents:
                 _delete_all_flags(source_agents)
-            logging.info("🗑️ Cleaned stale flags from previous run")
-            logging.info("🏁 Barrier agent finished (no caller specified).")
+            logging.info("🗑️ Se limpiaron las banderas viejas de la corrida anterior")
+            logging.info("🏁 El agente Barrier terminó (no se indicó quién lo llamó).")
             return
 
         # --- INPUT SUB-PROCESS ---
@@ -450,16 +450,16 @@ def main():
         # they deadlock.
         remove_pid_file()
 
-        logging.info(f"🚧 BARRIER INPUT for {caller}")
+        logging.info(f"🚧 ENTRADA DE BARRIER para {caller}")
         logging.info(f"👀 Source agents: {source_agents}")
-        logging.info(f"🎯 Target agents: {target_agents}")
+        logging.info(f"🎯 Agentes destino: {target_agents}")
 
         if _IS_REANIMATED:
             logging.info(f"🔄 {CURRENT_DIR_NAME} REANIMATED (resuming from pause)")
             logging.info("=" * 60)
 
         if caller not in source_agents:
-            logging.warning(f"⚠️ Caller '{caller}' not in source_agents — registering anyway")
+            logging.warning(f"⚠️ Quien llama, '{caller}', no está en source_agents — se registra de todos modos")
 
         # Atomically: create flag → check if ALL flags present → fire if so
         should_fire = False
@@ -472,19 +472,19 @@ def main():
                 if not os.path.exists(flag):
                     with open(flag, 'w') as ff:
                         ff.write(caller)
-                    logging.info(f"🏳️ Flag created for {caller}")
+                    logging.info(f"🏳️ Bandera creada para {caller}")
                 else:
-                    logging.info(f"🏳️ Flag already exists for {caller} — skipping")
+                    logging.info(f"🏳️ La bandera de {caller} ya existía — se omite")
 
                 present = _count_existing_flags(source_agents)
 
                 if _all_flags_present(source_agents):
-                    logging.info(f"🔓 All flags present ({present}/{len(source_agents)}) — barrier UNLOCKED!")
+                    logging.info(f"🔓 Están todas las banderas ({present}/{len(source_agents)}) — ¡barrier LIBERADO!")
                     _delete_all_flags(source_agents)
-                    logging.info("🗑️ All flag files deleted")
+                    logging.info("🗑️ Se borraron todos los archivos de bandera")
                     should_fire = True
                 else:
-                    logging.info(f"⏳ {present}/{len(source_agents)} flags — waiting for more arrivals")
+                    logging.info(f"⏳ {present}/{len(source_agents)} banderas — esperando que lleguen más")
             finally:
                 _unlock_file(lf)
 
@@ -500,9 +500,9 @@ def main():
                         total += 1
                 logging.info(f"🏁 Barrier fired. Triggered {total}/{len(target_agents)} agents.")
             else:
-                logging.info("🏁 Barrier fired (no target agents configured).")
+                logging.info("🏁 Barrier disparó (no hay agentes destino configurados).")
         else:
-            logging.info(f"🏁 Input sub-process for {caller} done — exiting")
+            logging.info(f"🏁 Terminó el subproceso de entrada de {caller} — saliendo")
 
     finally:
         time.sleep(0.4)

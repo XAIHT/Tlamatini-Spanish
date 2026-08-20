@@ -20,11 +20,18 @@
   <link rel="stylesheet" href="{% static 'agent/css/contacts_dialog.css' %}?v={{ STATIC_VERSION }}">
   <link rel="stylesheet" href="{% static 'agent/css/access_keys_wizard.css' %}?v={{ STATIC_VERSION }}">
   <link rel="stylesheet" href="{% static 'agent/css/avatar.css' %}?v={{ STATIC_VERSION }}">
+  {# dialog_theme.css MUST stay LAST: it supersedes the legacy .ui-dialog chrome on cascade ORDER. #}
+  <link rel="stylesheet" href="{% static 'agent/css/dialog_theme.css' %}?v={{ STATIC_VERSION }}_dlg2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+  <!-- Dialog dismissal policy: X / Cancel / Continue ONLY - never an outside
+       click, never Escape. Loaded right after jQuery UI (it patches the widget
+       defaults) and before every application dialog module, so dialogs written
+       later inherit the policy with no wiring. -->
+  <script src="{% static 'agent/js/dialog_policy.js' %}?v={{ STATIC_VERSION }}_dlgpolicy"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
@@ -47,7 +54,7 @@
     <div id="navbar-content" class="container-fluid align-items-center">
       <a class="navbar-brand navbar-margin" href="#">Tlamatini</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-        aria-controls="navbarMenu" aria-expanded="false" aria-label="Abrir o cerrar el menú">
+        aria-controls="navbarMenu" aria-expanded="false" aria-label="{% t 'Toggle navigation' %}">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div id="contextInfo" class="d-none d-lg-flex align-items-center flex-grow-1 mx-2 context-info-invisible">
@@ -204,7 +211,7 @@
                 <span>{% t "Multi-Turn" %}</span>
               </label>
               <label id="exec-report-toggle" class="toolbar-toggle toolbar-toggle-disabled" for="exec-report-enabled"
-                title="Agrega al final de la respuesta una tabla de ejecución por cada Agent. Solo se habilita cuando Multi-Turn esta activado.">
+                title="{% t 'Append per-agent execution tables to the answer. Enabled only when Multi-Turn is on.' %}">
                 <input id="exec-report-enabled" type="checkbox" disabled />
                 <span>{% t "Exec report" %}</span>
               </label>
@@ -213,7 +220,7 @@
                 <span>{% t "ACPX" %}</span>
               </label>
               <label id="ask-execs-toggle" class="toolbar-toggle toolbar-toggle-disabled" for="ask-execs-enabled"
-                title="Pide permiso antes de cada ejecución de tool o Agent en Multi-Turn. Solo se habilita cuando Multi-Turn esta activado.">
+                title="{% t 'Ask permission before each Multi-Turn tool/agent execution. Enabled only when Multi-Turn is on.' %}">
                 <input id="ask-execs-enabled" type="checkbox" disabled />
                 <span>{% t "Ask Execs" %}</span>
               </label>
@@ -231,10 +238,10 @@
           <div id="chat-image-chips" aria-live="polite"></div>
           <form id="chat-form">
             {% csrf_token %}
-            <textarea id="chat-message-input" autocomplete="off" placeholder="Envía un mensaje..."
+            <textarea id="chat-message-input" autocomplete="off" placeholder="{% t 'Send a message...' %}"
               spellcheck="false"></textarea>
             <button type="submit" id="chat-message-submit">{% t "Send" %}</button>
-<div id="tlm-avatar-dock" title="{% t "Click me - I will tell you how it is going" %}" role="button" tabindex="0" aria-label="Avatar de Tlamatini - haz click para escuchar cómo va"><div id="tlm-face-outer"><div id="tlm-face"><img id="tlm-s-eo-mc" class="tlm-on" src="{% static 'agent/img/avatar/eo_mc.jpg' %}?v={{ STATIC_VERSION }}" alt="Tlamatini" draggable="false"><img id="tlm-s-ec-mc" src="{% static 'agent/img/avatar/ec_mc.jpg' %}?v={{ STATIC_VERSION }}" alt="" draggable="false"><img id="tlm-s-eo-mo" src="{% static 'agent/img/avatar/eo_mo.jpg' %}?v={{ STATIC_VERSION }}" alt="" draggable="false"><img id="tlm-s-ec-mo" src="{% static 'agent/img/avatar/ec_mo.jpg' %}?v={{ STATIC_VERSION }}" alt="" draggable="false"></div></div></div>
+<div id="tlm-avatar-dock" title="{% t "Click me - I will tell you how it is going" %}" role="button" tabindex="0" aria-label="{% t 'Tlamatini avatar - click to hear a status update' %}"><div id="tlm-face-outer"><div id="tlm-face"><img id="tlm-s-eo-mc" class="tlm-on" src="{% static 'agent/img/avatar/eo_mc.jpg' %}?v={{ STATIC_VERSION }}" alt="Tlamatini" draggable="false"><img id="tlm-s-ec-mc" src="{% static 'agent/img/avatar/ec_mc.jpg' %}?v={{ STATIC_VERSION }}" alt="" draggable="false"><img id="tlm-s-eo-mo" src="{% static 'agent/img/avatar/eo_mo.jpg' %}?v={{ STATIC_VERSION }}" alt="" draggable="false"><img id="tlm-s-ec-mo" src="{% static 'agent/img/avatar/ec_mo.jpg' %}?v={{ STATIC_VERSION }}" alt="" draggable="false"></div></div></div>
 
 
           </form>
@@ -347,10 +354,10 @@
           <div class="emx-kicker">{% t "External MCPs" %}</div>
           <h2 id="external-mcps-title">{% t "Activate MCPs" %}</h2>
         </div>
-        <button id="external-mcps-close" class="emx-icon-button" type="button" aria-label="Cerrar">&times;</button>
+        <button id="external-mcps-close" class="emx-icon-button" type="button" aria-label="{% t 'Close' %}">&times;</button>
       </header>
       <div class="emx-body">
-        <section class="emx-catalog-pane" aria-label="Catálogo de MCPs">
+        <section class="emx-catalog-pane" aria-label="{% t 'MCP catalog' %}">
           <p id="external-mcps-legend"></p>
           <div class="emx-search-row">
             <input id="external-mcps-search" type="search" placeholder="{% t "Search services..." %}" autocomplete="off">
@@ -387,7 +394,7 @@
           <div class="ctb-kicker">{% t "Config" %}</div>
           <h2 id="contacts-title">{% t "Contacts book" %}</h2>
         </div>
-        <button id="contacts-close" class="ctb-icon-button" type="button" aria-label="Cerrar">&times;</button>
+        <button id="contacts-close" class="ctb-icon-button" type="button" aria-label="{% t 'Close' %}">&times;</button>
       </header>
       <div class="ctb-body">
         <section class="ctb-list-pane" aria-label="Lista de contactos">
@@ -587,12 +594,12 @@
   </div>
   <div id="access-keys-wizard-dialog-message" title="{% t "Access Keys Wizard" %}" style="display: none;">
     <div id="access-keys-wizard-shell">
-      <aside id="access-keys-wizard-nav" aria-label="Secciones del Access Keys Wizard"></aside>
+      <aside id="access-keys-wizard-nav" aria-label="{% t 'Access keys wizard sections' %}"></aside>
       <section id="access-keys-wizard-main">
         <div id="access-keys-wizard-header">
           <div>
             <h5 id="access-keys-wizard-title">{% t "Access Keys Wizard" %}</h5>
-            <p id="access-keys-wizard-subtitle">Configura las provider keys, los passwords de los bridges y los comandos de ACPX en un solo lugar.</p>
+            <p id="access-keys-wizard-subtitle">{% t 'Configure provider keys, bridge passwords, and ACPX commands in one place.' %}</p>
           </div>
           <div id="access-keys-wizard-summary" aria-live="polite"></div>
         </div>
@@ -654,9 +661,9 @@
         <input type="text" id="prompt-search-input" class="prompt-search-input"
                placeholder="{% t "Search prompts by words, initials (imd) or a #number..." %}"
                autocomplete="off" autocorrect="off" spellcheck="false"
-               aria-label="Buscar en el Catálogo de prompts">
+               aria-label="{% t 'Search the catalog of prompts' %}">
         <button type="button" id="prompt-search-clear" class="prompt-search-clear"
-                title="{% t "Clear search" %}" aria-label="Limpiar la búsqueda">&times;</button>
+                title="{% t "Clear search" %}" aria-label="{% t 'Clear search' %}">&times;</button>
         <span id="prompt-search-count" class="prompt-search-count"></span>
       </div>
       <div id="tools-body" class="modal-body"></div>
@@ -664,7 +671,7 @@
       </div>
     </div>
   </div>
-  <div id="about-overlay" class="about-overlay" style="display: none;" onclick="CloseAboutDialog(event);">
+  <div id="about-overlay" class="about-overlay" style="display: none;">
     <div class="about-window" onclick="event.stopPropagation();">
       <button class="about-close-btn" onclick="CloseAboutDialog(event);">&times;</button>
       <div class="about-video-container">
@@ -675,19 +682,43 @@
       <div class="about-text">
         <p class="about-company-name">{% t "XAIHT: eXtended Artificial Intelligence Humanly Tempered (a Mexican company)" %}</p>
         <p class="about-version">Tlamatini v{{ version }}</p>
-        <p class="about-owner">Empresa de A&amp;A.</p>
-        <p class="about-creator" style="font-weight:700; letter-spacing:0.5px;">{% t "CREATED BY ANGELA LÓPEZ MENDOZA" %}</p>
+        {% comment %}
+           El tag de traduccion no convierte cadenas con & < > " ' (es el
+           contrato de escapado de nepantla.py), por eso este renglon
+           estaba escrito a mano en espanol y quedaba fuera del catalogo.
+           Se traduce la parte que si puede viajar y el nombre de la
+           empresa se deja como marcado.
+
+           OJO - un comentario de VARIAS lineas va con este tag, nunca con
+           la forma corta de gato-llave: esa comenta UNA sola linea. Si
+           abarca varias, Django no la trata como comentario y el texto SE
+           IMPRIME en pantalla; salio dentro del dialogo de About.
+        {% endcomment %}
+        <p class="about-owner">{% t "Company of" %} A&amp;A.</p>
+        <p class="about-creator">{% t "CREATED BY ANGELA LÓPEZ MENDOZA" %}</p>
       </div>
     </div>
   </div>
-  <div id="update-overlay" class="about-overlay" style="display: none;" onclick="CloseUpdateDialog(event);">
+  <div id="update-overlay" class="about-overlay" style="display: none;">
     <div class="about-window update-window" onclick="event.stopPropagation();">
-      <button class="about-close-btn" onclick="CloseUpdateDialog(event);">&times;</button>
+      <div class="update-header">
+        <div>
+          <span class="update-kicker">Tlamatini</span>
+          <h3 class="update-title">{% t "Check for updates" %}</h3>
+        </div>
+        <button type="button" class="about-close-btn" aria-label="{% t 'Close' %}"
+          onclick="CloseUpdateDialog(event);">&times;</button>
+      </div>
       <div class="update-body">
-        <h3 class="update-title">{% t "Check for updates" %}</h3>
         <p class="update-current">{% t "Installed version:" %} <strong>v{{ version }}</strong></p>
         <div id="update-content" class="update-content">{% t "Checking for updates…" %}</div>
-        <pre id="update-notes" class="update-notes" style="display: none;"></pre>
+        <!-- RENDERED release notes (2026-08-13). This used to be a <pre> fed by
+             textContent, which showed the GitHub notes as literal markup:
+             "## What's New", a raw <img ... src="…user-attachments…"> tag and
+             [v1.42.0](https://…). It is now a real container whose markdown is
+             rendered - images and videos included - by
+             release_notes_renderer.js (whitelist-sanitised). -->
+        <div id="update-notes" class="update-notes" style="display: none;"></div>
         <div id="update-progress-wrap" class="update-progress-wrap" style="display: none;">
           <div id="update-progress-bar" class="update-progress-bar"></div>
         </div>
@@ -724,8 +755,11 @@
 <!-- TLM_AVATAR_PHASE1_START -->
 <div id="tlm-avatar-bubble" aria-live="polite"></div>
 <div id="tlm-voice-overlay" class="tlm-modal-overlay" style="display:none;">
- <div class="tlm-modal" role="dialog" aria-modal="true" aria-label="Configuración de la voz">
-  <div class="tlm-modal-head"><span>{% t "Voice" %}</span><button type="button" class="tlm-modal-x" id="tlm-voice-close" aria-label="Cerrar">&times;</button></div>
+ <div class="tlm-modal" role="dialog" aria-modal="true" aria-label="{% t 'Voice settings' %}">
+  <div class="tlm-modal-head">
+   <div><span class="tlm-modal-kicker">{% t "Voice" %}</span><h2>{% t 'Speech settings' %}</h2></div>
+   <button type="button" class="tlm-modal-x" id="tlm-voice-close" aria-label="{% t 'Close' %}">&times;</button>
+  </div>
   <div class="tlm-modal-body">
    <p class="tlm-voice-note">{% t "Tlamatini's voice is" %} <b>{% t "always female" %}</b>{% t ", and works the same in Chrome & Edge." %}</p>
    <p id="tlm-voice-missing-note" class="tlm-voice-note" style="display:none;color:#ffb4a2;border:1px solid #a4443a;border-radius:6px;padding:8px 10px;">
@@ -746,10 +780,14 @@
     <label><input type="radio" name="tlm-voice-mode" value="notify"> {% t "Notify answer complete" %}</label>
     <label><input type="radio" name="tlm-voice-mode" value="silent"> {% t "Silent" %}</label>
    </fieldset>
+  </div>
+  <div class="tlm-modal-foot">
+   <span class="tlm-modal-foot-note">{% t 'Settings are saved in this browser.' %}</span>
    <div class="tlm-voice-actions"><button type="button" id="tlm-voice-test">{% t "Test voice" %}</button><button type="button" id="tlm-voice-save">{% t "Save" %}</button></div>
   </div>
  </div>
 </div>
+<script src="{% static 'agent/js/release_notes_renderer.js' %}?v={{ STATIC_VERSION }}_relnotes"></script>
 <script src="{% static 'agent/js/avatar.js' %}?v={{ STATIC_VERSION }}_av6"></script>
 <!-- TLM_AVATAR_PHASE1_END -->
 </body>

@@ -84,7 +84,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except yaml.YAMLError as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -299,7 +299,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
 
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
 
     try:
@@ -319,9 +319,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
@@ -339,7 +339,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -351,7 +351,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -360,7 +360,7 @@ def write_status_file(status):
         with open(STATUS_FILE, "w") as f:
             f.write(status)
     except Exception as e:
-        logging.error(f"❌ Failed to write status file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo de estado: {e}")
 
 
 def remove_status_file():
@@ -368,7 +368,7 @@ def remove_status_file():
         if os.path.exists(STATUS_FILE):
             os.remove(STATUS_FILE)
     except Exception as e:
-        logging.error(f"❌ Failed to remove status file: {e}")
+        logging.error(f"❌ No se pudo borrar el archivo de estado: {e}")
 
 
 def cleanup_choice_file():
@@ -377,7 +377,7 @@ def cleanup_choice_file():
         if os.path.exists(CHOICE_FILE):
             os.remove(CHOICE_FILE)
     except Exception as e:
-        logging.error(f"⚠️ Failed to remove choice file: {e}")
+        logging.error(f"⚠️ No se pudo borrar el archivo de la elección: {e}")
 
 
 def main():
@@ -399,8 +399,8 @@ def main():
         target_agents_b: List[str] = config.get('target_agents_b', [])
 
         logging.info("🤔 ASKER AGENT STARTED")
-        logging.info(f"🅰️ Path A agents: {target_agents_a}")
-        logging.info(f"🅱️ Path B agents: {target_agents_b}")
+        logging.info(f"🅰️ Agentes del camino A: {target_agents_a}")
+        logging.info(f"🅱️ Agentes del camino B: {target_agents_b}")
         logging.info("=" * 60)
 
         # Signal the frontend to show the choice dialog
@@ -408,7 +408,7 @@ def main():
         write_status_file("waiting_for_user_input")
 
         # Poll for choice.txt (written by backend when user picks A or B)
-        logging.info("⏳ Waiting for user choice...")
+        logging.info("⏳ Esperando la elección del usuario...")
         max_wait = 300  # 5 minutes max
         elapsed = 0
         poll_interval = 0.5
@@ -420,13 +420,13 @@ def main():
                     with open(CHOICE_FILE, "r", encoding="utf-8") as f:
                         choice = f.read().strip().upper()
                     if choice in ("A", "B"):
-                        logging.info(f"✅ User selected: Path {choice}")
+                        logging.info(f"✅ El usuario eligió: camino {choice}")
                         break
                     else:
-                        logging.warning(f"⚠️ Invalid choice in file: '{choice}', waiting...")
+                        logging.warning(f"⚠️ Elección inválida en el archivo: '{choice}', esperando...")
                         choice = None
                 except Exception as e:
-                    logging.error(f"⚠️ Error reading choice file: {e}")
+                    logging.error(f"⚠️ Error al leer el archivo de la elección: {e}")
 
             time.sleep(poll_interval)
             elapsed += poll_interval
@@ -435,7 +435,7 @@ def main():
         remove_status_file()
 
         if choice is None:
-            logging.error("❌ Timed out waiting for user choice (5 minutes)")
+            logging.error("❌ Se agotó el tiempo esperando la elección del usuario (5 minutos)")
             return
 
         # Clean up choice file
@@ -450,18 +450,18 @@ def main():
             path_label = "B"
 
         if not agents_to_start:
-            logging.warning(f"⚠️ No agents configured for Path {path_label}")
+            logging.warning(f"⚠️ No hay agentes configurados para el camino {path_label}")
         else:
             logging.info(f"🚀 Triggering Path {path_label}: {len(agents_to_start)} agents...")
             wait_for_agents_to_stop(agents_to_start)
             total_triggered = 0
             for target in agents_to_start:
-                logging.info(f"   ► Triggering: {target}")
+                logging.info(f"   ► Disparando: {target}")
                 if start_agent(target):
                     total_triggered += 1
             logging.info(f"✨ Triggered {total_triggered}/{len(agents_to_start)} agents.")
 
-        logging.info(f"🏁 Asker agent finished. Choice: Path {path_label}")
+        logging.info(f"🏁 El agente Asker terminó. Elección: camino {path_label}")
 
     except Exception as e:
         logging.error(f"❌ Asker agent error: {e}")

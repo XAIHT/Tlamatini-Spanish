@@ -169,11 +169,11 @@ async function openInstancedAgentInApp(canvasItem, appId) {
 
         const result = await response.json();
         if (!response.ok || result.error) {
-            throw new Error(result.error || `No pude abrir ${canvasItem.id}`);
+            throw new Error(result.error || `Failed to open ${canvasItem.id}`);
         }
     } catch (err) {
         console.error(`[OPEN_IN_APP] Error opening ${canvasItem.id} in ${appId}:`, err);
-        alert(`Error al abrir ${canvasItem.id}: ${err.message}`);
+        acpAlert(`Error opening ${canvasItem.id}: ${err.message}`);
     }
 }
 
@@ -251,11 +251,11 @@ async function restartAgent(canvasItem) {
             console.log(`[RESTART] Successfully started ${agentId}: PID ${result.pid}`);
         } else {
             console.error(`[RESTART] Failed to start ${agentId}: ${result.message}`);
-            alert(`No pude reiniciar el agent: ${result.message}`);
+            acpAlert(`Failed to restart agent: ${result.message}`);
         }
     } catch (err) {
         console.error(`[RESTART] Error restarting ${agentId}:`, err);
-        alert(`Error al reiniciar el agent: ${err.message}`);
+        acpAlert(`Error restarting agent: ${err.message}`);
     }
 }
 
@@ -279,6 +279,17 @@ function initDescriptionDialog() {
 
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
+            hideDescriptionDialog();
+        });
+    }
+
+    // The footer's Close action. The dialog gained a real footer bar in the
+    // 2026-08-12 dialog standardization: the shared identity is a kicker
+    // above the title and a chrome bar with an action at the bottom, and
+    // without one this dialog read as a tooltip that had escaped.
+    const footerCloseBtn = document.getElementById('agent-description-close-action');
+    if (footerCloseBtn) {
+        footerCloseBtn.addEventListener('click', () => {
             hideDescriptionDialog();
         });
     }
@@ -322,7 +333,10 @@ function openDescriptionDialog(canvasItem) {
     }
 
     if (descriptionTitle) {
-        descriptionTitle.textContent = `Descripción: ${agentName}`;
+        // Just the agent name: the static "Description" kicker above it
+        // already says what this is, so repeating it here only ate the
+        // width the long agent names need.
+        descriptionTitle.textContent = agentName;
     }
 
     if (purpose) {
@@ -556,9 +570,10 @@ async function openLogViewer(canvasItem) {
         return;
     }
 
-    // Set title
+    // Set title. The "Agent log" kicker above it carries the category, so
+    // the title is just the agent - see initDescriptionDialog().
     if (logTitle) {
-        logTitle.textContent = `Log: ${agentName}`;
+        logTitle.textContent = agentName;
     }
 
     // Clear content and show loading
@@ -611,14 +626,14 @@ function updateLiveIndicator() {
         liveDot.classList.add('live-running');
         liveIndicator.classList.remove('indicator-stopped');
         liveIndicator.classList.add('indicator-running');
-        if (liveText) liveText.textContent = 'En vivo';
+        if (liveText) liveText.textContent = 'Live';
     } else {
         // Gray and static
         liveDot.classList.remove('live-running');
         liveDot.classList.add('live-stopped');
         liveIndicator.classList.remove('indicator-running');
         liveIndicator.classList.add('indicator-stopped');
-        if (liveText) liveText.textContent = 'Detenido';
+        if (liveText) liveText.textContent = 'Stopped';
     }
 }
 
@@ -657,7 +672,7 @@ async function fetchAndDisplayLog(agentId) {
         } else if (result.success && (!result.lines || result.lines.length === 0)) {
             logContent.textContent = '(El archivo del log está vacío)';
         } else {
-            logContent.textContent = result.message || 'Todavía no encuentro el archivo del log.\n\nSe va a crear cuando el agent empiece a correr.';
+            logContent.textContent = result.message || 'No log file found yet.\n\nThe log file will be created when the agent starts running.';
         }
     } catch (err) {
         console.error('Error fetching log:', err);

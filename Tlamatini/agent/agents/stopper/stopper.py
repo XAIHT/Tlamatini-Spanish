@@ -142,7 +142,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except yaml.YAMLError as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -209,7 +209,7 @@ def check_log_for_pattern(log_path: str, offset: int, pattern: str, last_size: i
         # Detect file truncation/recreation
         if current_size < offset or last_size == -1 or current_size < last_size:
             if last_size == -1:
-                logging.info(f"📁 Log file appeared: {log_path}")
+                logging.info(f"📁 Apareció la bitácora: {log_path}")
             elif current_size < last_size:
                 logging.info(f"🔄 Log file truncated: {log_path}")
             offset = 0
@@ -227,7 +227,7 @@ def check_log_for_pattern(log_path: str, offset: int, pattern: str, last_size: i
         return False, new_offset, None, current_size
     
     except Exception as e:
-        logging.error(f"Error reading log {log_path}: {e}")
+        logging.error(f"Error al leer la bitácora {log_path}: {e}")
         return False, offset, None, last_size
 
 
@@ -357,7 +357,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -370,7 +370,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -409,7 +409,7 @@ def main():
             return
 
         logging.info("🛑 STOPPER AGENT STARTED")
-        logging.info(f"📁 Pool path: {get_pool_path()}")
+        logging.info(f"📁 Ruta del pool: {get_pool_path()}")
         logging.info(f"👀 Monitoring {len(source_agents)} source agent(s)")
         logging.info(f"⏱️ Poll interval: {poll_interval}s")
         if output_agents:

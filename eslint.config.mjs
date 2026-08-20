@@ -43,6 +43,13 @@ export default [
                 DOMPurify: "readonly",
                 Sortable: "readonly",
 
+                // Cross-file globals: dialog_policy.js — the THEMED
+                // replacements for window.alert / window.confirm. Declared on
+                // `window` inside that IIFE, so per-file ESLint cannot see
+                // them; every dialog module calls them bare.
+                tlmAlert: "readonly",
+                tlmConfirm: "readonly",
+
                 // Cross-file globals: agent_page_state.js
                 sendChatSocketMessage: "readonly",
                 isChatSocketOpen: "readonly",
@@ -356,6 +363,14 @@ export default [
                 updateFilenameDisplay: "readonly",
                 canvasContent: "readonly",
                 updateCanvasContentSize: "readonly",
+                // Dialog standardization (2026-08-12): the ACP mirror of
+                // agent_page_dialogs.js's DIALOG_BUTTON_CSS/styleDialogButtons.
+                ACP_DIALOG_BUTTON_CSS: "readonly",
+                styleAcpDialogButtons: "readonly",
+                // Themed replacements for window.alert / window.confirm — the
+                // canvas raised ~28 OS-chrome popups no stylesheet could reach.
+                acpAlert: "readonly",
+                acpConfirm: "readonly",
 
                 // Cross-file globals: acp-running-state.js
                 setGlobalRunningState: "readonly",

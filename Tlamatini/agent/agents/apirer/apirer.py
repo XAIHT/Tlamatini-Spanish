@@ -80,7 +80,7 @@ def load_config(path: str = "config.yaml") -> dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -279,7 +279,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
 
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
 
     try:
@@ -298,9 +298,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
@@ -422,7 +422,7 @@ def make_http_request(config: dict) -> dict:
 
     except Exception as e:
         elapsed = round((time.time() - start_time) * 1000, 2)
-        logging.error(f"❌ Request failed: {e} ({elapsed}ms)")
+        logging.error(f"❌ Falló la petición: {e} ({elapsed}ms)")
 
         # Print the error in structured format
         logging.info(
@@ -451,7 +451,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -463,7 +463,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -484,7 +484,7 @@ def main():
         logging.info(f"🔗 URL: {config.get('url', 'NOT SET')}")
         logging.info(f"📡 Method: {config.get('method', 'GET')}")
         logging.info(f"🎯 Expected status: {expected_status}")
-        logging.info(f"🎯 Targets: {target_agents}")
+        logging.info(f"🎯 Destinos: {target_agents}")
 
         # Make the HTTP request
         result = make_http_request(config)
@@ -493,7 +493,7 @@ def main():
         if expected_status and result['status_code'] != expected_status:
             logging.warning(f"⚠️ Status mismatch: expected {expected_status}, got {result['status_code']}")
         elif result['success']:
-            logging.info(f"✅ Status matches expected: {expected_status}")
+            logging.info(f"✅ El status coincide con el esperado: {expected_status}")
 
         # Always trigger downstream agents regardless of success or failure
         total_triggered = 0

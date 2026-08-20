@@ -63,7 +63,7 @@ def load_config(path: str = "config.yaml") -> Dict[str, Any]:
             data = yaml.safe_load(handle) or {}
         return data if isinstance(data, dict) else {}
     except FileNotFoundError:
-        logging.error("Error: config.yaml not found.")
+        logging.error("Error: no se encontró config.yaml.")
         return {}
     except Exception as exc:
         logging.error("Error parsing config.yaml: %s", exc)
@@ -75,7 +75,7 @@ def write_pid_file() -> None:
         with open(PID_FILE, "w", encoding="utf-8") as handle:
             handle.write(str(os.getpid()))
     except Exception as exc:
-        logging.error("Failed to write PID file: %s", exc)
+        logging.error("No se pudo escribir el archivo PID: %s", exc)
 
 
 def remove_pid_file() -> None:
@@ -87,7 +87,7 @@ def remove_pid_file() -> None:
         except PermissionError:
             time.sleep(0.1)
         except Exception as exc:
-            logging.error("Failed to remove PID file: %s", exc)
+            logging.error("No se pudo borrar el archivo PID: %s", exc)
             return
 
 

@@ -347,7 +347,9 @@ class PdferRealRenderTests(SimpleTestCase):
                 '# Title\n\nSome **bold** text.\n\n| a | b |\n|---|---|\n| 1 | 2 |\n', False)
             self.assertIn('<table>', body)       # the markdown `tables` extension ran
             doc = m._build_html_document(body, {'title': 'Cover', 'page_size': 'A4'})
-            ok, message = m._render_html_to_pdf(doc, out)
+            # 3-tuple since 2026-08-12: the third value is how many images the
+            # FINISHED pdf contains (see PdferLocalAssetResolutionTests).
+            ok, message, _embedded = m._render_html_to_pdf(doc, out)
             self.assertTrue(ok, message)
             self.assertTrue(os.path.isfile(out))
             # cover page forces a break, so a titled document is at least 2 pages
@@ -562,6 +564,16 @@ class PdferPreflightTests(SimpleTestCase):
 
     def test_unwritable_output_dir_is_refused(self):
         # A path whose parent is a FILE can never be created as a directory.
+        #
+        # ⚠️ ASSERT THE CONTRACT, NOT THE SENTENCE (Angela, 2026-08-16). This
+        # used to require the literal words 'not writable'. The OneDrive fix
+        # then rewrote the blocker to say what the user can DO about it
+        # ("output_dir cannot accept a new file (...) — a paused or erroring
+        # OneDrive ... does exactly that"), because "the directory exists" and
+        # os.access both LIE and only a real create proves anything. The
+        # message got strictly better and the test went red: a FALSE failure on
+        # a fixed subsystem. What actually matters is that the refusal is
+        # ATTRIBUTED to output_dir, so the user knows which knob to turn.
         with tempfile.TemporaryDirectory() as tmp:
             blocker = os.path.join(tmp, 'blocker')
             with open(blocker, 'w', encoding='utf-8') as f:
@@ -569,7 +581,10 @@ class PdferPreflightTests(SimpleTestCase):
             pf = self._pf('markdown', {'output_dir': os.path.join(blocker, 'sub')},
                           text='# hi')
             self.assertFalse(pf['ok'])
-            self.assertTrue(any('not writable' in f for f in pf['fatals']))
+            self.assertTrue(
+                any('output_dir' in f for f in pf['fatals']),
+                f"the blocker must name output_dir so the user knows what to "
+                f"change; got {pf['fatals']!r}")
 
     def test_missing_paths_and_odd_page_size_are_warnings_not_blockers(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -988,7 +1003,7 @@ class PdferRegistryIntegrationTests(SimpleTestCase):
         from agent.views import PROMPT_CATEGORY_ORDER
         keys = [key for key, _label in PROMPT_CATEGORY_ORDER]
         self.assertIn('documents', keys)
-        self.assertEqual(dict(PROMPT_CATEGORY_ORDER)['documents'], 'Documentos y PDF')
+        self.assertEqual(dict(PROMPT_CATEGORY_ORDER)['documents'], 'Documents & PDF')
         # 'other' must stay last so unranked/unknown categories still fall through it.
         self.assertEqual(keys[-1], 'other')
 
@@ -1015,6 +1030,124 @@ class PdferRegistryIntegrationTests(SimpleTestCase):
                        '"pypdf"', '"fitz"'):
             self.assertIn(module, agent_imports,
                           f'{module} missing from build.py _AGENT_RUNTIME_IMPORTS')
+
+
+class PdferLocalAssetResolutionTests(unittest.TestCase):
+    """A document that references a local image must CONTAIN that image.
+
+    Angela, 2026-08-12. PDFer rendered a 4-diagram design document into a PDF
+    with ZERO diagrams, logged ``Could not get image data from src attribute``
+    as a warning, reported ``status: created`` — and handed over an
+    illustrated report with every illustration missing. Silent, plausible and
+    WRONG: the worst thing a document composer can do.
+
+    Cause: ``pisa.CreatePDF`` was called with no ``link_callback``, so
+    xhtml2pdf had no way to turn any of the three shapes a human actually
+    writes — a ``file:///`` URL, a Windows absolute path, or a path relative
+    to the Markdown file — into something it could open.
+
+    These tests use REAL PNGs and re-read the REAL PDF with PyMuPDF, because
+    the only trustworthy answer to "did the picture make it in?" is the file
+    on disk.
+    """
+
+    @staticmethod
+    def _png(path, size=(240, 160), color=(200, 40, 60)):
+        from PIL import Image
+        Image.new('RGB', size, color).save(path)
+        return path
+
+    def _render(self, md_text, workdir, name='doc.md'):
+        pdfer = _pdfer()
+        src = os.path.join(workdir, name)
+        with open(src, 'w', encoding='utf-8') as handle:
+            handle.write(md_text)
+        out = os.path.join(workdir, 'out.pdf')
+        body = pdfer._markdown_to_html_body(md_text, False)
+        html = pdfer._build_html_document(body, {'title': 'T'}, '')
+        ok, message, embedded = pdfer._render_html_to_pdf(
+            html, out, base_dir=workdir)
+        return ok, message, embedded, out
+
+    def test_relative_absolute_and_file_url_all_resolve(self):
+        pdfer = _pdfer()
+        with tempfile.TemporaryDirectory() as workdir:
+            png = self._png(os.path.join(workdir, 'fig.png'))
+            forms = {
+                'relative': 'fig.png',
+                'absolute': png,
+                'file-url': 'file:///' + png.replace('\\', '/'),
+            }
+            for label, ref in forms.items():
+                resolved = pdfer._resolve_asset_uri(ref, workdir)
+                self.assertTrue(
+                    os.path.isfile(resolved),
+                    f'{label} reference {ref!r} did not resolve to a real file '
+                    f'(got {resolved!r}). This is exactly how the diagrams '
+                    f'vanished from the design PDF.')
+                self.assertEqual(os.path.normcase(resolved),
+                                 os.path.normcase(png))
+
+    def test_remote_and_data_uris_are_left_alone(self):
+        """xhtml2pdf handles these natively — rewriting them would break them."""
+        pdfer = _pdfer()
+        for ref in ('https://example.com/a.png', 'http://x/y.png',
+                    'data:image/png;base64,AAAA'):
+            self.assertEqual(pdfer._resolve_asset_uri(ref, ''), ref)
+
+    def test_missing_asset_degrades_and_never_raises(self):
+        pdfer = _pdfer()
+        with tempfile.TemporaryDirectory() as workdir:
+            ref = 'does-not-exist.png'
+            self.assertEqual(pdfer._resolve_asset_uri(ref, workdir), ref)
+        for junk in ('', None, 'file:///nope/none.png'):
+            pdfer._resolve_asset_uri(junk, '')      # must not raise
+
+    def test_markdown_with_a_local_image_produces_a_pdf_containing_it(self):
+        with tempfile.TemporaryDirectory() as workdir:
+            self._png(os.path.join(workdir, 'fig.png'))
+            ok, message, embedded, out = self._render(
+                '# Title\n\nSome prose.\n\n![a figure](fig.png)\n', workdir)
+            self.assertTrue(ok, message)
+            self.assertTrue(os.path.isfile(out))
+            self.assertEqual(
+                embedded, 1,
+                'the rendered PDF does not contain the referenced image')
+            import fitz
+            doc = fitz.open(out)
+            try:
+                found = sum(len(p.get_images(full=True)) for p in doc)
+            finally:
+                doc.close()
+            self.assertEqual(found, 1, 'PyMuPDF found no image in the PDF')
+
+    def test_reported_images_used_is_measured_from_the_pdf(self):
+        """``images_used`` must describe the FILE, not our intentions.
+
+        Reporting 0 for a document that had four diagrams is what let a broken
+        render pass for a good one — the same 'the self-report must be true'
+        rule the Exec-Report verdict engine enforces.
+        """
+        pdfer = _pdfer()
+        with tempfile.TemporaryDirectory() as workdir:
+            self._png(os.path.join(workdir, 'a.png'), color=(10, 90, 200))
+            self._png(os.path.join(workdir, 'b.png'), color=(20, 160, 90))
+            _ok, _msg, embedded, out = self._render(
+                '# T\n\n![a](a.png)\n\n![b](b.png)\n', workdir)
+            self.assertEqual(embedded, 2)
+            self.assertGreaterEqual(pdfer._count_pdf_images(out), 2)
+
+    def test_count_pdf_images_is_fail_open(self):
+        pdfer = _pdfer()
+        self.assertEqual(pdfer._count_pdf_images('C:\\nope\\missing.pdf'), -1)
+
+    def test_render_passes_a_link_callback(self):
+        """The source contract: without it, nothing above can work."""
+        source = _read(_REPO_AGENT_DIR, 'agents', 'pdfer', 'pdfer.py')
+        block = source.split('def _render_html_to_pdf', 1)[1].split('\ndef ', 1)[0]
+        self.assertIn('link_callback=link_callback', block,
+                      'pisa.CreatePDF lost its link_callback — every local '
+                      'image in every generated document silently disappears.')
 
 
 if __name__ == '__main__':

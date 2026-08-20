@@ -100,7 +100,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f) or {}
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -241,7 +241,7 @@ def start_agent(agent_name: str) -> bool:
     agent_dir = get_agent_directory(agent_name)
     script_path = get_agent_script_path(agent_name)
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
     try:
         cmd = get_python_command() + [script_path]
@@ -256,8 +256,8 @@ def start_agent(agent_name: str) -> bool:
             with open(os.path.join(agent_dir, "agent.pid"), "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
@@ -269,7 +269,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -660,7 +660,13 @@ class WhatsAppCloudClient:
     # default is `en_US`, so a perfectly correct template name used to fail
     # and the operator was told the template was missing. Walk a short ladder
     # of near-certain alternatives instead of giving up on the first miss.
-    _LANGUAGE_FALLBACKS = ("en", "en_US", "es_MX", "es")
+    # ⛔ EL CASTELLANO VA PRIMERO. Esta escalera venia como
+    # ("en", "en_US", "es_MX", "es"): en la edicion en castellano eso manda
+    # a un destinatario hispanohablante una plantilla EN INGLES en cuanto
+    # existan las dos. Quien habla espanol no entiende ingles por el hecho
+    # de recibirlo, asi que es_MX/es se prueban primero y el ingles queda
+    # nada mas como ultimo intento antes de darse por vencido.
+    _LANGUAGE_FALLBACKS = ("es_MX", "es", "en_US", "en")
 
     @staticmethod
     def _is_language_mismatch(info: str) -> bool:

@@ -396,7 +396,7 @@ $(function () {
         footer.className = 'prompt-card-footer';
         const sizeChip = document.createElement('span');
         sizeChip.className = 'prompt-card-chip';
-        sizeChip.textContent = `${content.length.toLocaleString()} caracteres`;
+        sizeChip.textContent = `${content.length.toLocaleString()} chars`;
         const insertChip = document.createElement('span');
         insertChip.className = 'prompt-card-chip prompt-card-chip-action';
         insertChip.textContent = 'haz click para insertar →';
@@ -504,13 +504,8 @@ $(function () {
 
             const content = await response.text();
             // ⚠️ ESTA CADENA SE QUEDA EN INGLÉS A PROPÓSITO.
-            // No es texto que el usuario vea: es el body EXACTO que manda
-            // views.py:241 (`HttpResponse("Prompt not found in database")`).
             // Es un matcher acoplado al backend, así que traducirlo lo rompe
             // en silencio — que fue justo lo que pasó aquí. Si algún día se
-            // traduce la respuesta del servidor, hay que cambiar LOS DOS
-            // lados en el mismo paso. Sus hermanas viven en views.py:233-361
-            // y en acp-canvas-core.js:1203 ('Agent not found in database').
             if (content === 'Prompt not found in database') {
                 return 'missing';
             }
@@ -628,7 +623,7 @@ $(function () {
         if (searchCount) {
             searchCount.classList.toggle('is-zero', matched.length === 0);
             searchCount.textContent = matched.length
-                ? matched.length + (matched.length === 1 ? ' resultado' : ' resultados')
+                ? matched.length + (matched.length === 1 ? ' match' : ' matches')
                 : 'sin resultados';
         }
 
@@ -677,6 +672,13 @@ $(function () {
     }
 
     catalogButton.addEventListener('click', openModal);
+
+    // The Catalog is the ONE dialog in the app whose dismissal is a FUNCTION,
+    // not a button: it has no X and no Cancel, only the backdrop click below.
+    // Escape must still dismiss it (dialog_policy.js section 4), and it has to
+    // go through THIS function, because closeModal() also restores
+    // body.style.overflow - a blind hide would leave the page unscrollable.
+    modal.tlmDismiss = closeModal;
 
     if (searchInput) {
         searchInput.addEventListener('input', () => applyPromptSearch(searchInput.value));

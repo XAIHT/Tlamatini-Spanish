@@ -60,7 +60,7 @@ function buildSafeLoadCanvasLink(anchorHtml) {
     safeAnchor.classList.add('chat-load-canvas-link');
     safeAnchor.style.fontWeight = '600';
     safeAnchor.style.color = 'white';
-    safeAnchor.textContent = anchorLabel || `---Cargar en el canvas: ${filename}---`;
+    safeAnchor.textContent = anchorLabel || `---Load in canvas: ${filename}---`;
     safeAnchor.addEventListener('click', (event) => {
         event.preventDefault();
         loadCanvas(filename);
@@ -196,10 +196,10 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
     messageContentDiv.classList.add('message-content');
     usernameDiv.classList.add('username');
     copyBtn.classList.add('message-copy-btn');
-    copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copiar';
+    copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
 
     if (buildingInitial) {
-        // ⚠️ HISTORY REPLAY MUST NOT DRIVE LIVE CONTROL STATE (Angela, 2026-07-29).
+        // ⚠️ HISTORY REPLAY MUST NOT DRIVE LIVE CONTROL STATE (found 2026-07-29).
         //
         // `buildingInitial` was set around the replay loop but NEVER READ (it
         // even carried an eslint-disable for being unused), so replaying the
@@ -223,21 +223,10 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
         || message.toLowerCase().includes("outside the application root")
         || message.toLowerCase().includes("not a valid directory")
         || (message.toLowerCase().includes("directory") && message.toLowerCase().includes("does not exist"))
-        // Spanish edition — agent/consumers.py set-directory-as-context /
-        // set-file-as-context now answer in Spanish. KEEP the English forms
-        // above: this matcher must recognize BOTH or the context-failure
-        // branch silently stops firing (controls stay disabled).
-        //
         // ⚠️ NO agregues aquí "fuera del root directory". Esa frase vive DENTRO
-        // de constants.ERROR_AGENT_NOT_READY ("...no hayas puesto un context
         // fuera del root directory..."), que es el mensaje genérico de "no
-        // estoy lista" — NO una falla al elegir carpeta. Si se agrega, ese
-        // mensaje entra por error a esta rama y BORRA el context que la usuaria
         // ya tenía cargado. Los tres mensajes reales de consumers.py
-        // (L1111 / L1119 / L1155) dicen "fuera del root path" o
         // "no es una carpeta", así que ya quedan cubiertos por estas dos líneas.
-        || message.toLowerCase().includes("fuera del root path")
-        || message.toLowerCase().includes("no es una carpeta")
     ) {
         console.log("--- Context directory selection failed. message received: " + message);
         lapseLoadingContext = false;
@@ -254,9 +243,9 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
         clearContextEnabled = false;
         clearContextButton.setAttribute("style", "display: none !important;");
         enableControlsAfterOperation();
-    } else if (message.toLowerCase().includes("pregunta reformulada:")) {
+    } else if (message.toLowerCase().includes("referenced rephrase:")) {
         setTitleBusy(true);
-        console.log("--- Pregunta reformulada: message received: " + message);
+        console.log("--- Referenced Rephrase: message received: " + message);
     } else if (lapseLoadingContext === true && isSessionRestoredInfoMessage(message)) {
         // The "Welcome back…" message arrives between the session-restored
         // event (which disabled the input) and the eventual loading-context
@@ -331,7 +320,7 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
     //     punctuation/space/case-insensitive key ("File Creator" -> "File-Creator",
     //     "STM32er" -> "stm32er", "Monitor Log" -> "Monitor-Log"), so
     //     display-vs-DB spelling drift never blocks the button. A successful
-    //     agent that resolves to NO registered canvas agent is simply DROPPED
+    //     agent that resolves to NO agent registrado del canvas is simply DROPPED
     //     from the generated flow (same treatment as a failed execution) - it
     //     must NEVER disable the whole button. The button enables whenever AT
     //     LEAST ONE successful agent resolves.
@@ -345,7 +334,7 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
         // registry; flips on as long as >=1 successful agent resolves.
         createFlowBtn.disabled = true;
         createFlowBtn.classList.add('create-flow-validating');
-        createFlowBtn.title = 'Validando agents…';
+        createFlowBtn.title = 'Validating agents…';
 
         const _enableCreateFlow = (titleText) => {
             createFlowBtn.classList.remove('create-flow-validating');
@@ -363,8 +352,8 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
                 // >=1 successful agent resolves -> enable. Any unresolved
                 // agents are dropped from the flow, not a blocker.
                 _enableCreateFlow(missing.length
-                    ? ('El flow incluye ' + resolved.length + ' agent(s) exitoso(s); '
-                        + missing.length + ' agent(s) no registrado(s) se van a omitir: '
+                    ? ('Flow includes ' + resolved.length + ' successful agent(s); '
+                        + missing.length + ' unregistered agent(s) will be skipped: '
                         + missing.join(', '))
                     : '');
                 if (missing.length) {
@@ -416,7 +405,7 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
             console.error('Failed to copy message: ', err);
             copyBtn.innerHTML = '<i class="bi bi-x"></i> Error';
             setTimeout(() => {
-                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copiar';
+                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
             }, 2000);
         });
     });
@@ -592,7 +581,7 @@ async function _resolveSuccessfulAgents(toolCallsLog) {
  */
 async function _generateAndDownloadFlow(toolCallsLog) {
     // 1) Resolve every SUCCESSFUL tool call to its canonical (exact DB) agent
-    //    name and DROP any that don't resolve to a registered canvas agent --
+    //    name and DROP any that don't resolve to a agent registrado del canvas --
     //    the generated .flw must only ever reference agents the canvas can
     //    load, and only the successful executions become nodes (failed ones
     //    were never in `resolved`). Order + fidelity preserved: each kept
@@ -649,7 +638,7 @@ async function _generateAndDownloadFlow(toolCallsLog) {
             text: call.canonical,
             left: (50 + (idx + 1) * HORIZONTAL_GAP) + 'px',
             top: TOP_OFFSET + 'px',
-            agentPurpose: '',
+            agentPurpose: _agentPurpose(call.canonical),
             configData: configData
         });
     });
@@ -658,7 +647,7 @@ async function _generateAndDownloadFlow(toolCallsLog) {
         text: 'Ender',
         left: (50 + (successfulCalls.length + 1) * HORIZONTAL_GAP) + 'px',
         top: TOP_OFFSET + 'px',
-        agentPurpose: '',
+        agentPurpose: 'Terminates all agents, launches Cleaners',
         configData: {
             // Ender's target_agents is the list of ALL agents to terminate
             // (every pool name, not just the last one).
@@ -1519,6 +1508,13 @@ function _mapToolArgsToAgentConfig(canonicalName, rawArgs, _toolName) {
         set('project_dir', pairs.project_dir);
         set('main_file', pairs.main_file);
         set('input_text', pairs.input_text);
+        // The BYTE-EXACT channel. LaTeXer declares input_text / content /
+        // find_text / replace_text as verbatim_fields, and each has a `_b64`
+        // twin that WINS over its plain counterpart. Omitting them here meant a
+        // generated .flw silently dropped the only copy of the source that had
+        // survived transport intact — precisely the `\\` row-break loss the
+        // verbatim channel exists to prevent.
+        set('input_text_b64', pairs.input_text_b64);
         set('documentclass', pairs.documentclass);
         set('class_options', pairs.class_options);
         set('title', pairs.title);
@@ -1527,11 +1523,14 @@ function _mapToolArgsToAgentConfig(canonicalName, rawArgs, _toolName) {
         set('packages', pairs.packages);
         set('geometry', pairs.geometry);
         set('content', pairs.content);
+        set('content_b64', pairs.content_b64);
         set('template', pairs.template);
         set('document_language', pairs.document_language);
         set('edit_mode', pairs.edit_mode);
         set('find_text', pairs.find_text);
+        set('find_text_b64', pairs.find_text_b64);
         set('replace_text', pairs.replace_text);
+        set('replace_text_b64', pairs.replace_text_b64);
         set('engine', pairs.engine);
         set('use_latexmk', pairs.use_latexmk);
         set('bibliography', pairs.bibliography);
@@ -1777,7 +1776,8 @@ function _mapToolArgsToAgentConfig(canonicalName, rawArgs, _toolName) {
         if (Object.keys(telegram).length > 0) config.telegram = telegram;
 
     // ── Whatsapper ───────────────────────────────────────────────────
-    // Official Meta WhatsApp Cloud API ONLY. Top-level: message,
+    // Meta Cloud API by default; optional `provider=web` uses the personal account.
+    // Top-level: message,
     // contact_name, to, provider, template(+lang/params), mode,
     // rx_max_seconds. Nested: whatsapp (phone_number_id, access_token,
     // graph_base, api_version, to, verify_token, webhook_*).
@@ -2056,12 +2056,8 @@ function _toPoolName(displayName) {
 /**
  * Return a short purpose string for well-known agent types.
  * Keys are canonical DB agentDescription names.
- *
- * YA NO SE USA para generar el .flw (los nodos escriben agentPurpose: '' y el
  * canvas resuelve la descripción en español desde agents_descriptions.es.md).
  * NO BORRAR esta función sin borrar en el mismo commit el test
- * agent/test_agent_display_names.py::test_agent_purpose_map_keys_match_live_display_names,
- * que exige encontrar la cadena 'function _agentPurpose' en este archivo.
  */
 function _agentPurpose(canonicalName) {
     const purposes = {

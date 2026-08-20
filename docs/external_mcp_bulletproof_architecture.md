@@ -56,9 +56,9 @@ The normalizer also accepts the aliases `http` / `streamable_http` → `streamab
 `ws` → `websocket`, `socket` / `raw` → `tcp`, `pipe` → `named-pipe`, and infers a
 transport from `url` / `sseUrl` / `wsUrl` / `websocketUrl` when none is declared.
 
-## 3. The LLM surface — eight supervisor tools
+## 3. The LLM surface — ten supervisor tools
 
-`_SUPERVISOR_TOOL_NAMES` binds **eight supervisor tools**; every one returns a JSON
+`_SUPERVISOR_TOOL_NAMES` binds **ten supervisor tools**; every one returns a JSON
 envelope and never raises:
 
 | Tool | Role |
@@ -66,6 +66,8 @@ envelope and never raises:
 | `external_mcp_status` | catalog + active set + per-server connection state |
 | `external_mcp_reconnect` | force a reconnect of one server, or all |
 | `external_mcp_doctor` | per-server triage: transport, runtime, command-on-PATH, placeholder secrets, blockers, next step |
+| `external_mcp_runtime_status` | resolve node/npm/npx/pnpm/uv/uvx and report private-vs-system location |
+| `external_mcp_runtime_install` | install missing package managers in Tlamatini's private per-user runtime |
 | `external_mcp_list_tools` | enumerate the tools a connected server exposes |
 | `external_mcp_call` | call one remote tool directly |
 | `external_mcp_import` | add server(s) from a JSON object **or** a JSON string |

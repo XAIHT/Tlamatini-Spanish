@@ -53,13 +53,43 @@ def _normalize_agent_purpose_key(value: str) -> str:
     return re.sub(r'[^a-z0-9]+', '', (value or '').lower())
 
 
-# Idioma de esta edición de Tlamatini. Con 'es' el cargador superpone
-# ``agents_descriptions.es.md`` encima del archivo inglés. Ponerlo en '' (o en
-# None) devuelve el comportamiento original, sólo-inglés, sin tocar nada más.
-AGENT_DESCRIPTIONS_LANGUAGE = 'es'
+def _resolve_agent_descriptions_search_paths() -> list[str]:
+    """
+    Build the ordered list of locations to probe for the workflow-agents
+    description tables. ``agents_descriptions.md`` is the authoritative
+    source; ``README.md`` is kept as a legacy fallback so older deployments
+    that haven't been re-bundled yet still produce tooltips.
 
-# El archivo inglés es SIEMPRE la base: existe completo y nunca se queda sin
-# filas. El .es sólo se encima. Ver ``_load_agent_purpose_map``.
+    The list works for both source-mode (file lives at the repo root next to
+    ``manage.py``) and frozen-mode (file is copied next to the executable
+    by ``build.py`` and resolved via ``sys.executable``'s directory).
+    """
+    candidates: list[str] = []
+
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    candidates.extend([
+        os.path.join(project_root, 'agents_descriptions.md'),
+        os.path.join(project_root, 'README.md'),
+    ])
+
+    if getattr(sys, 'frozen', False):
+        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+        candidates.extend([
+            os.path.join(exe_dir, 'agents_descriptions.md'),
+            os.path.join(exe_dir, 'README.md'),
+        ])
+
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for candidate in candidates:
+        normalized = os.path.normcase(os.path.abspath(candidate))
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        ordered.append(candidate)
+    return ordered
+
+
 _AGENT_DESCRIPTIONS_BASE_FILENAMES = ('agents_descriptions.md', 'README.md')
 
 
@@ -71,43 +101,30 @@ def _localized_agent_descriptions_filename(language: str) -> str:
     return 'agents_descriptions.%s.md' % language
 
 
-def _resolve_agent_descriptions_search_paths(filenames=None) -> list[str]:
+def _load_purpose_map_from_paths(paths) -> tuple[dict[str, str], Optional[Exception]]:
     """
-    Build the ordered list of locations to probe for the workflow-agents
-    description tables. ``agents_descriptions.md`` is the authoritative
-    source; ``README.md`` is kept as a legacy fallback so older deployments
-    that haven't been re-bundled yet still produce tooltips.
+    Recorre las rutas y devuelve el PRIMER mapa no vacío (gana el primero, NO
+    se mezclan entre sí: ``tests.py::test_primary_file_wins_over_fallback...``
+    exige que README.md nunca se encime sobre agents_descriptions.md).
 
-    The list works for both source-mode (file lives at the repo root next to
-    ``manage.py``) and frozen-mode (file is copied next to the executable
-    by ``build.py`` and resolved via ``sys.executable``'s directory).
-
-    ``filenames`` permite pedir otro juego de archivos —lo usa la capa de
-    idioma para buscar ``agents_descriptions.es.md`` por las MISMAS rutas
-    (raíz del repo en modo source, junto al .exe en modo frozen)—. Sin
-    argumentos el resultado es idéntico al de siempre: ``agents_descriptions.md``
-    va en la posición 0 y ``README.md`` después (contrato fijado por
-    ``tests.py::test_search_paths_always_include_project_root_pair``).
+    Lee en ``utf-8-sig`` para tolerar un BOM: el archivo en español lo edita
+    una persona y varios editores de Windows lo guardan con BOM. Un BOM ensucia
+    la primera línea y el encabezado ``## Workflow Agents`` dejaría de coincidir.
     """
-    names = tuple(filenames) if filenames else _AGENT_DESCRIPTIONS_BASE_FILENAMES
-    candidates: list[str] = []
-
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    candidates.extend(os.path.join(project_root, name) for name in names)
-
-    if getattr(sys, 'frozen', False):
-        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
-        candidates.extend(os.path.join(exe_dir, name) for name in names)
-
-    seen: set[str] = set()
-    ordered: list[str] = []
-    for candidate in candidates:
-        normalized = os.path.normcase(os.path.abspath(candidate))
-        if normalized in seen:
+    last_error: Optional[Exception] = None
+    for path in paths:
+        try:
+            with open(path, 'r', encoding='utf-8-sig') as handle:
+                lines = handle.readlines()
+        except OSError as exc:
+            last_error = exc
             continue
-        seen.add(normalized)
-        ordered.append(candidate)
-    return ordered
+
+        purpose_map = _parse_agent_purpose_map(lines)
+        if purpose_map:
+            return purpose_map, last_error
+
+    return {}, last_error
 
 
 def _parse_agent_purpose_map(lines) -> dict[str, str]:
@@ -147,20 +164,17 @@ def _parse_agent_purpose_map(lines) -> dict[str, str]:
     return purpose_map
 
 
-def _load_purpose_map_from_paths(paths) -> tuple[dict[str, str], Optional[Exception]]:
+def _load_agent_purpose_map() -> dict[str, str]:
     """
-    Recorre las rutas y devuelve el PRIMER mapa no vacío (gana el primero, NO
-    se mezclan entre sí: ``tests.py::test_primary_file_wins_over_fallback...``
-    exige que README.md nunca se encime sobre agents_descriptions.md).
-
-    Lee en ``utf-8-sig`` para tolerar un BOM: el archivo en español lo edita
-    una persona y varios editores de Windows lo guardan con BOM. Un BOM ensucia
-    la primera línea y el encabezado ``## Workflow Agents`` dejaría de coincidir.
+    Load the Workflow Agents description map from the first available source.
+    Probes ``agents_descriptions.md`` first (authoritative) and falls back to
+    ``README.md`` for backward compatibility, in both source-mode and
+    frozen-mode locations.
     """
     last_error: Optional[Exception] = None
-    for path in paths:
+    for path in _resolve_agent_descriptions_search_paths():
         try:
-            with open(path, 'r', encoding='utf-8-sig') as handle:
+            with open(path, 'r', encoding='utf-8') as handle:
                 lines = handle.readlines()
         except OSError as exc:
             last_error = exc
@@ -168,59 +182,11 @@ def _load_purpose_map_from_paths(paths) -> tuple[dict[str, str], Optional[Except
 
         purpose_map = _parse_agent_purpose_map(lines)
         if purpose_map:
-            return purpose_map, last_error
+            return purpose_map
 
-    return {}, last_error
-
-
-def _load_agent_purpose_map() -> dict[str, str]:
-    """
-    Load the Workflow Agents description map from the first available source.
-    Probes ``agents_descriptions.md`` first (authoritative) and falls back to
-    ``README.md`` for backward compatibility, in both source-mode and
-    frozen-mode locations.
-
-    CAPA DE IDIOMA (edición en español)
-    -----------------------------------
-    El inglés se carga SIEMPRE como base y el archivo del idioma
-    (``agents_descriptions.es.md``) se ENCIMA agent por agent:
-
-        merged = {**inglés, **español}
-
-    Se hace así —y no "si existe el .es, usa el .es"— porque la traducción de
-    87 agents entra por partes: con reemplazo total, un .es a medias dejaría a
-    los agents que aún no se traducen SIN tooltip y SIN cuerpo en el diálogo de
-    Descripción. Al encimar, cada agent cae solo a su texto en inglés y ninguna
-    superficie se queda en blanco.
-
-    FAIL-OPEN: si el .es no existe, viene vacío, no se puede leer o revienta al
-    resolverse, se devuelve el inglés íntegro. Nunca se propaga la excepción:
-    quedarse sin descripciones es peor que quedarse en inglés.
-    """
-    purpose_map, last_error = _load_purpose_map_from_paths(
-        _resolve_agent_descriptions_search_paths()
-    )
-
-    localized: dict[str, str] = {}
-    localized_name = _localized_agent_descriptions_filename(AGENT_DESCRIPTIONS_LANGUAGE)
-    if localized_name:
-        try:
-            localized, _ = _load_purpose_map_from_paths(
-                _resolve_agent_descriptions_search_paths((localized_name,))
-            )
-        except Exception as exc:  # noqa: BLE001 - fail-open a propósito
-            print(f"Warning: could not overlay {localized_name}, staying in English: {exc}")
-            localized = {}
-
-    if not purpose_map and not localized and last_error is not None:
+    if last_error is not None:
         print(f"Warning: Could not load agent purposes from any known source: {last_error}")
-
-    if not localized:
-        return purpose_map
-
-    merged = dict(purpose_map)
-    merged.update(localized)
-    return merged
+    return {}
 
 
 # Legacy alias preserved so any out-of-tree callers (e.g. dev scripts or
@@ -317,25 +283,25 @@ def load_prompt_view(request, prompt_name):
 # a brand-new prompt added by a later migration before it is tagged), so nothing is
 # ever silently dropped from the catalog.
 PROMPT_CATEGORY_ORDER = [
-    ('getting_started', 'Primeros pasos'),
+    ('getting_started', 'Getting Started'),
     ('files_search', 'Archivos y búsqueda'),
     ('run_execute', 'Ejecución de comandos'),
     ('code_gen', 'Código y generación de proyectos'),
     # Documents & PDF (2026-07-26, PDFer) — the AUTHORING side of the document
-    # family. It sits after Code & Project Generation (both are "produce a
-    # deliverable") and before Images & Vision, because a PDFer report often
+    # family. It sits after Código y generación de proyectos (both are "produce a
+    # deliverable") and before Imágenes y visión, because a PDFer report often
     # EMBEDS the images the next section teaches you to capture/analyze.
-    ('documents', 'Documentos y PDF'),
+    ('documents', 'Documents & PDF'),
     ('images', 'Imágenes y visión'),
-    ('agents_flows', 'Agents y flows'),
-    ('acpx_skills', 'ACPX, Skills y MCPs'),
+    ('agents_flows', 'Agents & Flows'),
+    ('acpx_skills', 'ACPX, Skills & MCPs'),
     ('desktop_ui', 'Automatización del escritorio'),
-    ('games_3d', 'Juegos y 3D'),
-    ('firmware_iot', 'Firmware e IoT'),
-    ('security_recon', 'Seguridad y reconocimiento'),
+    ('games_3d', 'Games & 3D'),
+    ('firmware_iot', 'Firmware & IoT'),
+    ('security_recon', 'Security & Recon'),
     ('messaging', 'Mensajería y contactos'),
-    ('media_voice', 'Multimedia y voz'),
-    ('other', 'Otros'),
+    ('media_voice', 'Media & Voice'),
+    ('other', 'More'),
 ]
 _PROMPT_CATEGORY_RANK = {key: i for i, (key, _label) in enumerate(PROMPT_CATEGORY_ORDER)}
 _PROMPT_CATEGORY_LABEL = dict(PROMPT_CATEGORY_ORDER)
@@ -509,7 +475,7 @@ def clear_pool_view(request):
             return HttpResponse(json.dumps({'status': 'success', 'message': 'Pool directory created (was empty)'}), 
                               content_type='application/json')
         except Exception as e:
-             return HttpResponse(json.dumps({'status': 'error', 'message': f'No pude crear el pool: {e}'}), status=500)
+             return HttpResponse(json.dumps({'status': 'error', 'message': f'Failed to create pool: {e}'}), status=500)
     
     try:
         # 1. Kill processes first to release file locks
@@ -717,7 +683,7 @@ def _resolve_canvas_agent_directory(request, agent_name: str) -> str:
         raise ValueError("Nombre de agent inválido") from exc
 
     if not os.path.isdir(agent_dir):
-        raise FileNotFoundError(f"Agent directory not found: {pool_folder_name}")
+        raise FileNotFoundError(f"No encontré el directory del agent: {pool_folder_name}")
 
     return agent_dir
 
@@ -910,6 +876,22 @@ def get_user_python_home() -> str:
 def get_agent_env() -> dict:
     """Build environment for child processes with PYTHON_HOME from USER env vars on PATH."""
     env = os.environ.copy()
+
+    # TLAMATINI_AGENTS_ROOT — so an agent can find its SIBLINGS (2026-08-12).
+    # Playwrighter's `shoter` step needs the Shoter template, and a pool agent
+    # has no reliable way to walk to `agents/` from wherever it was copied.
+    # Same variable the chat-run path exports (chat_agent_runtime._build_child_env),
+    # so an agent behaves identically from the canvas and from chat.
+    # Fail-open: absent variable simply means "search for it yourself".
+    try:
+        from agent.services.agent_paths import get_agents_root
+
+        agents_root = str(get_agents_root())
+        if agents_root and os.path.isdir(agents_root):
+            env['TLAMATINI_AGENTS_ROOT'] = agents_root
+    except Exception:
+        pass
+
     
     # Reset PyInstaller's DLL search path alteration on Windows
     # If we don't do this, child Python processes will WinError 1114 when loading C extensions (like torch)
@@ -1482,7 +1464,7 @@ def update_raiser_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False, 
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating raiser connection: {e}")
@@ -1609,7 +1591,7 @@ def update_emailer_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False,
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating emailer connection: {e}")
@@ -1759,7 +1741,7 @@ def update_monitor_log_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False, 
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating monitor log connection: {e}")
@@ -1964,7 +1946,7 @@ def update_and_agent_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False, 
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating monitor_log connection: {e}")
@@ -2106,7 +2088,7 @@ def update_ender_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False,
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating ender connection: {e}")
@@ -2247,7 +2229,7 @@ def update_stopper_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False, 
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating stopper connection: {e}")
@@ -2381,7 +2363,7 @@ def update_notifier_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False, 
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating notifier connection: {e}")
@@ -2511,7 +2493,7 @@ def update_starter_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False, 
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating starter connection: {e}")
@@ -2608,7 +2590,7 @@ def save_session_state_view(request):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False,
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error saving session state: {e}")
@@ -2657,7 +2639,7 @@ def execute_starter_agent_view(request, agent_name):
         if not os.path.exists(agent_dir):
             return HttpResponse(json.dumps({
                 "success": False, 
-                "message": f"Agent directory not found: {pool_folder_name}"
+                "message": f"No encontré el directory del agent: {pool_folder_name}"
             }), content_type='application/json', status=404)
         
         # Find the starter.py script
@@ -2666,7 +2648,7 @@ def execute_starter_agent_view(request, agent_name):
         if not os.path.exists(script_path):
             return HttpResponse(json.dumps({
                 "success": False, 
-                "message": f"Agent script not found: {base_folder_name}.py"
+                "message": f"No encontré el script del agent: {base_folder_name}.py"
             }), content_type='application/json', status=404)
         
         # Execute the starter agent
@@ -2928,13 +2910,13 @@ def execute_ender_agent_view(request, agent_name):
                 "success": False, 
                 "message": f"No encontré el directory del agent: {pool_folder_name}"
             }), content_type='application/json', status=404)
-
+        
         # Find the ender.py script
         script_path = os.path.join(agent_dir, f"{base_folder_name}.py")
-
+        
         if not os.path.exists(script_path):
             return HttpResponse(json.dumps({
-                "success": False,
+                "success": False, 
                 "message": f"No encontré el script del agent: {base_folder_name}.py"
             }), content_type='application/json', status=404)
         
@@ -3666,13 +3648,13 @@ def restart_agent_view(request, agent_name):
                 "success": False, 
                 "message": f"No encontré el directory del agent: {pool_folder_name}"
             }), content_type='application/json', status=404)
-
+        
         # Find the agent's script (named after base folder, e.g., monitor_log.py)
         script_path = os.path.join(agent_dir, f"{base_folder_name}.py")
-
+        
         if not os.path.exists(script_path):
             return HttpResponse(json.dumps({
-                "success": False,
+                "success": False, 
                 "message": f"No encontré el script del agent: {base_folder_name}.py"
             }), content_type='application/json', status=404)
         
@@ -4526,7 +4508,7 @@ def update_croner_connection_view(request, agent_name):
     except json.JSONDecodeError as e:
         return HttpResponse(json.dumps({
             "success": False, 
-            "message": f"Invalid JSON: {str(e)}"
+            "message": f"El JSON no es válido: {str(e)}"
         }), content_type='application/json', status=400)
     except Exception as e:
         print(f"Error updating croner connection: {e}")
@@ -9108,7 +9090,7 @@ def update_latexer_connection_view(request, agent_name):
         if '..' in pool_folder_name or '/' in pool_folder_name or '\\' in pool_folder_name:
             return HttpResponse(json.dumps({
                 "success": False,
-                "message": "Invalid agent name"
+                "message": "Nombre de agent inválido"
             }), content_type='application/json', status=400)
 
         pool_base_path = get_pool_path(request)
@@ -9598,7 +9580,7 @@ _IPV4_RE = re.compile(
 
 def _validate_url_value(value) -> str | None:
     if not isinstance(value, str):
-        return "debe ser una cadena de texto"
+        return "must be a string"
     candidate = value.strip()
     if not candidate:
         return "no puede estar vacío"
@@ -9608,15 +9590,15 @@ def _validate_url_value(value) -> str | None:
     except Exception:
         return "no es una URL válida"
     if parsed.scheme not in {"http", "https", "ws", "wss"}:
-        return "debe usar un scheme http(s):// o ws(s)://"
+        return "must use http(s):// or ws(s):// scheme"
     if not parsed.netloc:
-        return "debe incluir un host"
+        return "must include a host"
     return None
 
 
 def _validate_host_value(value) -> str | None:
     if not isinstance(value, str):
-        return "debe ser una cadena de texto"
+        return "must be a string"
     candidate = value.strip()
     if not candidate:
         return "no puede estar vacío"
@@ -9633,7 +9615,7 @@ def _validate_port_value(value) -> tuple[str | None, int | None]:
     except (TypeError, ValueError):
         return ("debe ser un número entero entre 1 y 65535", None)
     if port < 1 or port > 65535:
-        return ("debe estar entre 1 y 65535", None)
+        return ("must be between 1 and 65535", None)
     return (None, port)
 
 
@@ -9672,7 +9654,7 @@ def save_config_models_view(request):
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
     except json.JSONDecodeError as exc:
-        return JsonResponse({"success": False, "error": f"invalid JSON: {exc}"}, status=400)
+        return JsonResponse({"success": False, "error": f"el JSON no es válido: {exc}"}, status=400)
 
     if not isinstance(payload, dict):
         return JsonResponse({"success": False, "error": "payload must be a JSON object"}, status=400)
@@ -9681,14 +9663,11 @@ def save_config_models_view(request):
     updates: dict[str, str] = {}
     for key in CONFIG_MODEL_KEYS:
         if key not in payload:
-            # ⚠️ "missing" es un CÓDIGO de error que lee el código (el JSON
-            # errors{} lo consume el frontend y lo afirma test_kalier_agent),
-            # NO es texto que la usuaria vea. NO se traduce.
             errors[key] = "missing"
             continue
         value = payload[key]
         if not isinstance(value, str):
-            errors[key] = "debe ser una cadena de texto"
+            errors[key] = "must be a string"
             continue
         trimmed = value.strip()
         if not trimmed:
@@ -9721,7 +9700,7 @@ def save_config_urls_view(request):
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
     except json.JSONDecodeError as exc:
-        return JsonResponse({"success": False, "error": f"invalid JSON: {exc}"}, status=400)
+        return JsonResponse({"success": False, "error": f"el JSON no es válido: {exc}"}, status=400)
 
     if not isinstance(payload, dict):
         return JsonResponse({"success": False, "error": "payload must be a JSON object"}, status=400)
@@ -9730,9 +9709,6 @@ def save_config_urls_view(request):
     updates: dict[str, object] = {}
     for key in CONFIG_URL_KEYS:
         if key not in payload:
-            # ⚠️ "missing" es un CÓDIGO de error que lee el código (el JSON
-            # errors{} lo consume el frontend y lo afirma test_kalier_agent),
-            # NO es texto que la usuaria vea. NO se traduce.
             errors[key] = "missing"
             continue
         value = payload[key]
@@ -9802,7 +9778,7 @@ def save_access_keys_wizard_view(request):
         return JsonResponse({"success": False, "error": f"el JSON no es válido: {exc}"}, status=400)
 
     if not isinstance(payload, dict):
-        return JsonResponse({"success": False, "error": "el payload debe ser un objeto JSON"}, status=400)
+        return JsonResponse({"success": False, "error": "payload must be a JSON object"}, status=400)
 
     try:
         from .access_key_wizard import save_access_key_wizard_settings
@@ -9880,7 +9856,7 @@ def backup_db_view(request):
         return JsonResponse({"success": False, "error": f"el JSON no es válido: {exc}"}, status=400)
 
     if not isinstance(payload, dict):
-        return JsonResponse({"success": False, "error": "el payload debe ser un objeto JSON"}, status=400)
+        return JsonResponse({"success": False, "error": "payload must be a JSON object"}, status=400)
 
     raw = payload.get("target_dir")
     if not isinstance(raw, str) or not raw.strip():
@@ -9899,7 +9875,7 @@ def backup_db_view(request):
         return JsonResponse({
             "success": False,
             "kind": "missing",
-            "error": f"El directory de destino no existe: {target_dir}",
+            "error": f"Target directory does not exist: {target_dir}",
         }, status=400)
 
     try:
@@ -9917,20 +9893,46 @@ def backup_db_view(request):
 
     destination_path = os.path.join(target_dir, "db.sqlite3")
 
+    if os.path.normcase(os.path.abspath(source_path)) == os.path.normcase(os.path.abspath(destination_path)):
+        return JsonResponse({
+            "success": False,
+            "error": "El origen y el destino resuelven al mismo archivo — elige otro directory de destino.",
+        }, status=400)
+
+    # ⚠️ Never use a plain filesystem copy here. The database runs in WAL mode
+    # (``settings.py`` -> ``PRAGMA journal_mode=WAL``), so everything
+    # committed since the last checkpoint lives in ``db.sqlite3-wal``, not in
+    # ``db.sqlite3``. A plain file copy therefore backs up an OLDER database
+    # and reports success — measured on the live install: 839,680-byte
+    # db.sqlite3 from 13:39 next to a 3,514,392-byte -wal from 22:49. The
+    # online backup API reads THROUGH the WAL and the copy is verified with
+    # quick_check before this returns success. See agent/sqlite_copy.py.
     try:
-        if os.path.normcase(os.path.abspath(source_path)) == os.path.normcase(os.path.abspath(destination_path)):
-            return JsonResponse({
-                "success": False,
-                "error": "El origen y el destino resuelven al mismo archivo — elige otro directory de destino.",
-            }, status=400)
-        shutil.copy2(source_path, destination_path)
+        from . import sqlite_copy
+        result = sqlite_copy.consistent_copy(source_path, destination_path)
     except Exception as exc:
         print(f"[BACKUP DB] Copy failed: {exc}")
         traceback.print_exc()
         return JsonResponse({"success": False, "error": str(exc)}, status=500)
 
-    print(f"[BACKUP DB] Copied {source_path} -> {destination_path}")
-    return JsonResponse({"success": True, "path": destination_path, "source": source_path})
+    if not result.get("ok"):
+        print(f"[BACKUP DB] {sqlite_copy.describe(result)}")
+        return JsonResponse({
+            "success": False,
+            "error": (result.get("error")
+                      or "; ".join(result.get("attempts", []))
+                      or "the backup could not be verified"),
+        }, status=500)
+
+    print(f"[BACKUP DB] Backed up {source_path} -> {sqlite_copy.describe(result)}")
+    return JsonResponse({
+        "success": True,
+        "path": destination_path,
+        "source": source_path,
+        "method": result.get("method", ""),
+        "bytes": result.get("bytes", 0),
+        "integrity": result.get("integrity", ""),
+    })
 
 
 def _resolve_db_to_load_directory() -> str:
@@ -10018,7 +10020,7 @@ def set_db_view(request):
         return JsonResponse({"success": False, "error": f"el JSON no es válido: {exc}"}, status=400)
 
     if not isinstance(payload, dict):
-        return JsonResponse({"success": False, "error": "el payload debe ser un objeto JSON"}, status=400)
+        return JsonResponse({"success": False, "error": "payload must be a JSON object"}, status=400)
 
     raw = payload.get("source_path")
     if not isinstance(raw, str) or not raw.strip():
@@ -10060,14 +10062,38 @@ def set_db_view(request):
 
         # The swap-in expects ``DB/ToLoad/db.sqlite3``; overwrite any
         # previously-staged file so the latest user pick wins.
-        shutil.copy2(source_path, destination_path)
+        #
+        # ⚠️ Not a plain filesystem copy. The file the user picked may itself be a
+        # live/WAL database (a copy taken from another install, or one made
+        # by an older Tlamatini), in which case its newest pages sit in a
+        # ``-wal`` beside it and a byte copy would stage a database MISSING
+        # exactly the data the user wants back. The online backup API pulls
+        # the WAL in and leaves ONE self-contained file for the swap-in.
+        from . import sqlite_copy
+        result = sqlite_copy.consistent_copy(source_path, destination_path)
     except Exception as exc:
         print(f"[SET DB] Could not stage db.sqlite3: {exc}")
         traceback.print_exc()
         return JsonResponse({"success": False, "error": str(exc)}, status=500)
 
-    print(f"[SET DB] Staged {source_path} -> {destination_path}")
-    return JsonResponse({"success": True, "path": destination_path, "source": source_path})
+    if not result.get("ok"):
+        print(f"[SET DB] {sqlite_copy.describe(result)}")
+        return JsonResponse({
+            "success": False,
+            "error": (result.get("error")
+                      or "; ".join(result.get("attempts", []))
+                      or "the database could not be staged"),
+        }, status=500)
+
+    print(f"[SET DB] Staged {source_path} -> {sqlite_copy.describe(result)}")
+    return JsonResponse({
+        "success": True,
+        "path": destination_path,
+        "source": source_path,
+        "method": result.get("method", ""),
+        "bytes": result.get("bytes", 0),
+        "integrity": result.get("integrity", ""),
+    })
 
 
 def _run_native_picker(kind: str, title: str) -> str:
@@ -10107,7 +10133,7 @@ def _run_native_picker(kind: str, title: str) -> str:
                 chosen = native_dialogs.pick_open_file(
                     title,
                     filter_pairs=[
-                        ('Database SQLite (db.sqlite3)', 'db.sqlite3'),
+                        ('SQLite database (db.sqlite3)', 'db.sqlite3'),
                         ('Todos los archivos (*.*)', '*.*'),
                     ],
                 )
@@ -10161,11 +10187,12 @@ def _picker_failure_payload(exc) -> dict:
     unavailable = any(marker in low for marker in _PICKER_UNAVAILABLE_MARKERS)
     if unavailable:
         message = (
-            "El file browser nativo no está disponible en esta máquina, por favor "
-            "escribe o pega el path completo en el campo de abajo."
+            "The native file browser isn't available on this machine, so "
+            "please type or paste the full path into the field below "
+            "instead."
         )
     else:
-        message = "No pude abrir el file browser nativo: " + detail
+        message = "Could not open the native file browser: " + detail
     return {
         "path": "",
         "error": detail,
@@ -11357,13 +11384,13 @@ def get_parametrizer_dialog_data_view(request, agent_name):
         if len(source_agents_list) > 1:
             return HttpResponse(json.dumps({
                 "success": False,
-                "message": f"Solo se permite un source agent, pero hay {len(source_agents_list)} conectados."
+                "message": f"Only one source agent allowed but {len(source_agents_list)} are connected."
             }), content_type='application/json', status=400)
 
         if len(target_agents_list) > 1:
             return HttpResponse(json.dumps({
                 "success": False,
-                "message": f"Solo se permite un target agent, pero hay {len(target_agents_list)} conectados."
+                "message": f"Only one target agent allowed but {len(target_agents_list)} are connected."
             }), content_type='application/json', status=400)
 
         # Validate source agent type
@@ -11373,7 +11400,7 @@ def get_parametrizer_dialog_data_view(request, agent_name):
                 "success": False,
                 "message": f"El source agent '{source_agent}' no produce structured output, así que "
                            "no puede ser source del Parametrizer. Solo se permiten los agents que emiten un "
-                           f"block INI_SECTION_<TYPE> ({len(PARAMETRIZER_ALLOWED_SOURCES)} "
+                           f"INI_SECTION_<TYPE> block are allowed ({len(PARAMETRIZER_ALLOWED_SOURCES)} "
                            "agents de structured output están registrados actualmente, p. ej. Apirer, "
                            "Summarizer, Discoverer, Kalier, Telegrammer, Whatsapper, Zavuerer)."
             }), content_type='application/json', status=400)
@@ -11539,7 +11566,7 @@ def open_in_app_view(request):
 
         if not app_id or (not directory and not agent_name):
             return HttpResponse(
-                json.dumps({"error": "se requiere app_id y directory o agent_name"}),
+                json.dumps({"error": "app_id and directory or agent_name are required"}),
                 content_type='application/json', status=400
             )
 
@@ -11561,7 +11588,7 @@ def open_in_app_view(request):
 
         if not os.path.isdir(resolved):
             return HttpResponse(
-                json.dumps({"error": "El directory no existe"}),
+                json.dumps({"error": "Directory does not exist"}),
                 content_type='application/json', status=400
             )
 
@@ -11606,7 +11633,7 @@ def open_in_app_view(request):
         elif app_id == 'cmd':
             if os.name != 'nt':
                 return HttpResponse(
-                    json.dumps({"error": "CMD solo funciona en Windows"}),
+                    json.dumps({"error": "CMD is only supported on Windows"}),
                     content_type='application/json', status=400
                 )
             subprocess.Popen(
@@ -11616,7 +11643,7 @@ def open_in_app_view(request):
             )
         else:
             return HttpResponse(
-                json.dumps({"error": f"App desconocida: {app_id}"}),
+                json.dumps({"error": f"Unknown app: {app_id}"}),
                 content_type='application/json', status=400
             )
 
@@ -12204,13 +12231,53 @@ def _build_skill_summary_row(reg_skill, enabled: bool) -> dict:
 
 @login_required
 def external_mcps_list_view(request):
-    """Catalog payload for the External ▸ MCPs dialog (one row per server)."""
+    """Catalog payload for the External ▸ MCPs dialog (one row per server).
+
+    Also carries a ``runtime`` block describing whether node / npm / npx / pnpm /
+    uv / uvx are available and where each came from, so the dialog can explain
+    WHY an npx-launched server cannot start — and offer to install the missing
+    manager — instead of leaving the user staring at a perfectly valid catalog
+    entry that silently fails to connect. Fail-open: if the provisioner cannot
+    be imported the dialog simply shows no runtime strip.
+    """
     try:
         from .external_mcp_manager import list_catalog
-        return JsonResponse(list_catalog())
+        payload = list_catalog()
+        try:
+            from . import runtime_provisioner
+            payload["runtime"] = runtime_provisioner.status()
+        except Exception:
+            payload["runtime"] = {"unavailable": True, "ok": True, "tools": {}, "missing": []}
+        return JsonResponse(payload)
     except Exception as e:
         traceback.print_exc()
         return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def external_mcps_runtime_install_view(request):
+    """Install the package managers an npx/uvx MCP server needs.
+
+    Downloads Node / uv / pnpm into Tlamatini's PRIVATE per-user runtime — no
+    administrator rights, no system PATH change, nothing installed outside her
+    own folder. Normally UNNECESSARY (activating such a server provisions its
+    runtime automatically); this backs the explicit "Install now" button in the
+    External ▸ MCPs dialog, for a user who would rather do it up front.
+    """
+    try:
+        from . import runtime_provisioner
+        body = json.loads((request.body or b"{}").decode("utf-8") or "{}")
+        tools = body.get("tools")
+        if isinstance(tools, str):
+            tools = [t.strip() for t in tools.replace(";", ",").split(",") if t.strip()]
+        if not isinstance(tools, list) or not tools:
+            tools = None
+        return JsonResponse(runtime_provisioner.provision(
+            tools, force=bool(body.get("force"))))
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
 
 
 @login_required
@@ -12222,7 +12289,7 @@ def external_mcps_activate_view(request):
         body = json.loads((request.body or b"{}").decode("utf-8") or "{}")
         keys = body.get("active", [])
         if not isinstance(keys, list):
-            return JsonResponse({"ok": False, "error": "active debe ser una lista"}, status=400)
+            return JsonResponse({"ok": False, "error": "active must be a list"}, status=400)
         return JsonResponse(set_active([str(k) for k in keys]))
     except Exception as e:
         traceback.print_exc()
@@ -12295,7 +12362,7 @@ def contacts_save_view(request):
         contacts = body.get("contacts")
         if not isinstance(contacts, list):
             return JsonResponse(
-                {"ok": False, "error": "contacts debe ser una lista"}, status=400)
+                {"ok": False, "error": "contacts must be a list"}, status=400)
         result = save_contacts(contacts)
         return JsonResponse(result, status=200 if result.get("ok") else 400)
     except Exception as e:
@@ -12345,7 +12412,7 @@ def skill_detail_view(request, skill_name):
         skill_registry.reload_if_stale()
         skill = skill_registry.get(skill_name)
         if skill is None:
-            return JsonResponse({"error": f"No existe la skill '{skill_name}'"}, status=404)
+            return JsonResponse({"error": f"unknown skill '{skill_name}'"}, status=404)
         db_row = Skill.objects.filter(name=skill_name).first()
         enabled = db_row.enabled if db_row else True
         summary = _build_skill_summary_row(skill, enabled)
@@ -12555,22 +12622,9 @@ def paste_image_view(request):
         return JsonResponse({"success": False, "message": str(e)}, status=500)
 
 
-# ─────────────────────────────────────────────────────────────────────────
-#  Voz mexicana (Piper TTS) — la voz propia de Tlamatini
-#
-#  Windows only ships en-US voices (David / Mark / Zira) and the browser's
-#  speechSynthesis sees nothing else, so reading Spanish through it produced
-#  the English accent Angela reported. Adding a Windows Spanish voice needs
-#  ADMINISTRATOR and is machine-wide, which the installer must never require.
-#  Piper runs entirely from %LOCALAPPDATA%, so the audio is synthesised here
-#  and streamed to the browser instead.
-#
-#  Silence beats a wrong accent: when the voice is missing this answers 204
-#  and the avatar simply says nothing, mirroring the Talker agent's refusal to
-#  substitute a male voice.
-# ─────────────────────────────────────────────────────────────────────────
-_TTS_MAX_CHARS = 2000
-
+# ── Voz (edicion en espanol) ─────────────────────────────────
+# Estas dos vistas SOLO existen en el arbol espanol: urls.py las
+# enruta, asi que si faltan Django ni siquiera arranca.
 
 def tts_view(request):
     """POST {"text": "..."} -> audio/wav. 204 when there is no voice to use."""
@@ -12614,3 +12668,5 @@ def tts_status_view(request):
         return JsonResponse(tts_piper.status())
     except Exception as e:
         return JsonResponse({"ready": False, "error": str(e), "needs_admin": False})
+
+

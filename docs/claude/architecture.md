@@ -258,7 +258,7 @@ Contract (do NOT weaken): HKCU only, never admin, every writer fail-open, read-o
 - Defined in `tools.py` as synchronous `@tool` functions
 - Returned by `get_mcp_tools()` (misnamed - returns LangChain tools, NOT MCP services)
 - Only active when unified-agent chain is selected
-- Includes: execute_command, agent_parametrizer, agent_starter, agent_stopper, agent_stat_getter, launch_view_image, unzip_file, decompile_java, googler, + 63 wrapped chat-agent launchers (see `chat_agent_registry.CHAT_AGENT_TOOLS`; the newest is `chat_agent_flowcreator` — turns a plain-language objective into a real, canvas-loadable `.flw` file, after the media-playback pair `chat_agent_audioplayer` / `chat_agent_videoplayer`)
+- Includes 20 direct/core tools, 65 wrapped chat-agent launchers (see `chat_agent_registry.WRAPPED_CHAT_AGENT_SPECS`), 12 ACPX/Skill tools, and 10 External-MCP supervisors for **107 built-ins** before dynamic `ext__*` remotes. The wrapped set includes `chat_agent_flowcreator`, PDFer, LaTeXer, and the media playback pair.
 - Googler tool must run Playwright inside a `ThreadPoolExecutor` — `sync_playwright()` is incompatible with Django Channels' running event loop
 
 ---
@@ -269,8 +269,10 @@ Contract (do NOT weaken): HKCU only, never admin, every writer fail-open, read-o
 
 - **Catalog = user state.** `agent/external_mcps.json` holds the standard `mcpServers` shape (identical to a Claude Desktop / VS Code config) plus an `active` list. It is resolved **next to `config.json`** with the same precedence (`CONFIG_PATH` env > frozen install root > source `agent/`), so it is user state that survives a self-update.
 - **Four connect transports.** The client speaks `stdio`, `streamable-http`, `sse`, and `websocket` (the normalizer also recognizes `tcp` / `named-pipe` labels). A `_NetworkMcpClientBase` (httpx + websockets) duck-types the `_StdioMcpClient`, so the supervisor tools treat every transport uniformly.
-- **LLM surface = 8 supervisor tools + lazily-bound remote tools.** The LLM drives the manager with `external_mcp_status` / `external_mcp_reconnect` / `external_mcp_doctor` / `external_mcp_list_tools` / `external_mcp_call` / `external_mcp_import` / `external_mcp_set_active` / `external_mcp_wait`. Each active server's remote tools are wrapped as `ext__<server>__<tool>` (the catalog can hold hundreds of servers; at most **5** are active at once so the bound surface stays small). The browser surface is the **External ▸ MCPs** navbar dialog (`docs/claude/frontend.md`).
+- **LLM surface = 10 supervisor tools + lazily-bound remote tools.** The LLM drives the manager with `external_mcp_status` / `external_mcp_reconnect` / `external_mcp_doctor` / `external_mcp_list_tools` / `external_mcp_call` / `external_mcp_import` / `external_mcp_set_active` / `external_mcp_wait`, plus `external_mcp_runtime_status` / `external_mcp_runtime_install` (2026-08-15) for the npx/uvx toolchain. Each active server's remote tools are wrapped as `ext__<server>__<tool>` (the catalog can hold hundreds of servers; at most **5** are active at once so the bound surface stays small). The browser surface is the **External ▸ MCPs** navbar dialog (`docs/claude/frontend.md`).
 - **NOT ACPX.** The `external_mcp_*` and `ext__*` tools are **not** part of ACPX — not in `ACPX_TOOL_NAMES`, not gated by the ACPX checkbox — they are gated only by Multi-Turn. See `docs/claude/acpx.md`.
+- **Runtimes are PROVISIONED, not assumed** (2026-08-15). Because most servers are `npx -y <pkg>` / `uvx <pkg>`, `agent/runtime_provisioner.py` keeps Tlamatini's OWN `node`/`npm`/`npx`/`pnpm`/`uv`/`uvx` in `%LOCALAPPDATA%\Tlamatini\runtimes`, downloaded once on demand from the official upstreams with sha256 verification and an atomic install — no admin, no system-PATH change, nothing bundled into the installer. Resolution order is `<tool>_executable` config → an existing private runtime → system PATH → well-known per-user locations. The private runtime is provisioned only when the manager was missing, so it does not displace a usable system install; once provisioned it is deterministic and takes precedence unless the user sets an explicit executable. `_StdioMcpClient` spawns through `augment_env()` + `resolve_spawn()`, the latter rewriting Windows' `npx.cmd` shim to `node.exe <npx-cli.js>`; `_connect` provisions a missing manager on the background connect thread before spawning. Toggle with `runtime_autoprovision` (default `true`).
+- **Two servers ship by DEFAULT, INACTIVE** — `memory` and `sequential-thinking` from the official `@modelcontextprotocol` suite, declared in `agent/external_mcp_defaults.py` and seeded by `load_catalog()`. Seeding lives in CODE because `external_mcps.json` is preserved across self-update, so a JSON-only default would never reach an existing install. Deleting a default **tombstones** it (`_removed_defaults`) so it is not resurrected; editing one is never overwritten; neither is ever auto-activated. The `memory` graph is stored at `%LOCALAPPDATA%\Tlamatini\memory\memory.json`, outside the install dir, so it survives every update.
 - **Static triage counterpart.** The **MCP Doctor** workflow agent (`chat_agent_mcp_doctor`) reads the same catalog WITHOUT connecting — the offline, on-paper sibling of the live `external_mcp_doctor` tool (`docs/claude/agents.md`).
 
 ---
@@ -287,6 +289,38 @@ Characteristics:
 - **Truncate-on-start**: the file is opened with mode `'w'`, so each run begins with a fresh log
 - **No rotation / no size cap**: long sessions grow unbounded — copy or rename before restart if you need to preserve the history
 - **Not a Django LOGGING handler**: the tee is stream-level, upstream of Django's logging config, so it picks up print() calls and third-party stdout as well
+
+### Per-line USER attribution — whose line is this? (2026-08-13)
+
+Tlamatini serves **several logged-in users at once** on one machine (open a session as `angela` and another as `alice` and both are served by the same process, the same event loop and the same thread pool). The log used to interleave them with no way to tell whose line was whose. Now every line that belongs to a user carries a tiny prefix:
+
+```
+--- [WHO] a = angela (user id 1)          <- legend, printed once per user per run
+--- [WHO] b = alice (user id 2)
+[a3] --- Message parsed: 'compile the report' **** to be sent to LLM
+[b1] --- [BINARY-GUARD] ENABLED - sampling 8192 bytes/file
+[a3] --- [Tier-1 reaper] killed=0 survivors=0
+```
+
+`[a3]` = user `a` (angela), turn 3. The **turn** is what separates two concurrent requests of the SAME user (two browser tabs), so `[a3]` and `[a4]` never blur. Grep one user's whole session with `findstr "[a"`.
+
+**Engine**: `agent/log_identity.py` (stdlib-only, imports nothing from `agent.*`). **Choke point**: `manage.py`'s `_TeeStream.write` — the one place every `print()`, every Django logger and every third-party stdout already passes through. **Bind points**: `consumers.py` (`connect` / `receive` / `queue_llm_retrieval`) for the chat path and `tlamatini/middleware.py::UserLogTagMiddleware` for the ~100 HTTP endpoints.
+
+| Setting (`config.json`) | Default | Meaning |
+|---|---|---|
+| `log_user_tags` | `true` | master switch |
+| `log_user_tag_style` | `"short"` | `"short"` → `[a3] ` (5 chars) · `"name"` → `[angela#3] ` · `"off"` |
+| `log_user_tag_thread_inherit` | `true` | child threads inherit the spawning user's tag |
+
+**Contract — do NOT weaken:**
+
+1. **Minimal characters.** Five per attributed line, and **none at all** for lines that belong to no user (startup, the MCP servers, the reaper) or for blank lines. That is the whole reason the tag is a one-letter code plus a turn number rather than a verbose `[user=angela thread=Thread-42]` preamble.
+2. **Minimal CPU.** The prefix is rendered ONCE per (user, turn) and stored **ready-to-write** in the ContextVar, so the hot path is one `ContextVar.get()` plus one concatenation — no formatting, no lookup, no lock, per line. With nothing bound the tee pays a single `is not None` test.
+3. **`ContextVar`, never `threading.local`.** ONE event-loop thread serves EVERY connected user, so a thread-local would smear angela's identity over alice's coroutine. `sync_to_async` propagates the context, so the whole synchronous Multi-Turn executor stays attributed for free; `install()` additionally wraps `Thread.start` so raw threads (the self-healing watchdog, the Tier-2 reaper, agent launchers) inherit it too.
+4. **Inverted coupling.** `manage.py` exposes an empty `_USER_TAG_HOOK` slot and `log_identity.install()` fills it in when the Django app boots. The tee must **never** `import agent.*` — it runs before Django exists, and that import would drag protobuf/gRPC into startup. A launch without the module simply writes untagged lines.
+5. **FAIL-OPEN everywhere**, and the prefix stays **ASCII** (the tee also writes to a cp1252 console).
+
+Coverage: `agent/test_log_identity.py` (27 tests — the exact characters that reach the file, two users in two contexts, thread inheritance, blank/partial-line handling, a hook that raises, and the wiring contracts).
 
 When asked to debug an issue, `Tlamatini/tlamatini.log` is the first artifact to consult.
 

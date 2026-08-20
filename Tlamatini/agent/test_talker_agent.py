@@ -1233,7 +1233,13 @@ class TalkerRegistryTests(SimpleTestCase):
         self.assertEqual(cfg['model'], 'legraphista/Orpheus:3b-ft-q8')
         self.assertEqual(cfg['ollama_url'], 'http://localhost:11434')
         self.assertEqual(cfg['ollama_token'], '')
-        self.assertEqual(cfg['language'], 'en')
+        # ⚠️ AQUI LAS DOS EDICIONES SE SEPARAN A PROPOSITO. En la inglesa
+        # este valor es "en"; en la espanola TIENE que ser "es", porque
+        # `include_language_in_prompt` teje el idioma en el prompt del modelo
+        # ("tara <es>: ...") y con "en" Tlamatini pronunciaba palabras en
+        # castellano con voz inglesa. La prueba se habia quedado pidiendo el
+        # valor ingles, o sea que avalaba justo lo que hay que evitar.
+        self.assertEqual(cfg['language'], 'es')
         self.assertEqual(cfg['voice'], 'tara')
         self.assertEqual(cfg['gender'], '')
         self.assertEqual(cfg['emotion'], '')

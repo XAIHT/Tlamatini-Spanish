@@ -101,7 +101,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f) or {}
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -296,7 +296,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
 
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
 
     try:
@@ -315,9 +315,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
@@ -1072,7 +1072,10 @@ def synthesize(config: Dict) -> Dict:
         raise RuntimeError("No input_text configured — set input_text to the words to speak.")
 
     model = str(config.get('model') or 'Orpheus-3b-FT').strip()
-    language = str(config.get('language') or 'en').strip()
+    # ⛔ SIN RESPALDO EN INGLES. Esta es la edicion en castellano: si el
+    # config viene vacio, el idioma es "es", NUNCA "en". Con 'en' aqui,
+    # Tlamatini leia frases en castellano con pronunciacion inglesa.
+    language = str(config.get('language') or 'es').strip()
     emotion = str(config.get('emotion') or '').strip().lower().strip('<>')
     base = str(config.get('ollama_url') or 'http://localhost:11434').rstrip('/')
 
@@ -1238,7 +1241,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -1250,7 +1253,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -1298,7 +1301,7 @@ def emit_parametrizer_error_section(config: Dict, error_message: str):
         f"output_dir: {resolve_output_dir(config)}\n"
         f"filename: \n"
         f"model: {config.get('model', 'Orpheus-3b-FT')}\n"
-        f"language: {config.get('language', 'en')}\n"
+        f"language: {config.get('language', 'es')}\n"
         f"voice: {_report_voice}\n"
         f"gender: {_report_gender}\n"
         f"emotion: {str(config.get('emotion') or '').strip().lower().strip('<>')}\n"
@@ -1366,7 +1369,7 @@ def main():
             f"🤖 Model: {config.get('model', 'Orpheus-3b-FT')} @ "
             f"{config.get('ollama_url', 'http://localhost:11434')}"
         )
-        logging.info(f"🎯 Targets: {target_agents}")
+        logging.info(f"🎯 Destinos: {target_agents}")
         logging.info("=" * 60)
 
         synth_ok = True

@@ -16,6 +16,499 @@
 
 ---
 
+## 2026-08-16 — ESCAPE CLOSES EVERY DIALOG (the dismissal policy, inverted)
+
+> **Release lineage for this day (three annotated tags):** `v1.48.15` = `9531b43f`
+> (encoding-safe Grepper + the closed verdict vocabulary + updater preservation),
+> `v1.48.16` = `6ee630ca` (themed `tlmAlert`/`tlmConfirm` pop-ups + the
+> frozen-bundle carriage proof in `build.py`), **`v1.48.17` = `f948be7b` — the
+> CURRENT release**, carrying everything below. Docs that name "the latest
+> version" say **1.48.17**; entries that say a change "landed in v1.48.15" are
+> historical statements and remain as written.
+
+**Angela, verbatim:** *"Standarize in every ... every dialog and all of the
+dialog without exception that if 'Esc' is pressed then the dialog must be
+closed with the similar action to 'cancel'/'dismiss' (doing nothing) for every
+agent in agentic_control_panel.html for every asset on agent_page.html."*
+
+This REVERSES the 2026-08-13 half of the rule that read *"Escape never closes"*.
+The other half is UNTOUCHED: **an outside click still never dismisses.** The
+rule is now one line:
+
+> A dialog closes by its titlebar X, its Cancel/dismiss button, its Continue/OK
+> button, **or ESCAPE** — and **Escape === X === Cancel**.
+
+**What changed** — `agent/static/agent/js/dialog_policy.js`:
+
+| § | before | after |
+|---|---|---|
+| 1 jQuery UI | `closeOnEscape = false` | `closeOnEscape = true` |
+| 2 native `<dialog>` | a document `cancel` interceptor calling `preventDefault()` | **removed** — `cancel` IS the platform's word for "dismissed" |
+| 3 Bootstrap | `keyboard = false` | `keyboard = true` (`backdrop: 'static'` UNCHANGED) |
+| 4 hand-rolled overlays | a CAPTURE-phase keydown that SWALLOWED Escape | **the Escape dispatcher** (below) |
+
+**⚠️ THE DISPATCHER NEVER HIDES A NODE.** It finds the topmost open dialog and
+**invokes that dialog's own dismiss control** — the click the user would make.
+That is why nothing had to be rewired per dialog: the exec-permission prompt
+still answers **DENY** through its `close:` handler, `acpConfirm` / `tlmConfirm`
+still resolve **false**, every `body.style.overflow` is still restored by the
+dialog's own close, and the **sealed updater still refuses**, because its X runs
+`CloseUpdateDialog` -> `mayClose('update')`. A blind hide would have silently
+skipped all four. (Same reasoning as `checkbox_bulk_toggle.js` clicking a real
+checkbox instead of assigning `.checked`.)
+
+**Contracts that must NOT be reverted:**
+
+1. **BUBBLE phase, not capture.** The Catalog's search box clears the query on
+   Escape and stops the event there, so the FIRST Escape empties the search and
+   only the SECOND closes the catalog. The old capture-phase listener stole both.
+2. **`stopImmediatePropagation()` when it dismisses.** Several dialogs bind their
+   own Escape handler on `document`. Without it, Escape on a `tlmConfirm` raised
+   over the External-MCPs dialog dismisses the confirm AND closes the dialog
+   underneath — two layers for one keystroke. This is also why
+   `dialog_policy.js` must stay the FIRST document keydown handler on both pages
+   (it loads right after jQuery UI, before every dialog module).
+3. **It bails when no dialog is open.** Escape still belongs to the page: the ACP
+   canvas hides its agent tooltip with it, the avatar stops speaking.
+4. **Escape can never press an affirmative button.** The label scan matches only
+   cancel / close / dismiss / cancelar / cerrar / no and the × glyphs. A dialog
+   with exactly ONE button is an acknowledgement (the parametrizer error box's
+   "OK", the starter result's "Continue!") and that button is its way out.
+5. **Backdrops are excluded.** `.ui-widget-overlay` also wears
+   `.starter-execution-overlay`, so the `-overlay` shape matches it; dismissing a
+   backdrop would leave its panel floating over an undimmed page.
+6. **A dialog with no X and no Cancel must expose `el.tlmDismiss`.** The Catalog
+   of prompts is the one such dialog (`tools_dialog.js`); a blind hide there
+   leaves `body.style.overflow: hidden`, i.e. the whole chat page unscrollable
+   with nothing on screen to explain why.
+7. **The sealed updater is NOT an exception to the rule — it IS the rule.**
+   "Escape behaves exactly like X" means that where the X refuses, Escape
+   refuses. Interrupting a half-applied update leaves a mixed install directory.
+
+**Two latent defects found on the way** (both invisible while Escape was
+swallowed):
+
+* `CUSTOM_OVERLAYS` listed `'#prompts-catalog'`, which is the **BUTTON** that
+  opens the Catalog, not an overlay. It is always visible, so
+  `aCustomOverlayIsVisible()` returned `true` unconditionally and Escape was in
+  fact being swallowed across the WHOLE chat page. The same hand-kept list had
+  drifted past six real overlays (`#log-viewer-overlay`,
+  `#agent-description-overlay`, `#parametrizer-dialog-overlay`,
+  `#parametrizer-error-overlay`, `#flowcreator-progress-overlay`,
+  `#chat-img-preview-overlay`). Its replacement is **shape-based**
+  (`[id$="-overlay"]`, `[class*="-overlay"]`, `[role="dialog"]`, `.ui-dialog`,
+  `.modal.show`, ...) so an overlay written tomorrow is covered with no edit.
+* Seven dialogs passed an explicit `closeOnEscape: false` of their own, which
+  beats any prototype default — `acp-control-buttons.js` x4, `acp-validate.js`
+  x2, `agent_page_dialogs.js` x1. All flipped, and `closeOnEscape [:=] false` is
+  now a FORBIDDEN pattern tree-wide.
+
+**Coverage:** `agent/test_dialog_dismissal_policy.py` (23 tests). The forbidden
+pattern flipped from `closeOnEscape: true` to `closeOnEscape: false`, and new
+tests pin bubble phase, `stopImmediatePropagation`, the no-affirmative-button
+rule, backdrop exclusion, the `tlmDismiss` hook, script load ORDER on both
+pages, and the themed popup resolving `dismissValue` on Escape. Behaviour is
+proven live by
+`.claude/skills/tlamatini-daily-chat-test/harness/dialog_policy_visible.py`
+(headed Chrome driven by **Playwrighter**, photos by **Shoter**) — which did not
+exist before this change, even though the old test docstring already cited it.
+
+### The ONE exception: the updater is INVULNERABLE while it downloads
+
+Angela, same day: *"make the only dialog invulnerable to 'Esc' (MUST IGNORE
+EVERY ESCAPE AND CLOSE OF ANY TYPE) ... the Check for updates dialog, while
+there is a download in progress"* - and then *"blind it from Ctrl+F4 too"*.
+
+Not a special case bolted onto the dispatcher: a dialog declares
+**`el.tlmSealKey`**, and while that key is sealed `dismissDialog()` refuses
+before ANY path runs. The updater is simply the first dialog to use it.
+`OpenCheckUpdatesDialog` binds `#update-overlay` to `'update'` the moment it
+opens (before it is even visible), and `seal(key, message, element)` takes an
+optional element so the two can never drift apart.
+
+**Four gaps this closed** - the seal machinery already existed, but:
+
+1. **The seal was checked too late.** `dismissDialog`'s last resort HIDES the
+   node. Checked anywhere but first, a sealed dialog whose X was hidden would
+   have been hidden by the very fallback meant to help. The test asserts the
+   seal check's index is lower than the jQuery close, the click and the hide.
+2. **Escape nagged instead of being ignored.** It clicked the X, `mayClose()`
+   raised a notice, and that notice became the new topmost dialog - so the next
+   Escape dismissed the notice. Now the key is **swallowed** (`preventDefault` +
+   `stopImmediatePropagation` BEFORE anything else) and the dialog gets a 600 ms
+   CSS shake (`.tlm-dlg-sealed-nudge`). The explanatory notice is kept only for
+   a DELIBERATE click on the X.
+3. **A failed start sealed the dialog FOREVER.** `StartTlamatiniUpdate` seals
+   before POSTing `/agent/start_update/`; the `!data.ok` branch and the `catch`
+   both returned WITHOUT unsealing. Nothing was downloading and the user owned a
+   dialog that ignored Escape, ignored its X and never went away - strictly
+   worse than the interruption the seal exists to prevent. Both paths now unseal.
+4. **Only Escape was guarded.** F5 / Ctrl+R destroy the page and the dialog with
+   it, and that is the accident a user is far likelier to have.
+
+**⚠️ THE HONEST SPLIT on keys - do not let anyone claim more than this:**
+
+| we really do win | we can NEVER win in a web page |
+|---|---|
+| F5 · Ctrl+R · Ctrl+Shift+R · Alt+Left/Right · Ctrl+F4 and Ctrl+W *in browsers that deliver them* | Alt+F4 · the window's own X · and in **Chrome** Ctrl+W / Ctrl+Shift+W / Ctrl+F4, which Chrome RESERVES and never delivers to the document |
+
+For the right-hand column the only defence the platform offers is
+`beforeunload` (already wired to `anySealed()`), which raises the browser's own
+"Leave site?" prompt - and the user may still confirm it. **What makes that
+acceptable: the swap runs in an EXTERNAL PowerShell process, so a closed tab
+does not abort an update in flight; it only costs the user the progress bar.**
+The guard is about preventing an ACCIDENT, not imprisoning anyone.
+
+⚠️ The sealed key guard is **CAPTURE**-phase (nothing may act on a keystroke
+aimed at a live update), which is the exact opposite of the Escape dispatcher's
+**bubble** phase - and both are pinned, so neither can be "made consistent"
+with the other by mistake.
+
+**Proven live:** `chat_14_sealed_update_ignores_escape` opens the real dialog,
+seals it, and takes Esc x3 + Ctrl+F4 + Ctrl+W + F5. The dialog is still there
+afterwards, and a `window.__tlmSealCanary` proves the page never reloaded -
+without it, "the dialog is gone" and "F5 worked" look identical. **The harness
+never starts a real update**: `seal('update')` puts the policy in the exact
+state `StartTlamatiniUpdate` puts it in, and a test may not download a release
+onto Angela's machine. Coverage: 12 more tests in
+`agent/test_dialog_dismissal_policy.py` (35 total).
+
+---
+
+## 2026-08-16 — v1.48.15 target: encoding-safe Grepper, closed verdict vocabulary, and updater preservation
+
+This release target closes four quiet drift paths that could otherwise report a
+healthy operation incorrectly or ship an incomplete update:
+
+1. **Grepper is text-encoding aware.** `agent/agents/grepper/grepper.py` detects
+   BOM-marked UTF-8, UTF-16, and UTF-32 before trying cp1252/Latin-1 fallbacks.
+   Genuine binary files are still skipped. Keep the BOM order: UTF-32 markers
+   share prefixes with UTF-16, so testing the shorter marker first corrupts the
+   decode. Coverage lives in `agent/test_grepper_encodings.py`.
+2. **The Exec Report vocabulary is CLOSED.** `agent_verdict.py` owns five
+   pairwise-disjoint sets: `DIAGNOSTIC_COMPLETED_STATUSES`,
+   `WORK_COMPLETED_STATUSES`, `WORK_DEGRADED_STATUSES`,
+   `WORK_NOT_DONE_STATUSES`, and `AGENT_ERROR_STATUSES`; `KNOWN_STATUSES` is
+   their union. Diagnostics and intact work are green. Degraded deliverables,
+   work that did not happen, and agent errors are red. R8b remains fail-open
+   for unknown tokens at runtime, but `agent/test_status_vocabulary.py`
+   statically rejects unknown literals before release. Add a new status to
+   exactly ONE shared set; never create a local vocabulary copy.
+3. **Numeric process results are not statuses.** Kuberneter now emits
+   `returncode: <int>`, `success: <bool>`, and `status: ok|failed`, and its
+   Parametrizer contract exposes all three. Never interpolate a numeric return
+   code into `status:`: an unrecognized `status: 1` reaches the compatibility
+   default instead of expressing failure.
+4. **The updater preserves the uninstaller.** The staged-swap policy retains
+   `Uninstaller.exe` alongside user state, and parser-sensitive PowerShell
+   comments stay on standalone lines. Public release tests now prove the
+   catalog is scrubbed/default-only while only the explicit private builder may
+   opt into the maintainer catalog. Keep these assertions source-derived so a
+   supervisor-name or prompt-rule change cannot make the tests themselves
+   stale.
+
+5. **`runtime_provisioner.py` is NAMED in `build.py`, and its carriage is
+   PROVEN.** It previously had **no mention in `build.py` at all**, while its
+   sibling `external_mcp_defaults.py` was explicitly loaded there. It *did*
+   ship — PyInstaller's graph followed `external_mcp_manager.py`'s
+   `from . import runtime_provisioner` — but that import lives inside a
+   `try/except ImportError` that sets the module to `None`, so carriage rested
+   entirely on graph analysis **and the failure mode was SILENT**: drop the
+   module and Tlamatini boots perfectly, then simply never provisions
+   node/npm/npx/pnpm/uv/uvx again, leaving every `npx -y <pkg>` server dead
+   with `[WinError 2]` on exactly the fresh machine the provisioner exists to
+   rescue. Two changes: `--hidden-import` now names
+   `agent.runtime_provisioner`, `agent.external_mcp_defaults`,
+   `agent.external_mcp_manager` and `agent.agent_verdict`; and
+   **`verify_frozen_agent_modules()`** runs on the successful-build path,
+   opening the archive the build just produced and ABORTING if any of the seven
+   `_FROZEN_REQUIRED_AGENT_MODULES` is absent. ⚠️ **The PYZ is NOT a loose
+   `_internal/PYZ-00.pyz`** under PyInstaller 6 onedir — it is an entry named
+   `PYZ.pyz` inside the executable's CArchive, so the reader uses
+   `CArchiveReader` on the `.exe`; a glob for `PYZ-*.pyz` finds nothing and
+   would have reported "cannot verify" forever, i.e. a check that never fails
+   and never proves anything. Measured against the shipped install: CArchive =
+   21 entries, PYZ = 15,075 modules, all 7 required modules PRESENT (confirmed
+   independently by a raw byte scan of `Tlamatini.exe`). Guarded by
+   `agent/test_runtime_provisioner.py::WiringContractTests`.
+6. **The last nine native browser pop-ups are gone.** `contacts_dialog.js` (2)
+   and `external_mcps_dialog.js` (7) still called `alert()` / `confirm()` long
+   after every other dialog wore the theme — the two NEWEST dialogs were the
+   last two raising a grey Windows/Chrome strip with the page URL in it, in the
+   middle of a dark themed app. `dialog_policy.js` now exports **`tlmAlert`** /
+   **`tlmConfirm`**, the chat-page counterparts of the canvas's
+   `acpAlert`/`acpConfirm` (2026-08-12), styled from the existing
+   `dialog_theme.css` tokens (`.tlmpop-*`). ⚠️ **They are NOT jQuery-UI
+   dialogs, and the z-index is load-bearing**: these popups are raised BY
+   native modals at `z-index: 20000` (`.emx-dialog` / `.ctb-dialog`), while
+   `.ui-front` sits at ~100 — a confirm rendered *underneath* the dialog that
+   asked for it is an invisible modal, i.e. a hang. The overlay is at
+   **100001**, above every layer the app defines. Both are Promise-based, so
+   each call site moved its action into the callback; `removeContact` also
+   re-resolves the contact by identity because the list may re-render while the
+   popup is open. Policy-compliant by construction (host listed in
+   `CUSTOM_OVERLAYS`, outside click swallowed, X === Cancel === `false`) and
+   **fail-open** to the native popup — a lost warning is worse than an ugly
+   one. Guarded by
+   `agent/test_dialog_dismissal_policy.py::NoNativePopupSurvivesInThemedDialogsTests`;
+   add a newly-migrated module to `_THEMED_DIALOG_MODULES` there.
+
+7. **Five RED tests that were not bugs in the code they guarded.** A full
+   `manage.py test agent` run was `4350 tests, FAILED (failures=5)`, and every
+   one was the TEST being wrong about its own subject. Recorded because each is
+   a distinct, recurring failure MODE:
+   * **A hand-typed count rots.** `test_external_mcp_e2e` listed the eight
+     supervisor tool names literally; the Runtime Provisioner added
+     `external_mcp_runtime_status` / `_runtime_install` and the healthy code
+     went red. Now DERIVED from `em._SUPERVISOR_TOOL_NAMES` — it still catches
+     a declared-but-unbuilt supervisor and can never go stale on a count. Same
+     rot that pinned "eight supervisor tools" into the prose.
+   * **A pinned SENTENCE rots when the message improves.** `test_pdfer_agent`
+     required the words `'not writable'`; the OneDrive fix had rewritten the
+     blocker to *"output_dir cannot accept a new file (…)"* — strictly better,
+     because "the directory exists" and `os.access` both LIE and only a real
+     create proves anything. It now asserts the blocker NAMES `output_dir` (the
+     contract: the user must know which knob to turn), not the prose.
+   * **Testing the wrong ARTIFACT.** `test_zavuerer_agent` asks "is a REAL
+     credential COMMITTED?" but read the WORKING TREE — where
+     `regen_secrets.py --mode keyed` puts Angela's real key ON PURPOSE. It cried
+     wolf on the one machine where the key belongs. Now reads
+     `git show HEAD:<path>` (fail-open to the working tree with no git), so it
+     guards the push, which is the only place a leak can happen.
+   * **A fixed sleep is a race, not a wait.** `test_watchdog_foreground_exemption`
+     slept 1.5 s then asserted the watchdog spares a VISIBLE console. Under the
+     full suite (with Ollama and a headed Chrome running) the window sometimes
+     was not up yet, so EnumWindows saw nothing, the process was CORRECTLY
+     judged headless, and it was reaped — a red about scheduling, not about the
+     watchdog (proved by 28/28 OK twice in isolation). Now `_await_visible()`
+     polls until the precondition actually holds and fails with a message
+     saying so if it never does.
+   * **One REAL defect.** LaTeXer's `_mapToolArgsToAgentConfig` branch never
+     mapped `input_text_b64` / `content_b64` / `find_text_b64` /
+     `replace_text_b64`, so a generated `.flw` silently dropped the only copy of
+     the source that had survived transport intact — exactly the `\\`
+     row-break loss the verbatim channel exists to prevent. Now mapped.
+
+   **The lesson to carry:** when a test goes red, ask FIRST whether it is still
+   testing what it claims to. Derive counts, assert contracts instead of
+   sentences, test the artifact the risk actually lives in, and WAIT for a
+   precondition rather than sleeping and hoping.
+
+These behaviors build on, rather than replace, the v1.48.14 private External-MCP
+runtime/default-seeding and public/private catalog boundary below.
+
+## 2026-08-15 — Runtime Provisioner: Tlamatini ALWAYS has npx/uvx, and two MCPs ship by default
+
+**Angela's directive:** ship `@modelcontextprotocol/server-memory` and
+`@modelcontextprotocol/server-sequential-thinking` in **every** installation,
+both **INACTIVE** — and give Tlamatini a *perfect, always-available*
+npm/pnpm/uv/uvx/npx **without carrying them in the installer** the way Python
+and the JRE are carried.
+
+**The hole this closes.** The External MCP ecosystem is overwhelmingly
+`npx -y <pkg>` or `uvx <pkg>`. A fresh Windows box has NONE of those, so a
+brand-new install that ticked `memory` got a silent
+`[WinError 2] The system cannot find the file specified`: the catalog entry was
+perfect, the runtime simply did not exist. Tlamatini's own design note for these
+two servers even listed "node v24, npm, npx, pnpm, uv, uvx — all detected" as a
+system fact; that was true of the DEV machine and of nobody else.
+
+### New: `agent/runtime_provisioner.py` — a PRIVATE, self-provisioning toolchain
+
+Same pattern Angela already proved three times (Discoverer's private Go,
+ESP32er's PlatformIO, Arduiner's arduino-cli): download once, on demand, from
+the OFFICIAL upstream into **`%LOCALAPPDATA%\Tlamatini\runtimes`** — never the
+install dir (a self-update replaces it wholesale, and Program Files may be
+read-only), never a system location, **no admin, no system PATH change**.
+
+**FIVE CONTRACTS — do NOT weaken any of them:**
+
+1. **FAIL-OPEN, ALWAYS.** Every public function is total. `resolve()` returns
+   `""` and life goes on. A provisioner that can break the chat path is
+   infinitely worse than a missing `npx`.
+2. **NEVER BLOCK STARTUP.** `provision_async()` is a pure no-op (one resolve,
+   zero network, **no thread started**) once the runtimes are present —
+   measured at 0.000 s. Downloads only ever happen on a background thread.
+3. **ATOMIC OR ABSENT.** Download → Temp, verify, unpack to `<dest>.partial-<pid>`,
+   then `os.replace`. A half-extracted tree that merely *looks* installed would
+   poison every later run, so it is structurally impossible.
+4. **VERIFY WHAT UPSTREAM SIGNS.** Node's `SHASUMS256.txt` is fetched and
+   ENFORCED; uv's `.sha256` sidecar likewise. `runtime_require_checksum: true`
+   refuses anything unverifiable.
+5. **SPAWN WITHOUT A SHELL.** ⚠️ On Windows `npx` is a `.cmd` batch shim that
+   `CreateProcess` cannot execute — the single most common cause of broken
+   npx-launched MCP servers. `resolve_spawn()` rewrites `npx` to
+   **`node.exe <npx-cli.js>`**, the real program behind the shim. It also sees
+   through a `cmd /c npx …` wrapper. **Do NOT "simplify" this back to
+   `shutil.which('npx')`.**
+
+**A system install WINS.** Resolution is: explicit `<tool>_executable` config →
+Tlamatini's private runtime → system PATH → well-known per-user locations. We
+only ever FILL A HOLE; we never shadow the user's own toolchain (our runtime
+only exists if we installed it, and we only install what was missing).
+
+### New: `agent/external_mcp_defaults.py` — the two shipped servers
+
+⚠️ **Defaults live in CODE, not only in the shipped JSON — this is load-bearing.**
+`external_mcps.json` is USER STATE that `apply_update.ps1` **preserves**, so a
+default written only into the file `build.py` ships would reach fresh installs
+and **nobody else**. `load_catalog()` seeds from code on the READ path
+(`_seed_defaults_once`, one write per process), which reaches every install on
+every launch, through every entry point.
+
+**TOMBSTONE CONTRACT:** if the user DELETES a default it must STAY deleted —
+`remove_servers` records it in `_removed_defaults` and the seeder skips it. A
+Remove button that silently undoes itself is a bug. An explicit re-import clears
+the tombstone. A default the user EDITED is never overwritten.
+
+Both seed **INACTIVE**: activating spawns a child and burns one of the five
+slots — the user's decision, never ours. `build.py` now writes the shipped
+catalog from `shipped_catalog_document()` (same module → the file and the seeder
+can never drift), and still ships **no** maintainer secrets.
+
+### Wiring
+
+- `_StdioMcpClient.__init__` starts from `runtime_provisioner.augment_env()`
+  (private bins on PATH + quiet npm flags, so a first run can't hang on an
+  update notice or a corepack prompt).
+- `_StdioMcpClient._resolve_argv` delegates to `resolve_spawn`.
+- `_connect` calls `_ensure_runtime_for_spec` for stdio servers — **the moment
+  that makes it "just work"**: tick `memory` on a Node-less box and Node is
+  downloaded right there, on the background connect thread.
+- `_which_executable` + the **MCP Doctor pool agent** are runtime-aware. A
+  missing-but-**provisionable** manager is deliberately **NOT a blocker** and the
+  `next_step` says Tlamatini installs it herself — telling the user to go install
+  Node would be wrong advice. A genuinely missing binary still blocks (no false
+  calm). The doctor mirrors the layout inline because a pool agent cannot import
+  `agent.*`; **keep the mirror in sync with `runtimes_root()`**.
+- Two new LLM tools: `external_mcp_runtime_status` / `external_mcp_runtime_install`
+  (registered in `_SUPERVISOR_TOOL_NAMES` **and** built in `_build_supervisor_tools`).
+- `GET /agent/external_mcps/` carries a `runtime` block; `POST
+  /agent/external_mcps/runtime_install/` backs the dialog's "Install now" button
+  (`.emx-runtime*` strip in `external_mcps_dialog.js`/`.css`).
+- `apps.ready()` pre-warms in the background and seeds the catalog.
+
+Config: `runtime_autoprovision` (default **true**), `runtime_install_dir`,
+`runtime_provision_tools`, `runtime_download_timeout_seconds`,
+`runtime_require_checksum`, `node_version`, and `<tool>_executable` overrides.
+Env: `TLAMATINI_RUNTIMES`, `TLAMATINI_RUNTIME_AUTOPROVISION`.
+
+**Proven end-to-end on a simulated fresh machine** (not mocked): with an empty
+runtime root and the system PATH stripped to bare Windows, Node 24.19.0 and uv
+0.12.5 were downloaded + **sha256-verified** in 7 s, and the real
+`@modelcontextprotocol/server-memory 0.6.3` completed an MCP
+`initialize` + `tools/list` handshake exposing exactly its **9 tools**.
+
+### The catalog is now TRACKED in git — and CANNOT leak
+
+Angela's follow-up call the same day: **`Tlamatini/agent/external_mcps.json` is no
+longer gitignored**, so the repo SHOWS every External MCP server Tlamatini knows
+about. That file held a live GitHub PAT and a live Snyk key, so tracking it
+required the same machinery `config.json` already uses:
+
+- **`regen_secrets.py` now patches the catalog too** (`patch_external_mcps_json`,
+  wired into `main()`). `--mode push-able` replaces every secret `env` value with
+  `<NAME goes here>`; `--mode keyed` restores the real values from `data.keys`.
+  **Run push-able BEFORE ANY PUSH**, exactly as for `config.json`. Both existing
+  keys were vaulted as `OCTOCODE_GITHUB_TOKEN` / `SNYK_API_KEY`.
+- ⚠️ **LOSSLESS CONTRACT — do NOT weaken.** `push-able` **AUTO-VAULTS** anything it
+  is about to redact into `data.keys` *first*, under a derived
+  `EXTMCP_<SERVER>_<FIELD>` name. That is what makes the round trip safe for a
+  server the rule table has never heard of: scrub → push → `keyed` brings it back.
+  A scrub that silently destroyed an unrecognised token would be far worse than
+  the leak it prevents.
+- ⚠️ **A LOCATION IS NOT A CREDENTIAL.** `_NEVER_SECRET_FIELD_PARTS` (path, file,
+  dir, url, host, port, …) **wins over** `_SECRETISH_FIELD_PARTS`, and `"pat"` was
+  REMOVED from the latter. Caught live: `MEMORY_FILE_PATH` contains "PAT", so the
+  memory server's storage path was scrubbed to a placeholder and vaulted — and
+  `keyed` would then have stamped the build machine's own path onto someone
+  else's install. Pinned by `test_a_location_is_never_treated_as_a_secret`.
+
+**Two build flavours** (`build.py`, "Ship external_mcps.json"):
+
+| build | catalog shipped |
+|---|---|
+| **PUBLIC** (bare `build.py`, `build_complete_public_release.py`) | ONLY `memory` + `sequential-thinking`, generated from `external_mcp_defaults.shipped_catalog_document()`. No maintainer server, no secret, ever. |
+| **PRIVATE / KEYED** (`build_complete_private_release.py`) | EVERY dev server **plus** the two defaults merged in, via `TLAMATINI_BUNDLE_EXTERNAL_MCPS` (mirrors `TLAMATINI_BUNDLE_CONTACTS`). Runs after `--mode keyed`, so real tokens are in place. |
+
+The public builder **CLEARS** that env var, and `build.py` carries a hard
+**SystemExit seatbelt**: a PUBLIC build that would ship a live-looking secret
+ABORTS rather than repeating the pre-2026-08-12 leak. Tombstones are dropped in
+the private path so a keyed build ships both defaults even if the dev deleted one.
+
+Verified by a real round trip on the live keys (scrub → nothing survives in the
+file → restore byte-for-byte) plus both build flavours.
+Coverage: `agent/test_runtime_provisioner.py` (**44 tests**).
+
+---
+
+## 2026-08-15 — v1.48.13 release baseline: guarded placement, uniform dialogs, coherent long operations
+
+- **Mover/Deleter placement:** empty, relative, and legacy `C:/Temp/...` scratch destinations resolve under `TLAMATINI_TEMP` / `<app>/Temp`; an explicit absolute user destination remains authoritative; Deleter normalization never broadens pattern, parent, or recursion.
+- **Uniform frontend:** `dialog_theme.css` defines the visual language across jQuery UI, Bootstrap, and custom overlays. `dialog_policy.js` owns fail-open dismissal semantics; outside click and Escape do not close guarded dialogs, titlebar X means Cancel, and sealed updater work may block dismissal.
+- **Long operations:** `agent_page_ui.js::LONG_OPERATION_DISABLED_MENU_BUTTONS` is the one menu-lock list. Disable/enable paths are mirrored and preserve/restore `data-bs-toggle`; only Check for Updates and Configure Agents receive the additional targeted lock.
+- **Updater and auditability:** `release_notes_renderer.js` safely renders release text; `agent/log_identity.py` and its middleware/consumer integrations attribute application output by user, request, stream, and source line.
+- **Do not regress:** JavaScript/CSS/template changes require `STATIC_VERSION`; verify movement guard tests, frontend lint/tests, source/collected-static parity, and release dossier coverage together.
+
+---
+
+## 2026-08-13 — `tlamatini.log` could not say WHICH user a line belonged to when two people were connected (`agent/log_identity.py`, `manage.py`, `consumers.py`, `tlamatini/middleware.py`)
+
+**Symptom (Angela).** Tlamatini happily serves two logged-in sessions at once on
+the same machine — `angela` in one browser, `alice` in another. But
+`tlamatini.log` interleaved both users' work into one undifferentiated stream:
+a Multi-Turn burst from alice and a RAG rebuild for angela looked identical, and
+nothing on the line said whose request produced it.
+
+**Why it was not just "add the username to the formatter".** Three reasons.
+(1) Most of Tlamatini's log output is `print()`, not `logging` — a
+`logging.Formatter` would miss the majority of lines, and third-party stdout
+entirely. The only universal choke point is `manage.py`'s `_TeeStream.write`.
+(2) The obvious identity carrier, `threading.local`, is **wrong here**: ONE
+event-loop thread serves EVERY connected user, so a thread-local smears angela's
+identity over alice's coroutine. (3) Angela's two explicit constraints — minimal
+characters in the file, minimal CPU per line — rule out formatting anything
+per line.
+
+**The fix.** `agent/log_identity.py` keeps a `contextvars.ContextVar` holding a
+**pre-rendered, ready-to-write** prefix (`'[a3] '` = user `a`, turn 3). The tee
+does one `ContextVar.get()` and one concatenation; nothing is formatted per
+line, and lines that belong to no user get **no prefix at all**. `bind()` /
+`begin_turn()` are called from `consumers.py` (connect / receive /
+queue_llm_retrieval) and from the new `UserLogTagMiddleware` for HTTP. A
+one-time `--- [WHO] a = angela (user id 1)` legend makes the 5-character tag
+self-describing. `config.json` knobs: `log_user_tags`, `log_user_tag_style`
+(`short` | `name` | `off`), `log_user_tag_thread_inherit`.
+
+**Contracts — do NOT revert these:**
+
+* **The tee must never `import agent.*`.** It runs BEFORE Django exists, and
+  `agent/__init__` pulls protobuf/gRPC. Coupling is inverted on purpose:
+  `manage.py` exposes an empty `_USER_TAG_HOOK = None` slot and
+  `log_identity.install()` fills it in at app boot. A launch without the module
+  writes untagged lines instead of failing.
+* **`data` is never reassigned inside `write()`** — the tagged text goes to
+  `payload`, so the return value stays the number of characters the CALLER
+  passed. A `write()` that claims it wrote more than it was given lies to any
+  caller that loops on partial writes.
+* **`_at_line_start` must survive across calls.** `print()` writes the text and
+  its newline as TWO separate `write()` calls; without that state the second
+  call would emit a second tag on the same line.
+* **The BOM-style ordering trap has an analogue here:** a chunk that is only a
+  newline is left BARE. Tagging blank lines spends characters on nothing.
+* **`ContextVar`, not `threading.local`** (see above), and `install()` wraps
+  `Thread.start` with `contextvars.copy_context()` so raw threads (self-healing
+  watchdog, Tier-2 reaper, agent launchers) inherit the tag — that is what makes
+  the attribution total rather than merely usual.
+* **FAIL-OPEN everywhere**, ASCII-only prefix (the tee also writes to a cp1252
+  console), stdlib-only module.
+
+Coverage: `agent/test_log_identity.py` (27 tests, incl. two users in two
+contexts never seeing each other's tag, and a hook that raises never breaking a
+write).
+
+---
+
 ## 2026-08-09 — pip's "A new release of pip is available" nag on EVERY `build_complete_*` run: suppress the CHECK, do NOT chase the upgrade
 
 **Symptom (Angela).** Every single run of `build_complete_public_release.py` /
@@ -184,7 +677,7 @@ Coverage: `agent/test_self_modify_gate.py` (25 tests — block XOR, marker leaka
 * **100% DETERMINISTIC** — no model call, no heuristics. A probabilistic verdict engine could not be trusted to say whether something failed, and would cost a round-trip on every tool call. The agents already emit a precise machine-readable self-report; the only thing missing was somebody actually READING it.
 * `mcp_agent._result_is_failure` honours the engine **only when `verdict.source == "agent"`**; every other case falls through to the legacy classifier, so ACPX / External-MCP / plain-text envelopes are untouched (`{"ok": false}` still goes red).
 * Stdlib only, and it imports nothing from `agent.*` — so it can never create an import cycle between `tools.py` and `mcp_agent.py` (both import it), and behaves identically frozen and from source.
-* The status vocabulary has **exactly ONE definition** (`agent_verdict.DIAGNOSTIC_COMPLETED_STATUSES`); `mcp_agent` aliases it. Two copies would drift, and a drifted copy silently mis-colours rows. Do NOT re-inline it.
+* **Historical v1.48.2 form:** the status vocabulary had one diagnostic-completion set. The v1.48.15 contract at the top of this log supersedes that shape with five disjoint sets and `KNOWN_STATUSES`; the invariant that `mcp_agent` aliases rather than copies the shared definitions remains unchanged.
 
 Pinned by `agent/test_agent_verdict.py` (25 tests: the parser, every rule, rule ORDER, auditable provenance, totality-never-raises, both call sites, the single-vocabulary contract, and the live STEP-4 payload end-to-end). `agent.test_agent_verdict` + `agent.test_latexer_agent` = **125 passing**, ruff clean.
 
@@ -250,11 +743,11 @@ Pinned by `agent/test_latexer_agent.py::test_validate_tex_finding_errors_is_a_SU
 
 ---
 
-## 2026-08-05 — The DB guard was crying wolf: 11 quarantines of a PERFECTLY HEALTHY database (`db_guard.py`)
+## 2026-08-04 — SPACE-bar bulk check/uncheck of a text-selected block of checkboxes (`checkbox_bulk_toggle.js`)
 
-**What was wrong.** The startup smoke alarm added on 2026-08-03 quarantined the live database **11 times in 40 minutes** (08:32 → 09:12), shouting `DATABASE LOOKS WRONG` and copying an 840 KB file aside each time. **Every single one of those 11 "broken" copies was healthy**: `PRAGMA integrity_check = ok`, all 211 migrations, all 87 agents — and 8 of the 11 were **byte-identical** to the live file (`sha=4d7f3118…`). Nothing was ever wrong with the database.
+**What was wrong.** The Configure Mcps / Tools / Agents / Skills dialogs, the External-MCPs catalog and the ACP canvas agent-config dialogs list **dozens** of checkboxes. Clearing 20 of them cost 20 clicks — and there was no way to say "these ones, all at once". Every prior idea for fixing it (a select-all button, per-dialog range-select, shift-click) would have needed **per-dialog wiring**, so each new dialog would silently ship without it.
 
-**Root cause (measured, not guessed).** Replaying `compare_with_sentinel()` against the real sentinel and the real DB produced exactly one complaint: `table agent_chatagentrun dropped from 16 to 0 rows`. That is the **wrapped-agent run ledger**, which is pruned on purpose (`chat_agent_limit_runs`). Two compounding faults:
+**The fix (Angela López Mendoza, 2026-08-04).** One self-contained IIFE — `agent/static/agent/js/checkbox_bulk_toggle.js` — with **ZERO per-dialog wiring**. The user drags an **ordinary text selection** across several checkbox labels and presses **SPACE once**: every checkbox the selection overlaps flips.
 
 1. **Churn tables were treated as precious.** The *size* rule had already been made lenient with the explicit reasoning *"the user may have legitimately cleared their chat history"* — but the *row* rule still fired on the very tables that sentence describes (run ledger, chat history, sessions, caches).
 2. **It never re-baselined.** The `CRITICAL/SUSPICIOUS` branch `return`ed **before** `write_sentinel()`, so the stale fingerprint was compared again on the next start, alarmed again, and copied the database aside again — **forever**, one copy per start. That is the whole 9.2 MB of junk.
@@ -269,38 +762,40 @@ Pinned by `agent/test_latexer_agent.py::test_validate_tex_finding_errors_is_a_SU
 
 **DO NOT weaken these — each prevents a specific, silent failure:**
 
-- **A `CRITICAL` verdict must NEVER re-baseline.** A damaged database has to keep shouting on every start until Angela decides what to do; recording it as the new "healthy" shape would silence the one alarm that actually matters.
-- **A report that could not be inspected must NEVER become the baseline.** The re-baseline is gated on `integrity == "ok"` **and** non-empty `tables`; writing a blank fingerprint would overwrite a good baseline and blind the next start.
-- **Pruning only ever deletes `db.sqlite3.broken_*` files this module itself wrote**, never the copy just taken, and never a foreign file dropped in that folder. Evidence is the point of the module — the pruning is deliberately timid and fail-open.
-- **Do not "simplify" `VOLATILE_TABLES` away.** Adding a new churn/bookkeeping table to the schema? Add it there too, or the guard starts crying wolf again on the next legitimate prune.
+1. **The listener MUST stay on `document` in the CAPTURE phase** (`document.addEventListener('keydown', onKeyDown, true)`). Bubble phase is a silent **data-corrupting** bug, not a style preference: `external_mcps_dialog.js` already binds Space on `.emx-row` and only calls `preventDefault()`, so it would toggle the focused row **first** and our pass would toggle it **again** — netting that one row back to its original state while all its neighbours flipped. `stopPropagation()` is called **only for a SPACE we actually consumed**, so Escape / Tab / Enter / Ctrl+Z and every other key reach their handlers exactly as before.
+2. **It bails on `input` / `textarea` / `select` / `contenteditable`, testing BOTH `event.target` AND `document.activeElement`.** The `activeElement` half is not redundant: after a mouse-drag the target is usually `<body>`, so a target-only guard would steal SPACE from every search box in the app.
+3. **It toggles with `checkbox.click()` — a REAL click.** Every existing click/change handler still runs (state persistence, the External-MCPs 5-active cap, the ACP canvas dialogs). Setting `.checked` directly would skip them and silently lose the user's change.
+4. **The range-overlap test is STRICT** — a zero-length touch at a boundary does not count — so selecting label A never drags in the first character of label B.
+5. **A row must own EXACTLY ONE checkbox** (`node.querySelectorAll('input[type="checkbox"]').length !== 1` breaks the walk up). Without it a whole list container could be mistaken for a single row, and *any* selection would toggle the entire dialog.
+6. **Self-re-rendering lists are handled by re-resolving each checkbox right before it is clicked** (`makeResolver`, by `id` then `[data-key]` then `isConnected`). The External-MCPs catalog rebuilds every row from its model on each toggle, so a snapshotted element is already detached by the time the loop reaches it; a row that vanished is skipped, never clicked while detached.
+7. **Nothing acts without a non-collapsed selection that overlaps a checkbox** — with no targets it returns **before** `preventDefault()`, so native SPACE (page scroll, focused-checkbox toggle) is untouched. Every step is wrapped in `try/catch`: a failure degrades to "SPACE did nothing", never to a broken page.
 
-**Unchanged and re-proved:** the zero-byte database still goes `CRITICAL`, still preserves evidence *first*, still shouts; a truncated/non-SQLite/wrecked-page file is still `CRITICAL`; a genuinely gutted precious table (`agent_prompt` 117 → 10) is still `SUSPICIOUS`; the guard still never restores by itself and still never raises.
+**The chat toolbar toggles (`#multi-turn-enabled`, `#acpx-enabled`, `#ask-execs-enabled`, …) are UNREACHABLE by design**, and that is not an accident to be "fixed": `.toolbar-toggle` carries `user-select: none` in `agent_page.css`, so no text selection can ever be made over them and no bulk pass can ever flip a run-shaping flag behind the user's back.
 
-**Coverage:** `agent/test_db_guard.py::CryingWolfTests` (9 tests pinning the false positive, the still-caught real losses, the re-baseline, the CRITICAL exception, and the evidence cap). Full suite green: **152 tests, exit 0**.
+It is an IIFE that declares **NO cross-file globals** (same shape as `chat_image_paste.js`), so it cannot trip the const-poison contract and needs no `eslint.config.mjs` globals entry.
+
+**Wired in**: `agent_page.html` **and** `agentic_control_panel.html` (a `?v={{ STATIC_VERSION }}_bulktoggle` cache-buster on both). A module nobody loads does nothing — both pages must keep the tag, and `staticfiles/` must be re-collected (`python Tlamatini/manage.py collectstatic --noinput`) or the browser downloads a stale copy.
+
+Coverage: `agent/test_checkbox_bulk_toggle.py` (15 tests in three layers — source contract, template wiring, collected-static sync). Module listing: `docs/claude/frontend.md` → *Shared / chat-runtime auxiliary*.
 
 ---
 
-## 2026-08-04 — SPACE-bar bulk check/uncheck over a text selection (`checkbox_bulk_toggle.js`)
+## 2026-07-31 — Self-modify snapshot was shipping LIVE credentials (`copy_source_assets.py`)
 
-**What was wrong.** The Configure Mcps / Tools / Agents / Skills dialogs, the External-MCPs catalog and the ACP canvas agent-config dialogs list dozens of checkboxes each. Turning 20 of them off cost 20 precise clicks, and there was no way to act on a *range*. Every previous idea for fixing it (a "select all" button, shift-click ranges, a per-dialog helper) needed wiring in each dialog and would have to be re-added to every future one.
+**What was wrong.** `copy_source_assets.py` walks the **WORKING TREE**, not git. So a file that `.gitignore` keeps out of history is still physically on disk — and was being copied straight into `TlamatiniSourceCode/`, from there into `pkg.zip`, and out to **every user** of a `--self-modify` build. Git history stayed spotless while the **build** leaked. Found live by the self-modify inclusion sweep on 2026-07-31, carrying two real secrets:
 
-**The fix.** One self-contained IIFE — `agent/static/agent/js/checkbox_bulk_toggle.js` — with **zero per-dialog wiring**. The user drags an ORDINARY TEXT SELECTION across several checkbox labels and presses **SPACE once**: every checkbox the selection overlaps flips.
+- **`open_router.key`** (repo root) — a live OpenRouter `sk-or-v1-…` API key.
+- **`.claude/skills/tlamatini-daily-chat-test/harness/.creds.env`** — the chat-test `TLAMATINI_USER` / `TLAMATINI_PASS` login.
 
-- **The rule is deliberately asymmetric so it is predictable**: if **ANY** selected checkbox is checked → uncheck them **ALL**; if all are already unchecked → check them **ALL**. So the first SPACE over a checked-or-mixed block always CLEARS it (what a human means by "unselect these"); press SPACE again to turn the same block back on.
-- **It is generic by construction.** It never enumerates dialogs — it asks *which checkboxes does the live selection overlap*. So Configure Mcps/Tools, Configure Agents, Configure Skills, External MCPs and the ACP canvas config dialogs all got it for free, and **every future checkbox dialog gets it with no code at all**.
-- It declares **NO cross-file globals** (the `chat_image_paste.js` shape), so it cannot trip the const-poison contract and needs no `eslint.config.mjs` globals entry. Every step is `try/catch`-wrapped: a failure degrades to "SPACE did nothing", never to a broken page.
+Neither was ever committed. The exposure was **build-only**, and nothing had shipped yet (no `pkg.zip`/`dist` existed at the time).
 
-**DO NOT weaken these — each prevents a specific, silent failure:**
+**Why neither guard caught it.** The generator only redacted `config.json`, `external_mcps.json`, `contacts.json` and agent `config.yaml`, and excluded `data.keys` by exact name — there was **no rule for credential files by extension**. And the sweep's secret check only scanned **config-type suffixes** (`.json/.yaml/.env/.ini/.cfg/.toml`) for **machine-token value shapes** — so a `.key` file was never even opened, and a plain human password in `.env` matches no token regex. Both filters were content-shaped; neither asked the simpler question *"should this FILE exist here at all?"*.
 
-1. **The `keydown` listener MUST stay on `document` in the CAPTURE phase** (`addEventListener('keydown', onKeyDown, true)`). Bubble phase is not a style preference, it is a **data-corrupting bug**: `external_mcps_dialog.js` already binds Space on `.emx-row` and only calls `preventDefault()`, so on the bubble path that handler would toggle the focused row FIRST and the bulk pass would toggle it AGAIN — netting that one row back to its original state while all its neighbours flipped. Capture phase runs us first, and we call `stopPropagation()` **only for a SPACE we actually consumed**, so Escape / Tab / Enter / Ctrl+Z and every other key still reach their handlers untouched.
-2. **It bails on `input` / `textarea` / `select` / `contenteditable`, testing BOTH `event.target` AND `document.activeElement`.** Checking only the target is not enough: after a mouse-drag the target is usually `<body>`, so a target-only guard would eat the space bar in every search box in the app.
-3. **It toggles with `checkbox.click()` — a REAL click**, never a bare `checked = !checked`. Every existing `click`/`change` handler must still run: state persistence over the WebSocket, the External-MCPs ≤5-active cap, the canvas dialogs' own bookkeeping. Setting `.checked` directly would flip the pixels and silently persist nothing.
-4. **Overlap is STRICT** (`r.start < node.end && r.end > node.start`) — a zero-length touch at a boundary does NOT count. Without this, selecting label A always drags in the first character of label B and toggles a row the user never highlighted.
-5. **A row must own EXACTLY ONE checkbox** to be accepted as that checkbox's text region (`querySelectorAll('input[type="checkbox"]').length !== 1` → stop climbing). Drop this and a whole list container can be mistaken for a single row, at which point *any* selection toggles the **entire dialog**.
-6. **Self-re-rendering lists are handled by re-resolving each checkbox immediately before clicking it** (`makeResolver`: by `id`, else by an ancestor `data-key`, else the live node). The External-MCPs catalog rebuilds every row from its model on each toggle, so the node collected during the scan is already detached by the time we reach the second one; a row that vanished is skipped, never clicked while detached.
-7. **The chat toolbar toggles (`#multi-turn-enabled`, Exec report, ACPX, Ask Execs, Step-by-Step) are UNREACHABLE by design** — `.toolbar-toggle` carries `user-select: none` in `agent_page.css`, so no text selection can ever be made over them and no bulk pass can reach them. Removing that `user-select: none` would silently expose the run-mode toggles to a stray SPACE.
+**The fix.**
 
-**Wired in**: `agent_page.html` and `agentic_control_panel.html` (a `<script>` tag with a `_bulktoggle` cache-buster on `STATIC_VERSION`) — it loads on BOTH pages.
+- **`copy_source_assets.py`** — new `SECRET_FILE_EXTENSIONS` (`.key .keys .pem .p12 .pfx .jks .keystore .env .asc .gpg .ppk`) + `SECRET_FILE_GLOBS` (`.env`, `.env.*`, `id_rsa*`, `id_ed25519*`), enforced by `_is_secret_file()` in `_skip_file`'s **first tier — the same NEVER-resurrected tier as `EXCLUDED_FILE_NAMES`, i.e. BEFORE `KEEP_PATH_GLOBS`**, so a KEEP carve-out can never resurrect a secret. A bare `.env` needs the *name* glob because `Path(".env").suffix` is `""` (a leading dot makes the whole name a STEM) — the extension test alone silently misses it.
+- **New `DROP_PATH_GLOBS`** (+ `_is_dropped_by_path()`) — path-anchored always-drop for run artifacts. Currently one entry: the dated chat-test `harness/reports/**` (29 gitignored files, ~1.2 MB). **Path-anchored on purpose** — a bare `reports` in `EXCLUDED_DIR_NAMES` would be far too broad and could drop real source elsewhere.
+- **`sweep_self_modify.py`** — `check_redaction` gained a **STRUCTURAL guard**: a credential-bearing **file present in the snapshot is a FINDING regardless of its bytes**. Value-shape scanning is necessary but provably not sufficient; presence alone is now the test.
 
 Coverage: `agent/test_checkbox_bulk_toggle.py` (15 tests — source contract + template wiring on both pages + collected-`staticfiles` sync). Author: Angela López Mendoza.
 
@@ -843,7 +1338,7 @@ A large Claude + Codex collaboration. Full design contract: `docs/external_mcp_b
 
 - **Four transports, one shared surface.** `stdio` (`_StdioMcpClient`, original) + the network family `_StreamableHttpMcpClient` / `_SseMcpClient` / `_WebSocketMcpClient` (all subclass `_NetworkMcpClientBase`, which owns the MCP handshake, and all DUCK-TYPE `_StdioMcpClient`: `.alive/.tools/.call_tool/.refresh_tools/.close/.stderr_tail/.zero_tools_since/.proc=None`). `_make_client`/`_connect` dispatch by transport. `httpx` (http/sse) + `websockets` (ws) are imported lazily and are in `requirements.txt`. `tcp`/`named-pipe` are detected + diagnosed but NOT connectable yet (clear blocker, future adapter). Network clients have `proc=None` so the command watchdog's `external_mcp_root_pids()` skips them. To add a transport: subclass `_NetworkMcpClientBase` + wire `_make_client`; tests in `test_external_mcp_transports.py` (REAL loopback http/sse/ws servers).
 
-- **8 LLM supervisor tools — keep the THREE name-lists coherent.** `external_mcp_status / reconnect / doctor / list_tools / call / import / set_active / wait`. Adding/removing one means updating ALL of: `external_mcp_manager._SUPERVISOR_TOOL_NAMES`, `global_execution_planner._external_mcp_force_names` (the `supervisor` set — force-binds them on MCP-setup intents), and the fallback set in `mcp_agent._is_external_mcp_tool_name`; plus `capability_registry._EXTRA_HINTS_BY_TOOL_NAME`. The executor reconciles the `ext__*` slice of `self.tools` per request via `mcp_agent._refresh_external_mcp_tool_surface` (the executor caches `self.tools` once, so tools that connect AFTER first build must be re-attached each turn).
+- **The original 8 LLM supervisor tools became 10 on 2026-08-15 — keep every name-list coherent.** Original set: `external_mcp_status / reconnect / doctor / list_tools / call / import / set_active / wait`; current additions: `external_mcp_runtime_status / runtime_install`. Adding/removing one means updating ALL of: `external_mcp_manager._SUPERVISOR_TOOL_NAMES`, `global_execution_planner._external_mcp_force_names` (the `supervisor` set — force-binds them on MCP-setup intents), and the fallback set in `mcp_agent._is_external_mcp_tool_name`; plus `capability_registry._EXTRA_HINTS_BY_TOOL_NAME`. The executor reconciles the `ext__*` slice of `self.tools` per request via `mcp_agent._refresh_external_mcp_tool_surface` (the executor caches `self.tools` once, so tools that connect AFTER first build must be re-attached each turn).
 
 - **`external_mcp_import` / `external_mcp_set_active` accept dict-or-string / list-or-string — do NOT narrow to `str` only.** The LLM naturally passes the JSON config as an OBJECT (and keys as a list); a `str`-only pydantic schema rejected the object and the model fumbled into "I need to pass it as a string, let me retry" (leaked into the answer). Schemas are `Union[Dict[str,Any], str]` / `Union[List[str], str]`; the funcs branch on the runtime type.
 
@@ -996,7 +1491,7 @@ Three coordinated changes (committed `00b85a2`):
 
 The media-I/O family is now **screen / camera-in / mic-in / speakers-out / screen-out**: Shoter (screen), Camcorder (camera capture), Recorder (mic capture), **AudioPlayer** (audio file → speakers), **VideoPlayer** (video file → a display, with audio). Both new agents ship on the canvas AND as wrapped Multi-Turn tools (`chat_agent_audioplayer` / `chat_agent_videoplayer`). Contracts to keep:
 
-- **Both are observational/output → NOT in the Exec Report**, exactly like Shoter/Camcorder/Recorder. They mutate no persistent state (digital volume gain, per-playback device choice — AudioPlayer does NOT change the OS default audio endpoint, VideoPlayer does NOT change the OS default monitor). `_EXEC_REPORT_TOOLS` must NOT list `chat_agent_audioplayer` / `chat_agent_videoplayer` (a test guards this in each suite).
+- **Historical capture note, superseded 2026-06-07:** both are observational/output and mutate no persistent state, but their wrapped Multi-Turn calls ARE now captured automatically like every `chat_agent_*`. They still need no curated `_EXEC_REPORT_TOOLS` entry because that map is only an optional styling/merge refinement. AudioPlayer does not change the OS default endpoint and VideoPlayer does not change the OS default monitor.
 - **`time_played` truncate/loop is a STREAMING contract, not a prebuilt buffer.** AudioPlayer uses a `sounddevice` `OutputStream` wrap-around callback; VideoPlayer uses a wall-clock `drive_playback` loop that re-seeks the backend on EOF. `0` = whole file once; `N>0` = exactly N s, truncating a longer file or looping a shorter one (whole repeats + a final partial). Do NOT "simplify" either into `np.tile(...)` then play — a large `time_played` over a tiny file would allocate gigabytes.
 - **Sampling rate / backend nuances:** AudioPlayer plays at the FILE's native rate by default (`sample_rate: 0`, read from the file — correct pitch); a non-zero value forces the output rate and pitch-shifts (not resampled). VideoPlayer's audio+video is **`ffpyplayer`** (pip wheel bundles ffmpeg+SDL → no external ffmpeg, no runtime download) with **OpenCV** (`cv2`) for the window; if ffpyplayer is unavailable it degrades to **silent cv2 video** — keep that fallback (it is the reason the core honors "bundles with no problems" even worst-case). `build.py` carries `--collect-all ffpyplayer` AND `ffpyplayer` in `_agent_libs`; do NOT drop either (PyInstaller's module graph alone misses ffpyplayer's bundled DLLs).
 - **Top-level promotion + parametrizer fields.** `tools._PROMOTE_SECTION_FIELDS_BY_TEMPLATE_DIR` promotes `input_path` (and friends) for both so the LLM sees the played path without grepping the log; `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS` + `parametrizer.SECTION_AGENT_TYPES` list `audioplayer` / `videoplayer`. Migrations `0116`/`0117` (AudioPlayer) and `0118`/`0119` (VideoPlayer); deps `soundfile` and `ffpyplayer` in `requirements.txt`. Full per-agent notes live in `docs/claude/agents.md`; coverage = `test_audioplayer_agent.py` (43) + `test_videoplayer_agent.py` (38).
@@ -1165,6 +1660,6 @@ The `.flw` the converter (`scripts/result_to_flw.py`) emits must stay the `schem
 
 - **`SuppressHttpGet200` logging filter generalizes the runtime-poller silencer (commit `8bb4047`, May 2026)** — `Tlamatini/tlamatini/logging_filters.py::SuppressHttpGet200` (was `SuppressRuntimePollerOk`, hard-coded to `/agent/check_chat_runtimes_status/`) now drops the daphne access log line for **any** HTTP GET that returned a 200, while keeping every non-GET request, every redirect (3xx), and every error (4xx/5xx) visible. Settings entry was renamed `suppress_http_get_200` and rebound to `django.channels.server`. Net effect: the unified `tlamatini.log` is near-zero-noise during normal operation (the runtime poller, every static-file fetch, every WebSocket-handshake-as-GET — all silenced) but a real failure still surfaces because non-200s pass through. **Do NOT narrow it back to a path-based match** — the explicit goal of the rename was that adding a new GET endpoint never re-introduces noise; do NOT extend it to drop POST/PUT/DELETE either, because state-changing requests are the ones an oncall reader most needs to see in the log.
 
-- **Whatsapper vs WhatsTlamatini are different agents — keep them straight** — `Whatsapper` is the short-lived action / notification agent and now sends or receives through Meta's **official WhatsApp Cloud API only**. It does not use TextMeBot, Twilio, or WhatsApp Web. `WhatsTlamatini` was the long-running WhatsApp chat bridge counterpart of TeleTlamatini and has been retired; TeleTlamatini remains the remote full-chat bridge. If you find yourself reading old "TextMeBot" or "WhatsTlamatini" copy in a current Whatsapper context, treat it as stale and update it.
+- **Whatsapper vs WhatsTlamatini are different agents — keep them straight** — At the 2026-06-22 consolidation, `Whatsapper` became the short-lived official Meta Cloud action/notification agent and `WhatsTlamatini` was retired. **Current behavior supersedes the old "Cloud only" wording:** Whatsapper still defaults to the official business Cloud API, but an explicitly selected `provider=web` / `me` now sends from the operator's own personal account through unofficial WhatsApp Web automation with a one-time QR login and account-ban risk. TeleTlamatini remains the only remote full-chat bridge. TextMeBot/Twilio remain absent, providers must never be switched silently, and older "no WhatsApp Web" prose is historical rather than current guidance.
 
 - **ACPX-Skills navbar dropdown (2026-05-17) — DB stays at "enumeration + enable/disable", disk is source of truth** — A new **ACPX-Skills** dropdown lives between **Agents** and **Config** in the chat navbar (`agent/templates/agent/agent_page.html`). Four entries: **Browse Skills** (`GET /agent/skills/` + `/agent/skills/<name>/`), **Configure Skills** (WebSocket `set-skills`, mirrors `set-mcps` / `set-agents`), **Diagnostics** (`GET /agent/skills/_/diagnostics/`), **Reload Registry** (`POST /agent/skills/_/reload/`). The `Skill` DB model already existed from migration `0071_acpx_skills.py` and is auto-seeded by `boot_skills()` on a background thread from `apps.AgentConfig.ready()` — only the UI + HTTP endpoints + WebSocket wiring + tool-surface gating in `agent/acpx/tools.py` were missing. **Key constraint**: `save_skill(name, enabled)` only touches `Skill.enabled`; the cached fields (`description`, `runtime`, `acpx_agent`, `frontmatter_json`, `body_sha256`) are owned by `boot_skills()` and are intentionally NOT user-configurable. Browse / Diagnostics read fresh from `agent.skills.registry.skill_registry` — SKILL.md on disk is the only source of truth for permissions, budgets, body. **Tool-surface gating** is via `_disabled_skill_names()` in `agent/acpx/tools.py`: when `Skill.enabled = False`, `list_skills` filters the row out and `invoke_skill` returns `{"ok":false,"code":"SKILL_DISABLED"}`. Fails OPEN on DB exception so a broken admin layer never silently hides skills. **WebSocket parity** with Mcps/Tools/Agents: `consumers.skill_establishment()` sends `type:'skill'` system messages on connect; frontend pushes them into the module-level `skills = []` array (`agent_page_state.js`); Configure dialog reads from there and sends `set-skills` on Continue with the `name=description=true/false,...` shape. **Skill names key directly** (no `skill-N` prefix unlike `mcp-N` / `tool-N`) because `Skill.name` is the SKILL.md frontmatter `name` and is already unique. Coverage: 14 tests in 3 classes (`SkillsAdminEndpointTests`, `SkillsToolSurfaceGatingTests`, `SkillsNavbarTemplateContractTests`). **Do NOT** add granular skill config (permission overrides, budget overrides, per-user toggles) to the DB — the user-stated constraint is "DB only for enumeration and enable/disable like MCPs/Agents". If those features are ever needed, put them in `config.json` or a separate sidecar table.

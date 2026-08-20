@@ -15,11 +15,20 @@
 // ============================================================
 
 const DIALOG_BUTTON_CSS = {
+    // Identico a ACP_DIALOG_BUTTON_CSS (acp-globals.js) A PROPOSITO: esto
+    // se aplica con jQuery .css(), o sea INLINE, y le gana a cualquier
+    // hoja de estilo. Si las dos paginas no dicen lo mismo aqui, sus pies
+    // de dialogo se separan por mas correcto que este el CSS. El radio
+    // era 8px de un lado y 6px del otro.
     'background-color': '#55BBAA',
     'color': 'white',
-    'border-radius': '8px',
+    'border-radius': '6px',
     'font-size': '1em',
-    'height': '4vh'
+    // Altura FIJA. Con una medida relativa al viewport el boton era el
+    // unico control que cambiaba de tamano con la ventana: 43px en 1080p
+    // y 26px en una laptop. (No se escribe aqui la unidad vieja: el guard
+    // busca esa cadena en este bloque y un comentario tambien cuenta.)
+    'height': '34px'
 };
 
 /**
@@ -66,7 +75,7 @@ function computeCheckboxGridLayout(itemCount, options = {}) {
 /**
  * Build the standard two-button array for jQuery UI dialogs.
  */
-function makeDialogButtons(callbackOnContinue, callbackOnCancel) {
+function makeDialogButtons(callbackOnContinue, callbackOnCancelar) {
     return [
         {
             text: "Continuar",
@@ -82,11 +91,11 @@ function makeDialogButtons(callbackOnContinue, callbackOnCancel) {
         {
             text: "Cancelar",
             click: function () {
-                console.log("Cancel...");
+                console.log("Cancelar...");
                 confirmationByUser = false;
                 $(this).dialog("close");
-                if (callbackOnCancel != null) {
-                    callbackOnCancel();
+                if (callbackOnCancelar != null) {
+                    callbackOnCancelar();
                 }
             }
         }
@@ -97,8 +106,8 @@ function makeDialogButtons(callbackOnContinue, callbackOnCancel) {
 // Confirmation dialog
 // ----------------------------------------------------------------
 
-function preRenderConfirmationDialog(message, primaryDialogText, secondaryDialogText, callbackOnContinue = null, callbackOnCancel = null) {
-    console.log("--- preRenderConfirmationDialog called with callbacks:", callbackOnContinue != null, callbackOnCancel != null);
+function preRenderConfirmationDialog(message, primaryDialogText, secondaryDialogText, callbackOnContinue = null, callbackOnCancelar = null) {
+    console.log("--- preRenderConfirmationDialog called with callbacks:", callbackOnContinue != null, callbackOnCancelar != null);
     confirmationDialogMessage.title = message;
     confirmationPrimaryDialogLegend.innerText = primaryDialogText;
     confirmationSecondaryDialogLegend.innerText = secondaryDialogText;
@@ -125,7 +134,7 @@ function preRenderConfirmationDialog(message, primaryDialogText, secondaryDialog
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Continuar")').css(DIALOG_BUTTON_CSS);
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancel)
+        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancelar)
     });
 }
 
@@ -144,14 +153,22 @@ const EXEC_PERM_PROCEED_CSS = {
     'color': 'white',
     'border-radius': '8px',
     'font-size': '1em',
-    'height': '4vh'
+    // Altura FIJA. Con una medida relativa al viewport el boton era el
+    // unico control que cambiaba de tamano con la ventana: 43px en 1080p
+    // y 26px en una laptop. (No se escribe aqui la unidad vieja: el guard
+    // busca esa cadena en este bloque y un comentario tambien cuenta.)
+    'height': '34px'
 };
 const EXEC_PERM_DENY_CSS = {
     'background-color': '#c62828',
     'color': 'white',
     'border-radius': '8px',
     'font-size': '1em',
-    'height': '4vh'
+    // Altura FIJA. Con una medida relativa al viewport el boton era el
+    // unico control que cambiaba de tamano con la ventana: 43px en 1080p
+    // y 26px en una laptop. (No se escribe aqui la unidad vieja: el guard
+    // busca esa cadena en este bloque y un comentario tambien cuenta.)
+    'height': '34px'
 };
 
 // Guards against double-sending a decision for the same prompt (button click
@@ -267,7 +284,7 @@ function showExecPermissionDialog(detail) { // eslint-disable-line no-unused-var
  */
 function dismissExecPermissionDialogSilently(reason) {
     // Close an open Proceed/Deny prompt WITHOUT emitting any decision, because the
-    // backend has ALREADY resolved it (a Cancel auto-denied it; a runtime relax
+    // backend has ALREADY resolved it (a Cancelar auto-denied it; a runtime relax
     // auto-proceeded it; the broker closed on teardown).
     //
     // Setting _execPermDecisionSent FIRST is load-bearing: the dialog's `close`
@@ -300,7 +317,7 @@ function dismissExecPermissionDialogForRuntimeProceed() { // eslint-disable-line
 // Omissions dialog
 // ----------------------------------------------------------------
 
-function preRenderOmissionsDialog(message, primaryDialogText, secondaryDialogText, callbackOnContinue = null, callbackOnCancel = null) {
+function preRenderOmissionsDialog(message, primaryDialogText, secondaryDialogText, callbackOnContinue = null, callbackOnCancelar = null) {
     omissionsDialogMessage.title = message;
     omissionsPrimaryDialogLegend.innerText = primaryDialogText;
     omissionsSecondaryDialogLegend.innerText = secondaryDialogText;
@@ -318,7 +335,7 @@ function preRenderOmissionsDialog(message, primaryDialogText, secondaryDialogTex
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Continuar")').css(DIALOG_BUTTON_CSS);
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancel)
+        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancelar)
     });
     loadOmission('omission-1');
 }
@@ -333,7 +350,7 @@ function renderOmissionsDialog() {
 // MCPs dialog
 // ----------------------------------------------------------------
 
-function preRenderMcpsDialog(message, primaryDialogText, secondaryDialogText, thirtiaryDialogText, callbackOnContinue = null, callbackOnCancel = null) {
+function preRenderMcpsDialog(message, primaryDialogText, secondaryDialogText, thirtiaryDialogText, callbackOnContinue = null, callbackOnCancelar = null) {
     mcpsDialogMessage.title = message;
     mcpsPrimaryDialogLegend.innerText = primaryDialogText;
     mcpsSecondaryDialogLegend.innerText = secondaryDialogText;
@@ -381,7 +398,7 @@ function preRenderMcpsDialog(message, primaryDialogText, secondaryDialogText, th
                 checkbox.type = 'checkbox';
                 checkbox.id = tool.name;
                 checkbox.style.marginRight = '8px';
-                checkbox.style.accentColor = '#55BBAA';
+                checkbox.style.accentColor = 'var(--tlm-dlg-accent, #55BBAA)';
                 checkbox.style.flexShrink = '0';
 
                 label.htmlFor = tool.name;
@@ -415,7 +432,7 @@ function preRenderMcpsDialog(message, primaryDialogText, secondaryDialogText, th
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Continuar")').css(DIALOG_BUTTON_CSS);
             $('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancel)
+        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancelar)
     });
     loadMcps();
 }
@@ -432,7 +449,7 @@ function renderMcpsDialog() {
 // Agents dialog
 // ----------------------------------------------------------------
 
-function preRenderAgentsDialog(message, primaryDialogText, secondaryDialogText, callbackOnContinue = null, callbackOnCancel = null) {
+function preRenderAgentsDialog(message, primaryDialogText, secondaryDialogText, callbackOnContinue = null, callbackOnCancelar = null) {
     agentsDialogMessage.title = message;
     agentsPrimaryDialogLegend.innerText = primaryDialogText;
     agentsSecondaryDialogLegend.innerText = secondaryDialogText;
@@ -479,7 +496,7 @@ function preRenderAgentsDialog(message, primaryDialogText, secondaryDialogText, 
                 checkbox.type = 'checkbox';
                 checkbox.id = agent.name;
                 checkbox.style.marginRight = '8px';
-                checkbox.style.accentColor = '#55BBAA';
+                checkbox.style.accentColor = 'var(--tlm-dlg-accent, #55BBAA)';
                 checkbox.style.flexShrink = '0';
 
                 label.htmlFor = agent.name;
@@ -514,7 +531,7 @@ function preRenderAgentsDialog(message, primaryDialogText, secondaryDialogText, 
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Continuar")').css(DIALOG_BUTTON_CSS);
             $('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancel)
+        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancelar)
     });
 }
 
@@ -531,12 +548,12 @@ function renderAgentsDialog() {
 // ----------------------------------------------------------------
 
 /**
- * Build a Save/Cancel button pair for the config dialogs. The "Save"
+ * Build a Guardar/Cancelar button pair for the config dialogs. The "Guardar"
  * callback returns a Promise<boolean>: when it resolves to ``true`` the
  * dialog closes; when ``false`` the dialog stays open so the user can
  * correct the invalid inputs and try again.
  */
-function makeSaveCancelButtons(asyncOnSave, onCancel) {
+function makeGuardarCancelarButtons(asyncOnGuardar, onCancelar) {
     return [
         {
             text: "Guardar",
@@ -547,7 +564,7 @@ function makeSaveCancelButtons(asyncOnSave, onCancel) {
                 saveBtn.prop('disabled', true);
                 cancelBtn.prop('disabled', true);
                 Promise.resolve()
-                    .then(() => (asyncOnSave ? asyncOnSave() : true))
+                    .then(() => (asyncOnGuardar ? asyncOnGuardar() : true))
                     .then(success => {
                         saveBtn.prop('disabled', false);
                         cancelBtn.prop('disabled', false);
@@ -556,7 +573,7 @@ function makeSaveCancelButtons(asyncOnSave, onCancel) {
                         }
                     })
                     .catch(err => {
-                        console.error('Save handler threw:', err);
+                        console.error('Guardar handler threw:', err);
                         saveBtn.prop('disabled', false);
                         cancelBtn.prop('disabled', false);
                     });
@@ -566,15 +583,15 @@ function makeSaveCancelButtons(asyncOnSave, onCancel) {
             text: "Cancelar",
             click: function () {
                 $(this).dialog("close");
-                if (onCancel != null) {
-                    onCancel();
+                if (onCancelar != null) {
+                    onCancelar();
                 }
             }
         }
     ];
 }
 
-function _styleSaveCancelButtons() {
+function _styleGuardarCancelarButtons() {
     $('.ui-dialog-buttonpane button:contains("Guardar")').css(DIALOG_BUTTON_CSS);
     $('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
 }
@@ -605,15 +622,15 @@ function preRenderConfigModelsDialog(message, primaryText, secondaryText) { // e
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Guardar")').css(DIALOG_BUTTON_CSS);
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeSaveCancelButtons(typeof _saveConfigModels === 'function' ? _saveConfigModels : null, null)
+        buttons: makeGuardarCancelarButtons(typeof _saveConfigModels === 'function' ? _saveConfigModels : null, null)
     });
 }
 
 function renderConfigModelsDialog() { // eslint-disable-line no-unused-vars
-    _styleSaveCancelButtons();
+    _styleGuardarCancelarButtons();
     $("#config-models-dialog-message").dialog("open");
     $("#config-models-dialog-message").dialog("option", "position", { my: "center", at: "center", of: window });
-    _styleSaveCancelButtons();
+    _styleGuardarCancelarButtons();
 }
 
 function preRenderConfigUrlsDialog(message, primaryText, secondaryText) { // eslint-disable-line no-unused-vars
@@ -642,15 +659,15 @@ function preRenderConfigUrlsDialog(message, primaryText, secondaryText) { // esl
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Guardar")').css(DIALOG_BUTTON_CSS);
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeSaveCancelButtons(typeof _saveConfigUrls === 'function' ? _saveConfigUrls : null, null)
+        buttons: makeGuardarCancelarButtons(typeof _saveConfigUrls === 'function' ? _saveConfigUrls : null, null)
     });
 }
 
 function renderConfigUrlsDialog() { // eslint-disable-line no-unused-vars
-    _styleSaveCancelButtons();
+    _styleGuardarCancelarButtons();
     $("#config-urls-dialog-message").dialog("open");
     $("#config-urls-dialog-message").dialog("option", "position", { my: "center", at: "center", of: window });
-    _styleSaveCancelButtons();
+    _styleGuardarCancelarButtons();
 }
 
 function preRenderReconnectRequiredDialog(message, primaryText, secondaryText) { // eslint-disable-line no-unused-vars
@@ -701,11 +718,11 @@ function renderReconnectRequiredDialog() { // eslint-disable-line no-unused-vars
 // ----------------------------------------------------------------
 
 /**
- * Build a Backup/Cancel button pair. Same async-Promise convention as the
- * Save/Cancel pair used by the Config dialogs: when ``asyncOnBackup``
+ * Build a Backup/Cancelar button pair. Same async-Promise convention as the
+ * Guardar/Cancelar pair used by the Config dialogs: when ``asyncOnBackup``
  * resolves to ``true`` the dialog closes; when ``false`` it stays open.
  */
-function makeBackupCancelButtons(asyncOnBackup, onCancel) {  
+function makeBackupCancelarButtons(asyncOnBackup, onCancelar) {  
     return [
         {
             text: "Backup",
@@ -735,15 +752,15 @@ function makeBackupCancelButtons(asyncOnBackup, onCancel) {
             text: "Cancelar",
             click: function () {
                 $(this).dialog("close");
-                if (onCancel != null) {
-                    onCancel();
+                if (onCancelar != null) {
+                    onCancelar();
                 }
             }
         }
     ];
 }
 
-function _styleBackupCancelButtons() {
+function _styleBackupCancelarButtons() {
     $('.ui-dialog-buttonpane button:contains("Backup")').css(DIALOG_BUTTON_CSS);
     $('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
 }
@@ -774,15 +791,15 @@ function preRenderBackupDbDialog(message, primaryText, secondaryText) { // eslin
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Backup")').css(DIALOG_BUTTON_CSS);
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeBackupCancelButtons(typeof _saveBackupDb === 'function' ? _saveBackupDb : null, null)
+        buttons: makeBackupCancelarButtons(typeof _saveBackupDb === 'function' ? _saveBackupDb : null, null)
     });
 }
 
 function renderBackupDbDialog() { // eslint-disable-line no-unused-vars
-    _styleBackupCancelButtons();
+    _styleBackupCancelarButtons();
     $("#backup-db-dialog-message").dialog("open");
     $("#backup-db-dialog-message").dialog("option", "position", { my: "center", at: "center", of: window });
-    _styleBackupCancelButtons();
+    _styleBackupCancelarButtons();
 }
 
 // ----------------------------------------------------------------
@@ -790,12 +807,12 @@ function renderBackupDbDialog() { // eslint-disable-line no-unused-vars
 // ----------------------------------------------------------------
 
 /**
- * Build a Set/Cancel button pair. Same async-Promise convention as
- * makeBackupCancelButtons: when ``asyncOnSet`` resolves to ``true`` the
+ * Build a Set/Cancelar button pair. Same async-Promise convention as
+ * makeBackupCancelarButtons: when ``asyncOnSet`` resolves to ``true`` the
  * dialog closes; when ``false`` it stays open so the user can correct
  * the input.
  */
-function makeSetCancelButtons(asyncOnSet, onCancel) {  
+function makeSetCancelarButtons(asyncOnSet, onCancelar) {  
     return [
         {
             text: "Establecer",
@@ -825,15 +842,15 @@ function makeSetCancelButtons(asyncOnSet, onCancel) {
             text: "Cancelar",
             click: function () {
                 $(this).dialog("close");
-                if (onCancel != null) {
-                    onCancel();
+                if (onCancelar != null) {
+                    onCancelar();
                 }
             }
         }
     ];
 }
 
-function _styleSetCancelButtons() {
+function _styleSetCancelarButtons() {
     $('.ui-dialog-buttonpane button:contains("Establecer")').css(DIALOG_BUTTON_CSS);
     $('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
 }
@@ -864,15 +881,15 @@ function preRenderSetDbDialog(message, primaryText, secondaryText) { // eslint-d
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Establecer")').css(DIALOG_BUTTON_CSS);
             $(this).parent().find('.ui-dialog-buttonpane button:contains("Cancelar")').css(DIALOG_BUTTON_CSS);
         },
-        buttons: makeSetCancelButtons(typeof _saveSetDb === 'function' ? _saveSetDb : null, null)
+        buttons: makeSetCancelarButtons(typeof _saveSetDb === 'function' ? _saveSetDb : null, null)
     });
 }
 
 function renderSetDbDialog() { // eslint-disable-line no-unused-vars
-    _styleSetCancelButtons();
+    _styleSetCancelarButtons();
     $("#set-db-dialog-message").dialog("open");
     $("#set-db-dialog-message").dialog("option", "position", { my: "center", at: "center", of: window });
-    _styleSetCancelButtons();
+    _styleSetCancelarButtons();
 }
 
 function preRenderSetDbWarningDialog(message, primaryText, secondaryText) { // eslint-disable-line no-unused-vars
@@ -937,7 +954,7 @@ async function loadOmission(omissionName) {
 
         const content = await response.text();
         if (content === 'No se encontró la omisión en la base de datos') {
-            console.error('Omission not found in database: ' + omissionName);
+            console.error('No se encontró la omisión en la base de datos: ' + omissionName);
             return true;
         }
 
@@ -965,7 +982,7 @@ async function loadMcp(mcpName) {
 
         const content = await response.text();
         if (content === 'No se encontró el MCP en la base de datos') {
-            console.error('Mcp not found in database: ' + mcpName);
+            console.error('No se encontró el MCP en la base de datos: ' + mcpName);
             return true;
         }
 
@@ -996,7 +1013,7 @@ async function loadTool(toolName) {
 
         const content = await response.text();
         if (content === 'No se encontró el Tool en la base de datos') {
-            console.error('Tool not found in database: ' + toolName);
+            console.error('No se encontró el Tool en la base de datos: ' + toolName);
             return true;
         }
 
@@ -1027,7 +1044,7 @@ async function loadAgent(agentName) {
 
         const content = await response.text();
         if (content === 'No se encontró el Agent en la base de datos') {
-            console.error('Agent not found in database: ' + agentName);
+            console.error('No se encontró el Agent en la base de datos: ' + agentName);
             return true;
         }
 
@@ -1119,7 +1136,10 @@ function CloseAboutDialog(event) {
 }
 
 document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') {
+    // `defaultPrevented` => dialog_policy.js's dispatcher already dismissed the
+    // top dialog through its own X. Without this guard a SEALED update would
+    // run CloseUpdateDialog twice and raise the "please wait" notice twice.
+    if (event.key !== 'Escape' || event.defaultPrevented) {
         return;
     }
 
@@ -1178,6 +1198,13 @@ function OpenCheckUpdatesDialog(event) {
 
 function CloseUpdateDialog(event) {
     if (event) event.preventDefault();
+    // Cerrar a media actualizacion deja la instalacion a medias. La capa
+    // de politica avisa y devuelve false; solo un kill de Windows, o
+    // cerrar la consola de Tlamatini, la detiene de verdad.
+    if (window.TlamatiniDialogPolicy
+            && !window.TlamatiniDialogPolicy.mayClose('update')) {
+        return;
+    }
     const overlay = document.getElementById('update-overlay');
     if (overlay) overlay.style.display = 'none';
     if (_updatePollTimer) { clearInterval(_updatePollTimer); _updatePollTimer = null; }
@@ -1236,6 +1263,19 @@ async function StartTlamatiniUpdate(event) {
     }
     actionBtn.disabled = true;
     actionBtn.style.display = 'none';
+    // A partir de aqui el dialogo queda SELLADO: ni Escape, ni click
+    // afuera, ni el boton de cerrar. Si la pestana se cierra, el
+    // navegador pregunta. (Una pagina no puede vetar que la cierren,
+    // pero el swap corre en un PowerShell aparte, asi que cerrar la
+    // pestana no aborta una actualizacion ya en marcha.)
+    if (window.TlamatiniDialogPolicy) {
+        window.TlamatiniDialogPolicy.seal('update',
+            'Tlamatini se está actualizando y NO se puede interrumpir.\n\n'
+            + 'Si cierras ahora, la instalación puede quedar a medias. '
+            + 'Espera a que termine: Tlamatini se cierra y vuelve a abrir '
+            + 'en la versión nueva solita.\n\nSolo un kill de Windows, o '
+            + 'cerrar la consola de Tlamatini, la detiene.');
+    }
     _setUpdateProgress(0, 'Iniciando la actualización…');
     try {
         const resp = await fetch('/agent/start_update/', {
@@ -1267,9 +1307,19 @@ async function _pollUpdateStatus() {
         _setUpdateProgress(s.percent, s.message || s.phase);
         if (s.phase === 'error') {
             clearInterval(_updatePollTimer); _updatePollTimer = null;
+            // La actualizacion se detuvo, asi que el sello TIENE que
+            // levantarse: si no, una actualizacion fallida deja al
+            // usuario con un dialogo que ya nunca puede cerrar.
+            if (window.TlamatiniDialogPolicy) window.TlamatiniDialogPolicy.unseal('update');
             document.getElementById('update-progress-wrap').style.display = 'none';
             content.innerHTML = '⚠️ ' + (s.error || 'No pude terminar la actualización.');
         } else if (s.phase === 'handoff' || s.phase === 'done') {
+            // 'done' = no se aplico nada, se levanta el sello. 'handoff'
+            // se queda SELLADO a proposito: el swapper ya esta corriendo
+            // y Tlamatini se esta cerrando.
+            if (s.phase === 'done' && window.TlamatiniDialogPolicy) {
+                window.TlamatiniDialogPolicy.unseal('update');
+            }
             clearInterval(_updatePollTimer); _updatePollTimer = null;
             if (s.phase === 'handoff') {
                 content.innerHTML = '🔄 Ya dejé lista la actualización. <strong>Tlamatini se está cerrando</strong> y '

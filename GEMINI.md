@@ -53,11 +53,22 @@ When solving a problem that needs Angela to do things on her machine (Rethinking
   3. **WAIT**. Only when she sends that string do you give the next step.
   4. Repeat — one step + one reply-string per turn.
 
+### 1.5 Current Release (v1.48.17, 2026-08-16)
+- **`v1.48.17` is the current annotated tag** and the documentation/package version; runtime identity stays git-tag-derived. Same-day lineage: `v1.48.15` = encoding-safe Grepper + closed verdict vocabulary, `v1.48.16` = themed popups + frozen-bundle carriage proof, `v1.48.17` = the Escape dismissal standardization and the sealed updater.
+- Grepper uses a BOM-first decoder for UTF-8/16/32 and then cp1252/Latin-1, so Windows PowerShell logs and accented Spanish source are searchable while genuine binary files remain skipped. Keep the BOM test ahead of the NUL test — UTF-16/32 text is legitimately full of `0x00`.
+- **Escape now dismisses EVERY dialog on both pages and means exactly what the titlebar ✕ means; an outside click still never dismisses.** A bubble-phase dispatcher activates each dialog's own dismiss control, so Ask-Execs still answers Deny, confirms resolve `false`, scroll locks release, and a sealed updater still refuses. `closeOnEscape: false` is forbidden tree-wide. The ONE exception is a dialog holding `el.tlmSealKey` (the updater while downloading), whose seal is checked before every other dismissal path.
+- The last native `alert()` / `confirm()` calls became themed **`tlmAlert` / `tlmConfirm`** (Promise-based, `.tlmpop-*`, overlay z-index 100001, fail-open). They are intentionally not jQuery-UI dialogs, because they are raised by native modals at z-index 20000 while `.ui-front` is ~100.
+- **`build.py` proves its own payload.** Modules reached only through fail-open imports cannot report their own absence, so `verify_frozen_agent_modules()` opens the archive PyInstaller just produced and aborts unless all seven `_FROZEN_REQUIRED_AGENT_MODULES` are inside it. The PYZ is an entry inside the executable's CArchive, not a loose `_internal/PYZ-00.pyz`.
+- `agent_verdict.py` has five disjoint status classes plus `KNOWN_STATUSES`; `test_status_vocabulary.py` statically guards every pool-agent token. Degraded deliverables are red, named intact completions are green, and unknown tokens fail open but are reported as `R8b.unknown_status`.
+- Kuberneter publishes numeric `returncode`, boolean `success`, and tokenized `status: ok|failed`; never put an exit-code expression in `status:`.
+- Self-update preserves the separately built `Uninstaller.exe`. Public builders clear private External-MCP catalog opt-in; only the explicit keyed/private builder may supply it.
+- Source-verified active surface: 87 workflow agents, 65 wrapped chat agents, 107 built-in Multi-Turn tools, 28 runtime skills, 194 migrations, and 37 JavaScript modules.
+
 ---
 
 ## 2. Strict Casing & Naming Conventions
 
-The single source of truth for any visual workflow agent is its **`agentDescription`** database field (seeded via Django migrations). It is rendered **verbatim** in the sidebar and canvas. If you mismatch casing, the JavaScript class map or Django views will fail to load the agent.
+The single source of truth for any visual workflow agent display name is `agent/services/agent_paths.py::display_name_from_agent_type`, because startup rebuilds the `Agent` table from the `agents/` directory. The migration row, `chat_agent_registry.display_name`, and JavaScript class map must stay aligned with that canonical resolver. If casing or hyphenation drifts, the canvas connection or Configure-Agents gate can fail silently.
 
 | Context | Case Convention | Example (STM32er) |
 | :--- | :--- | :--- |
@@ -146,7 +157,7 @@ When **Multi-Turn** is checked in the toolbar, Tlamatini shifts from a "text ans
    - **Repetition Breaker**: Detects if the LLM calls the same tool with identical signatures. Polling and management tools (`run_status`, `session_status`, etc.) are explicitly exempt from fingerprinting to avoid tripping this guard during normal wait loops.
 
 ### 4.1 Cost Trimming Measures
-To avoid ballooning LLM token counts with up to 89 tools bound:
+To avoid ballooning LLM token counts with 107 built-in tools plus dynamic External-MCP remotes:
 - **One-line Tool Summaries**: Standard LangChain JSON schemas are fed to the model, but the textual system prompt lists each tool on a single line.
 - **Ollama Keep-Alive**: The `ChatOllama` connection is instantiated with `keep_alive: -1` (or from `OLLAMA_KEEP_ALIVE`) so the model context cache is preserved between turns on the Ollama daemon.
 
@@ -201,15 +212,18 @@ Is Ask Execs Checked? ───(No)───► Execute Tool
 Tlamatini features a universal, config-driven MCP client managed by `agent/external_mcp_manager.py`:
 
 - **Decoupled Lifecycle**: MCP server connections are established in a **background thread, off the main chat path**. A slow, failing, or offline server will never freeze the chat page.
-- **Config file**: Lives at `agent/external_mcps.json` next to `config.json` in the `mcpServers` format.
+- **Config file**: Lives at `agent/external_mcps.json` next to `config.json` in the `mcpServers` format. It is preserved user state and a sanitized tracked build input; never commit a keyed/private copy.
 - **Entitlements**: Allows up to **5 active servers** at a time.
 - **Transports**:
   - `stdio`: Spawns a local executable (e.g. `npx`, `uvx`, `python`, `docker run`).
   - `streamable-http`: Modern HTTP endpoint.
   - `sse`: Legacy server-sent events.
   - `websocket`: Standard WebSockets.
-- **LLM Supervisor Tools**: The LLM manages imports and activations using 8 dedicated tools:
-  - `external_mcp_status`, `external_mcp_reconnect`, `external_mcp_doctor`, `external_mcp_list_tools`, `external_mcp_call`, `external_mcp_import`, `external_mcp_set_active`, and `external_mcp_wait`.
+- **LLM Supervisor Tools**: The LLM manages imports, runtimes, and activations using 10 dedicated tools:
+  - `external_mcp_status`, `external_mcp_reconnect`, `external_mcp_doctor`, `external_mcp_runtime_status`, `external_mcp_runtime_install`, `external_mcp_list_tools`, `external_mcp_call`, `external_mcp_import`, `external_mcp_set_active`, and `external_mcp_wait`.
+- **Private runtime**: `runtime_provisioner.py` can install missing Node/npm/npx/pnpm and uv/uvx under `%LOCALAPPDATA%\Tlamatini\runtimes`, with no administrator rights or system-PATH mutation. Startup and connection paths remain fail-open and non-blocking.
+- **Shipped defaults**: `external_mcp_defaults.py` seeds official `memory` and `sequential-thinking` entries, both inactive. Edits are preserved, deletes are tombstoned, and Memory persists under `%LOCALAPPDATA%\Tlamatini\memory\memory.json`.
+- **Release separation**: Public builds contain only the two secret-free defaults and abort on live-looking credentials; private/keyed builds may contain the maintainer catalog.
 - **MCP Doctor (Agent #78)**: A static triage node that inspects server configurations (validates executable paths, detects missing environment tokens or placeholder secrets) **without establishing a live socket connection**.
 
 ---
@@ -263,7 +277,7 @@ To prevent task manager pollution (where companion `conhost.exe` processes would
 
 So sister XAIHT apps like **Tlamatini-FlowPills** can find Tlamatini's agent-template catalog at startup WITHOUT importing Python, running Tlamatini, or scanning drives, Tlamatini publishes three read-only, **HKCU-only, fail-open** surfaces: the registry key `HKCU\Software\XAIHT\Tlamatini` (six `REG_SZ` values — `InstallLocation`, `AgentsRoot`, `SourceAgentsRoot`, `AgentManifestPath`, `Version`, `AgentCatalogVersion`; all six written every call, empty when unknown), the `_tlamatini_agents_manifest.json` next to the agents (complete templates only, per-file `sha256`, `utf-8-sig` read), and the `.tlamatini-preserved-agents.json` marker the uninstaller leaves (with `manifest_sha256`; the discovery key is KEPT). Engine `agent/agent_manifest.py` + `agent/windows_app_registration.py`; wired into `apps.py` (scheduled FIRST in `ready()`, import-independent, dedicated idempotency gate), `install.py` (independent of the ARP entry), `uninstall.py`, `build.py`. Filesystem is authoritative; 17 Django-free secret-safe tests in `agent/test_agent_manifest.py`. Contract: `docs/companion-app-discovery.md`; implements `Tlamatini-FlowPills-Lookup.md` §15 + second-sprint hardening.
 
-### 8.3b Truthful Exec-Report Verdicts (`agent_verdict.py`) — v1.48.2, 2026-08-06
+### 8.3b Truthful Exec-Report Verdicts (`agent_verdict.py`) — closed vocabulary in v1.48.15
 
 The Exec Report's per-row SUCCESS/FAILED verdict is decided by a **deterministic expert system**, not by the child process's exit code.
 
@@ -276,17 +290,20 @@ The Exec Report's per-row SUCCESS/FAILED verdict is decided by a **deterministic
 | R1 | no self-report | the exit code |
 | R2 | `error` / `failed` | FAILED |
 | R3 | `refused` / `not_found` / `not_unique` / `engine_unavailable` (work did NOT happen) | FAILED |
+| R3b | degraded or compromised deliverable (`tokens_only`, `compiled_with_errors`, `operator_required`, …) | FAILED |
 | R4 | read-only diagnostic completed — `invalid`, `findings`, `no_matches`, `listed` … | **SUCCESS** |
 | R5 | explicit `success:` / `ok:` | that boolean |
 | R6 | non-zero `errors:` (`"0"` is not a failure) | FAILED |
 | R7 | nothing decisive + non-zero exit | FAILED |
+| R7b | named intact completion (`ok`, `completed`, `sent`, `created`, …) | SUCCESS |
+| R8b | unknown status token | fail-open SUCCESS, token named in provenance |
 | R8 | no failure signal | SUCCESS |
 
 **ORDER IS THE ALGORITHM — R4 must outrank R5 and R6.** A linter that worked perfectly reports `status: invalid` **and** `success: False` **and** `errors: 2` in the same breath; the last two describe the **document**, not the agent.
 
-**Contract (do NOT weaken):** the agent's self-report OUTRANKS the exit code; it is NEVER dropped (on a key collision the process view stays under `<key>` and the agent view lands on `agent_<key>` — both survive); a read-only diagnostic reporting an adverse finding has **SUCCEEDED** (a red row must mean *"the tool malfunctioned"*, never *"the tool found something"*); **fail-open** — every parse error resolves to "no opinion" and nothing may raise into a caller; stdlib-only and imports nothing from `agent.*` (so no `tools.py` ↔ `mcp_agent.py` import cycle, identical frozen and from source); the status vocabulary has exactly ONE definition (`agent_verdict.DIAGNOSTIC_COMPLETED_STATUSES`) — do not re-inline a copy.
+**Contract (do NOT weaken):** the agent's self-report OUTRANKS the exit code; it is NEVER dropped (on a key collision the process view stays under `<key>` and the agent view lands on `agent_<key>` — both survive); a read-only diagnostic reporting an adverse finding has **SUCCEEDED**, while a degraded or missing deliverable is red; **fail-open** — every parse error resolves to "no opinion" and nothing may raise into a caller; stdlib-only and imports nothing from `agent.*` (so no `tools.py` ↔ `mcp_agent.py` import cycle, identical frozen and from source). The one vocabulary is five disjoint sets in `agent_verdict.py`, united as `KNOWN_STATUSES`; `mcp_agent` aliases them rather than re-inlining a copy.
 
-**If you author an agent**: its `status:` is load-bearing — READ, not decoration. A read-only diagnostic must exit `0` even when it finds problems; never tie the exit code to how clean the user's input was. Pinned by `agent/test_agent_verdict.py` (25 tests) + `agent/test_exec_report_verdict.py`.
+**If you author an agent**: its `status:` is load-bearing — READ, not decoration. Reuse one token from `KNOWN_STATUSES`; numeric results belong under `returncode` or `exit_code`. A read-only diagnostic must exit `0` even when it finds problems; never tie the exit code to how clean the user's input was. Pinned by `agent/test_agent_verdict.py`, `agent/test_exec_report_verdict.py`, and the repository-wide `agent/test_status_vocabulary.py` guard.
 
 ---
 
@@ -301,9 +318,9 @@ Tlamatini's web UI + chat WebSocket port is **no longer hardcoded to 8000** — 
 - The browser then splices the returned **absolute path into the chat box at the caret** and renders a thumbnail chip (`#chat-image-chips`). The point is that a *path* — not an attachment — is what **Image-Interpreter** consumes, so the next prompt is immediately actionable. `prompt.pmt` tells the LLM to treat an `image_<timestamp>.jpg` under Temp as *the* image the user means.
 - **Two contracts (do NOT break):** the `paste` listener is on `document` (after Alt+Tab focus sits on `<body>`, so a textarea-scoped listener never fires — the caret is remembered separately), and `agent_page_layout.js::computeFormMinHeight()` **must count the chips row** because it pins `#tools-chat-form-container` to an explicit pixel height (an uncounted row pushes the textarea + Send off-screen). Full contract: `docs/claude/recent-fixes.md` (2026-07-14).
 
-## 9. Complete Visual Agent Catalog (85 Agents)
+## 9. Complete Visual Agent Catalog (87 Agents)
 
-Visual agents are designed to run out of process. The backend compiler generates their config, spawns them, and inspects their logs. Below is the complete catalog of all 85 visual agents:
+Visual agents are designed to run out of process. The backend compiler generates their config, spawns them, and inspects their logs. Below is the complete catalog of all 87 visual agents:
 
 1. **starter**: Flow initiator.
 2. **ender**: Flow terminator; kills targeted processes.
@@ -382,7 +399,7 @@ Visual agents are designed to run out of process. The backend compiler generates
 75. **blenderer**: Drives a Blender instance through the Blender MCP add-on's TCP socket.
 76. **editor**: Makes surgical find-and-replace edits to a single text file.
 77. **globber**: Discovers files under a directory by glob/filename pattern matching.
-78. **grepper**: Performs read-only regex content searches across a file or directory tree.
+78. **grepper**: Performs read-only regex content searches across a file or directory tree with BOM-first UTF-8/16/32 plus cp1252/Latin-1 decoding.
 79. **instant_messaging_doctor**: Diagnostic/repair tool for Telegrammer and Whatsapper credentials and contacts.
 80. **playwrighter**: Scripted browser automation (navigate, click, type, screenshot) via Playwright.
 81. **talker**: Neural Text-to-Speech synthesizer (strictly female voices only).
@@ -390,6 +407,8 @@ Visual agents are designed to run out of process. The backend compiler generates
 83. **zavuerer**: Multi-channel Zavu messaging gateway (SMS, WhatsApp, Email, Telegram, Voice).
 84. **video_analyzer**: MOTION-VERDICT video analyzer for loop training.
 85. **nmapper**: Local nmap bridge for network scanning and host discovery (NPSL-compliant).
+86. **pdfer**: Creates, edits, merges, splits, extracts, renders, and validates PDF artifacts.
+87. **latexer**: MiKTeX-backed LaTeX authoring, validation, compilation, and deterministic eight-rung repair.
 
 ---
 

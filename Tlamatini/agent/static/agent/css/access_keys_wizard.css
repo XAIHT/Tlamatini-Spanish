@@ -55,8 +55,8 @@
     gap: 8px;
     border: 1px solid rgba(255, 255, 255, 0.14);
     background: rgba(0, 0, 0, 0.18);
-    color: #e0e0e0;
-    border-radius: 8px;
+    color: var(--tlm-dlg-body, #e0e0e0);
+    border-radius: var(--tlm-dlg-radius, 8px);
     padding: 9px 10px;
     margin-bottom: 8px;
     text-align: left;
@@ -68,7 +68,7 @@
 .akw-nav-button.active {
     border-color: #55BBAA;
     background: rgba(85, 187, 170, 0.16);
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
 }
 
 .akw-nav-index {
@@ -79,7 +79,7 @@
     align-items: center;
     justify-content: center;
     background: rgba(85, 187, 170, 0.24);
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     font-size: 0.78em;
     font-weight: 700;
 }
@@ -112,23 +112,23 @@
 }
 
 #access-keys-wizard-title {
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     margin: 0 0 4px 0;
     font-size: 1.05em;
 }
 
 #access-keys-wizard-subtitle {
-    color: #b0b0b0;
+    color: var(--tlm-dlg-muted, #b0b0b0);
     margin: 0;
     max-width: 680px;
     line-height: 1.35;
 }
 
 #access-keys-wizard-summary {
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     background: rgba(85, 187, 170, 0.14);
     border: 1px solid rgba(85, 187, 170, 0.28);
-    border-radius: 8px;
+    border-radius: var(--tlm-dlg-radius, 8px);
     padding: 8px 10px;
     min-width: 150px;
     text-align: center;
@@ -141,10 +141,10 @@
 }
 
 .akw-notice {
-    border-radius: 8px;
+    border-radius: var(--tlm-dlg-radius, 8px);
     padding: 8px 10px;
     margin: 0;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
     line-height: 1.35;
     overflow-wrap: break-word;
 }
@@ -180,14 +180,14 @@
 }
 
 .akw-section-title {
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     font-size: 1em;
     font-weight: 700;
     margin: 0;
 }
 
 .akw-section-help {
-    color: #b0b0b0;
+    color: var(--tlm-dlg-muted, #b0b0b0);
     margin: -4px 0 2px 0;
     line-height: 1.35;
 }
@@ -200,7 +200,7 @@
 }
 
 .akw-field-label {
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
     font-weight: 600;
     line-height: 1.25;
     overflow-wrap: break-word;
@@ -210,9 +210,9 @@
     width: 100%;
     min-width: 0;
     background-color: #40414F;
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     border: 1px solid #5c6275;
-    border-radius: 6px;
+    border-radius: var(--tlm-dlg-radius-sm, 6px);
     padding: 7px 10px;
     font-size: 0.94em;
     font-family: 'Nunito', sans-serif;
@@ -264,7 +264,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
     margin-top: 4px;
 }
 
@@ -275,7 +275,7 @@
 .akw-command-table {
     width: 100%;
     border-collapse: collapse;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
     table-layout: fixed;
     min-width: 0;
 }
@@ -288,20 +288,20 @@
 }
 
 .akw-command-table th {
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     font-size: 0.85em;
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
 
 .akw-command-name {
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     font-weight: 700;
     word-break: break-word;
 }
 
 .akw-command-desc {
-    color: #b0b0b0;
+    color: var(--tlm-dlg-muted, #b0b0b0);
     font-size: 0.82em;
     margin-top: 2px;
     overflow-wrap: break-word;
@@ -311,9 +311,9 @@
     width: 100%;
     min-width: 0;
     background-color: #40414F;
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     border: 1px solid #5c6275;
-    border-radius: 6px;
+    border-radius: var(--tlm-dlg-radius-sm, 6px);
     padding: 6px 8px;
     font-family: 'Nunito', sans-serif;
     font-size: 0.9em;
@@ -332,13 +332,13 @@
     justify-content: space-between;
     gap: 12px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: var(--tlm-dlg-radius, 8px);
     padding: 9px 10px;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
 }
 
 .akw-review-list strong {
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
 }
 
 @media (max-width: 820px) {

@@ -15,7 +15,7 @@
 // ============================================================
 //
 //   OpenExternalMcpsDialog(event)
-//     -- "Activar MCPs" dialog. Lists the external_mcps.json catalog as a
+//     -- "Activate MCPs" dialog. Lists the external_mcps.json catalog as a
 //        searchable checkbox grid capped at 5 active. Continue POSTs the
 //        active set to /agent/external_mcps/activate/. The modal is viewport
 //        bounded and centered; only the catalog panes scroll.
@@ -33,6 +33,32 @@ let _externalMcpsKeydownHandler = null;
 function _emxCsrf() {
     const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
     return m ? decodeURIComponent(m[1]) : '';
+}
+
+/**
+ * POST a dropped `mcpServers` map to the import endpoint and report the
+ * outcome through the THEMED popup. Split out of the drop handler when the
+ * native confirm() became a Promise (Angela's review, 2026-08-16).
+ */
+function _emxImportServers(map) {
+    fetch('/agent/external_mcps/import/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': _emxCsrf(),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ mcpServers: map })
+    }).then(r => r.json()).then(d => {
+        if (d.ok) {
+            const added = (d.added || []).length;
+            const updated = (d.updated || []).length;
+            tlmAlert('Catálogo actualizado — ' + added + ' added, ' + updated +
+                ' updated.\nOpen External ▸ MCPs to activate them.', 'Import terminado');
+        } else {
+            tlmAlert('Falló el import: ' + (d.error || 'error desconocido'), 'Falló el import');
+        }
+    }).catch(err => tlmAlert('Falló el import: ' + err, 'Falló el import'));
 }
 
 function _emxDestroyLegacyJqueryDialog(dlg) {
@@ -81,8 +107,8 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
 
     function renderLegend() {
         legend.textContent = 'Elige hasta ' + maxActive +
-            ' services — los activos se quedan fijos hasta arriba. La búsqueda filtra' +
-            ' el catálogo; los services inactivos se quedan solo en el catálogo.';
+            ' servicios — los activos se quedan fijos hasta arriba. La búsqueda filtra el' +
+            ' catálogo; los inactivos se quedan solo en el catálogo.';
     }
 
     function statusClass(s) {
@@ -99,11 +125,11 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
 
     function statusLabel(s) {
         if (s.status_label) return s.status_label;
-        if (s.connecting) return 'conectando';
+        if (s.connecting) return 'connecting';
         if (s.error) return 'error';
         if (s.active && s.tool_count === 0) return '0 tools';
-        if (s.active && s.tool_count) return 'listo';
-        return 'inactivo';
+        if (s.active && s.tool_count) return 'ready';
+        return 'inactive';
     }
 
     function diagnosticText(s) {
@@ -137,7 +163,7 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
             ((s.display || '') + ' ' + (s.key || '') + ' ' +
                 (s.command || '') + ' ' + (s.transport || '')).toLowerCase().includes(q));
         if (!shown.length) {
-            listEl.appendChild(listMessage('Sin resultados.'));
+            listEl.appendChild(listMessage('Sin coincidencias.'));
             return;
         }
         // Active first (alphabetical), then the rest (alphabetical). Sorting BEFORE the
@@ -181,14 +207,14 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
                 '</svg></button>';
             row.querySelector('.emx-name').textContent = s.display;
             row.querySelector('.emx-desc').textContent =
-                s.command || s.transport || 'server configurado';
+                s.command || s.transport || 'configured server';
             const diagEl = row.querySelector('.emx-diag');
             if (diagEl) diagEl.textContent = diag;
             if (tc) row.querySelector('.emx-badge').textContent = tc;
             const statusEl = row.querySelector('.emx-status');
             statusEl.className = 'emx-status ' + statusClass(s);
             statusEl.textContent = statusLabel(s);
-            row.querySelector('.emx-trans').textContent = s.transport || 'desconocido';
+            row.querySelector('.emx-trans').textContent = s.transport || 'unknown';
             const cb = row.querySelector('.emx-cb');
             cb.setAttribute('aria-label', s.display);
             const delBtn = row.querySelector('.emx-del');
@@ -196,8 +222,8 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
             fragment.appendChild(row);
         }
         if (shown.length > rendered.length) {
-            fragment.appendChild(listMessage('Mostrando ' + rendered.length +
-                ' de ' + shown.length + ' resultados. Busca para filtrar el catálogo.'));
+            fragment.appendChild(listMessage('Showing ' + rendered.length +
+                ' of ' + shown.length + ' coincidencias. Busca para acotar el catálogo.'));
         }
         listEl.appendChild(fragment);
     }
@@ -207,7 +233,7 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
         sumEl.innerHTML = '';
         if (!active.length) {
             sumEl.innerHTML = '<tr><td class="empty" colspan="4">' +
-                'Todavía no hay services activos.</td></tr>';
+                'Todavía no hay servicios activos.</td></tr>';
             return;
         }
         for (const s of active) {
@@ -220,7 +246,7 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
             const tds = tr.querySelectorAll('td');
             tds[0].textContent = s.display;
             tds[1].textContent = tc;
-            tds[2].textContent = s.transport || 'desconocido';
+            tds[2].textContent = s.transport || 'unknown';
             const pill = tr.querySelector('span');
             pill.className = statusClass(s);
             pill.textContent = statusLabel(s);
@@ -240,11 +266,91 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
 
     function renderChip() {
         const c = activeCount();
-        chip.textContent = c + ' / ' + maxActive + ' activos';
+        chip.textContent = c + ' / ' + maxActive + ' active';
         chip.classList.toggle('full', c >= maxActive);
     }
 
-    function renderAll() { renderList(); renderSum(); renderChip(); }
+    // ── Runtime strip: node / npm / npx / pnpm / uv / uvx ────────────────────
+    // Most of the MCP ecosystem ships as `npx -y <pkg>` or `uvx <pkg>`. Without
+    // this strip, a user on a machine with no Node sees a perfectly valid
+    // catalog row that simply never connects and NOTHING on screen explaining
+    // why. A star on a pill means it came from Tlamatini's own private runtime
+    // rather than the user's system install.
+    let runtimeInfo = null;
+    let runtimeBusy = false;
+
+    function renderRuntime() {
+        let box = document.getElementById('emx-runtime');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'emx-runtime';
+            box.className = 'emx-runtime';
+            listEl.parentNode.insertBefore(box, listEl);
+        }
+        if (!runtimeInfo || runtimeInfo.unavailable) { box.style.display = 'none'; return; }
+        box.style.display = '';
+        const missing = runtimeInfo.missing || [];
+        const tools = runtimeInfo.tools || {};
+        box.innerHTML =
+            '<div class="emx-runtime-head"></div>' +
+            '<div class="emx-runtime-pills"></div>' +
+            '<button type="button" class="emx-runtime-btn"></button>';
+        const head = box.querySelector('.emx-runtime-head');
+        head.className = 'emx-runtime-head ' + (missing.length ? 'warn' : 'ok');
+        head.textContent = missing.length
+            ? ('Missing: ' + missing.join(', ') +
+               ' — Tlamatini installs these herself, no admin needed.')
+            : 'Package managers ready — npx / uvx servers can be activated.';
+        const pills = box.querySelector('.emx-runtime-pills');
+        ['node', 'npm', 'npx', 'pnpm', 'uv', 'uvx'].forEach(function (name) {
+            const t = tools[name] || {};
+            const pill = document.createElement('span');
+            pill.className = 'emx-runtime-pill ' + (t.available ? 'on' : 'off');
+            pill.textContent = name + (t.available && t.source === 'tlamatini' ? ' ★' : '');
+            pill.title = t.available
+                ? (t.path + '  (' + (t.source || 'system') + ')')
+                : (name + ' is not installed on this machine');
+            pills.appendChild(pill);
+        });
+        const btn = box.querySelector('.emx-runtime-btn');
+        btn.textContent = runtimeBusy || runtimeInfo.provisioning_in_progress
+            ? 'Installing…'
+            : (missing.length ? 'Install now' : 'Reinstall');
+        btn.disabled = !!(runtimeBusy || runtimeInfo.provisioning_in_progress);
+        btn.onclick = installRuntimes;
+    }
+
+    function installRuntimes() {
+        if (runtimeBusy) return;
+        runtimeBusy = true;
+        renderRuntime();
+        flash('Downloading Node / uv into Tlamatini’s private runtime…');
+        fetch('/agent/external_mcps/runtime_install/', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': _emxCsrf() },
+            body: JSON.stringify({ tools: ['npx', 'uvx'] })
+        })
+            .then(r => r.json())
+            .then(() => fetch('/agent/external_mcps/', { credentials: 'same-origin' }))
+            .then(r => r.json())
+            .then(payload => {
+                runtimeInfo = payload.runtime || null;
+                runtimeBusy = false;
+                renderRuntime();
+                const stillMissing = (runtimeInfo && runtimeInfo.missing) || [];
+                flash(stillMissing.length
+                    ? ('Still missing: ' + stillMissing.join(', ') + ' — check the network.')
+                    : 'Runtimes installed — npx / uvx servers can be activated now.');
+            })
+            .catch(err => {
+                runtimeBusy = false;
+                renderRuntime();
+                flash('Falló la instalación del runtime: ' + err);
+            });
+    }
+
+    function renderAll() { renderRuntime(); renderList(); renderSum(); renderChip(); }
 
     // A toggled row jumps between the two blocks, so keep it under the user's eye and
     // re-focus it -- renderList() replaced the DOM node the focus was sitting on.
@@ -264,8 +370,8 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
         const s = servers.find(x => x.key === key);
         if (!s) return;
         if (!s.active && activeCount() >= maxActive) {
-            flash('Puedes correr ' + maxActive +
-                ' a la vez — primero apaga uno.');
+            flash('You can run ' + maxActive +
+                ' at once — switch one off first.');
             return;
         }
         s.active = !s.active;
@@ -278,11 +384,18 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
         const s = servers.find(x => x.key === key);
         if (!s) return;
         const label = s.display || key;
-        if (!confirm('¿Quitar "' + label + '" del catálogo?\n\n' +
-            'Esto borra el config guardado del server. Lo puedes volver a agregar cuando quieras ' +
-            'soltando su .json en la página otra vez.')) {
-            return;
-        }
+        // Themed confirm (dialog_policy.js) — the native one rendered a grey
+        // OS strip on top of this very dialog. Promise-based, so the delete
+        // request moved into the callback.
+        tlmConfirm('¿Quitar "' + label + '" del catálogo?',
+            'This deletes the saved server config. You can add it back any time by ' +
+            'dropping its .json onto the page again.', 'Quitar el MCP server').then((ok) => {
+            if (!ok) return;
+            _emxRemoveServer(key, label);
+        });
+    }
+
+    function _emxRemoveServer(key, label) {
         fetch('/agent/external_mcps/remove/', {
             method: 'POST',
             credentials: 'same-origin',
@@ -297,9 +410,9 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
                 renderAll();
                 flash('Se quitó "' + label + '" del catálogo.');
             } else {
-                flash('No se pudo quitar: ' + (d.error || 'error desconocido'));
+                flash('Falló el quitado: ' + (d.error || 'unknown error'));
             }
-        }).catch(err => flash('No se pudo quitar: ' + err));
+        }).catch(err => flash('Falló el quitado: ' + err));
     }
 
     listEl.onclick = (e) => {
@@ -385,9 +498,9 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
 
     closeBtn.onclick = closeDialog;
     cancelBtn.onclick = closeDialog;
-    dlg.onclick = (e) => {
-        if (e.target === dlg) closeDialog();
-    };
+    // Backdrop-click dismissal removed (Angela, 2026-08-13): a dialog closes
+    // ONLY by its X, Cancel, Continue or ESCAPE (standardised 2026-08-16 -
+    // routed by static/agent/js/dialog_policy.js, with onDialogKeydown local).
 
     listEl.innerHTML = '';
     listEl.appendChild(listMessage('Cargando...'));
@@ -403,6 +516,7 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
         .then(payload => {
             maxActive = Number(payload.max_active) || EXTERNAL_MCPS_MAX_ACTIVE;
             servers = (payload.servers || []).map(s => Object.assign({}, s));
+            runtimeInfo = payload.runtime || null;
             renderLegend();
             renderAll();
         })
@@ -428,7 +542,7 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
                 closeDialog();
             } else {
                 setSaving(false);
-                flash('Falló el guardado: ' + (d.error || 'error desconocido'));
+                flash('Falló el guardado: ' + (d.error || 'unknown error'));
             }
         }).catch(err => {
             setSaving(false);
@@ -489,7 +603,7 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
                     const text = String(reader.result || '').replace(/^\uFEFF/, '').trim();
                     parsed = JSON.parse(text);
                 } catch (err) {
-                    alert('El JSON no es válido: ' + err);
+                    tlmAlert('El JSON no es válido: ' + err, 'Falló el import');
                     return;
                 }
                 let map = (parsed && parsed.mcpServers) ? parsed.mcpServers : null;
@@ -512,31 +626,18 @@ function OpenExternalMcpsDialog(event) { // eslint-disable-line no-unused-vars
                 }
                 const names = (map && typeof map === 'object') ? Object.keys(map) : [];
                 if (!names.length) {
-                    alert('No se encontraron mcpServers en ' + file.name);
+                    tlmAlert('No se encontraron mcpServers en ' + file.name, 'No hay nada que importar');
                     return;
                 }
-                if (!confirm('¿Agregar ' + names.length + ' MCP server(s) al catálogo?\n\n' +
-                    names.join(', '))) {
-                    return;
-                }
-                fetch('/agent/external_mcps/import/', {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-CSRFToken': _emxCsrf(),
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ mcpServers: map })
-                }).then(r => r.json()).then(d => {
-                    if (d.ok) {
-                        const added = (d.added || []).length;
-                        const updated = (d.updated || []).length;
-                        alert('Catálogo actualizado — ' + added + ' agregados, ' + updated +
-                            ' actualizados.\nAbre External ▸ MCPs para activarlos.');
-                    } else {
-                        alert('Falló el import: ' + (d.error || 'error desconocido'));
-                    }
-                }).catch(err => alert('Falló el import: ' + err));
+                // Themed confirm + result notices (dialog_policy.js). The drop
+                // handler is document-level, so it fires even with the dialog
+                // CLOSED — which is why these stay real popups instead of the
+                // in-dialog `flash()` strip the user might not be looking at.
+                tlmConfirm('¿Agregar ' + names.length + ' MCP server(s) al catálogo?',
+                    names.join(', '), 'Importar MCP servers').then((ok) => {
+                    if (!ok) return;
+                    _emxImportServers(map);
+                });
             };
             reader.readAsText(file);
         });

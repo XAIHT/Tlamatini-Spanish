@@ -51,9 +51,9 @@ body.ctb-dialog-open {
     height: min(760px, 100%);
     min-height: min(500px, 100%);
     overflow: hidden;
-    background: #4a4f5c;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
+    background: var(--tlm-dlg-surface, #4a4f5c);
+    border: var(--tlm-dlg-border, 1px solid rgba(255, 255, 255, 0.12));
+    border-radius: var(--tlm-dlg-radius, 8px);
     box-shadow: 0 22px 70px rgba(0, 0, 0, 0.62);
 }
 
@@ -63,12 +63,12 @@ body.ctb-dialog-open {
     justify-content: space-between;
     gap: 16px;
     padding: 13px 16px;
-    background: #444853;
+    background: var(--tlm-dlg-chrome, #444853);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .ctb-kicker {
-    color: #55bbaa;
+    color: var(--tlm-dlg-accent, #55bbaa);
     font-size: 0.72rem;
     font-weight: 700;
     line-height: 1.1;
@@ -77,7 +77,7 @@ body.ctb-dialog-open {
 
 .ctb-header h2 {
     margin: 2px 0 0;
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.2;
@@ -92,7 +92,7 @@ body.ctb-dialog-open {
     padding: 0;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--tlm-dlg-radius-sm, 6px);
     color: #c8ccd8;
     font-size: 1.7rem;
     line-height: 1;
@@ -101,8 +101,8 @@ body.ctb-dialog-open {
 
 .ctb-icon-button:hover,
 .ctb-icon-button:focus-visible {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
+    color: var(--tlm-dlg-title, #ffffff);
+    background: var(--tlm-dlg-btn-secondary, rgba(255, 255, 255, 0.08));
     border-color: rgba(255, 255, 255, 0.14);
     outline: none;
 }
@@ -123,15 +123,15 @@ body.ctb-dialog-open {
     flex-direction: column;
     overflow: hidden;
     background: rgba(27, 30, 44, 0.32);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+    border: var(--tlm-dlg-hairline, 1px solid rgba(255, 255, 255, 0.08));
+    border-radius: var(--tlm-dlg-radius, 8px);
     padding: 12px;
 }
 
 #contacts-legend {
     flex: none;
     margin: 0 0 10px;
-    color: #c1c5d0;
+    color: var(--tlm-dlg-body, #c1c5d0);
     font-size: 0.88rem;
     line-height: 1.4;
 }
@@ -150,8 +150,8 @@ body.ctb-dialog-open {
     padding: 9px 12px;
     background: rgba(0, 0, 0, 0.22);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 8px;
-    color: #ffffff;
+    border-radius: var(--tlm-dlg-radius, 8px);
+    color: var(--tlm-dlg-title, #ffffff);
     font-family: 'Nunito', sans-serif;
     font-size: 0.94rem;
 }
@@ -190,8 +190,8 @@ body.ctb-dialog-open {
     padding: 11px 13px;
     overflow: hidden;
     background: linear-gradient(135deg, #2c2f44 0%, #353954 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+    border: var(--tlm-dlg-hairline, 1px solid rgba(255, 255, 255, 0.08));
+    border-radius: var(--tlm-dlg-radius, 8px);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     cursor: pointer;
     transition: border-color 0.18s ease-out, box-shadow 0.18s ease-out;
@@ -224,7 +224,7 @@ body.ctb-dialog-open {
 
 .ctb-name {
     overflow: hidden;
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     font-size: 0.98rem;
     font-weight: 700;
     line-height: 1.25;
@@ -251,7 +251,7 @@ body.ctb-dialog-open {
 
 .ctb-chan {
     padding: 2px 8px;
-    border-radius: 6px;
+    border-radius: var(--tlm-dlg-radius-sm, 6px);
     font-family: 'JetBrains Mono', 'Consolas', monospace;
     font-size: 0.64rem;
     font-weight: 700;
@@ -270,7 +270,7 @@ body.ctb-dialog-open {
 
 .ctb-chan-em {
     background: linear-gradient(135deg, #6d28d9 0%, #2563eb 100%);
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
 }
 
 .ctb-del {
@@ -281,8 +281,8 @@ body.ctb-dialog-open {
     flex: none;
     padding: 0;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
+    border: var(--tlm-dlg-border, 1px solid rgba(255, 255, 255, 0.12));
+    border-radius: var(--tlm-dlg-radius, 8px);
     color: #c0c5d2;
     cursor: pointer;
     opacity: 0.5;
@@ -332,7 +332,7 @@ body.ctb-dialog-open {
 .ctb-empty {
     flex: none;
     padding: 14px 12px;
-    color: #c1c5d0;
+    color: var(--tlm-dlg-body, #c1c5d0);
     font-size: 0.86rem;
     line-height: 1.35;
     text-align: center;
@@ -363,7 +363,7 @@ body.ctb-dialog-open {
 }
 
 .ctb-flabel {
-    color: #c1c5d0;
+    color: var(--tlm-dlg-body, #c1c5d0);
     font-size: 0.78rem;
     font-weight: 700;
 }
@@ -379,8 +379,8 @@ body.ctb-dialog-open {
     padding: 8px 11px;
     background: rgba(0, 0, 0, 0.22);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 8px;
-    color: #ffffff;
+    border-radius: var(--tlm-dlg-radius, 8px);
+    color: var(--tlm-dlg-title, #ffffff);
     font-family: 'Nunito', sans-serif;
     font-size: 0.9rem;
 }
@@ -406,7 +406,7 @@ body.ctb-dialog-open {
 
 .ctb-form-hint {
     margin: 6px 0 0;
-    color: #9ca2ba;
+    color: var(--tlm-dlg-muted, #9ca2ba);
     font-size: 0.76rem;
     line-height: 1.35;
 }
@@ -417,7 +417,7 @@ body.ctb-dialog-open {
     justify-content: space-between;
     gap: 12px;
     padding: 12px 14px;
-    background: #444853;
+    background: var(--tlm-dlg-chrome, #444853);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -430,9 +430,9 @@ body.ctb-dialog-open {
 
 .ctb-footer-note code {
     padding: 1px 5px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--tlm-dlg-btn-secondary, rgba(255, 255, 255, 0.08));
     border-radius: 3px;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
 }
 
 .ctb-actions {
@@ -445,9 +445,9 @@ body.ctb-dialog-open {
 .ctb-button {
     min-width: 92px;
     padding: 8px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 6px;
-    color: #ffffff;
+    border: var(--tlm-dlg-border, 1px solid rgba(255, 255, 255, 0.12));
+    border-radius: var(--tlm-dlg-radius-sm, 6px);
+    color: var(--tlm-dlg-title, #ffffff);
     font-family: 'Nunito', sans-serif;
     font-size: 0.88rem;
     font-weight: 700;
@@ -473,11 +473,11 @@ body.ctb-dialog-open {
 }
 
 .ctb-button-secondary {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--tlm-dlg-btn-secondary, rgba(255, 255, 255, 0.08));
 }
 
 .ctb-button-secondary:hover {
-    background: rgba(255, 255, 255, 0.14);
+    background: var(--tlm-dlg-btn-secondary-hover, rgba(255, 255, 255, 0.14));
 }
 
 .ctb-list::-webkit-scrollbar,

@@ -80,6 +80,7 @@ BINARY_EXTENSIONS = {
 LANGUAGE_BY_EXTENSION = {
     ".bat": ("Batch", "Batch"),
     ".css": ("CSS", "CSS"),
+    ".flw": ("Tlamatini Flow", "Flow"),
     ".html": ("HTML", "HTML"),
     ".js": ("JavaScript", "JS"),
     ".json": ("JSON", "JSON"),
@@ -503,6 +504,10 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
         or "1.48.0" in subject
         or "1.48.1" in subject
         or "1.48.2" in subject
+        or "1.48.13" in subject
+        or "runtime provision" in subject
+        or "memory mcp" in subject
+        or "diagram" in subject
         or "execution report" in subject
         or "agent verdict" in subject
         or "smoke alarm" in subject
@@ -512,6 +517,7 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
         or "shoter" in subject
         or "1.48.1" in subject
         or "1.48.2" in subject
+        or "1.48.13" in subject
         or "execution report" in subject
         or "agent verdict" in subject
         or "database" in subject
@@ -555,10 +561,10 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
     )
     if has_current_release_wave:
         highlights.append(
-            "The latest annotated release is `v1.48.2s`; the version stays git-tag-derived (`agent/version.py`) and is never hardcoded. The generated repository facts report the current aligned local/remote HEAD separately because it contains a later execution-verdict reliability commit. Git/source inspection extends README.md and BookOfTlamatini.md before the generated inventory tables derive the current agent, tool, skill, asset, and effective-line totals."
+            "The current release is annotated `v1.48.17` at local/remote HEAD `f948be7b`; `v1.48.15` and `v1.48.16` were tagged the same day and are carried by it. Runtime versions remain git-tag-derived through `agent/version.py`. Generated inventories derive current agent, tool, skill, asset, and effective-line totals from live source."
         )
         highlights.append(
-            "The `v1.48.0` wave adds **LaTeXer** (`agent/agents/latexer/`), and `v1.48.2` hardens her with an ordered eight-rung repair ladder, safer package inference/acquisition, truthful degraded-build reporting, and broader regression proof. The aligned post-tag HEAD adds deterministic agent self-report reconciliation so a diagnostic that successfully finds a defect is not mislabelled as an execution failure. The `v1.47.0` binary-content guard, `v1.46.0` PDFer, `v1.45.x` FlowCreator and oversized-context work, `v1.44.0` prompt grammar, `v1.43.5` recon free-run, `v1.42.0` STM32er PlatformIO expansion, and `v1.41.4` External-MCP structured output remain carried foundations."
+            "`v1.48.15` adds multi-encoding Grepper search, a guarded five-class Exec Report vocabulary, Kuberneter's canonical result fields, `Uninstaller.exe` preservation, and source-derived drift checks; `v1.48.16` adds the themed `tlmAlert`/`tlmConfirm` pop-ups and a post-build proof that fail-open `agent.*` modules really ship inside the frozen archive; `v1.48.17` standardizes dialog dismissal so Escape closes every dialog exactly as its close control does, while an outside click still never dismisses, with a sealed downloading updater as the single exception. The `v1.48.14` private External-MCP runtime/defaults, catalog boundary, and nested-diagram restoration remain carried with the earlier placement, dialog, logging, and runtime safeguards."
         )
     if any("structuredcontent" in subject for subject in subjects):
         highlights.append(
@@ -694,7 +700,7 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
         )
     if any("file-reading" in subject or "file-modification" in subject or "tool-order rule" in subject or "quoted args" in subject for subject in subjects):
         highlights.append(
-            "The working tree also advances the file-navigation and file-editing operator surface: the new Globber, Grepper, and Editor agents/tools let Tlamatini discover files by pattern, search contents by regex, and make surgical in-place edits without falling back to a shell command."
+            "The file-navigation and file-editing operator surface now includes encoding-safe Grepper search: BOM-marked UTF-8/16/32 is decoded before cp1252/Latin-1 fallbacks, genuine binary files are skipped, and Globber/Editor still provide deterministic discovery and surgical replacement without a shell fallback."
         )
     if any("blenderer" in subject or "blender" in subject for subject in subjects):
         highlights.append(
@@ -747,7 +753,7 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
         for subject in subjects
     ):
         highlights.append(
-            "The latest dossier pass resolves the product at annotated release `v1.48.2s`, with the current aligned local/remote HEAD reported separately; it combines README.md and BookOfTlamatini.md with source/Git truth and retains the complete installation, Ollama, architecture, usage, tree, line inventory, and responsibility context."
+            "The latest dossier pass resolves the product at release `v1.48.17`, reports that annotated tag at the aligned local/remote HEAD, and combines README.md and BookOfTlamatini.md with source/Git truth while retaining complete installation, Ollama, architecture, usage, tree, line inventory, and responsibility context."
         )
     elif not has_current_release_wave and any(
         "1.26.5" in subject
@@ -1019,6 +1025,9 @@ def visual_doc_highlights(commits: list[CommitInfo]) -> list[str]:
         or "oob_shift" in subject
         or "stm32er" in subject
         or "structuredcontent" in subject
+        or "runtime provision" in subject
+        or "memory mcp" in subject
+        or "diagram" in subject
         or "django_port" in subject
         or "port of tlamatini" in subject
         or "configurable" in subject
@@ -1033,10 +1042,10 @@ def visual_doc_highlights(commits: list[CommitInfo]) -> list[str]:
     )
     if has_current_release_wave:
         highlights.append(
-            "The latest annotated release is `v1.48.2s`; the current aligned local/remote HEAD is reported independently, and the version remains git-derived rather than hardcoded."
+            "The current release is annotated `v1.48.17` at aligned local/remote HEAD `f948be7b`; the runtime version remains tag-derived rather than hardcoded."
         )
         highlights.append(
-            "The release delta adds and hardens LaTeXer, database startup guarding, bulk MCP/agent checkbox control, ACP backend-disconnection signaling, whole-desktop Shoter capture, language-safe PDFer output, and active-first External-MCP organization. The aligned post-tag commit adds deterministic agent-verdict reconciliation so Exec Report reflects whether work actually ran rather than confusing a successful adverse diagnostic with a process failure."
+            "The release delta adds Grepper's UTF-8/16/32 and Windows-encoding search, the guarded five-class agent-verdict vocabulary, Kuberneter's semantic result shape, updater preservation of `Uninstaller.exe`, and source-derived drift tests; it carries the v1.48.14 External-MCP runtime/defaults, catalog privacy boundary, diagram restoration, and all earlier safeguards."
         )
     if any("structuredcontent" in subject for subject in subjects):
         highlights.append(
@@ -1271,7 +1280,13 @@ def resolve_version_info() -> dict[str, str]:
     # running the generator. With no override it falls through to git tags.
     override = os.environ.get("TLAMATINI_VERSION", "").strip()
     if override:
-        return {"version": override, "build": override, "commit": "override", "date": "", "source": "env"}
+        return {
+            "version": override,
+            "build": override,
+            "commit": git("rev-parse", "--short", "HEAD"),
+            "date": git("show", "-s", "--format=%cI", "HEAD"),
+            "source": "environment release target",
+        }
     version_module_path = PROJECT_DIR / "agent" / "version.py"
     try:
         module = _load_module_from_path("tlamatini_agent_version", version_module_path)
@@ -1313,14 +1328,35 @@ def count_requirements() -> int:
     return count
 
 
-def count_agent_description_rows() -> int:
+def agent_description_names() -> list[str]:
     path = REPO_ROOT / "agents_descriptions.md"
-    count = 0
-    for line in path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-        if stripped.startswith("| **") and "| Agent |" not in stripped and "| Purpose |" not in stripped:
-            count += 1
-    return count
+    return re.findall(
+        r"^\|\s+\*\*([^*]+)\*\*\s+\|",
+        path.read_text(encoding="utf-8"),
+        flags=re.MULTILINE,
+    )
+
+
+def validate_agent_description_parity(agents: list[str], descriptions: list[str]) -> None:
+    def normalize(value: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", value.lower())
+
+    agent_keys = {normalize(name): name for name in agents}
+    description_keys: dict[str, str] = {}
+    duplicates: list[str] = []
+    for name in descriptions:
+        key = normalize(name)
+        if key in description_keys:
+            duplicates.append(name)
+        description_keys[key] = name
+
+    missing_rows = sorted(agent_keys[key] for key in agent_keys.keys() - description_keys.keys())
+    stale_rows = sorted(description_keys[key] for key in description_keys.keys() - agent_keys.keys())
+    if duplicates or missing_rows or stale_rows:
+        raise RuntimeError(
+            "agents_descriptions.md parity failed: "
+            f"duplicates={duplicates}, missing_rows={missing_rows}, stale_rows={stale_rows}"
+        )
 
 
 def count_wrapped_chat_agent_tools() -> int:
@@ -1334,6 +1370,23 @@ def count_skills() -> int:
     return sum(1 for entry in skills_root.iterdir() if entry.is_dir() and (entry / "SKILL.md").exists())
 
 
+def count_external_mcp_supervisor_tools() -> int:
+    path = PROJECT_DIR / "agent" / "external_mcp_manager.py"
+    tree = ast.parse(path.read_text(encoding="utf-8-sig"))
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        if not any(isinstance(target, ast.Name) and target.id == "_SUPERVISOR_TOOL_NAMES"
+                   for target in node.targets):
+            continue
+        value = node.value
+        if isinstance(value, ast.Call) and value.args:
+            value = value.args[0]
+        if isinstance(value, (ast.Set, ast.List, ast.Tuple)):
+            return sum(1 for item in value.elts if isinstance(item, ast.Constant))
+    raise RuntimeError("Could not derive External-MCP supervisor count from source")
+
+
 def collect_context() -> dict:
     tracked = git_tracked_paths()
     untracked = git_untracked_paths()
@@ -1343,8 +1396,11 @@ def collect_context() -> dict:
     total_effective = sum(row.effective_lines for row in language_rows)
     total_lines = sum(row.total_lines for row in language_rows)
     agents = workflow_agents()
+    descriptions = agent_description_names()
+    validate_agent_description_parity(agents, descriptions)
     wrapped_chat_tools = count_wrapped_chat_agent_tools()
     skills_count = count_skills()
+    external_mcp_supervisors = count_external_mcp_supervisor_tools()
     reference_media = extract_reference_media()
     weekly = recent_week_commits()
     visual_baseline = last_visual_doc_commit()
@@ -1372,11 +1428,12 @@ def collect_context() -> dict:
         "total_lines": total_lines,
         "workflow_agents": agents,
         "workflow_agent_count": len(agents),
-        "agent_description_rows": count_agent_description_rows(),
+        "agent_description_rows": len(descriptions),
         "wrapped_chat_agent_count": wrapped_chat_tools,
         "core_python_tool_count": 20,
         "acpx_tool_count": 12,
-        "total_multi_turn_tools": 20 + wrapped_chat_tools + 12,
+        "external_mcp_supervisor_count": external_mcp_supervisors,
+        "total_multi_turn_tools": 20 + wrapped_chat_tools + 12 + external_mcp_supervisors,
         "skills_count": skills_count,
         "requirements_count": count_requirements(),
         "js_modules": len(list((PROJECT_DIR / "agent" / "static" / "agent" / "js").glob("*.js"))),
@@ -1412,8 +1469,9 @@ AGENT_DIRECTORY_DISCLAIMER = [
 WHAT_IT_DOES = [
     "Answers codebase questions with loaded file or directory context.",
     "Uses hybrid retrieval to extract metadata, split content, rank source chunks, and respect context budgets.",
-    "Can discover files by glob pattern, search their contents by regex, and make surgical in-place replacements through the Globber, Grepper, and Editor agent/tool trio.",
-    "Can connect to external MCP servers declared in `external_mcps.json`, expose their remote tools to Multi-Turn under the `ext__<server>__<tool>` naming convention, and supervise those connections through status / reconnect / doctor / import / list / call helpers.",
+    "Can discover files by glob pattern, search their contents by regex through Grepper's BOM-first UTF-8/16/32 and cp1252/Latin-1 decoder while skipping genuine binary data, and make surgical in-place replacements through Editor.",
+    "Can connect to external MCP servers declared in `external_mcps.json`, expose their remote tools to Multi-Turn under the `ext__<server>__<tool>` naming convention, and supervise those connections through ten status / reconnect / doctor / runtime / import / list / call / activate / wait helpers.",
+    "Ships official Memory and Sequential-Thinking MCP catalog defaults in every install, both inactive, and can provision a private per-user Node/npm/npx/pnpm or uv/uvx runtime without admin access or system-PATH changes.",
     "Gives operators GUI-first database maintenance through the new DB dropdown for backup and staged database replacement.",
     "Lets operators manage provider secrets from the browser through the Config -> Access Keys Wizard instead of hand-editing `config.json`.",
     "Can drive Blender through the Blenderer agent, using the official Blender MCP add-on socket to inspect scenes, mutate objects and materials, run raw code, and automate renders from chat or the workflow canvas.",
@@ -1451,14 +1509,14 @@ HOW_IT_WORKS = [
     "RAG chains load selected file/directory context, retrieve relevant chunks, and build answer prompts.",
     "DB-menu actions validate directories or SQLite files in the browser, then call Django views that either copy the live database out or stage a replacement into `DB/ToLoad/db.sqlite3`.",
     "Config -> Access Keys Wizard reads masked provider-key status from the backend and persists only the edited secrets, keeping the browser flow honest without dumping live values back to the page.",
-    "The file-navigation and file-edit trio sits above raw shell execution: Globber enumerates matching files, Grepper scans content with regex while pruning noisy/binary trees, and Editor performs byte-exact in-place replacements without rewriting an entire file.",
-    "External MCP connectivity is catalog-driven: `external_mcps.json` stores Claude-style `mcpServers` entries, `external_mcp_manager.py` negotiates stdio / streamable-HTTP / SSE / WebSocket transports, and wrapped remote tools are surfaced into the planner as `ext__<server>__<tool>` only after the connection is healthy.",
+    "The file-navigation and file-edit trio sits above raw shell execution: Globber enumerates matching files, Grepper decodes BOM-marked UTF-8/16/32 before cp1252/Latin-1 fallbacks while pruning genuine binary/noisy trees, and Editor performs byte-exact in-place replacements without rewriting an entire file.",
+    "External MCP connectivity is catalog-driven: `external_mcps.json` stores preserved Claude-style `mcpServers` state, `external_mcp_defaults.py` seeds inactive Memory/Sequential-Thinking defaults with edit/tombstone semantics, `runtime_provisioner.py` resolves or privately provisions npx/uvx managers, and `external_mcp_manager.py` negotiates stdio / streamable-HTTP / SSE / WebSocket before healthy remote tools become `ext__<server>__<tool>` planner entries.",
     "The MCP Doctor path is intentionally safer than a live connect: it reads the configured server entry, validates transport shape, runtime commands, PATH/toolchain presence, placeholder secrets, and docs/source URLs, then returns an onboarding diagnosis without consuming the server's real tool surface.",
     "Blenderer opens the official Blender MCP add-on TCP socket (default `localhost:9876`), sends one action payload or raw code-execution request, and returns the structured result through the same wrapped-tool / canvas contract used by the rest of the agent catalog.",
     "When Ask Execs is enabled, the synchronous Multi-Turn executor stops before each state-changing tool call, emits an `exec_permission_request`, and waits on `ExecPermissionBroker` until the browser sends Proceed or Deny.",
     "When the browser surfaces an Ask Execs prompt or a Notifier event, JavaScript can POST to `/agent/flash_window/`; the backend then best-effort flashes the `Tlamatini.exe` console/taskbar window through `window_flash.py` and prints an uppercase attention banner for the log.",
     "Installer-time registration writes a per-user HKCU Add/Remove Programs entry pointing at `Uninstaller.exe`, and frozen startup re-checks that entry through `windows_app_registration.self_heal_for_frozen()` so older installs retroactively appear in Windows' uninstall surfaces.",
-    "In-app self-update uses Django views plus `self_update.py` to check GitHub releases, download and stage the selected package, then hand off the locked-file swap to the external `apply_update.ps1` helper before relaunch.",
+    "In-app self-update uses Django views plus `self_update.py` to check GitHub releases, download and stage the selected package, then hand off the locked-file swap to `apply_update.ps1`; the preserve contract retains operator state and `Uninstaller.exe` before relaunch.",
     "Frozen-build hardening now verifies media dependencies during packaging too: `build.py` embeds numpy and OpenCV in both shipped Python runtimes and refuses to produce a release if those imports are missing.",
     "Before a heavy directory embedding run on supported NVIDIA hosts, a fail-open pre-flight guard can estimate VRAM pressure and surface a non-blocking warning in chat.",
     "Version resolution now flows through git tags, a runtime resolver module, generated build artefacts, and an open `/agent/version/` endpoint.",
@@ -1522,7 +1580,7 @@ AGENT_DESCRIPTION_GUIDE = [
 AGENT_RUNTIME_GUIDE = [
     "Every workflow agent follows the same operational skeleton: template directory, `config.yaml`, a session-scoped pool copy, PID/status/log files, and explicit source/target wiring.",
     "Chat-wrapped tool calls launch isolated runtime copies under `agent/agents/pools/_chat_runs_/`, while ACP uses named pool folders such as `starter_1` or `unrealer_1`.",
-        "Specialized agents now stretch the platform in different directions: Globber/Grepper/Editor cover deterministic file discovery, regex search, and surgical in-place edits; Video-Analyzer closes hardware-in-the-loop video verdicts; MCP Doctor performs safe external-MCP onboarding diagnosis; ACPXer drives external coding-agent CLIs; Kalier drives a remote or tunneled Kali Linux tool server; Nmapper drives local use-only nmap scans for authorized targets; STM32er drives a zero-config STM32 firmware MCP bridge; ESP32er drives PlatformIO directly; ESPHomer drives ESPHome directly for YAML-authored smart-home devices; Blenderer drives a live Blender editor over the official MCP add-on socket; Unrealer drives a live UE5 editor; TeleTlamatini bridges full Tlamatini conversations into Telegram; and Telegrammer / Whatsapper send and receive messages over the official Telegram Bot API and Meta WhatsApp Cloud API.",
+        "Specialized agents now stretch the platform in different directions: Globber/Grepper/Editor cover deterministic file discovery, regex search, and surgical in-place edits; Video-Analyzer closes hardware-in-the-loop video verdicts; MCP Doctor performs safe external-MCP onboarding diagnosis; ACPXer drives external coding-agent CLIs; Kalier drives a remote or tunneled Kali Linux tool server; Nmapper drives local use-only nmap scans for authorized targets; STM32er drives a zero-config STM32 firmware MCP bridge; ESP32er drives PlatformIO directly; ESPHomer drives ESPHome directly for YAML-authored smart-home devices; Blenderer drives a live Blender editor over the official MCP add-on socket; Unrealer drives a live UE5 editor; TeleTlamatini bridges full Tlamatini conversations into Telegram; Telegrammer uses official Telegram surfaces; Whatsapper defaults to Meta's official business Cloud API but can explicitly use an unofficial personal-account Web route; and Instant Messaging Doctor diagnoses the official messaging credentials and policy without silently switching providers.",
 ]
 
 ACPX_SKILLS_GUIDE = [
@@ -1534,40 +1592,41 @@ ACPX_SKILLS_GUIDE = [
 def operator_surface_counts_guide(context: dict) -> list[str]:
     return [
         f"The live operator surface now stands at {context['workflow_agent_count']} workflow agents, {context['total_multi_turn_tools']} Multi-Turn tools, {context['acpx_tool_count']} ACPX tools, and {context['skills_count']} skills.",
-        f"Source inspection confirms the total: {context['wrapped_chat_agent_count']} distinct wrapped chat-agent tools bound from `chat_agent_registry.py`, which combines with {context['core_python_tool_count']} core Python tools and {context['acpx_tool_count']} ACPX/Skill tools for {context['total_multi_turn_tools']} Multi-Turn tools overall.",
+        f"Source inspection confirms the total: {context['core_python_tool_count']} core Python tools + {context['wrapped_chat_agent_count']} wrapped chat-agent tools + {context['acpx_tool_count']} ACPX/Skill tools + {context['external_mcp_supervisor_count']} External-MCP supervisors = {context['total_multi_turn_tools']} built-in Multi-Turn tools; healthy active servers add dynamic `ext__*` remotes separately.",
         "The count growth over older public badges now comes from several stacked waves together: the deterministic file-navigation/file-edit trio (Globber, Grepper, Editor), the ESPHomer smart-home firmware lane, MCP Doctor for External MCP onboarding, Zavuerer unified messaging, Video-Analyzer for robotic video verdicts, and Nmapper for local authorized nmap reconnaissance.",
         "The workflow-agent and wrapped-tool totals are validated from the live tree even when some handbook badges or older prose lines lag behind the newest release wave, so the dossier stays tied to source truth instead of stale summaries.",
         "This matters operationally because the planner never binds everything at once: the documented default `max_selected_tools` cap stays at 20, so breadth of capability does not mean uncontrolled tool sprawl per turn.",
     ]
 
 CURRENT_RELEASE_GUIDE = [
-    "Git resolves the latest annotated release to `v1.48.2` at `be0bcb8e`; the current local and `origin/main` HEAD is `7e2ec979`, one synchronized post-tag commit later. The live tree remains authoritative for generated counts and the repository-facts pages preserve both identities.",
-    "`v1.48.0` introduced LaTeXer as the LaTeX-typesetting agent and wrapped `chat_agent_latexer` tool: the typesetting sibling of PDFer, with real `.tex` mathematics, bibliographies, cross-references, indexes, whole-project master detection, `\\input` traversal, and a BibTeX/biber/makeindex convergence loop.",
-    "`v1.48.2` hardens LaTeXer with an ordered eight-rung repair ladder: lint repair, inferred preamble packages, deterministic rewrite rules, a minimal probe, package acquisition, engine fallback, an explicitly configured Ollama repair model, and destructive-last bisection/quarantine. Candidate repairs are re-linted and must actually compile; degraded builds never claim clean success.",
-    "MiKTeX is LaTeXer's recommended prerequisite because it can install a missing package on demand during compilation. Tlamatini deliberately bundles no multi-gigabyte TeX distribution; TeX Live and MacTeX are detected when already present, no-distribution runs refuse cleanly, and `action: install` launches the official MiKTeX installer. `shell_escape` remains off by default and `latexmk` must prove usable rather than merely exist.",
-    "The post-tag `7e2ec979` commit adds `agent/agent_verdict.py`, a deterministic lexer/parser and ordered production-rule engine for wrapped-agent `INI_SECTION` self-reports. It fixes Exec Report false positives and false negatives without replacing auditable rules with model guesses.",
-    "Agent truth now outranks a one-bit process exit code: a read-only diagnostic that successfully finds a defect is SUCCESS as an execution even though its finding is adverse, while refusals, missing work, declared malfunctions, explicit false flags, and real nonzero error counts remain FAILURE. Process and agent views survive key collisions as separate values, every verdict carries provenance, and malformed input fails open.",
-    "The startup database guard (`agent/db_guard.py`, wired before Django in `manage.py`) checks SQLite shape/integrity, preserves suspicious evidence under `DB/Corrupted/`, prints an actionable alarm, remembers healthy size/table fingerprints, and detects silent shrink. It never auto-restores, never blocks startup, exempts volatile ledger/session tables from ordinary row-drop alarms, and caps its own evidence copies.",
-    "Bulk checkbox control now works across current and future MCP/agent dialogs: drag-select labels and press Space to apply one coherent action. Capture-phase handling avoids double toggles, text-entry and disabled controls are protected, rerendering rows are re-resolved, and the rule is deterministic - any checked target means uncheck all; otherwise check all.",
-    "The ACP designer now exposes backend health even though it has no WebSocket: a fail-open fetch wrapper reports network-level failures immediately and an eight-second `/agent/version/` heartbeat catches idle outages. A recovery message appears when the backend returns without taking ownership of ACP button state.",
+    "The current release is annotated `v1.48.17` at aligned local/remote HEAD `f948be7b`, with `v1.48.15` and `v1.48.16` tagged the same day and carried by it. Runtime identity remains Git-tag-derived; generating this dossier changes no runtime code and creates no tag, commit, or push.",
+    "Grepper now detects BOM-marked UTF-8/16/32 before cp1252/Latin-1 fallbacks, deliberately before the NUL-byte binary test, so Windows logs and accented source stay searchable while genuine binaries remain skipped. The updater also preserves `Uninstaller.exe`, and parser-sensitive PowerShell comments stay on standalone lines.",
+    "The carried `v1.48.14` foundation provides Tlamatini's private per-user Node/npm/npx/pnpm and uv/uvx runtime, inactive official Memory/Sequential-Thinking defaults, edit/tombstone semantics, persistent state outside the install directory, secret-separated public/private catalogs, and fixed-point nested-diagram restoration.",
+    "`v1.48.0` introduced LaTeXer and `v1.48.2` hardened it with an eight-rung repair ladder and MiKTeX-first package acquisition. Tlamatini bundles no multi-gigabyte TeX distribution; degraded builds never claim clean success, `shell_escape` stays off, and `latexmk` must prove usable rather than merely exist.",
+    "`agent/agent_verdict.py` now owns the CLOSED `KNOWN_STATUSES` union of five disjoint sets: `DIAGNOSTIC_COMPLETED_STATUSES`, `WORK_COMPLETED_STATUSES`, `WORK_DEGRADED_STATUSES`, `WORK_NOT_DONE_STATUSES`, and `AGENT_ERROR_STATUSES`. The first two are green; the last three are red. R8b remains fail-open for unknown runtime input, while `agent/test_status_vocabulary.py` rejects unknown literals before release.",
+    "The self-report outranks the process exit code, but numeric process results never belong in `status:`. Kuberneter therefore emits `returncode: <int>`, `success: <bool>`, and `status: ok|failed`; its Parametrizer contract exposes all three. Source-derived tests keep supervisor lists, prompt terminal rules, and public/private catalog expectations from drifting with implementation.",
+    "The startup database swap (`manage.py::_apply_pending_db_swap`) runs before Django, archives the outgoing SQLite file family under `DB/Older/`, clears stale WAL/SHM state, and promotes the verified `DB/ToLoad/db.sqlite3` directly.",
+    "Frontend dialogs now share one visual language through `dialog_theme.css` and one fail-open dismissal contract through `dialog_policy.js`: an outside click never dismisses, while Escape finds the topmost open dialog and invokes that dialog's own X/Cancel path so permission denials, confirmation-false results, and scroll-lock cleanup remain intact. A sealed downloading updater is the single exception and refuses Escape/reload shortcuts. `tlmAlert` / `tlmConfirm` replace the remaining native pop-ups inside Contacts and External MCP dialogs, while `release_notes_renderer.js` safely renders update notes.",
+    "The `v1.48.16` build proof names fail-open imports explicitly with hidden-import flags, opens the PyInstaller archive it just produced, and aborts if any of seven required `agent.*` modules is genuinely absent. Unreadable archive formats warn rather than fabricate failure, but a readable archive missing a required module cannot ship.",
+    "Long operations use `LONG_OPERATION_DISABLED_MENU_BUTTONS` as the single Open/Save/Context/MCPs/Skills/External/Config/DB/Reconnect lock list; disable/restore paths preserve `data-bs-toggle`, while only Check for Updates and Configure Agents receive the targeted extra lock. Application logging now attributes output by user, request, stream, and source line.",
     "Shoter now captures the whole desktop by default so secondary-monitor evidence is not silently lost, accepts a basename-sanitized exact filename for report workflows, falls back to primary-screen capture when `all_screens` is unsupported, and emits the resolved capture settings in its structured result.",
     "PDFer now localizes its own footer/fallback-title labels through `document_language` and forces optional Ollama polish to preserve the source language. External-MCP catalog refinements pin active services first, keep them alphabetized, add active/catalog headings, and preserve focus after rerendering.",
     "`v1.47.0` keeps the binary-content guard: `agent/rag/binary_guard.py` screens candidate context bytes with a short-circuiting extension/BOM/signature/NUL/control-ratio/UTF-8 cascade and logs each omission as `--- [BINARY-GUARD]`. Configuration can disable detection, tune the control ratio, or override text/binary extensions.",
     "`v1.46.0` PDFer, `v1.45.x` FlowCreator and oversized-context recovery, `v1.44.0` prompt grammar, `v1.43.5` recon free-run, `v1.42.0` STM32er PlatformIO and stepwise camera demos, and `v1.41.4` External-MCP structured-result delivery remain carried behavior.",
     "The categorized prompt catalog, per-user Hard Cancel epochs, path-native screenshot paste/drop, configurable port, FlowPills discovery, Unreal scaffold, self-healing, robotic loop, firmware/media agents, External MCPs, ACPX skills, and deterministic file tools remain part of the complete product rather than being reduced to a latest-changes summary.",
     "README.md and BookOfTlamatini.md retain the complete MIT-licensed installation, Ollama setup, architecture, everyday-use, agent, and responsibility narrative. The plain-Python agent disclaimer is explicit: transparency enables user control but is not a security warranty, and authorization, review, permissions, and consequences remain the operator's responsibility.",
-    "README.md and BookOfTlamatini.md still display `v1.48.0` on some release surfaces, so this dossier uses the annotated Git tag/commit graph for release identity while treating those documents as the primary behavioral handbook.",
+    "README.md and BookOfTlamatini.md display `v1.48.17`, and the Git evidence section reports that same annotated tag at the aligned local/remote HEAD. Whenever the documentation version runs ahead of the newest tag it must be labelled a target and reported separately, so a documentation target is never misreported as an already-created tag.",
     "The inventory is rebuilt from Git-tracked plus Git-unignored files without reproducing credentials, endpoints, private values, or machine-specific configuration. This generation pass does not stage, commit, or push anything.",
-    "The regenerated PDF/PPTX preserve the whole system, architecture, installation/use guidance, recent Git history, complete file tree, effective-line inventory, and validation evidence; tagged behavior and the aligned post-tag commit are described separately.",
+    "The regenerated PDF/PPTX preserve the whole system, architecture, installation/use guidance, recent Git history, complete file tree, effective-line inventory, and validation evidence; the current tagged behavior and its historical predecessors are described separately.",
 ]
 
 RECENT_ASSETS_GUIDE = [
-    "LaTeXer assets include `agent/agents/latexer/{latexer.py,config.yaml}`, migrations `0191`-`0193`, the wrapped-tool/ACPX wiring, `test_latexer_agent.py`, `test_latexer_repair_ladder.py`, the generated suite in `test_latexer_suite.py`, and step-by-step development harnesses.",
-    "Execution-verdict assets include the new `agent/agent_verdict.py`, `test_agent_verdict.py`, expanded `test_exec_report_verdict.py`, and coordinated integration in `tools.py`, `mcp_agent.py`, and LaTeXer's structured self-report path.",
-    "Database-safety assets include `agent/db_guard.py`, `test_db_guard.py`, pre-Django wiring in `manage.py`, and tracked `DB/Corrupted/` evidence samples. The binary inventory recognizes the nonstandard corrupt-database artifact as skipped binary content rather than counting its bytes as source lines.",
-    "Frontend reliability assets include `static/agent/js/checkbox_bulk_toggle.js`, `test_checkbox_bulk_toggle.py`, both page-template load points, `static/agent/js/acp-connection-status.js`, the ACP status bar/CSS, and browser harnesses for bulk selection and backend-outage behavior.",
-    "Operator refinements update Shoter's config/agent/tests and browser harnesses, PDFer's language-preserving document path, and External-MCP catalog ordering/focus behavior. These are implementation changes backed by source and tests, not documentation-only claims.",
-    "No newly tracked standard image, audio, video, PDF, or PPTX asset was added in the audited post-dossier range. The generated tree and language tables still count every current tracked/unignored asset, and the binary/skipped totals explicitly account for non-text evidence files.",
+    "Search assets now include Grepper's encoding-aware source and `agent/test_grepper_encodings.py`, whose sixteen cases cover BOM precedence, UTF-8/16/32, cp1252/Latin-1, unreadable inputs, and genuine binary exclusion.",
+    "Execution-truth assets include `agent/agent_verdict.py`, Kuberneter, `services/agent_contracts.py`, and `agent/test_status_vocabulary.py`, which statically guards the five status classes and rejects numeric-status interpolation.",
+    "Updater/build evidence includes the `apply_update.ps1` `Uninstaller.exe` preservation rule and a source-derived `test_preserved_user_state.py` contract proving that only the explicit private builder can supply a maintainer External-MCP catalog.",
+    "The carried External-MCP runtime/default wave remains represented by `runtime_provisioner.py`, `external_mcp_defaults.py`, manager/doctor/apps/build wiring, isolated state, and focused runtime/default/public-build tests.",
+    "Response-rendering assets still harden `services/response_parser.py` and its tests so nested explicit/auto diagrams, Markdown thematic breaks, malformed sentinels, and NUL cleanup remain lossless.",
+    "The tracked tree reflects repository cleanup too: obsolete draft performance/FlowPills documents and duplicate image assets removed after v1.48.14 are no longer presented as current assets; the transactional-updater document remains explicitly a design proposal, not shipped behavior.",
 ]
 
 STRUCTURED_CONTENT_1414_GUIDE = [
@@ -1666,7 +1725,7 @@ NMAPPER_GUIDE = [
 
 STARTUP_PROMPT_POLISH_GUIDE = [
     "`v1.39.4` restored first-run/startup dialog closeability so a fresh launch can no longer be trapped behind an unclosable overlay.",
-    "Commit `a45fe0e0` followed the public `v1.39.4` tag with Catalog-of-Prompts localization cleanup; that historical polish remains carried by current `v1.48.2`.",
+    "Commit `a45fe0e0` followed the public `v1.39.4` tag with Catalog-of-Prompts localization cleanup; that historical polish remains carried by the `v1.48.17` release.",
     "The prompt catalog path stays centralized through the secure one-call `/agent/list_prompts/` endpoint ordered by category rank and stable surviving id, while the gap-tolerant probe loop remains only as an offline fallback.",
     "Frontend mutable-state tests and dialog templates continue to guard the chat/startup/overlay surfaces so future cleanup passes do not reintroduce const-poison or close-button regressions.",
 ]
@@ -1715,7 +1774,7 @@ FRONTEND_HOTFIX_GUIDE = [
 ]
 
 V136_RELEASE_GUIDE = [
-    "Release identity: the latest annotated version is `v1.48.2s`, while the generated repository facts report the aligned post-tag local/remote HEAD separately; v1.48.2 LaTeXer hardening, the v1.48.0 LaTeXer introduction, v1.47.0 binary-content guard, v1.46.0 PDFer, v1.45.0 FlowCreator wrapped chat-agent, v1.44.0 Catalog-of-Prompts parameter standardization, v1.43.5 recon free-run (OOB_shift_reaper), v1.42.0 STM32er PlatformIO, v1.41.4 External-MCP structured output, and earlier waves remain part of this release lineage.",
+    "Release identity: `v1.48.17` is the latest annotated tag and the documentation/package version, at aligned local/remote HEAD `f948be7b`; `v1.48.15` and `v1.48.16` were tagged the same day. The release adds encoding-safe Grepper search, guarded verdict classes, Kuberneter result normalization, updater/uninstaller preservation, source-derived drift checks, themed pop-ups with a frozen-bundle carriage proof, and the standardized Escape-closes-every-dialog policy with its sealed-updater exception, while carrying the private MCP runtime/defaults, diagram restoration, Mover/Deleter guard, LaTeXer, binary guard, PDFer, FlowCreator, prompt grammar, recon, STM32er PlatformIO, structured External-MCP output, and earlier waves.",
     "New agent: Video-Analyzer becomes the current media-verdict workflow agent and wrapped `chat_agent_video_analyzer`, complementing Image-Interpreter with video-specific motion analysis.",
     "Implementation assets: `agent/agents/video_analyzer/`, migrations `0166_add_video_analyzer.py`, `0167_add_chat_agent_video_analyzer_tool.py`, `0168_add_video_analyzer_demo_prompt.py`, `test_video_analyzer_agent.py`, `chat_agent_registry.py`, `mcp_agent.py`, and `services/agent_contracts.py` all move together.",
     "Model strategy: `interpreter_model_1` defaults to `qwen3-vl:235b-cloud`, `interpreter_model_2` defaults to `qwen3.5:cloud`, and `merging_model` defaults to `glm-5.2:cloud`, with independent calls merged only after both interpreters report.",
@@ -1901,7 +1960,7 @@ PROMPT_CATALOG_GUIDE = [
     "Version `1.3.2` tightened the HTML answer contract with a Prime Directive on visual readability: explicit background and text color, no grey-on-dark body text, and safer table-body defaults.",
     "The seeded `Prompts` dropdown was also re-sorted into a learner path: context-only Q&A first, then metrics, files search, shell, code generation, vision, specialized single-tool actions, agent control, Unrealer, and heavier Multi-Turn/ACPX demos last.",
     "The `v1.35.0` prompt-search pass then makes that larger catalog easier to operate: prompt cards support substring, word-start, and fuzzy matching, with mode badges that keep one-shot, Multi-Turn, ACPX, Exec Report, and Step-by-Step demos visually distinct.",
-    "Those readability rules remain in force in the current documentation set; `v1.48.2` hardens the LaTeXer introduced in v1.48.0 on top of the v1.47.0 binary-content guard, v1.46.0 PDFer, the chat-callable FlowCreator, v1.44.0 Catalog-of-Prompts standardization, v1.41.4 External-MCP structured-output delivery, v1.41.3 category grouping, gap-tolerant loading, and ranked fuzzy search while preserving the broader operator context.",
+    "Those readability rules remain in force in the `v1.48.17` release documentation set; it adds encoding-safe search and guarded execution truth while carrying private MCP runtime/defaults, diagram hardening, LaTeXer, the binary guard, PDFer, chat-callable FlowCreator, prompt standardization, structured External-MCP delivery, category grouping, gap-tolerant loading, and ranked fuzzy search.",
 ]
 
 SELF_KNOWLEDGE_GUIDE = [
@@ -2211,9 +2270,9 @@ RELEASE_GUIDE = [
 ]
 
 EXEC_REPORT_GUIDE = [
-    "Exec Report is a Multi-Turn-only transparency layer that appends one operation table per state-changing agent family to the final answer.",
+    "Exec Report is a Multi-Turn-only transparency layer that appends operation tables for every wrapped agent family, including observational and read-only agents; `_EXEC_REPORT_TOOLS` only refines grouping and style.",
     "Rows are recorded from the live tool-call stream rather than guessed from the LLM prose, so the report is the operational ground truth.",
-    "Each row receives a SUCCESS/FAILURE verdict from raw tool returns, making long installs, deployments, and remediations inspectable after the fact.",
+    "Each row receives a deterministic SUCCESS/FAILURE verdict from the agent's structured self-report: completed diagnostics and intact work are green, while degraded, not-done, and agent-error statuses are red under the guarded five-class vocabulary.",
     "When Ask Execs is enabled, Exec Report and the red denial banner complement each other: already-executed steps still render as tables, while the denied step stays out of the tables and is surfaced only through the interruption banner.",
 ]
 
@@ -3058,6 +3117,13 @@ def add_text(
     frame.clear()
     frame.word_wrap = True
     frame.vertical_anchor = MSO_ANCHOR.TOP
+    # PowerPoint's implicit textbox margins vary by host and can make text that
+    # fits geometrically report a small native-render overflow. Pin them so the
+    # generated deck has the same conservative text bounds everywhere.
+    frame.margin_left = Pt(1)
+    frame.margin_right = Pt(1)
+    frame.margin_top = Pt(1)
+    frame.margin_bottom = Pt(1)
     p0 = frame.paragraphs[0]
     p0.alignment = align
     add_run(p0, text, size, color or THEME["white"], bold, font)
@@ -3116,8 +3182,8 @@ def add_bullets(
     # Backstop only: PowerPoint may re-shrink on edit. The deterministic size
     # computed below is the primary guarantee against overflow.
     frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
-    frame.margin_left = Pt(3)
-    frame.margin_right = Pt(3)
+    frame.margin_left = Pt(1)
+    frame.margin_right = Pt(1)
     frame.margin_top = Pt(2)
     frame.margin_bottom = Pt(2)
     space_after_pt = 4.0
@@ -3200,7 +3266,7 @@ def add_flow_boxes(
         add_text(slide, audit, bx + 0.08, y + 0.18, box_w - 0.16, 0.28, label, 10, THEME["white"], True, PP_ALIGN.CENTER, name=f"flow-{idx}")
         audit.append((bx, y, box_w, 0.75, f"flowbox-{idx}"))
         if idx < len(labels) - 1:
-            add_text(slide, audit, bx + box_w, y + 0.19, gap, 0.2, ">", 12, accent, True, PP_ALIGN.CENTER, name=f"arrow-{idx}")
+            add_text(slide, audit, bx + box_w, y + 0.19, gap, 0.28, ">", 12, accent, True, PP_ALIGN.CENTER, name=f"arrow-{idx}")
 
 
 def audit_layout(audit: list[tuple[float, float, float, float, str]], slide_no: int) -> None:
@@ -3410,7 +3476,7 @@ def build_ppt(context: dict) -> None:
     ], THEME["jade"], "mt-b", 16)
     audit_layout(audit, len(prs.slides))
 
-    slide, audit = add_slide(prs, "Ask Execs", "v1.10.0 safety modifier still active in v1.48.2", THEME["amber"])
+    slide, audit = add_slide(prs, "Ask Execs", "v1.10.0 safety modifier still active in v1.48.17", THEME["amber"])
     add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Operator contract", ASK_EXECS_GUIDE, THEME["amber"], "ask-a", 13)
     add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Runtime mechanics", ASK_EXECS_PIPELINE_GUIDE, THEME["jade"], "ask-b", 13)
     audit_layout(audit, len(prs.slides))
@@ -3424,7 +3490,7 @@ def build_ppt(context: dict) -> None:
     ], THEME["amber"], "attention-b", 12)
     audit_layout(audit, len(prs.slides))
 
-    slide, audit = add_slide(prs, "Windows Installed-App Registration", "v1.11.0 uninstall integration carried into v1.48.2", THEME["copper"])
+    slide, audit = add_slide(prs, "Windows Installed-App Registration", "v1.11.0 uninstall integration carried into v1.48.17", THEME["copper"])
     add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "What changed", WINDOWS_APP_REGISTRATION_GUIDE, THEME["copper"], "arp-a", 12)
     add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Why operators care", [
         "Packaged installs now show up in normal Windows uninstall surfaces instead of only leaving behind shortcuts and a loose `Uninstaller.exe` in the install folder.",
@@ -3433,19 +3499,30 @@ def build_ppt(context: dict) -> None:
     ], THEME["jade"], "arp-b", 12)
     audit_layout(audit, len(prs.slides))
 
-    slide, audit = add_slide(prs, "Current Release Focus", "v1.48.2 tagged release plus one aligned post-tag reliability commit", THEME["amber"])
+    slide, audit = add_slide(prs, "Current Release Focus", "v1.48.17 - encoding-safe search, guarded verdicts, uniform dialog dismissal, updater integrity", THEME["amber"])
     add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Release line", CURRENT_RELEASE_GUIDE[:2], THEME["amber"], "rel-a", 10)
-    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "LaTeXer hardening and prerequisite", CURRENT_RELEASE_GUIDE[2:4], THEME["jade"], "rel-b", 10)
+    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Carried runtime and typesetting foundation", CURRENT_RELEASE_GUIDE[2:4], THEME["jade"], "rel-b", 10)
     audit_layout(audit, len(prs.slides))
 
-    slide, audit = add_slide(prs, "Execution Truth And Runtime Reliability", "deterministic verdicts, database safety, and interface safeguards", THEME["jade"])
+    slide, audit = add_slide(prs, "Execution Truth And Runtime Reliability", "closed status vocabulary, canonical result fields, and runtime safeguards", THEME["jade"])
     add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Deterministic execution truth", CURRENT_RELEASE_GUIDE[4:6], THEME["jade"], "rel-c", 10)
-    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Data and interface safeguards", CURRENT_RELEASE_GUIDE[6:9], THEME["amber"], "rel-d", 10)
+    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Database startup safeguard", CURRENT_RELEASE_GUIDE[6:7], THEME["amber"], "rel-d", 11)
+    audit_layout(audit, len(prs.slides))
+
+    slide, audit = add_slide(prs, "Dialog And Bundle Proof", "v1.48.16 - v1.48.17 operator-safety contract", THEME["copper"])
+    add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Uniform dismissal and themed pop-ups", [
+        CURRENT_RELEASE_GUIDE[7],
+        "The bubble-phase dispatcher closes only the topmost layer through its own dismiss control; no affirmative action is selected and one Escape cannot close two stacked dialogs.",
+    ], THEME["copper"], "dialog-release-a", 10)
+    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Frozen payload proof", [
+        CURRENT_RELEASE_GUIDE[8],
+        "Evidence: 35 focused dismissal-policy tests, a visible headed-Chrome proof runner, the tree-wide `closeOnEscape: false` guard, and build tests for CArchive/PYZ inspection.",
+    ], THEME["jade"], "dialog-release-b", 10)
     audit_layout(audit, len(prs.slides))
 
     slide, audit = add_slide(prs, "Operator Refinements", "capture, PDF language, and External-MCP catalog behavior", THEME["copper"])
-    add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Whole-desktop capture", CURRENT_RELEASE_GUIDE[9:10], THEME["copper"], "rel-operator-a", 11)
-    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Document and MCP refinements", CURRENT_RELEASE_GUIDE[10:11], THEME["jade"], "rel-operator-b", 11)
+    add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Menus, logging, and whole-desktop capture", CURRENT_RELEASE_GUIDE[9:11], THEME["copper"], "rel-operator-a", 10)
+    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Document and MCP refinements", CURRENT_RELEASE_GUIDE[11:12], THEME["jade"], "rel-operator-b", 11)
     audit_layout(audit, len(prs.slides))
 
     slide, audit = add_slide(prs, "Recent Implementation Assets", "new source, tests, migrations, harnesses, and inventory effects", THEME["amber"])
@@ -3454,8 +3531,8 @@ def build_ppt(context: dict) -> None:
     audit_layout(audit, len(prs.slides))
 
     slide, audit = add_slide(prs, "Release Continuity", "older waves still carried by the current dossier", THEME["copper"])
-    add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Carried product story", CURRENT_RELEASE_GUIDE[11:15], THEME["copper"], "rel-e", 10)
-    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Documentation contract", CURRENT_RELEASE_GUIDE[15:], THEME["jade"], "rel-f", 10)
+    add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Carried product story", CURRENT_RELEASE_GUIDE[12:16], THEME["copper"], "rel-e", 10)
+    add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Documentation contract", CURRENT_RELEASE_GUIDE[16:], THEME["jade"], "rel-f", 10)
     audit_layout(audit, len(prs.slides))
 
     slide, audit = add_slide(prs, "External MCP Structured Results", "v1.41.4 - successful server data reaches the model", THEME["jade"])
@@ -3995,22 +4072,22 @@ def build_ppt(context: dict) -> None:
                 add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Data and operator contract", group[split_at:], THEME["amber"], f"since-more-b-{offset}", 10)
             audit_layout(audit, len(prs.slides))
 
-    slide, audit = add_slide(prs, "Recent Platform Additions", "v1.48.2 release lineage and aligned post-tag reliability", THEME["jade"])
+    slide, audit = add_slide(prs, "Recent Platform Additions", "v1.48.15 - v1.48.16 - v1.48.17 release lineage", THEME["jade"])
     add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Recent agents and execution surfaces", [
         "PDFer (v1.46.0): visual and wrapped document composer for Markdown, HTML, text, images, mixed reports, and PDF merging, with safe preflight and real-renderer tests.",
         "LaTeXer (v1.48.0/v1.48.2): visual and wrapped LaTeX typesetter with whole-project compilation, bibliography/index convergence, readable diagnostics, and an eight-rung repair ladder. Requires MiKTeX; refuses cleanly when no distribution is present.",
-        "Execution verdict (post-tag HEAD): deterministic self-report parsing separates successful diagnostics from adverse findings, preserves process and agent truth, and fixes Exec Report false positives/false negatives.",
+        "Execution verdict (v1.48.17): five guarded status classes distinguish completed diagnostics and intact work from degraded, not-done, and error outcomes; Kuberneter exposes returncode/success/status without numeric-status ambiguity.",
         "STM32er (v1.42.0): device-aware PlatformIO routing adds Blue Pill/mainstream-family build and safe flash; new stepwise Blue Pill/F407 demos finish with camera evidence.",
         "Prompt catalog (v1.42.0): migration 0179 deliberately regroups and renumbers every row to contiguous 1..N category blocks, backed by four database invariants tests.",
         "Hard Cancel (v1.41.2): per-user run epochs stop executor/retry/self-healing resurrection while preserving completed tool evidence and the next request.",
         "Binary-content guard (v1.47.0): candidate context files are screened by bytes, binary content is dropped from the embedding chain, and each omission is logged as --- [BINARY-GUARD]; fail-open by contract.",
     ], THEME["copper"], "monday-a", 10)
     add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Lifecycle, policy, and monitoring", [
-        "Resolved identity: the latest annotated version is v1.48.2; the aligned local/remote HEAD is one post-tag commit later and is reported separately, while local configuration values are not reproduced here.",
+        "Resolved identity: v1.48.17 is the latest annotated tag, at aligned local/origin HEAD f948be7b; v1.48.15 and v1.48.16 were tagged the same day and are carried by it. Local configuration values are never reproduced here.",
         "The stronger disclaimer says plain-Python transparency enables user control but is not a security warranty; the operator owns authorization, permissions, review, and consequences.",
         "The dossier distinguishes tagged behavior from local configuration-only changes, preserves private-data discipline, and does not stage, commit, or push.",
         "Operator setup: easy-start install, Ollama guidance, Config dialogs, DB menu, and Windows Installed-apps registration stay in the dossier.",
-        f"Catalog now stands at {context['workflow_agent_count']} workflow agents and {context['total_multi_turn_tools']} Multi-Turn tools ({context['wrapped_chat_agent_count']} wrapped chat-agent + {context['acpx_tool_count']} ACPX/Skill + {context['core_python_tool_count']} core), with {context['skills_count']} skills.",
+        f"Catalog now stands at {context['workflow_agent_count']} workflow agents and {context['total_multi_turn_tools']} built-in Multi-Turn tools ({context['core_python_tool_count']} core + {context['wrapped_chat_agent_count']} wrapped + {context['acpx_tool_count']} ACPX/Skill + {context['external_mcp_supervisor_count']} External-MCP supervisors), with {context['skills_count']} skills; dynamic ext__ remotes are separate.",
     ], THEME["jade"], "monday-b", 10)
     audit_layout(audit, len(prs.slides))
 
@@ -4110,6 +4187,7 @@ def serialize_context(context: dict) -> dict:
         "wrapped_chat_agent_count": context["wrapped_chat_agent_count"],
         "core_python_tool_count": context["core_python_tool_count"],
         "acpx_tool_count": context["acpx_tool_count"],
+        "external_mcp_supervisor_count": context["external_mcp_supervisor_count"],
         "total_multi_turn_tools": context["total_multi_turn_tools"],
         "skills_count": context["skills_count"],
         "requirements_count": context["requirements_count"],

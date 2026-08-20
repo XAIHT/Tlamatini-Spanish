@@ -790,13 +790,32 @@ body.resizing-vertical {
     }
 }
 
+/* ============================================================
+ * jQuery-UI dialogs on the chat page — GEOMETRY ONLY
+ * ------------------------------------------------------------
+ * Angela, 2026-08-15: this block used to carry a SECOND COPY of
+ * the dialog chrome — the #4a4f5c card, 12px corners, the flat
+ * shadow, the #e0e0e0 title and the centred #626978 buttons —
+ * duplicating what `dialog_theme.css` already owns. The theme
+ * loads LAST so it won on the cascade and the page LOOKED right,
+ * which is exactly what made the duplication dangerous: it was
+ * invisible until someone edited one file and wondered why the
+ * other page did not change. Same defect the canvas stylesheet
+ * carried (fixed 2026-08-12).
+ *
+ * What stays here is only what is genuinely this page's: the
+ * sizing envelope, the DRAGGABLE titlebar, the close-X glyph and
+ * the centred body padding these dialogs were laid out around.
+ *
+ * ⚠️ Do NOT re-add background-color / border-radius / box-shadow
+ * / title colour / button colours here. Consume the --tlm-dlg-*
+ * tokens instead, or the two pages start drifting again.
+ * ---------------------------------------------------------- */
+
 .ui-dialog {
-    background-color: #4a4f5c;
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
     padding: 0;
+    /* Keeps the card's rounded corners clipping their contents. */
     overflow: hidden;
     min-width: min(600px, calc(100vw - 24px));
     max-width: calc(100vw - 24px);
@@ -804,86 +823,99 @@ body.resizing-vertical {
     z-index: 10000;
 }
 
+/* `cursor: move` is functional here: these dialogs are draggable. */
 .ui-dialog .ui-dialog-titlebar {
-    background-color: #444853;
-    border: none;
     padding: 12px 20px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    font-weight: 700;
-    color: #e0e0e0;
     position: relative;
     cursor: move;
 }
 
+/*
+ * The X GLYPH (a background image) is ours; its hit-target, hover
+ * chip and right offset come from the theme. Longhands on purpose
+ * — the `background:` shorthand would reset the background-color
+ * the theme paints on hover.
+ */
 .ui-dialog .ui-dialog-titlebar-close {
-    background: none;
-    border: none;
+    background-color: transparent;
     position: absolute;
     top: 50%;
-    right: 15px;
     transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
     margin: 0;
     padding: 0;
-    opacity: 0.6;
-    transition: opacity 0.2s ease-in-out;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FFFFFF'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
     background-size: 14px 14px;
     background-repeat: no-repeat;
     background-position: center;
 }
 
-.ui-dialog .ui-dialog-titlebar-close:hover {
-    opacity: 1;
-}
-
+/*
+ * `background: none` is load-bearing: the CARD is painted by the
+ * theme, so the content area must stay transparent over it.
+ */
 .ui-dialog .ui-dialog-content {
     background: none;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-text);
+    font-family: var(--tlm-dlg-font);
     text-align: center;
     padding: 30px 50px;
     max-height: calc(100dvh - 160px);
     overflow: auto;
 }
 
-#dialog-message h1 {
-    font-size: 24px;
+/*
+ * Body typography for the chat-page dialogs.
+ *
+ * These rules used to be `#dialog-message h1` / `#dialog-message p`
+ * — an id that does NOT exist on this page (every dialog here is
+ * `#<name>-dialog-message`: confirmation, exec-permission, mcps,
+ * agents, skills, contacts, config-*, backup-db, set-db …), so they
+ * styled NOTHING and each dialog body fell back to whatever
+ * Bootstrap gave it. Scoped to the dialog content and built from
+ * the tokens, they now read as one program.
+ */
+.ui-dialog .ui-dialog-content h1,
+.ui-dialog .ui-dialog-content h2,
+.ui-dialog .ui-dialog-content h3,
+.ui-dialog .ui-dialog-content h4,
+.ui-dialog .ui-dialog-content h5 {
+    color: var(--tlm-dlg-title);
+    font-family: var(--tlm-dlg-font);
     font-weight: 700;
-    color: #ffffff;
+    line-height: 1.25;
     margin: 0 0 10px;
 }
 
-#dialog-message p {
-    font-size: 16px;
+.ui-dialog .ui-dialog-content h1 {
+    font-size: 1.5rem;
+}
+
+.ui-dialog .ui-dialog-content h2 {
+    font-size: 1.25rem;
+}
+
+.ui-dialog .ui-dialog-content h3,
+.ui-dialog .ui-dialog-content h4 {
+    font-size: 1.1rem;
+}
+
+.ui-dialog .ui-dialog-content h5 {
+    font-size: 1rem;
+}
+
+.ui-dialog .ui-dialog-content>p {
+    color: var(--tlm-dlg-body);
+    font-size: 0.95rem;
+    line-height: 1.45;
     margin: 0;
 }
 
-.ui-dialog .ui-dialog-buttonpane {
-    background: none;
-    border: none;
-    padding: 0 50px 30px;
-    margin-top: 25px;
-}
-
-.ui-dialog .ui-dialog-buttonset {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    float: none;
-}
-
-.ui-dialog .ui-button {
-    background-color: #626978;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: #ffffff;
-    padding: 10px 24px;
-}
+/*
+ * NOTE: `.ui-dialog-buttonpane` / `-buttonset` / `.ui-button` are
+ * deliberately ABSENT. The footer bar, its actions and the button
+ * styles all come from dialog_theme.css now. Re-adding them here
+ * recreates the duplication this block was written to remove.
+ */
 
 .context-ellipsis {
     display: inline-block;
@@ -1085,14 +1117,20 @@ body.resizing-vertical {
     margin: 0;
 }
 
-/* About dialog */
+/* ── About dialog ────────────────────────────────────────────────────
+   Usa los tokens de dialog_theme.css, igual que los demas dialogos.
+   Antes traia su propio color (#1a1a2e, #e0e0e0, rgba(0,0,0,.7)), asi
+   que quedaba de otro color que el resto del sistema y no seguia un
+   cambio de tema. Cada var() lleva su valor previo como respaldo: si
+   dialog_theme.css no cargara, el dialogo se ve como antes en vez de
+   quedarse sin color. */
 .about-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--tlm-dlg-overlay, rgba(0, 0, 0, 0.7));
     z-index: 20000;
     display: flex;
     align-items: center;
@@ -1103,10 +1141,16 @@ body.resizing-vertical {
     position: relative;
     width: min(800px, calc(100vw - 24px));
     max-height: calc(100dvh - 24px);
-    background: #1a1a2e;
-    border-radius: 12px;
+    /* Sin respaldo a #1a1a2e a proposito: ese azul-marino privado era el
+       que hacia que esta tarjeta se viera de otro color que el resto de
+       los dialogos. El token manda, sin escapatoria. */
+    background: var(--tlm-dlg-surface);
+    color: var(--tlm-dlg-body);
+    font-family: var(--tlm-dlg-font, 'Nunito', sans-serif);
+    border: var(--tlm-dlg-border, 1px solid rgba(255, 255, 255, 0.12));
+    border-radius: var(--tlm-dlg-radius, 12px);
     overflow: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--tlm-dlg-shadow, 0 20px 60px rgba(0, 0, 0, 0.5));
 }
 
 .about-close-btn {
@@ -1115,13 +1159,22 @@ body.resizing-vertical {
     right: 12px;
     background: none;
     border: none;
-    color: #ffffff;
+    color: var(--tlm-dlg-title, #ffffff);
     font-size: 24px;
     cursor: pointer;
     z-index: 1;
     opacity: 0.7;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, background 0.2s;
     line-height: 1;
+    /* Un glifo suelto es un blanco de 8px: en la practica se le pega uno
+       al lado. 32x32 le da area real de click y la esquina redondeada
+       ensena donde termina el boton al pasar el mouse. */
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--tlm-dlg-radius-sm, 6px);
 }
 
 .about-close-btn:hover {
@@ -1141,9 +1194,9 @@ body.resizing-vertical {
 }
 
 .about-text {
-    background: #1a1a2e;
+    background: var(--tlm-dlg-surface, #1a1a2e);
     padding: 16px 24px 20px;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
 }
 
 .about-text p {
@@ -1154,15 +1207,27 @@ body.resizing-vertical {
 .about-company-name {
     font-size: 14px;
     font-weight: 700;
+    color: var(--tlm-dlg-title, #ffffff);
 }
 
 .about-version {
     font-size: 13px;
+    color: var(--tlm-dlg-muted, #9ca2ba);
 }
 
 .about-owner {
     font-size: 13px;
     font-weight: 700;
+}
+
+/* El credito de autoria. `text-transform` estaba solo en la edicion en
+   ingles, asi que el mismo renglon salia en MAYUSCULAS alla y en
+   minusculas aca. Se iguala. */
+.about-creator {
+    color: var(--tlm-dlg-accent, #55bbaa);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 /* ── Check-for-updates dialog (reuses .about-overlay) ───────────────── */
@@ -1173,7 +1238,7 @@ body.resizing-vertical {
 
 .update-body {
     padding: 22px 26px 24px;
-    color: #e0e0e0;
+    color: var(--tlm-dlg-body, #e0e0e0);
 }
 
 .update-title {
@@ -1230,12 +1295,35 @@ body.resizing-vertical {
     transition: width 0.3s ease;
 }
 
+/* La barra de arriba y la de abajo son lo que hace que un dialogo se lea
+   como NUESTRO. Sin ellas la tarjeta es un rectangulo con texto. */
+.update-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 22px 12px;
+    background: var(--tlm-dlg-chrome);
+    border-bottom: var(--tlm-dlg-hairline, 1px solid rgba(255, 255, 255, 0.08));
+}
+
+.update-kicker {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--tlm-dlg-kicker, #55bbaa);
+}
+
 .update-actions {
     margin-top: 18px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 14px;
+    padding: 12px 22px;
+    background: var(--tlm-dlg-chrome);
+    border-top: var(--tlm-dlg-hairline, 1px solid rgba(255, 255, 255, 0.08));
 }
 
 .update-link {
@@ -1248,10 +1336,12 @@ body.resizing-vertical {
     text-decoration: underline;
 }
 
+/* El boton de confirmar es TEAL en toda la app. Este traia su propio
+   degradado morado-rosa, asi que el mismo gesto se veia distinto aqui. */
 .update-btn {
-    background: linear-gradient(135deg, #5A1FB8 0%, #EC4899 100%);
+    background: var(--tlm-dlg-accent);
     border: none;
-    color: #ffffff;
+    color: #0d1117;
     font-size: 14px;
     font-weight: 600;
     padding: 8px 20px;

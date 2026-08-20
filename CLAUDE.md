@@ -27,6 +27,64 @@ Enforced by: `test_private_data_guard.py` (automated tests) + a global CAPS Sess
 
 ---
 
+# ⛔ DO NOT TOUCH THE DB MECHANICS. EVER. (Angela, 2026-08-17, REAFFIRMED 2026-08-19) ⛔
+
+**THE DATABASE BACKUP / SET-DB CODE IS OFF LIMITS. DO NOT MODIFY IT, DO NOT "PROTECT" IT, DO NOT ADD A CHECK TO IT.**
+
+Angela's words, verbatim: *"DON'T EVEN TRY TO TOUCH THE CODE ESPECIALLY ON THE DB MECHANICS."*
+
+**WHAT HAPPENED.** Claude added `agent/db_guard.py` — a "startup smoke alarm for the database"
+(commit `906b5906`, 2026-08-03) — because DB data *appeared* to vanish or revert. **It never
+did.** The database was **not erasing, not lost, not corrupted; it was manipulated correctly.**
+The guard was built on a **false premise born of ignorance of Tlamatini's own mechanism**, it
+quarantined a perfectly healthy live database **11 times in 40 minutes**, it **overrode the
+existing Backup/Set-DB functionality**, and it **hid the real bug for two weeks**. Codex deleted
+the whole thing in commit **`a506373e` (2026-08-16)** — *"Getting rid of the stupid db guard tha
+was just Claude ignorance of our mechanism"*: `db_guard.py` (−486) and `test_db_guard.py` (−527)
+**erased**, along with its `recent-fixes.md` entry.
+
+**THE ACTUAL ROOT CAUSE — `PRAGMA journal_mode=WAL`.** `tlamatini/settings.py` puts SQLite in
+**WAL mode** and says so in a comment right there: *"Under WAL, back up with sqlite3's online
+backup API, never a plain file copy."* Both DB menu options were written **before** WAL was
+switched on and were never updated, so both did `shutil.copy2(db.sqlite3)` — wrong in **both**
+directions:
+
+- **Backup database** copied ONLY `db.sqlite3`. Everything committed since the last checkpoint
+  lives in **`db.sqlite3-wal`**, so the "backup" was an OLDER database while the dialog reported
+  success. Measured live: `db.sqlite3` 839,680 B @ 13:39 vs `db.sqlite3-wal` **3,514,392 B @
+  22:49** — nine hours of work outside the "backup".
+- **Set DB** dropped the chosen file over `db.sqlite3` but left the **OLD `-wal`/`-shm`** beside
+  it; SQLite replays that stale WAL on the next open, so its pages **override the database just
+  loaded** — old data returns, or two databases mix (real corruption). That is why Set DB
+  "did nothing" three times in a row.
+
+**THE CORRECT MECHANISM — `Tlamatini/agent/sqlite_copy.py` (Codex, 2026-08-16). Read it; never
+replace it.** `consistent_copy` uses SQLite's **online backup API** (reads through the WAL) then
+writes the copy in `DELETE` journal mode so ONE self-contained file lands on disk; `PRAGMA
+quick_check` **verifies** before success is reported; `move_with_sidecars` / `remove_sidecars`
+keep the `-wal`/`-shm`/`-journal` trio with their own database. Contracts: never claim success
+without checking · never delete the source · **fail-SAFE, not fail-open** (unclear ⇒ FAILURE,
+because the alternative is telling the user their data is safe when it is not) · stdlib-only,
+imports nothing from `agent.*` (used by `manage.py` pre-Django **and** `views.py` inside Django).
+Coverage: `agent/test_db_backup_restore_wal.py`, `agent/run_db_wal_tests.ps1`, and the visible
+end-to-end `tests_e2e/test_db_backup_set_visible.py`.
+
+**STANDING RULES:**
+1. **NEVER re-add a DB guard / smoke alarm / integrity-quarantine / health fingerprint.** Not as
+   a helper, not as a test, not "just a check".
+2. **Do not edit** `agent/sqlite_copy.py`, `agent/test_db_backup_restore_wal.py`,
+   `agent/run_db_wal_tests.ps1`, `tests_e2e/test_db_backup_set_visible.py`, or the DB blocks of
+   `agent/views.py` / `manage.py` — unless Angela asks in that same turn, in her own words.
+3. **If DB data ever looks lost again: suspect WAL, never Tlamatini — then STOP and ask Angela.**
+4. General lesson: before adding any protective layer, **read the mechanism that already exists,
+   and the comment sitting next to it.** The existing design is the authority; a reading of it
+   is not.
+
+*(Leftovers deliberately untouched: `.gitignore:377` still carries a dead `db_guard.py` comment
+and `KIMI.md` still names it. Harmless — Angela decides if they go.)*
+
+---
+
 # Tlamatini - CLAUDE.md
 
 This is the authoritative onboarding document for any AI assistant (Claude Code, Cursor, Gemini CLI, Antigravity IDE, etc.) working on the Tlamatini project. Read this file in full before making any changes, then follow the `@docs/claude/*.md` imports below — each specialized file is automatically included in your context.
@@ -42,8 +100,9 @@ This is the authoritative onboarding document for any AI assistant (Claude Code,
 - A **Visual Agentic Workflow Designer** (ACP) with 87 drag-and-drop agent types
 - A **backend Flow Compiler + Agent Contract registry** (`agent/services/flow_compiler.py`, `agent/services/agent_contracts.py`) that turns the live ACP canvas snapshot OR a Chat-generated Create-Flow draft into validated, redacted, source-and-frozen-portable `config.yaml` files in the session pool — exposed over `/agent/compile_flow/`, `/agent/flow_from_tool_calls/`, and `/agent/agent_contracts/`
 - **ACPX runtime** (Agent Communication Protocol eXtension) — spawns external coding-agent CLIs (Claude Code, Codex, Cursor, Gemini, Qwen, Kiro/Kimi/iFlow/Kilocode/OpenCode/Pi/Droid/Copilot, and a Tlamatini self-host) as out-of-process children, brokered to the LLM as 12 `acp_*` tools and to the canvas as the visual **ACPXer** agent. Toolbar checkbox **ACPX** filters the entire ACPX/Skills tool surface in or out per-request
-- **External MCPs** (2026-06) — a config-driven UNIVERSAL MCP **client**: connect to and use the tools of **any** external MCP server declared in a JSON file (the `mcpServers` shape, like a Claude-Code `.mcp.json`), over **four transports** — `stdio` (a local command, e.g. a Docker `mcp/*` image / npx / uvx / python) plus `streamable-http`, legacy `sse`, and `websocket` for already-running servers — with up to 5 active at once. Engine `agent/external_mcp_manager.py` + catalog `agent/external_mcps.json` (user state, resolved next to `config.json`); each remote tool is bound for the LLM as `ext__<server>__<tool>`; managed by 8 LLM supervisor tools (`external_mcp_status` / `reconnect` / `doctor` / `list_tools` / `call` / `import` / `set_active` / `wait`) and the **External ▸ MCPs** navbar dialog (searchable catalog, tick ≤5 active, drag a `.json` to import) over `/agent/external_mcps/` `…/activate/` `…/import/`. It is DISTINCT from the two built-in `Mcp`-model context providers (System-Metrics / Files-Search), from ACPX (which spawns coding-agent CLIs), and from the per-agent inline MCP clients (STM32er / Kalier). Companion **MCP Doctor** agent (#78, canvas + `chat_agent_mcp_doctor`) statically triages a catalogued MCP before you wire it. Full design contract: `docs/external_mcp_bulletproof_architecture.md`; how-to: `docs/claude/mcp-tools.md`
-- **Skills system** — markdown-defined `SKILL.md` packages run by `SkillHarness`. The LLM invokes them through `list_skills` / `invoke_skill`. Built-in skills include `acp-router`, `summarize`, `setup-new-acpx-key`, `skill-creator`, `flow-making` (turn a plain objective into a canvas-loadable `.flw` by wrapping the FlowCreator engine — ships `scripts/make_flow.py` + `scripts/result_to_flw.py`; supersedes the legacy `tlamatini-flow-from-objective`), `code-review`, `security-audit`, `kali-pentest` (authorized Kali Linux / MCP-Kali-Server assessment runbook driving the Kalier agent), `tlamatini_*` (audit / lint / refactor helpers), and integration stubs (gmail, slack, github, jira, notion, todoist, trello, weather). Administered through the **ACPX-Skills navbar dropdown** (Browse / Configure / Diagnostics / Reload — 2026-05-17): Browse and Diagnostics are HTTP-backed read-only inspection; Configure mirrors the existing Mcps/Agents/Tools WebSocket toggle pattern (`set-skills` → `Skill.enabled`); Reload re-runs `boot_skills()` so disk edits show up without a server restart. The DB stays at "enumeration + enable/disable" only — permissions/budgets/body live in SKILL.md on disk
+- **External MCPs** (2026-06) — a config-driven UNIVERSAL MCP **client**: connect to and use the tools of **any** external MCP server declared in a JSON file (the `mcpServers` shape, like a Claude-Code `.mcp.json`), over **four transports** — `stdio` (a local command, e.g. a Docker `mcp/*` image / npx / uvx / python) plus `streamable-http`, legacy `sse`, and `websocket` for already-running servers — with up to 5 active at once. Engine `agent/external_mcp_manager.py` + catalog `agent/external_mcps.json` (preserved user state and sanitized tracked build input, resolved next to `config.json`); each remote tool is bound for the LLM as `ext__<server>__<tool>`; managed by 10 LLM supervisor tools (`external_mcp_status` / `reconnect` / `doctor` / `runtime_status` / `runtime_install` / `list_tools` / `call` / `import` / `set_active` / `wait`) and the **External ▸ MCPs** navbar dialog (searchable catalog, runtime strip, tick ≤5 active, drag a `.json` to import) over `/agent/external_mcps/` `…/activate/` `…/import/` `…/runtime_install/`. It is DISTINCT from the two built-in `Mcp`-model context providers (System-Metrics / Files-Search), from ACPX (which spawns coding-agent CLIs), and from the per-agent inline MCP clients (STM32er / Kalier). Companion **MCP Doctor** agent (#78, canvas + `chat_agent_mcp_doctor`) statically triages a catalogued MCP before you wire it. Full design contract: `docs/external_mcp_bulletproof_architecture.md`; how-to: `docs/claude/mcp-tools.md`
+- **Runtime Provisioner + two DEFAULT MCP servers** (2026-08-15) — the External MCP ecosystem ships almost entirely as `npx -y <pkg>` / `uvx <pkg>`, and a fresh Windows box has neither, so a perfect catalog entry used to die with `[WinError 2]`. `agent/runtime_provisioner.py` gives Tlamatini her **OWN private, self-provisioning** `node` / `npm` / `npx` / `pnpm` / `uv` / `uvx`: downloaded once on demand from the OFFICIAL upstreams into `%LOCALAPPDATA%\Tlamatini\runtimes` — **no admin, no system-PATH change, and NOT carried in the installer** the way Python/the JRE are (the release must stay under 2 GiB). Same pattern as Discoverer's private Go toolchain. Resolution is explicit config → existing Tlamatini private runtime → system PATH → known per-user locations; provisioning runs only for a missing manager, so it does not replace an already usable system tool. Five contracts, none to be weakened: *fail-open always*; *never block startup* (a pre-warm with everything present is a 0.000 s no-op that starts no thread); *atomic or absent* (`.partial-<pid>` → `os.replace`); *verify what upstream signs* (Node's `SHASUMS256.txt` is ENFORCED); and **spawn without a shell** — ⚠️ on Windows `npx` is a `.cmd` shim `CreateProcess` cannot execute, so `resolve_spawn()` rewrites it to `node.exe <npx-cli.js>` (and sees through a `cmd /c npx …` wrapper). Alongside it, `agent/external_mcp_defaults.py` ships **`memory`** (knowledge-graph, 9 tools) and **`sequential-thinking`** in EVERY installation, **both INACTIVE**. ⚠️ Those defaults live in **CODE**, not only in the JSON `build.py` writes: `external_mcps.json` is USER STATE that `apply_update.ps1` PRESERVES, so a JSON-only default would reach fresh installs and *nobody else* — `load_catalog()` seeds on the read path instead. A default the user DELETES is **tombstoned** and never resurrected; one they EDIT is never overwritten. LLM surface: `external_mcp_runtime_status` / `external_mcp_runtime_install`. Proven on a simulated fresh machine (stripped PATH): Node + uv downloaded and sha256-verified in 7 s, then real `server-memory 0.6.3` handshook and exposed its 9 tools. Contract: `docs/claude/recent-fixes.md` (2026-08-15); coverage `agent/test_runtime_provisioner.py`
+- **Skills system** — markdown-defined `SKILL.md` packages run by `SkillHarness`. The LLM invokes them through `list_skills` / `invoke_skill`. Built-in skills include `acp-router`, `summarize`, `setup-new-acpx-key`, `skill-creator`, **`adding-external-mcp`** (the authoritative runbook for adding a NEW external MCP server — read it before `external_mcp_import`, before editing `external_mcps.json`, and before activating a server; see *HARD-STONED SKILLS* below), `flow-making` (turn a plain objective into a canvas-loadable `.flw` by wrapping the FlowCreator engine — ships `scripts/make_flow.py` + `scripts/result_to_flw.py`; supersedes the legacy `tlamatini-flow-from-objective`), `code-review`, `security-audit`, `kali-pentest` (authorized Kali Linux / MCP-Kali-Server assessment runbook driving the Kalier agent), `tlamatini_*` (audit / lint / refactor helpers), and integration stubs (gmail, slack, github, jira, notion, todoist, trello, weather). Administered through the **ACPX-Skills navbar dropdown** (Browse / Configure / Diagnostics / Reload — 2026-05-17): Browse and Diagnostics are HTTP-backed read-only inspection; Configure mirrors the existing Mcps/Agents/Tools WebSocket toggle pattern (`set-skills` → `Skill.enabled`); Reload re-runs `boot_skills()` so disk edits show up without a server restart. The DB stays at "enumeration + enable/disable" only — permissions/budgets/body live in SKILL.md on disk
 - **Self-Knowledge & Self-Modification** (2026-05-25) — the LLM carries a first-person self-reference file, `agent/Tlamatini.md`, injected into `prompt.pmt`'s `<self_knowledge>` block at prompt-build time by `agent/rag/config.py` (covers every chain; brace-escaped; fails open) — **but ONLY in a `--self-modify` build (2026-08-08)**: the whole `<self_knowledge>` section is sentinel-wrapped and DROPPED when `TlamatiniSourceCode/` is absent, replaced by one short honest line, cutting **≈15.7k tokens from EVERY request** (138,225 → 75,371 chars). Her source and her self-description ship together or not at all; `build.py` bundles `Tlamatini.md` only under the flag, and both `build_complete_*` wrappers default to OFF. An OPTIONAL `TlamatiniSourceCode/` directory at the install root — generated fresh by `copy_source_assets.py` (repo root) when `build.py --self-modify` is passed — holds her own complete, rebuildable source snapshot (all .py/.js/.css/.ps1/build scripts; media + secrets omitted/redacted; ships `_REBUILD_INSTRUCTIONS.md`) so she can read/modify/rebuild herself: present = a "self-able-modify" build, absent = "not-self-able-modify". See `docs/claude/architecture.md`
 - **Multi-model LLM support** (Ollama local, Anthropic Claude cloud, Qwen vision)
 - A full **PyInstaller packaging pipeline** (build.py -> installer -> standalone .exe; `--self-modify` ships the self-source tree)
@@ -81,6 +140,66 @@ This is the authoritative onboarding document for any AI assistant (Claude Code,
 ## ⚠️ Use ONLY Tlamatini's Agents When Asked (MANDATORY)
 
 When the user asks to **"use Tlamatini's agents"** — or names any pool agent (**Executer, Pythonxer, Playwrighter, Shoter, Mouser, Keyboarder, Kalier, STM32er**, … any of the 83) — you **MUST** perform the work with **only Tlamatini's pool agents**, never Claude Code's own built-in tools. Your shell is **only the launcher**: copy the agent to an isolated runtime dir, write a tailored `config.yaml`, run `python <agent>.py`; the agent does the work and writes its result to `<agent_dir_basename>.log`. For **visible / desktop** agents (a headed Playwrighter browser, an Executer/Pythonxer `execute_forked_window` console, Shoter/Mouser/Keyboarder) launch in the **foreground with `dangerouslyDisableSandbox: true`** so the window renders on the user's real desktop — the Bash sandbox otherwise hides the GUI in an isolated window station (it reports `WinSta0` but isn't visible), and `run_in_background` detaches it entirely. Do **NOT** substitute your own Bash / Read / Write / Playwright for the agents' job. This rule is re-injected at **every session start** by `.claude/hooks/announce_skills.py` (the SessionStart hook wired in `.claude/settings.json`). Full mechanics: memory `feedback_run_tlamatini_agents_visible`.
+
+---
+
+## 🪨 HARD-STONED SKILLS — BOTH SKILL SETS ARE TRACKED, PERMANENT, AND NEVER DROPPED (Angela, 2026-08-19)
+
+**This codebase carries TWO skill sets. Both are STONE. Every single one MUST be tracked in git.**
+
+A skill that *runs* but is **untracked is a skill that disappears** — on the next clone, on a fresh
+build, on a self-update, on any machine but this one. `adding-external-mcp` was exactly that: live
+and auto-loading since it was written, invisible to git until 2026-08-19. **That must never happen
+again.**
+
+### Set 1 — Tlamatini's own `SKILL.md` packages (`Tlamatini/agent/skills_pkg/`, **29**)
+
+Loaded at app start by `agent/acpx/service.py::boot_skills()`; invoked by the LLM through
+`list_skills` / `invoke_skill`; mirrored into the `Skill` DB table (enable/disable only) and
+administered from the **ACPX-Skills** navbar dropdown.
+
+`acp_router` · **`adding_external_mcp`** · `code_review` · `create_new_agent` · `create_new_mcp` ·
+`flow_making` · `github` · `gmail` · `hello_world` · `jira` · `kali_pentest` · `notion` ·
+`roblox_studio` · `security_audit` · `setup_new_acpx_key` · `skill_creator` · `slack` · `summarize` ·
+`tlamatini_allowed_hosts_tighten` · `tlamatini_csrf_exempt_audit` · `tlamatini_exec_report_row_adder` ·
+`tlamatini_flow_from_objective` · `tlamatini_flw_doctor` · `tlamatini_new_acp_agent` ·
+`tlamatini_planner_trace_replay` · `tlamatini_static_version_bumper` · `todoist` · `trello` · `weather`
+
+### Set 2 — Claude Code's skills for this repo (`.claude/skills/`, **5**)
+
+Discovered at session start; they encode how an assistant must work ON Tlamatini.
+
+`tlamatini-agent-creation` · `tlamatini-agent-naming` · `tlamatini-daily-chat-test` ·
+`tlamatini-self-modify-inclusion` · `tlamatini-self-update-inclusion`
+
+### The newest stone — `adding-external-mcp` (tracked 2026-08-19)
+
+The authoritative runbook for adding a **new external MCP server** to Tlamatini's universal MCP
+client. `runtime: in-process`; budget 15 iterations / 300 s / 32k tokens; `network: allow`, `db: deny`;
+reads `external_mcps.json` + `external_mcp_manager.py` + `external_mcp_defaults.py` +
+`runtime_provisioner.py` and writes only `external_mcps.json`. It requires the **11** tools
+`external_mcp_import` / `set_active` / `status` / `doctor` / `wait` / `list_tools` / `call` /
+`reconnect` / `runtime_status` / `runtime_install` + `chat_agent_mcp_doctor`. Inputs `server_key`,
+`server_config`, `activate`, `verify`; outputs `import_status`, `activation_status`, `doctor_report`,
+`tools_discovered`. Covers the whole lifecycle — catalog import → transport selection → activation →
+runtime provisioning → diagnosis → verification → troubleshooting. **Read it BEFORE calling
+`external_mcp_import`, BEFORE editing `external_mcps.json`, and BEFORE activating a server.**
+639 lines / 28,218 bytes across `SKILL.md` (225) + `references/external_mcp_catalog_format.md` (99),
+`transport_guide.md` (110), `troubleshooting.md` (118), `llm_reflection_research.md` (87).
+Companion docs: `docs/claude/mcp-tools.md` → *External MCPs*, `docs/external_mcp_bulletproof_architecture.md`.
+
+### Standing rules (do NOT weaken)
+
+1. **A new skill in either set is COMMITTED in the same pass it is written.** Finish by running
+   `git status` and confirming **no `??` under `agent/skills_pkg/` or `.claude/skills/`**.
+2. **Never delete, rename, or disable a shipped skill** unless Angela asks in that same turn.
+   Renaming breaks `Skill.name` rows, the `requires_tools` cross-check in Diagnostics, and every
+   prompt that invokes it by name.
+3. `skills_pkg/` ships to users through `build.py`; `.claude/skills/` is tracked and pushed
+   **public** — never put a secret in either.
+4. Authoring guide: `Tlamatini/.skills/create_new_skill.md`; validate with
+   `skills_pkg/skill_creator/scripts/quick_validate.py`; a skill that fails to parse is silently
+   **skipped** at boot, so validate before assuming it registered.
 
 ---
 
@@ -184,7 +303,7 @@ Tlamatini/                          # Git root
 │   │   │   ├── chains/             # basic.py, history_aware.py, unified.py
 │   │   │   └── ...
 │   │   │
-│   │   ├── agents/                 # 83 workflow agent templates
+│   │   ├── agents/                 # 87 workflow agent templates
 │   │   │   ├── flowcreator/
 │   │   │   │   └── agentic_skill.md  # ** SKILL: FlowCreator AI reference **
 │   │   │   ├── flowhypervisor/
@@ -195,7 +314,7 @@ Tlamatini/                          # Git root
 │   │   │   ├── node_manager/       # Infrastructure registry
 │   │   │   ├── teletlamatini/      # Telegram bridge into the full Multi-Turn Tlamatini chat
 │   │   │   ├── telegrammer/        # Telegram send/receive via official Telegram surfaces
-│   │   │   ├── whatsapper/         # WhatsApp send/receive via official Meta Cloud API
+│   │   │   ├── whatsapper/         # WhatsApp send/receive: official Meta Cloud default + explicit unofficial personal Web route
 │   │   │   ├── instant_messaging_doctor/  # Diagnose + optionally safely-repair Telegrammer/Whatsapper readiness (tokens/contacts/templates/24h-window/webhook); non-mutating by default; auto-launched after a messaging failure (canvas + chat_agent_instant_messaging_doctor)
 │   │   │   ├── acpxer/             # Visual canvas counterpart of the 12 ACPX tools
 │   │   │   ├── playwrighter/       # Scripted interactive browser automation (Playwright; canvas + chat_agent_playwrighter)
@@ -231,10 +350,10 @@ Tlamatini/                          # Git root
 │   │   ├── templates/agent/        # HTML templates (toolbar has Multi-Turn / Exec-Report / ACPX / Ask-Execs checkboxes)
 │   │   ├── static/agent/
 │   │   │   ├── css/                # agentic_control_panel.css, agent_page.css, tools_dialog.css, etc.
-│   │   │   ├── js/                 # 35 JS modules (10 chat incl. chat_image_paste.js + avatar.js + 14 ACP incl. acp-flow-snapshot.js + acp-connection-status.js + 1 ACP entry + 10 shared incl. chat_page_runtime_poller.js, shared-runtime-dialogs.js, canvas_item_dialog.js, contextual_menus.js, tools_dialog.js, skills_dialog.js, external_mcps_dialog.js, contacts_dialog.js, access_keys_wizard.js, checkbox_bulk_toggle.js)
+│   │   │   ├── js/                 # 37 JS modules (10 chat + 14 ACP + 1 ACP entry + 12 shared, incl. dialog_policy.js and release_notes_renderer.js)
 │   │   │   ├── img/Tlamatini.ico   # App icon (web pages + console window + .exe)
 │   │   │   └── sounds/             # notification.wav, hypervisor_alert.wav
-│   │   └── migrations/             # Django migrations — 193 total (latest: 0193_add_latexer_demo_prompts; 0191/0192/0193 add the LaTeXer agent + Chat-Agent-LaTeXer tool row + demo prompts; 0188/0189/0190 add PDFer; 0186/0187 the wrapped FlowCreator + its Step-by-Step opener)
+│   │   └── migrations/             # Django migrations — 194 total (latest: 0194_add_deep_research_demo_prompt — seeds the Deep-Research demo prompt `idPrompt=118`, `category='getting_started'`, `sort_rank=100`, guarded by `agent/test_deep_research_prompt.py`; 0193_add_latexer_demo_prompts; 0191/0192/0193 add the LaTeXer agent + Chat-Agent-LaTeXer tool row + demo prompts; 0188/0189/0190 add PDFer; 0186/0187 the wrapped FlowCreator + its Step-by-Step opener)
 │   │
 │   ├── manage.py                   # Django entrypoint; tees stdout/stderr into tlamatini.log; sets console window title + icon
 │   ├── tlamatini.log               # Unified application log (console + Django loggers)
@@ -271,7 +390,7 @@ LLM Backends: Ollama (local) | Anthropic Claude (cloud) | Qwen (vision)
 7b. Ask-Execs gate (Multi-Turn-only): when `ask_execs_enabled=True`, the executor BLOCKS before every state-changing tool on a browser Proceed/Deny prompt, bridged by `agent/exec_permission.py::ExecPermissionBroker` (consumer registers a per-request broker keyed by user id; executor thread emits `exec_permission_request` onto the consumer loop via `run_coroutine_threadsafe` and waits on a `threading.Event`; the browser's `exec-permission-response` → `resolve_permission` unblocks it). **Deny halts the whole chain** and surfaces a red "Execution interrupted" banner; the round-trip is fail-safe (emit failure / Cancel / `close()` all resolve to *deny*). The flag must stay in `UnifiedAgentChain.invoke`'s payload-rebuild whitelist alongside `conversation_user_id` (same drop-on-rebuild bug class as `exec_report_enabled`). See `docs/claude/multi-turn.md` → *Ask Execs* and `docs/claude/recent-fixes.md` (2026-05-29)
 8. Context prefetch (system/file MCP)
 9. Execution loop (tool calls, wrapped agent monitoring, ACPX child-process drain); **every model step is wrapped by a per-request self-healing invoker** (`agent/self_healing.py::SelfHealingInvoker`, 2026-07-06) that retries distinct recovery tactics under a per-attempt watchdog (`unified_agent_llm_step_timeout_seconds`, 80 s) up to `unified_agent_llm_step_max_tactics` (4096) — so a transient model failure **never hangs, never discards work already done** (it degrades gracefully from the agents that already ran, preserving the Create-Flow button + Exec report), and **never yields a silent/untruthful answer** (a `recovery_preamble` always tells the user what happened, and live retry status is streamed to the chat via `register_status_broadcaster`). Only the user's Cancel or an exhausted tactic ladder stops it (`ModelStepUnrecoverable`). See `docs/claude/multi-turn.md` → *Self-healing model steps* and `docs/claude/recent-fixes.md` (2026-07-06)
-9b. **Per-tool verdict (v1.48.2)**: after each wrapped agent returns, `agent/agent_verdict.py` decides SUCCESS/FAILED **deterministically** — it parses the agent's own `INI_SECTION` self-report into a typed AST and runs an ORDERED rule table over it, and **the agent's self-report OUTRANKS the process exit code**. A read-only diagnostic that reports an adverse finding (`invalid`, `findings`, `no_matches`, …) is a **SUCCESS** — the finding is the deliverable — while `refused` / `not_found` / `engine_unavailable` stay red because the work did not happen. The self-report is never dropped: on a key collision the process view stays under `<key>` and the agent view lands on `agent_<key>`. Fail-open and stdlib-only. See `docs/claude/exec-report.md` → *Success/failure classification* and `docs/claude/recent-fixes.md` (2026-08-06)
+9b. **Per-tool verdict (v1.48.15 vocabulary guard)**: after each wrapped agent returns, `agent/agent_verdict.py` decides SUCCESS/FAILED **deterministically** — it parses the agent's own `INI_SECTION` self-report into a typed AST and runs an ORDERED rule table over it, and **the agent's self-report OUTRANKS the process exit code**. A read-only diagnostic that reports an adverse finding (`invalid`, `findings`, `no_matches`, …) is a **SUCCESS** because the finding is the deliverable; degraded work (`tokens_only`, `compiled_with_errors`, `operator_required`, …), work not done, and agent errors stay red. Intact named completions are explicit greens, and unknown tokens fail open but are identified under `R8b`. The self-report is never dropped: on a key collision the process view stays under `<key>` and the agent view lands on `agent_<key>`. `agent/test_status_vocabulary.py` statically sweeps every pool agent so undeclared tokens and numeric `status:` interpolations cannot ship. See `docs/claude/exec-report.md` → *Success/failure classification* and `docs/claude/recent-fixes.md` (2026-08-16)
 10. Streaming response via WebSocket; whenever Multi-Turn ran with **≥1 successfully-executed agent**, the chat header renders a **Create Flow** button that converts **only the successfully-executed** tool calls into a downloadable `.flw` (the browser POSTs the successful-only draft to `/agent/flow_from_tool_calls/`, which normalizes it through `FlowSpec` and redacts known secret fields before download). There is no whole-answer SUCCESS/FAILURE classifier (removed 2026-07-06)
 11. Start sequence (canvas Start button) compiles the live snapshot through `/agent/compile_flow/` (mode=`write`) before it executes any agent — so a flow that was edited or loaded since the last write goes through the **same** Agent Contract validation as a `.flw` saved fresh, and Validate uses mode=`dry_run` to preview the same agent/config shape without touching disk
 
@@ -333,7 +452,7 @@ When adding a new tool that spawns a console child: either (a) add the tool name
 
 ---
 
-## Truthful Exec-Report Verdicts — the deterministic verdict engine (2026-08-06, v1.48.2)
+## Truthful Exec-Report Verdicts — deterministic engine + closed vocabulary (2026-08-16, v1.48.15)
 
 **Angela's demand:** if the execution really succeeded, the table must say **SUCCESS**; if it really errored and did not do the designated task at all, it must say **FAILED**. Both directions, every agent, no exceptions.
 
@@ -345,13 +464,15 @@ Until v1.48.2 the runtime collapsed **two different questions** into one string 
 
 - The agent's own self-report **OUTRANKS** the process exit code.
 - A self-report is **NEVER** dropped or overwritten — on a key collision the process view stays under `<key>` and the agent view lands on `agent_<key>`; **both** survive.
-- A **read-only diagnostic reporting an adverse finding has SUCCEEDED** — the finding is the DELIVERABLE. A red row must mean *"the tool malfunctioned"*, never *"the tool found something"*. This is why the diagnostic rule **must outrank** the `success:` / `errors:` rules: a linter that worked perfectly reports `status: invalid` **and** `success: False` **and** `errors: 2` in the same breath, and the last two describe the **document**, not the agent.
-- `refused` / `not_found` / `not_unique` / `engine_unavailable` stay **FAILED** — the user got no PDF, no edit, no build.
+- A **read-only diagnostic reporting an adverse finding has SUCCEEDED** — the finding is the DELIVERABLE. This is why the diagnostic rule **must outrank** the `success:` / `errors:` rules: a linter that worked perfectly reports `status: invalid` **and** `success: False` **and** `errors: 2` in the same breath, and the last two describe the **document**, not the agent.
+- `WORK_DEGRADED_STATUSES` (`tokens_only`, `compiled_with_errors`, `operator_required`, …) are **FAILED** because the deliverable is compromised or absent; `WORK_NOT_DONE_STATUSES` (`refused`, `not_found`, `not_unique`, `engine_unavailable`, …) stay red because the requested work did not happen. A red row therefore means **no clean requested deliverable**, never merely "the diagnostic found something".
+- `WORK_COMPLETED_STATUSES` gives intact completions a named, auditable green (`R7b`); an unknown status keeps fail-open compatibility but is quoted under `R8b.unknown_status` so the anomaly is visible.
 - **FAIL-OPEN**: every parse/coercion error resolves to "no opinion" and falls through. Nothing here may raise into a caller.
-- The status vocabulary has **exactly ONE definition** (`agent_verdict.DIAGNOSTIC_COMPLETED_STATUSES`); `mcp_agent` aliases it — do **NOT** re-inline a second copy, it will drift and silently mis-colour rows.
+- The status vocabulary has **exactly ONE definition**: five disjoint sets in `agent_verdict.py`, with `KNOWN_STATUSES` as their union. `mcp_agent` aliases the shared definitions — do **NOT** re-inline a second copy.
+- `agent/test_status_vocabulary.py` AST-scans every pool agent, requires every literal status to belong to exactly one set, rejects malformed/unknown tokens, and rejects interpolated exit-code variables in `status:`. Kuberneter is the canonical fix: numeric `returncode`, explicit `success`, tokenized `status: ok|failed`.
 - Stdlib-only and imports nothing from `agent.*`, so it can never create an import cycle between `tools.py` and `mcp_agent.py` (both import it) and behaves identically frozen and from source.
 
-**If you author an agent**: its `status:` field is now load-bearing — it is READ, not decoration. A read-only diagnostic must exit `0` and report its finding in `status` / `errors`; never tie the process exit code to how clean the user's input was. Pinned by `agent/test_agent_verdict.py` (25 tests) + `agent/test_exec_report_verdict.py`. Full contract: `docs/claude/exec-report.md` → *Success/failure classification*; story: `docs/claude/recent-fixes.md` (2026-08-06).
+**If you author an agent**: its `status:` field is load-bearing — it is READ, not decoration. Reuse a token from `KNOWN_STATUSES`; put numeric process results in `returncode`/`exit_code`, never `status:`. A read-only diagnostic must exit `0` and report its finding in `status` / `errors`; never tie the process exit code to how clean the user's input was. Pinned by `agent/test_agent_verdict.py`, `agent/test_exec_report_verdict.py`, and the repository-wide `agent/test_status_vocabulary.py`. Full contract: `docs/claude/exec-report.md` → *Success/failure classification*; current story: `docs/claude/recent-fixes.md` (2026-08-16).
 
 ---
 
@@ -422,13 +543,7 @@ branch — a degraded build must still read as a problem.
 `file_creator.content re-extracted VERBATIM (61951 chars, no escape decoding)`)
 and compiled **`OpenMPCompleteGuide.pdf` — 27 pages, 716,421 bytes, 0 errors**.
 
-**Spanish-edition note.** The whole fix is in the request path and the agent
-engine, so it ports byte-for-byte: the Spanish tree keeps its own
-`document_language: "es"` default and its own SHOTER launcher
-(`shoter_foto.toma_foto`), and every LLM-facing string above stays ENGLISH per
 the Spanglish GUI rule — a `verbatim_fields` name or an `action=` value is fixed
-product vocabulary and translating one would silently break the agent.
-
 ---
 
 ## Binary-Content Guard on Context Loading (2026-07-26)
@@ -441,6 +556,26 @@ Detection is a short-circuiting cascade, cheapest test first, with **at most ONE
 
 **Two contracts that must NOT be weakened:** (a) **FAIL-OPEN** — any error, any uncertainty, any malformed config value resolves to "load it as text", because a guard that wrongly drops a file silently deletes the user's real context; (b) **the BOM stage must stay ahead of the NUL stage**, or every UTF-16 document (legitimately full of `0x00`) silently vanishes. Toggle with `binary_context_detection` in `config.json`. Coverage: `agent/test_binary_guard.py` (45 tests). Full contract: `docs/claude/architecture.md` and `docs/claude/recent-fixes.md` (2026-07-26).
 
+
+## ⌨️ Uniform Dialog Dismissal — ESCAPE CLOSES EVERY DIALOG (2026-08-16, v1.48.17)
+
+**Angela REVERSED the previous rule.** Until 2026-08-13 `dialog_policy.js` deliberately SWALLOWED Escape. The policy is now one line, on **both** pages, for **every** dialog:
+
+> A dialog closes by its titlebar ✕, its Cancel/dismiss button, its Continue/OK button, **or ESCAPE** — and **Escape === ✕ === Cancel**.
+
+The other half is UNCHANGED and must not be relaxed: **an outside click still never dismisses anything.**
+
+**⚠️ THE DISPATCHER NEVER HIDES A NODE.** `dialog_policy.js` §4 is a **bubble-phase `document` keydown** handler that finds the *topmost open dialog* (shape-based selector — `[id$="-overlay"]`, `[class*="-overlay"]`, `[role="dialog"]`, `.ui-dialog`, `.modal.show`, … — ranked by z-index, backdrops excluded) and **invokes THAT dialog's own dismiss control**: the click the user would have made. That is why nothing had to be rewired per dialog and every fail-safe survives Escape — the Ask-Execs prompt still answers **DENY** through its `close:` handler, `acpConfirm` / `tlmConfirm` still resolve **false**, every `body.style.overflow` is restored by the dialog's own close, and the **sealed updater still refuses** (`CloseUpdateDialog` → `mayClose`). A blind hide would have silently skipped all four.
+
+**Contracts that must NOT be reverted:** BUBBLE phase, not capture (the Catalog's search box clears the query on the FIRST Escape; only the SECOND closes the catalog) · `stopImmediatePropagation()` when it dismisses, so one keystroke never closes two stacked layers · `dialog_policy.js` stays the FIRST document keydown handler on both pages · it bails when no dialog is open (Escape still belongs to the page) · Escape can never press an **affirmative** button (the label scan matches only cancel/close/dismiss/cancelar/cerrar/no and the × glyphs; a one-button acknowledgement box uses that button) · backdrops are excluded · a dialog with no ✕ and no Cancel must expose **`el.tlmDismiss`** (the Catalog of Prompts is the one such dialog — a blind hide there leaves the whole chat page unscrollable). **`closeOnEscape: false` is now a FORBIDDEN pattern tree-wide** (seven dialogs carried their own and were flipped).
+
+**The ONE exception — the updater is INVULNERABLE while it downloads.** Not a special case bolted onto the dispatcher: a dialog declares **`el.tlmSealKey`**, and while that key is sealed `dismissDialog()` refuses **FIRST**, before any other path (checked later, the "hide the node" last resort would kill exactly the dialog it must protect). Escape is **swallowed** (`preventDefault` + `stopImmediatePropagation`) plus a 600 ms shake instead of nagging; F5 / Ctrl+R / Ctrl+F4 are guarded too; and a **failed start ALWAYS unseals** (a permanent seal is strictly worse than the interruption it prevents). ⚠️ The seal guard is **CAPTURE** phase — deliberately the opposite of the dispatcher's bubble phase, and both are pinned so neither gets "made consistent" by mistake. Honest limit: Alt+F4, the window ✕, and Chrome-reserved Ctrl+W can never be blocked from a web page — but the swap runs in an **external PowerShell process**, so a closed tab costs the progress bar, not the update.
+
+**No native browser pop-ups inside a themed dialog.** `alert()` / `confirm()` / `prompt()` paint OS chrome carrying the page URL, block the page, and cannot be photographed by a headed Playwright run. Use **`tlmAlert(message, title)` / `tlmConfirm(primary, secondary, title)`** — chat + canvas, exported by `dialog_policy.js`, Promise-based (`tlmConfirm` → `Promise<boolean>`; anything but Continue is `false`), styled from `dialog_theme.css` `.tlmpop-*` tokens, overlay at z-index **100001**, **fail-open** to the native popup — or `acpAlert` / `acpConfirm` on the canvas. ⚠️ They are deliberately **NOT** jQuery-UI dialogs: they are raised BY native modals at `z-index: 20000` (`.emx-dialog` / `.ctb-dialog`) while `.ui-front` is ~100, so a jQuery-UI confirm would render *under* the dialog that asked for it — an invisible modal, i.e. a hang. When you migrate a module, add it to `_THEMED_DIALOG_MODULES` in the test.
+
+Coverage: `agent/test_dialog_dismissal_policy.py` (**35 tests** — bubble phase, `stopImmediatePropagation`, no-affirmative-button, backdrop exclusion, the `tlmDismiss` hook, script load ORDER on both pages, the seal-check index, and the forbidden patterns) + the **visible** headed-Chrome runner `.claude/skills/tlamatini-daily-chat-test/harness/dialog_policy_visible.py` (Playwrighter drives, Shoter photographs). Full contract: `docs/claude/frontend.md`; full story: `docs/claude/recent-fixes.md` (2026-08-16).
+
+---
 
 ## Temp & Templates Directory Policy (2026-06-02)
 
@@ -478,7 +613,7 @@ The rest of the onboarding material is split into topic files under `docs/claude
 │   │   │   ├── pdfer/              # PDFer — DOCUMENT COMPOSER, the WRITE side of the document family (File-Extractor/File-Interpreter READ, PDFer AUTHORS). Tlamatini's answer / Markdown / HTML / text / images / existing PDFs → ONE styled PDF. ZERO new deps (markdown+xhtml2pdf+pymupdf+reportlab+pillow+pypdf already ship; md→pdf pipeline ported INLINE from doc_generation/mardown_to_pdf.py). mode: auto|markdown|html|text|images|mixed|merge|info|validate; optional Ollama polish (default OFF, never loses the doc); saves to Documents/TlamatiniPDF, collision-proof; fail-safe preflight REFUSES rather than write an empty PDF; INI_SECTION_PDFER; Exec Report + Ask-Execs tier A (canvas + chat_agent_pdfer)
 │   │   │   ├── latexer/            # LaTeXer — LaTeX TYPESETTING, the typesetting sibling of PDFer (PDFer COMPOSES from Markdown/HTML/images; LaTeXer TYPESETS from .tex: real maths, bibliographies, cross-refs, index). Embeds the WHOLE mcp-latex-server surface NATIVELY (create/template/edit/read/list/validate/structure/compile) — NO MCP server, NO sidecar, NO new dependency (stdlib only: subprocess+shutil+glob+re+urllib) — PLUS whole-PROJECT compile of a .tex SET (master auto-detected, \input followed), a real BibTeX/Biber + makeindex + makeglossaries convergence loop, latexmk pass-through, and LaTeX-log diagnostics a human can read. **REQUIRES MiKTeX** (https://miktex.org/download) — Tlamatini bundles NO TeX distribution (several GB; the release must stay <2 GB); MiKTeX is preferred because `--enable-installer` installs a missing .sty ON DEMAND mid-compile, so any document builds. ⚠️ latexmk is probed for USABILITY not presence (it ships with MiKTeX but is a PERL script; most Windows boxes have no Perl → auto-fallback to the built-in loop). action: compile|compile_project|scaffold_compile|create_file|create_from_template|edit_file|read_file|list_files|validate_tex|structure|clean|validate|install; auto_preamble wraps a bare fragment; shell_escape OFF by default (\write18 = RCE); saves to Documents/TlamatiniLaTeX, projects to <app>/Templates/LaTeXer; fail-safe preflight REFUSES rather than mis-typeset; **EIGHT-RUNG REPAIR LADDER (v1.48.2) so a failed build self-heals — lint → preamble → rules → log_directed → acquire → engine_swap → model → bisect, each repair applied to a COPY and re-linted (a repair that worsens the lint is REVERTED), the author's file untouched unless `repair_write_back`, every rung audit-traced, quarantined blocks named; ⚠️ the DESTRUCTIVE `bisect` rung is strictly LAST (reordered 2026-08-05) — do NOT swap it back ahead of `model`**; a DEGRADED build never claims clean success; INI_SECTION_LATEXER; Exec Report + Ask-Execs tier A (canvas + chat_agent_latexer)
 │   │   │   ├── editor/             # Surgical in-place find-and-replace on ONE text file (Claude-Edit equivalent; byte-exact, refuses a non-unique match unless replace_all, base64 channel; emits INI_SECTION_EDITOR) (canvas + chat_agent_editor)
-│   │   │   ├── grepper/            # Read-only regex CONTENT search across a file/dir tree (Claude-Grep equivalent; file:line:match, glob filter, prunes noise dirs; emits INI_SECTION_GREPPER) (canvas + chat_agent_grepper)
+│   │   │   ├── grepper/            # Read-only regex CONTENT search across a file/dir tree (Claude-Grep equivalent; file:line:match, glob filter, prunes noise dirs; emits INI_SECTION_GREPPER). ⚠️ ENCODING-AWARE since 2026-08-16 (`_read_text_lines`): BOM tested BEFORE the NUL byte (UTF-16/32 text is legitimately full of 0x00 — same ordering contract as rag/binary_guard.py; _BOM_CODECS longest-prefix-first), then UTF-8 → cp1252 → latin-1. It used to open() strict-UTF-8 and swallow the UnicodeDecodeError as "binary", so it answered a confident `no_matches` about files it never opened (PowerShell's UTF-16 logs, accented Spanish sources). Pinned by test_grepper_encodings.py (canvas + chat_agent_grepper)
 │   │   │   ├── globber/            # Read-only filename glob search (Claude-Glob equivalent; find files by pattern, newest-first, ** recursive; emits INI_SECTION_GLOBBER) (canvas + chat_agent_globber)
 ---
 

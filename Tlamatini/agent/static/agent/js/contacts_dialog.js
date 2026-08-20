@@ -17,7 +17,7 @@
 //   OpenContactsDialog(event)
 //     -- "Libreta de contactos" dialog. Full CRUD over contacts.json: a
 //        searchable master list (left) + a detail editor (right).
-//        Add / edit / delete happen in-memory; "Save" POSTs the whole
+//        Add / edit / delete happen in-memory; "Guardar" POSTs the whole
 //        list to /agent/contacts/save/. The modal is viewport bounded
 //        and centered (native, focus-trapped, Esc/backdrop to close),
 //        matching the External ▸ MCPs dialog look and feel.
@@ -108,7 +108,7 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
             return;
         }
         if (!shown.length) {
-            listEl.appendChild(listMessage('Sin resultados.'));
+            listEl.appendChild(listMessage('Sin coincidencias.'));
             return;
         }
         const fragment = document.createDocumentFragment();
@@ -123,13 +123,13 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
                 '<div class="ctb-info"><div class="ctb-name"></div>' +
                 (c.aliases ? '<div class="ctb-sub"></div>' : '') +
                 '<div class="ctb-chanrow"></div></div>' +
-                '<button type="button" class="ctb-del" title="Borrar el contacto">' +
+                '<button type="button" class="ctb-del" title="Borrar contacto">' +
                 '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
                 '<path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9zm4 2v8h2v-8h-2zm4 0v8h2v-8h-2z"/>' +
                 '</svg></button>';
             row.querySelector('.ctb-name').textContent = c.name || '(sin nombre)';
             const sub = row.querySelector('.ctb-sub');
-            if (sub) sub.textContent = 'alias ' + c.aliases;
+            if (sub) sub.textContent = 'aka ' + c.aliases;
             const chans = row.querySelector('.ctb-chanrow');
             if (c.telegram) appendChannel(chans, 'ctb-chan-tg', 'TG ' + c.telegram);
             if (c.whatsapp) appendChannel(chans, 'ctb-chan-wa', 'WA ' + c.whatsapp);
@@ -138,7 +138,7 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
                 appendChannel(chans, 'ctb-chan-em', 'sin canales');
             }
             row.querySelector('.ctb-del')
-                .setAttribute('aria-label', 'Borrar ' + (c.name || 'el contacto'));
+                .setAttribute('aria-label', 'Delete ' + (c.name || 'contact'));
             fragment.appendChild(row);
         }
         listEl.appendChild(fragment);
@@ -160,7 +160,7 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
         if (!c) return;
         editingIndex = idx;
         fillForm(c);
-        editTitle.textContent = 'Editando: ' + (c.name || '(sin nombre)');
+        editTitle.textContent = 'Editing: ' + (c.name || '(sin nombre)');
         renderList();
         window.setTimeout(() => f.name.focus(), 0);
     }
@@ -168,7 +168,7 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
     function newContact() {
         editingIndex = -1;
         fillForm(null);
-        editTitle.textContent = 'Nuevo contacto';
+        editTitle.textContent = 'Contacto nuevo';
         renderList();
         window.setTimeout(() => f.name.focus(), 0);
     }
@@ -187,7 +187,7 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
     function applyForm() {
         const c = readForm();
         if (!c.name) {
-            flash('Se necesita un nombre.', true);
+            flash('El nombre es obligatorio.', true);
             f.name.focus();
             return;
         }
@@ -198,28 +198,35 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
             editingIndex = contacts.length - 1;
         }
         dirty = true;
-        editTitle.textContent = 'Editando: ' + c.name;
+        editTitle.textContent = 'Editing: ' + c.name;
         renderAll();
-        flash('Se aplicó “' + c.name + '” — presiona Guardar para dejarlo fijo.');
+        flash('Applied “' + c.name + '” — presiona Guardar para conservarlo.');
     }
 
     function removeContact(idx) {
         const c = contacts[idx];
         if (!c) return;
         const label = c.name || 'este contacto';
-        if (!confirm('¿Borrar “' + label + '” de la libreta de contactos?\n\n' +
-            'Se elimina cuando presiones Guardar.')) {
-            return;
-        }
-        contacts.splice(idx, 1);
-        dirty = true;
-        if (editingIndex === idx) {
-            newContact();
-        } else {
-            if (editingIndex > idx) editingIndex -= 1;
-            renderAll();
-        }
-        flash('Se quitó “' + label + '” — presiona Guardar para dejarlo fijo.');
+        // Themed confirm (dialog_policy.js). Async by nature, so the removal
+        // moved INTO the callback — the old synchronous `confirm()` was the
+        // last native popup this dialog raised.
+        tlmConfirm('Delete “' + label + '” de la libreta de contactos?',
+            'Se borra cuando presiones Guardar.', 'Borrar contacto').then((ok) => {
+            if (!ok) return;
+            // Re-resolve: the list may have been re-rendered while the popup
+            // was open, so a stale index must never delete the wrong person.
+            const at = contacts.indexOf(c);
+            if (at < 0) return;
+            contacts.splice(at, 1);
+            dirty = true;
+            if (editingIndex === at) {
+                newContact();
+            } else {
+                if (editingIndex > at) editingIndex -= 1;
+                renderAll();
+            }
+            flash('Removed “' + label + '” — presiona Guardar para conservarlo.');
+        });
     }
 
     listEl.onclick = (e) => {
@@ -250,11 +257,10 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
     function setSaving(next) {
         isSaving = next;
         saveBtn.disabled = next;
-        saveBtn.textContent = next ? 'Guardando...' : 'Guardar';
+        saveBtn.textContent = next ? 'Saving...' : 'Guardar';
     }
 
-    function closeDialog() {
-        if (dirty && !confirm('¿Descartar los cambios sin guardar?')) return;
+    function reallyCloseDialog() {
         if (warnTimer) clearTimeout(warnTimer);
         if (_contactsKeydownHandler) {
             document.removeEventListener('keydown', _contactsKeydownHandler);
@@ -263,6 +269,19 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
         dlg.classList.remove('is-open');
         dlg.hidden = true;
         document.body.classList.remove('ctb-dialog-open');
+    }
+
+    function closeDialog() {
+        // Clean → close immediately, exactly as before. Dirty → ask, themed,
+        // and close only on Continue. The themed confirm is a Promise, so the
+        // close moved into the callback; discarding edits is destructive, so
+        // any other dismissal (X, Cancel) keeps the dialog open.
+        if (!dirty) { reallyCloseDialog(); return; }
+        tlmConfirm('¿Descartar los cambios sin guardar de los contactos?',
+            'Los contactos que agregaste o editaste no se van a guardar.',
+            'Cambios sin guardar').then((ok) => {
+            if (ok) reallyCloseDialog();
+        });
     }
 
     function focusableElements() {
@@ -304,7 +323,7 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
         if (isSaving) return;
         const c = readForm();
         // Auto-commit a non-empty in-progress editor entry so a user who typed
-        // a contact and pressed Save (without Apply) does not lose it.
+        // a contact and pressed Guardar (without Apply) does not lose it.
         if (c.name && (editingIndex < 0 ||
             JSON.stringify(contacts[editingIndex]) !== JSON.stringify(c))) {
             applyForm();
@@ -319,28 +338,28 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
             setSaving(false);
             if (d.ok) {
                 dirty = false;
-                flash(d.count === 1
-                    ? 'Se guardó ' + d.count + ' contacto.'
-                    : 'Se guardaron ' + d.count + ' contactos.');
+                flash('Guardard ' + d.count + (d.count === 1 ? ' contact.' : ' contacts.'));
             } else {
-                flash('Falló el guardado: ' + (d.error || 'error desconocido'), true);
+                flash('Guardar failed: ' + (d.error || 'unknown error'), true);
             }
-        }).catch(err => { setSaving(false); flash('Falló el guardado: ' + err, true); });
+        }).catch(err => { setSaving(false); flash('Guardar failed: ' + err, true); });
     }
 
     closeBtn.onclick = closeDialog;
     cancelBtn.onclick = closeDialog;
     saveBtn.onclick = saveAll;
-    dlg.onclick = (e) => { if (e.target === dlg) closeDialog(); };
+    // Backdrop-click dismissal removed (Angela, 2026-08-13): a dialog closes
+    // ONLY by its X, Cancel, Continue or ESCAPE (standardised 2026-08-16 -
+    // routed by static/agent/js/dialog_policy.js, with onDialogKeydown local).
 
     // Initial state
     contacts = [];
     editingIndex = -1;
     dirty = false;
     fillForm(null);
-    editTitle.textContent = 'Elige un contacto, o presiona “Nuevo”';
+    editTitle.textContent = 'Pick a contact, or press “New”';
     listEl.innerHTML = '';
-    listEl.appendChild(listMessage('Cargando...'));
+    listEl.appendChild(listMessage('Loading...'));
     warn.textContent = '';
     setSaving(false);
     legend.textContent = '';
@@ -352,7 +371,7 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
             if (!payload || payload.ok === false) {
                 listEl.innerHTML = '';
                 listEl.appendChild(listMessage(
-                    'Falló la carga: ' + ((payload && payload.error) || 'error desconocido')));
+                    'Load failed: ' + ((payload && payload.error) || 'unknown error')));
                 return;
             }
             contacts = (payload.contacts || []).map(c => Object.assign({}, c));
@@ -360,6 +379,6 @@ function OpenContactsDialog(event) { // eslint-disable-line no-unused-vars
         })
         .catch(err => {
             listEl.innerHTML = '';
-            listEl.appendChild(listMessage('Falló la carga: ' + err));
+            listEl.appendChild(listMessage('Load failed: ' + err));
         });
 }

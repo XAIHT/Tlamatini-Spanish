@@ -24,8 +24,12 @@ WHAT NEVER MOVES, AND WHY
   deployment, screenshot, browser, firmware, timeout, backup, script, prompt,
   token, endpoint. A Mexican developer says these in English; translating them
   makes a colleague stop and re-read.
-* ANGELA'S NAME - "CREATED BY ANGELA LOPEZ MENDOZA" maps to ITSELF, listed
-  explicitly below so the catalog is proof, not merely an omission.
+* ANGELA'S NAME - "ANGELA LOPEZ MENDOZA" travels BYTE-EXACT, listed explicitly
+  below so the catalog is proof, not merely an omission. Only the two words
+  around it move ("CREATED BY" -> "CREADA POR"); the name itself never does,
+  and it is spelled WITHOUT a tilde on Angela, the way she writes it and the
+  way every author banner in the tree writes it. The entry used to render
+  "Angela" as "Ángela" - respelling the one name that must never change.
 
 WHAT DOES MOVE
 --------------
@@ -258,7 +262,12 @@ UI_ES: Dict[str, str] = {
 
     # ── About ─────────────────────────────────────────────────────────────
     # Angela's name and XAIHT's expansion are NAMES. They never move.
-    "CREATED BY ANGELA LÓPEZ MENDOZA": "Creada por Ángela López Mendoza",
+    # Su nombre se escribe SIN tilde en Angela — asi lo escribe ella y asi
+    # aparece en todo el arbol (banners de autoria, CLAUDE.md, docs). La
+    # entrada anterior decia "Ángela" y le cambiaba la ortografia del nombre.
+    # Va en MAYUSCULAS para igualar la edicion en ingles.
+    "CREATED BY ANGELA LÓPEZ MENDOZA": "CREADA POR ANGELA LÓPEZ MENDOZA",
+    "Company of": "Empresa de",
     "XAIHT: eXtended Artificial Intelligence Humanly Tempered (a Mexican company)":
         "XAIHT: eXtended Artificial Intelligence Humanly Tempered "
         "(una empresa mexicana)",
@@ -325,6 +334,12 @@ UI_ES: Dict[str, str] = {
     "Welcome, !": "¡Te damos la bienvenida, !",
     "You have successfully logged in.": "Iniciaste sesión correctamente.",
     "Go to Chat": "Ir al Chat",
+    # ── D1: textos que estaban escritos a mano en la
+    #    plantilla y no pasaban por el catalogo ─────────
+    "Agent log":
+        "Log del Agent",
+    "Speech settings": "Ajustes de la voz",
+    "Settings are saved in this browser.": "Los ajustes se guardan en este browser.",
 }
 
 

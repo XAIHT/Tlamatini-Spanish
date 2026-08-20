@@ -315,7 +315,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except yaml.YAMLError as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -328,7 +328,7 @@ def save_reanim_offsets(offsets: Dict[str, int]):
         with open(REANIM_FILE, "w", encoding="utf-8") as f:
             yaml.dump(offsets, f)
     except Exception as e:
-        logging.warning(f"⚠️ Warning: Could not save reanimation offsets: {e}")
+        logging.warning(f"⚠️ Aviso: no se pudieron guardar los marcadores de reanimación: {e}")
 
 
 def load_reanim_offsets() -> Dict[str, int]:
@@ -340,7 +340,7 @@ def load_reanim_offsets() -> Dict[str, int]:
             data = yaml.safe_load(f)
             return data if data else {}
     except Exception as e:
-        logging.warning(f"⚠️ Warning: Could not load reanimation offsets: {e}")
+        logging.warning(f"⚠️ Aviso: no se pudieron leer los marcadores de reanimación: {e}")
         return {}
 
 
@@ -373,11 +373,11 @@ def check_log_for_pattern(log_path: str, offset: int, patterns: List[str], file_
         # Detect file truncation/recreation scenarios:
         if current_size < offset or last_known_size == -1 or current_size < last_known_size:
             if last_known_size == -1:
-                logging.info(f"📁 Log file appeared: {log_path}")
+                logging.info(f"📁 Apareció la bitácora: {log_path}")
             elif current_size < last_known_size:
                 logging.info(f"🔄 Log file truncated/recreated: {log_path} ({last_known_size} -> {current_size} bytes)")
             else:
-                logging.info(f"🔄 Stale offset detected for {log_path}, resetting")
+                logging.info(f"🔄 Marcador obsoleto en {log_path}, reiniciando")
             offset = 0  # Read from beginning
         
         # Update tracking
@@ -399,7 +399,7 @@ def check_log_for_pattern(log_path: str, offset: int, patterns: List[str], file_
         return False, new_offset, None
     
     except Exception as e:
-        logging.error(f"Error reading log {log_path}: {e}")
+        logging.error(f"Error al leer la bitácora {log_path}: {e}")
         return False, offset, None
 
 
@@ -492,7 +492,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
     
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
     
     if not os.path.exists(agent_dir):
@@ -512,7 +512,7 @@ def start_agent(agent_name: str) -> bool:
             creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
         )
         
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     
     except Exception as e:
@@ -527,7 +527,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 def remove_pid_file():
     for attempt in range(5):
@@ -538,7 +538,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 def main():
@@ -572,8 +572,8 @@ def main():
         sys.exit(1)
     
     logging.info("🔥 RAISER AGENT STARTED")
-    logging.info(f"📁 Pool path: {get_pool_path()}")
-    logging.info(f"📁 Template path: {get_template_agents_path()}")
+    logging.info(f"📁 Ruta del pool: {get_pool_path()}")
+    logging.info(f"📁 Ruta de plantillas: {get_template_agents_path()}")
     logging.info(f"👀 Monitoring source agents: {source_agents}")
     logging.info(f"🔍 Patterns to detect: {patterns}")
     logging.info(f"🎯 Target agents to start: {target_agents}")
@@ -605,7 +605,7 @@ def main():
                 # Start from beginning to catch events that happened before startup
                 offsets[source] = 0
                 file_sizes[log_path] = os.path.getsize(log_path)
-                logging.info(f"📍 Initialized offset for {source}: {offsets[source]}")
+                logging.info(f"📍 Marcador inicial de {source}: {offsets[source]}")
             else:
                 # Log file may not exist yet (source agent hasn't started)
                 # This is normal - just initialize offset to 0 and wait silently

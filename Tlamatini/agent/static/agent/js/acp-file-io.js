@@ -138,7 +138,7 @@ if (openBtn) {
                     updateFilenameDisplay(file.name);
                 } catch (err) {
                     console.error("Failed to load diagram", err);
-                    alert("Error al cargar el archivo del diagrama.");
+                    acpAlert("Error al cargar el archivo del diagrama.");
                 }
             };
             reader.readAsText(file);
@@ -156,7 +156,11 @@ if (fileCloseBtn) {
         e.preventDefault();
 
         if (hasUnsavedChanges) {
-            if (!confirm('Tienes cambios sin guardar. ¿Seguro que quieres cerrar el diagrama actual?')) {
+            // Igual que en el boton de limpiar: `acpConfirm` es una promesa
+            // y sin await el `if` nunca entra, asi que se cerraria el
+            // diagrama con cambios sin guardar sin avisar. El listener ya
+            // es async.
+            if (!(await acpConfirm('Tienes cambios sin guardar. ¿Seguro que quieres cerrar el diagrama actual?', '', 'Cerrar el diagrama'))) {
                 return;
             }
         }
@@ -173,7 +177,7 @@ if (fileCloseBtn) {
                 console.log('--- Pool directory cleared successfully');
             } else {
                 console.error('--- Failed to clear pool directory:', result.message);
-                alert('No se pudo limpiar el pool directory: ' + result.message);
+                acpAlert('No se pudo limpiar el pool directory: ' + result.message);
                 return;
             }
 
@@ -183,7 +187,7 @@ if (fileCloseBtn) {
 
         } catch (error) {
             console.error('--- Error during close operation:', error);
-            alert('Error al cerrar: ' + error.message);
+            acpAlert('Error al cerrar: ' + error.message);
         }
     });
 }
@@ -260,14 +264,14 @@ async function loadDiagram(data) {
                 const existing = loadedNodes.find(n => (n.dataset.agentName || '').toLowerCase() === 'flowcreator');
                 if (existing) {
                     console.warn(`[Load] Skipping extra FlowCreator agent: ${nodeData.text}`);
-                    alert('Solo se permite un agent FlowCreator por Flow. Las instancias extra se quitaron del diagrama cargado.');
+                    acpAlert('Solo se permite un agent FlowCreator por Flow. Las instancias extra se quitaron del diagrama cargado.');
                     continue;
                 }
             } else if (lowerName === 'flowhypervisor') {
                 const existing = loadedNodes.find(n => (n.dataset.agentName || '').toLowerCase() === 'flowhypervisor');
                 if (existing) {
                     console.warn(`[Load] Skipping extra FlowHypervisor agent: ${nodeData.text}`);
-                    alert('Solo se permite un agent FlowHypervisor por Flow. Las instancias extra se quitaron del diagrama cargado.');
+                    acpAlert('Solo se permite un agent FlowHypervisor por Flow. Las instancias extra se quitaron del diagrama cargado.');
                     continue;
                 }
             }

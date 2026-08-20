@@ -56,7 +56,7 @@ def load_config(path="config.yaml"):
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error("❌ Error: config.yaml not found.")
+        logging.error("❌ Error: no se encontró config.yaml.")
         sys.exit(1)
 
 CONFIG = load_config()
@@ -353,7 +353,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 def remove_pid_file():
     for attempt in range(5):
@@ -364,7 +364,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 if __name__ == "__main__":

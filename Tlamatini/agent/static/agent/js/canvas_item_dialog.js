@@ -97,12 +97,13 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
                 input.type = 'text';
                 input.id = 'prop-' + fieldKey;
                 input.value = val.join(', '); // Join array to comma-separated string
-                input.classList.add('form-control');
+                // `tlm-dlg-input` (dialog_theme.css) es quien manda el color
+                // del campo. Pintarlo aqui en blanco con texto negro metia un
+                // formulario CLARO dentro de la tarjeta oscura.
+                input.classList.add('form-control', 'tlm-dlg-input');
                 input.dataset.key = fieldKey;
                 input.dataset.isArray = 'true'; // Mark as array for reconstruction
                 input.style.width = "100%";
-                input.style.backgroundColor = "#fff";
-                input.style.color = "#000";
                 input.placeholder = "Escribe los valores separados por comas";
 
                 listElement.appendChild(label);
@@ -184,7 +185,7 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
                     radioRes.style.cursor = "pointer";
                     radioRes.style.width = "18px";
                     radioRes.style.height = "18px";
-                    radioRes.style.accentColor = "#55BBAA";
+                    radioRes.style.accentColor = "var(--tlm-dlg-accent, #55BBAA)";
 
                     const optLabel = document.createElement('label');
                     // La ETIQUETA se traduce; el VALOR (opt) NO se toca nunca:
@@ -228,7 +229,7 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
                 input.style.marginRight = "10px";
                 input.style.width = "18px";
                 input.style.height = "18px";
-                input.style.accentColor = "#55BBAA";
+                input.style.accentColor = "var(--tlm-dlg-accent, #55BBAA)";
                 input.style.cursor = "pointer";
 
                 const label = document.createElement('label');
@@ -262,11 +263,10 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
 
                 input.id = 'prop-' + fieldKey; // Not strictly needed for logic but good for debugging
                 input.value = val;
-                input.classList.add('form-control'); // Bootstrap class
+                // Ver la rama de arriba: el color lo manda `tlm-dlg-input`.
+                input.classList.add('form-control', 'tlm-dlg-input');
                 input.dataset.key = fieldKey;
                 input.style.width = "100%";
-                input.style.backgroundColor = "#fff";
-                input.style.color = "#000"; // Ensure readable text
 
                 listElement.appendChild(label);
                 listElement.appendChild(input);
@@ -331,7 +331,7 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
                 checkbox.checked = currentSelected.includes(itemId);
                 checkbox.classList.add('cleaner-agent-checkbox'); // Class for saving logic
                 checkbox.style.marginRight = '8px';
-                checkbox.style.accentColor = '#55BBAA';
+                checkbox.style.accentColor = 'var(--tlm-dlg-accent, #55BBAA)';
 
                 const label = document.createElement('label');
                 label.htmlFor = `clean-select-${itemId}`;
@@ -586,15 +586,14 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
             // Ensure dialog content area is flex/column if needed, or just let custom div handle scroll
             // Fix button styles
             const buttonPane = $(this).parent().find('.ui-dialog-buttonpane');
-            buttonPane.css({
-                "background": "none",
-                "border": "none",
-                "padding": "10px 20px"
-            });
+            // Aqui iba un `buttonPane.css({background:'none', border:'none'})`
+            // que BORRABA la barra de pie — la mitad mas reconocible del
+            // dialogo — en todos los que pasaban por aqui. El pie lo pinta
+            // dialog_theme.css; no se le encima nada.
 
             buttonPane.find('button:contains("Guardar"), button:contains("¡Vamos!")')
                 .css({
-                    'background-color': '#55BBAA',
+                    'background-color': 'var(--tlm-dlg-accent, #55BBAA)',
                     'color': 'white',
                     'border': 'none',
                     'border-radius': '6px',
@@ -757,19 +756,23 @@ function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCa
 function renderCanvasItemDialog() {
     $('.ui-dialog-buttonpane button:contains("Guardar"), .ui-dialog-buttonpane button:contains("¡Vamos!")')
         .css({
-            'background-color': '#55BBAA',
+            'background-color': 'var(--tlm-dlg-accent, #55BBAA)',
             'color': 'white',
             'border-radius': '8px',
             'font-size': '1em',
-            'height': '4vh'
+            // Altura FIJA: con '4vh' el boton crecia o se encogia con la
+            // ventana (43px en 1080p, 26px en una laptop).
+            'height': '34px'
         });
     $('.ui-dialog-buttonpane button:contains("Cancelar")')
         .css({
-            'background-color': '#55BBAA',
+            'background-color': 'var(--tlm-dlg-accent, #55BBAA)',
             'color': 'white',
             'border-radius': '8px',
             'font-size': '1em',
-            'height': '4vh'
+            // Altura FIJA: con '4vh' el boton crecia o se encogia con la
+            // ventana (43px en 1080p, 26px en una laptop).
+            'height': '34px'
         });
     $("#canvas-item-dialog-message").dialog("open");
 }
@@ -789,9 +792,9 @@ function showDeploymentResultDialog(success, agentName, pathOrError) {
 
     if (success) {
         iconEl.innerHTML = '✅';
-        iconEl.style.color = '#55BBAA';
+        iconEl.style.color = 'var(--tlm-dlg-accent, #55BBAA)';
         titleEl.innerText = 'Deployment exitoso';
-        titleEl.style.color = '#55BBAA';
+        titleEl.style.color = 'var(--tlm-dlg-accent, #55BBAA)';
         messageEl.innerText = `El agent "${agentName}" se desplegó correctamente.`;
         pathEl.innerText = `Directorio: ${pathOrError}`;
         pathEl.style.display = 'block';
@@ -814,15 +817,10 @@ function showDeploymentResultDialog(success, agentName, pathOrError) {
         closeText: "",
         create: function () {
             const buttonPane = $(this).parent().find('.ui-dialog-buttonpane');
-            buttonPane.css({
-                "background": "none",
-                "border": "none",
-                "padding": "10px 20px",
-                "text-align": "center"
-            });
+            // Misma razon que arriba: no se borra la barra de pie.
             buttonPane.find('button:contains("OK")')
                 .css({
-                    'background-color': success ? '#55BBAA' : '#e74c3c',
+                    'background-color': success ? 'var(--tlm-dlg-accent, #55BBAA)' : '#e74c3c',
                     'color': 'white',
                     'border': 'none',
                     'border-radius': '6px',
@@ -837,7 +835,7 @@ function showDeploymentResultDialog(success, agentName, pathOrError) {
             const buttonPane = $(this).parent().find('.ui-dialog-buttonpane');
             buttonPane.find('button:contains("OK")')
                 .css({
-                    'background-color': success ? '#55BBAA' : '#e74c3c'
+                    'background-color': success ? 'var(--tlm-dlg-accent, #55BBAA)' : '#e74c3c'
                 });
         },
         buttons: [

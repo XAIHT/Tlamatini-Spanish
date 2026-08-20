@@ -19,9 +19,10 @@ Angela, 2026-07-14, live on the frozen build:
 
 She cancelled a Multi-Turn run while a Proceed/Deny prompt was open. The backend
 denied it and stopped the run correctly — but the MODAL STAYED ON HER SCREEN and
-she was forced to answer a question that had already been answered. The dialog is
-`modal:true`, `closeOnEscape:false`, and its titlebar X is hidden, so clicking a
-button was her ONLY way out. An ORPHAN MODAL.
+she was forced to answer a question that had already been answered. At that time
+the dialog was `modal:true`, used `closeOnEscape:false`, and hid its titlebar X,
+so clicking a button was her ONLY way out. An ORPHAN MODAL. Since v1.48.17,
+Escape routes through the same Deny/dismiss path as the dialog's own close action.
 
 Fixing that exposed two more:
   * a Cancel was reported (and SAVED to chat history) as "⛔ You denied the Tool…"
@@ -96,9 +97,9 @@ except Exception as exc:  # pragma: no cover
     print(f"!!! Playwright is required: {exc}")
     sys.exit(2)
 
-# PROHIBIDO PIL.ImageGrab (Angela, 2026-08-02): las fotos las toma
-# SHOTER, el agent de Tlamatini. Ver shoter_foto.py.
-from shoter_foto import toma_foto
+# PIL.ImageGrab is FORBIDDEN (Angela, 2026-08-02): screenshots are
+# taken by SHOTER, Tlamatini's own agent. See shoter_shot.py.
+from shoter_shot import take_shot
 
 
 
@@ -159,9 +160,7 @@ def shot(name: str) -> None:
         except Exception:
             pass
     p = OUT / f"{len(SHOTS):02d}_{name}.png"
-    # El local se llama `p`, no `path`: escribir `path` aqui era un NameError
-    # justo al tomar la foto, y una prueba sin foto no demuestra nada.
-    toma_foto(os.path.dirname(p), os.path.basename(p))
+    take_shot(os.path.dirname(p), os.path.basename(p))
     SHOTS.append(p.name)
 
 
@@ -222,14 +221,11 @@ def wait_idle(page, timeout=240) -> bool:
 # "Agent is not ready. Please try again later." This happens on a slow boot (e.g. the
 # External MCPs connecting) or right after a chain rebuild. We must WAIT for real
 # readiness and RE-SEND, or every scenario waits forever for a prompt that never comes.
-#
 # ⚠️ EDICIÓN EN ESPAÑOL — estos markers DEBEN ser bilingües y sin acentos.
 # La app en español responde con agent/constants.py:
 #   ERROR_AGENT_NOT_READY_SIMPLE = "Todavía no estoy lista. Inténtalo de nuevo…"
-#   MSG_AGENT_READY              = "Hola, soy Tlamatini, estoy lista para platicar…"
 # Con markers sólo en inglés, agent_not_ready() SIEMPRE daba False y
 # wait_agent_ready() nunca confirmaba readiness: la regresión se colgaba los
-# 300 s completos o —peor— registraba un banner transitorio como respuesta.
 # Se comparan con fold() (sin acentos) porque "Todavía"/"Inténtalo" los llevan.
 NOT_READY_MARKERS = (
     # inglés (install mixto o viejo)
@@ -237,30 +233,16 @@ NOT_READY_MARKERS = (
     "still loading",
     "please wait a moment and try again",
     # español (acentos ya plegados por fold())
-    "todavia no estoy lista",
-    "intentalo de nuevo",
-    "me estoy cargando",
-    "estoy cargando el context",
-    "esperame tantito",
 )
 READY_MARKER = "your agent is ready"
-READY_MARKERS = (READY_MARKER, "estoy lista para platicar")
-
-
-def _fold(s: str) -> str:
     """lowercase sin acentos — 'Todavía' y 'todavia' deben matchear igual."""
-    import unicodedata
-    return "".join(
-        c for c in unicodedata.normalize("NFD", (s or "").lower())
-        if unicodedata.category(c) != "Mn"
-    )
 
 
 def agent_not_ready(page) -> bool:
     txts = bot_texts(page)
     if not txts:
         return False
-    last = _fold(txts[-1])
+    last = txts[-1].lower()
     return any(m in last for m in NOT_READY_MARKERS)
 
 

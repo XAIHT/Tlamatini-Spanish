@@ -28,7 +28,6 @@ from versioning import (
     resolve_build_version,
 )
 
-
 # ── pip's "A new release of pip is available" nag: OFF for the whole build ──
 # It is pure noise in a long build log, and it is NOT fixable the obvious way:
 # the build Python is normally the SYSTEM one under Program Files, whose pip
@@ -42,6 +41,7 @@ from versioning import (
 # so the silence survives a refactor that rebuilds env from scratch.
 # Pinned by Tlamatini/agent/test_build_pip_quiet.py.
 os.environ["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
+
 
 def find_package_data_paths(pypi_name, import_name):
     """Finds paths for a package's code and metadata."""
@@ -366,6 +366,111 @@ _AGENT_RUNTIME_IMPORTS = (
     "torch", "snac",                        # text-to-speech (Talker) — Orpheus token -> 24 kHz audio vocoder
     "faster_whisper", "ctranslate2",        # speech-to-text (Whisperer) — local Whisper (GPU auto / CPU fallback)
 )
+
+# ── FROZEN-BUNDLE CARRIAGE PROOF (Angela review, 2026-08-16) ─────────────────
+# _AGENT_RUNTIME_IMPORTS above covers the CARRIED Python (the pool agents).  It
+# says NOTHING about what landed inside the PyInstaller bundle, and these
+# modules run INSIDE the frozen Django app, not in the pool.
+#
+# WHY A PROOF AND NOT JUST A --hidden-import: every one of these is imported
+# fail-open (`try: from . import runtime_provisioner / except ImportError:
+# runtime_provisioner = None`).  A fail-open import cannot report its own
+# absence — the app boots perfectly and simply loses the capability.  So the
+# review question "confirm the frozen build REALLY ships it" cannot be answered
+# by reading build.py at all; it has to be answered by looking in the archive
+# the build just produced.  That is what verify_frozen_agent_modules() does.
+_FROZEN_REQUIRED_AGENT_MODULES = (
+    "agent.runtime_provisioner",   # private node/npm/npx/pnpm/uv/uvx provisioning
+    "agent.external_mcp_defaults",  # ships + seeds `memory` / `sequential-thinking`
+    "agent.external_mcp_manager",  # the universal External-MCP client
+    "agent.agent_verdict",         # the deterministic Exec-Report verdict engine
+    "agent.path_guard",            # <app>/Temp + <app>/Templates policy
+    "agent.self_update",           # About ▸ Check for updates
+    "agent._version",              # SemVer resolver
+)
+
+
+def _read_pyz_module_names(dist_root):
+    """Return the set of module names inside the build's PYZ archive.
+
+    ⚠️ WHERE THE PYZ ACTUALLY LIVES (measured, not assumed): under PyInstaller
+    6 in onedir mode there is NO loose ``_internal/PYZ-00.pyz``.  The PYZ is an
+    entry named ``PYZ.pyz`` INSIDE the executable's CArchive — verified against
+    the shipped C:/Tlamatini/Tlamatini.exe, whose CArchive holds 21 entries and
+    whose PYZ holds 15,061 modules.  A glob for ``PYZ-*.pyz`` finds nothing and
+    would have reported "cannot verify" forever, i.e. a check that never fails
+    and never proves anything — the same silence this whole item is about.
+
+    Returns None only when the archive genuinely cannot be READ (a future
+    PyInstaller moves its private reader API), so the caller can degrade to a
+    warning instead of failing a build for a reason that is not about Tlamatini.
+    """
+    root = Path(dist_root)
+    names = set()
+
+    # 1) The normal path: the PYZ embedded in the frozen executable.
+    try:
+        from PyInstaller.archive.readers import CArchiveReader  # noqa: PLC0415
+        for exe in sorted(root.glob("*.exe")):
+            try:
+                carchive = CArchiveReader(str(exe))
+            except Exception:
+                continue                      # not a PyInstaller exe (installer stub, ...)
+            toc = getattr(carchive, "toc", None) or {}
+            for entry in toc:
+                if not str(entry).upper().startswith("PYZ"):
+                    continue
+                try:
+                    inner = carchive.open_embedded_archive(entry)
+                except Exception:
+                    continue
+                inner_toc = getattr(inner, "toc", None)
+                if inner_toc:
+                    names.update(
+                        inner_toc.keys() if hasattr(inner_toc, "keys") else inner_toc
+                    )
+    except Exception:
+        pass
+
+    # 2) Legacy / onefile layouts that DO write a loose PYZ next to the app.
+    if not names:
+        try:
+            from PyInstaller.archive.readers import ZlibArchiveReader  # noqa: PLC0415
+            for pyz in sorted(root.rglob("PYZ*.pyz")):
+                toc = getattr(ZlibArchiveReader(str(pyz)), "toc", None)
+                if toc:
+                    names.update(toc.keys() if hasattr(toc, "keys") else toc)
+        except Exception:
+            pass
+
+    return names or None
+
+
+def verify_frozen_agent_modules(dist_root):
+    """Assert every module in _FROZEN_REQUIRED_AGENT_MODULES is IN the bundle.
+
+    Aborts the build when a required module is genuinely absent.  Prints a
+    WARNING (and continues) when the archive could not be inspected at all —
+    an unreadable archive is a PyInstaller-version question, not evidence that
+    Tlamatini is broken, and a build that dies on it would be its own bug.
+    """
+    print("\n--- Post-build: verifying frozen agent modules ---")
+    names = _read_pyz_module_names(dist_root)
+    if names is None:
+        print("  WARNING: could not read the PYZ archive - carriage NOT proven "
+              "(the --hidden-import flags still name every module above).")
+        return True
+    missing = [m for m in _FROZEN_REQUIRED_AGENT_MODULES if m not in names]
+    if missing:
+        print("ERROR: the frozen bundle is MISSING required agent modules: "
+              + ", ".join(missing))
+        print("       These are imported FAIL-OPEN, so the app would boot and "
+              "silently lose the capability. Add a --hidden-import for each and "
+              "rebuild. Aborting build.")
+        sys.exit(1)
+    print(f"  OK - all {len(_FROZEN_REQUIRED_AGENT_MODULES)} required agent "
+          f"module(s) present in the PYZ ({len(names)} modules total).")
+    return True
 
 
 def _probe_carried_python(python_exe):
@@ -1117,6 +1222,22 @@ def main():
         # builds would have an empty skill catalog.
         f'--add-data=Tlamatini/agent/skills_pkg{separator}agent/skills_pkg',
         '--hidden-import=agent._version',
+        # ── The agent.* modules NOTHING ELSE NAMES (Angela review, 2026-08-16) ──
+        # Every one of these is reached only through a FAIL-OPEN import:
+        #   external_mcp_manager.py  `try: from . import runtime_provisioner
+        #                             except ImportError: runtime_provisioner = None`
+        #   apps.py / views.py       lazy `from . import runtime_provisioner`
+        # A fail-open import is exactly what makes a missing module INVISIBLE:
+        # drop runtime_provisioner from the bundle and Tlamatini does not crash,
+        # she simply stops provisioning node/npx/uv/uvx forever, and every
+        # `npx -y <pkg>` MCP server dies with [WinError 2] on a machine that
+        # was supposed to self-heal. Naming them here means the graph can never
+        # quietly decide they are unreachable; `verify_frozen_agent_modules()`
+        # below then PROVES they landed in the PYZ.
+        '--hidden-import=agent.runtime_provisioner',
+        '--hidden-import=agent.external_mcp_defaults',
+        '--hidden-import=agent.external_mcp_manager',
+        '--hidden-import=agent.agent_verdict',
         '--hidden-import=daphne.server', '--hidden-import=channels',
         '--hidden-import=whitenoise.middleware', '--hidden-import=whitenoise.storage',
         '--hidden-import=django_bootstrap5',
@@ -1221,6 +1342,9 @@ def main():
     # Post-build steps (only reached on successful PyInstaller build)
     # ══════════════════════════════════════════════════════════════════
 
+    # ── 5b) PROVE the fail-open agent modules really landed in the bundle ──
+    verify_frozen_agent_modules(Path("dist") / "manage")
+
     # ── 6) Copy application files & create directories ───────────────
     print("\n--- Post-build: copying files and directories ---")
     try:
@@ -1234,12 +1358,19 @@ def main():
             # here — it is added just below, GATED on --self-modify, so that a
             # not-self-able-modify build carries neither her source tree nor her
             # own self-description.
-            # external_mcps.json is the External ▸ MCPs catalog + active set.
-            # external_mcp_manager resolves it next to config.json (install root
-            # in frozen mode), so the seed must land at the install root. It is
-            # also PRESERVED across self-update (apply_update.ps1 $Preserve) so a
-            # user's added servers + active selection survive updates, like config.json.
-            Path("Tlamatini") / "agent" / "external_mcps.json": dist_manage / "external_mcps.json",
+            # NOTE: external_mcps.json is INTENTIONALLY NOT copied here any more
+            # (2026-08-12). It used to be, and the dev tree's copy holds the
+            # maintainer's REAL provider secrets — a GitHub PAT and a Snyk API
+            # key sat in `env` blocks — so every release built from a working
+            # tree shipped those keys inside pkg.zip. Exactly the leak
+            # contacts.json was already excluded for; the MCP catalog simply
+            # never got the same treatment.
+            #
+            # It is also the wrong CONTENT for a user: it carried the build
+            # machine's own servers and its `"active": []`, so a reinstall
+            # replaced the user's catalog with a stranger's and deactivated
+            # everything. A sanitized EMPTY catalog is written below instead
+            # (see "Ship a sanitized empty external_mcps.json").
             # NOTE: contacts.json is INTENTIONALLY NOT copied here. The dev tree's
             # contacts.json holds the maintainer's PRIVATE data (real phone numbers /
             # Telegram handles / emails). Shipping it would leak that PII into every
@@ -1314,6 +1445,110 @@ def main():
         print(f"Wrote contacts.json -> {contacts_dst} "
               f"({len(contacts_doc.get('contacts', []))} contact(s))")
 
+        # ── Ship external_mcps.json (the External ▸ MCPs catalog) ───────────────
+        # TWO FLAVOURS, and the difference is deliberate (Angela, 2026-08-15):
+        #
+        #   PUBLIC  (the default, and what a bare `python build.py` produces):
+        #     ONLY the servers Tlamatini herself implements — `memory` and
+        #     `sequential-thinking` — taken from the SAME module the running app
+        #     seeds from (Tlamatini/agent/external_mcp_defaults.py), so the file
+        #     we ship and the boot-time seeder can never drift. No maintainer
+        #     server, no maintainer secret, ever.
+        #
+        #   PRIVATE / KEYED:
+        #     build_complete_private_release.py sets TLAMATINI_BUNDLE_EXTERNAL_MCPS
+        #     to the dev catalog (Tlamatini/agent/external_mcps.json, with real
+        #     values restored by `regen_secrets.py --mode keyed`). We ship EVERY
+        #     server in it PLUS the two defaults merged in. The public builder
+        #     CLEARS that variable, so a public build cannot pick it up by accident.
+        #
+        # History: until 2026-08-12 the build copied the dev catalog verbatim and
+        # shipped a live GitHub PAT + Snyk key inside every pkg.zip. The seatbelt
+        # at the bottom of this block exists so that can never happen again.
+        external_mcps_doc = None
+        _mcp_defaults_mod = None
+        try:
+            import importlib.util as _ilu
+            _mcp_defaults_src = Path("Tlamatini") / "agent" / "external_mcp_defaults.py"
+            _mcp_spec = _ilu.spec_from_file_location("_tlm_mcp_defaults", _mcp_defaults_src)
+            _mcp_defaults_mod = _ilu.module_from_spec(_mcp_spec)
+            _mcp_spec.loader.exec_module(_mcp_defaults_mod)
+            external_mcps_doc = _mcp_defaults_mod.shipped_catalog_document()
+        except Exception as _mcp_exc:
+            print(f"WARNING: could not load external_mcp_defaults ({_mcp_exc}); shipping an "
+                  f"EMPTY catalog (the app still seeds the defaults on first launch).")
+
+        _mcps_flavor = "PUBLIC"
+        _bundle_mcps = (os.environ.get("TLAMATINI_BUNDLE_EXTERNAL_MCPS") or "").strip()
+        if _bundle_mcps and os.path.isfile(_bundle_mcps) and _mcp_defaults_mod is not None:
+            try:
+                with open(_bundle_mcps, "r", encoding="utf-8-sig") as _xf:
+                    _dev_doc = json.load(_xf)
+                if isinstance(_dev_doc, dict) and isinstance(_dev_doc.get("mcpServers"), dict):
+                    # A private build ships every default too, even one the dev
+                    # deleted locally — so drop the tombstones before merging.
+                    _dev_doc.pop(_mcp_defaults_mod.TOMBSTONE_KEY, None)
+                    _merged, _seeded = _mcp_defaults_mod.seed_defaults(_dev_doc)
+                    if external_mcps_doc:
+                        _merged.setdefault("_README", external_mcps_doc.get("_README", ""))
+                    external_mcps_doc = _merged
+                    _mcps_flavor = "PRIVATE/KEYED"
+                    print(f"Bundling PRIVATE MCP catalog from {_bundle_mcps} "
+                          f"({len(_merged.get('mcpServers', {}))} server(s); defaults merged: "
+                          f"{', '.join(_seeded) or 'already present'}) -- KEYED build.")
+                else:
+                    print(f"WARNING: {_bundle_mcps} is not a valid mcpServers doc; "
+                          f"shipping the PUBLIC default catalog instead.")
+            except Exception as _xe:
+                print(f"WARNING: could not read {_bundle_mcps} ({_xe}); shipping the "
+                      f"PUBLIC default catalog instead.")
+
+        if external_mcps_doc is None:
+            external_mcps_doc = {
+                "_README": (
+                    "Tlamatini External MCP catalog. Add servers in the standard "
+                    "`mcpServers` shape (the same JSON a Claude Code .mcp.json uses), "
+                    "then tick up to 5 of them in External > MCPs to activate. This "
+                    "file is USER STATE: it lives next to config.json and is preserved "
+                    "across updates AND reinstalls."
+                ),
+                "mcpServers": {},
+                "active": [],
+            }
+
+        # ── SEATBELT: a PUBLIC build must never carry a live-looking secret ─────
+        # Structurally impossible today (the public doc is generated from code),
+        # but this is the exact leak that shipped in every pkg.zip before
+        # 2026-08-12, so it gets a hard, build-breaking assertion rather than a
+        # comment. SystemExit is a BaseException, so no `except Exception:`
+        # further up can swallow it.
+        if _mcps_flavor == "PUBLIC":
+            _mcp_leaks = []
+            for _sk, _sv in (external_mcps_doc.get("mcpServers") or {}).items():
+                for _ek, _ev in ((_sv or {}).get("env") or {}).items():
+                    _t = str(_ev or "").strip()
+                    if not _t or (_t.startswith("<") and _t.endswith(">")):
+                        continue
+                    if any(_p in str(_ek).lower() for _p in
+                           ("token", "key", "secret", "password", "auth", "bearer")):
+                        _mcp_leaks.append(f"{_sk}.env.{_ek}")
+            if _mcp_leaks:
+                raise SystemExit(
+                    "ABORT: a PUBLIC build would ship live MCP secret(s): "
+                    + ", ".join(_mcp_leaks)
+                    + "\nRun `python regen_secrets.py --mode push-able` first, or build the "
+                      "private release if these are meant to be bundled."
+                )
+
+        external_mcps_dst = dist_manage / "external_mcps.json"
+        external_mcps_dst.parent.mkdir(parents=True, exist_ok=True)
+        with open(external_mcps_dst, "w", encoding="utf-8") as _mf:
+            json.dump(external_mcps_doc, _mf, ensure_ascii=False, indent=2)
+        print(f"Wrote external_mcps.json -> {external_mcps_dst} "
+              f"[{_mcps_flavor}] servers: "
+              + (", ".join(sorted(external_mcps_doc.get("mcpServers", {}))) or "(none)")
+              + f"  active: {external_mcps_doc.get('active') or '[]'}")
+
         # Required root-level assets for the installed application.
         # ``agents_descriptions.md`` is the authoritative source for the
         # workflow-agent sidebar tooltips and the canvas Description dialog
@@ -1321,7 +1556,6 @@ def main():
         # resolve it in frozen mode just like in source mode.
         # ``agents_descriptions.es.md`` es la capa de idioma de esta edición:
         # ``agent.views._load_agent_purpose_map`` carga el inglés como base y
-        # ENCIMA el .es agent por agent. Va como REQUIRED (no optional) a
         # propósito — si falta, el build no debe seguir en silencio: un frozen
         # español sin este archivo se ve entero en inglés en cada tooltip del
         # sidebar y en cada diálogo de Descripción, y nadie se entera hasta que
@@ -1329,7 +1563,6 @@ def main():
         required_file_copies = {
             Path("README.md"): dist_manage / "README.md",
             Path("agents_descriptions.md"): dist_manage / "agents_descriptions.md",
-            Path("agents_descriptions.es.md"): dist_manage / "agents_descriptions.es.md",
         }
         for src, dst in required_file_copies.items():
             if not src.exists():

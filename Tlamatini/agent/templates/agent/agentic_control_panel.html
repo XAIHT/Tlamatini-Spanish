@@ -1,9 +1,11 @@
 {% load static %}
+{% load nepantla %}
+{% comment %}
 <!DOCTYPE html>
-<html lang="es-MX" class="html-general">
+<html lang="en" class="html-general">
 
 <head>
-    <title>Tlamatini (Panel de Control Agéntico)</title>
+    <title>{% t 'Tlamatini (Agentic Control Panel)' %}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="{% static 'agent/img/Tlamatini.ico' %}?v={{ STATIC_VERSION }}">
@@ -12,12 +14,18 @@
     {% load django_bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
-    <link rel="stylesheet" href="{% static 'agent/css/agentic_control_panel.css' %}?v={{ STATIC_VERSION }}_v2">
+    <link rel="stylesheet" href="{% static 'agent/css/agentic_control_panel.css' %}?v={{ STATIC_VERSION }}_v2_dlg2">
+    {# dialog_theme.css MUST stay LAST: it supersedes the legacy .ui-dialog chrome on cascade ORDER. #}
+    <link rel="stylesheet" href="{% static 'agent/css/dialog_theme.css' %}?v={{ STATIC_VERSION }}_dlg3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+    <!-- Dialog dismissal policy: X / Cancel / Continue ONLY - never an outside
+         click, never Escape. Must load after jQuery UI and before every
+         application dialog module. -->
+    <script src="{% static 'agent/js/dialog_policy.js' %}?v={{ STATIC_VERSION }}_dlgpolicy3_esc"></script>
 </head>
 
 <body>
@@ -25,21 +33,21 @@
         <div id="navbar-content" class="container-fluid align-items-center">
             <a class="navbar-brand navbar-margin" href="#">Tlamatini (Agentic Control Panel)</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-                aria-controls="navbarMenu" aria-expanded="false" aria-label="Abrir o cerrar el menú">
+                aria-controls="navbarMenu" aria-expanded="false" aria-label="{% t 'Toggle navigation' %}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
                 <ul class="navbar-nav align-items-lg-center" id="menu-editor">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="file-dropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">Archivo</a>
+                            data-bs-toggle="dropdown" aria-expanded="false">{% t 'File' %}</a>
                         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="file-dropdown">
-                            <li><a class="dropdown-item" href="#" id="file-open-button">Abrir</a></li>
-                            <li><a class="dropdown-item" href="#" id="save-as-button">Guardar como</a></li>
+                            <li><a class="dropdown-item" href="#" id="file-open-button">{% t 'Open' %}</a></li>
+                            <li><a class="dropdown-item" href="#" id="save-as-button">{% t 'Save as' %}</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#" id="file-close-button">Cerrar</a></li>
+                            <li><a class="dropdown-item" href="#" id="file-close-button">{% t 'Close' %}</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -70,43 +78,43 @@
         <div class="col-9 px-0" id="monitor-container">
             <div id="monitor-header" class="header-title">
                 <div id="monitor-header-left">
-                    <span id="monitor-header-title">Panel de control del Flow:</span>
+                    <span id="monitor-header-title">{% t 'Flow Control Panel:' %}</span>
                     <span id="filename"></span>
                 </div>
                 <div id="monitor-controls" style="display: flex !important; gap: 4px; padding-right: 8px;">
-                    <button type="button" id="btn-validate" class="control-btn control-btn-validate" title="Validar" disabled>
+                    <button type="button" id="btn-validate" class="control-btn control-btn-validate" title="Validate" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
                                 d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                         </svg>
-                        Validar
+                        Validate
                     </button>
-                    <button type="button" id="btn-start" class="control-btn" title="Iniciar">
+                    <button type="button" id="btn-start" class="control-btn" title="Start">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
                                 d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" />
                         </svg>
-                        Iniciar
+                        Start
                     </button>
-                    <button type="button" id="btn-stop" class="control-btn" title="Detener" disabled>
+                    <button type="button" id="btn-stop" class="control-btn" title="Stop" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
                                 d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5z" />
                         </svg>
-                        Detener
+                        Stop
                     </button>
-                    <button type="button" id="btn-pause" class="control-btn" title="Pausar" disabled>
+                    <button type="button" id="btn-pause" class="control-btn" title="Pause" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
                                 d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
                         </svg>
-                        Pausar
+                        Pause
                     </button>
-                    <button type="button" id="btn-clear" class="control-btn" title="Limpiar">
+                    <button type="button" id="btn-clear" class="control-btn" title="{% t 'Clear' %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
@@ -114,7 +122,7 @@
                             <path fill-rule="evenodd"
                                 d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                         </svg>
-                        Limpiar
+                        Clear
                     </button>
                 </div>
             </div>
@@ -146,15 +154,15 @@
         <div id="deployment-result-content" style="padding: 15px; text-align: center;">
             <div id="deployment-result-icon" style="font-size: 48px; margin-bottom: 15px;"></div>
             <h4 id="deployment-result-title" style="margin-bottom: 10px;"></h4>
-            <p id="deployment-result-message" style="color: #ccc; word-break: break-word;"></p>
-            <p id="deployment-result-path" style="color: #888; font-size: 0.85em; word-break: break-all;"></p>
+            <p id="deployment-result-message" class="tlm-dlg-note" style="word-break: break-word;"></p>
+            <p id="deployment-result-path" class="tlm-dlg-hint" style="word-break: break-all;"></p>
         </div>
     </div>
     <div id="starter-execution-dialog" title="" style="display: none;">
         <div id="starter-execution-content">
             <h4 id="starter-execution-title"></h4>
             <div id="starter-execution-spinner-container">
-                <img id="starter-execution-spinner" src="{% static 'agent/img/spinner.svg' %}" alt="Cargando..." />
+                <img id="starter-execution-spinner" src="{% static 'agent/img/spinner.svg' %}" alt="Loading..." />
             </div>
             <div id="starter-execution-result" style="display: none;">
                 <div id="starter-execution-icon"></div>
@@ -167,7 +175,7 @@
         <div id="ender-execution-content">
             <h4 id="ender-execution-title"></h4>
             <div id="ender-execution-spinner-container">
-                <img id="ender-execution-spinner" src="{% static 'agent/img/spinner.svg' %}" alt="Cargando..." />
+                <img id="ender-execution-spinner" src="{% static 'agent/img/spinner.svg' %}" alt="Loading..." />
             </div>
             <div id="ender-execution-result" style="display: none;">
                 <div id="ender-execution-icon"></div>
@@ -176,12 +184,12 @@
             </div>
         </div>
     </div>
-    <div id="cleaning-progress-dialog" title="Limpieza en progreso" style="display: none;">
+    <div id="cleaning-progress-dialog" title="Cleaning In Progress" style="display: none;">
         <div id="cleaning-progress-content" style="text-align: center; padding: 20px;">
-            <img src="{% static 'agent/img/spinner.svg' %}" alt="Cargando..."
+            <img src="{% static 'agent/img/spinner.svg' %}" alt="Loading..."
                 style="width: 48px; height: 48px; margin-bottom: 15px;" />
             <h4 style="color: #ccc; margin-bottom: 10px;">🧹 Operaciones de limpieza en progreso...</h4>
-            <p style="color: #888; font-size: 0.9em;">Limpiando el pool directory y reiniciando el canvas. Espera por favor.</p>
+            <p style="color: #888; font-size: 0.9em;">{% t 'Clearing pool directory and resetting canvas. Please wait.' %}</p>
         </div>
     </div>
     <div id="validation-result-dialog" title="" style="display: none;">
@@ -194,58 +202,70 @@
     <div id="agent-context-menu">
         <div class="context-menu-item" id="ctx-menu-configure">
             <span class="context-menu-icon">⚙️</span>
-            <span>Configurar</span>
+            <span>Configure</span>
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" id="ctx-menu-description">
             <span class="context-menu-icon">ℹ️</span>
-            <span>Descripción</span>
+            <span>{% t 'Description' %}</span>
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" id="ctx-menu-view-log">
             <span class="context-menu-icon">📄</span>
-            <span>Ver el log</span>
+            <span>{% t 'See log' %}</span>
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" id="ctx-menu-open-explorer">
             <span class="context-menu-icon">📁</span>
-            <span>Explorar el directorio...</span>
+            <span>{% t 'Explore dir...' %}</span>
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" id="ctx-menu-open-cmd">
             <span class="context-menu-icon">💻</span>
-            <span>Abrir cmd...</span>
+            <span>{% t 'Open cmd...' %}</span>
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item context-menu-item-disabled" id="ctx-menu-restart">
             <span class="context-menu-icon">🔄</span>
-            <span>Reiniciar</span>
+            <span>Restart</span>
         </div>
     </div>
     <!-- Log Viewer Modal -->
     <div id="log-viewer-overlay"></div>
-    <div id="log-viewer-dialog">
+    <div id="log-viewer-dialog" role="dialog" aria-modal="true" aria-labelledby="log-viewer-title">
         <div id="log-viewer-header">
-            <h4 id="log-viewer-title">Visor del log</h4>
-            <button id="log-viewer-close" title="Cerrar">&times;</button>
+            <div>
+                <span class="tlm-dlg-kicker">{% t 'Agent log' %}</span>
+                <h4 id="log-viewer-title">{% t 'Log Viewer' %}</h4>
+            </div>
+            <button type="button" id="log-viewer-close" title="{% t 'Close' %}"
+                aria-label="{% t 'Close' %}">&times;</button>
         </div>
         <pre id="log-viewer-content"></pre>
         <div id="log-viewer-footer">
-            <span id="log-viewer-status">Últimas 100 líneas</span>
+            <span id="log-viewer-status">{% t 'Last 100 lines' %}</span>
             <div class="log-viewer-live-indicator">
                 <span class="log-viewer-live-dot"></span>
-                <span>En vivo</span>
+                <span>Live</span>
             </div>
         </div>
     </div>
     <!-- Agent Description Modal -->
     <div id="agent-description-overlay"></div>
-    <div id="agent-description-dialog">
+    <div id="agent-description-dialog" role="dialog" aria-modal="true" aria-labelledby="agent-description-title">
         <div id="agent-description-header">
-            <h4 id="agent-description-title">Descripción del Agent</h4>
-            <button id="agent-description-close" title="Cerrar">&times;</button>
+            <div>
+                <span class="tlm-dlg-kicker">{% t 'Description' %}</span>
+                <h4 id="agent-description-title">{% t 'Agent Description' %}</h4>
+            </div>
+            <button type="button" id="agent-description-close" title="{% t 'Close' %}"
+                aria-label="{% t 'Close' %}">&times;</button>
         </div>
         <div id="agent-description-content"></div>
+        <div id="agent-description-footer">
+            <button type="button" id="agent-description-close-action"
+                class="tlm-native-button">{% t 'Close' %}</button>
+        </div>
     </div>
     <form id="csrf-bootstrap-form" style="display: none;">
         {% csrf_token %}
@@ -256,23 +276,23 @@
     {{ flw_data|json_script:"server-flw-data" }}
     {{ flw_filename|json_script:"server-flw-filename" }}
     {% endif %}
-    <script src="{% static 'agent/js/canvas_item_dialog.js' %}?v={{ STATIC_VERSION }}"></script>
-    <script src="{% static 'agent/js/contextual_menus.js' %}?v={{ STATIC_VERSION }}"></script>
+    <script src="{% static 'agent/js/canvas_item_dialog.js' %}?v={{ STATIC_VERSION }}_dlg2"></script>
+    <script src="{% static 'agent/js/contextual_menus.js' %}?v={{ STATIC_VERSION }}_dlg3"></script>
     <!-- ACP split files: load order matters -->
-    <script src="{% static 'agent/js/acp-globals.js' %}?v={{ STATIC_VERSION }}_statefix"></script>
+    <script src="{% static 'agent/js/acp-globals.js' %}?v={{ STATIC_VERSION }}_statefix_dlg3"></script>
     <script src="{% static 'agent/js/acp-session.js' %}?v={{ STATIC_VERSION }}"></script>
     <script src="{% static 'agent/js/acp-undo-manager.js' %}?v={{ STATIC_VERSION }}_constfix"></script>
     <script src="{% static 'agent/js/acp-agent-connectors.js' %}?v={{ STATIC_VERSION }}_v3"></script>
-    <script src="{% static 'agent/js/shared-runtime-dialogs.js' %}?v={{ STATIC_VERSION }}"></script>
+    <script src="{% static 'agent/js/shared-runtime-dialogs.js' %}?v={{ STATIC_VERSION }}_dlg3"></script>
     <script src="{% static 'agent/js/acp-running-state.js' %}?v={{ STATIC_VERSION }}"></script>
-    <script src="{% static 'agent/js/acp-control-buttons.js' %}?v={{ STATIC_VERSION }}_constfix"></script>
-    <script src="{% static 'agent/js/acp-validate.js' %}?v={{ STATIC_VERSION }}"></script>
-    <script src="{% static 'agent/js/acp-canvas-core.js' %}?v={{ STATIC_VERSION }}_v3"></script>
+    <script src="{% static 'agent/js/acp-control-buttons.js' %}?v={{ STATIC_VERSION }}_constfix_dlg3"></script>
+    <script src="{% static 'agent/js/acp-validate.js' %}?v={{ STATIC_VERSION }}_dlg2"></script>
+    <script src="{% static 'agent/js/acp-canvas-core.js' %}?v={{ STATIC_VERSION }}_v3_dlg3"></script>
     <script src="{% static 'agent/js/acp-flow-snapshot.js' %}?v={{ STATIC_VERSION }}"></script>
     <script src="{% static 'agent/js/acp-canvas-undo.js' %}?v={{ STATIC_VERSION }}"></script>
-    <script src="{% static 'agent/js/acp-file-io.js' %}?v={{ STATIC_VERSION }}"></script>
+    <script src="{% static 'agent/js/acp-file-io.js' %}?v={{ STATIC_VERSION }}_dlg3"></script>
     <script src="{% static 'agent/js/acp-layout.js' %}?v={{ STATIC_VERSION }}"></script>
-    <script src="{% static 'agent/js/acp-parametrizer-dialog.js' %}?v={{ STATIC_VERSION }}"></script>
+    <script src="{% static 'agent/js/acp-parametrizer-dialog.js' %}?v={{ STATIC_VERSION }}_dlg3"></script>
     <script src="{% static 'agent/js/acp-connection-status.js' %}?v={{ STATIC_VERSION }}"></script>
     <script src="{% static 'agent/js/checkbox_bulk_toggle.js' %}?v={{ STATIC_VERSION }}_bulktoggle"></script>
 </body>

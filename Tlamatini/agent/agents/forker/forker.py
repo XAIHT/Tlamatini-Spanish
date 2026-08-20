@@ -294,7 +294,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except yaml.YAMLError as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -307,7 +307,7 @@ def save_reanim_offsets(offsets: Dict[str, int]):
         with open(REANIM_FILE, "w", encoding="utf-8") as f:
             yaml.dump(offsets, f)
     except Exception as e:
-        logging.warning(f"⚠️ Warning: Could not save reanimation offsets: {e}")
+        logging.warning(f"⚠️ Aviso: no se pudieron guardar los marcadores de reanimación: {e}")
 
 
 def load_reanim_offsets() -> Dict[str, int]:
@@ -319,7 +319,7 @@ def load_reanim_offsets() -> Dict[str, int]:
             data = yaml.safe_load(f)
             return data if data else {}
     except Exception as e:
-        logging.warning(f"⚠️ Warning: Could not load reanimation offsets: {e}")
+        logging.warning(f"⚠️ Aviso: no se pudieron leer los marcadores de reanimación: {e}")
         return {}
 
 
@@ -350,11 +350,11 @@ def check_log_for_pattern(log_path: str, offset: int, patterns: List[str], file_
 
         if current_size < offset or last_known_size == -1 or current_size < last_known_size:
             if last_known_size == -1:
-                logging.info(f"📁 Log file appeared: {log_path}")
+                logging.info(f"📁 Apareció la bitácora: {log_path}")
             elif current_size < last_known_size:
                 logging.info(f"🔄 Log file truncated/recreated: {log_path} ({last_known_size} -> {current_size} bytes)")
             else:
-                logging.info(f"🔄 Stale offset detected for {log_path}, resetting")
+                logging.info(f"🔄 Marcador obsoleto en {log_path}, reiniciando")
             offset = 0
 
         file_sizes[log_path] = current_size
@@ -373,7 +373,7 @@ def check_log_for_pattern(log_path: str, offset: int, patterns: List[str], file_
         return False, new_offset, None
 
     except Exception as e:
-        logging.error(f"Error reading log {log_path}: {e}")
+        logging.error(f"Error al leer la bitácora {log_path}: {e}")
         return False, offset, None
 
 
@@ -450,7 +450,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
 
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
 
     if not os.path.exists(agent_dir):
@@ -475,9 +475,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
 
     except Exception as e:
@@ -493,7 +493,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -505,7 +505,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -544,8 +544,8 @@ def main():
         sys.exit(1)
 
     logging.info("🔀 FORKER AGENT STARTED")
-    logging.info(f"📁 Pool path: {get_pool_path()}")
-    logging.info(f"📁 Template path: {get_template_agents_path()}")
+    logging.info(f"📁 Ruta del pool: {get_pool_path()}")
+    logging.info(f"📁 Ruta de plantillas: {get_template_agents_path()}")
     logging.info(f"👀 Monitoring source agents: {source_agents}")
     logging.info(f"🅰️ Path A patterns: {patterns_a}")
     logging.info(f"🅱️ Path B patterns: {patterns_b}")
@@ -581,7 +581,7 @@ def main():
             if os.path.exists(log_path):
                 offsets[source] = 0
                 file_sizes[log_path] = os.path.getsize(log_path)
-                logging.info(f"📍 Initialized offset for {source}: {offsets[source]}")
+                logging.info(f"📍 Marcador inicial de {source}: {offsets[source]}")
             else:
                 offsets[source] = 0
                 file_sizes[log_path] = -1
@@ -623,7 +623,7 @@ def main():
                 total_started = 0
                 wait_for_agents_to_stop(target_agents_a)
                 for target in target_agents_a:
-                    logging.info(f"   ► Starting: {target}")
+                    logging.info(f"   ► Iniciando: {target}")
                     if start_agent(target):
                         total_started += 1
                 logging.info(f"✨ Path A: started {total_started}/{len(target_agents_a)} agents.")
@@ -636,7 +636,7 @@ def main():
                 total_started = 0
                 wait_for_agents_to_stop(target_agents_b)
                 for target in target_agents_b:
-                    logging.info(f"   ► Starting: {target}")
+                    logging.info(f"   ► Iniciando: {target}")
                     if start_agent(target):
                         total_started += 1
                 logging.info(f"✨ Path B: started {total_started}/{len(target_agents_b)} agents.")

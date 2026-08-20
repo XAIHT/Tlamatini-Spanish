@@ -81,7 +81,7 @@ def load_config(path="config.yaml"):
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error("❌ Error: config.yaml not found.")
+        logging.error("❌ Error: no se encontró config.yaml.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"❌ Error loading config: {e}")
@@ -422,7 +422,7 @@ def tool_node(state: NotifierState):
                 offsets[agent_name] = new_offset
                 
         except Exception as e:
-            logging.error(f"Error reading log {log_path}: {e}")
+            logging.error(f"Error al leer la bitácora {log_path}: {e}")
 
     save_reanim_offset(offsets)
     

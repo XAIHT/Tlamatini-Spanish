@@ -1,0 +1,66 @@
+{
+  "mcpServers": {
+    "octocode": {
+      "command": "npx",
+      "args": [
+        "octocode-mcp"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "<OCTOCODE_GITHUB_TOKEN goes here>"
+      },
+      "transport": "stdio"
+    },
+    "redis": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "REDIS_URL=redis://host.docker.internal:6379",
+        "mcp/redis:latest"
+      ],
+      "env": {},
+      "transport": "stdio"
+    },
+    "Snyk Security Scanner": {
+      "command": "snyk",
+      "args": [
+        "mcp",
+        "-t",
+        "stdio",
+        "--experimental"
+      ],
+      "env": {
+        "API_KEY": "<SNYK_API_KEY goes here>"
+      },
+      "transport": "stdio"
+    },
+    "burp_suite_proxy": {
+      "command": "java",
+      "args": [
+        "-jar",
+        "C:\\Development\\mcp-server\\libs\\mcp-proxy-all.jar",
+        "--sse-url",
+        "http://127.0.0.1:9876"
+      ],
+      "env": {},
+      "transport": "stdio"
+    },
+    "torrent-search-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "C:\\Development\\torrent-search-mcp",
+        "-m",
+        "torrent_search"
+      ],
+      "env": {},
+      "transport": "stdio"
+    }
+  },
+  "active": [
+    "torrent-search-mcp"
+  ]
+}

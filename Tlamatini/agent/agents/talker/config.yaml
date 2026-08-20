@@ -43,7 +43,14 @@ model: "legraphista/Orpheus:3b-ft-q8"
 # Orpheus-3b-FT is ENGLISH-ONLY; multilingual fine-tunes accept other values. A
 # non-English value is woven into the prompt only when `include_language_in_prompt`
 # is true (below), so a model that does NOT accept a language simply ignores it.
-language: "en"
+#
+# ⚠️ Spanish edition: this MUST be "es". It shipped as "en", which told the model
+# to speak ENGLISH in a Spanish product — the same class of defect as reading
+# Spanish with a Windows en-US voice (see agent/tts_piper.py). The base
+# Orpheus-3b-FT is English-only and simply ignores the tag, so this is harmless
+# there and correct the moment a multilingual fine-tune is pulled. The spoken
+# variety is LATIN AMERICAN (Mexican), matching the es_MX Piper voice.
+language: "es"
 
 # ── Voice & speaker character (FEMALE-ONLY by design) ──────────────────────
 # ===========================================================================

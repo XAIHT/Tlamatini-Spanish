@@ -148,7 +148,7 @@ def save_reanim_offsets(offsets: Dict[str, int]):
         with open(REANIM_FILE, "w", encoding="utf-8") as f:
             yaml.dump(offsets, f)
     except Exception as e:
-        logging.warning(f"⚠️ Warning: Could not save reanimation offsets: {e}")
+        logging.warning(f"⚠️ Aviso: no se pudieron guardar los marcadores de reanimación: {e}")
 
 def load_reanim_offsets() -> Dict[str, int]:
     if not os.path.exists(REANIM_FILE):
@@ -192,11 +192,11 @@ def check_log_for_pattern(log_path: str, offset: int, pattern: str, file_sizes: 
         # 3. Current offset is beyond file size (stale offset from reanim.pos)
         if current_size < offset or last_known_size == -1 or current_size < last_known_size:
             if last_known_size == -1:
-                logging.info(f"📁 Log file appeared: {log_path}")
+                logging.info(f"📁 Apareció la bitácora: {log_path}")
             elif current_size < last_known_size:
                 logging.info(f"🔄 Log file truncated/recreated: {log_path} ({last_known_size} -> {current_size} bytes)")
             else:
-                logging.info(f"🔄 Stale offset detected for {log_path}, resetting")
+                logging.info(f"🔄 Marcador obsoleto en {log_path}, reiniciando")
             offset = 0  # Read from beginning
         
         # Update tracking
@@ -216,7 +216,7 @@ def check_log_for_pattern(log_path: str, offset: int, pattern: str, file_sizes: 
         return False, new_offset, None
     
     except Exception as e:
-        logging.error(f"Error reading log {log_path}: {e}")
+        logging.error(f"Error al leer la bitácora {log_path}: {e}")
         return False, offset, None
 
 
@@ -357,7 +357,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
     
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
     
     try:
@@ -377,9 +377,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
@@ -392,7 +392,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 def remove_pid_file():
     for attempt in range(5):
@@ -403,7 +403,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 def main():
@@ -435,7 +435,7 @@ def main():
             logging.info(f"👀 Input 1: {source_1} (Pattern: '{pattern_1}')")
         if source_2:
             logging.info(f"👀 Input 2: {source_2} (Pattern: '{pattern_2}')")
-        logging.info(f"🎯 Targets: {target_agents}")
+        logging.info(f"🎯 Destinos: {target_agents}")
         
         offsets = load_reanim_offsets()
         
@@ -492,7 +492,7 @@ def main():
                 
                 wait_for_agents_to_stop(target_agents)
                 for target in target_agents:
-                    logging.info(f"🚀 Starting target '{target}'...")
+                    logging.info(f"🚀 Iniciando el destino '{target}'...")
                     start_agent(target)
             
             # Heartbeat logging every 10 polls to show agent is alive

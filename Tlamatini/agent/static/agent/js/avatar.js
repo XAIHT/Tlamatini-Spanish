@@ -16,14 +16,41 @@
     var mx=by(/^es[-_]MX/i);                     if(mx.length) return mx;
     var latam=by(/^es[-_](419|US|CO|AR|CL|PE|VE|EC|GT|CR|UY|PY|BO|DO|HN|NI|PA|SV|PR)/i);
     if(latam.length) return latam;
+    // El latinoamericano es el que se busca primero, pero si no hay, el
+    // castellano de Espana SI sirve (Angela, 2026-08-19): se entiende
+    // perfecto. Lo que NO existe es un escalon en ingles.
     var es=by(/^es(-|_|$)/i);                    if(es.length) return es;
-    var en=by(/^en(-|_|$)/i);                    return en.length?en:vs;
+    // ⛔ NO HAY ESCALON EN INGLES. Aqui decia:
+    //       var en=by(/^en(-|_|$)/i); return en.length?en:vs;
+    // ...o sea que en una maquina sin voces en espanol (Windows de fabrica:
+    // David, Mark y Zira, las tres en-US) el pool terminaba siendo el INGLES.
+    // Zira pasa el filtro "femenina", pickVoice() la elegia, y Tlamatini leia
+    // castellano con boca inglesa: exactamente el acento que Angela oye.
+    // Vacio es la respuesta correcta: speak() se va por Piper (es_MX-claude-
+    // high, femenina) y si Piper tampoco esta, SE QUEDA CALLADA.
+    return [];
   }
+  // ⛔ VOZ FEMENINA SIEMPRE - UNA VOZ MASCULINA ESTA PROHIBIDA (Angela).
+  // Tlamatini es mujer. Una voz de hombre NO es un sustituto aceptable en
+  // NINGUN caso, en NINGUNA parte.
+  //
+  // Este filtro tenia un hoyo: la ultima linea era `fem=pool.slice()`, que
+  // devolvia TODO el pool -- voces masculinas incluidas -- cuando ningun
+  // nombre coincidia con el patron femenino. En una maquina cuyas voces en
+  // espanol son todas masculinas (o cuyos nombres no reconocemos), Tlamatini
+  // hablaba con voz de HOMBRE. Ahora esa rama devuelve VACIO.
+  //
+  // Vacio => pickVoice() regresa null => speak() se va por Piper (es_MX,
+  // femenina) y si tampoco esta, SE QUEDA CALLADA. El silencio es la unica
+  // alternativa aceptable: es exactamente la misma regla que aplica el agent
+  // Talker (MaleVoiceForbiddenError) y la misma que aplica tts_piper.py al
+  // negarse a leer espanol con una voz inglesa.
   function femaleVoices(){
     var pool=spanishPool();
     var fem=pool.filter(function(v){var n=(v.name||'');return FEMALE_RE.test(n) && !MALE_RE.test(n);});
+    // Segundo intento: cualquier voz que NO sea masculina reconocida.
     if(!fem.length) fem=pool.filter(function(v){return !MALE_RE.test(v.name||'');});
-    if(!fem.length) fem=pool.slice();
+    // NO hay tercer intento. Antes aqui se devolvia el pool completo.
     return fem;
   }
   var DEF={mode:'notify',voiceURI:'',volume:100,rate:1,pitch:1.05};
@@ -32,10 +59,17 @@
   var settings=loadSettings();
   function pickVoice(){
     var fem=femaleVoices(); if(!fem.length)return null;
-    if(settings.voiceURI){ var m=fem.filter(function(v){return v.voiceURI===settings.voiceURI;}); if(m.length)return m[0]; }
-    // Mexican female voices first (Windows: Sabina / Dalia; Google: español),
-    // then any Latin-American Spanish, then the old English names as a last
-    // resort so a machine with no Spanish voice still speaks.
+    // La voz guardada solo vale si es en ESPANOL. Si quedo grabada una
+    // inglesa (Zira) de una version anterior, se ignora: una preferencia
+    // vieja no puede devolverle el acento ingles.
+    if(settings.voiceURI){
+      var m=fem.filter(function(v){
+        return v.voiceURI===settings.voiceURI && /^es(-|_)/i.test(v.lang||'');
+      });
+      if(m.length)return m[0];
+    }
+    // Primero las mexicanas (Windows: Sabina / Dalia; Google: español),
+    // luego cualquier otro espanol. NO HAY TERCER ESCALON.
     var mex=fem.filter(function(v){return /^es[-_]MX/i.test(v.lang||'');});
     if(mex.length){
       var mexPref=mex.filter(function(v){return /sabina|dalia|renata|ximena|esperanza/i.test(v.name||'');});
@@ -43,8 +77,11 @@
     }
     var esAny=fem.filter(function(v){return /^es(-|_)/i.test(v.lang||'');});
     if(esAny.length) return esAny[0];
-    var pref=fem.filter(function(v){return /zira|jenny|aria|samantha|google us english|hazel/i.test(v.name||'');});
-    return (pref[0]||fem[0]);
+    // ⛔ Antes aqui se prefería /zira|jenny|aria|samantha|hazel/ "para que una
+    // maquina sin voz en espanol igual hablara". Hablaba, si — en INGLES.
+    // Nada que no sea espanol sale por esta boca: null manda a Piper, y si
+    // Piper no esta, al silencio.
+    return null;
   }
   var _primed=false;
   function prime(){ if(_primed)return; _primed=true; try{ var u=new SpeechSynthesisUtterance(' '); u.volume=0; window.speechSynthesis.speak(u);}catch(e){} }
@@ -66,9 +103,15 @@
   // Spanish to choose from and falls through to English — and an English
   // voice reading Spanish text is the accent she heard.
   function spanishVoiceAvailable(){
-    try{
-      return allVoices().some(function(v){ return /^es(-|_)/i.test(v.lang||''); });
-    }catch(e){ return false; }
+    // ⚠️ TIENE QUE PREGUNTAR LO MISMO QUE spanishPool(). Antes preguntaba
+    // por CUALQUIER /^es/, incluido es-ES. En una maquina que solo tiene
+    // castellano de Espana esto decia "si hay", speak() se iba por el
+    // navegador, pickVoice() devolvia null (porque el pool ya no acepta
+    // es-ES)... y el navegador hablaba con su voz POR DEFECTO, que es
+    // inglesa. Preguntar exactamente por lo que el pool acepta cierra ese
+    // hoyo: si no hay voz LATINOAMERICANA, nos vamos por Piper o al silencio.
+    try{ return spanishPool().length > 0; }
+    catch(e){ return false; }
   }
   var _warnedNoEs=false;
   function warnNoSpanishVoice(){
@@ -164,7 +207,15 @@
     // consecutive messages are ALL spoken, one after another, none swallowed.
     if(!(opts&&opts.queue)){ try{window.speechSynthesis.cancel();}catch(e){} }
     var pieces=chunk(text); if(!pieces.length)return;
-    var v=pickVoice(); keepAlive(true);
+    var v=pickVoice();
+    // ⛔ SIN VOZ ELEGIDA NO SE HABLA POR EL NAVEGADOR. Si se deja pasar con
+    // `v` en null, el navegador usa su voz POR DEFECTO — que en Windows es
+    // inglesa — y volvemos al acento que Angela oyo. Pasa de verdad: cuando
+    // las unicas voces en castellano de la maquina son masculinas,
+    // femaleVoices() queda vacio y pickVoice() devuelve null. En ese caso se
+    // sintetiza con MI voz (Piper es_MX, femenina) o no se dice nada.
+    if(!v){ speakViaServer(text,opts); return; }
+    keepAlive(true);
     pieces.forEach(function(p,i){
       var u=new SpeechSynthesisUtterance(p);
       if(v)u.voice=v;
@@ -539,7 +590,7 @@
     function closeDialog(){ if(overlay)overlay.style.display='none'; }
     if(overlay){
       var x=document.getElementById('tlm-voice-close'); if(x)x.addEventListener('click',closeDialog);
-      overlay.addEventListener('click',function(e){ if(e.target===overlay)closeDialog(); });
+      /* sin cierre por click afuera: se cierra con la X */
       var save=document.getElementById('tlm-voice-save'); if(save)save.addEventListener('click',function(){ saveSettings(readDialog()); closeDialog(); });
       var test=document.getElementById('tlm-voice-test'); if(test)test.addEventListener('click',function(){ saveSettings(readDialog()); prime(); speak("¡Hola "+uname+"! Esta es mi voz."); });
       ['tlm-voice-volume','tlm-voice-rate','tlm-voice-pitch'].forEach(function(id){

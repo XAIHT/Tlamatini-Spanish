@@ -116,7 +116,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -127,7 +127,7 @@ def save_reanim_offsets(offsets: Dict[str, int]):
         with open(REANIM_FILE, "w", encoding="utf-8") as f:
             yaml.dump(offsets, f)
     except Exception as e:
-        logging.warning(f"⚠️ Warning: Could not save reanimation offsets: {e}")
+        logging.warning(f"⚠️ Aviso: no se pudieron guardar los marcadores de reanimación: {e}")
 
 def load_reanim_offsets() -> Dict[str, int]:
     if not os.path.exists(REANIM_FILE):
@@ -137,7 +137,7 @@ def load_reanim_offsets() -> Dict[str, int]:
             data = yaml.safe_load(f)
             return data if data else {}
     except Exception as e:
-        logging.warning(f"⚠️ Warning: Could not load reanimation offsets: {e}")
+        logging.warning(f"⚠️ Aviso: no se pudieron leer los marcadores de reanimación: {e}")
         return {}
 
 def resolve_log_paths(source_agents: List[str]) -> List[str]:
@@ -159,9 +159,9 @@ def resolve_log_paths(source_agents: List[str]) -> List[str]:
         
         if os.path.exists(log_path):
             resolved_paths.append(log_path)
-            logging.info(f"🔗 Resolved log path for {agent_name}: {log_path}")
+            logging.info(f"🔗 Bitácora resuelta de {agent_name}: {log_path}")
         else:
-            logging.warning(f"⚠️ Could not find log file for agent: {agent_name} at {log_path}")
+            logging.warning(f"⚠️ No se encontró la bitácora del agente {agent_name} en {log_path}")
             
     return resolved_paths
 
@@ -279,7 +279,7 @@ def perform_file_operations(operation: str, sources_list: List[str], destination
                 parent = os.path.dirname(pattern)
                 filename_part = os.path.basename(pattern)
                 pattern = os.path.join(parent, '**', filename_part) if parent else os.path.join('**', filename_part)
-                logging.info(f"🔄 Recursive mode: expanded pattern to '{pattern}'")
+                logging.info(f"🔄 Modo recursivo: el patrón se expandió a '{pattern}'")
             # Handle wildcards
             files_found = _glob_all(pattern, recursive)
             if not files_found:
@@ -293,7 +293,7 @@ def perform_file_operations(operation: str, sources_list: List[str], destination
                 processed_paths.add(file_path)
 
                 if is_excluded(file_path, excluded_extensions or set(), excluded_filenames or set()):
-                    logging.info(f"🚫 Excluded: {file_path}")
+                    logging.info(f"🚫 Excluido: {file_path}")
                     continue
 
                 filename = os.path.basename(file_path)
@@ -354,8 +354,39 @@ def check_log_for_event(log_path: str, offset: int, event_string: str) -> tuple:
         return False, new_offset
 
     except Exception as e:
-        logging.error(f"Error reading log {log_path}: {e}")
+        logging.error(f"Error al leer la bitácora {log_path}: {e}")
         return False, offset
+
+def resolve_scratch_destination(destination: str) -> str:
+    """Keep an unrooted destination INSIDE Tlamatini (Rule 15).
+
+    An ABSOLUTE path the user named is honoured VERBATIM - they chose that
+    folder, and quietly writing somewhere else would be worse than obeying.
+
+    Everything else - a relative path, an empty value, or one of the historic
+    ``C:/Temp/...`` placeholders this config shipped with - is re-rooted under
+    ``<app>/Temp``. The placeholders were the live defect: calling Mover
+    without a destination CREATED ``C:\\Temp\\MoverDest``, a directory outside
+    the application, which is exactly what the Temp policy forbids.
+
+    Fail-open: with no TLAMATINI_TEMP in the environment the value is returned
+    untouched, because refusing to move a user's files over a path detail
+    would be worse than the tidiness it buys.
+    """
+    text = str(destination or '').strip().strip('"').strip("'")
+    temp_root = (os.environ.get('TLAMATINI_TEMP') or '').strip()
+    if not temp_root:
+        return text
+    # The shipped placeholders are not real destinations - never honour them.
+    placeholder = text.replace('\\', '/').lower().startswith('c:/temp/')
+    if text and os.path.isabs(text) and not placeholder:
+        return text
+    leaf = os.path.basename(text.replace('\\', '/').rstrip('/')) or 'MoverDest'
+    resolved = os.path.join(temp_root, leaf)
+    if text != resolved:
+        logging.info(f"📂 Destination re-rooted inside <app>/Temp: {resolved}")
+    return resolved
+
 
 def main():
     config = load_config()
@@ -365,7 +396,7 @@ def main():
     operation = config.get('operation', 'copy') # 'move' or 'copy'
     source_patterns = config.get('source_files', []) # List of file paths/patterns
     source_agents = config.get('source_agents', []) # List of source agents for event triggering
-    destination = config.get('destination_folder', '')
+    destination = resolve_scratch_destination(config.get('destination_folder', ''))
     recursive = config.get('recursive', False)
     filetype_exclusions = config.get('filetype_exclusions', '')
     excl_exts, excl_names = parse_exclusions(filetype_exclusions)
@@ -384,7 +415,7 @@ def main():
     if filetype_exclusions:
         logging.info(f"🚫 Exclusions: {filetype_exclusions}")
     logging.info(f"📂 Destination: {destination}")
-    logging.info(f"🎯 Targets: {target_agents}")
+    logging.info(f"🎯 Destinos: {target_agents}")
 
     # PID Management
     PID_FILE = "agent.pid"
@@ -394,7 +425,7 @@ def main():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
     try:
         if not destination:
@@ -413,7 +444,7 @@ def main():
                 perform_file_operations(operation, source_patterns, destination, recursive=recursive, excluded_extensions=excl_exts, excluded_filenames=excl_names)
             except Exception as e:
                 logging.error(f"❌ Operation terminated with error: {e}")
-                logging.warning("⚠️ Proceeding to downstream agents despite errors...")
+                logging.warning("⚠️ Continuando con los agentes siguientes pese a los errores...")
 
             # Trigger downstream agents
             if target_agents:
@@ -421,7 +452,7 @@ def main():
                 logging.info(f"🚀 Triggering {len(target_agents)} downstream agents...")
                 triggered_count = 0
                 for target in target_agents:
-                    logging.info(f"   ► Triggering: {target}")
+                    logging.info(f"   ► Disparando: {target}")
                     if start_agent(target):
                         triggered_count += 1
                 logging.info(f"✨ Triggered {triggered_count}/{len(target_agents)} agents.")
@@ -497,7 +528,7 @@ def main():
             if os.path.exists(PID_FILE):
                 os.remove(PID_FILE)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
 
 
 # Helper functions for Agent Triggering (Adapted from Croner)
@@ -698,7 +729,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
 
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
 
     try:
@@ -718,9 +749,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")

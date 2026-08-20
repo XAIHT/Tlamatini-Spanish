@@ -68,7 +68,7 @@ def load_config(path="config.yaml") -> dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"Error: {path} not found.")
+        logging.error(f"Error: no se encontró {path}.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"Error parsing {path}: {e}")
@@ -212,7 +212,7 @@ def start_agent(agent_name: str) -> bool:
     agent_dir = get_agent_directory(agent_name)
     script_path = get_agent_script_path(agent_name)
     if not os.path.exists(script_path):
-        logging.error(f"Agent script not found: {script_path}")
+        logging.error(f"No se encontró el script del agente: {script_path}")
         return False
     try:
         cmd = get_python_command() + [script_path]
@@ -228,8 +228,8 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"Failed to write PID file for target {agent_name}: {pid_err}")
-        logging.info(f"Started agent '{agent_name}' with PID: {process.pid}")
+            logging.error(f"No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
+        logging.info(f"Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"Failed to start agent '{agent_name}': {e}")
@@ -245,7 +245,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"Failed to write PID file: {e}")
+        logging.error(f"No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -257,7 +257,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"Failed to remove PID file: {e}")
+            logging.error(f"No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -314,7 +314,7 @@ def main():
 
         logging.info("✏️ EDITOR AGENT STARTED")
         logging.info(f"\U0001f4c4 Target file: {file_path}")
-        logging.info(f"\U0001f3af Targets: {target_agents}")
+        logging.info(f"\U0001f3af Destinos: {target_agents}")
 
         # Binary-exact channels override the plain strings.
         if isinstance(old_b64, str) and old_b64.strip():

@@ -17,6 +17,7 @@ import sys
 # FIX: Disable Intel Fortran runtime Ctrl+C handler
 os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
 
+import re
 import time
 import yaml
 import logging
@@ -81,7 +82,7 @@ def load_config(path: str = "config.yaml") -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error(f"❌ Error: {path} not found.")
+        logging.error(f"❌ Error: no se encontró {path}.")
         sys.exit(1)
     except Exception as e:
         logging.error(f"❌ Error parsing {path}: {e}")
@@ -270,7 +271,7 @@ def start_agent(agent_name: str) -> bool:
     script_path = get_agent_script_path(agent_name)
 
     if not os.path.exists(script_path):
-        logging.error(f"❌ Agent script not found: {script_path}")
+        logging.error(f"❌ No se encontró el script del agente: {script_path}")
         return False
 
     try:
@@ -290,9 +291,9 @@ def start_agent(agent_name: str) -> bool:
             with open(pid_path, "w") as f:
                 f.write(str(process.pid))
         except Exception as pid_err:
-            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+            logging.error(f"⚠️ No se pudo escribir el archivo PID del destino {agent_name}: {pid_err}")
 
-        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        logging.info(f"✅ Se inició el agente '{agent_name}' con PID: {process.pid}")
         return True
     except Exception as e:
         logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
@@ -607,7 +608,18 @@ def _execute_in_forked_window(cmd: list, script_path: str) -> bool:
             with open(wrapper_path, "w", encoding="utf-8") as wf:
                 wf.write(f'@"{python_exe}" "{script_path}"\n')
                 wf.write('@set EC=%ERRORLEVEL%\n')
-                wf.write(f'@echo %EC%> "{exitcode_file}"\n')
+                # ⚠️ THE PARENTHESES ARE LOAD-BEARING (2026-08-13). Written as
+                # `@echo %EC%> "file"`, cmd.exe reads the digit glued to `>` as
+                # a REDIRECTION HANDLE - `echo 1> file` is "echo, stdout to
+                # file" - so the sentinel received the literal text
+                # "ECHO is on." for EVERY run. int() then raised, the reader
+                # fell back to 0, and a script that CRASHED was reported as
+                # "✅ Script returned True (exit code: 0)". Pythonxer's exit
+                # code drives the canvas LED and the Multi-Turn
+                # fix->re-ruff->retry loop, so that lie silently disabled both.
+                # `(echo %EC%)> "file"` groups the echo first, so the digit is
+                # an ARGUMENT again. Do NOT "simplify" it back.
+                wf.write(f'@(echo %EC%)> "{exitcode_file}"\n')
                 wf.write('@echo.\n')
                 wf.write('@echo ============================================\n')
                 wf.write('@echo   Script finished  (exit code: %EC%)\n')
@@ -684,11 +696,25 @@ def _execute_in_forked_window(cmd: list, script_path: str) -> bool:
         # script completed (or the script never ran) — treat as True.
         script_exitcode = 0  # default: closing the window = success
         if os.path.exists(exitcode_file):
+            raw = ""
             try:
-                with open(exitcode_file, "r") as ef:
-                    script_exitcode = int(ef.read().strip())
-            except (ValueError, OSError):
-                script_exitcode = 0  # unreadable → treat as success
+                with open(exitcode_file, "r", encoding="utf-8", errors="replace") as ef:
+                    raw = ef.read()
+            except OSError as exc:
+                logging.warning(f"⚠️ Could not read the exit-code sentinel: {exc}")
+            digits = re.search(r'-?\d+', raw or "")
+            if digits:
+                script_exitcode = int(digits.group(0))
+            else:
+                # The sentinel EXISTS, so the script really finished - we just
+                # cannot tell HOW. Claiming success here is exactly the lie the
+                # 2026-08-13 redirection bug produced for months, so report the
+                # failure loudly instead of inventing a green result.
+                logging.error(
+                    "⛔ Exit-code sentinel is unreadable "
+                    f"(content: {raw!r}) - refusing to report success."
+                )
+                script_exitcode = 1
 
         if script_exitcode == 0:
             logging.info(f"✅ Script returned True (exit code: {script_exitcode})")
@@ -711,7 +737,7 @@ def write_pid_file():
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
     except Exception as e:
-        logging.error(f"❌ Failed to write PID file: {e}")
+        logging.error(f"❌ No se pudo escribir el archivo PID: {e}")
 
 
 def remove_pid_file():
@@ -723,7 +749,7 @@ def remove_pid_file():
         except PermissionError:
             time.sleep(0.1)
         except Exception as e:
-            logging.error(f"❌ Failed to remove PID file: {e}")
+            logging.error(f"❌ No se pudo borrar el archivo PID: {e}")
             return
 
 
@@ -747,7 +773,7 @@ def main():
         _RUFF_BLOCKING = bool(config.get('ruff_blocking', True))
 
         logging.info("🐍 PYTHONXER AGENT STARTED")
-        logging.info(f"🎯 Targets: {target_agents}")
+        logging.info(f"🎯 Destinos: {target_agents}")
         logging.info(f"🪟 Forked window: {execute_forked_window}")
         logging.info(f"🔒 Ruff blocking (strict gate): {_RUFF_BLOCKING}")
         logging.info("=" * 60)
@@ -779,7 +805,7 @@ def main():
             logging.info(f"🚀 Triggering {len(target_agents)} downstream agent(s) "
                          "(ALWAYS - regardless of Pythonxer's result)...")
             for target in target_agents:
-                logging.info(f"   ► Triggering: {target}")
+                logging.info(f"   ► Disparando: {target}")
                 if start_agent(target):
                     total_triggered += 1
             logging.info(f"✨ Triggered {total_triggered}/{len(target_agents)} agents.")

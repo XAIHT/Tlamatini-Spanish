@@ -42,7 +42,7 @@ async function executeStartSequence() {
 
     if (starterAgents.length === 0) {
         console.log('--- No Starter agents found on canvas');
-        alert('No hay ningún Starter agent en el canvas. Agrega un Starter agent y conéctalo con los demás para poder empezar.');
+        acpAlert('No hay ningún Starter agent en el canvas. Agrega un Starter agent y conéctalo con los demás para poder empezar.');
         isBusyProcessing = false;
         updateControlButtonStates();
         return;
@@ -82,7 +82,7 @@ async function executeStartSequence() {
             }
         } catch (compileError) {
             console.error('--- [Start Sequence] Flow compile failed:', compileError);
-            alert('No pude compilar el flow antes de arrancarlo: ' + compileError.message);
+            acpAlert('No pude compilar el flow antes de arrancarlo: ' + compileError.message);
             isBusyProcessing = false;
             updateControlButtonStates();
             try { $("#starter-execution-dialog").dialog("close"); } catch (_err) {}
@@ -302,7 +302,7 @@ function showStarterResult(success, failedAgentNames, dialog) {
 
     // Install the way OUT before anything else can throw.
     // This dialog opens with its titlebar X hidden, Esc disabled and no buttons, so
-    // "Continue!" is the ONLY exit. It used to be added at the END of this function,
+    // "¡Continuar!" is the ONLY exit. It used to be added at the END of this function,
     // after setGlobalRunningState() / updateControlButtonStates(). Because we run
     // inside an async poll, a throw in either was swallowed as an unhandled rejection
     // and left a modal with no exit at all (a const-poisoned agentStatusPollerInterval
@@ -380,7 +380,7 @@ if (btnStop) {
 
         if (enderAgents.length === 0) {
             console.log('--- No Ender agents found on canvas');
-            alert('No hay ningún Ender agent en el canvas. Agrega un Ender agent y conéctalo con los demás para poder detener el flow.');
+            acpAlert('No hay ningún Ender agent en el canvas. Agrega un Ender agent y conéctalo con los demás para poder detener el flow.');
             isBusyProcessing = false;
             updateControlButtonStates();
             return;
@@ -877,7 +877,7 @@ function showEnderAlreadyDownDialog(_enderInfo) {
         width: 500,
         resizable: false,
         draggable: false,
-        closeOnEscape: true,
+        closeOnEscape: false,
         closeText: "",
         dialogClass: "ender-execution-dialog-wrapper",
         open: function () {
@@ -922,7 +922,7 @@ if (btnPause) {
             await pauseExecution();
         } else {
             console.log('--- Cannot pause when system is STOPPED');
-            alert('El sistema no está corriendo. Inicia el Flow antes de pausar.');
+            acpAlert('El sistema no está corriendo. Inicia el Flow antes de pausar.');
         }
     });
 }
@@ -951,7 +951,7 @@ async function pauseExecution() {
 
         if (!processesResult.success) {
             console.error('--- Failed to get running processes:', processesResult.error);
-            alert('No pude obtener los procesos que están corriendo: ' + (processesResult.error || 'Error desconocido'));
+            acpAlert('No pude obtener los procesos que están corriendo: ' + (processesResult.error || 'Error desconocido'));
             resetPauseButtons();
             return;
         }
@@ -961,7 +961,7 @@ async function pauseExecution() {
 
         if (runningProcesses.length === 0) {
             console.log('--- [Pause] No running processes to pause');
-            alert('No hay procesos corriendo para pausar.');
+            acpAlert('No hay procesos corriendo para pausar.');
             resetPauseButtons();
             return;
         }
@@ -1003,7 +1003,7 @@ async function pauseExecution() {
 
     } catch (error) {
         console.error('--- Error during pause:', error);
-        alert('Hubo un error al pausar: ' + error.message);
+        acpAlert('Hubo un error al pausar: ' + error.message);
     } finally {
         resetPauseButtons();
     }
@@ -1080,7 +1080,7 @@ async function resumeFromPause() {
         } else {
             console.warn('--- [Resume] Some agents failed to reanimate:', reanimateResult.failed);
             if (reanimateResult.failed.length > 0) {
-                alert(`Ojo: ${reanimateResult.failed.length} agent(s) no lograron reanimarse.`);
+                acpAlert(`Ojo: ${reanimateResult.failed.length} agent(s) no lograron reanimarse.`);
             }
         }
 
@@ -1101,7 +1101,7 @@ async function resumeFromPause() {
 
     } catch (error) {
         console.error('--- Error during resume:', error);
-        alert('Hubo un error al reanudar: ' + error.message);
+        acpAlert('Hubo un error al reanudar: ' + error.message);
     } finally {
         resetPauseButtons();
     }
@@ -1123,7 +1123,10 @@ if (btnClear) {
         e.preventDefault();
         console.log('--- Clear button clicked');
 
-        if (!confirm('Esto borra PARA SIEMPRE todos los agents desplegados en el pool directory y limpia el canvas. ¿Le sigo?')) {
+        // `acpConfirm` devuelve una PROMESA, asi que el await no es opcional:
+        // `if (!promesa)` siempre es falso y el borrado se ejecutaria sin
+        // preguntar. El listener ya es async, por eso basta con esperar.
+        if (!(await acpConfirm('Esto borra PARA SIEMPRE todos los agents desplegados en el pool directory y limpia el canvas. ¿Le sigo?', '', 'Limpiar el canvas'))) {
             return;
         }
 
@@ -1151,7 +1154,7 @@ if (btnClear) {
             } else {
                 console.error('--- Failed to clear pool directory:', result.message);
                 $cleaningDialog.dialog('close');
-                alert('No pude limpiar el pool directory: ' + result.message);
+                acpAlert('No pude limpiar el pool directory: ' + result.message);
                 return;
             }
 
@@ -1166,7 +1169,7 @@ if (btnClear) {
 
         } catch (error) {
             console.error('--- Error during clear operation:', error);
-            alert('Hubo un error al limpiar: ' + error.message);
+            acpAlert('Hubo un error al limpiar: ' + error.message);
         } finally {
             if ($cleaningDialog.hasClass('ui-dialog-content')) {
                 $cleaningDialog.dialog('close');
