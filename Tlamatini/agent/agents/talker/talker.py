@@ -382,6 +382,165 @@ class MaleVoiceForbiddenError(Exception):
     crash than to ever sound male. NEVER a male voice. NEVER.
     """
 
+class EnglishVoiceForbiddenError(Exception):
+    """FATAL, por diseno: el modelo NO puede hablar castellano, asi que NO habla.
+
+    Angela, 2026-08-19, palabras suyas: *"si no puedes hacer que el LLM hable
+    en espanol, APAGA el LLM, avienta un error"*, y *"si una hispanohablante
+    oye ingles, no va a pasar el milagro de que de repente lo entienda"*.
+
+    Orpheus base es un modelo SOLO EN INGLES. Con `language: "es"` no se
+    convierte en hispanohablante: pronuncia las palabras castellanas con boca
+    inglesa. Eso NO es un respaldo aceptable — es una falla que ademas suena a
+    que funciono.
+
+    Es exactamente el mismo trato que ``MaleVoiceForbiddenError``: no se
+    recupera, no se sustituye, no se degrada. ``main()`` reporta el error y
+    CIERRA EL PROCESO ("NOW CLOSING.. BYE"). Callarse es la unica alternativa
+    aceptable a hablar en castellano.
+    """
+
+
+#: Modelos TTS que NO saben castellano. Se comparan en minusculas por
+#: subcadena contra el nombre del modelo configurado.
+_MODELOS_SOLO_INGLES = ("orpheus",)
+
+#: Marcas que indican que ESE tag si es multilingue / castellano, y entonces
+#: el modelo SI puede hablar. Ganan sobre la lista de arriba.
+_MARCAS_MULTILINGUE = ("multiling", "spanish", "espanol", "español", "-es",
+                       "_es", "es-", "es_", "xtts", "polyglot")
+
+
+def _es_castellano(language: str) -> bool:
+    """True si el idioma pedido es castellano (es, es-MX, spanish, ...)."""
+    idioma = (language or "").strip().lower().replace("_", "-")
+    return idioma.startswith("es") or idioma in ("spanish", "castellano")
+
+
+def exigir_modelo_que_hable_castellano(model: str, language: str) -> None:
+    """Se niega a hablar si el modelo no puede producir castellano.
+
+    NO adivina ni "intenta a ver que sale": si el modelo esta en la lista de
+    solo-ingles y no trae marca de multilingue, levanta
+    ``EnglishVoiceForbiddenError`` ANTES de pedir un solo token, de modo que
+    jamas salga audio en ingles por la bocina.
+    """
+    if not _es_castellano(language):
+        return
+    nombre = (model or "").strip().lower()
+    if any(marca in nombre for marca in _MARCAS_MULTILINGUE):
+        return
+    if any(solo in nombre for solo in _MODELOS_SOLO_INGLES):
+        raise EnglishVoiceForbiddenError(
+            "el modelo '%s' es SOLO INGLES y se pidio hablar en '%s'. "
+            "Tlamatini-Spanish no habla ingles: o consigues un modelo TTS que "
+            "hable castellano (por ejemplo un Orpheus multilingue, o usa la voz "
+            "mexicana de Piper con `python -c \"from agent import tts_piper; "
+            "tts_piper.ensure_ready()\"`), o no se habla. Callarse es correcto; "
+            "hablar ingles no." % (model, language)
+        )
+
+
+# ──────────────────────────────────────────────────────────────────────
+#  MI PROPIA VOZ MEXICANA (Piper) — SOLO EN LA EDICION EN CASTELLANO
+# ──────────────────────────────────────────────────────────────────────
+# Angela, 2026-08-19: "connect the talker to piper but only on
+# Tlamatini-Spanish, NEVER TOUCH TLAMATINI ENGLISH".
+#
+# Orpheus es un modelo SOLO INGLES: con `language: "es"` no aprende
+# castellano, nada mas lo pronuncia con boca inglesa. En vez de negarse y
+# callarse, el Talker de ESTA edicion sintetiza con Piper (es_MX-claude-high,
+# femenina), que es la misma voz que ya usa la capa de accesibilidad.
+#
+# ⚠️ SE PORTA INLINE A PROPOSITO. Un agent del pool corre como subproceso y
+# NO puede importar `agent.*` (no tiene camino de regreso a la app Django),
+# asi que aqui va la invocacion minima con pura biblioteca estandar:
+# resolver piper.exe + el modelo de voz bajo %LOCALAPPDATA%\Tlamatini\piper
+# y llamarlo por subprocess. Es exactamente lo que hace agent/tts_piper.py.
+_PIPER_VOZ = "es_MX-claude-high"
+
+
+def _piper_raiz() -> str:
+    r"""%LOCALAPPDATA%\Tlamatini\piper — sin permisos de administrador."""
+    base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+    return os.path.join(base, "Tlamatini", "piper")
+
+
+def _piper_exe():
+    """Ruta a piper.exe si esta instalado, si no None. Nunca revienta."""
+    try:
+        raiz = _piper_raiz()
+        for cand in (os.path.join(raiz, "piper", "piper.exe"),
+                     os.path.join(raiz, "piper.exe")):
+            if os.path.isfile(cand):
+                return cand
+    except Exception:
+        pass
+    return None
+
+
+def _piper_modelo(voz: str = _PIPER_VOZ):
+    """(modelo, config) de la voz; pueden no existir todavia."""
+    raiz = os.path.join(_piper_raiz(), "voices")
+    return (os.path.join(raiz, voz + ".onnx"),
+            os.path.join(raiz, voz + ".onnx.json"))
+
+
+def piper_disponible(voz: str = _PIPER_VOZ) -> bool:
+    """True cuando una sintesis con Piper si funcionaria. Nunca revienta."""
+    try:
+        modelo, cfg = _piper_modelo(voz)
+        return bool(_piper_exe()) and os.path.isfile(modelo) and os.path.isfile(cfg)
+    except Exception:
+        return False
+
+
+def piper_sintetiza(texto: str, voz: str = _PIPER_VOZ):
+    """texto -> (bytes wav, estado). Nunca revienta.
+
+    estado: 'ok' | 'empty' | 'not_ready' | 'error:<detalle>'
+    Con cualquier cosa que no sea 'ok' hay que QUEDARSE CALLADA: jamas caer
+    a una voz inglesa.
+    """
+    if not texto or not texto.strip():
+        return b"", "empty"
+    if not piper_disponible(voz):
+        return b"", "not_ready"
+    exe = _piper_exe()
+    modelo, _cfg = _piper_modelo(voz)
+    salida = ""
+    try:
+        import tempfile as _tmp
+        fd, salida = _tmp.mkstemp(suffix=".wav", prefix="tlm_voz_")
+        os.close(fd)
+        creation = 0
+        if sys.platform == "win32":
+            creation = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        proc = subprocess.run(
+            [exe, "-m", modelo, "-f", salida],
+            input=texto.encode("utf-8"),
+            stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
+            timeout=90, creationflags=creation,
+        )
+        if proc.returncode != 0:
+            return b"", "error:piper rc=%s %s" % (
+                proc.returncode,
+                (proc.stderr or b"").decode("utf-8", "replace")[:160])
+        with open(salida, "rb") as fh:
+            datos = fh.read()
+        return (datos, "ok") if datos else (b"", "error:wav vacio")
+    except subprocess.TimeoutExpired:
+        return b"", "error:timeout"
+    except Exception as exc:
+        return b"", "error:%s" % exc
+    finally:
+        if salida:
+            try:
+                os.remove(salida)
+            except Exception:
+                pass
+
+
 # Orpheus paralinguistic / emotive tags that can be woven into the speech.
 _EMOTION_TAGS = ("laugh", "chuckle", "sigh", "cough", "sniffle", "groan", "yawn", "gasp")
 
@@ -1076,6 +1235,26 @@ def synthesize(config: Dict) -> Dict:
     # config viene vacio, el idioma es "es", NUNCA "en". Con 'en' aqui,
     # Tlamatini leia frases en castellano con pronunciacion inglesa.
     language = str(config.get('language') or 'es').strip()
+
+    # ⛔ COMPUERTA DE IDIOMA, antes de pedir un solo token.
+    # Si el modelo no sabe castellano (Orpheus es solo-ingles), NO se le pide
+    # nada: se sintetiza con MI voz mexicana (Piper). Y si Piper tampoco esta,
+    # se levanta EnglishVoiceForbiddenError y main() cierra el proceso.
+    # Hablar ingles no es una opcion en ninguna de las dos ramas.
+    usar_piper = False
+    try:
+        exigir_modelo_que_hable_castellano(model, language)
+    except EnglishVoiceForbiddenError:
+        if piper_disponible():
+            usar_piper = True
+            logging.info(
+                "🇲🇽 El modelo '%s' no habla castellano: sintetizo con mi voz "
+                "mexicana (Piper %s) en vez de sonar en ingles."
+                % (model, _PIPER_VOZ)
+            )
+        else:
+            raise
+
     emotion = str(config.get('emotion') or '').strip().lower().strip('<>')
     base = str(config.get('ollama_url') or 'http://localhost:11434').rstrip('/')
 
@@ -1107,6 +1286,62 @@ def synthesize(config: Dict) -> Dict:
         "played": False,
         "status": "error",
     }
+
+    # === MI VOZ MEXICANA (Piper) — atajo completo ==========================
+    # Cuando el modelo no habla castellano, Piper hace TODA la sintesis y
+    # Ollama ni se toca: no se pide un token, no se decodifica SNAC. Piper
+    # entrega un WAV ya terminado, asi que se guarda tal cual y se reproduce.
+    if usar_piper:
+        wav_bytes, estado = piper_sintetiza(text)
+        if estado != "ok" or not wav_bytes:
+            # Piper fallo DESPUES de haberse reportado disponible. No hay
+            # segunda opcion: en ingles no se habla.
+            raise EnglishVoiceForbiddenError(
+                "el modelo '%s' no habla castellano y mi voz mexicana (Piper) "
+                "fallo (%s). No hay con que hablar en castellano, y en ingles "
+                "no se habla." % (model, estado)
+            )
+        out_path = _unique_output_path(output_dir)
+        with open(out_path, "wb") as fh:
+            fh.write(wav_bytes)
+
+        # leer el WAV de vuelta para poder reproducirlo y medir la duracion
+        import wave as _wave
+        with _wave.open(out_path, "rb") as wf:
+            piper_sr = wf.getframerate()
+            n_frames = wf.getnframes()
+            crudo = wf.readframes(n_frames)
+        segundos = (n_frames / float(piper_sr)) if piper_sr else 0.0
+
+        result.update({
+            "output_path": out_path,
+            "filename": os.path.basename(out_path),
+            "model": "piper:" + _PIPER_VOZ,
+            "voice": _PIPER_VOZ,
+            "gender": "female",
+            "sample_rate": piper_sr,
+            "audio_seconds": round(segundos, 3),
+            "status": "spoken",
+        })
+        logging.info(
+            "💾 Guardado %s (%.2fs, %d Hz) con la voz mexicana"
+            % (out_path, segundos, piper_sr)
+        )
+
+        if _coerce_bool(config.get('play_audio', True), True):
+            try:
+                import numpy as _np
+                pcm = (_np.frombuffer(crudo, dtype=_np.int16)
+                       .astype(_np.float32) / 32768.0)
+                dev_idx, dev_name, _clip = play_pcm(pcm, piper_sr, config)
+                result["played"] = True
+                logging.info("🔊 Hablado por [%s] %s" % (dev_idx, dev_name))
+            except Exception as exc:
+                logging.error("❌ No pude reproducir: %s" % exc)
+                result["status"] = "saved"
+        else:
+            result["status"] = "saved"
+        return result
 
     # === LONG-TEXT PARTITIONING (talk for hours) ===========================
     # A single Orpheus generation is hard-capped by Ollama's num_predict
@@ -1352,6 +1587,40 @@ def _die_male_voice_forbidden(config: Dict, forbidden: Exception) -> None:
     os._exit(70)
 
 
+def _die_english_voice_forbidden(config, forbidden):
+    """Cierra TODA la ejecucion porque el modelo no sabe castellano.
+
+    Mismo trato que ``_die_male_voice_forbidden``: no dispara agentes
+    downstream y no corre el teardown normal. Hablar ingles no es una opcion,
+    asi que el proceso simplemente termina.
+    """
+    una_linea = " ".join(str(forbidden).splitlines()).strip()
+    logging.critical("=" * 60)
+    logging.critical("⛔ NO VOY A HABLAR EN INGLES — Tlamatini-Spanish habla castellano.")
+    logging.critical(f"⛔ Rechazado: {una_linea}")
+    logging.critical("⛔ NOW CLOSING.. BYE")
+    logging.critical("=" * 60)
+    try:
+        emit_parametrizer_error_section(
+            config,
+            f"PROHIBIDO POR DISENO: el modelo no puede hablar castellano "
+            f"({una_linea}). Tlamatini-Spanish NUNCA habla en ingles: "
+            f"prefiere quedarse callada. NOW CLOSING.. BYE",
+        )
+    except Exception:
+        pass
+    try:
+        remove_pid_file()
+    except Exception:
+        pass
+    try:
+        sys.stdout.flush()
+        sys.stderr.flush()
+    except Exception:
+        pass
+    os._exit(71)
+
+
 def main():
     config = load_config()
 
@@ -1382,6 +1651,11 @@ def main():
             emit_parametrizer_section(result)
             if result['status'] == 'error':
                 synth_ok = False
+        except EnglishVoiceForbiddenError as ingles:
+            # PROHIBIDO POR DISENO: el modelo no habla castellano. No se
+            # recupera, no se sustituye y NO se habla en ingles: se cierra
+            # toda la ejecucion. Esto nunca regresa.
+            _die_english_voice_forbidden(config, ingles)
         except MaleVoiceForbiddenError as forbidden:
             # FORBIDDEN BY DESIGN: a male / non-female voice was requested. Do NOT
             # recover, do NOT substitute, do NOT trigger downstream — report the
