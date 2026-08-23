@@ -320,7 +320,7 @@ function appendChatMessage(username, message, addedContent = null, timestampStr 
     //     punctuation/space/case-insensitive key ("File Creator" -> "File-Creator",
     //     "STM32er" -> "stm32er", "Monitor Log" -> "Monitor-Log"), so
     //     display-vs-DB spelling drift never blocks the button. A successful
-    //     agent that resolves to NO agent registrado del canvas is simply DROPPED
+    //     agent that resolves to NO registered canvas agent is simply DROPPED
     //     from the generated flow (same treatment as a failed execution) - it
     //     must NEVER disable the whole button. The button enables whenever AT
     //     LEAST ONE successful agent resolves.
@@ -581,7 +581,7 @@ async function _resolveSuccessfulAgents(toolCallsLog) {
  */
 async function _generateAndDownloadFlow(toolCallsLog) {
     // 1) Resolve every SUCCESSFUL tool call to its canonical (exact DB) agent
-    //    name and DROP any that don't resolve to a agent registrado del canvas --
+    //    name and DROP any that don't resolve to a registered canvas agent --
     //    the generated .flw must only ever reference agents the canvas can
     //    load, and only the successful executions become nodes (failed ones
     //    were never in `resolved`). Order + fidelity preserved: each kept
@@ -689,7 +689,7 @@ async function _generateAndDownloadFlow(toolCallsLog) {
     flowData = await _normalizeChatFlowBeforeDownload(toolCallsLog, flowData);
 
     // 5) Prompt user for filename and trigger download
-    let filename = prompt('Escribe un nombre para el archivo del flow:', 'multi-turn-flow');
+    let filename = prompt('Enter a name for the flow file:', 'multi-turn-flow');
     if (filename === null) return;
     filename = filename.trim();
     if (!filename) return;
@@ -1234,6 +1234,45 @@ function _mapToolArgsToAgentConfig(canonicalName, rawArgs, _toolName) {
     // Template fields: video_pathfilenames, expected_motion, num_frames,
     //                  frame_sampling, motion_gate, motion_threshold, roi,
     //                  interpreter_model_1/2, merging_model, llm.host/token
+    // ── NetSpeed-Calculator ──────────────────────────────────────────
+    // Template fields: action, providers, min_successful_providers,
+    //                  parallel_streams, test_duration_seconds, warmup_seconds,
+    //                  sample_interval_seconds, max_bytes_per_stream,
+    //                  upload_payload_mb, request_timeout, latency_samples,
+    //                  measure_bufferbloat, outlier_rejection, trim_percent,
+    //                  confidence_level, aggregation, heterogeneity_i2_threshold,
+    //                  preflight, command_timeout, output_dir, save_json
+    } else if (lower === 'netspeed-calculator' || lower === 'netspeed_calculator') {
+        set('action', pairs.action);
+        set('providers', pairs.providers);
+        set('outlier_rejection', pairs.outlier_rejection);
+        set('aggregation', pairs.aggregation);
+        set('output_dir', pairs.output_dir);
+        // Counts stay integers; anything that can sensibly be fractional is parsed
+        // as a float, because parseInt('0.25') is 0 and would silently turn the
+        // sampling interval into a busy-loop.
+        for (const k of ['min_successful_providers', 'parallel_streams',
+            'test_duration_seconds', 'max_bytes_per_stream', 'upload_payload_mb',
+            'request_timeout', 'latency_samples', 'heterogeneity_i2_threshold',
+            'command_timeout']) {
+            if (pairs[k] !== undefined && pairs[k] !== '') {
+                const n = parseInt(pairs[k], 10);
+                if (!Number.isNaN(n)) config[k] = n;
+            }
+        }
+        for (const k of ['warmup_seconds', 'sample_interval_seconds',
+            'trim_percent', 'confidence_level']) {
+            if (pairs[k] !== undefined && pairs[k] !== '') {
+                const n = parseFloat(pairs[k]);
+                if (!Number.isNaN(n)) config[k] = n;
+            }
+        }
+        for (const k of ['measure_bufferbloat', 'preflight', 'save_json']) {
+            if (pairs[k] !== undefined && pairs[k] !== '') {
+                config[k] = (String(pairs[k]).toLowerCase() === 'true' || pairs[k] === true);
+            }
+        }
+
     } else if (lower === 'video-analyzer' || lower === 'video_analyzer') {
         set('video_pathfilenames', pairs.video_pathfilenames || pairs.video_path || pairs.video);
         set('expected_motion', pairs.expected_motion);
@@ -2064,6 +2103,7 @@ function _agentPurpose(canonicalName) {
         'Starter': 'Entry point, launches first agents',
         'Ender': 'Terminates all agents, launches Cleaners',
         'Executer': 'Shell commands',
+        'NetSpeed-Calculator': 'Measures real Internet throughput, latency, jitter and bufferbloat across several keyless providers (RFC 6349)',
         'Pythonxer': 'Inline Python execution',
         'Crawler': 'Web crawling with LLM analysis',
         'Googler': 'Google search and text extraction',
@@ -2155,7 +2195,7 @@ function parseToFindFiles(data) {
         $(link2BeAppended).data('files', stringFileNames);
         link2BeAppended.href = '#';
         link2BeAppended.className = 'save-files-anchor';
-        link2BeAppended.innerText = 'Guardar todos los archivos recibidos';
+        link2BeAppended.innerText = 'Save all files received';
         console.log('Extracted loadCanvas strings (files in message):', extractedStrings);
         console.log("Link generated: ");
         console.log("+++++++++++++++++++++");

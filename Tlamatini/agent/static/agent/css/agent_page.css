@@ -1117,20 +1117,21 @@ body.resizing-vertical {
     margin: 0;
 }
 
-/* ── About dialog ────────────────────────────────────────────────────
-   Usa los tokens de dialog_theme.css, igual que los demas dialogos.
-   Antes traia su propio color (#1a1a2e, #e0e0e0, rgba(0,0,0,.7)), asi
-   que quedaba de otro color que el resto del sistema y no seguia un
-   cambio de tema. Cada var() lleva su valor previo como respaldo: si
-   dialog_theme.css no cargara, el dialogo se ve como antes en vez de
-   quedarse sin color. */
+/* ── About splash + Check-for-updates dialog ─────────────────────────
+ * Angela, 2026-08-12: this pair was the EIGHTH dialog skin — a #1a1a2e
+ * card with 12px corners, no border and its own shadow, plus a bare 24px
+ * "x" with no hit target. "Check for updates" is a REAL dialog (title,
+ * body, progress, actions), so it has to wear the shared identity; the
+ * About splash is a branded video frame and only borrows the frame.
+ * Built from the --tlm-dlg-* tokens like everything else.
+ * ------------------------------------------------------------------ */
 .about-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--tlm-dlg-overlay, rgba(0, 0, 0, 0.7));
+    background: var(--tlm-dlg-overlay);
     z-index: 20000;
     display: flex;
     align-items: center;
@@ -1141,44 +1142,42 @@ body.resizing-vertical {
     position: relative;
     width: min(800px, calc(100vw - 24px));
     max-height: calc(100dvh - 24px);
-    /* Sin respaldo a #1a1a2e a proposito: ese azul-marino privado era el
-       que hacia que esta tarjeta se viera de otro color que el resto de
-       los dialogos. El token manda, sin escapatoria. */
     background: var(--tlm-dlg-surface);
-    color: var(--tlm-dlg-body);
-    font-family: var(--tlm-dlg-font, 'Nunito', sans-serif);
-    border: var(--tlm-dlg-border, 1px solid rgba(255, 255, 255, 0.12));
-    border-radius: var(--tlm-dlg-radius, 12px);
+    border: var(--tlm-dlg-border);
+    border-radius: var(--tlm-dlg-radius);
     overflow: auto;
-    box-shadow: var(--tlm-dlg-shadow, 0 20px 60px rgba(0, 0, 0, 0.5));
+    box-shadow: var(--tlm-dlg-shadow);
+    font-family: var(--tlm-dlg-font);
 }
 
+/* Same 32px hit-target + hover chip as every other close X. */
 .about-close-btn {
     position: absolute;
     top: 8px;
-    right: 12px;
-    background: none;
-    border: none;
-    color: var(--tlm-dlg-title, #ffffff);
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--tlm-dlg-radius-sm);
+    color: var(--tlm-dlg-title);
     font-size: 24px;
     cursor: pointer;
     z-index: 1;
-    opacity: 0.7;
-    transition: opacity 0.2s, background 0.2s;
+    opacity: 0.75;
+    transition: opacity 0.18s ease-out, background-color 0.18s ease-out,
+        border-color 0.18s ease-out;
     line-height: 1;
-    /* Un glifo suelto es un blanco de 8px: en la practica se le pega uno
-       al lado. 32x32 le da area real de click y la esquina redondeada
-       ensena donde termina el boton al pasar el mouse. */
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--tlm-dlg-radius-sm, 6px);
 }
 
-.about-close-btn:hover {
+.about-close-btn:hover,
+.about-close-btn:focus-visible {
+    background-color: var(--tlm-dlg-btn-secondary);
+    border-color: rgba(255, 255, 255, 0.14);
     opacity: 1;
+    outline: none;
 }
 
 .about-video-container {
@@ -1194,9 +1193,10 @@ body.resizing-vertical {
 }
 
 .about-text {
-    background: var(--tlm-dlg-surface, #1a1a2e);
+    background: var(--tlm-dlg-chrome);
+    border-top: var(--tlm-dlg-hairline);
     padding: 16px 24px 20px;
-    color: var(--tlm-dlg-body, #e0e0e0);
+    color: var(--tlm-dlg-body);
 }
 
 .about-text p {
@@ -1207,27 +1207,15 @@ body.resizing-vertical {
 .about-company-name {
     font-size: 14px;
     font-weight: 700;
-    color: var(--tlm-dlg-title, #ffffff);
 }
 
 .about-version {
     font-size: 13px;
-    color: var(--tlm-dlg-muted, #9ca2ba);
 }
 
 .about-owner {
     font-size: 13px;
     font-weight: 700;
-}
-
-/* El credito de autoria. `text-transform` estaba solo en la edicion en
-   ingles, asi que el mismo renglon salia en MAYUSCULAS alla y en
-   minusculas aca. Se iguala. */
-.about-creator {
-    color: var(--tlm-dlg-accent, #55bbaa);
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
 }
 
 /* ── Check-for-updates dialog (reuses .about-overlay) ───────────────── */
@@ -1236,22 +1224,62 @@ body.resizing-vertical {
     max-width: 92vw;
 }
 
+/*
+ * A real HEADER BAR. Without it this dialog was a bare body with a
+ * heading floating in it — panel and buttons could match the rest of the
+ * app and it STILL read as a different window, because the chrome strip
+ * at the top is half of what makes a Tlamatini dialog recognisable.
+ */
+.update-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 26px;
+    background: var(--tlm-dlg-chrome);
+    border-bottom: var(--tlm-dlg-hairline);
+    border-top-left-radius: var(--tlm-dlg-radius);
+    border-top-right-radius: var(--tlm-dlg-radius);
+}
+
+/* In the header the X sits in the flex row, not absolutely on the card. */
+.update-header .about-close-btn {
+    position: static;
+    flex-shrink: 0;
+}
+
 .update-body {
-    padding: 22px 26px 24px;
-    color: var(--tlm-dlg-body, #e0e0e0);
+    padding: 18px 26px 24px;
+    color: var(--tlm-dlg-body);
 }
 
 .update-title {
-    margin: 0 0 6px;
+    margin: 0;
     font-size: 18px;
     font-weight: 700;
-    color: #ffffff;
+    line-height: 1.2;
+    color: var(--tlm-dlg-title);
+}
+
+/*
+ * The teal eyebrow above the title — the single most recognisable half of
+ * the reference dialog, and the reason this one used to read as a stray
+ * window rather than as part of Tlamatini.
+ */
+.update-kicker {
+    display: block;
+    color: var(--tlm-dlg-kicker);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 2px;
+    text-transform: uppercase;
 }
 
 .update-current {
     margin: 0 0 14px;
     font-size: 13px;
-    opacity: 0.8;
+    color: var(--tlm-dlg-muted);
 }
 
 .update-content {
@@ -1265,18 +1293,114 @@ body.resizing-vertical {
     opacity: 0.75;
 }
 
+/*
+ * RENDERED release notes (2026-08-13). This pane used to be a <pre> with
+ * `white-space: pre-wrap` holding the raw GitHub markdown, so the user read
+ * "## What's New" and a literal <img ... src="…"> tag. It now holds real
+ * rendered HTML from release_notes_renderer.js, so the styling below is for
+ * headings / lists / links / code / MEDIA, and the max-height is roomy enough
+ * that a release screenshot or video is actually watchable.
+ */
 .update-notes {
     margin: 12px 0 0;
-    max-height: 160px;
+    max-height: 320px;
     overflow: auto;
-    padding: 10px 12px;
-    background: rgba(0, 0, 0, 0.35);
-    border-radius: 6px;
-    font-size: 12px;
-    line-height: 1.4;
-    white-space: pre-wrap;
+    padding: 10px 14px;
+    background: var(--tlm-dlg-pane);
+    border: var(--tlm-dlg-hairline);
+    border-radius: var(--tlm-dlg-radius-sm);
+    font-size: 12.5px;
+    line-height: 1.5;
     word-break: break-word;
-    color: #cfd2e0;
+    color: var(--tlm-dlg-body);
+}
+
+.update-notes p { margin: 0 0 8px; }
+.update-notes > :first-child { margin-top: 0; }
+.update-notes > :last-child { margin-bottom: 0; }
+
+.update-notes h1,
+.update-notes h2,
+.update-notes h3,
+.update-notes h4,
+.update-notes h5,
+.update-notes h6 {
+    margin: 14px 0 6px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--tlm-dlg-title);
+}
+
+.update-notes h1 { font-size: 16px; }
+.update-notes h2 { font-size: 15px; }
+.update-notes h3 { font-size: 14px; }
+.update-notes h4,
+.update-notes h5,
+.update-notes h6 { font-size: 13px; }
+
+.update-notes ul,
+.update-notes ol { margin: 0 0 8px; padding-left: 20px; }
+.update-notes li { margin: 2px 0; }
+
+.update-notes a { color: var(--tlm-dlg-kicker); text-decoration: underline; }
+.update-notes a:hover { filter: brightness(1.25); }
+
+.update-notes blockquote {
+    margin: 8px 0;
+    padding: 2px 0 2px 10px;
+    border-left: 3px solid var(--tlm-dlg-kicker);
+    opacity: 0.9;
+}
+
+.update-notes hr {
+    margin: 12px 0;
+    border: 0;
+    border-top: var(--tlm-dlg-hairline);
+}
+
+.update-notes code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.10);
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+}
+
+.update-notes pre.rn-code {
+    margin: 8px 0;
+    padding: 8px 10px;
+    overflow: auto;
+    border-radius: var(--tlm-dlg-radius-sm);
+    background: rgba(0, 0, 0, 0.35);
+    white-space: pre-wrap;
+}
+
+.update-notes pre.rn-code code { padding: 0; background: none; }
+
+/* The whole point of the fix: a release screenshot or clip renders INLINE,
+ * scaled to the dialog, never overflowing it. */
+.update-notes .rn-media,
+.update-notes img,
+.update-notes video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 8px auto;
+    border-radius: var(--tlm-dlg-radius-sm);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.update-notes table {
+    width: 100%;
+    margin: 8px 0;
+    border-collapse: collapse;
+}
+
+.update-notes th,
+.update-notes td {
+    padding: 4px 8px;
+    border: var(--tlm-dlg-hairline);
+    text-align: left;
 }
 
 .update-progress-wrap {
@@ -1295,40 +1419,28 @@ body.resizing-vertical {
     transition: width 0.3s ease;
 }
 
-/* La barra de arriba y la de abajo son lo que hace que un dialogo se lea
-   como NUESTRO. Sin ellas la tarjeta es un rectangulo con texto. */
-.update-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 22px 12px;
-    background: var(--tlm-dlg-chrome);
-    border-bottom: var(--tlm-dlg-hairline, 1px solid rgba(255, 255, 255, 0.08));
-}
-
-.update-kicker {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-    color: var(--tlm-dlg-kicker, #55bbaa);
-}
-
+/*
+ * A real FOOTER BAR. The negative margins pull it out to the edges of
+ * `.update-body`'s 26px/24px padding so the chrome fill spans the card,
+ * which is what makes it read as a footer instead of buttons floating on
+ * the page. Keep them in step if that padding ever changes.
+ */
 .update-actions {
-    margin-top: 18px;
+    margin: 18px -26px -24px;
+    padding: 12px 26px;
+    background: var(--tlm-dlg-chrome);
+    border-top: var(--tlm-dlg-hairline);
+    border-bottom-left-radius: var(--tlm-dlg-radius);
+    border-bottom-right-radius: var(--tlm-dlg-radius);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 14px;
-    padding: 12px 22px;
-    background: var(--tlm-dlg-chrome);
-    border-top: var(--tlm-dlg-hairline, 1px solid rgba(255, 255, 255, 0.08));
 }
 
 .update-link {
     font-size: 13px;
-    color: #8fb7ff;
+    color: var(--tlm-dlg-accent);
     text-decoration: none;
 }
 
@@ -1336,21 +1448,29 @@ body.resizing-vertical {
     text-decoration: underline;
 }
 
-/* El boton de confirmar es TEAL en toda la app. Este traia su propio
-   degradado morado-rosa, asi que el mismo gesto se veia distinto aqui. */
+/* The confirm button is teal here too — one primary, everywhere. */
 .update-btn {
-    background: var(--tlm-dlg-accent);
-    border: none;
-    color: #0d1117;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 20px;
-    border-radius: 6px;
+    min-width: 98px;
+    background-color: var(--tlm-dlg-accent);
+    border: var(--tlm-dlg-border);
+    color: #ffffff;
+    font-family: var(--tlm-dlg-font);
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 8px 14px;
+    border-radius: var(--tlm-dlg-radius-sm);
     cursor: pointer;
+    transition: background-color 0.18s ease-out;
 }
 
 .update-btn:hover {
-    filter: brightness(1.1);
+    background-color: var(--tlm-dlg-accent-hover);
+}
+
+.update-btn:focus-visible {
+    outline: 2px solid rgba(85, 187, 170, 0.65);
+    outline-offset: 2px;
 }
 
 .update-btn:disabled {
@@ -1789,6 +1909,17 @@ body.resizing-vertical {
     border-left: 3px solid #7B2FF7;
 }
 
+/* NetSpeed-Calculator — abyss navy -> amber, mirroring
+   .canvas-item.netspeed-calculator-agent in agentic_control_panel.css. */
+.exec-report-caption-netspeedcalculator {
+    background: linear-gradient(135deg, #041E2B 0%, #F9C80E 100%);
+    color: #ffffff;
+}
+
+.exec-report-netspeedcalculator .exec-report-cmd {
+    border-left: 3px solid #0E6BA8;
+}
+
 /* ESP32er — charcoal -> Espressif red, mirrors .canvas-item.esp32er-agent in
    agentic_control_panel.css. State-changing because it scaffolds / writes / builds
    / uploads (flashes) ESP32 firmware through the PlatformIO `pio` CLI. */
@@ -1874,6 +2005,7 @@ body.resizing-vertical {
 .exec-report-esphomer thead th,
 .exec-report-arduiner thead th,
 .exec-report-videoanalyzer thead th,
+.exec-report-netspeedcalculator thead th,
 .exec-report-pdfer thead th,
 .exec-report-latexer thead th,
 .exec-report-acpx thead th,

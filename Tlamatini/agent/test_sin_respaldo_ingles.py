@@ -166,7 +166,7 @@ class ElTalkerHablaCastellanoPorDefecto(unittest.TestCase):
     def test_el_config_yaml_dice_es(self):
         yaml = _lee(_AGENTES, "talker", "config.yaml")
         self.assertRegex(
-            yaml, r'^language:\s*"es"', 
+            yaml, r'(?m)^language:\s*"es"', 
             "talker/config.yaml tiene que decir language: \"es\" en esta "
             "edicion.")
 
@@ -194,7 +194,7 @@ class ElPdfSaleEnCastellano(unittest.TestCase):
 
     def test_document_language_por_defecto_es(self):
         yaml = _lee(_AGENTES, "pdfer", "config.yaml")
-        self.assertRegex(yaml, r'^document_language:\s*"es"')
+        self.assertRegex(yaml, r'(?m)^document_language:\s*"es"')
 
 
 if __name__ == "__main__":

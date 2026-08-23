@@ -495,6 +495,42 @@ def piper_disponible(voz: str = _PIPER_VOZ) -> bool:
         return False
 
 
+#: ⛔ NI LA VOZ NI LAS PRUEBAS HABLAN INGLES (Angela, 2026-08-23).
+#: El mismo filtro que agent/tts_piper.py, copiado aqui A PROPOSITO: un agent
+#: del pool corre como subproceso y NO puede importar `agent.*`. Si solo
+#: estuviera alla, el Talker seguiria siendo un hueco por donde sale ingles.
+_PALABRAS_INGLESAS = frozenset("""
+the and you are was were will would should could have has had been being
+this that these those with from they them their there here what when where
+which while about after before because between into through during without
+your yours mine ours theirs isn't don't can't won't didn't doesn't
+""".split())
+
+_MARCAS_ES = frozenset("""
+el la los las un una unos unas de del al que para por con sin sobre entre
+es son era eran ser estar tengo tiene hacer hago muy pero porque cuando
+donde como esto esta este ese esa aqui alli ya no si mas menos
+""".split())
+
+
+def _es_ingles(texto):
+    """True cuando el texto es INGLES corrido y por tanto NO se pronuncia.
+
+    FAIL-OPEN: ante la duda, se habla. Callar a Tlamatini por error es peor
+    que dejar pasar una frase rara; lo que se caza es el ingles evidente, no
+    el Spanglish de todos los dias.
+    """
+    palabras = [p.strip('.,;:!?¡¿()[]"\'').lower()
+                for p in (texto or "").split()]
+    palabras = [p for p in palabras if p.isalpha()]
+    if len(palabras) < 4:
+        return False
+    if any(p in _MARCAS_ES for p in palabras):
+        return False
+    inglesas = sum(1 for p in palabras if p in _PALABRAS_INGLESAS)
+    return inglesas >= 2 and (inglesas / len(palabras)) >= 0.15
+
+
 def piper_sintetiza(texto: str, voz: str = _PIPER_VOZ):
     """texto -> (bytes wav, estado). Nunca revienta.
 
@@ -504,6 +540,8 @@ def piper_sintetiza(texto: str, voz: str = _PIPER_VOZ):
     """
     if not texto or not texto.strip():
         return b"", "empty"
+    if _es_ingles(texto):
+        return b"", "refused:ingles"
     if not piper_disponible(voz):
         return b"", "not_ready"
     exe = _piper_exe()

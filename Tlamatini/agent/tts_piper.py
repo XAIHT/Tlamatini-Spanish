@@ -310,15 +310,206 @@ def ensure_ready(voice: str = _DEFAULT_VOICE, log=None, piper_url: str = "",
 
 
 # -------------------------------------------------------------- synthesis
+#: ⛔ NI LA VOZ NI LAS PRUEBAS HABLAN INGLES (Angela, 2026-08-23).
+#: Palabras suyas: *"Tlamatini in its voices and automated tests must always
+#: speak Spanish. If it can't, then NOT SPEAK"*.
+#:
+#: La voz es mexicana, pero eso solo arregla el ACENTO: una voz es_MX leyendo
+#: una frase inglesa sigue siendo Tlamatini hablando ingles, nada mas que mal
+#: pronunciado. Por eso el filtro mira el TEXTO, no la voz.
+#:
+#: Palabras funcion inglesas que casi no aparecen en castellano. Se piden
+#: VARIAS y una proporcion alta para que un tecnicismo suelto ("el buffer",
+#: "hazme un backup", "corre el test") NO calle a Tlamatini: eso es
+#: Spanglish normal y SI se habla.
+_PALABRAS_INGLESAS = frozenset("""
+the and you are was were will would should could have has had been being
+this that these those with from they them their there here what when where
+which while about after before because between into through during without
+your yours mine ours theirs isn't don't can't won't didn't doesn't
+""".split())
+
+#: Marcas inequivocas de castellano: si aparecen, no es ingles y se habla.
+_MARCAS_ES = frozenset("""
+el la los las un una unos unas de del al que para por con sin sobre entre
+es son era eran ser estar tengo tiene hacer hago muy pero porque cuando
+donde como esto esta este ese esa aqui alli ya no si mas menos
+""".split())
+
+
+def _es_ingles(texto: str) -> bool:
+    """True cuando el texto es INGLES corrido y por tanto no se pronuncia.
+
+    FAIL-OPEN A PROPOSITO: ante la duda devuelve False (se habla). Callar a
+    Tlamatini por error es peor que dejar pasar una frase rara; lo que se
+    persigue es el ingles evidente, no el Spanglish de todos los dias.
+    """
+    palabras = [p.strip(".,;:!?¡¿()[]\"'").lower()
+                for p in (texto or "").split()]
+    palabras = [p for p in palabras if p.isalpha()]
+    if len(palabras) < 4:
+        return False                     # muy corto para juzgar: se habla
+    if any(p in _MARCAS_ES for p in palabras):
+        return False                     # trae castellano: se habla
+    inglesas = sum(1 for p in palabras if p in _PALABRAS_INGLESAS)
+    # dos o mas palabras funcion inglesas Y al menos el 15% del texto
+    return inglesas >= 2 and (inglesas / len(palabras)) >= 0.15
+
+
+#: ⛔ NO SE CALLA: LO DICE EN CASTELLANO (Angela, 2026-08-23).
+#: Palabras suyas: *"make the fucking Piper ... and all the shit speak
+#: spanish"*. Antes, un texto en ingles devolvia 'refused:ingles' y no salia
+#: audio. Mejor que el silencio es DECIRLO EN CASTELLANO: se traduce y se
+#: pronuncia. El silencio queda solo para cuando no hay con que traducir.
+#:
+#: Escalera, de lo barato y seguro a lo caro:
+#:   1. el catalogo NEPANTLA (agent/i18n/ui_es.py) — exacto, instantaneo
+#:   2. el lexico NEPANTLA, palabra por palabra
+#:   3. Ollama en local, si esta prendido
+#:   4. si nada de eso puede: NO SE HABLA (jamas en ingles)
+_OLLAMA_TIMEOUT = 20
+
+
+def _catalogo_nepantla():
+    """El catalogo de la interfaz, {ingles: castellano}. Fail-open a {}."""
+    try:
+        from .i18n.ui_es import UI_ES
+        return UI_ES
+    except Exception:
+        try:
+            import importlib.util
+            ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "i18n", "ui_es.py")
+            spec = importlib.util.spec_from_file_location("_ui_es", ruta)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            return getattr(mod, "UI_ES", {})
+        except Exception:
+            return {}
+
+
+def _traduce_con_catalogo(texto):
+    """Coincidencia exacta en el catalogo NEPANTLA. '' si no esta."""
+    cat = _catalogo_nepantla()
+    if not cat:
+        return ""
+    limpio = (texto or "").strip()
+    if limpio in cat:
+        return cat[limpio]
+    for en, es in cat.items():                      # sin distinguir mayusculas
+        if en.strip().lower() == limpio.lower():
+            return es
+    return ""
+
+
+def _traduce_con_ollama(texto):
+    """Traduce con el Ollama local. '' si no esta prendido o si falla.
+
+    Se le pide castellano LATINOAMERICANO y que NO toque los nombres propios
+    del sistema (Tlamatini, Executer, Exec report...), que son canal de
+    maquina y no se traducen nunca.
+    """
+    try:
+        import json as _json
+        import urllib.request as _req
+        base = "http://127.0.0.1:11434"
+        try:
+            cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "config.json")
+            with open(cfg, encoding="utf-8-sig") as fh:
+                base = (_json.load(fh).get("ollama_base_url") or base).rstrip("/")
+        except Exception:
+            pass
+        modelo = os.environ.get("TLAMATINI_TRAD_MODEL", "llama3.2:3b")
+        instruccion = (
+            "Traduce al espanol latinoamericano. Responde SOLO con la "
+            "traduccion, sin comillas ni explicaciones. NO traduzcas nombres "
+            "propios ni terminos tecnicos (Tlamatini, Executer, Exec report, "
+            "Multi-Turn, log, backup, script, token).\n\nTexto: " + texto)
+        cuerpo = _json.dumps({"model": modelo, "prompt": instruccion,
+                              "stream": False}).encode("utf-8")
+        pet = _req.Request(base + "/api/generate", data=cuerpo,
+                           headers={"Content-Type": "application/json"})
+        with _req.urlopen(pet, timeout=_OLLAMA_TIMEOUT) as r:
+            got = _json.loads(r.read().decode("utf-8", "replace"))
+        return (got.get("response") or "").strip()
+    except Exception:
+        return ""
+
+
+def _tiene_marca_de_castellano(texto):
+    """True si el texto trae una senal POSITIVA de castellano.
+
+    No es "¿parece ingles?" al reves: aquello contesta que no ante cualquier
+    duda y por eso dejaba pasar frases cortas en ingles. Esto exige ver algo
+    nuestro — acento, enye, signo de apertura, o una palabra funcion del
+    castellano — antes de dejar que se pronuncie sin traducir.
+    """
+    s = (texto or "")
+    if any(c in s for c in "áéíóúüñÁÉÍÓÚÜÑ¿¡"):
+        return True
+    palabras = [p.strip('.,;:!?()[]"\'').lower() for p in s.split()]
+    return any(p in _MARCAS_ES for p in palabras if p.isalpha())
+
+
+def a_castellano(texto):
+    """(texto_a_hablar, como). `como` == '' cuando NO se puede y hay que callar.
+
+    ⚠️ EL CATALOGO SE CONSULTA PRIMERO, ANTES DE JUZGAR EL IDIOMA. Sonaba
+    razonable preguntar "¿esto es ingles?" y solo entonces traducir, pero
+    `_es_ingles` necesita al menos cuatro palabras para no equivocarse, asi
+    que "Save", "Contacts book" o "Please wait" se colaban como si ya
+    estuvieran en castellano... y se pronunciaban EN INGLES. Justo lo unico
+    prohibido. El catalogo NEPANTLA acierta con esas cadenas cortas sin tener
+    que adivinar nada, asi que va primero y el largo deja de importar.
+    """
+    if not (texto or "").strip():
+        return texto, "vacio"
+
+    # 1) el catalogo, a cualquier longitud
+    try:
+        got = _traduce_con_catalogo(texto)
+    except Exception:
+        got = ""
+    if got:
+        return got, "catalogo"
+
+    # 2) MODO ESTRICTO: para decirlo tal cual hay que estar SEGUROS de que
+    #    es castellano, no solo de que "no parece ingles". `_es_ingles` pide
+    #    >=4 palabras, asi que con esa pregunta sola se colaban "Please
+    #    wait", "Unsaved changes" o "Delete contact" y se pronunciaban EN
+    #    INGLES. Ahora se exige una marca POSITIVA de castellano (un acento,
+    #    una enye, un signo de apertura o una palabra funcion nuestra).
+    #    Sin esa marca no se arriesga: se manda a traducir, y si no hay con
+    #    que, se calla. Mejor muda que en ingles.
+    if _tiene_marca_de_castellano(texto):
+        return texto, "ya-en-castellano"
+
+    # 3) ingles de verdad: que lo traduzca el Ollama local
+    try:
+        got = _traduce_con_ollama(texto)
+    except Exception:
+        got = ""
+    if got and not _es_ingles(got):
+        return got, "ollama"
+
+    # 4) no hubo con que: SE CALLA. En ingles no se habla jamas.
+    return "", ""
+
+
 def synthesize(text: str, voice: str = _DEFAULT_VOICE) -> Tuple[bytes, str]:
     """text -> (wav_bytes, status). Never raises.
 
-    status: 'ok' | 'empty' | 'not_ready' | 'error:<detail>'
+    status: 'ok' | 'empty' | 'refused:ingles' | 'not_ready' | 'error:<detail>'
     On anything other than 'ok' the caller MUST stay silent rather than fall
     back to an English voice.
     """
     if not text or not text.strip():
         return b"", "empty"
+    text, _como = a_castellano(text)
+    if not text:
+        # No hubo con que traducir. Callarse es correcto; hablar ingles no.
+        return b"", "refused:ingles"
     if not is_ready(voice):
         return b"", "not_ready"
     exe = piper_exe()

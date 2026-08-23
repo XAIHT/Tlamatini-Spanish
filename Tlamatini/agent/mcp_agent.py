@@ -9,6 +9,16 @@
 #   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
 # MCP Agent (mcp_agent.py)
 import json
+
+# ── NEPANTLA: plegado de texto (solo en la edicion espanola) ──
+# Sirve para comparar sin acentos ni mayusculas. Se importa con
+# respaldo: si el paquete i18n no esta, queda en None y quien lo usa
+# ya pregunta `is not None` antes de llamarlo (fail-open).
+try:
+    from .i18n.normalize import fold_text as _nepantla_fold
+except ImportError:  # pragma: no cover - depende del arbol
+    _nepantla_fold = None
+
 import logging
 import re
 
@@ -27,7 +37,7 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, System
 from . import agent_verdict
 from .acpx import ACPX_TOOL_NAMES, filter_acpx_tools
 from .capability_registry import (
-    normalize_request,
+    _normalize_text,
     _score_capability,
     _tokenize,
     build_tool_capabilities,
@@ -45,25 +55,6 @@ from .orphan_reaper import reap_orphans
 from .tools import get_mcp_tools
 from .llm_timing import llm_timing_callbacks
 from .self_healing import ModelStepUnrecoverable, SelfHealingInvoker, recovery_preamble
-
-# --- NEPANTLA -----------------------------------------------------------------
-try:
-    from .i18n.normalize import fold_text as _nepantla_fold
-except Exception:  # pragma: no cover - defensive
-    _nepantla_fold = None
-
-# Folded, accent-free. Deliberately tight and unambiguous: every entry is a
-# phrase that only ever introduces a failure, so no successful output can
-# begin with one.
-_ES_FAILURE_PREFIXES = (
-    "fallo", "fallido", "fracaso",
-    "no se pudo", "no fue posible", "no se puede", "no pudo",
-    "no existe", "no encontrado", "no se encontro",
-    "acceso denegado", "permiso denegado",
-    "excepcion", "error fatal", "errores:",
-    "el sistema no puede",
-)
-# ------------------------------------------------------------------------------
 
 
 # Tool names whose invocation is likely to spawn an external console
@@ -292,6 +283,10 @@ _EXEC_REPORT_TOOLS: Dict[str, Tuple[str, str]] = {
     # verdict — it mutates no state), but EVERY Multi-Turn agent must appear in the
     # Exec Report, so it gets its own row + caption gradient (agent_key videoanalyzer).
     "chat_agent_video_analyzer": ("videoanalyzer",  "Video-Analyzer"),
+    # NetSpeed-Calculator measures rather than mutates, but the completeness
+    # contract is absolute: EVERY Multi-Turn agent gets an Exec-Report row.
+    # agent_key drops the dash to match .exec-report-caption-netspeedcalculator.
+    "chat_agent_netspeed_calculator": ("netspeedcalculator", "NetSpeed-Calculator"),
     # Playwrighter drives a real browser through a scripted flow: it submits
     # forms, clicks, logs into sites, downloads files, and otherwise changes
     # remote/web state. Read-only steps (extract_text / screenshot) share the
@@ -500,6 +495,12 @@ _ASK_EXECS_REQUIRED_TOOLS: frozenset = frozenset({
     "chat_agent_nmapper",       # Nmapper       (local nmap scans — offensive recon)
     "chat_agent_discoverer",    # Discoverer    (ProjectDiscovery active recon)
     "chat_agent_crawler",       # Crawler       (fetches arbitrary URLs)
+    # NetSpeed-Calculator sits in tier D for the SAME reason Crawler does — it
+    # reaches out to remote hosts — but with one extra edge: it deliberately
+    # SATURATES the link, moving ~100-200 MB of real traffic per full run. On a
+    # metered or capped connection that costs money, and it will briefly slow
+    # everything else on the network, so Angela gets to say when.
+    "chat_agent_netspeed_calculator",  # NetSpeed-Calculator (saturates the link)
 })
 
 
@@ -556,7 +557,7 @@ def _infer_execution_shell(tool_name: str, tool_input: Any) -> str:
         return os_shell
     if name == "chat_agent_ssher":
         host = tool_input.get("host") if isinstance(tool_input, dict) else None
-        return f"Shell SSH remoto{(' @ ' + str(host)) if host else ''}"
+        return f"Remote SSH shell{(' @ ' + str(host)) if host else ''}"
     if name == "chat_agent_dockerer":
         return f"Docker CLI vía {os_shell}"
     if name == "chat_agent_kuberneter":
@@ -574,7 +575,7 @@ def _infer_execution_shell(tool_name: str, tool_input: Any) -> str:
     if name == "chat_agent_arduiner":
         return "Arduino CLI (arduino-cli)"
     if name.startswith("acp_"):
-        return "CLI externo de coding-agent"
+        return "External coding-agent CLI"
     if name == "invoke_skill":
         return "Tlamatini SkillHarness"
     return os_shell
@@ -835,17 +836,6 @@ class MultiTurnToolAgentExecutor:
                 # contesta en español la puede parrotear TRADUCIDA. Sin estas
                 # marcas el guard quedaría medio ciego en esta edición: la fuga
                 # se vería en pantalla igual, solo que en español.
-                "correccion interna del sistema",
-                # Ambos generos: el model escribe "la tool" o "el tool" segun
-                # le acomode, y este archivo usa el masculino ("ningun tool").
-                "no existe la tool",
-                "no existe el tool",
-                "no existe ninguna tool",
-                "no existe ningun tool",
-                "no hay ninguna tool llamada",
-                "no hay ningun tool llamado",
-                "no existe la herramienta",
-                "mecanismo de tool-calling",
             )
             # Comparar SIN acentos: el model escribe "corrección" o "correccion"
             # indistintamente, y una marca acentuada no cazaría a la otra.
@@ -1389,21 +1379,6 @@ class MultiTurnToolAgentExecutor:
                 return (True, s[:300])
         if "failed with return code" in low:
             return (True, s[:300])
-        # NEPANTLA: additive Spanish failure surface. Tlamatini's OWN agents
-        # log in English and are matched above; this covers a Spanish OS
-        # message ("El sistema no puede encontrar la ruta especificada") or an
-        # external MCP server. Additive only - it can classify a call as
-        # FAILED that was previously read as success, never the reverse, so a
-        # genuine success can never be downgraded by this branch.
-        folded_low = low
-        if _nepantla_fold is not None:
-            try:
-                folded_low = _nepantla_fold(low)
-            except Exception:
-                folded_low = low
-        for p in _ES_FAILURE_PREFIXES:
-            if folded_low.startswith(p):
-                return (True, s[:300])
         return (False, "")
 
     # Maximum consecutive identical tool-call rounds before the loop is
@@ -1639,7 +1614,7 @@ class MultiTurnToolAgentExecutor:
 
         if not self.tools:
             try:
-                response = self._healer.invoke(self.llm, messages, label="respondiendo")
+                response = self._healer.invoke(self.llm, messages, label="answering")
             except ModelStepUnrecoverable as _step:
                 if _step.reason == "user_cancelled":
                     return self._cancelled_result(messages)
@@ -1665,7 +1640,7 @@ class MultiTurnToolAgentExecutor:
                 return self._cancelled_result(messages)
             try:
                 response = self._healer.invoke(
-                    self.bound_llm, messages, label=f"trabajando en el paso {iteration + 1}"
+                    self.bound_llm, messages, label=f"working on step {iteration + 1}"
                 )
             except ModelStepUnrecoverable as _step:
                 # The model step could not be reached — either the USER cancelled,
@@ -1820,7 +1795,7 @@ class MultiTurnToolAgentExecutor:
                     )))
                     try:
                         retry_response = self._healer.invoke(
-                            self.bound_llm, messages, label="resumiendo los resultados"
+                            self.bound_llm, messages, label="summarizing the results"
                         )
                     except ModelStepUnrecoverable as _step:
                         # Do NOT swallow a user cancel here — the old code set
@@ -1846,7 +1821,7 @@ class MultiTurnToolAgentExecutor:
                                     break
                         if last_real_results:
                             answer = (
-                                "Estos son los resultados de los tool calls ejecutados:\n\n"
+                                "Here are the results from the executed tool calls:\n\n"
                                 + "\n---\n".join(reversed(last_real_results))
                             )
                         else:
@@ -1903,7 +1878,7 @@ class MultiTurnToolAgentExecutor:
                 # Give the model one more chance to produce a final answer.
                 try:
                     final_response = self._healer.invoke(
-                        self.bound_llm, messages, label="cerrando"
+                        self.bound_llm, messages, label="wrapping up"
                     )
                 except ModelStepUnrecoverable as _step:
                     # Same as the nudge path above: a user cancel must STOP the run,
@@ -2560,7 +2535,7 @@ def _budget_select_tools(request_tools, *, system_prompt_text, input_text,
         if global_execution_plan else set()
     )
     try:
-        normalized_request = normalize_request(input_text)
+        normalized_request = _normalize_text(input_text)
         request_tokens = _tokenize(input_text)
         capability_by_name = {
             capability.tool_name: capability
@@ -2795,22 +2770,6 @@ def create_unified_agent(llm, preeliminary_prompt: str):
     getted_llm = _ensure_chat_tool_model(llm)
     if not hasattr(getted_llm, "bind_tools"):
         raise RuntimeError("The configured unified agent model does not support bind_tools().")
-
-    # NEPANTLA Stage 0 - measure this model's Spanish, once, on a background
-    # thread. Never blocks: probe_in_background returns immediately and is a
-    # no-op when the model is already known or is an embedder.
-    try:
-        from .i18n import model_caps as _caps
-
-        _probe_model = _caps.active_model() or getattr(getted_llm, "model", "")
-        if _probe_model:
-            def _probe_invoke(prompt, _llm=getted_llm):
-                out = _llm.invoke(prompt)
-                return getattr(out, "content", None) or str(out)
-
-            _caps.probe_in_background(_probe_model, _probe_invoke)
-    except Exception:
-        pass          # a probe that cannot start must never break chain build
 
     max_iterations = get_int_config_value("unified_agent_max_iterations", 4096, minimum=1)
     print(f"--- Unified agent max iterations: {max_iterations} ---")

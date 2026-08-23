@@ -434,48 +434,6 @@ _CONJUNCTION_ASSIGNMENT_RE = re.compile(
     flags=re.IGNORECASE,
 )
 
-# ── Spanish conjunctions (localized GUI, Matrix Language Frame) ──────────
-# A Mexican developer keeps the TECHNICAL LEXICON in English and supplies
-# only the GRAMMAR in Spanish, so a localized request reads
-# ``filepath='C:/Temp/a.txt' y content='hola'`` — keys, values and agent
-# names are untouched, only the connective changes. Teaching the splitter
-# these connectives is therefore a GRAMMAR repair, not a translation.
-#
-# ⚠️ DANGER — ``y``/``e``/``con`` are short words that occur inside ordinary
-# VALUES (``filepath='C:/a y b.txt'``). Simply widening the regex above
-# would split such a value and re-create the exact file_creator corruption
-# documented in ``_looks_like_conjunction_assignment_start`` below. So the
-# widened set is honoured ONLY at an offset the quote mask proves lies
-# OUTSIDE every quoted region — see ``_mask_quoted_regions``.
-#
-# Alternation is longest-first; the trailing ``\s+`` is what keeps
-# ``content=`` from being read as the conjunction ``con`` (``con`` is
-# followed by ``t``, not whitespace) and ``entrada=`` from being read as
-# ``e``.
-_MULTILINGUAL_CONJUNCTION_ASSIGNMENT_RE = re.compile(
-    r'(además|ademas|and|with|con|y|e)\s+[A-Za-z_][A-Za-z0-9_.\-]*\s*=',
-    flags=re.IGNORECASE,
-)
-
-# Unanchored prefix probes (used with ``.match(text, pos)``, which anchors
-# at ``pos``) — they measure how much ``(conjunction)\s+`` to skip so the
-# next segment starts exactly at its ``KEY=`` identifier.
-_CONJUNCTION_PREFIX_RE = re.compile(r'(and|with)\s+', flags=re.IGNORECASE)
-_MULTILINGUAL_CONJUNCTION_PREFIX_RE = re.compile(
-    r'(además|ademas|and|with|con|y|e)\s+',
-    flags=re.IGNORECASE,
-)
-
-# ``^``-anchored variants used by ``_strip_leading_conjunction``. The
-# English one is byte-identical to the original inline ``re.sub`` pattern;
-# the multilingual one additionally REQUIRES a following ``KEY=`` so a bare
-# value fragment starting with ``y`` is never mutilated.
-_LEADING_CONJUNCTION_RE = re.compile(r'^(and|with)\s+', flags=re.IGNORECASE)
-_MULTILINGUAL_LEADING_CONJUNCTION_RE = re.compile(
-    r'^(además|ademas|and|with|con|y|e)\s+(?=[A-Za-z_][A-Za-z0-9_.\-]*\s*=)',
-    flags=re.IGNORECASE,
-)
-
 
 def _looks_like_conjunction_assignment_start(text, pos):
     """Return True if ``text[pos:]`` begins with ``and KEY=`` or ``with KEY=``.
@@ -489,22 +447,8 @@ def _looks_like_conjunction_assignment_start(text, pos):
     file_path value silently absorbs the entire tail — which is how the
     file_creator chat agent kept writing literal ``C:\\...\\X' and content='/*...``
     paths to disk.
-
-    Localized (Spanish) requests separate the SAME English keys with a
-    Spanish connective instead — ``filepath='X' y content='Y'`` — so the
-    widened ``_MULTILINGUAL_CONJUNCTION_ASSIGNMENT_RE`` is tried second.
-    Because ``y``/``e``/``con`` also occur inside ordinary values, a
-    multilingual hit is honoured ONLY when the quote mask proves the whole
-    matched run lies outside every quoted region. English behaviour is
-    untouched: the original regex is tested FIRST and short-circuits, so no
-    existing ``example_request`` can change shape.
     """
-    if _CONJUNCTION_ASSIGNMENT_RE.match(text, pos):
-        return True
-    match = _MULTILINGUAL_CONJUNCTION_ASSIGNMENT_RE.match(text, pos)
-    if not match:
-        return False
-    return _conjunction_match_is_outside_quotes(text, pos, match.end())
+    return bool(_CONJUNCTION_ASSIGNMENT_RE.match(text, pos))
 
 
 def _starts_triple_quote(text, index):
@@ -615,206 +559,6 @@ def _closes_outer_quote_at_boundary(text, index, quote_char, multiline_mode):
     if _looks_like_conjunction_assignment_start(text, probe):
         return True
     return False
-
-
-# ═══════════════════════════════════════════════════════════════════════
-#  Quote mask — the pre-pass that makes the Spanish widening SAFE
-# ═══════════════════════════════════════════════════════════════════════
-_MASK_OUTSIDE = '.'
-_MASK_INSIDE = '#'
-_QUOTE_MASK_CACHE = []
-_QUOTE_MASK_CACHE_LIMIT = 8
-_QUOTE_MASK_LOCK = threading.Lock()
-
-
-def _last_unescaped_quote_index(text, quote, start):
-    """Index of the LAST unescaped ``quote`` at/after ``start``, else ``-1``."""
-    last = -1
-    i = start
-    n = len(text)
-    while i < n:
-        char = text[i]
-        if char == '\\':
-            i += 2
-            continue
-        if char == quote:
-            last = i
-        i += 1
-    return last
-
-
-def _mask_quoted_regions(text):
-    """Return a SAME-LENGTH map of ``text`` marking its quoted regions.
-
-    ``_MASK_INSIDE`` marks every byte belonging to a quoted value (the
-    delimiters included); ``_MASK_OUTSIDE`` marks structural text. Offsets
-    are preserved 1:1, so a caller can test ``mask[pos]`` for the exact index
-    it is about to split at and the real text still splits in the right
-    place.
-
-    ⚠️ The scan is deliberately CONJUNCTION-FREE. It must NOT reuse
-    ``_closes_outer_quote``: that decides where a value ends by asking
-    whether a conjunction follows, while the multilingual conjunction rule
-    decides whether to trust a conjunction by asking this mask — the two
-    would be mutually recursive. (Pinning the mask to the English-only
-    closer was tried first and is WRONG: a value ending in ``' y `` has no
-    English closer, so the quote never closed and the mask swallowed the
-    whole rest of the request.) Instead the span boundaries are purely
-    lexical:
-
-    * ``'''`` / ``\"\"\"`` are atomic — the span runs to the matching triple.
-    * A SINGLE-LINE quote (no newline right after the opener) closes at the
-      next unescaped same quote, with ``\\<q>`` skipped as an escape and a
-      doubled ``<q><q>`` skipped as the SQL/YAML inner-quote convention
-      ``_unquote_preserving_backslashes`` already honours.
-    * A MULTI-LINE quote (the ``script='\\n…`` payload shape), or a
-      single-line one that meets a newline first, extends to the LAST
-      unescaped same quote in the remaining text. That is the maximally
-      INCLUSIVE choice on purpose: interior apostrophes in a Python or Java
-      body (``don't``, ``print('x')``) then stay masked, so a conjunction
-      inside a script body can never be mistaken for a separator.
-
-    Erring toward INSIDE is always the safe direction — it can only make us
-    MISS a Spanish split (degrading to today's English-only behaviour),
-    never split inside a value.
-
-    ⚠️ FAIL-SAFE CONTRACT: returns ``None`` whenever the result cannot be
-    trusted (an unbalanced quote, a length mismatch, a non-string input).
-    Callers MUST read ``None`` as "fall back to the English-only rule" —
-    NEVER as "assume it is outside a quote". Missing a Spanish split merely
-    leaves today's behaviour in place; splitting inside a value destroys the
-    user's data, which is the whole failure mode this repair exists to stop.
-    """
-    if not isinstance(text, str):
-        return None
-
-    n = len(text)
-    mask = [_MASK_OUTSIDE] * n
-
-    i = 0
-    while i < n:
-        triple = _starts_triple_quote(text, i)
-        if triple is not None:
-            end = text.find(triple, i + 3)
-            if end < 0:
-                return None
-            for k in range(i, end + 3):
-                mask[k] = _MASK_INSIDE
-            i = end + 3
-            continue
-
-        char = text[i]
-        if char not in ('"', "'"):
-            i += 1
-            continue
-
-        end = -1
-        if not _is_multiline_quote_open(text, i):
-            probe = i + 1
-            while probe < n:
-                current = text[probe]
-                if current == '\\':
-                    probe += 2
-                    continue
-                if current == char and probe + 1 < n and text[probe + 1] == char:
-                    # SQL / YAML doubled quote = an escaped INNER quote.
-                    probe += 2
-                    continue
-                if current == char:
-                    end = probe
-                    break
-                if current == '\n':
-                    # Dynamic multi-line upgrade, same as the parser's.
-                    break
-                probe += 1
-        if end < 0:
-            end = _last_unescaped_quote_index(text, char, i + 1)
-        if end < 0:
-            # Unbalanced quote — the tail of the mask would be a guess.
-            return None
-        for k in range(i, end + 1):
-            mask[k] = _MASK_INSIDE
-        i = end + 1
-
-    if len(mask) != n:
-        return None
-    return ''.join(mask)
-
-
-def _quote_mask_for(text):
-    """``_mask_quoted_regions`` memoized by object IDENTITY.
-
-    The parser probes for a conjunction at every whitespace/quote byte, so
-    rebuilding the mask per probe would make a 50 KB script O(n²) — precisely
-    the cost the conjunction probe's own comment in
-    ``_split_assignment_segments`` warns about. The parser always re-passes
-    the SAME string object, so an identity hit is O(1).
-
-    We deliberately do NOT fall back to ``==``: comparing a 50 KB string on
-    every probe would reintroduce the O(n²). Identity can never yield a wrong
-    mask because Python strings are immutable. A miss simply rebuilds.
-
-    Never raises: any failure degrades to ``None`` (English-only behaviour).
-    """
-    try:
-        with _QUOTE_MASK_LOCK:
-            for cached_text, cached_mask in _QUOTE_MASK_CACHE:
-                if cached_text is text:
-                    return cached_mask
-        mask = _mask_quoted_regions(text)
-        with _QUOTE_MASK_LOCK:
-            _QUOTE_MASK_CACHE.append((text, mask))
-            while len(_QUOTE_MASK_CACHE) > _QUOTE_MASK_CACHE_LIMIT:
-                _QUOTE_MASK_CACHE.pop(0)
-        return mask
-    except Exception:
-        return None
-
-
-def _conjunction_match_is_outside_quotes(text, start, end):
-    """True only if ``text[start:end]`` is provably outside every quoted region.
-
-    Fail-safe in the conservative direction: an unavailable or inconsistent
-    mask returns ``False``, which keeps the original English-only behaviour.
-    """
-    mask = _quote_mask_for(text)
-    if mask is None or len(mask) != len(text):
-        return False
-    if start < 0 or end > len(mask) or start >= end:
-        return False
-    return _MASK_INSIDE not in mask[start:end]
-
-
-def _conjunction_prefix_length(text, pos):
-    """Length of the ``(conjunction)\\s+`` run at ``pos``, or ``0``.
-
-    Mirrors whichever rule ``_looks_like_conjunction_assignment_start``
-    accepted, so the splitter resumes exactly at the ``KEY=`` identifier.
-    Leaving a Spanish ``y ``/``con `` glued to the next segment would produce
-    a bogus ``requested_key`` such as ``y content``.
-    """
-    if _CONJUNCTION_ASSIGNMENT_RE.match(text, pos):
-        prefix = _CONJUNCTION_PREFIX_RE.match(text, pos)
-        return prefix.end() - pos if prefix else 0
-    match = _MULTILINGUAL_CONJUNCTION_ASSIGNMENT_RE.match(text, pos)
-    if not match or not _conjunction_match_is_outside_quotes(text, pos, match.end()):
-        return 0
-    prefix = _MULTILINGUAL_CONJUNCTION_PREFIX_RE.match(text, pos)
-    return prefix.end() - pos if prefix else 0
-
-
-def _strip_leading_conjunction(segment):
-    """Drop a leading ``and ``/``with ``/``y ``/``con ``/``además `` … prefix.
-
-    The English strip runs FIRST and is byte-identical to the original inline
-    ``re.sub(r'^(and|with)\\s+', '', ...)``, so English segments are untouched.
-    The Spanish strip only fires when an actual ``KEY=`` follows, so a value
-    fragment that merely begins with ``y`` is never mutilated.
-    """
-    stripped = _LEADING_CONJUNCTION_RE.sub('', segment)
-    if stripped != segment:
-        return stripped
-    return _MULTILINGUAL_LEADING_CONJUNCTION_RE.sub('', segment)
 
 
 def _split_assignment_segments(assignments_text):
@@ -936,16 +680,18 @@ def _split_assignment_segments(assignments_text):
                 # iteration starts at the identifier. The leading conjunction
                 # is already stripped by _parse_requested_assignments, but
                 # skipping here keeps the segment boundaries clean.
-                # Advance past ``\s+(conjunction)\s+`` but stop at the
-                # identifier char so the next segment starts with ``KEY=``.
-                # ``_conjunction_prefix_length`` mirrors whichever rule (the
-                # original English one, or the mask-verified Spanish one) the
-                # probe above accepted, so ``y ``/``con `` is skipped exactly
-                # the way ``and ``/``with `` already was.
-                prefix_length = _conjunction_prefix_length(assignments_text, i + 1)
-                if prefix_length:
-                    i = i + 1 + prefix_length
-                    continue
+                conj_match = _CONJUNCTION_ASSIGNMENT_RE.match(assignments_text, i + 1)
+                if conj_match:
+                    # Advance past ``\s+(and|with)\s+`` but stop at the
+                    # identifier char so the next segment starts with ``KEY=``.
+                    prefix = re.match(
+                        r'(and|with)\s+',
+                        assignments_text[i + 1:conj_match.end()],
+                        flags=re.IGNORECASE,
+                    )
+                    if prefix:
+                        i = i + 1 + prefix.end()
+                        continue
                 i += 1
                 continue
 
@@ -1201,7 +947,7 @@ def _parse_requested_assignments(request_text):
     ignored = []
 
     for raw_segment in _split_assignment_segments(assignments_text):
-        segment = _strip_leading_conjunction(raw_segment.strip())
+        segment = re.sub(r'^(and|with)\s+', '', raw_segment.strip(), flags=re.IGNORECASE)
         key, value = _split_assignment_segment(segment)
         if not key:
             continue
@@ -1257,7 +1003,7 @@ def _extract_verbatim_assignment(request_text, target_key):
     assignments_text = request_text[start_index:]
     norm_target = _normalize_identifier(target_key)
     for raw_segment in _split_assignment_segments(assignments_text):
-        segment = _strip_leading_conjunction(raw_segment.strip())
+        segment = re.sub(r'^(and|with)\s+', '', raw_segment.strip(), flags=re.IGNORECASE)
         key, value = _split_assignment_segment(segment)
         if not key:
             continue
@@ -1745,6 +1491,12 @@ _PROMOTE_SECTION_FIELDS_BY_TEMPLATE_DIR: dict = {
     ),
     "camcorder": ("output_path", "output_dir", "filename", "media_type", "resolution"),
     "video_analyzer": ("verdict", "verdict_token", "confidence", "motion_score", "status", "video_path"),
+    # Surface the headline measurement so the LLM can answer "how fast is my
+    # internet" straight from the tool result instead of re-reading the log.
+    "netspeed_calculator": (
+        "download_mbps", "upload_mbps", "latency_ms", "jitter_ms",
+        "bufferbloat_grade", "packet_loss_pct", "providers_ok", "status", "json_path",
+    ),
     "recorder": (
         "output_path", "output_dir", "filename",
         "device_index", "device_name", "sample_rate", "channels",
@@ -2818,6 +2570,15 @@ _PRE_LAUNCH_PREVIEW_BY_TEMPLATE = {
     # about to ask (and confirm the wording matches the intent).
     'asker':          {'title': 'ASKER USER CHOICE TO PROMPT',
                        'params': ('legend_path_a', 'legend_path_b')},
+
+    # --- network measurement ---------------------------------------------
+    # NetSpeed-Calculator mutates nothing, but it is NOT free: a default full
+    # run pulls and pushes roughly 100-200 MB of real, possibly METERED
+    # bandwidth. That cost is exactly what is worth showing before the spawn,
+    # so it gets a preview rather than a place in the observational set.
+    'netspeed_calculator': {'title': 'NETSPEED-CALCULATOR MEASUREMENT TO RUN',
+                            'params': ('action', 'providers', 'test_duration_seconds',
+                                       'parallel_streams')},
 }
 
 # Wrapped chat-agents deliberately NOT in _PRE_LAUNCH_PREVIEW_BY_TEMPLATE.
@@ -4526,11 +4287,25 @@ def _googler_is_binary(url: str, content_type: str = '') -> bool:
     return False
 
 
+def _googler_url_extension(url: str) -> str:
+    """Best-effort file extension from a URL, ignoring the query string."""
+    tail = str(url or '').split('?', 1)[0].split('#', 1)[0].rstrip('/')
+    return tail.rsplit('.', 1)[-1].lower() if '.' in tail.rsplit('/', 1)[-1] else ''
+
+
 def _googler_fetch_page_text(page, url: str) -> dict:
     """Navigate Playwright page to URL and extract rendered visible text.
-    Skips binary content (PDFs, images, etc.)."""
+
+    A BINARY hit is NOT an error — it is the answer. When the search was a
+    ``filetype:`` hunt every result is a PDF/EPUB/DOCX by construction, and the
+    thing the caller wants is the DOWNLOAD URL, not page text that does not
+    exist. So a binary result is returned as a first-class ``kind: "file"``
+    record; reporting it as "skipped" made a perfectly successful file hunt look
+    like N consecutive failures."""
     if _googler_is_binary(url):
-        return {"url": url, "error": "Binary file detected from URL extension, skipped"}
+        return {"url": url, "kind": "file",
+                "filetype": _googler_url_extension(url),
+                "note": "downloadable file located (not fetched as text)"}
 
     try:
         response = page.goto(url, wait_until="domcontentloaded", timeout=30000)
@@ -4543,8 +4318,11 @@ def _googler_fetch_page_text(page, url: str) -> dict:
     status = response.status
     content_type = response.headers.get('content-type', '')
     if _googler_is_binary('', content_type):
-        return {"url": url, "status_code": status,
-                "error": f"Binary content-type ({content_type}), skipped"}
+        return {"url": url, "kind": "file", "status_code": status,
+                "content_type": content_type,
+                "content_length": response.headers.get('content-length', ''),
+                "filetype": _googler_url_extension(url),
+                "note": "downloadable file located (not fetched as text)"}
 
     try:
         page.wait_for_load_state("networkidle", timeout=10000)
@@ -4580,23 +4358,113 @@ def _googler_fetch_page_text(page, url: str) -> dict:
 @tool
 def googler(query: str, number_of_results: int = 5) -> str:
     """
-    Search Google for a topic and return the top results with their readable text content.
-    Falls back to DuckDuckGo if Google returns no results.
-    Automatically skips binary content (PDFs, images, etc.).
+    Search Google (falling back to DuckDuckGo) and return the top results. Text pages
+    come back as readable text; a PDF/EPUB/DOCX hit comes back as **FILE FOUND** with
+    its direct download URL — so this tool FINDS FILES AND WHOLE DOCUMENTS, not just
+    articles.
 
-    Use this tool when the user asks to search the internet, Google something,
-    look up information online, or needs current real-time information.
+    `query` accepts the FULL Google search-operator ("dork") language. Composing a
+    precise dork instead of plain keywords is the single biggest quality lever you
+    have: it is the difference between ten pages ABOUT a book and the book itself.
+
+    ══ THE FIVE SYNTAX RULES (breaking any one silently disables the filter) ══
+      1. NO space after the colon.  filetype:pdf  ✔     filetype: pdf  ✘ (filters nothing)
+      2. Exact phrases in "double quotes".
+      3. OR must be UPPERCASE. Lowercase "or" is ignored as a stop word.
+      4. Parenthesise alternatives: (filetype:epub OR filetype:pdf)
+      5. Exclude with a hyphen and NO space: -review    ✘ - review
+
+    ══ FINDING FILES, BOOKS AND DOCUMENTS (start here) ══
+    Google indexes PDF and EPUB natively, so `filetype:` is the highest-signal filter.
+      "exact title" filetype:epub
+      "exact title" filetype:pdf
+      "exact title" "author name" filetype:epub
+      intitle:"exact title" filetype:pdf
+      "exact title" (filetype:epub OR filetype:pdf)      ← catches either format
+      "filename.pdf"                                     ← hunt an exact filename
+    Other types: docx, pptx, xlsx, txt, rtf, csv, json, xml, mobi, azw3, ps, rtf.
+
+    PREFER SOURCES THAT LAWFULLY PUBLISH COMPLETE WORKS. For books that means the
+    public-domain / open-licence libraries — and for papers, the open-access ones:
+      "title" filetype:epub site:gutenberg.org
+      "title" filetype:epub site:standardebooks.org
+      "title" (filetype:epub OR filetype:pdf) site:archive.org
+      "topic" filetype:pdf site:arxiv.org
+      "quantum computing" filetype:pdf site:.edu
+      "climate report" filetype:pdf site:.gov
+    If the user wants a specific in-copyright book, say plainly that you can locate
+    legitimate sources (publisher, retailer, library lending, or an open edition) and
+    search those, rather than hunting pirated copies.
+
+    ══ NARROWING BY PLACE ══
+      site:example.com            one host, or a whole TLD: site:.edu / site:.gov
+      -site:scribd.com            drop an aggregator that answers everything
+      related:example.com         sites similar to this one
+      cache:example.com/page      Google's stored copy
+
+    ══ NARROWING BY WHERE THE WORDS APPEAR ══
+      intitle:"user manual"       one word/phrase in the title
+      allintitle:annual report    EVERY following word in the title
+      inurl:manual                in the URL
+      allinurl:docs api
+      intext:"exact sentence"     in the body
+      allintext:installation guide
+      inanchor:download           in the TEXT OF LINKS pointing at the page
+      allinanchor:free ebook
+      intitle:"index of"          an open directory listing
+
+    ══ NARROWING BY TIME AND NUMBERS ══
+      after:2025-01-01            published after a date
+      before:2020-01-01
+      after:2023-01-01 before:2026-01-01
+      2020..2026                  a numeric range (years, prices, model numbers)
+
+    ══ SHAPING THE TERMS ══
+      "a" OR "b"                  alternatives (UPPERCASE OR)
+      (epub OR mobi OR azw3)
+      solar * panel               * is a single-word wildcard
+      tesla AROUND(3) battery     the two terms within N words of each other
+      -template -sample -slides   remove noise
+      define:entropy              a definition
+      source:reuters              a publisher (Google News)
+
+    ══ WORKED COMBINATIONS ══
+      "machine learning" filetype:pdf -slides -syllabus -worksheet
+      intitle:"user manual" filetype:pdf "device model"
+      "annual report" filetype:pdf site:.gov after:2025-01-01
+      "book title" (filetype:epub OR filetype:pdf) -review -summary -preview
+      "research topic" filetype:pdf site:.edu after:2023-01-01 before:2026-01-01
+
+    ══ HOW TO WORK ══
+      · Put the exact title/phrase FIRST — Google weights leading terms most.
+      · Start SPECIFIC; if a dork returns nothing, drop ONE operator at a time
+        (usually site: first, then filetype:) rather than falling back to keywords.
+      · A file hunt should ask for MORE results (number_of_results=10): many hits
+        will be dead links or the wrong edition.
+      · The result URLs are the deliverable. To actually download one, hand the URL
+        to the Apirer agent; to read a downloaded PDF, use File-Extractor or
+        File-Interpreter.
+      · The canvas/pool Googler agent additionally exposes these operators as
+        STRUCTURED config fields (filetypes, sites, exclude_sites, preset: book /
+        book_public / paper / manual / docs / slides / sheets, around_terms,
+        numeric_range …) which build the query for you and cannot get the syntax
+        wrong. Use `chat_agent_*` flows or the canvas for that; here, write the
+        operators directly into `query`.
+
+    These operators only surface PUBLIC pages Google has already indexed — they do not
+    bypass any login, paywall or access control. Whether a located file may be
+    downloaded or redistributed is a separate question of copyright and licence.
 
     Examples of what to pass:
-    - User says "Google Python asyncio tutorial" → pass query="Python asyncio tutorial"
-    - User says "Search the internet for Django 5.2 release notes" → pass query="Django 5.2 release notes"
-    - User says "Look up the latest CVE vulnerabilities" → pass query="latest CVE vulnerabilities 2026"
-    - User says "Find online info about Kubernetes ingress" → pass query="Kubernetes ingress controllers"
-    - User says "Google nginx reverse proxy, top 3" → pass query="nginx reverse proxy", number_of_results=3
+    - "Google Python asyncio tutorial" → query="Python asyncio tutorial"
+    - "Find the EPUB of Moby Dick"     → query='"Moby Dick" filetype:epub site:gutenberg.org'
+    - "Get me PDFs on transformers"    → query='"transformer architecture" filetype:pdf site:arxiv.org', number_of_results=10
+    - "Find the manual for a WF-1000XM5" → query='intitle:"user manual" filetype:pdf "WF-1000XM5"'
+    - "Government climate reports 2025" → query='"climate report" filetype:pdf site:.gov after:2025-01-01'
 
     Input:
-    - query: The search query or phrase to look up on Google.
-    - number_of_results: Number of top sites to fetch (default 5, max 10).
+    - query: The search query — plain words, or any combination of the operators above.
+    - number_of_results: Number of top hits to process (default 5, max 10).
     """
     try:
         from playwright.sync_api import sync_playwright
@@ -4720,7 +4588,18 @@ def googler(query: str, number_of_results: int = 5) -> str:
     for i, outcome in enumerate(outcomes, 1):
         output_parts.append(f"=== Result {i} ===")
         output_parts.append(f"URL: {outcome.get('url', 'unknown')}")
-        if "error" in outcome:
+        if outcome.get("kind") == "file":
+            # A located file is a SUCCESS, not a fetch failure — the URL above is
+            # the deliverable of a `filetype:` hunt.
+            bits = [b for b in (
+                (outcome.get("filetype") or "").upper() or None,
+                outcome.get("content_type") or None,
+                (f"{outcome['content_length']} bytes"
+                 if outcome.get("content_length") else None),
+            ) if b]
+            output_parts.append("FILE FOUND" + (f" [{' · '.join(bits)}]" if bits else ""))
+            output_parts.append("Download it with the Apirer agent, or open the URL directly.")
+        elif "error" in outcome:
             output_parts.append(f"Fetch error: {outcome['error']}")
         else:
             output_parts.append(f"HTTP status: {outcome.get('status_code', 'unknown')}")
