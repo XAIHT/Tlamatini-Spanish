@@ -36,7 +36,7 @@ evidence is *left* in the carryover directory rather than removed. Do not "simpl
 adding `security` to `$Preserve`: that would freeze the defender scripts forever.
 
 **2. The Spanish edition letter silently corrupted two numeric version paths.** This tree tags
-releases as `v1.50.0s` so a Spanish build is distinguishable from the English `v1.50.0`. That
+releases as `v1.50.2s` so a Spanish build is distinguishable from the English `v1.50.2`. That
 letter is not SemVer, and `version._SEMVER_RE` is strict, so `parse_semver()` returned `None`
 and two callers failed open in opposite, invisible ways:
 
@@ -399,7 +399,7 @@ audit. Migrations **0195/0196/0197**; catalog prompt **119**
 > `v1.48.16` = `6ee630ca` (themed `tlmAlert`/`tlmConfirm` pop-ups + the
 > frozen-bundle carriage proof in `build.py`), **`v1.48.17` = `f948be7b` — the
 > newest release on that day**, carrying everything below. The current release
-> is now `v1.50.0s`; entries that say a change "landed in v1.48.15" or
+> is now `v1.50.2s`; entries that say a change "landed in v1.48.15" or
 > `v1.48.17` are historical statements and remain as written.
 
 **Angela, verbatim:** *"Standarize in every ... every dialog and all of the
