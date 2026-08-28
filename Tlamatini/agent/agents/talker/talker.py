@@ -1220,13 +1220,102 @@ def save_tokens(path: str, raw_text: str, codes: List[int]) -> None:
         f.write(raw_text)
 
 
+def _corriendo_pruebas() -> str:
+    """Razon por la que este proceso NO debe emitir sonido, o ''.
+
+    UNA PRUEBA JAMAS SUENA. El 2026-08-26 la suite completa corrio al Talker de
+    verdad — `play_audio` viene en True por omision — y Tlamatini hablo EN
+    INGLES por las bocinas de Angela, a mitad de la noche, sin que nadie se lo
+    pidiera. Una suite de pruebas capaz de manejar las bocinas reales es un
+    defecto, en cualquier idioma. `manage.py` marca TLAMATINI_SIN_AUDIO=1 en
+    cuanto el comando es `test`, y todo agent del pool lo hereda por
+    `get_agent_env`.
+    """
+    # Se aceptan LOS DOS nombres: el de esta edicion y el que usa el arbol
+    # ingles (TLAMATINI_NO_AUDIO). El nombre de una variable de entorno es
+    # canal de maquina; reconocer ambos evita que una prueba portada de alla
+    # crea que apago el sonido y en realidad no apago nada.
+    for _var in ('TLAMATINI_SIN_AUDIO', 'TLAMATINI_NO_AUDIO'):
+        val = str(os.environ.get(_var, '')).strip().lower()
+        if val and val not in ('0', 'false', 'no'):
+            return '%s esta puesto' % _var
+    if os.environ.get('PYTEST_CURRENT_TEST'):
+        return 'se esta corriendo pytest'
+    try:
+        argv = ' '.join(sys.argv).lower()
+    except Exception:
+        argv = ''
+    if 'pytest' in argv or 'unittest' in argv:
+        return 'se esta corriendo la suite de pruebas'
+    return ''
+
+
+def _matar_si_va_a_sonar_en_ingles(config: Dict) -> None:
+    """Ultima reja antes de las bocinas: si va a sonar INGLES, se MUERE.
+
+    Las rejas de mas arriba miran el MODELO y la VOZ *antes* de sintetizar.
+    Esta mira lo que de verdad esta a punto de salir por la bocina, que es lo
+    unico que la usuaria oye. No traduce, no degrada, no avisa y sigue: mata el
+    proceso, igual que la voz masculina. Callarse es la unica alternativa
+    aceptable — mejor muda que en ingles.
+    """
+    texto = str(config.get('input_text', '') or '')
+
+    # ⚠️ AQUI SOLO SE JUZGA EL TEXTO, NUNCA `config['voice']`.
+    #    `voice` es la voz de ORPHEUS que se pidio (por omision "tara"); cuando
+    #    el modelo no habla castellano, quien sintetiza es PIPER con
+    #    `_PIPER_VOZ` (es_MX-claude-high) y Ollama ni se toca. Mirar
+    #    `config['voice']` aqui mataba una sintesis perfectamente española por
+    #    decir "tara" en un campo que ya no se estaba usando. La voz ya tiene
+    #    sus propias rejas ANTES de sintetizar (`resolve_voice`,
+    #    MaleVoiceForbiddenError, EnglishVoiceForbiddenError); lo que falta
+    #    cubrir aqui, y lo unico que la usuaria oye, es el TEXTO.
+    motivo = ''
+    if texto.strip() and _es_ingles(texto):
+        motivo = 'el texto que iba a hablar esta en ingles'
+
+    if not motivo:
+        return
+
+    try:
+        logging.critical("=" * 60)
+        logging.critical("⛔ TLAMATINI-SPANISH NO HABLA INGLES. NUNCA.")
+        logging.critical(f"⛔ {motivo}.")
+        logging.critical("⛔ NOW CLOSING.. BYE")
+        logging.critical("=" * 60)
+        sys.stdout.flush()
+        sys.stderr.flush()
+    except Exception:
+        pass
+    try:
+        remove_pid_file()
+    except Exception:
+        pass
+    # Se cierra TODA la ejecucion aqui mismo: nada de teardown, nada de
+    # downstream, y sobre todo NI UN BYTE de audio.
+    os._exit(71)
+
+
 def play_pcm(pcm, sample_rate: int, config: Dict) -> Tuple[int, str, int]:
     """
     Play a mono float32 buffer through the resolved OUTPUT device, after a
     software-volume gain. Returns (device_index, device_name, clipped_samples).
+
+    ⚠️ Este es el UNICO punto por donde el sonido sale de la maquina, asi que
+    aqui viven las dos rejas finales: no sonar en una prueba, y morir antes de
+    sonar en ingles.
     """
     import numpy as np
     import sounddevice as sd
+
+    # 1) Ninguna prueba suena, jamas.
+    _sin_audio = _corriendo_pruebas()
+    if _sin_audio:
+        logging.warning(f"🔇 No se reproduce audio: {_sin_audio}.")
+        return -1, 'sin-audio(prueba)', 0
+
+    # 2) Si lo que va a sonar es ingles, se mata el proceso ANTES de sonar.
+    _matar_si_va_a_sonar_en_ingles(config)
 
     device_arg, device_index, device_name = resolve_output_device(config)
 

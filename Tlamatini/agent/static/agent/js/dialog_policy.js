@@ -390,8 +390,34 @@
     // PowerShell process, so a closed tab does not abort an update in flight.
     var sealed = Object.create(null);
 
-    function seal(key, message) {
+    //: llave -> el dialogo que protege, para que una tecla bloqueada sacuda
+    //: el dialogo CORRECTO aunque no sea el de mas arriba.
+    var sealedElements = Object.create(null);
+
+    /** Amarra `element` al sello `key`. Se puede llamar varias veces. */
+    function bindSeal(element, key) {
+        if (!element || !key) return;
+        try {
+            element.tlmSealKey = key;
+            sealedElements[key] = element;
+        } catch (err) { /* un nodo congelado jamas debe romper el sellado */ }
+    }
+
+    /**
+     * Sella una llave. Mientras este sellada `mayClose(key)` se niega, y
+     * cualquier dialogo amarrado a esa llave es invulnerable en
+     * `dismissDialog` - Escape incluido.
+     *
+     * El `element` opcional amarra el dialogo a la llave en el momento exacto
+     * en que se toma el sello, para que los dos no se separen nunca. Un
+     * dialogo tambien puede amarrarse solo poniendo `el.tlmSealKey` al
+     * abrirse; hacer las dos cosas es el cinturon-y-tirantes que usa el
+     * actualizador, porque un dialogo sellado pero NO amarrado se seguiria
+     * cerrando con Escape.
+     */
+    function seal(key, message, element) {
         sealed[key] = message || 'Esta operación no se puede interrumpir.';
+        bindSeal(element, key);
     }
 
     function unseal(key) {

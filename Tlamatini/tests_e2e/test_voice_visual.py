@@ -15,7 +15,7 @@ logs in through the real GUI, and verifies:
   B3  exactly 3 mode radios, one exclusive group (speak / notify / silent)
   B4  the voice list is FEMALE-ONLY (no male voice names offered)
   B5  mode 'Notify answer complete' -> on a completed answer she speaks
-      exactly "I have completed your request!"
+      exactamente "Tu request está completa."
   B6  mode 'Automatically speak answers' -> she speaks the answer PROSE only
       (the .automated-message-body text, NOT the timestamp / Copy / Create-Flow)
   B7  mode 'Silent' -> nothing is spoken on a completed answer
@@ -26,6 +26,16 @@ and toggling the chat input disabled->enabled (the same "answer complete" signal
 the feature listens on) - so no dependency on the cloud LLM. HEADED real Chrome
 only; full-desktop screenshots per Angela's visible-tests rule.
 """
+
+# ⛔ REGLA DE ORO DE ESTA EDICION: Tlamatini-Spanish JAMAS habla ingles —
+# ni ella, ni sus pruebas. Esta prueba le inyectaba respuestas en ingles
+# ("This is the answer body two") y la hacia pronunciarlas, que es
+# exactamente lo prohibido; y encima exigia la frase de aviso en ingles
+# ("I have completed your request!") cuando avatar.js dice "Tu request esta
+# completa.". Todo el texto hablado va en castellano. Angela, 2026-08-27:
+# *"if there are some tests that makes her speak english REFACTOR them or
+# ERASE them, ONLY HERE in Tlamatini-Spanish"*.
+
 import json
 import os
 import sys
@@ -200,26 +210,26 @@ def main():
         # ---- B5: notify mode ----
         page.check("input[name=\"tlm-voice-mode\"][value=\"notify\"]")
         n0 = len(page.evaluate("() => window.__spoken || []"))
-        page.evaluate(_SIMULATE_JS, "ANSWER ALPHA one two three")
+        page.evaluate(_SIMULATE_JS, "RESPUESTA ALFA uno dos tres")
         time.sleep(1.4)
         spoken = page.evaluate("() => window.__spoken || []")
-        b5 = len(spoken) > n0 and (spoken[-1] or "").strip() == "I have completed your request!"
+        b5 = len(spoken) > n0 and (spoken[-1] or "").strip() == "Tu request está completa."
         check("B5 Notify mode speaks the completion phrase", b5, "last=" + repr(spoken[-1] if spoken else None))
 
         # ---- B6: speak mode -> answer prose only ----
         page.check("input[name=\"tlm-voice-mode\"][value=\"speak\"]")
         n1 = len(page.evaluate("() => window.__spoken || []"))
-        page.evaluate(_SIMULATE_JS, "This is the answer body two")
+        page.evaluate(_SIMULATE_JS, "Éste es el cuerpo de la respuesta dos")
         time.sleep(1.4)
         spoken = page.evaluate("() => window.__spoken || []")
         last = (spoken[-1] or "").strip() if spoken else ""
-        b6 = len(spoken) > n1 and last == "This is the answer body two" and ("Copy" not in last) and ("2026/07/16" not in last)
+        b6 = len(spoken) > n1 and last == "Éste es el cuerpo de la respuesta dos" and ("Copy" not in last) and ("2026/07/16" not in last)
         check("B6 Speak mode speaks the answer prose only (no timestamp/buttons)", b6, "last=" + repr(last))
 
         # ---- B7: silent mode -> nothing ----
         page.check("input[name=\"tlm-voice-mode\"][value=\"silent\"]")
         n2 = len(page.evaluate("() => window.__spoken || []"))
-        page.evaluate(_SIMULATE_JS, "This must NOT be spoken")
+        page.evaluate(_SIMULATE_JS, "Esto NO se debe pronunciar")
         time.sleep(1.4)
         spoken = page.evaluate("() => window.__spoken || []")
         check("B7 Silent mode speaks nothing", len(spoken) == n2, "before=%d after=%d" % (n2, len(spoken)))
@@ -251,7 +261,7 @@ def main():
         while time.time() < rdl:
             spk = page.evaluate("() => window.__spoken || []")
             bots = page.eval_on_selector_all("#chat-log .message.bot-message", "els => els.length")
-            if bots > bb and any((str(s).strip() == "I have completed your request!") for s in spk[nb:]):
+            if bots > bb and any((str(s).strip() == "Tu request está completa.") for s in spk[nb:]):
                 real_ok = True
                 break
             time.sleep(1.0)

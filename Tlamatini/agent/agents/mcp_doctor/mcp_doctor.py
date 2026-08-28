@@ -337,14 +337,85 @@ def _load_catalog(config: Dict[str, Any]) -> tuple[str, Dict[str, Any], Optional
     return "", {"mcpServers": {}, "active": []}, "external_mcps.json not found; searched " + "; ".join(searched[:8])
 
 
+#: Gestores de paquetes que Tlamatini se instala ella misma en un runtime
+#: PRIVADO por usuario. Espeja ``agent/runtime_provisioner.py::MANAGED_TOOLS``.
+_MANAGED_TOOLS = ("node", "npm", "npx", "pnpm", "uv", "uvx")
+
+
+def _tlamatini_runtimes_root() -> str:
+    """Espejo de ``agent/runtime_provisioner.py::runtimes_root()``.
+
+    Un agente del pool no tiene ``sys.path`` de vuelta a ``agent.*``, asi que
+    el layout del runtime privado se espeja aqui en unas cuantas lineas -
+    igual que ``acpxer.py`` espeja el registro de ACPX. MANTENER EN SINCRONIA
+    con el provisioner: si se separan, este doctor empieza a reportar un
+    ``npx`` perfectamente instalado como ausente y manda al usuario a
+    instalar Node para nada.
+    """
+    override = (os.environ.get("TLAMATINI_RUNTIMES") or "").strip()
+    if override:
+        return os.path.abspath(os.path.expandvars(os.path.expanduser(override)))
+    if os.name == "nt":
+        base = os.environ.get("LOCALAPPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Local")
+    else:
+        base = os.environ.get("XDG_DATA_HOME") or os.path.join(os.path.expanduser("~"), ".local", "share")
+    return os.path.join(base, "Tlamatini", "runtimes")
+
+
+def _tlamatini_runtime_bins() -> List[str]:
+    """Directorios bin privados a buscar ANTES del PATH del sistema. Nunca truena."""
+    dirs: List[str] = []
+    try:
+        root = _tlamatini_runtimes_root()
+        node_root = os.path.join(root, "node")
+        if os.path.isdir(node_root):
+            candidates = [node_root]
+            try:
+                candidates += [os.path.join(node_root, n) for n in sorted(os.listdir(node_root))]
+            except Exception:
+                pass
+            for candidate in candidates:
+                if os.path.isfile(os.path.join(candidate, "node.exe")):
+                    dirs.append(candidate)
+                    break
+                if os.path.isfile(os.path.join(candidate, "bin", "node")):
+                    dirs.append(os.path.join(candidate, "bin"))
+                    break
+        for extra in (os.path.join(root, "uv", "bin"), os.path.join(root, "uv"),
+                      os.path.join(root, "pnpm"), os.path.join(root, "npm-global")):
+            if os.path.isdir(extra):
+                dirs.append(extra)
+    except Exception:
+        return []
+    return dirs
+
+
 def _which_executable(command: str) -> Dict[str, Any]:
     expanded = os.path.expandvars(str(command or "").strip())
     if not expanded:
         return {"command": "", "found": False, "resolved": ""}
     if os.path.isabs(expanded) or os.sep in expanded or (os.altsep and os.altsep in expanded):
         return {"command": expanded, "found": os.path.exists(expanded), "resolved": expanded if os.path.exists(expanded) else ""}
-    resolved = shutil.which(expanded) or ""
-    return {"command": expanded, "found": bool(resolved), "resolved": resolved}
+    # Primero el runtime PROPIO de Tlamatini, luego el PATH del sistema: si no,
+    # un servidor que ella ya puede lanzar sale reportado como descompuesto.
+    private = _tlamatini_runtime_bins()
+    search = os.pathsep.join(private + [os.environ.get("PATH", "")]) if private else None
+    resolved = (shutil.which(expanded, path=search) if search else shutil.which(expanded)) or ""
+    payload: Dict[str, Any] = {"command": expanded, "found": bool(resolved), "resolved": resolved}
+    base = os.path.splitext(os.path.basename(expanded))[0].lower()
+    if base in _MANAGED_TOOLS:
+        payload["managed_runtime"] = base
+        payload["provisionable"] = True
+        if resolved:
+            try:
+                root = os.path.normcase(os.path.abspath(_tlamatini_runtimes_root()))
+                payload["runtime_source"] = (
+                    "tlamatini" if os.path.normcase(os.path.abspath(resolved)).startswith(root)
+                    else "system"
+                )
+            except Exception:
+                pass
+    return payload
 
 
 def _infer_runtime(command: str, args: List[str]) -> str:
@@ -432,8 +503,11 @@ def _diagnose_one(key: str, spec: Dict[str, Any], active: List[str], source_url:
     elif transport == "stdio":
         if not command:
             blockers.append("stdio server has no command")
-        elif not probe["found"]:
+        elif not probe["found"] and not probe.get("provisionable"):
             blockers.append(f"command not found on PATH: {command}")
+        # Un gestor AUSENTE pero PROVISIONABLE (npx/uvx/pnpm/node/npm/uv) no es
+        # un bloqueo a proposito: Tlamatini se lo instala ella sola cuando el
+        # servidor se activa.
     elif not url:
         blockers.append(f"{transport} server has no url")
     if missing:
@@ -442,6 +516,13 @@ def _diagnose_one(key: str, spec: Dict[str, Any], active: List[str], source_url:
         next_step = f"Wrap the {transport} server behind a stdio MCP bridge, or expose it over streamable-http/sse/websocket."
     elif transport == "stdio" and not command:
         next_step = "Find the server command from the MCP documentation, add it to the JSON, and import again."
+    elif transport == "stdio" and not probe["found"] and probe.get("provisionable"):
+        next_step = (
+            f"`{command}` is not installed on this machine yet, but Tlamatini provisions "
+            f"it HERSELF into her own per-user runtime (no admin rights, no system PATH "
+            f"change). Just activate this MCP in External > MCPs and it is installed "
+            f"automatically on first connect."
+        )
     elif transport == "stdio" and not probe["found"]:
         next_step = f"Install or expose `{command}` on PATH, then reconnect this MCP."
     elif transport != "stdio" and not url:

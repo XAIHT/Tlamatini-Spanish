@@ -47,6 +47,18 @@ The download runs on a background thread; the browser polls
 :func:`get_status` for progress. The module is import-safe (no Django
 dependency at import time) and never raises into its callers — every public
 function returns a plain dict.
+
+``security/`` es codigo de la aplicacion (una version nueva TIENE que poder
+reemplazar un ``tlamatini_defender.ps1`` roto), asi que a proposito NO esta en
+la lista de preservados. Pero ``security/security_logs/`` (``alerts.log``,
+``monitor.log`` y la prueba visible de los assets) es la evidencia de
+incidentes de la operadora y vive DENTRO de ese directorio que se reemplaza.
+Por eso ``apply_update.ps1`` la guarda bajo el preservado
+``Temp/_security_logs_carryover`` antes de borrar (paso 3c) y la regresa al
+``security/`` nuevo despues (paso 5b). Las dos mitades fallan ABIERTO: una
+actualizacion nunca se detiene por preservar bitacoras, y si la devolucion
+falla el respaldo SE QUEDA en ``Temp`` en vez de borrarse, para que la
+evidencia se pueda recuperar a mano.
 """
 from __future__ import annotations
 
@@ -152,8 +164,8 @@ def _current_version() -> str:
 def _version_tuple(version: str):
     """Best-effort (major, minor, patch, has_no_prerelease) tuple for compare."""
     try:
-        from .version import parse_semver, _public_version
-        parsed = parse_semver(_public_version(version.lstrip("vV")))
+        from .version import parse_semver, _semver_body
+        parsed = parse_semver(_semver_body(version.lstrip("vV")))
     except Exception:
         parsed = None
     if parsed:

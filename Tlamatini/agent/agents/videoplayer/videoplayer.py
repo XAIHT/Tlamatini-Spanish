@@ -92,6 +92,28 @@ console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(
 logging.getLogger().addHandler(console_handler)
 
 
+#: ⛔ NINGUNA PRUEBA SUENA. Se aceptan los DOS nombres: el de esta edicion
+#: (TLAMATINI_SIN_AUDIO, que manage.py prende al correr `test`) y el del
+#: arbol ingles (TLAMATINI_NO_AUDIO). El nombre de una variable de entorno
+#: es canal de maquina, asi que reconocer ambos evita que una prueba
+#: portada de alla crea que apago el sonido sin haberlo apagado.
+def _sin_audio() -> str:
+    """Razon por la que este proceso NO debe sonar, o ''."""
+    for _var in ("TLAMATINI_SIN_AUDIO", "TLAMATINI_NO_AUDIO"):
+        val = str(os.environ.get(_var, "")).strip().lower()
+        if val and val not in ("0", "false", "no"):
+            return "%s esta puesto" % _var
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        return "se esta corriendo pytest"
+    try:
+        argv = " ".join(sys.argv).lower()
+    except Exception:
+        argv = ""
+    if "pytest" in argv or "unittest" in argv:
+        return "se esta corriendo la suite de pruebas"
+    return ""
+
+
 def load_config(path: str = "config.yaml") -> Dict:
     try:
         with open(path, "r", encoding="utf-8") as f:

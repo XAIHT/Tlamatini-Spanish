@@ -52,6 +52,7 @@ from agent.version import (  # noqa: E402  (sys.path mutated above)
     parse_semver,
     render_pyinstaller_version_file,
     semver_to_win32_tuple,
+    strip_edition_suffix,
     write_version_module,
 )
 
@@ -195,6 +196,7 @@ __all__ = [
     "get_version",
     "get_version_info",
     "parse_semver",
+    "strip_edition_suffix",
     "semver_to_win32_tuple",
     "extract_cli_version",
     "resolve_build_version",

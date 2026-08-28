@@ -104,7 +104,7 @@ def _is_kept_name(value: str) -> bool:
         return True
     # Kept only when EVERY token is one of her name tokens, so "Angela",
     # "Angela Lopez Mendoza" and "Ángela López Mendoza" are all kept, but
-    # "Ana Lazcano" or "angela@xaiht.org" (a token that isn't a bare name) are not.
+    # "<REDACTED>" or "<REDACTED>" (a token that isn't a bare name) are not.
     tokens = [t for t in re.split(r"[\s.]+", norm) if t]
     return bool(tokens) and all(t in KEEP_NAME_TOKENS for t in tokens)
 
@@ -126,7 +126,12 @@ SKIP_DIRS = {".git", "node_modules", "__pycache__", "venv", ".venv", "dist",
              # PermissionError), and it plus the pool scratch is huge. Mirrors the
              # SKIP_DIRS in check_private_data.py.
              "Go", "go-build", "Templates", "TlamatiniSourceCode",
-             "pools", "mcp_agent_runs"}
+             "pools", "mcp_agent_runs",
+             # Blue-hat toolkit runtime EVIDENCE (gitignored): alerts.log,
+             # monitor.log and the visible asset-test artifacts. Never published
+             # (build.py ignores it), so a release build must never rewrite it.
+             # Mirrors the SKIP_DIRS in check_private_data.py.
+             "security_logs"}
 TEXT_EXT = {".py", ".js", ".ts", ".json", ".yaml", ".yml", ".md", ".txt", ".env",
             ".cfg", ".ini", ".toml", ".html", ".css", ".csv", ".pmt", ".keys"}
 # NEVER scrub the sources of truth: the keys vault and the targets file. Scrubbing

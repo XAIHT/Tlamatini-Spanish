@@ -413,3 +413,6 @@ private_data_audit_report.json
 #   (`--mode keyed` restores your working values afterwards.)
 # push-able AUTO-VAULTS anything it redacts into data.keys first, so scrubbing
 # can never lose a token you added by importing a server.
+
+# ── Reglas nuevas venidas de la edicion en ingles ──────────────
+/security/security_logs/

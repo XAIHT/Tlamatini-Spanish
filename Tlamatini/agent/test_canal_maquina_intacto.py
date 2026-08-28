@@ -69,44 +69,40 @@ sys.path.insert(0, os.path.dirname(_AQUI))
 
 from agent import agent_verdict as _av  # noqa: E402
 
-#: El vocabulario que el motor de veredicto reconoce, IMPORTADO (36 valores).
-STATUS_DEL_MOTOR = frozenset(
-    set(_av.DIAGNOSTIC_COMPLETED_STATUSES)
-    | set(_av.WORK_NOT_DONE_STATUSES)
-    | set(_av.AGENT_ERROR_STATUSES)
-)
+#: El vocabulario que el motor reconoce, IMPORTADO de su UNICA definicion.
+#:
+#: ⚠️ AQUI SE UNIAN SOLO TRES DE LOS CINCO CONJUNTOS. Cuando se escribio
+#: esto (2026-08-15) `agent_verdict` tenia tres; el 2026-08-16 crecio a
+#: cinco (WORK_COMPLETED y WORK_DEGRADED) y esta prueba no lo siguio. El
+#: resultado fue una prueba que reprobaba valores PERFECTAMENTE VALIDOS:
+#: netspeed_calculator emite `partial`, que vive en WORK_DEGRADED desde
+#: entonces, y aqui salia reportado como desconocido. Un falso positivo en
+#: un guard es caro: manda a leer el archivo equivocado.
+#:
+#: Por eso ahora se toma `KNOWN_STATUSES`, que es la union de los cinco y
+#: la UNICA definicion del vocabulario. Si mañana se agrega un sexto
+#: conjunto, esta prueba lo hereda sola. Es la misma regla que la casa ya
+#: tiene escrita: no se teclea a mano lo que se puede DERIVAR.
+STATUS_DEL_MOTOR = frozenset(_av.KNOWN_STATUSES)
 
-#: ⚠️ HALLAZGO (2026-08-15): estos 14 valores SÍ los emiten los agents hoy y
-#: agent_verdict.py NO los conoce. Al no casar con ninguna regla caen hasta
-#: R7/R8 y el renglón termina decidido por el EXIT CODE — justo lo que el
-#: motor de v1.48.2 existe para evitar, porque el auto-reporte debe MANDAR
-#: sobre el exit code.
+#: Lo que los agents emiten hoy y el motor todavia NO conoce.
 #:
-#: Cuatro se ven como huecos REALES del motor, no como ruido:
-#:     unreachable    (zavuerer)         -> el mensaje NO se envió
-#:     forward_failed (gateway_relayer)  -> el reenvío NO ocurrió
-#:     rejected       (gatewayer)        -> se rechazó la petición
-#:     ignored        (gateway_relayer)  -> no se hizo nada
-#: Los cuatro son "el trabajo NO se hizo" y deberían vivir en
-#: WORK_NOT_DONE_STATUSES para pintar FAILED de forma determinista.
+#: Era una lista de 21 y quedo en UNO. Los otros 20 entraron al vocabulario
+#: oficial cuando crecio a cinco conjuntos — incluidos los cuatro que el
+#: hallazgo del 2026-08-15 señalo como huecos REALES (`unreachable`,
+#: `forward_failed`, `rejected`, `ignored`): los cuatro viven ya en
+#: WORK_NOT_DONE_STATUSES, asi que aquel hallazgo se atendio y mantenerlos
+#: aqui solo duplicaba la verdad.
 #:
-#: Se listan aquí para que este guard sirva de TRINQUETE: lo que se emite hoy
-#: se acepta, y CUALQUIER valor nuevo — es decir, cualquier traducción — falla.
-#: No se agregan a agent_verdict.py desde aquí: esa es una decisión de
-#: producto sobre cómo debe pintarse cada renglón.
-STATUS_EMITIDOS_HOY = frozenset({
-    'accepted', 'created', 'duplicate', 'forward_failed', 'forwarded',
-    'ignored', 'ok', 'played', 'pong', 'rejected', 'spoken', 'success',
-    'tokens_only', 'unreachable',
-    # Sólo visibles por la forma `status = "..."`. El primer barrido no los
-    # vio: el bloque interpola `f"status: {status}"`, así que el literal
-    # nunca aparece pegado a la palabra `status:`.
-    'edited',                       # editor
-    'merged', 'merge_fallback_concat',
-    'partial_interpreter_1_only', 'partial_interpreter_2_only',
-    'ready',                        # mcp_doctor
-    'sent',                         # telegrammer
-})
+#: `ready` (mcp_doctor) sigue afuera. No se agrega desde aqui: como decia
+#: la nota original, en que conjunto entra un status es decision de
+#: PRODUCTO — de como debe pintarse el renglon —, no de una prueba. Cae a
+#: R7/R8 y lo decide el exit code, que para un diagnostico de solo lectura
+#: que sale con 0 pinta verde, que es lo correcto.
+#:
+#: El guard sigue siendo TRINQUETE: cualquier valor fuera de estos dos
+#: conjuntos falla — y una traduccion del token es exactamente eso.
+STATUS_EMITIDOS_HOY = frozenset({'ready'})
 
 STATUS_VALIDOS = STATUS_DEL_MOTOR | STATUS_EMITIDOS_HOY
 

@@ -8,7 +8,7 @@
 -->
 # Tlamatini
 
-![Project Logo](Tlamatini.jpg)
+In this book, **Blue-hat** means a defensive operator posture: Tlamatini helps inspect and respond to security signals on a Windows machine that you own or are explicitly authorised to defend. It does **not** turn her into an unsupervised endpoint-security authority, add a new database-backed workflow Agent, or make every alert a confirmed intrusion. The `security/` directory is an administrator-operated host toolkit. A human chooses when to enable it, reviews the evidence, decides whether response is justified, and owns the resulting Windows policy changes.
 
 > **El Libro de Tlamatini** — una guía paso a paso para ejecutar, usar y dominar un asistente de desarrollo con IA desplegado localmente, con RAG, orquestación de tools Multi-Turn, delegación a CLIs externos por ACPX, un cliente MCP de Unreal para manejar Unreal Engine 5 desde el chat o el canvas, un diseñador visual de workflows, 87 tipos de agent que se arrastran y sueltan, y un Flow Compiler en el backend que convierte el canvas vivo — o un log de tool-calls generado en el chat — en un workflow validado contra el registry, con los secretos redactados y portable tanto en source como en frozen.
 >
@@ -16,7 +16,25 @@
 >
 > 💬 **Únete a la comunidad en Discord:** **https://discord.gg/WFQsrskgc** — pide ayuda, presume lo que construyas, reporta bugs y ayuda a darle forma al roadmap.
 
----
+1. **Host enablement** changes persistent Windows settings so Tlamatini can run and observe more of the machine.
+2. **Defensive monitoring and response** inspects ten signal families and can, in armed modes, add firewall blocks or force-stop selected processes.
+
+## Habilita a Tlamatini como agente Blue-hat
+
+Tlamatini trae su propio juego de **seguridad defensiva** en `security/`, para
+cuidar la maquina donde corre — no para atacar la de nadie:
+
+- **`tlamatini_defender.ps1`** — vigila y responde; deja su evidencia en
+  `security/security_logs/`.
+- **`tlamatini_whitelist_v2.ps1`** — pone en la lista blanca de Windows
+  Defender lo que Tlamatini necesita ejecutar, sin abrirle la puerta a nada mas.
+- **`run_defender.bat`** / **`enable_tlamatini_v2.bat`** — los lanzadores.
+- **`automated_tests_of_security_assets.py`** — comprueba que los assets estan
+  completos y sanos; la foto de PANTALLA COMPLETA la toma **Shoter**.
+
+Las bitacoras de `security/security_logs/` son **tuyas**: estan en `.gitignore`
+(retratan tu escritorio entero) y el actualizador las conserva a traves de una
+actualizacion guardandolas en `Temp/_security_logs_carryover`.
 
 ## ⚠️ DESLINDE CLARO — CONTROL, JURISDICCIÓN Y RESPONSABILIDAD DEL USUARIO SOBRE LOS AGENTS
 
@@ -121,6 +139,7 @@ Tlamatini hace muchas cosas. Este README está organizado para que puedas dejar 
 - **Parte X — Guía de Supervivencia**: solución de problemas, `tlamatini.log`, problemas comunes.
 - **Capítulo extra §57** — Manejar Unreal Engine 5 desde Tlamatini (el agent Unrealer + el plugin MCP de Unreal). Lee esto si construyes juegos o simulaciones en UE5 y quieres una superficie de chat / canvas para el editor.
 - **Capítulo extra §59** — Esculpir en Blender desde Tlamatini (el agent Blenderer + el add-on oficial MCP de Blender). Lee esto si haces arte / assets 3D en Blender y quieres una superficie de chat / canvas para el editor — y para ver por qué el protocolo de *ejecución de código* de Blender difiere de los verbos de Unreal.
+- **[Activa a Tlamatini como agente Blue-hat](#activa-a-tlamatini-como-agente-blue-hat)** — el runbook completo del kit defensivo de Windows: validación de los activos, cambios permanentes en el equipo, línea base en detect-only, modos armado/watch, revisión de evidencia, falsos positivos, reversión de la respuesta y responsabilidad de quien opera.
 - **Apéndice A** — Referencia de teclas de Keyboarder.
 - **Apéndice B** — Glosario.
 - **Apéndice C** — Changelog completo (conservado al pie de la letra).
@@ -140,13 +159,1394 @@ Si sólo tienes diez minutos, lee la Parte I §3–§7 (instalación + primer lo
 
 ---
 
-# Part I — Getting Tlamatini Running
+## Activa a Tlamatini como agente Blue-hat
+
+En este libro, **Blue-hat** significa una postura de operadora defensiva: Tlamatini ayuda a inspeccionar y a reaccionar ante señales de seguridad en una máquina Windows que sea tuya o que tengas autorización explícita para defender. **No** la convierte en una autoridad de seguridad de endpoint sin supervisión, ni agrega un workflow Agent nuevo respaldado por la base de datos, ni vuelve cada alerta una intrusión confirmada. El directorio `security/` es un kit del equipo, operado por una persona administradora: ella decide cuándo activarlo, revisa la evidencia, decide si la respuesta está justificada y se hace cargo de los cambios de política de Windows que resulten.
+
+La distinción importa porque el kit tiene dos trabajos muy distintos:
+
+1. **Activación del equipo:** cambia ajustes permanentes de Windows para que Tlamatini pueda correr y observar más de la máquina.
+2. **Monitoreo y respuesta defensiva:** inspecciona diez familias de señales y, en modo armado, puede agregar bloqueos de firewall o detener ciertos procesos.
+
+El patrón de operación más seguro es siempre **validar → anotar la línea base → activar → reiniciar → detect-only → investigar → armar sólo cuando esté justificado**.
+
+### Mapa completo de los activos de `security/`
+
+```text
+<raíz-de-Tlamatini>/
+├── Tlamatini.exe                         # build instalado; no existe en un checkout del código
+├── agents/                               # catálogo de agents instalado, incluida Shoter
+├── Tlamatini/agent/agents/               # el catálogo equivalente en el árbol de código
+└── security/
+    ├── README.md                         # referencia rápida local (en español)
+    ├── enable_tlamatini_v2.bat           # lanzador de activación que se autoeleva
+    ├── tlamatini_whitelist_v2.ps1        # configuración permanente de política/visibilidad v2.1
+    ├── run_defender.bat                  # lanzador que se autoeleva para un barrido armado
+    ├── tlamatini_defender.ps1            # motor de monitoreo/respuesta v2.1
+    ├── automated_tests_of_security_assets.py
+    └── security_logs/                    # se crea en tiempo de ejecución; está en .gitignore
+        ├── alerts.log                    # flujo conciso de alertas y respuestas
+        ├── monitor.log                   # flujo completo del monitor
+        └── asset_tests/                  # bitácoras, HTML, JSON y capturas de la prueba visible
+```
+
+Los dos `.bat` se resuelven a sí mismos con `%~f0`, llevan esa ruta a través del UAC en una variable de entorno para que los espacios sobrevivan, localizan sus scripts acompañantes con `%~dp0` e invocan Windows PowerShell con `-NoProfile -ExecutionPolicy Bypass`. Propagan el código de error del proceso de PowerShell en lugar de aparentar éxito siempre. Los `.ps1` derivan la raíz del repositorio/instalación de `$PSScriptRoot` y `Split-Path -Parent`; no hay letra de unidad ni nombre de directorio fijo.
+
+> **Nota de esta edición.** En `Tlamatini-Spanish` el arnés de pruebas toma sus fotos con `toma_foto()` (el árbol en inglés la llama `take_shot()`) y todas sus superficies visibles están en español. Los mensajes de consola de los dos `.ps1` se conservan **a propósito** en inglés: el arnés hace aserciones sobre frases exactas de esos archivos, así que traducirlas dejaría la prueba en verde sin comprobar nada.
+
+- Windows 10 or Windows 11 with Microsoft Defender PowerShell cmdlets and the Windows Firewall/Security-log facilities used by the scripts.
+- Administrator approval for the whitelist and defender. The asset regression test itself is non-destructive and does not require elevation.
+- A machine you own or have explicit written authority to defend. The toolkit does not authorise scanning, containment, or investigation of third-party systems.
+- A human operator who can review Windows events, process paths, firewall rules, and false positives before treating a signal as malicious.
+- A recovery plan. There is currently **no bundled undo script** for the whitelist's persistent changes.
+
+- Windows 10 u 11 con los cmdlets de PowerShell de Microsoft Defender y las funciones de Firewall / registro de Seguridad que los scripts usan.
+- Aprobación de Administrador para la whitelist y el defender. El arnés de regresión es no destructivo y **no** requiere elevación.
+- Una máquina que sea tuya o sobre la que tengas autoridad escrita explícita para defender. El kit no autoriza escanear, contener ni investigar sistemas de terceros.
+- Una persona que pueda revisar eventos de Windows, rutas de procesos, reglas de firewall y falsos positivos antes de tratar una señal como maliciosa.
+- Un plan de recuperación. Por ahora **no hay script de deshacer** para los cambios permanentes de la whitelist.
+
+El kit complementa a Microsoft Defender y a la respuesta humana a incidentes. No es un motor antivirus, ni un EDR, ni un SIEM, ni un sandbox, ni un producto forense, ni una conclusión legal, ni un certificado de que el equipo está limpio.
+
+### Valida los activos antes de tocar Windows
+
+Corre la prueba persistente desde la raíz del repositorio/instalación:
+
+```powershell
+python security\automated_tests_of_security_assets.py
+```
+
+La prueba es deliberadamente visible. Abre una consola de PowerShell bifurcada en primer plano, analiza la sintaxis de los dos `.ps1`, carga **solamente** las definiciones de funciones del defender, revisa el clasificador de amenazas que lo protege de sí mismo, valida los tokens obligatorios del monitor, los GUIDs oficiales de ASR/auditoría, la protección del intervalo de watch, el cableado `.bat` → PowerShell, el manejo de rutas en el UAC y la propagación del código de salida, captura todo el escritorio con el agent **Shoter** de Tlamatini y muestra un `SUMMARY.html` local en Chrome/Chromium con interfaz. Una corrida exitosa sale con `0`; una verificación fallida sale con `1`.
+
+Lo que eso demuestra es, a propósito, **estrecho**: sintaxis, ciertos contratos estáticos, los destinos de los lanzadores y el comportamiento del clasificador. **No** aplica la whitelist, no requiere permisos de administrador, no ejecuta un barrido real del defender, no valida cada mutación de política de Windows, no prueba que cada heurística sea exacta y no certifica que la máquina esté limpia. Las capturas y bitácoras que quedan en `security\security_logs\asset_tests\` pueden contener información visible de tu escritorio; trátalas como telemetría sensible del equipo.
+
+### Anota una línea base antes de activar
+
+La whitelist **no guarda** los ajustes que reemplaza. Antes de correrla, crea un punto de restauración de Windows o captura el estado que tu organización necesitará restaurar. Estos comandos de sólo lectura son un mínimo útil:
+
+```powershell
+Get-MpPreference | Select-Object ExclusionPath, ExclusionProcess, `
+    ControlledFolderAccessAllowedApplications, AttackSurfaceReductionRules_Ids, `
+    AttackSurfaceReductionRules_Actions
+Get-ExecutionPolicy -List
+Get-NetFirewallRule -DisplayName "Tlamatini*" -ErrorAction SilentlyContinue
+auditpol /get /category:*
+(Get-Item "HKLM:\SYSTEM\CurrentControlSet\Services\EventLog\Security").GetValue("CustomSD")
+```
+
+Guarda la salida en un lugar protegido y **fuera** del árbol de instalación de Tlamatini. La política de dominio, Intune, Group Policy u otro producto de seguridad pueden ser dueños de algunos de esos ajustes; coordina con ese plano de control en vez de pelearte con él localmente.
+
+### Qué cambia realmente la activación
+
+Corre `security\enable_tlamatini_v2.bat` una vez y aprueba el UAC. Lanza `tlamatini_whitelist_v2.ps1`; la mayoría de los cambios persisten después de que el script termina.
+
+| Área | Implementación real | Consecuencia de seguridad |
+|---|---|---|
+| Microsoft Defender | Agrega toda la raíz de Tlamatini a `ExclusionPath`, agrega `Tlamatini.exe` y, cuando los encuentra, los ejecutables de Python empaquetados a `ExclusionProcess`. | Los servicios de Defender siguen encendidos, pero el contenido y los procesos excluidos reciben menos análisis. Código malicioso colocado en el árbol excluido hereda ese punto ciego. |
+| Controlled Folder Access | Activa CFA si está apagado y luego agrega `Tlamatini.exe` a `ControlledFolderAccessAllowedApplications`. | Las carpetas protegidas siguen resguardadas frente a otras apps; Tlamatini recibe una excepción explícita de escritura. |
+| Attack Surface Reduction | Pone seis GUIDs de reglas ASR en acción `6` (**Auditoría**), luego lee los IDs/acciones efectivos de Defender y verifica cada par antes de reportar éxito. | Esas reglas **registran** en vez de bloquear. Es una reducción real de la protección, no sólo más visibilidad; un ajuste rechazado o no verificable produce `[WARN]`. |
+| PowerShell | Pone la política de ejecución del usuario actual en `RemoteSigned`. | Los scripts locales pueden correr sin firma; los descargados normalmente requieren una firma confiable salvo que se les haga bypass explícito. Los lanzadores `.bat` sí usan `Bypass`. |
+| Firewall de Windows | Agrega reglas de salida `Tlamatini Outbound` y, cuando existe, `Tlamatini Python Outbound`. | Se permite salida amplia para esas rutas de ejecutable en todos los perfiles. La política de entrada existente no se toca. |
+| Registro de eventos de Seguridad | Agrega al usuario elevado a `Event Log Readers`; cuando hay un `CustomSD` sin el SID, le anexa un ACE de lectura. | Otorga más visibilidad del registro de Seguridad. La membresía de grupo puede requerir una sesión nueva antes de que los procesos no elevados la vean. |
+| Política de auditoría | Usa GUIDs estables de subcategoría para habilitar Inicio de sesión, Validación de credenciales, Uso de privilegios confidenciales y Administración de cuentas (éxito y error); Creación de procesos (éxito). Revisa cada código de salida de `auditpol`. | Produce los eventos que el defender lee, evita depender del idioma de Windows y puede aumentar el volumen del registro de Seguridad. |
+| Líneas de comando de procesos | Pone `ProcessCreationIncludeCmdLine_Enabled=1`. | El evento 4688 gana evidencia de línea de comandos: útil, pero puede registrar argumentos sensibles. |
+| Logging de PowerShell | Activa Script Block Logging. | Mejora la evidencia de scripts, pero puede registrar comandos o valores que necesitan retención restringida. |
+| WMI, tareas, registro, servicios | Ejecuta `Get-CimInstance`, `Get-ScheduledTask`, lecturas de claves Run y sondeos de `Get-Service`. | Estos cuatro pasos **verifican** el acceso que la sesión elevada ya tiene; no instalan un proveedor WMI ni crean permisos aparte de tareas/registro/servicios. |
+
+El enunciado exacto es entonces: **Defender, CFA, ASR y el firewall no se apagan globalmente, pero la whitelist crea excepciones a propósito y cambia ciertas reglas ASR de aplicación a auditoría.** Trata el árbol de Tlamatini y cada ejecutable permitido por esas excepciones como una **frontera de confianza privilegiada**.
+
+Los seis comportamientos ASR auditados son: Office creando procesos hijos; robo de credenciales de LSASS; persistencia por suscripción a eventos WMI; contenido ejecutable de correo/webmail; procesos no confiables o sin firma desde USB; y creación de procesos vía PSExec/WMI. Sus IDs son los identificadores publicados por Microsoft, no alias inventados localmente; compáralos con la [referencia de reglas ASR de Microsoft](https://learn.microsoft.com/es-es/defender-endpoint/attack-surface-reduction-rules-reference) cada vez que el kit se actualice.
+
+Cuando la activación termine, reinicia Tlamatini y abre una sesión nueva de PowerShell / de inicio de sesión donde sea práctico. Lee **cada** renglón `[WARN]` del lanzador: `$ErrorActionPreference="Continue"` significa que un paso fallido **no** revierte automáticamente los pasos anteriores que sí funcionaron.
+
+### Start with detect-only
+
+El lanzador `run_defender.bat` siempre corre un barrido **armado** por defecto. No lo uses como primera prueba de comportamiento. Abre PowerShell como Administrador y establece una línea base sin contención:
+
+```powershell
+cd <raíz-de-Tlamatini>\security
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tlamatini_defender.ps1 -DetectOnly
+```
+
+En modo detect-only, un candidato a respuesta se registra como `WOULD BLOCK` o `WOULD KILL` en el log de alertas. Deja correr tus cargas normales de desarrollo, automatización, firmware, navegador, pruebas de seguridad, respaldos y administración mientras revisas qué considera sospechoso la heurística. Anota las herramientas, rutas, puertos, cuentas y tareas esperadas **antes** de pasar a un modo armado.
+
+### Modos de operación
+
+```powershell
+# Una pasada de observación; nunca bloquea ni mata
+.\tlamatini_defender.ps1 -DetectOnly
+
+# Observación continua cada 60 segundos; Ctrl+C la detiene
+.\tlamatini_defender.ps1 -Watch -DetectOnly
+
+# Observación continua con un intervalo deliberado
+.\tlamatini_defender.ps1 -Watch -IntervalSeconds 30 -DetectOnly
+
+# One-shot armed response (same mode run_defender.bat launches)
+.\tlamatini_defender.ps1
+
+# Armed watch loop
+.\tlamatini_defender.ps1 -Watch -IntervalSeconds 60
+
+# Además, mata herramientas de doble uso fuera de las rutas propias de Tlamatini
+.\tlamatini_defender.ps1 -Aggressive
+```
+
+`-Watch` es un ciclo en primer plano, no un servicio de Windows ni una tarea programada. Escanea, anexa a los logs, duerme y repite hasta `Ctrl+C` o hasta que se termine el proceso. `-IntervalSeconds` se valida entre `5` y `86400`, lo que evita ciclos ocupados con cero/negativos y valores accidentales sin límite. Los ajustes de Windows de la whitelist **persisten**; el proceso de watch no.
+
+### The ten monitor families
+
+| Monitor | Evidence examined | Response behavior |
+|---|---|---|
+| Salud de Defender | Estado de tiempo real / antivirus / tamper, antigüedad de firmas, detecciones de Defender de las últimas 24 horas. | Alertas y notificaciones de escritorio; **no** reactiva Defender por su cuenta. |
+| Inicios de sesión | Últimos 100 eventos de Seguridad 4624/4625, tipos de logon, cuenta e IP de origen. | Los inicios exitosos sospechosos alertan. Cinco o más eventos fallidos desde una IP no local provocan un bloqueo permanente de entrada+salida en modo armado. |
+| Red | Conexiones TCP establecidas y sockets TCP a la escucha contra una lista de puertos sospechosos; lista opcional de IPs conocidas como maliciosas (vacía por omisión). | Puertos/escuchas sospechosos sólo alertan. Una coincidencia en la lista de IPs maliciosas sí puede crear un bloqueo de firewall. |
+| Procesos | Nombre base, ruta, patrones de herramientas de atacante conocidas, nombres de doble uso y ejecución desde rutas Temp/AppData/Public. | Los patrones de herramientas de atacante se detienen por la fuerza en modo armado. Los de doble uso alertan salvo con `-Aggressive`. Las rutas sospechosas sólo alertan. |
+| Tareas programadas | Tareas habilitadas que no son de Microsoft ni de Tlamatini, rutas de acción, PowerShell codificado e indicadores de descargar/ejecutar. | Sólo alertan. |
+| Servicios | Servicios corriendo fuera de Windows/Program Files, rutas temporales o de usuario y descripciones faltantes. | Sólo alertan. |
+| Persistencia en el registro | Valores de Run/RunOnce, Winlogon Shell/Userinit, AppInit DLLs y Debugger de IFEO. | Sólo alertan. |
+| Directorios críticos | Extensiones de ejecutable/script/acceso directo modificadas en las últimas 24 horas bajo Temp de Windows, Public, Temp del usuario y ubicaciones de Inicio. | Sólo alertan. |
+| Indicadores de ransomware | Líneas de comando recientes del evento 4688 para destrucción de instantáneas/recuperación/logs; nombres de notas de rescate y ráfagas de cinco o más extensiones cifradas en datos del usuario. | Alertas críticas y notificaciones; **no** detiene el proceso ni restaura archivos. |
+| Abuso de cuentas/privilegios | Eventos de Seguridad 4720/4728/4732/4756 de las últimas 24 horas más la membresía actual de Administradores locales. | Sólo alertas e inventario en el log. |
+
+El monitor es principalmente **heurístico**. Una herramienta de desarrollo, una utilería legítima de red team, un instalador, un actualizador, una tarea administrativa, una herramienta de respaldo, un archivo comprimido cifrado, un servicio inusual o un cambio de cuenta autorizado pueden coincidir con estas señales. Al revés, un atacante real puede evadir nombres fijos, extensiones, puertos y ventanas de eventos. Trata cada resultado como una **pista que necesita corroboración**.
+
+### Clasificación «propia»: guardia de disponibilidad, no prueba de confianza
+
+El defender construye dos raíces propias reconocidas: la carpeta padre del directorio `security/` activo y `%LOCALAPPDATA%\Tlamatini` cuando existe. `Test-IsSelf` compara la ruta de un proceso/archivo contra esas raíces. Un proceso que coincide **no** se mata automáticamente. Nombres como `nmap`, `ncat`, `john` y `hashcat` se clasifican como doble uso y sólo alertan por omisión; `-Aggressive` puede detenerlos cuando corren fuera de una raíz propia.
+
+Esto protege de una terminación accidental el trabajo de Nmapper, Kalier, Discoverer y compañía, pero **una coincidencia de ruta no es una verificación de firma ni de procedencia**. Si un atacante coloca una carga dentro de un árbol de Tlamatini reconocido/excluido, tanto la regla de «propio» del defender como la exclusión de ruta de Defender reducen el escrutinio. Protege el acceso de escritura al árbol de instalación/código, revisa las modificaciones y **nunca** trates «propio» como equivalente a «confiable».
+
+### Respuesta armada y reversión
+
+El modo armado por defecto tiene dos acciones automáticas de contención:
+
+1. `Block-SuspiciousIP` crea las reglas de Firewall `Tlamatini Block <IP> Inbound` y `Tlamatini Block <IP> Outbound`.
+2. `Stop-SuspiciousProcess` usa `Stop-Process -Force` para un proceso clasificado por los patrones de nombre de herramientas de atacante conocidas, después de rechazar una ruta propia reconocida.
+
+Las reglas de firewall **no expiran** y permanecen después de que el defender termina. Lístalas con:
+
+```powershell
+Get-NetFirewallRule -DisplayName "Tlamatini Block *"
+```
+
+Antes de quitar un bloqueo, correlaciona su IP de origen, las horas de los eventos, la cuenta, la evidencia de proceso/red y la política de tu organización. Después elimina **sólo** el par validado, nombrando las reglas específicas de esa IP en vez de borrar todas las reglas de Tlamatini. Conserva los renglones de log correspondientes como registro de auditoría, tanto de la contención como de la liberación.
+
+Tampoco hay restauración automática de un proceso terminado, ni copia en cuarentena, ni captura de memoria, ni contención del árbol de procesos. Durante un incidente real, preserva la evidencia y sigue tu plan de respuesta **antes** de reiniciar software o borrar artefactos.
+
+### Read and protect the logs
+
+`Write-Alert` anexa cada entrada tanto a `security_logs\alerts.log` como a `security_logs\monitor.log`; este último no es hoy un flujo separado de menor nivel, así que espera duplicación sustancial y hallazgos repetidos en modo watch. No hay rotación, límite de retención, base de datos de deduplicación ni reenvío automático a un SIEM.
+
+Severity means **triage priority**, not certainty:
+
+- `INFO` registra salud, inventario, fronteras de barrido y verificaciones exitosas.
+- `WARNING` registra heurísticas débiles, estado de protección viejo, fallas de acceso y rutas sospechosas.
+- `ALERT` registra pistas más fuertes, herramientas de doble uso, inicios de sesión sospechosos, eventos de cuentas y vistas previas de respuesta en detect-only.
+- `CRITICAL` registra patrones de alto riesgo, acciones armadas de contención, indicadores de ransomware, Defender deshabilitado y nombres de herramientas de atacante conocidas.
+
+Los logs pueden contener nombres de usuario, membresía del grupo de administradores, direcciones IP, rutas de ejecutables, valores del registro, argumentos de tareas y líneas de comando. La auditoría de bloques de script y de creación de procesos también puede dejar argumentos sensibles en los registros de eventos de Windows. Restringe el acceso, define retención y redacta antes de compartir.
+
+### Empaquetado, actualizaciones y auto-modificación
+
+`build.py` copia todo el árbol `security/` del repositorio junto al ejecutable instalado y excluye `security_logs`, `*.log` y `__pycache__`. `copy_source_assets.py` incluye el código `.ps1`, `.bat`, `.py` y Markdown en los snapshots de auto-modificación, podando cualquier directorio llamado `security_logs`. `.gitignore` excluye igualmente `/security/security_logs/`.
+
+En la auto-actualización, `security/` se trata como **código de la aplicación**: una versión nueva reemplaza los scripts, que es exactamente lo que quieres — un defender corregido tiene que poder llegarle a la gente. Pero `security/security_logs/` es **evidencia de quien opera**, y vive dentro de ese directorio reemplazado, así que igual que la base de datos necesita un trato aparte: `apply_update.ps1` lo aparta en `Temp/_security_logs_carryover` antes del borrado (paso 3c) y lo devuelve al nuevo `security/` después (paso 5b). Ambas mitades fallan hacia adelante: ante cualquier error la actualización termina de todos modos y la evidencia se queda en `Temp/_security_logs_carryover` en lugar de borrarse.
+
+Estas reglas mantienen las capturas de prueba y la telemetría del equipo fuera de Git, del instalador público y de los snapshots de código fuente. **No** cifran los logs en la máquina local; eso sigue siendo responsabilidad de quien opera.
+
+### Lista de verificación del despliegue Blue-hat
+
+- Lee y compara (diff) cada activo de `security/` antes de elevar.
+- Corre la prueba visible no destructiva y exige código de salida `0`.
+- Anota las líneas base de Defender, ASR, CFA, firewall, política de ejecución, política de auditoría y registro de Seguridad.
+- Confirma que la política de tu organización permite exclusiones, ASR en modo Auditoría, auditoría de línea de comandos y Script Block Logging.
+- Corre la whitelist una vez, revisa **cada** advertencia y reinicia las sesiones correspondientes.
+- Corre detect-only primero y documenta los falsos positivos esperados.
+- Protege la raíz de Tlamatini como una frontera de confianza privilegiada/excluida.
+- Arma sólo con una persona presente; evita `-Aggressive` durante desarrollo normal o pruebas de seguridad autorizadas.
+- Revisa los bloqueos permanentes de firewall y la retención de logs después de cada sesión armada o de watch.
+- Escala un compromiso confirmado a un proceso real de respuesta a incidentes; no te apoyes sólo en este kit.
+
+> **Creado por Angela López Mendoza (@angelahack1)** — Tlamatini, la que sabe.
+
+The `adding-external-mcp` skill is the supported guided path for bringing a new server into Tlamatini. It keeps setup deterministic and prevents a configuration record from being mistaken for a healthy connection:
+
+1. Classify the server as stdio, Streamable HTTP, SSE, or WebSocket from its official launch instructions.
+2. Build a secret-separated `mcpServers` entry; never place a live credential in a public catalog or generated document.
+3. Import the entry through `external_mcp_import` instead of editing user state blindly.
+4. Run `external_mcp_doctor` before the first activation so transport, runtime, endpoint, and placeholder-secret failures are named.
+5. Activate only with operator intent and keep the global active-server cap at five.
+6. Wait for a healthy connection with `external_mcp_wait`; catalog presence alone is not readiness.
+7. Inspect `external_mcp_status` and `external_mcp_list_tools` before selecting a remote operation.
+8. Call the proven remote tool through `external_mcp_call`, or let Multi-Turn bind its `ext__<server>__<tool>` wrapper lazily.
 
 ## 1. ¿Qué es Tlamatini?
 
 **Tlamatini** (náhuatl para "la que sabe") es un asistente de desarrollo con IA desplegado localmente. Corre en tu browser, habla con un LLM local o en la nube, conoce tu código y de verdad puede *hacer* cosas en tu máquina — no sólo describir cómo hacerlas.
 
-Las cuatro cosas que Tlamatini te da y que una cajita estilo ChatGPT no:
+`build_complete_private_release.py` is the maintainer-only keyed path and must never be published. Before building, it synchronizes contact records from the development-tree `contacts.json` and a same-machine frozen installation into gitignored `contacts.private.json`: names are compared case- and accent-insensitively, aliases are unioned, and existing non-empty values win. That merged private file may be bundled only when the explicit private-build opt-in is set. Public builds still ship an empty contacts book, and `TlamatiniSourceCode/` never carries contact files or other contact PII.
+
+## 48. Versioning
+
+Tlamatini follows [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH` — but the **single source of truth is a git tag**, not a number sitting in any source file. You never hand-edit a version anywhere. You tag, then you build, and the three build scripts in §47 each bake the resolved value into the artefact they produce.
+
+### What the three numbers mean
+
+- **MAJOR** bumps when something that already shipped breaks for the user: the `.flw` file schema changes, an Agent Contract is removed, an LLM tool is renamed, a public endpoint URL changes. The first `2.0.0` is the first release where loading an old `.flw` might not just work.
+- **MINOR** bumps when you add a backward-compatible feature: a new agent (ACPXer was a minor bump), a new toolbar checkbox, a new SKILL package, a new HTTP endpoint, a new optional field on an existing API.
+- **PATCH** bumps for backward-compatible fixes: the conjunction-parser fix, the exec-report ordering fix, the ACPX `oneshot-prompt` capture fix — anything that closes a regression without changing surface.
+
+Pre-releases use the standard SemVer suffixes — `2.0.0-alpha.1`, `2.0.0-beta.1`, `2.0.0-rc.1`. They sort **before** the final release, so `2.0.0-rc.2` < `2.0.0` for the Windows installer registry and for Python tooling alike.
+
+### Cutting a release in five commands
+
+```powershell
+git status                                          # clean tree, on main
+git tag -a v1.50.0 -m "Release 1.50.0: <one-liner>"   # annotated tag
+git push origin v1.50.0
+python build.py
+python build_uninstaller.py
+python build_installer.py
+```
+
+All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini_Release_v1.50.0/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. The current `v1.50.0` tag remains reachable from `HEAD`, so the bare runtime version stays `1.50.0` even though the worktree is one commit beyond the tagged commit.
+
+### Where the version shows up in a running install
+
+The build computes the version once and bakes it into four surfaces:
+
+- **`Tlamatini/agent/_version.py`** — generated at build time, gitignored, read at runtime by `agent.version.get_version()`. This is what every in-process surface reads.
+- **Win32 `VERSIONINFO`** — `Tlamatini.exe`, `Installer.exe`, and `Uninstaller.exe` all carry the version in their resource fork. Right-click the file → Properties → Details → ProductVersion.
+- **Release folder name** — `dist/Tlamatini_Release_v1.50.0/`.
+- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.50.0` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.50.0","commit":"abc1234","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
+
+If the four surfaces ever disagree, your build was run with a stale `$env:TLAMATINI_VERSION` or against an out-of-date `_version.py` — clear them and re-run `build.py`.
+
+### What happens if you don't tag
+
+The build never fails for "no version" — and the version surface is always a clean SemVer like `1.1.1`. The resolver returns the **bare base tag** reachable from HEAD; distance / commit / dirty state are deliberately stripped from the displayed version:
+
+| Situation | Version baked in |
+|---|---|
+| Tag exists, HEAD exactly on `v1.2.0` | `1.2.0` |
+| Tag exists, HEAD 17 commits past, clean tree | `1.2.0` |
+| Tag exists, HEAD 17 commits past, uncommitted edits | `1.2.0` |
+| No tags at all | `0.0.0` |
+| Not a git repo (e.g. download zip) | `0.0.0+unknown` |
+
+No `.devN`, no `+gSHA`, no `.dirty` ever appears in the version string. Distance from the tag and dirty state are git concerns and live in `git status` / `git describe --long --dirty`, not in the user-facing version.
+
+### Overriding the resolver
+
+There are four sources of the version, in precedence order:
+
+1. `--version X.Y.Z` on the build script's command line (highest).
+2. `$env:TLAMATINI_VERSION` exported in the shell.
+3. `git describe --tags --abbrev=0 --match 'v[0-9]*'` against the working tree — the bare base tag, no distance/dirty suffix (the normal path).
+4. The sentinel `0.0.0+unknown` (lowest — only fires when there is no git at all).
+
+`build.py` exports `$env:TLAMATINI_VERSION` after it resolves, so `build_installer.py` and `build_uninstaller.py` in the same shell see exactly the same value — the three artefacts cannot disagree. Even on an untagged commit, the git-derived dev version stays consistent across all three.
+
+The full contract — including the recovery path for a mis-tagged release, the runtime resolver internals, the file-by-file integration map, and the FAQ — lives in [`VERSIONING.md`](VERSIONING.md) at the repo root.
+
+## 49. What the installer does
+
+When an end user runs `Installer.exe`:
+
+1. Tkinter GUI to choose installation directory.
+2. Extracts `pkg.zip` into `<install_path>/Tlamatini/`.
+3. Locks agent venv permissions.
+4. Writes `config.json` with installation settings.
+5. Copies `Uninstaller.exe` into the install dir.
+6. Creates desktop and Start Menu shortcuts (`Tlamatini.lnk`).
+7. Registers `.flw` extension to open with Tlamatini.
+8. Cleans the PyInstaller bundle path from helper subprocess environments so PowerShell helpers and Explorer restarts don't stall.
+
+## 50. What the uninstaller does
+
+1. Removes shortcuts (with Explorer restart for immediate effect).
+2. Unregisters the `.flw` association and clears cached shell state.
+3. Deletes all application files **except** `<install_path>/Tlamatini/agents/*` (preserves user-created agents).
+4. Removes the install directory if empty.
+
+## 51. Frozen-mode behavior
+
+The Multi-Turn implementation carries frozen-build awareness in supporting runtime code:
+
+- `config_loader.py` resolves `CONFIG_PATH`, then executable-local `config.json`, then module-local.
+- `FileSearchRAGChain` resolves its default `config.json` from the executable directory in frozen mode.
+- Template-agent discovery checks both `<install_dir>/agents` and `<install_dir>/Tlamatini/agent/agents`.
+- `_get_agents_root()` in `chat_agent_runtime.py` resolves from `sys.executable` in frozen mode, from `__file__` in source mode — both paths are logged at INFO level.
+- `_resolve_python_executable()` tries `PYTHON_HOME`, then bundled `python.exe` beside the frozen executable, then PATH.
+
+---
+
+# Part IX — The Command Deck (API + WebSocket)
+
+## 52. WebSocket protocol
+
+Endpoint: `ws://<host>/ws/agent/`.
+
+### Client → Server (chat)
+
+```json
+{
+  "message": "Your question here",
+  "multi_turn_enabled": true,
+  "exec_report_enabled": true,
+  "acpx_enabled": true
+}
+```
+
+Optional toggles. `multi_turn_enabled=false` falls back to legacy one-shot.
+
+### Client → Server (control)
+
+| Type | Purpose |
+|---|---|
+| `set-canvas-as-context` | Use the current canvas file as context |
+| `unset-canvas-as-context` | Remove the canvas file from context |
+| `set-directory-as-context` | Load a directory as context |
+| `set-file-as-context` | Load a single file as context |
+| `cancel-current` | Cancel the current generation |
+| `reconnect-llm-agent` | Rebuild the current LLM/RAG chain |
+| `clean-history-and-reconnect` | Clear chat history and rebuild |
+| `clear-context` | Remove persisted context and rebuild |
+| `cancel-all` | Cancel all active generation |
+| `save-files-from-db` | Persist canvas / DB-backed files |
+| `enable-llm-internet-access` | Enable internet access for the LLM |
+| `disable-llm-internet-access` | Disable internet access for the LLM |
+| `view-context-dir-in-canvas` | Show the current context directory tree in the canvas |
+| `set-file-omissions` | Update file omission patterns |
+| `set-mcps` | Persist MCP enablement |
+| `set-tools` | Persist tool enablement |
+| `set-agents` | Persist agent enablement |
+
+### Server → Client
+
+```json
+{ "message": "Processing request...", "username": "Tlamatini" }
+```
+
+```json
+{ "type": "session-restored", "context_type": "directory", "context_path": "/path/to/project" }
+```
+
+A Multi-Turn message also carries `tool_calls_log` and `multi_turn_used`. The Create Flow button appears whenever ≥1 agent in that log executed successfully; the old `answer_success` classifier flag was removed 2026-07-06.
+
+## 53. HTTP endpoints
+
+The backend currently exposes 104 routes. Highlights:
+
+### Pages
+
+| Endpoint | Method |
+|---|---|
+| `/` | GET/POST (login) |
+| `/welcome/` | GET |
+| `/agent/` | GET (chat) |
+| `/agentic_control_panel/` | GET (designer) |
+| `/logout/` | GET |
+
+### Data loading
+
+| Endpoint | Method |
+|---|---|
+| `/load_canvas/<filename>/` | GET |
+| `/load_prompt/<prompt_name>/` | GET |
+| `/load_omissions/<omission_name>/` | GET |
+| `/load_mcp/<mcp_name>/` | GET |
+| `/load_tool/<tool_name>/` | GET |
+| `/load_agent/<agent_name>/` | GET |
+| `/load_agent_description/<agent_name>/` | GET |
+| `/load_agent_config/<agent_name>/` | GET |
+
+### Agent management
+
+| Endpoint | Method |
+|---|---|
+| `/save_agent_config/<agent_name>/` | POST |
+| `/deploy_agent_template/<agent_name>/` | POST |
+| `/ensure_agent_exists/<agent_name>/` | GET |
+| `/execute_starter_agent/<agent_name>/` | POST |
+| `/execute_ender_agent/<agent_name>/` | POST |
+| `/check_starter_log/<agent_name>/` | GET |
+| `/check_ender_log/<agent_name>/` | GET |
+| `/check_agents_running/<agent_name>/` | GET |
+| `/check_all_agents_status/` | GET |
+| `/read_agent_log/<agent_name>/` | GET |
+| `/restart_agent/<agent_name>/` | POST |
+| `/restart_agents/` | POST |
+| `/asker_choice/<agent_name>/` | POST |
+| `/execute_flowhypervisor/<agent_name>/` | POST |
+| `/check_flowhypervisor_alert/<agent_name>/` | GET |
+| `/validate_flow/` | GET |
+
+### Flow Compiler & Agent Contracts (since commit `0bea21d`, May 2026)
+
+| Endpoint | Method | Notes |
+|---|---|---|
+| `/agent/compile_flow/` | POST | Backend Flow Compiler. Body: `{ "mode": "dry_run"\|"write", "flow": <ACP snapshot> }`. Save / Validate use `dry_run`; Start uses `write` to materialize `config.yaml` and `interconnection-scheme.csv` into the session pool. |
+| `/agent/flow_from_tool_calls/` | POST | Chat Create-Flow normalizer. Body: `{ "tool_calls_log": [...], "flow_data": <legacy draft> }`. Returns a registry-canonical, secret-redacted `.flw` JSON. |
+| `/agent/agent_contracts/` | GET | Returns the live `AgentContract` registry summary — connection-field shape, parametrizer source-fields, secret paths, singleton/long-running/never-starts-targets/excluded-from-validation flags. Used for diagnostics and for any out-of-tree client (e.g. a future MCP server) that needs to introspect the agent surface. |
+
+### Connection updates (canvas auto-configuration)
+
+`/update_<agent>_connection/<agent_name>/` for every agent type that has connections — Starter, Ender, Stopper, Raiser, Emailer, Monitor-Log, Notifier, Executer, Pythonxer, Sqler, Whatsapper, Recmailer, OR, AND, Croner, Mover, Mouser, Keyboarder, Windower, Sleeper, Cleaner, Deleter, Asker, Forker, Dockerer, Pser, Kuberneter, Apirer, Jenkinser, Crawler, Summarizer, FlowHypervisor, Counter, File-Interpreter, Image-Interpreter, Gatewayer, Gateway-Relayer, Node-Manager, File-Creator, File-Extractor, J-Decompiler, Kyber-KeyGen/Cipher/DeCipher, Parametrizer, FlowBacker, Barrier, Googler, TeleTlamatini, ACPXer.
+
+Plus the Parametrizer-specific pair:
+
+| Endpoint | Method |
+|---|---|
+| `/get_parametrizer_dialog_data/<agent_name>/` | GET |
+| `/save_parametrizer_scheme/<agent_name>/` | POST |
+
+### Session & pool
+
+| Endpoint | Method |
+|---|---|
+| `/session_state/` | GET |
+| `/save_session_state/` | POST |
+| `/clear_session_state/` | POST |
+| `/clear_pool/` | POST |
+| `/cleanup_session/` | POST |
+| `/clear_agent_logs/` | POST |
+| `/clear_pos_files/` | POST |
+| `/reanimate_agents/` | POST |
+| `/save_paused_agents/` | POST |
+| `/load_paused_agents/` | GET |
+| `/delete_paused_agents/` | POST |
+| `/delete_agent_pool_dir/<agent_name>/` | POST |
+| `/get_session_running_processes/` | GET |
+| `/kill_session_processes/` | POST |
+
+### Open in… external editors
+
+| Endpoint | Method |
+|---|---|
+| `/agent/detect_installed_apps/` | GET — returns which of File Explorer / VS Code / Antigravity are installed |
+| `/agent/open_in_app/` | POST — accepts `app_id` plus `directory` or `agent_name`; resolves the current session pool instance directory |
+
+---
+
+### Chat image ingest (screenshot paste / drag-and-drop)
+
+| Endpoint | Method |
+|---|---|
+| `/agent/paste_image/` | POST — multipart `image` field. Re-encodes the clipboard bitmap to JPEG (Pillow; alpha flattened onto white; 25 MB cap) and writes it to `<app>/Temp/image_<timestamp>.jpg`. Returns `{ success, path, filename, directory, width, height, bytes }`; the chat page splices `path` into the message at the caret. |
+
+---
+
+# Part X — Survival Guide (Troubleshooting)
+
+## 54. Common issues
+
+### Ollama connection failed
+
+- Run `ollama serve` in a dedicated terminal.
+- Check `ollama_base_url` in `config.json` is `http://127.0.0.1:11434`.
+- `ollama list` shows your pulled models.
+- Remote Ollama? Set `ollama_token` for bearer auth.
+
+### RAG context not loading
+
+- Look for the green confirmation banner after Set Context.
+- Check file permissions and that files are text (not binary).
+- Hit `max_doc_chars`? Bump the limit.
+- "Out of memory" during embedding? You're now in fallback mode — answers still work, retrieval quality degrades. Fix by switching to a smaller embedding model.
+
+### Multi-Turn not engaging
+
+- Did you tick the **Multi-Turn** checkbox?
+- `enable_unified_agent: true` in `config.json`?
+- Look for `[Planner._select]` in the console — it shows scoring decisions.
+- "Tool X is not available"? The planner did not select X. Verify X is enabled in the Tools dialog and that your prompt has matching keywords.
+
+### ACPX child not capturing answers
+
+If transcripts only show outbound prompts and no inbound responses, your build is older than May 2026. Update — the fix is `transport="oneshot-prompt"` for claude/gemini/cursor/qwen/codex (re-spawn per turn with `-p "<task>"`).
+
+### Frozen build uses wrong config
+
+- Place `config.json` next to the executable, or set `CONFIG_PATH`.
+- Verify `agents/` directory exists in the install.
+- Rebuild if `README.md`, `jd-cli/`, or template directories are missing.
+
+### WebSocket disconnections
+
+- Check network stability.
+- Increase Daphne timeouts.
+- Verify no proxy is interfering.
+- Browser console for errors.
+
+### Agent not starting
+
+- Check the agent's log in the pool directory.
+- `config.yaml` valid YAML?
+- Port conflicts with MCP servers? Change ports in config.
+- Use **Read Log** in the workflow designer.
+
+### Memory issues
+
+- Reduce `chunk_size` and `k_vector` / `k_bm25`.
+- Lower `max_chunks_per_file`.
+- Reduce `max_context_chars`.
+
+### Image analysis fails
+
+- Claude path: check `ANTHROPIC_API_KEY` (and that you have credits).
+- Qwen path: verify the vision model is pulled (`ollama list`) and that `image_interpreter_base_url` points at the right Ollama.
+- Image format must be supported (jpg/png/gif/bmp/tiff/webp/svg/ico/heic/avif).
+
+### Forker / Asker not routing
+
+- Verify `pattern_a` / `pattern_b` actually appear in the source agent's log output.
+- `source_agents` and `target_agents_a/b` populated by the canvas auto-config?
+- Read the Forker/Asker log for pattern-matching diagnostics.
+- Asker only: did the browser dialog appear? Check console errors.
+
+## 55. Debug mode
+
+```json
+{
+  "logging": {
+    "verbose_metadata": true,
+    "log_retrieval_metrics": true,
+    "log_context_size": true,
+    "log_query_rewrites": true
+  }
+}
+```
+
+INFO-level loggers configured in `tlamatini/settings.py`:
+
+| Logger | What it logs |
+|---|---|
+| `agent.chat_agent_runtime` | Runtime dir creation, template copy, subprocess launch, PID, Python executable selection |
+| `agent.tools` | Wrapped chat-agent launch lifecycle |
+| `agent.mcp_agent` | Multi-turn tool invocation: which tools called, args, return values |
+| `agent.global_execution_planner` | Planner scoring, selected tools, threshold, top score |
+| `agent.capability_registry` | Capability scoring details |
+
+All log lines are prefixed with timestamp and logger name (e.g. `2026-04-13 12:28:39 [agent.tools] INFO …`).
+
+## 56. Log locations
+
+| What | Where |
+|---|---|
+| Django / Multi-Turn console | stdout |
+| **Application-wide** | `Tlamatini/tlamatini.log` (truncated on every start; see §37) |
+| ACP workflow agent logs | `<pool_directory>/<agent_name>/<agent_name>.log` |
+| Chat-launched wrapped agents | `agent/agents/pools/_chat_runs_/<agent>_<seq>_<id>/<agent>_<seq>_<id>.log` (failed runs preserved) |
+
+---
+
+# Bonus Chapter — § 57. The Day Tlamatini Learned to Drive Unreal Engine
+
+> *A bonus chapter, in the spirit of the book — narrative first, reference second. Read this if you want to understand not just **how** Tlamatini talks to Unreal Engine 5, but **why** the conversation looks the way it does, and how to make it bullet-proof on your own box. If you only need the dry reference, the matching coverage lives in **README §6** and in the agent's own `agents_descriptions.md` entry.*
+
+## 57.1. The shape of the problem
+
+For most of the work Tlamatini does, the universe is plain text. Files have lines, lines have characters, the LLM produces a string, a tool consumes a string, and the world rearranges itself. Even the visual workflow designer is, at the end of the day, a YAML file the engine reads and obeys.
+
+Unreal Engine is not like that. Unreal Engine is a **running editor process** holding a hierarchy of in-memory objects — actors, components, blueprints, widgets, level streaming volumes — and it does not want you to reach in from outside. It wants you to drive it through its own UI: click here, drag this into the level, type this transform, press Compile. That is fine if you are a human at a desk. It is a problem if you want a chat agent to *do* something — anything — in the editor without you needing to take your hands off the keyboard.
+
+The **Unreal MCP** project, hosted upstream at `https://github.com/chongdashu/unreal-mcp` (MIT-licensed, UE5.5+) — and shipped in the extended, Tlamatini-tuned form we recommend at `https://github.com/XAIHT/XaihtUnrealEngineMCP.git` (the Unreal Engine MCP modified specifically for this system; see §57.2) — solves that problem from the engine side. It is a small C++ plugin that you drop into your project's `Plugins/UnrealMCP/` folder, enable from `Edit → Plugins`, and forget. From the moment the editor opens, the plugin starts listening on `127.0.0.1:55557` for **JSON commands over a TCP socket**. The wire shape is brutally simple — one command per connection, going in as `{"type": "<verb>", "params": {...}}`, coming back as `{"status": "ok"|"error", "result": {...}, "error": "..."}`. That is the whole API. There is no SDK. There is no authentication. There is just a socket, and a script that knows the right verbs.
+
+The Tlamatini side is even simpler. The **Unrealer** agent (`agent/agents/unrealer/unrealer.py`, the 62nd entry in the catalog) is a pool subprocess that opens that socket, sends one command, captures one response, writes it as an `INI_SECTION_UNREALER<<<` block to its own log, triggers any downstream agents, and exits. The plugin does the heavy lifting; Tlamatini does the orchestration. It is, structurally, the smallest agent in the whole catalog — about 120 lines of business logic on top of the standard pool-agent boilerplate — and it gives you the entire command surface the connected plugin build exposes — up to 53 verbs across nine categories.
+
+## 57.2. Where the plugin lives (the MCP git location, repeated for emphasis)
+
+You install the plugin once, per Unreal project. **The build we recommend — and the one Tlamatini is developed and tested against — is Tlamatini's own extended fork, the Unreal Engine MCP modified specifically for this system:**
+
+- **Repository**: `https://github.com/XAIHT/XaihtUnrealEngineMCP.git`
+- **What it is**: the canonical `chongdashu/unreal-mcp` plugin forked and extended for Tlamatini. It ships the full **53-verb, nine-category** surface this chapter describes — the base editor / blueprint / node / project / umg verbs **plus** the System / Level / Asset / Material families and `take_screenshot` / `focus_viewport` / `set_pawn_properties` / `find_blueprint_nodes`.
+- **Plugin folder name (inside your project)**: `Plugins/UnrealMCP/`
+- **Default in-engine TCP port**: `55557` on `127.0.0.1`
+- **Supported Unreal Engine versions**: 5.5 and newer
+
+It is a drop-in for the upstream — same wire protocol, same port, same folder name — so Tlamatini's Unrealer needs no client-side changes to use it.
+
+The fork is built on the canonical reference implementation, which is what Tlamatini's `UnrealConnection` adapter mirrors verbatim:
+
+- **Repository**: `https://github.com/chongdashu/unreal-mcp`
+- **License**: MIT
+- **Supported Unreal Engine versions**: 5.5 and newer
+
+The upstream alone gives you the base 28-verb surface; install the XAIHT fork above for the System / Level / Asset / Material families that demos 60/61/62 (§57.7) exercise. Two further community forks ship the same wire protocol on the same port and also work with Tlamatini's Unrealer with no client-side changes:
+
+- `https://github.com/CrispyW0nton/Unreal-MCP-Ghost`
+- `https://github.com/gingerol/vhcilab-unreal-engine-mcp`
+
+You are also welcome to fork the plugin and add your own command verbs. Tlamatini's Unrealer does not maintain a client-side allow-list of verbs — it forwards whatever `command` + `params` pair you give it, verbatim. If your fork understands a new verb like `spawn_one_thousand_grass_blades`, your fork will get a call for `spawn_one_thousand_grass_blades`, and Tlamatini will pass the response back into the conversation the same way it does for any other verb. The decoupling is intentional, and it is the entire reason Tlamatini does not need to track the plugin's version.
+
+## 57.3. Wiring up your UE5 project
+
+There is no shortcut, but there are no surprises either:
+
+1. **Clone the plugin** from your chosen upstream (or download the ZIP and unzip it).
+2. **Drop the `UnrealMCP` folder** into your project's `Plugins/` directory so the path ends `<YourProject>/Plugins/UnrealMCP/UnrealMCP.uplugin`. If you do not have a `Plugins` directory in your project root, create one — UE5 expects exactly that name.
+3. **Open the project in the UE5 editor.** Because the plugin is C++, the editor will offer to rebuild it for your engine version. Accept. If the project is Blueprint-only and you have never built a C++ project before, the editor will first nudge you to install Visual Studio Build Tools (Windows) or the Xcode command-line tools (macOS). This is a one-time set-up.
+4. **Enable the plugin** via `Edit → Plugins`, search "UnrealMCP", tick **Enabled**, restart the editor when prompted.
+5. **Confirm the listener** by opening `Window → Developer Tools → Output Log` and watching for a line such as `LogTemp: UnrealMCP listening on 127.0.0.1:55557`. That line is the *single* green light you need. Without it, every Unrealer call from Tlamatini will return `Failed to connect to Unreal at 127.0.0.1:55557` — which is the right error message, but not the one you want to chase if you can avoid it.
+
+> A subtlety worth knowing: **you do not need to press Play (PIE)** to drive the editor through Unreal MCP. The plugin operates at editor level — spawning actors, building blueprints, compiling them — and that work happens against the open project, not the running game. Some UMG operations like `add_widget_to_viewport` queue the widget for the next PIE session, so if you are testing a HUD widget you will need to press Play to actually see it. That is an Unreal MCP behaviour, not a Tlamatini one.
+
+## 57.4. The thirty-second conceptual model
+
+```
+┌─────────────────────────────────────────┐
+│ You (in the Tlamatini chat)             │
+└────────────┬────────────────────────────┘
+             │ "Run Unreal command with command='spawn_actor' …"
+             ▼
+┌─────────────────────────────────────────┐
+│ Tlamatini Multi-Turn LLM                │
+│   → chat_agent_unrealer (one call)      │
+└────────────┬────────────────────────────┘
+             │ writes config.yaml, spawns child process
+             ▼
+┌─────────────────────────────────────────┐
+│ unrealer.py (pool subprocess, ~120 LOC) │
+│   opens socket → 127.0.0.1:55557        │
+│   sends {"type":"spawn_actor", …}        │
+│   reads JSON until complete             │
+│   logs INI_SECTION_UNREALER<<<          │
+└────────────┬────────────────────────────┘
+             │ TCP/JSON
+             ▼
+┌─────────────────────────────────────────┐
+│ UnrealMCP plugin (inside UE5 editor)    │
+│   schedules work on the game thread     │
+│   returns {"status":"ok", "result":…}   │
+└─────────────────────────────────────────┘
+```
+
+The diagram is not lying for the sake of clarity — that **is** the whole pipeline. There is no middle service to start, no daemon to register, no broker to authenticate against. The plugin listens, the agent calls, the answer comes back.
+
+## 57.5. The command surface, organised the way a builder thinks
+
+The wrapped tool `chat_agent_unrealer` and the canvas **Unrealer** node both forward whatever verb you pick, so the catalog is exactly whatever your connected plugin build exposes — from the base 28 verbs up to the **53-verb, nine-category** extended surface that Tlamatini's own fork (`XAIHT/XaihtUnrealEngineMCP`, §57.2) ships. It splits into reasoning units:
+
+- **Reading the level + observing (editor reads).** `get_actors_in_level`, `find_actors_by_name`, `get_actor_properties`, plus `focus_viewport` (aim the editor camera) and `take_screenshot` (capture the viewport to a file so the LLM can *see* the result of its own change — the observe→act loop). These are the safe, side-effect-free probes you sprinkle through any flow to give the LLM enough context to make decisions ("the level already has a `MyCube`; do I need to spawn another?").
+- **Modifying the level (editor writes).** `spawn_actor`, `create_actor`, `spawn_blueprint_actor`, `delete_actor`, `set_actor_transform`, `set_actor_property`. The bread-and-butter of any procedural-content flow.
+- **Authoring Blueprints (blueprint).** `create_blueprint`, `add_component_to_blueprint`, `set_static_mesh_properties`, `set_component_property`, `set_physics_properties`, `compile_blueprint`, `set_blueprint_property`, `set_pawn_properties`. You can scaffold an entire new Actor class from chat — give it a static-mesh component, configure its physics, compile it — and then spawn instances of it back into the level in the same conversation.
+- **Wiring Blueprint event graphs (node).** `add_blueprint_event_node`, `add_blueprint_input_action_node`, `add_blueprint_function_node`, `connect_blueprint_nodes`, `add_blueprint_variable`, `find_blueprint_nodes`, `add_blueprint_get_self_component_reference`, `add_blueprint_self_reference`. This is the niche that ties Tlamatini to *gameplay* engineering and not just level-decoration tooling.
+- **Project input + UMG widgets (project, umg).** `create_input_mapping`, `create_umg_widget_blueprint`, `add_text_block_to_widget`, `add_button_to_widget`, `bind_widget_event`, `add_widget_to_viewport`, `set_text_block_binding`. A complete HUD pipeline in seven verbs.
+- **The escape hatch + introspection (system).** `execute_python` (run ANY script inside the editor — it reaches all of UE5's `unreal` Python API, so Niagara, Sequencer, landscape, audio, etc. are all in range even without a dedicated verb), `execute_console_command` (any console line / CVar — pass it as `params.console_command`, which the agent remaps to the wire's `params.command`), `get_class_info` (reflect a UClass before you set a property), `list_assets` (enumerate the content browser). `execute_python` is the single most powerful verb in the catalog.
+- **Levels / world (level).** `open_level`, `new_level`, `get_current_level`, `save_current_level`, `save_all`. The AI can now change *which* map it is editing, not just what is in the current one.
+- **Assets (asset).** `import_asset` (pull an FBX / texture / audio file off disk into the project), `duplicate_asset`, `rename_asset`, `delete_asset`, `save_asset`, `create_folder`.
+- **Materials (material).** `create_material`, `create_material_instance`, `set_material_parameter`, `assign_material` — author a material, derive an instance, tint it, and paint it onto a level actor, all from chat.
+
+> The plugin's *headless* tools (`build_project`, `run_automation_tests`, `run_macro`) are **not** part of this socket surface — they shell out to `UnrealEditor-Cmd` as separate processes and cannot be reached over the editor's TCP listener. Chain Unrealer nodes through a Parametrizer for the `run_macro` equivalent.
+
+If you forget which verb does what, ask Tlamatini. The agent's `purpose` string in `chat_agent_registry.py` carries the full taxonomy, so the LLM has it in its tool-description prompt at all times.
+
+## 57.6. The smallest possible "hello, Unreal" you can run today
+
+Once UE5 is open with the plugin enabled and Tlamatini is running:
+
+1. Open the chat at `http://127.0.0.1:8000/agent/`.
+2. Tick **Multi-Turn**. Tick **Exec Report** too — you will want the run table.
+3. Send: `"Run Unreal command with command='get_actors_in_level'."`
+
+A few seconds later you should see:
+
+- The chat LLM picked `chat_agent_unrealer` from the planner.
+- The wrapped runtime spawned `unrealer_001_<id>` under `agent/agents/pools/_chat_runs_/`.
+- The agent's log contains the outbound JSON and the inbound JSON.
+- The chat answer carries a one-line summary ("Level contains N actors: …") followed by the per-step **Unrealer Operations** table.
+
+If that round-trip works, the rest of the command surface is just paperwork. If it does not, jump to §57.10 (troubleshooting).
+
+## 57.7. The full demo (built in, no setup beyond the plugin)
+
+Tlamatini ships with a seeded demo prompt — `idPrompt=25`, *Unreal MCP End-to-End Editor Drive* — that puts every **base** command category (editor / blueprint / node / umg) through its paces in a single Multi-Turn run. It:
+
+1. Sanity-probes the connection (`get_actors_in_level`).
+2. Spawns a bare `StaticMeshActor` named `TlamatiniProbe_Cube` (`spawn_actor`).
+3. Verifies the spawn (`find_actors_by_name`).
+4. Scaffolds a brand-new Blueprint Actor (`create_blueprint`) called `BP_TlamatiniProbe`.
+5. Gives it a `StaticMeshComponent` (`add_component_to_blueprint`).
+6. Compiles it (`compile_blueprint`).
+7. Spawns a `BP_TlamatiniProbe` instance (`spawn_blueprint_actor`) called `TlamatiniProbe_Spawned`.
+8. Builds a UMG HUD widget called `WBP_TlamatiniProbeHUD` (`create_umg_widget_blueprint` → `add_text_block_to_widget` → `add_button_to_widget` → `add_widget_to_viewport`).
+9. Renders the whole run as an HTML report table at the bottom of the answer.
+10. Closes with a banner — ✅ FULLY OPERATIONAL, ⚠️ PARTIALLY OPERATIONAL, or ❌ UNREACHABLE — that mirrors the verdict the row-by-row table already gave you.
+
+After the demo finishes, your project will have three new artifacts in it (one actor, one Blueprint, one widget). They are intentionally left in place so you can poke at them in the editor; delete them via the Content Browser when you are done.
+
+If you have never run an Unreal MCP demo before, this is the **one** prompt to start with. It also doubles as a regression test — any change to the plugin, to Unrealer, to the contract registry, or to the wrapped-tool registration that breaks this prompt will be immediately visible in the final per-step table.
+
+**Three more demos for the extended surface.** The base demo above only drives the original editor / blueprint / node / umg verbs. Migration `0100_add_unrealer_extended_demo_prompts.py` adds three tiered prompts that put the **System / Level / Asset / Material** verbs (and `take_screenshot`) through their paces — pick them from the same Prompts dropdown:
+
+- **`idPrompt=60` — *Unreal Snapshot*** (basic): the observe→act loop — `get_current_level` → `spawn_actor` → `take_screenshot` (to `C:/Temp/unreal_snapshot.png`) → `save_current_level`.
+- **`idPrompt=61` — *Unreal Scene Forge*** (medium): content authoring — `list_assets` → `create_folder` → `create_material` → `create_material_instance` → `set_material_parameter` → `spawn_actor` → `assign_material` → `take_screenshot` → `save_all`. (It is honest that `set_material_parameter` on a freshly-created *blank* material may legitimately return `status: error` — that is expected, recorded, and not aborted.)
+- **`idPrompt=62` — *Unreal Python & Introspection*** (hard): the System escape hatch — `execute_console_command` → `get_class_info` → `list_assets` → `execute_python` (a multi-line script passed as a triple-quoted `params.code`) → `take_screenshot`.
+
+All three drive `chat_agent_unrealer` exactly like the base demo (tick only **Multi-Turn**; ACPX is not required) against the same running editor + bound plugin listener.
+
+## 57.8. Chaining Unreal calls on the visual canvas
+
+For long unattended flows that should run from a `.flw` or a Croner schedule, the **Unrealer** node on the canvas is the right surface. One node executes one command; you chain several together with **Parametrizer** nodes between them to copy a JSON field from one Unreal response into the next Unreal call's params.
+
+The canonical "scaffold a Blueprint and spawn an instance of it" canvas flow looks like this:
+
+```
+Starter
+  → Unrealer (command: create_blueprint, params.name=BP_X, params.parent_class=Actor)
+    → Parametrizer
+      → Unrealer (command: add_component_to_blueprint, params.blueprint_name=BP_X, …)
+        → Parametrizer
+          → Unrealer (command: compile_blueprint, params.blueprint_name=BP_X)
+            → Parametrizer
+              → Unrealer (command: spawn_blueprint_actor, params.blueprint_name=BP_X, …)
+                → Ender
+```
+
+The Parametrizer between each leg gives you a place to copy `response_body.result.name` (or any other JSON field the previous step returned) into the next step's `params`. Tlamatini's Agent Contract registry knows about Unrealer's six source fields — `host`, `port`, `command`, `status`, `error`, `response_body` — so the Parametrizer dialog will offer them in its dropdown when you wire the connection.
+
+If you want a branching flow — "if `compile_blueprint` failed, fire a Notifier instead of continuing" — drop a Raiser between the Unrealer and the next Parametrizer and have it watch for `status: error` in the log. That is exactly the pattern any non-Unreal agent uses; nothing about Unrealer is special there.
+
+## 57.9. The bullet-proof checklist (copy this to a sticky note)
+
+Before you start any Tlamatini-driven Unreal session:
+
+| Check | How |
+|---|---|
+| UE5 5.5+ open with a project loaded | `File → Open Project → <yours>`, leave the editor focused — not minimised to the tray |
+| Plugin enabled | `Edit → Plugins → UnrealMCP = Enabled`, editor restarted since you enabled it |
+| Listener bound | UE5 Output Log shows `UnrealMCP listening on 127.0.0.1:55557` |
+| Port not blocked | PowerShell: `Test-NetConnection -ComputerName 127.0.0.1 -Port 55557` → `TcpTestSucceeded: True` |
+| Tlamatini server up | `python Tlamatini/manage.py runserver` (or `--noreload`) shows the startup banner |
+| **Multi-Turn** ticked | The toolbar checkbox left of **Exec Report** |
+| Tool enabled | Tools dialog shows `Chat-Agent-Unrealer` ticked (it ships ticked by default after migration `0086`) |
+
+Then run the seeded **Unreal MCP End-to-End Editor Drive** demo (Prompts dropdown → idPrompt 25) as your smoke test. If the demo's final banner is ✅, everything from the wire up to the LLM's understanding is healthy and you can move on to your real work.
+
+## 57.10. When it goes wrong (and what each failure actually means)
+
+Tlamatini's Unrealer agent is designed never to raise into the caller — every failure mode turns into a `status: error` row in the response and, if the call was driven from chat, a clean error message in the Multi-Turn loop instead of a crashed conversation. Reading those messages with a clear head is half the battle.
+
+- **`Failed to connect to Unreal at 127.0.0.1:55557`.** The plugin's listener is not bound. Either UE5 is not running, the plugin is disabled, the plugin failed to rebuild for your current engine version, or — rarely — you have a second editor instance also bound to the same port. Open UE5's Output Log and find the `UnrealMCP listening on …` line; that is your ground truth.
+- **`Timeout receiving Unreal response`.** UE5's game thread is busy. Most often this happens during `compile_blueprint` on a non-trivial graph. Widen `read_timeout` in the canvas node's `config.yaml` or in the wrapped-tool call. Do not lower `connect_timeout` to compensate; the two are independent.
+- **`status: error` from a Blueprint command, no obvious reason.** Check the capitalisation of `parent_class` and similar string params — UE5 type names are case-sensitive and the plugin will not auto-resolve `actor` → `Actor`.
+- **The widget appears in the Content Browser but never shows up in the game.** `add_widget_to_viewport` queues the widget at editor level; you still need to press **Play** in the editor to enter PIE and see it. This is an Unreal MCP plugin design choice, not a Tlamatini bug.
+- **An actor spawn silently no-ops.** Most often: you spawned inside another object's collision volume. Raise `params.location` to `[0, 0, 150]` (or any sufficiently free patch of world space) and retry.
+- **Output Log shows a backtrace from the plugin, not a JSON response.** That is an upstream plugin bug. Reproduce it with the canonical Unreal MCP Python client (the upstream repo ships one in its `Python/` folder), report it upstream, and in the meantime work around it from the Tlamatini side by avoiding that verb.
+
+For the full debugging trail: pool-agent log lives at `<pool>/unrealer_<n>/unrealer_<n>.log`; chat-wrapped runs land under `agent/agents/pools/_chat_runs_/unrealer_<seq>_<id>/unrealer_<seq>_<id>.log`. Both contain the outbound JSON command and the inbound Unreal response verbatim. When you file a bug report — to us, or to the upstream plugin maintainers — paste those two lines, and the conversation gets a lot shorter.
+
+## 57.11. Why this matters
+
+A drag-and-drop workflow designer that can issue real, structured commands to a real, running Unreal Engine 5 editor is not the kind of bridge a small project usually ships. Tlamatini gets to ship it cheaply for three reasons that are worth naming explicitly, because each is the result of a design choice we made on other parts of the system long before Unreal entered the picture.
+
+1. **The pool-subprocess model.** Every workflow agent in Tlamatini already runs as its own short-lived Python interpreter, talking to the engine over plain text logs and `INI_SECTION_<TYPE><<<` blocks. The Unreal MCP plugin's TCP/JSON protocol slotted into that model without any new runtime — the Unrealer agent is just a pool subprocess that happens to open a socket instead of running `git log` or sending an email.
+2. **The Agent Contract registry.** Every agent's connection-field shape, parametrizer source fields, and `secret_paths` are declared once in `agent/services/agent_contracts.py`. Adding Unrealer was a single contract entry — and from that one entry the Flow Compiler, the canvas wiring, the Parametrizer dialog, the `.flw` save/load redaction, and the Validate dry-run all "just worked".
+3. **The wrapped chat-agent runtime.** Adding `chat_agent_unrealer` was one entry in `chat_agent_registry.py` plus two migrations (one for the Agent row, one for the Tool row). The wrapped runtime did the rest — sequencing, isolation, log capture, deduplication, exec-report integration, Parametrizer-compatibility, the lot.
+
+In other words: when a future engine — Unity, Godot, Blender, Houdini — exposes an equivalent MCP-style socket, **the cost of supporting it from Tlamatini is one new pool agent file, one contract entry, and two migrations**. The hard work is already done. That is the architectural payoff of the past year of refactoring, and Unreal MCP is the first place outside the existing 83-agent catalog where the cheque cashes for a brand-new domain.
+
+Welcome to driving Unreal Engine 5 from chat. Mind the collision volumes.
+
+---
+
+The **Keyboarder** agent simulates human keyboard input through the `input_sequence` field.
+
+- **Literal strings**: enclose in single or double quotes — `'Hello World'`.
+- **Simultaneous keys**: join with `+` — `ctrl+c`, `shift+alt+delete`.
+- **Sequential commands**: separate with commas — `escape, escape, ctrl+c, 'hello'`.
+
+| Category | Supported keys |
+|---|---|
+| **Modifiers** | `ctrl`, `shift`, `alt`, `altgr`, `win`, `windows`, `command`, `option` |
+| **Arrows** | `left`, `<-(left arrow)`, `right`, `->(right arrow)`, `up`, `up arrow`, `down`, `down arrow` |
+| **Navigation** | `home`, `end`, `pageup`, `pgup`, `pagedown`, `pgdn` |
+| **Editing** | `enter`, `return`, `esc`, `escape`, `backspace`, `space`, `tab`, `del`, `delete`, `insert` |
+| **Locks** | `capslock`, `mayus`, `mayuscula`, `numlock`, `scrolllock` |
+| **Function keys** | `f1` through `f24` |
+| **Media & system** | `volumedown`, `volumeup`, `volumemute`, `playpause`, `nexttrack`, `printscreen`, `prtsc`, `pause`, `apps` |
+| **Symbols & numbers** | digits `0`–`9`, common punctuation, `\n`, `\r`, and `/`, `\\`, `[`, `]`, `-`, `=`, `,`, `.`, `;`, `'`, `` ` ``, `{`, `}`, `~`, `!`, `?`, `@`, `#`, `$`, `%`, `&`, `*`, `+`, `<`, `>` |
+
+*Commands are case-insensitive internally; literal quoted text preserves your exact capitalization.*
+
+---
+
+# Bonus Chapter — § 58. The ESP32 Template Project — a known-good ESP32 firmware baseline for ESP32er
+
+This bonus chapter documents the **ESP32 Template Project** — a small, standalone
+PlatformIO project that blinks an ESP32's onboard LED and prints the LED state
+over the serial port. It is the ESP32 counterpart of the **STM32 Template Project
+MCP** (the project STM32er drives): a clean, version-controlled,
+*guaranteed-to-compile* starting point that Tlamatini's **ESP32er** agent can
+build, flash and monitor, and that you can equally use on its own from the
+command line or the VS Code PlatformIO IDE.
+
+> **Read this if** you want to prove an ESP32 board + toolchain are healthy before
+> writing real firmware, or you want a baseline ESP32er can drive end-to-end
+> (build → upload → monitor), or you want to publish your own ESP32 firmware
+> starter to GitHub.
+
+## 58.1. Why a separate template project at all?
+
+ESP32er and STM32er solve the same problem — "let Tlamatini scaffold, build,
+flash and observe embedded firmware" — but through deliberately different plumbing:
+
+| | **STM32er** | **ESP32er** |
+|---|---|---|
+| Toolchain driver | A separate **MCP server** (the STM32 Template Project MCP), because STM32CubeIDE has no single unified CLI. | The **`pio` CLI directly** — PlatformIO already ships a complete command line, so there is **no MCP server**. |
+| What gets downloaded | The MCP repo (`git clone`/zip) + its Python deps. | PlatformIO Core itself (the official `get-platformio.py` installer), once. |
+| The "template project" | Lives *inside* the MCP repo and is F407VG-specific. | Is a separate, self-contained project (`ESP32TemplateProject` — not yet published as a repository; ESP32er scaffolds an equivalent), board-and-framework agnostic by editing one file. |
+
+So the ESP32 Template Project is intentionally a **plain PlatformIO project**, not
+a server. ESP32er does not embed it — ESP32er can either point at a checkout of it
+(set `project_dir`) or scaffold an equivalent one from scratch with
+`action: create_project`. This repository is the **reference shape** that scaffold
+produces, kept as a maintained, CI-tested baseline.
+
+## 58.2. Where it lives and what's in it
+
+The scaffold ships at **`C:\Development\ESP32TemplateProject`** and is meant to be
+its own GitHub repository. That home has **not been published yet** — mirroring the
+STM32 one it would be `https://github.com/XAIHT/ESP32TemplateProject`, so treat that
+address as a plan rather than a link. Until it exists, ESP32er scaffolds an equivalent
+project on demand with `action: create_project`:
+
+```
+ESP32TemplateProject/
+├── platformio.ini             # board (esp32dev), framework (arduino), build flags
+├── src/
+│   └── main.cpp               # the blinking-LED firmware
+├── include/  lib/  test/      # standard PlatformIO directories (each with a README)
+├── .github/workflows/build.yml# CI: compiles the firmware on every push
+├── scripts/
+│   ├── create_github_repo.ps1 # one-shot "publish to GitHub" helper (Windows)
+│   └── create_github_repo.sh  # same, for bash / Git Bash / Linux / macOS
+├── .gitignore  CHANGELOG.md  LICENSE (MIT)  README.md
+```
+
+`platformio.ini` targets the generic **`esp32dev`** board with the **Arduino**
+framework — exactly the defaults ESP32er's `config.yaml` uses (`board: esp32dev`,
+`framework: arduino`) — and exposes two compile-time knobs:
+
+| Build flag | Default | Meaning |
+|---|---|---|
+| `-DBLINK_LED_PIN=2` | GPIO 2 | The GPIO the LED is wired to (GPIO 2 is the onboard blue LED on most DevKitC / WROOM-32 boards). |
+| `-DBLINK_INTERVAL_MS=500` | 500 ms | Half-period of the blink → 1 Hz. |
+
+`src/main.cpp` is the whole firmware: in `setup()` it configures the LED pin and
+opens the serial port at 115200 baud; in `loop()` it toggles the LED and prints
+`LED ON` / `LED OFF`. Printing the state means you can confirm the board is alive
+over the serial monitor even without watching the physical LED.
+
+## 58.3. Using it standalone (no Tlamatini)
+
+You need PlatformIO Core (`pip install platformio` or the official installer) and
+your board's USB-serial driver (CP210x / CH34x). Then, from the project root:
+
+```bash
+pio run                 # compile (the FIRST build also pulls the espressif32
+                        # platform + toolchain — several hundred MB — once)
+pio run -t upload       # flash over the onboard USB-serial bootloader (no JTAG)
+pio device monitor      # watch the log at 115200 baud (Ctrl+] to quit)
+```
+
+Expected serial output:
+
+```
+ESP32TemplateProject :: blink starting
+LED pin = 2, interval = 500 ms
+LED ON
+LED OFF
+LED ON
+...
+```
+
+To target a different ESP32 variant, run `pio boards espressif32`, change
+`board =` in `platformio.ini` (e.g. `esp32-s3-devkitc-1`, `esp32-c3-devkitm-1`),
+and — if the LED is on another pin — change `-DBLINK_LED_PIN=`.
+
+## 58.4. Driving it from ESP32er (the Tlamatini way)
+
+ESP32er auto-bootstraps PlatformIO Core if it is missing, so the only thing you
+install is the board's USB driver + Tlamatini. Point ESP32er at the project by
+setting its `project_dir` to the folder that holds `platformio.ini`, then run one
+`action` per invocation:
+
+| ESP32er `action` | Effect on this project |
+|---|---|
+| `validate` | Preflight — confirms `pio` resolves, `platformio.ini` exists, and (for hardware actions) a serial port is connected. Refuses fail-safe rather than mis-run. |
+| `build` | `pio run` — compiles `src/main.cpp`. Needs no board. |
+| `upload` / `build_and_upload` | `pio run -t upload` — flashes over USB. Requires a connected serial port. |
+| `monitor` | A bounded `pio device monitor` window (`monitor_seconds`, default 10 s). |
+| `monitor_session` | Composite: upload, then monitor — the end-to-end "flash and watch it blink" proof in one run. |
+| `write_source` / `read_source` / `list_sources` | Author / inspect files under `project_dir` — e.g. edit `src/main.cpp` to change the blink rate. |
+
+A natural Multi-Turn chat prompt:
+
+> *Using ESP32er, build and upload the ESP32TemplateProject at
+> `C:\Development\ESP32TemplateProject` to my board on COM5, then monitor the
+> serial port for 8 seconds and show me the LED log.*
+
+ESP32er emits an `INI_SECTION_ESP32ER` block for every run (fields `action`,
+`tool`, `ok`, `returncode`, `success`, `project_dir`, `port`, `environment`,
+`stage`) and **always** triggers its `target_agents`, so a downstream Forker can
+branch on `{success}` / `{returncode}` — making this template the first node of a
+larger firmware CI flow on the canvas.
+
+## 58.5. Publishing it to GitHub
+
+The project is ready to become its own repository. Two helper scripts wrap the
+[`gh` CLI](https://cli.github.com/) (install it and run `gh auth login` first):
+
+```powershell
+# Windows (PowerShell)
+.\scripts\create_github_repo.ps1 -RepoName ESP32TemplateProject -Owner XAIHT -Visibility public
+```
+```bash
+# bash / Git Bash / Linux / macOS
+./scripts/create_github_repo.sh ESP32TemplateProject XAIHT public
+```
+
+Each script will `git init` (if needed), make the first commit, create the GitHub
+repository under the given owner, push `main`, and print the URL. Equivalent by hand:
+
+```bash
+git init -b main && git add . && git commit -m "Initial commit: ESP32 blinking-LED template"
+gh repo create XAIHT/ESP32TemplateProject --public --source=. --remote=origin --push
+```
+
+Once pushed, the bundled GitHub Actions workflow (`.github/workflows/build.yml`)
+compiles the firmware on every push so the template never silently rots. The
+template has been verified to build clean with **PlatformIO Core 6.1.19** (it
+produces `firmware.bin` + `firmware.elf`).
+
+---
+
+# Bonus Chapter — § 59. The Day Tlamatini Learned to Sculpt in Blender
+
+> *A bonus chapter, narrative first, reference second. Read this if you make 3D art, motion graphics, or game assets in Blender and want a chat / canvas surface for the editor — driven by the **Blenderer** agent. The dry reference lives in **README §6.11** and in the agent's own `agents_descriptions.md` entry; this chapter is the "why it looks the way it does, and how to make it bullet-proof on your box".*
+
+## 59.1. The shape of the problem (and why Blender is *not* Unreal)
+
+Two chapters ago Tlamatini learned to drive Unreal Engine (§57). Blender is the same *kind* of problem — a **running editor process** holding a live graph of in-memory objects (meshes, materials, modifiers, collections, lights, cameras) that does not want to be poked from outside — but the **shape of the conversation is fundamentally different**, and that difference is the whole story of this chapter.
+
+Unreal MCP is a **verb** protocol: you send `{"type": "spawn_actor", "params": {...}}` and the plugin has a hand-written C++ handler for `spawn_actor`. The surface is a fixed menu of ~53 verbs.
+
+The **official Blender MCP add-on** (from blender.org) took the opposite design. Its socket speaks **one** primitive: *"here is some Python — run it inside Blender and give me back what the `result` variable holds."* The wire request is literally:
+
+```json
+{"type": "execute", "code": "import bpy\nresult = {'objects': len(bpy.data.objects)}", "strict_json": false}
+```
+
+followed by a single **NUL byte** (`\0`) as the frame delimiter, and Blender answers with another NUL-terminated JSON object:
+
+```json
+{"status": "ok", "result": {"objects": 3}, "stdout": "", "stderr": ""}
+```
+
+That is breathtakingly powerful — the "command surface" is the **entire Blender Python API**, every operator, every data block, every add-on — and slightly terrifying, because now *the caller* has to write correct `bpy` code for every single thing, and remember to assign a `result` dict, and hope it's JSON-serializable. A bare LLM client (which is what blender.org recommends) puts that whole burden on the model, every turn.
+
+Tlamatini's **Blenderer** agent splits the difference. It keeps the escape hatch — `execute_code` runs any Python you give it — but wraps the everyday operations (inspect the scene, make an object, colour it, render it) in a small **rich action catalog** of named commands that *generate* the correct, `result`-setting Python for you. You get verb-like ergonomics when you want them and the full API when you need it.
+
+## 59.2. Where Blender MCP lives (the add-on, not a Tlamatini fork)
+
+Unlike Unreal — where Tlamatini ships its own extended MCP fork — Blender's MCP is **official, first-party, and maintained by the Blender project**:
+
+- **Home / docs:** https://www.blender.org/lab/mcp-server/
+- **Source:** the `blender_mcp` repository on Blender's own Gitea (`projects.blender.org/lab/blender_mcp`). It has three parts: the **add-on** (the TCP socket server that runs *inside* Blender), the **`blmcp` MCP server** (a stdio↔socket bridge for generic MCP clients), and a bundled **`chat_client.py`** (a bare terminal chat).
+
+Here is the key architectural decision Tlamatini makes, and the reason Blenderer is a better experience than the stock setup: **Tlamatini talks to the add-on socket *directly* and ignores the `blmcp` bridge and the bundled chat client entirely.** Blenderer *is* the client. So you install exactly two things — **Blender** and **the add-on** — and skip `uv`, skip running a separate MCP-server process, skip the terminal chat. Everything you already love about Tlamatini (the canvas, Multi-Turn, the Exec Report, Parametrizer pipelines, the other 86 agents) then composes on top of Blender with zero extra plumbing.
+
+## 59.3. Installing and enabling the add-on
+
+1. Install the **Blender MCP add-on** in Blender (Edit → Preferences → Add-ons → Install, then tick it on), following the instructions on the blender.org page above.
+2. Turn on **Online access** in *Edit → Preferences → System*. The add-on refuses to open a socket while Blender is in fully-offline mode — this is the single most common "it won't connect" cause.
+3. In the add-on's preferences panel, set the **host** and **port** (defaults `localhost` / `9876`) and **start the server** (there's an optional auto-start toggle so it comes up with Blender).
+
+That's it. Blender is now listening on `localhost:9876`. Blenderer never launches Blender — it only connects to an already-running editor, exactly like Unrealer never launches UE5.
+
+## 59.4. The thirty-second conceptual model
+
+Hold these five facts and everything else follows:
+
+1. **One primitive.** Every Blenderer run becomes one `{"type":"execute","code":…,"strict_json":…}` message to `localhost:9876`, NUL-framed, and one NUL-framed JSON reply.
+2. **The code must set `result`.** Whatever you want back, assign it to a `result` dict. (Blenderer's baked verbs do this for you; in `execute_code` *you* do it.)
+3. **`strict_json` (default `false`).** When `true`, Blender errors if `result` isn't JSON-serializable. When `false` (the robust default), non-serializable values are `repr()`'d instead of failing — friendlier for exploration.
+4. **Blenderer is a generic, deterministic forwarder.** It does not run an LLM itself; it builds the code, sends it, captures the reply into an `INI_SECTION_BLENDERER` block, and **always** triggers `target_agents` (success *or* error) so a downstream Forker can branch on `{status}`.
+5. **Direct socket.** No `blmcp`, no external client. The same `agent_id`-free socket is used by both the chat tool (`chat_agent_blenderer`) and the canvas **Blenderer** node — they produce identical artefacts.
+
+## 59.5. The action catalog, organised the way a builder thinks
+
+`command` picks what Blenderer does. Three buckets:
+
+**Look (read-only — safe, no scene changes):**
+- `ping` — is Blender alive? Returns the Blender version + the active scene.
+- `scene_info` — scene name, frame range, render engine, and the object list.
+- `get_objects` — the full tree: every object (name/type/location/parent/visibility/dimensions), plus collections, meshes and materials.
+- `get_object_detail` (`params.object_name`) — one object in depth: transform, scale, dimensions, assigned materials, modifiers, vertex count.
+- `blendfile_summary` — datablock counts for the open `.blend` (objects, meshes, materials, textures, images, cameras, lights, collections, scenes).
+
+**Make (mutating):**
+- `create_object` — `params.type` ∈ cube / sphere / cylinder / cone / plane / monkey / torus, with `params.name` and `params.location` `[x,y,z]`.
+- `delete_object` (`params.object_name`).
+- `set_material` — attach (or reuse) a Principled-BSDF material on `params.object_name` and set its base colour to `params.color` `[r,g,b]` or `[r,g,b,a]`; name it with `params.material`.
+
+**Show (output to disk):**
+- `screenshot` (`params.output_path`) — a window grab via `bpy.ops.screen.screenshot`.
+- `render` (`params.output_path`) — a full still render via `bpy.ops.render.render(write_still=True)`.
+
+For both output verbs, **omit `params.output_path`** and Blenderer writes a collision-proof `.png` under Tlamatini's **Temp** directory (`<app>/Temp/TlamatiniBlenderer/…`), in line with the 2026-06 temp-directory policy.
+
+**Escape hatch:**
+- `execute_code` (`params.code`) — runs your Python verbatim. Anything the catalog doesn't cover (modifiers, geometry nodes, animation, UV, sculpt, compositor, import/export, add-on calls…) lives here. Set a `result` dict to return data.
+
+## 59.6. The smallest possible "hello, Blender"
+
+With **Multi-Turn** ticked, type:
+
+> Run Blender command with command='ping'
+
+Blenderer connects to `localhost:9876`, runs a tiny snippet, and you get back `status: ok` with something like `blender_version_string: "4.x.x"` and the active scene name. If instead you see a `status: error` whose message mentions *Online access* / *Cannot connect*, jump to §59.11 — it's almost always the add-on server not started or Online access off.
+
+## 59.7. The full demo — "BLENDER FORGE" (built in, no setup beyond the add-on)
+
+Tlamatini ships a Catalog-of-Prompts demo called **BLENDER FORGE** (open the prompts catalog, slot 75). Run it and Tlamatini will, end to end through `chat_agent_blenderer`:
+
+1. `ping` — confirm Blender is reachable (and bail gracefully to a banner if not).
+2. `create_object` — add a **monkey** (Suzanne) named `ForgeSuzanne` at `[0,0,2]`.
+3. `set_material` — give it a warm orange Principled base colour.
+4. `render` — render a still (defaulting under the Temp dir).
+5. Print a tidy HTML **Build Report** table — one row per call, every value taken verbatim from the `INI_SECTION_BLENDERER` blocks — and a closing **✅ FORGED** / **⚙️ BLENDER UNREACHABLE** banner.
+
+It is deliberately safe to run repeatedly: it adds one object and one material and renders a small image. If Blender isn't running, it degrades to the "unreachable" banner instead of failing — the same fail-soft contract every Blenderer flow honours.
+
+## 59.8. Chaining Blender calls on the visual canvas
+
+The chat tool is great for one-offs; the **canvas** is where unattended pipelines live. Drop the **Blenderer** node (it carries a distinctive blue→orange "Blender Forge" gradient so it's easy to spot next to the cobalt Unrealer), set its `command` + `params` in the node dialog, and wire it like any other agent.
+
+Because each Blenderer emits an `INI_SECTION_BLENDERER` block whose body is Blender's full JSON response, **Parametrizer** can copy one step's output into the next step's config. The canonical pattern:
+
+```
+Starter → Blenderer(create_object) → Parametrizer → Blenderer(set_material)
+        → Parametrizer → Blenderer(render) → Notifier → Ender
+```
+
+Each Parametrizer copies the previous Blenderer's `response_body` (or a specific JSON field, via the Parametrizer dialog's interconnection-mapping UI) into the next Blenderer's `params`. Put a **Forker** after a Blenderer and branch on the section's `status` (`ok` vs `error`) for per-step exception handling — e.g. abort to a Notifier if a render fails. A **Croner** in front turns the whole thing into a nightly automated render. **FlowCreator** knows the Blenderer entry (catalog #77) and can design these flows for you from a plain-English objective.
+
+## 59.9. `execute_code` — the universal escape hatch (and its one rule)
+
+When you outgrow the catalog, reach for `execute_code`. The **one rule**: your code must assign a `result` dict. Example — count polygons across the scene and report the heaviest object:
+
+> Run Blender command with command='execute_code' and params.code="import bpy; objs=[(o.name,len(o.data.polygons)) for o in bpy.data.objects if o.type=='MESH']; objs.sort(key=lambda x:-x[1]); result={'meshes':objs,'heaviest':objs[0] if objs else None}"
+
+Tips that save you grief:
+- Keep `strict_json` at `false` unless you specifically want the serialization guard — then a stray Blender object in `result` is `repr()`'d instead of erroring the whole call.
+- Anything you `print()` comes back in the response's `stdout`, captured in the section body — handy for progress without polluting `result`.
+- `execute_code` and `render` get **longer socket read-timeout floors** (300 s and 600 s respectively) because a heavy script or a cold-start render legitimately takes a while; Blenderer raises the timeout for you so a slow-but-valid run is never killed mid-flight.
+
+## 59.10. The bullet-proof checklist (copy this to a sticky note)
+
+1. Blender is **running**, the MCP add-on is **enabled**, **Online access** is **on**, and the add-on **server is started** (host/port match — default `localhost:9876`).
+2. For a remote Blender, pass `host='<ip>'` / `port=<n>` per call (or set them in the node dialog); only one Blender can bind a given port.
+3. Start every session with `ping` — if it isn't `ok`, fix the connection before anything else.
+4. Use the **read** verbs to ground yourself (`scene_info`, `get_objects`) before mutating.
+5. Let output verbs default their path to **Temp** unless you have a reason to choose one.
+6. In Multi-Turn, the agent is gated by the **Ask Execs** toggle like any state-changer — tick it if you want a Proceed/Deny prompt before each Blender mutation.
+7. The agent **always** fires `target_agents`; branch on `{status}` with a Forker rather than assuming success.
+
+## 59.11. When it goes wrong (and what each failure actually means)
+
+- **`status: error` … "Cannot connect to Blender at localhost:9876" / ConnectionRefusedError.** Blender isn't running, the add-on isn't enabled, **Online access is off**, or the add-on server wasn't started. This is the #1 cause — walk §59.3 again.
+- **"did not reply within Ns" on a fast read verb.** Blender's main thread is busy or parked on a **modal dialog / blocking operator** (a popup waiting for a human, a long bake). Dismiss the dialog in Blender, or split the work; for genuinely long work raise `read_timeout`.
+- **A render/`execute_code` "times out" anyway.** Rare — the per-command floors are generous — but a cold GPU/CYCLES first-frame compile or an enormous scene can exceed even those. Raise `read_timeout` for that node.
+- **"Unknown command".** You wired a `command` that isn't in the catalog. Use `execute_code` for anything the catalog doesn't name — it reaches the whole API.
+- **Your `execute_code` "succeeded" but `result` is empty.** You forgot to assign `result`. Blender defaults it to `{}` when your script doesn't set it; anything you `print()` is still in `stdout`.
+
+For the full trail: the pool-agent log is `<pool>/blenderer_<n>/blenderer_<n>.log`; chat-wrapped runs land under `agent/agents/pools/_chat_runs_/blenderer_<seq>_<id>/…log`. Both contain the exact Python sent and Blender's verbatim reply.
+
+## 59.12. Why this matters
+
+blender.org's own recommendation is to point a generic MCP client (Claude Desktop, or their bundled terminal `chat_client.py`) at the `blmcp` bridge and chat with it. That works — and it's a flat, single-window, you-versus-one-model experience. Tlamatini takes the *same* official add-on and gives it a body: a visual canvas where a dozen Blender steps wire into a render pipeline, a Multi-Turn operator loop that does the modelling for you, an Exec Report that shows every command and its verdict, Parametrizer chains that pass a created object's name into the next step's material, a FlowHypervisor watching for stalls, and 81 sibling agents so a Blender render can be the *middle* of a workflow that started with a web crawl and ends with a Telegram message. Same engine underneath; an order of magnitude more leverage on top. That is the point of Blenderer.
+
+---
+
+# Bonus Chapter — § 60. The Day Tlamatini Learned to Build a House
+
+> *A bonus chapter, narrative first, reference second. Read this if you want a light you can flick from your phone, a temperature sensor that whispers its readings to a dashboard, or a doorbell that texts you — built not by soldering a weekend away over a C++ compiler, but by describing the thing you want in a few lines of YAML and letting Tlamatini's **ESPHomer** agent do the rest. The dry reference lives in **README §3.19** and in the agent's own `agents_descriptions.md` entry; this chapter is the "why it looks the way it does, and how to make it work on your kitchen table".*
+
+## 60.1. A different kind of firmware
+
+The three firmware agents you have already met in this book — STM32er, ESP32er, Arduiner — all share a quiet assumption: that *firmware is a program*. You scaffold a project, you author a `.c` or a `.cpp` or an `.ino`, you compile it into a binary, you flash that binary onto silicon, and you watch a serial port to prove it lives. It is the honest, low-level craft of embedded engineering, and Tlamatini does it beautifully across three toolchains.
+
+ESPHome refuses that assumption. Its founding idea — *Smart Home Made Simple*, in the words of the Open Home Foundation that stewards it — is that for the overwhelmingly common case of a home-automation device (a light, a switch, a sensor, a display) you should never see a line of C++ at all. You should **describe the device**, in a small, declarative YAML file, and let ESPHome *generate* the firmware for you. Under the hood it still compiles real C++ through PlatformIO and flashes a real binary; but that machinery is hidden the way an engine is hidden under a hood. What you touch is the intent, not the implementation.
+
+So ESPHomer is the fourth firmware agent, and the odd one out — by design. Where its siblings author source code, ESPHomer authors *configuration*. That single difference ripples through everything: the actions it offers, the file it cares about, even the built-in generator it carries in place of an interactive wizard. This chapter is about that difference and how to wield it.
+
+## 60.2. The foundation: ESPHome, in one breath
+
+[ESPHome](https://esphome.io) turns ESP32, ESP8266, RP2040 and BK72xx microcontrollers into smart-home devices from a YAML configuration. Four promises define it, and ESPHomer inherits all four:
+
+- **No coding required** — a device is a YAML file, not a program.
+- **Wireless updates (OTA)** — after the first USB flash, you push new firmware over WiFi.
+- **Modular** — hundreds of supported sensors, switches, lights and displays, composed by listing them.
+- **Local control** — the device runs on your own network and talks to a hub (most famously Home Assistant) over a native API, with no cloud dependency.
+
+ESPHome is a Python package — `pip install esphome` — and ships a complete command-line tool, `esphome`, covering everything ESPHomer needs: validate a config, compile it, upload it over USB or over-the-air, stream its logs, clean its build. That completeness is exactly why ESPHomer, like ESP32er and Arduiner before it, drives the CLI **directly** and needs no MCP server. (STM32er needs a server only because STM32CubeIDE has no unified CLI; ESPHome has the opposite problem — too capable a CLI to bother wrapping.)
+
+## 60.3. The thirty-second conceptual model
+
+Hold one picture in your head and the rest follows: **a device is a `*.yaml` file.** Everything ESPHomer does is in service of that file — generate it, write it, read it back, validate it, compile it into firmware, push that firmware to a board, then listen to the board talk.
+
+```
+ new_config / write_config        config              compile               upload                 logs
+   author the YAML       ──▶  validate the YAML ──▶ build firmware ──▶ flash (USB or OTA) ──▶ watch it run
+```
+
+That is the whole lifecycle. The granular actions walk it one step at a time; the composite `scaffold_compile_upload` walks the whole thing in a single call. There is no "project directory full of source" to reason about, no linker script, no `fqbn` — just a path to one YAML file (`config_path`) that every step shares.
+
+## 60.4. Zero-config: you install only the USB driver
+
+The operator promise that runs through every firmware agent in this book holds here too, and is if anything simpler. With `esphome_executable` left blank (the default), ESPHomer **installs ESPHome itself** — `pip install esphome` — the first time it needs it. There is no separate IDE to download as with STM32CubeIDE, no Go binary to fetch as with arduino-cli, no installer script as with PlatformIO; ESPHome is *just a Python package*, and Tlamatini already carries a Python. You run `action='bootstrap'` to do it explicitly, or trust `auto_bootstrap` (default `true`) to do it lazily on first use.
+
+The only thing the *human* installs is the board's USB-serial driver (so the first flash can find the board) and Tlamatini. The first `compile` afterwards is slow — once — because ESPHome, through PlatformIO underneath, downloads the platform and toolchain. Every compile after that is quick. The FlowHypervisor knows this and will not flag a long *first* compile as stuck while download progress keeps printing (see its **ESPHOMER SPECIAL NOTES**).
+
+## 60.5. The fail-safe preflight
+
+Before ESPHomer compiles or uploads anything, it runs the same kind of safety gate its siblings run — refusing, rather than producing a doomed build. `action='validate'` reports the whole environment without building; every build/upload action runs the gate implicitly. The rules:
+
+- `esphome` must be resolvable (or bootstrappable).
+- For anything that touches the YAML — `config`, `compile`, `upload`, `logs`, `clean`, `list_artifacts` — the device YAML must exist. (Don't have one? `new_config` or `write_config` first.)
+- For anything that touches **hardware** — `upload`, `run`, `logs` — a serial port must be physically connected **or** an OTA host must be supplied in `port`. ESPHome's first flash is always over USB-serial; *after* that, because every generated device carries an `ota:` block, you can update it over WiFi by passing the device's IP as `port`. ESPHomer treats a `port` that looks like a hostname or IP as an OTA target and waives the serial requirement.
+
+A refusal is **not a crash**. A `stage: preflight` section that says "No serial port detected and no OTA host given" is the gate working exactly as designed — routable evidence a downstream Forker can branch on, never an error to flag.
+
+## 60.6. The action catalog, organised the way a builder thinks
+
+| What you want | `action` |
+|---|---|
+| Provision / check ESPHome | `bootstrap`, `validate`, `version` |
+| **Make** a device YAML (headless wizard) | `new_config` |
+| Hand-write / read / validate / clean a YAML | `write_config`, `read_config`, `config`, `clean` |
+| Build & flash | `compile`, `upload`, `run`, `list_artifacts` |
+| Watch it run (serial or OTA) | `logs` |
+| **Do it all in one call** | `scaffold_compile_upload` |
+
+Because the interactive `esphome wizard` cannot run unattended, ESPHomer ships its own **`new_config`** generator — the headless replacement. Give it a `name`, a `platform` (`esp32` / `esp8266` / `rp2040` / `bk72xx`), optionally a `board`, `led_pin`, and WiFi credentials, and it writes a minimal, *valid* device YAML to `config_path`. One call, and a flashable device exists.
+
+## 60.7. The smallest possible device — "hello, light"
+
+Here is the canonical first device, the one this book opened its ESPHomer story with: an on/off light on the board's onboard LED, exposed over the native API so a hub — and therefore your phone — can toggle it. Ask Tlamatini, with only the **Multi-Turn** toggle ticked:
+
+> *"Make me a phone-controlled light on an ESP32 at `<my Templates dir>/light/tlamatini-light.yaml`, compile it, and flash it to the board."*
+
+ESPHomer calls `new_config`, and the file it writes is this:
+
+```yaml
+esphome:
+  name: tlamatini-light
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+logger:
+api:                    # the hub discovers and controls the device over this
+ota:
+  - platform: esphome   # push new firmware over WiFi after the first USB flash
+wifi:
+  ssid: "YOUR_WIFI_SSID"
+  password: "YOUR_WIFI_PASSWORD"
+output:
+  - platform: gpio
+    pin: GPIO2          # onboard LED on most ESP32 DevKitC boards
+    id: light_output
+light:
+  - platform: binary
+    name: "Tlamatini Light"   # the entity your phone toggles
+    output: light_output
+```
+
+Edit the two WiFi lines, and the rest of the lifecycle — `config`, `compile`, `upload` — needs nothing but that one `config_path`. Adopt the device into Home Assistant, open the app, and the toggle labelled **Tlamatini Light** is the GPIO2 LED. You have built a smart-home device, and you never opened a C++ file. (This exact file ships in the repository at `agent/agents/esphomer/ESPHomeTemplateProject/tlamatini-light.yaml` as a known-good baseline.)
+
+Want a sensor instead of a light? ESPHome's modularity means you just *list* the component — for instance a DHT temperature/humidity sensor becomes:
+
+```yaml
+sensor:
+  - platform: dht
+    pin: GPIO4
+    temperature:
+      name: "Tlamatini Temperature"
+    humidity:
+      name: "Tlamatini Humidity"
+    update_interval: 60s
+```
+
+Hand that to `write_config`, then `compile` and `upload`, and the readings appear on your dashboard. The shape of the work never changes: describe, validate, compile, flash, observe.
+
+## 60.8. The one-call fast path
+
+Most of the time you do not want five round-trips; you want the device built. `scaffold_compile_upload` collapses the whole lifecycle into a single agent run — author (via `new_config`, or `write_config` when you pass `content`), then `config`, then `compile`, then `upload`, then `logs` if you set `monitor_seconds`. It is **fail-safe**: with no board connected it still authors, validates and compiles, and reports *"compiled OK, upload skipped — connect the board and run `upload`"*. One call:
+
+> *"Run ESPHomer with `action='scaffold_compile_upload'`, `config_path='<Templates>/light/tlamatini-light.yaml'`, `name='tlamatini-light'`, `platform='esp32'`, `board='esp32dev'`, `led_pin='GPIO2'`, `port='COM9'`."*
+
+Every run — granular or composite — emits one atomic `INI_SECTION_ESPHOMER` block for the Exec Report and for Parametrizer to mine:
+
+```
+INI_SECTION_ESPHOMER<<<
+action: compile
+tool: compile
+ok: true
+returncode: 0
+success: true
+config_path: C:/.../light/tlamatini-light.yaml
+name: tlamatini-light
+port:
+stage:
+
+INFO Successfully compiled program.
+Linking .esphome/build/tlamatini-light/.pioenvs/.../firmware.bin
+>>>END_SECTION_ESPHOMER
+```
+
+A downstream Forker branches on `{success}`; Parametrizer pipes `{config_path}` into the next node. A `success: false` here — a YAML that fails to validate, an upload that finds no port — is content for the next agent to act on, not a Tlamatini fault.
+
+## 60.9. Chaining ESPHomer on the visual canvas
+
+The chat is for one device; the canvas is for a device *factory*. The same capability is the green **ESPHomer** node, and it wires into a fully unattended pipeline:
+
+```
+Starter
+  → ESPHomer (new_config:  name, platform, board → writes the YAML)
+  → Parametrizer (carry {config_path} forward)
+  → ESPHomer (config:  validate the YAML)
+  → ESPHomer (compile)
+  → Forker (branch on {success})
+        ├─ success → ESPHomer (upload) → ESPHomer (logs, monitor_seconds: 8) → File-Creator (save the boot log)
+        └─ failure → Emailer (send me the compiler diagnostic)
+  → Ender
+```
+
+Drop a **Gatewayer** in front of the Starter and the whole thing becomes a webhook: every push to your device-configs repository re-compiles and re-flashes the bench unit. ESPHomer ALWAYS triggers its `target_agents` — success *or* failure — precisely so the Forker can route both outcomes.
+
+## 60.10. Two demos that ship in the box
+
+Open the **Prompts** catalog and two ESPHomer demos are waiting, each a self-contained, narrated run that drives only `chat_agent_esphomer` with only the Multi-Turn toggle:
+
+- **ESPHOME GENESIS** *(basic)* — the zero-config story end to end: `bootstrap` (ESPHomer pip-installs ESPHome itself) → `validate` → `new_config` (generate a device YAML) → `config` → `compile` → `list_artifacts`. **No board required** — it is pure provision-and-build, perfect for proving the toolchain on a fresh machine, and it closes with a green "ESPHOME PROVISIONED & FIRMWARE BUILT" banner and a build report.
+- **SMART LIGHT** *(medium)* — the phone-controlled light of §60.7, built for real: `validate` → `new_config` → `config` → `compile` → `list_artifacts` → `upload`. The upload is board-*optional*: with no board attached, ESPHomer's preflight refuses it cleanly ("BUILT, NO BOARD"), and with a board attached it flashes and lights up.
+
+Both are deliberately **safe to run repeatedly** — they write only into your Templates directory and never touch anything destructive.
+
+## 60.11. When it goes wrong (and what each failure actually means)
+
+- **`overall : FAILED` in a `stage: bootstrap` section.** ESPHomer could not `pip install esphome` — almost always no internet on the host. This *is* a legitimate error to flag; everything downstream depends on the CLI existing.
+- **A `stage: preflight` section that REFUSES with "No serial port detected and no OTA host given".** Not a crash — the fail-safe gate doing its job. Connect the board over USB, or pass `port='<device-ip>'` for an OTA update.
+- **The first `compile` seems to hang for minutes.** Normal, once. ESPHome is downloading the platform + toolchain through PlatformIO. As long as new progress keeps printing, it is working; only total silence beyond ~10 minutes (or an explicit error) is a real stall.
+- **`config` reports the YAML is invalid.** ESPHome's validator is strict and *helpful* — it names the offending key. This is a `success: false` you should read, not fear: fix the YAML (`write_config`) and re-run.
+- **An OTA `upload` can't reach the device.** The `port` IP is wrong, the device isn't on the network yet, or it has never had its *first* USB flash (OTA only works once the device is already running ESPHome with the `ota:` block). The first flash is always USB.
+
+For the full trail, the pool-agent log is `<pool>/esphomer_<n>/esphomer_<n>.log`; chat-wrapped runs land under `agent/agents/pools/_chat_runs_/esphomer_<seq>_<id>/…log`, and contain the exact `esphome` command and its verbatim output.
+
+## 60.12. Why this matters
+
+The other firmware agents make Tlamatini an *embedded engineer*. ESPHomer makes her a *home builder*. The distance between "I wish that lamp turned on when I got home" and a working device used to be measured in soldering irons, Arduino sketches, and an evening lost to a serial monitor. ESPHome compressed that distance to a YAML file; ESPHomer compresses it again, to a sentence in chat — and then, because it lives inside Tlamatini, hands the result to the same canvas, Exec Report, Parametrizer chains, FlowHypervisor and 81 sibling agents as everything else. A light you flick from your phone can be the *first* step of a flow that ends in a dashboard, a notification, or a Telegram message. Same simple foundation underneath; the whole of Tlamatini on top. That is the point of ESPHomer.
+
+---
+
+# Appendix B — Glossary
+
+| Term | Definition |
+|---|---|
+| **ACPX** | Agent Communication Protocol eXtension — Tlamatini's runtime for spawning external coding-agent CLIs as child processes and brokering them as LLM tools. |
+| **Agent** | An autonomous Python process that performs a specific workflow task. |
+| **Apirer** | HTTP/REST API agent. |
+| **Arduiner** | Tlamatini agent that scaffolds, builds, flashes, and observes Arduino firmware by driving the **Arduino CLI** (`arduino-cli`) directly — no MCP server. The microcontroller is chosen by `fqbn`. Zero-config bootstrap downloads the arduino-cli Go binary + auto-installs the FQBN's core; ships an `ArduinoTemplateProject` scaffold. Available both as the wrapped Multi-Turn tool `chat_agent_arduiner` and as a visual canvas node. The 70th entry in the agent catalog; the direct-CLI sibling of ESP32er. |
+| **ArduinoTemplateProject** | The bundled Arduino sketch scaffold Arduiner's `create_project` copies and stamps with the chosen FQBN/port in a `sketch.yaml` profile — the Arduino analog of the STM32 Template Project MCP and the ESP32 Template Project. |
+| **Asker** | Interactive A/B path chooser; pauses for user dialog. |
+| **ASGI** | Asynchronous Server Gateway Interface — Python standard for async web servers. |
+| **Barrier** | Synchronization barrier; fires when ALL N source agents have started. |
+| **BM25** | Best Matching 25 — probabilistic keyword retrieval algorithm. |
+| **Camcorder** | Tlamatini agent that captures from a physical camera (webcam) via OpenCV — a photo (default) or a short video — and saves it to `Pictures/TlamatiniCamcorder`. The hardware-camera sibling of Shoter (screen capture); observational, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears). Available both as the wrapped Multi-Turn tool `chat_agent_camcorder` and as a visual canvas node. The 71st entry in the agent catalog. |
+| **Recorder** | Tlamatini agent that records audio from a system input device (microphone) via `sounddevice` and saves a WAV to `Music/TlamatiniRecords` — the SOUND sibling of the capture trio (Shoter = screen, Camcorder = camera, Recorder = audio); observational, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears). Records from the default mic by default (`device_index`/`device_name` to pick another); `sample_rate: 0` = device-native. Available both as the wrapped Multi-Turn tool `chat_agent_recorder` and as a visual canvas node. The 72nd entry in the agent catalog. |
+| **AudioPlayer** | Tlamatini agent that PLAYS an audio file (`audio_file`) through a system output device (speakers) via `soundfile` (decode) + `sounddevice` (stream) — the PLAYBACK counterpart of Recorder (mic-in → speakers-out); observational/output, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears). Plays to the default output by default (`device_index`/`device_name` to pick another); `volume_percent` is a software gain; **`time_played`** sets the length — `0` plays the whole file once, a positive value plays exactly that long, TRUNCATING a longer file or LOOPING a shorter one (whole repeats + a final partial segment); `sample_rate: 0` uses the file's own native rate (correct pitch). Available both as the wrapped Multi-Turn tool `chat_agent_audioplayer` and as a visual canvas node. The 73rd entry in the agent catalog. |
+| **VideoPlayer** | Tlamatini agent that PLAYS a video file (`video_file`: .mp4/.mov/.mkv/.avi/.webm) WITH audio on a chosen display via `ffpyplayer` (decode + synced audio + volume; its pip wheel bundles ffmpeg+SDL, so nothing external is needed) and OpenCV for the window — the on-screen sibling of AudioPlayer; observational/output, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears) (falls back to silent OpenCV video if ffpyplayer is absent). `display_index` picks the monitor (`-1` = primary); `volume_percent` the audio level; **`time_played`** TRUNCATES a longer video or LOOPS a shorter one; `window_width`/`window_height` size the window (`0` = native), `fullscreen` fills the screen, `keep_aspect` letterboxes. Available both as the wrapped Multi-Turn tool `chat_agent_videoplayer` and as a visual canvas node. The 74th entry in the agent catalog. |
+| **Video-Analyzer** | Tlamatini agent that WATCHES a recorded video and rules whether a physical system performed the requested motion — the "eye" of **Robotic-Loop-Training** and the motion-verdict sibling of Image-Interpreter. A deterministic OpenCV motion gate short-circuits no-motion clips (`FAIL_NO_MOTION`, no model call); otherwise two Ollama cloud vision models judge timestamped frames in parallel and a merge model issues the final verdict, with `PASS_OK` only on independent agreement (never a false pass). Emits a substring-safe `TLM_VERDICT::<TOKEN>` routing line so a Forker loops back to reprogram on FAIL or finishes on PASS — the loop that programmed a robotic arm from a blank page and two cameras (v1.38.0). Available both as the wrapped Multi-Turn tool `chat_agent_video_analyzer` and as a visual canvas node. The 84th entry in the agent catalog. |
+| **NetSpeed-Calculator** | Tlamatini agent that measures the machine's real Internet connection and reports the answer **with its error bar** — download, upload, latency, jitter, packet loss and **bufferbloat** (the RTT increase under load, graded A+ to F, and usually the real reason a "fast" link has choppy video calls). It does not trust one speed-test site: it measures against several keyless public providers at once and fuses them with a DerSimonian-Laird random-effects meta-analysis, publishing a 95% confidence interval and an I² heterogeneity figure that says plainly whether the providers agreed. Follows RFC 6349 — parallel TCP streams, the slow-start ramp discarded, throughput sampled as a derivative rather than total÷elapsed, outliers rejected. A provider whose endpoint moved or died is skipped **with a named reason**, never as a silent `0.00 Mbps`. Available both as the wrapped Multi-Turn tool `chat_agent_netspeed_calculator` and as a visual canvas node. The 88th entry in the agent catalog. |
+| **Canvas** | The right-hand code panel in the chat *and* the drag-and-drop area in the designer. Context-dependent. |
+| **Cardinal** | Numeric suffix added to deployed agents to support multiple instances (e.g. `monitor_log_1`). |
+| **Chunk** | A segment of a document after splitting for processing. |
+| **Context Budget** | Allocation strategy that distributes the token limit across document types. |
+| **Counter** | Persistent counter agent with L/G threshold routing. |
+| **Crawler** | Developer-oriented web crawler (raw mode + LLM analysis). |
+| **Daphne** | HTTP/HTTP2/WebSocket protocol server for ASGI. |
+| **Discoverer** | Tlamatini agent that runs the **ProjectDiscovery** recon / attack-surface / vuln-discovery suite — `subfinder` / `httpx` / `naabu` / `katana` / `nuclei` / `cvemap`→`vulnx` (cvemap's API was retired Aug 2025, so the CVE search runs `vulnx`), one tool per run — by invoking each CLI directly (no MCP server), like Kalier / ESP32er / Arduiner. Zero-config: a self-installing PRIVATE Go toolchain under `<install_dir>/Go` compiles the tools on first use (no system Go, no PATH change); the PDCP key is optional — set it once in **Config ▸ Access Keys Wizard ▸ "Security Recon (ProjectDiscovery)"** (auto-injected on every run; redacted from `.flw` exports and by `regen_secrets.py` before a push) — naabu defaults to a Windows-safe CONNECT scan, and a fail-safe preflight refuses rather than mis-scan. Available both as the wrapped Multi-Turn tool `chat_agent_discoverer` and as a visual canvas node. **Authorized targets only.** |
+| **Zavuerer** | Tlamatini agent that sends a message through **Zavu** (zavu.dev) — ONE unified REST API for **SMS / WhatsApp / Telegram / Email / Voice** from a single key. Instead of separately wiring Twilio + Meta's WhatsApp Cloud API + SMTP, Zavuerer POSTs to Zavu's `/v1/messages` endpoint; `channel: auto` lets Zavu's ML pick the best/cheapest channel with automatic fallback (e.g. WhatsApp fails → SMS). Direct HTTP over the Python stdlib (`urllib`, no SDK), like Kalier / Apirer. The `zavu_api_key` (free to sign up at zavu.dev, but Zavu charges pay-as-you-go to send) is set ONCE via **Config ▸ Access Keys Wizard ▸ "Unified Messaging (Zavu)"** and auto-injected on every run; with no key a send safely REFUSES (`status: refused`) instead of failing silently, and a fail-safe preflight checks the key / recipient / text / channel first. Available both as the wrapped Multi-Turn tool `chat_agent_zavuerer` and as a visual canvas node. **Authorized, opted-in recipients only** (A2P / the WhatsApp 24-hour window / GDPR). |
+| **Dockerer** | Docker container management agent. |
+| **Embedding** | Numerical vector representation of text for similarity comparison. |
+| **ESP32er** | Tlamatini agent that scaffolds, builds, flashes, and monitors ESP32 firmware by driving **PlatformIO Core** (`pio`) directly — no MCP server (unlike STM32er). Zero-config bootstrap downloads PlatformIO via `get-platformio.py`; the `scaffold_build_upload` composite collapses create→write→build→upload into one run. Available both as the wrapped Multi-Turn tool `chat_agent_esp32er` and as a visual canvas node. The 69th entry in the agent catalog; the direct-CLI sibling of Arduiner. |
+| **FAISS** | Facebook AI Similarity Search — vector similarity library. |
+| **File-Creator / File-Extractor / File-Interpreter** | File creation / raw-text extraction / LLM-aided document parsing. |
+| **Flow Validation** | Pre-execution structural check (no orphans, no self-connections, terminal agents reachable). |
+| **FlowBacker** | Post-Ender backup of session logs/configs. |
+| **FlowCreator** | LLM that designs flows from natural-language objectives. |
+| **FlowHypervisor** | LLM watchdog over running agents; outputs `OK` or `ATTENTION NEEDED { … }`. |
+| **Forker** | Automatic A/B path router based on log patterns. |
+| **Gatewayer** | Inbound webhook / folder-drop gateway. |
+| **Gateway-Relayer** | Bridges provider-native webhooks (GitHub) into Gatewayer's HMAC format. |
+| **Gitter** | Git operations agent. |
+| **Googler** | Resilient two-tier search + extraction/URL lists: four plain-HTTP routes first, seven visible-browser routes second, and a structured dork compiler/lawful-source presets on the visual/pool agent. |
+| **Image-Interpreter** | LLM vision agent for image analysis. |
+| **J-Decompiler** | Java JAR/WAR decompiler using bundled `jd-cli`. |
+| **De-Compresser** | Deterministic short-running compression / decompression agent (`.gz` / `.zip` / `.7z` / `.tar.gz` / `.gz.tar`). |
+| **jd-cli** | Java Decompiler CLI tool bundled with the application. |
+| **Jenkinser** | CI/CD pipeline trigger agent. |
+| **Kalier** | Kali Linux / MCP-Kali-Server bridge agent for AI-assisted pentesting (nmap, gobuster, dirb, nikto, sqlmap, metasploit, hydra, john, wpscan, enum4linux, raw commands). |
+| **Keyboarder** | Deterministic PyAutoGUI-based keyboard automation. |
+| **Kyber-KeyGen / Cipher / DeCipher** | CRYSTALS-Kyber post-quantum encryption agents. |
+| **LangChain** | Framework for LLM applications. |
+| **LangGraph** | Stateful, multi-actor LangChain extension. |
+| **Logic Gate** | Agent that performs boolean operations (AND/OR/Barrier) on events. |
+| **MCP** | Model Context Protocol — standard for tool/context communication. |
+| **Mouser** | PyAutoGUI-based pointer movement agent. |
+| **NodeManager** | Long-running infrastructure registry that probes nodes. |
+| **Unreal MCP** | Open-source UE5 plugin (upstream `https://github.com/chongdashu/unreal-mcp`, MIT, UE5.5+) that listens on `127.0.0.1:55557` for JSON commands and dispatches them onto the editor's game thread. Tlamatini is a client of this plugin — it does not embed it. The build Tlamatini recommends and is tested against is its own extended fork, **`https://github.com/XAIHT/XaihtUnrealEngineMCP.git`** (the Unreal Engine MCP modified specifically for Tlamatini; ships the full 53-verb, nine-category surface). |
+| **Unrealer** | Tlamatini agent that drives Unreal Engine 5 through the Unreal MCP plugin's TCP/JSON protocol. Available both as a wrapped Multi-Turn tool (`chat_agent_unrealer`) and as a visual canvas node. The 62nd entry in the agent catalog. |
+| **Notifier** | LangGraph-based notification agent — in-browser popup + optional sound. |
+| **output_agents** | Config field used by Ender, Stopper, Cleaner for downstream canvas wiring (vs `target_agents` for "agents to start"). |
+| **Parametrizer** | Strict single-lane queue that maps source-agent log segments into target-agent config.yaml. |
+| **Playwrighter** | Tlamatini agent that drives a REAL browser (Playwright — Chromium/Firefox/WebKit) through a scripted, interactive step list (goto/click/fill/wait_for/extract/assert/screenshot/download). Set `headless: false` to watch it and `hold_open_seconds: N` (alias `hold_open_ms`) to keep the browser visible N seconds after the last step before it closes. Available both as the wrapped Multi-Turn tool `chat_agent_playwrighter` and as a visual canvas node. The 65th entry in the agent catalog. |
+| **Pool** | Directory where deployed agent instances are stored. |
+| **Pser** | LLM-powered fuzzy process finder. |
+| **Pythonxer** | Inline-Python agent behind a strict `compile()` + blocking-Ruff gate; ALWAYS triggers downstream regardless of outcome (exit code drives only the LED + Multi-Turn retry loop). |
+| **PyAutoGUI** | Python library for mouse/keyboard control, used by Mouser and Keyboarder. |
+| **RAG** | Retrieval-Augmented Generation. |
+| **Reanimation Offset** | Saved log-file position to handle restarts and rotation. |
+| **Recmailer** | LangGraph IMAP receiver with LLM keyword analysis. |
+| **RRF** | Reciprocal Rank Fusion — method for combining ranked lists. |
+| **Ruff** | Fast Python linter used by Pythonxer. |
+| **Skill** | Markdown-driven extension package — a directory under `agent/skills_pkg/<name>/` with a `SKILL.md` (YAML frontmatter + body). 27 seed skills ship. |
+| **STM32er** | Tlamatini agent that scaffolds, builds, flashes, and observes STM32F407VG firmware through the STM32 Template Project MCP (`https://github.com/XAIHT/STM32TemplateProjectMCP`), via a self-contained inline MCP stdio JSON-RPC client. Zero-config auto-bootstrap downloads the MCP itself and a safety preflight refuses to build/flash on a bad toolchain or wrong device family. Available both as the wrapped Multi-Turn tool `chat_agent_stm32er` and as a visual canvas node. Joined as the 68th entry in the agent catalog (now 70 with ESP32er #69 and Arduiner #70); the first of the microcontroller-firmware trio (STM32er drives an MCP server; ESP32er and Arduiner drive a CLI directly). |
+| **STM32 Template Project MCP** | FastMCP stdio server (`https://github.com/XAIHT/STM32TemplateProjectMCP`) exposing 23 tools for STM32F407VG firmware scaffolding, build, flash, and serial observation. STM32er is a client of it — it does not embed it — and auto-downloads it on first use. |
+| **ESP32 Template Project** | A standalone PlatformIO project (**not yet published**; its intended home is `https://github.com/XAIHT/ESP32TemplateProject`) that blinks an ESP32's onboard LED and prints the LED state over serial — the ESP32 counterpart of the STM32 Template Project MCP. Unlike the STM32 one it is a plain PlatformIO project, not a server, because ESP32er drives the `pio` CLI directly. ESP32er can build/flash/monitor a checkout of it (`project_dir`) or scaffold an equivalent with `action: create_project`. See bonus chapter §58. |
+| **ESPHome** | The Open Home Foundation system (`https://esphome.io`) that turns ESP32 / ESP8266 / RP2040 / BK72xx boards into smart-home devices from a **simple YAML config — no C++**. It ships the `esphome` CLI (validate / compile / upload over USB or OTA / logs / clean) and exposes devices to a hub (e.g. Home Assistant) over a native API for local control. The foundation ESPHomer is built on. |
+| **ESPHomer** | Tlamatini agent that authors, validates, compiles, uploads, and observes ESPHome smart-home device firmware by driving the `esphome` CLI directly — no MCP server. A device is a YAML file, not a program; ESPHomer ships a built-in `new_config` generator (the headless replacement for `esphome wizard`) and a zero-config `pip install esphome` bootstrap, and runs a fail-safe preflight (serial OR OTA host) before any flash. The fourth microcontroller-firmware agent and the direct-CLI sibling of ESP32er / Arduiner. Available both as the wrapped Multi-Turn tool `chat_agent_esphomer` and as a visual canvas node. See bonus chapter §60. |
+| **ESPHomeTemplateProject** | The bundled ESPHome sample (`agent/agents/esphomer/ESPHomeTemplateProject/tlamatini-light.yaml`) — a known-good, phone-controllable on/off light on the onboard LED, with the native API / OTA / WiFi blocks — the ESPHome analog of the ESP32 Template Project and the ArduinoTemplateProject. |
+| **LaTeXer** | LaTeX typesetter — the typesetting half of the document family (File-Extractor/File-Interpreter *read* documents, PDFer *composes* them from Markdown/HTML/images, LaTeXer *typesets* them from `.tex` source with real mathematics, bibliographies, cross-references and an index). Requires MiKTeX, which is the only prerequisite. |
+| **MiKTeX** | The TeX distribution LaTeXer requires and recommends (https://miktex.org/download). Tlamatini ships no TeX distribution — a full one is several gigabytes — and MiKTeX is preferred over TeX Live/MacTeX because it downloads a missing LaTeX package *on demand, mid-compile*, so a document needing an uninstalled package still builds. |
+| **Stopper** | Single-threaded pattern-based agent terminator. |
+| **Summarizer** | LLM polls source logs for events. |
+| **Tlamatini** | Nahuatl for "one who knows" — and the name of this assistant. The LLM responds to it as a self-reference. |
+| **WebSocket** | Full-duplex protocol over TCP. |
+| **Windower** | Deterministic Win32 window manager — locates an application window by title and runs one window-lifecycle operation (focus / minimize / maximize / restore / move / resize / close / topmost / arrange / list). The third member of the desktop-UI trio (Windower = the window, Mouser = clicks, Keyboarder = typing). |
+
+---
+
+# Appendix C — Changelog
+
+### Recent Updates
+
+- **Release v1.49.1 — Measured networking, WAL-safe data movement, resilient structured web discovery, guided MCP onboarding, and synchronized private contacts — 2026-08-23** — The annotated release tag resolves to `6adf3623`; local and remote `HEAD` are aligned one commit later at `abc7899a`, with the same reachable bare release identity. NetSpeed-Calculator becomes workflow agent 88 and wrapped launcher 66, measuring download/upload/latency/jitter/loss/bufferbloat across keyless providers with slow-start exclusion, derivative sampling, outlier rejection, confidence intervals, random-effects fusion, I² heterogeneity reporting, named zero-byte failures, and an Ask-Execs tier-D bandwidth warning. `agent/sqlite_copy.py` moves Backup DB, Set DB, and pre-Django hot-swap onto SQLite's online backup API, self-contained DELETE-journal destinations, `quick_check`, and WAL/SHM/journal sidecar hygiene. Googler gains a structured Google-dork compiler with syntax normalization, aliases, presets for ordinary and lawful/open-source discovery, grouped site/filetype alternatives, and URL-only file-hunt output. Its execution path now runs four server-rendered routes through plain `urllib` first, then falls back to visible installed Chrome/bundled Chromium across seven direct-results routes with bounded retries and answer-route logging; advanced Google-only operators may broaden on fallback engines. Its dedicated 73-test suite pins query correctness, HTTP-before-browser behavior, browser/config defaults, chain order, retry/fallback stopping, redirect unwrapping, and the direct-tool/canvas contract. The 29th runtime skill adds the guarded External-MCP classify/import/doctor/activate/wait/list/call lifecycle; migration 0194 adds the append-only Deep Internet Research starter; migrations 0195-0197 add NetSpeed's agent/tool/prompt rows. The private builder synchronizes same-machine contacts into gitignored `contacts.private.json`, while public builds and self-modify snapshots remain contact-empty. The source-verified release surface is **88 workflow agents**, **66 wrapped chat agents**, **108 built-in Multi-Turn tools**, **29 skills**, and **197 migrations**.
 
 1. **Un pipeline RAG de verdad** que lee los archivos de tu proyecto, clasifica sus papeles arquitectónicos y aterriza las respuestas en tu código fuente real.
 2. **El modo Multi-Turn** que convierte el chat en un operador de tools: el LLM puede correr comandos de shell, pegarle a APIs, mandar correos, tomar capturas de pantalla, escribir en ventanas, consultar SQL — y encadenar esos pasos para terminar el trabajo.

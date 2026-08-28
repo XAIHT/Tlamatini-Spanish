@@ -191,7 +191,76 @@
     _srvNext();
   }
 
+  // ─── ¿ESTE TEXTO YA VIENE EN CASTELLANO? ────────────────────────────────
+  // Espejo en JS de tts_piper._tiene_marca_de_castellano. Exige una marca
+  // POSITIVA de castellano; NO pregunta "¿parece ingles?", porque esa
+  // pregunta contesta "no" ante cualquier duda y por eso dejaba pasar
+  // frases cortas como "Save" o "Please wait", que salian EN INGLES.
+  //
+  // ⚠️ ESTAS LISTAS SON UN SUBCONJUNTO DE LAS DEL SERVIDOR, A PROPOSITO.
+  // Quedarse corto es seguro: manda mas texto a Piper, que sabe traducir.
+  // Pasarse es lo unico peligroso: deja salir ingles por la bocina. Por eso
+  // la guarda comprueba SUBCONJUNTO y no igualdad — la lista de Python puede
+  // crecer sin romper nada. Guarda: agent/test_sin_respaldo_ingles.py.
+  var _PAL_ES = [
+    'abrir','acaba','acabo','adios','agente','agentes','ahora','ajustes','al',
+    'algo','alguien','alli','aqui','archivo','archivos','ayuda','bien',
+    'bienvenida','bienvenido','borrada','borrado','borrar','buenas','buenos',
+    'buscar','busqueda','cambio','cambios','cargando','carpeta','carpetas',
+    'cerrar','como','con','contrasena','correcta','correcto','correo',
+    'corriendo','creada','creado','cuando','de','decir','del','dias','dice',
+    'dijo','disculpa','donde','el','empezar','encontrar','entre','era','eran',
+    'eres','es','esa','escuchar','ese','esperando','esta','estamos','estar',
+    'estas','este','esto','estoy','exitosa','exitoso','fallida','fallido',
+    'favor','gracias','guardada','guardado','guardar','hablar','hace','hacer',
+    'haces','hago','hecha','hecho','herramienta','herramientas','hola','la',
+    'las','lista','listo','los','luego','mas','menos','mensaje','mensajes',
+    'mostrar','mucho','muy','nada','nadie','no','noches','nunca','pantalla',
+    'para','perdon','pero','poco','poner','por','porque','pregunta','prueba',
+    'pruebas','puede','puedes','puedo','que','quiere','quieres','quiero',
+    'raton','respuesta','resultado','resultados','sacar','seguir','senor',
+    'senora','senorita','ser','si','siempre','sin','sobre','somos','son',
+    'soy','tambien','tardes','teclado','tengo','terminada','terminado',
+    'terminar','tiene','tienes','todavia','un','una','unas','unos','usuaria',
+    'usuario','vamos','ventana','ventanas','voy','ya',
+  ];
+  var _SET_ES = (function(){ var o={}; for(var i=0;i<_PAL_ES.length;i++)o[_PAL_ES[i]]=1; return o; })();
+  var _SUF_ES = ['aban', 'ando', 'aron', 'cion', 'ción', 'dad', 'endo', 'iendo', 'mente', 'sion', 'sión'];
+  var _RE_ACENTO = /[áéíóúüñÁÉÍÓÚÜÑ¿¡]/;
+  var _RE_LIMPIA = /^[.,;:!?()[\]"']+|[.,;:!?()[\]"']+$/g;
+
+  function pareceCastellano(text){
+    var s = String(text == null ? '' : text);
+    if(!s.trim()) return true;                 // vacio: no hay nada que decir
+    if(_RE_ACENTO.test(s)) return true;        // acento, enye o signo de apertura
+    var ws = s.split(/\s+/);
+    for(var i=0;i<ws.length;i++){
+      var w = ws[i].replace(_RE_LIMPIA,'').toLowerCase();
+      if(!w) continue;
+      if(_SET_ES[w]) return true;              // palabra funcion o de contenido
+      if(w.length > 5){                        // terminacion que solo es nuestra
+        for(var j=0;j<_SUF_ES.length;j++){
+          if(w.slice(-_SUF_ES[j].length) === _SUF_ES[j]) return true;
+        }
+      }
+    }
+    return false;
+  }
+
   function speak(text,opts){
+    // ⛔ AQUI SE FILTRA EL TEXTO, NO SOLO LA VOZ (Angela, 2026-08-27).
+    // Antes esta funcion solo elegia QUE VOZ usaba. Eso arregla el ACENTO y
+    // nada mas: si la LLM contestaba en ingles, la frase inglesa se le
+    // entregaba igual a speechSynthesis con u.lang='es-MX' y se oia ingles
+    // con boca mexicana. El camino del servidor (tts_piper.a_castellano) si
+    // filtraba el texto y devolvia 'refused:ingles'; el del navegador no.
+    // Con esto los dos caminos aplican la misma regla.
+    //
+    // Y NO se calla de entrada: lo que no viene en castellano se manda a
+    // Piper, que PRIMERO intenta traducirlo (catalogo NEPANTLA, luego el
+    // Ollama local) y solo enmudece si de veras no hubo con que. Traducir
+    // antes que callar; callar antes que hablar ingles.
+    if(!pareceCastellano(text)){ speakViaServer(text,opts); return; }
     // ⚠️ REFUSE RATHER THAN FAKE IT.
     // Same principle the Talker agent already applies to a male voice: if the
     // right voice is not available she does NOT substitute a wrong one. An

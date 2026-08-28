@@ -71,7 +71,7 @@ Every count in this file was **re-verified against source on 2026-08-19 for the 
 **Tlamatini** (Nahuatl for *"one who knows"*) is a **local-first AI developer assistant** created by **Angela López Mendoza** (@angelahack1, XAIHT). It is a Django 5.2 + Channels monolith with a LangChain/LangGraph agent core, a RAG system, a visual agentic workflow designer, an external coding-agent runtime (ACPX), a markdown skill system, and a pool of standalone agent scripts it spawns as subprocesses. Windows-only distribution (PyInstaller-frozen, carried Python 3.12.10).
 
 - **Repository**: `https://github.com/XAIHT/Tlamatini.git` · **License**: MIT · **Platform**: Windows 10/11
-- **Current release**: **v1.48.17** (annotated tag, 2026-08-16; same-day lineage `v1.48.15` encoding-safe Grepper + closed verdict vocabulary → `v1.48.16` themed popups + frozen-bundle carriage proof → `v1.48.17` Escape-dismissal standardization + sealed updater). SemVer; runtime single source of truth = annotated git tags; see §16
+- **Current release**: **`v1.50.0s`** — the package/documentation target for this Spanish edition; the newest annotated tag actually in THIS tree is `v1.49.1s` (`c02056e7`). The trailing **`s` is the edition letter**: kept in every human-readable surface, stripped wherever a version becomes numbers (`agent/version.py::strip_edition_suffix`, `VERSIONING.md` → *The Spanish edition letter*, pinned by `agent/test_edition_version_suffix.py`). Never quote the English tree's commit hashes — they do not exist here. Historical lineage: **v1.48.17** (annotated tag, 2026-08-16; same-day lineage `v1.48.15` encoding-safe Grepper + closed verdict vocabulary → `v1.48.16` themed popups + frozen-bundle carriage proof → `v1.48.17` Escape-dismissal standardization + sealed updater). SemVer; runtime single source of truth = annotated git tags; see §16
 - **Python**: 3.12.10 (carried interpreter under `<repo>/python` is build-provisioned — never use it to run builds)
 
 **Verified counts (2026-08-19, counted from source and an isolated live Django tool build; skill list confirmed live via `tlamatini_list_skills`):**
@@ -252,7 +252,7 @@ Tlamatini/                          # Git root (C:\Development\Tlamatini)
 ├── test_author_banner.py           # Author-banner presence guard
 ├── requirements.txt                # Python deps (ruff is a REQUIRED runtime gate — never unpin)
 ├── eslint.config.mjs               # ESLint 10 config (501-line cross-file globals whitelist)
-├── package.json                    # release 1.48.17; npm run lint / lint:fix
+├── package.json                    # release 1.50.0s; npm run lint / lint:fix
 ├── tlamatini_mcp_server.py         # Root stdio MCP server: 85 agent tools + 7 mgmt + 10 ACPX
 ├── tlamatini_acpx.py               # Self-contained stdlib ACPX runtime port for the MCP server
 ├── Tlamatini.ps1                   # Legacy launcher for the frozen exe

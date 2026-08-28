@@ -84,6 +84,7 @@ NOISE_DIRS = ('.git', '__pycache__', '.ruff_cache', '.mypy_cache',
               '.pytest_cache', 'node_modules', 'site-packages')
 
 
+# ── Reja de seguridad del Deleter (portada del arbol ingles) ──────
 def _drop_noise(paths, pattern):
     asked = str(pattern).lower()
     active = [d for d in NOISE_DIRS if d.lower() not in asked]
@@ -196,13 +197,79 @@ def is_excluded(file_path: str, excluded_extensions: set, excluded_filenames: se
     return ext in excluded_extensions or basename in excluded_filenames
 
 
-def perform_delete_operations(files_to_delete: List[str], recursive: bool = False, excluded_extensions: set = None, excluded_filenames: set = None):
+#: Nombres de directorio que este agent NUNCA borra, ni aunque se lo pidan.
+#: Son el cuerpo de la aplicación y el estado de la usuaria.
+_DIRECTORIOS_INTOCABLES = {
+    'agent', 'agents', 'tlamatini', 'tlamatini-spanish', 'migrations',
+    'skills_pkg', 'static', 'staticfiles', 'templates', 'security',
+    'security_logs', 'db', 'backups', 'templates_projects', 'acpx',
+    'services', 'rag', 'windows', 'system32', 'users', 'python',
+}
+
+
+def por_que_no_se_borra(path: str, base_dir: str = '') -> str:
+    """Devuelve la RAZÓN por la que `path` no se debe borrar, o '' si sí.
+
+    FALLA HACIA LA SEGURIDAD: ante cualquier duda, REHÚSA. Perder trabajo de
+    la usuaria es peor que no borrar algo que sí sobraba — lo segundo se
+    arregla pidiéndolo otra vez; lo primero, a veces, no se arregla.
+    """
+    try:
+        real = os.path.realpath(path)
+    except Exception:
+        return 'no se pudo resolver la ruta'
+
+    # 1. La raíz de una unidad, o algo demasiado cerca de ella.
+    unidad, resto = os.path.splitdrive(real)
+    partes = [p for p in resto.replace('\\', '/').split('/') if p]
+    if len(partes) < 2:
+        return 'está en la raíz de la unidad (o a un nivel de ella)'
+
+    # 2. El propio directorio de trabajo, o un ANCESTRO suyo.
+    if base_dir:
+        try:
+            base_real = os.path.realpath(base_dir)
+            if real == base_real:
+                return 'es el directorio de trabajo (target_path), no un objetivo'
+            if base_real.lower().startswith(real.lower() + os.sep):
+                return 'es un ancestro del directorio de trabajo'
+        except Exception:
+            return 'no se pudo comparar contra el directorio de trabajo'
+
+    # 3. Un ancestro del propio código de este agent: borrarlo lo mata a él.
+    try:
+        yo = os.path.realpath(os.path.dirname(os.path.abspath(__file__)))
+        if yo == real or yo.lower().startswith(real.lower() + os.sep):
+            return 'contiene al propio Deleter'
+    except Exception:
+        pass
+
+    # 4. La raíz de un repositorio git (tiene un .git adentro).
+    if os.path.isdir(os.path.join(real, '.git')):
+        return 'es la raíz de un repositorio git'
+
+    # 5. Un directorio de la aplicación o del estado de la usuaria, por nombre.
+    if os.path.isdir(real) and os.path.basename(real).lower() in _DIRECTORIOS_INTOCABLES:
+        return 'es un directorio protegido de la aplicación (%s)' % os.path.basename(real)
+
+    return ''
+
+
+def perform_delete_operations(files_to_delete: List[str], recursive: bool = False,
+                              excluded_extensions: set = None, excluded_filenames: set = None,
+                              base_dir: str = '', allow_directory_delete: bool = False):
     """
     Executes the delete operation for the given list of file patterns.
     When recursive=True, injects **/ to scan subdirectories.
+
+    ⚠️ Un DIRECTORIO sólo se borra si `allow_directory_delete` es True, y aun
+    así tiene que pasar `por_que_no_se_borra`. Antes bastaba con que un glob
+    casara una carpeta para que `shutil.rmtree` se llevara el árbol completo,
+    sin preguntar y sin manera de deshacerlo.
     """
     total_success = 0
     total_failed = 0
+    total_refused = 0
 
     for original_pattern in files_to_delete:
         patterns_to_check = [original_pattern]
@@ -240,9 +307,25 @@ def perform_delete_operations(files_to_delete: List[str], recursive: bool = Fals
 
                 filename = os.path.basename(file_path)
 
+                # ⚠️ GUARDA A PRUEBA DE FALLOS. Va ANTES de tocar el disco.
+                razon = por_que_no_se_borra(file_path, base_dir)
+                if razon:
+                    logging.error(f"⛔ ME NIEGO a borrar {file_path}: {razon}.")
+                    total_refused += 1
+                    continue
+
                 try:
                     if os.path.isdir(file_path):
-                        # Directory Deletion - force remove entire tree
+                        # Un DIRECTORIO se borra sólo si se pidió explícitamente.
+                        # Que un glob case una carpeta NO es permiso para
+                        # llevarse el árbol entero.
+                        if not allow_directory_delete:
+                            logging.error(
+                                f"⛔ ME NIEGO a borrar la CARPETA {file_path}: "
+                                f"pon allow_directory_delete: true si de verdad "
+                                f"quieres borrar un árbol completo.")
+                            total_refused += 1
+                            continue
                         shutil.rmtree(file_path)
                         logging.info(f"🗑️ Deleted Folder: {file_path}")
                         total_success += 1
@@ -252,12 +335,13 @@ def perform_delete_operations(files_to_delete: List[str], recursive: bool = Fals
                         os.remove(file_path)
                         logging.info(f"🗑️ Deleted File: {file_path}")
                         total_success += 1
-                
+
                 except Exception as e:
                     logging.error(f"❌ Failed to delete {filename}: {e}")
                     total_failed += 1
 
-    logging.info(f"✅ Deletion Completed. Success: {total_success}, Failed: {total_failed}")
+    logging.info(f"✅ Deletion Completed. Success: {total_success}, "
+                 f"Failed: {total_failed}, Refused: {total_refused}")
 
 
 def check_log_for_event(log_path: str, offset: int, event_string: str) -> tuple:
@@ -289,27 +373,43 @@ def main():
     # Configuration
     trigger_mode = config.get('trigger_mode', 'immediate') # 'immediate' or 'event'
 
-    # Build the delete list ROBUSTLY: honor files_to_delete (a list) PLUS the
-    # intuitive single-target keys a caller or the LLM may use (target_path / path /
-    # file / file_path / target / pattern / paths), so the Deleter deletes EXACTLY
-    # what it is told no matter which key was used. Each value may be one path/glob
-    # or a list. (Previously only files_to_delete was read, so a target_path was
-    # silently dropped and the template default ran instead.)
+    # ⚠️⚠️ `target_path` ES EL DIRECTORIO DONDE SE TRABAJA. NUNCA es algo que
+    # se borra. NO LO VUELVAS A METER EN LA LISTA DE BORRADO.
+    #
+    # Hasta el 2026-08-26 se agregaba a `files_to_delete` "robustamente", así
+    # que una llamada perfectamente normal —
+    #     target_path = <carpeta>,  files_to_delete = [tres nombres]
+    # — BORRÓ LA CARPETA ENTERA. Se llevó `Tlamatini/agent/`, o sea el paquete
+    # de la propia aplicación: 764 archivos, incluida la libreta de contactos
+    # de la usuaria. Un Deleter capaz de borrarse a sí mismo no es una
+    # comodidad, es un arma cargada. El alias se fue para siempre.
+    #
+    # La semántica correcta, y la que cualquiera espera: los nombres RELATIVOS
+    # de `files_to_delete` se resuelven DENTRO de `target_path`.
+    base_dir = str(config.get('target_path') or '').strip()
+
     files_to_delete = config.get('files_to_delete', []) or []
     if isinstance(files_to_delete, str):
         files_to_delete = [files_to_delete]
     files_to_delete = [str(p).strip() for p in files_to_delete if str(p).strip()]
-    for _alias in ('target_path', 'path', 'file', 'file_path', 'target', 'pattern', 'paths'):
+    # Estos alias SÍ nombran un archivo, así que se conservan. `target_path`
+    # está ausente A PROPÓSITO — no lo agregues "por comodidad".
+    for _alias in ('path', 'file', 'file_path', 'target', 'pattern', 'paths'):
         _val = config.get(_alias)
         if isinstance(_val, str) and _val.strip():
             files_to_delete.append(_val.strip())
         elif isinstance(_val, (list, tuple)):
             files_to_delete.extend([str(v).strip() for v in _val if str(v).strip()])
+    if base_dir:
+        files_to_delete = [p if os.path.isabs(p) else os.path.join(base_dir, p)
+                           for p in files_to_delete]
     _seen = set()
     files_to_delete = [p for p in files_to_delete if not (p in _seen or _seen.add(p))]
 
     source_agents = config.get('source_agents', []) # List of source agents for event triggering
     recursive = config.get('recursive', False)
+    # Borrar un ÁRBOL COMPLETO tiene que pedirse a propósito. Por omisión, no.
+    allow_directory_delete = bool(config.get('allow_directory_delete', False))
     filetype_exclusions = config.get('filetype_exclusions', '')
     excl_exts, excl_names = parse_exclusions(filetype_exclusions)
 
@@ -352,7 +452,7 @@ def main():
             logging.info("🚀 Executing immediate deletion...")
 
             try:
-                perform_delete_operations(files_to_delete, recursive=recursive, excluded_extensions=excl_exts, excluded_filenames=excl_names)
+                perform_delete_operations(files_to_delete, recursive=recursive, excluded_extensions=excl_exts, excluded_filenames=excl_names, base_dir=base_dir, allow_directory_delete=allow_directory_delete)
             except Exception as e:
                 logging.error(f"❌ Operation terminated with error: {e}")
                 logging.warning("⚠️ Continuando con los agentes siguientes pese a los errores...")
@@ -411,7 +511,7 @@ def main():
 
                 if any_event_triggered:
                     logging.info("🚀 Executing deletion...")
-                    perform_delete_operations(files_to_delete, recursive=recursive, excluded_extensions=excl_exts, excluded_filenames=excl_names)
+                    perform_delete_operations(files_to_delete, recursive=recursive, excluded_extensions=excl_exts, excluded_filenames=excl_names, base_dir=base_dir, allow_directory_delete=allow_directory_delete)
                     
                     # Trigger downstream agents
                     if target_agents:

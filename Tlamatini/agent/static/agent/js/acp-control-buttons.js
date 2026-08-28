@@ -218,7 +218,7 @@ function showStarterExecutionDialog(starterInfo, justBeforeStartingTimestamp) {
         width: 500,
         resizable: false,
         draggable: false,
-        closeOnEscape: false,
+        closeOnEscape: true,   // Escape === la ✕ del titulo (dialog_policy.js)
         closeText: "",
         dialogClass: "starter-execution-dialog-wrapper",
         open: function () {
@@ -496,7 +496,7 @@ function showEnderExecutionDialog() {
         width: 500,
         resizable: false,
         draggable: false,
-        closeOnEscape: false,
+        closeOnEscape: true,   // Escape === la ✕ del titulo (dialog_policy.js)
         closeText: "",
         dialogClass: "ender-execution-dialog-wrapper",
         open: function () {
@@ -877,7 +877,7 @@ function showEnderAlreadyDownDialog(_enderInfo) {
         width: 500,
         resizable: false,
         draggable: false,
-        closeOnEscape: false,
+        closeOnEscape: true,   // Escape === la ✕ del titulo (dialog_policy.js)
         closeText: "",
         dialogClass: "ender-execution-dialog-wrapper",
         open: function () {
@@ -1137,7 +1137,7 @@ if (btnClear) {
             height: 'auto',
             resizable: false,
             draggable: false,
-            closeOnEscape: false,
+            closeOnEscape: true,   // Escape === la ✕ del titulo (dialog_policy.js)
             dialogClass: 'cleaning-progress-dialog-class',
             open: function () {
                 $(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').hide();

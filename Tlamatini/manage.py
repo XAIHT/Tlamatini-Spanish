@@ -444,6 +444,49 @@ def _isolate_carried_python():
         print(f"--- [PYTHON] Could not pin carried-Python isolation (non-fatal): {exc}")
 
 
+def _silenciar_las_pruebas():
+    """Una corrida de pruebas NUNCA debe sonar en las bocinas de la usuaria.
+
+    El 2026-08-26 la suite completa corrio al Talker de verdad y Tlamatini
+    hablo EN INGLES por las bocinas de Angela, a mitad de la noche. Son dos
+    fallas en una: una suite capaz de manejar el audio real es un defecto en
+    CUALQUIER idioma, y que ademas sonara en ingles rompio la regla de oro de
+    esta edicion en voz alta.
+
+    La marca se pone ANTES que nada, porque todo agent del pool la hereda por
+    `get_agent_env()` -> `os.environ.copy()`. Puesta despues, un agent lanzado
+    durante el arranque ya habria sonado: el orden ES el contrato, y
+    `test_ninguna_prueba_suena` lo fija.
+
+    SE PONEN LAS DOS VARIABLES. Los cuatro agents de audio (Talker,
+    AudioPlayer, VideoPlayer, Recorder) revisan las dos, pero aqui solo se
+    ponia `TLAMATINI_NO_AUDIO`: la rama castellana estaba escrita en los
+    cuatro y no habia forma de dispararla. Poner las dos cuesta una linea y
+    cierra esa distancia entre lo que el agent revisa y lo que el arranque
+    promete.
+
+    ANTE LA DUDA, SE CALLA. La deteccion tira hacia el silencio a proposito:
+    un falso positivo solo deja una prueba sin audio, que no le molesta a
+    nadie; un falso negativo son las bocinas de Angela sonando de madrugada.
+    Por eso tambien se reconoce a pytest y a `test` en cualquier posicion, no
+    unicamente `manage.py test`.
+    """
+    try:
+        argv = [str(a).lower() for a in sys.argv[1:]]
+        es_prueba = (
+            (bool(argv) and argv[0] == 'test')
+            or ('test' in argv)
+            or ('pytest' in os.path.basename(str(sys.argv[0] or '')).lower())
+            or bool(os.environ.get('PYTEST_CURRENT_TEST'))
+        )
+        if es_prueba:
+            os.environ['TLAMATINI_SIN_AUDIO'] = '1'
+            os.environ['TLAMATINI_NO_AUDIO'] = '1'
+    except Exception:
+        pass
+
+
+_silenciar_las_pruebas()
 _enforce_app_temp_dir()
 _pin_playwright_browsers()
 _pin_bundled_tools()

@@ -199,3 +199,135 @@ class ElPdfSaleEnCastellano(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ElNavegadorFiltraElTextoNoSoloLaVoz(unittest.TestCase):
+    """avatar.js — la mitad que faltaba (Angela, 2026-08-27).
+
+    Hasta hoy `speak()` elegia QUE VOZ usar y nada mas. Eso arregla el
+    ACENTO y solamente el acento: si la LLM contestaba en ingles, la frase
+    inglesa se le entregaba igual a `speechSynthesis` con `u.lang='es-MX'`
+    y se oia INGLES con boca mexicana. El camino del servidor
+    (`tts_piper.a_castellano`) si miraba el texto y devolvia
+    'refused:ingles'; el del navegador no miraba nada. La regla se aplicaba
+    en un camino y en el otro no, que es como no aplicarla.
+    """
+
+    def setUp(self):
+        self.js = _sin_comentarios_js(_lee(_JS, "avatar.js"))
+
+    def test_speak_mira_el_texto_antes_de_pronunciarlo(self):
+        cuerpo = _cuerpo(self.js, "speak")
+        self.assertTrue(cuerpo, "no encontre speak() en avatar.js")
+        self.assertIn(
+            "pareceCastellano", cuerpo,
+            "speak() volvio a filtrar SOLO la voz: sin mirar el texto, una "
+            "respuesta en ingles se pronuncia igual, con acento mexicano.")
+
+    def test_el_texto_se_juzga_antes_que_la_voz(self):
+        cuerpo = _cuerpo(self.js, "speak")
+        self.assertLess(
+            cuerpo.index("pareceCastellano"), cuerpo.index("spanishVoiceAvailable"),
+            "el texto tiene que juzgarse ANTES de elegir voz: al reves, una "
+            "frase inglesa con voz espanola disponible se pronuncia y ya.")
+
+    def test_lo_que_no_es_castellano_va_a_traducirse_no_al_silencio(self):
+        cuerpo = _cuerpo(self.js, "speak")
+        pos = cuerpo.index("pareceCastellano")
+        rama = cuerpo[pos:pos + 160]
+        self.assertIn(
+            "speakViaServer", rama,
+            "lo que no viene en castellano debe ir a Piper, que PRIMERO "
+            "intenta traducirlo. Callar de entrada tira texto que si se "
+            "podia decir en castellano.")
+
+    def test_la_funcion_exige_marca_positiva_no_ausencia_de_ingles(self):
+        cuerpo = _cuerpo(self.js, "pareceCastellano")
+        self.assertTrue(cuerpo, "falta pareceCastellano() en avatar.js")
+        self.assertIn("_SET_ES", cuerpo)
+        self.assertIn("_RE_ACENTO", cuerpo)
+        self.assertNotIn(
+            "_PALABRAS_INGLESAS", cuerpo,
+            "no se pregunta '¿parece ingles?': esa pregunta contesta que no "
+            "ante cualquier duda, y por eso se colaban 'Save' y 'Please wait'.")
+
+
+class LasListasDelNavegadorNoSeDesincronizan(unittest.TestCase):
+    """La copia en JS es un SUBCONJUNTO de la del servidor — nunca al reves.
+
+    Las listas viven dos veces: en `tts_piper` (la autoridad) y en
+    `avatar.js` (la copia barata que evita un viaje al servidor por cada
+    frase). Dos copias se separan solas, asi que la direccion del error
+    importa: quedarse CORTO en JS solo manda mas texto a Piper, que sabe
+    traducir; PASARSE deja salir ingles por la bocina. Por eso se exige
+    subconjunto y no igualdad: la lista de Python puede crecer sin romper
+    esta prueba, pero una palabra inventada en el JS la pone roja.
+    """
+
+    def _palabras_js(self):
+        js = _lee(_JS, "avatar.js")
+        m = re.search(r"var\s+_PAL_ES\s*=\s*\[(.*?)\]", js, re.S)
+        self.assertTrue(m, "no encontre _PAL_ES en avatar.js")
+        return set(re.findall(r"'([^']+)'", m.group(1)))
+
+    def test_toda_palabra_del_js_existe_en_el_servidor(self):
+        from . import tts_piper as tp
+        autoridad = set(tp._MARCAS_ES) | set(tp._PALABRAS_ES_CONTENIDO)
+        sobra = self._palabras_js() - autoridad
+        self.assertFalse(
+            sobra,
+            "estas palabras estan en avatar.js y NO en tts_piper: %s. Una "
+            "palabra de mas en el navegador deja pasar texto que el servidor "
+            "habria mandado a traducir." % sorted(sobra))
+
+    def test_las_terminaciones_tambien_son_subconjunto(self):
+        from . import tts_piper as tp
+        js = _lee(_JS, "avatar.js")
+        m = re.search(r"var\s+_SUF_ES\s*=\s*\[(.*?)\]", js, re.S)
+        self.assertTrue(m, "no encontre _SUF_ES en avatar.js")
+        sobra = set(re.findall(r"'([^']+)'", m.group(1))) - set(tp._SUFIJOS_ES)
+        self.assertFalse(sobra, "terminaciones de mas en el JS: %s" % sorted(sobra))
+
+    def test_la_copia_no_se_quedo_vacia(self):
+        # Un subconjunto vacio pasaria las dos pruebas de arriba y mandaria
+        # TODO al servidor: correcto pero lentisimo, y mudo sin Piper.
+        self.assertGreater(len(self._palabras_js()), 100)
+
+
+class LaLlmTieneOrdenDeContestarEnCastellano(unittest.TestCase):
+    """prompt.pmt — la causa RAIZ, arriba de la voz (Angela, 2026-08-27).
+
+    Filtrar la voz es curar el sintoma. Si la LLM contesta en ingles, el
+    texto ingles ya existe: quedo escrito en la pantalla, se guardo en el
+    historial y se copio al Exec Report. La voz es lo ultimo que pasa.
+    Antes de hoy `prompt.pmt` no le pedia castellano ni una sola vez — la
+    unica coincidencia de 'spanish' era el nombre de una plantilla de
+    LaTeXer. El idioma de la respuesta dependia de la buena voluntad del
+    modelo.
+    """
+
+    def setUp(self):
+        self.pmt = _lee(_AQUI, "prompt.pmt")
+
+    def test_la_orden_existe_y_es_explicita(self):
+        self.assertIn(
+            "YOU ALWAYS ANSWER IN SPANISH", self.pmt,
+            "prompt.pmt dejo de exigir castellano: sin esa linea el idioma "
+            "de la respuesta queda a criterio del modelo.")
+
+    def test_prohibe_el_ingles_sin_excepciones(self):
+        self.assertIn("English is never acceptable", self.pmt)
+
+    def test_protege_el_canal_de_maquina(self):
+        # La orden de "todo en castellano" no debe llevarse por delante los
+        # nombres que lee el codigo: traducir END-RESPONSE o INI_SECTION_*
+        # rompe el parseo rio abajo.
+        self.assertIn("END-RESPONSE", self.pmt)
+        self.assertIn("INI_SECTION_", self.pmt)
+
+    def test_la_orden_va_temprano_no_sepultada_al_final(self):
+        pos = self.pmt.index("YOU ALWAYS ANSWER IN SPANISH")
+        self.assertLess(
+            pos, len(self.pmt) * 0.10,
+            "la regla del idioma quedo enterrada; va en el bloque de "
+            "identidad, arriba, donde el modelo la pesa mas.")

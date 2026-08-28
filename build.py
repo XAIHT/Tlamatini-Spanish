@@ -1563,6 +1563,13 @@ def main():
         required_file_copies = {
             Path("README.md"): dist_manage / "README.md",
             Path("agents_descriptions.md"): dist_manage / "agents_descriptions.md",
+            # REQUIRED in this edition, not optional. agents_descriptions.es.md
+            # is what every canvas tooltip and Description dialog reads; ship a
+            # Spanish build without it and the whole agent catalog silently
+            # reads in ENGLISH, which nobody notices until Angela sees it.
+            # That is a golden-rule failure in the GUI, so the build must ABORT
+            # rather than produce it.
+            Path("agents_descriptions.es.md"): dist_manage / "agents_descriptions.es.md",
         }
         for src, dst in required_file_copies.items():
             if not src.exists():
@@ -1589,6 +1596,25 @@ def main():
                 print(f"Copied directory: {src_dir} -> {dst_dir}")
             else:
                 print(f"WARNING: Source directory not found: {src_dir}")
+
+        # ---- Security assets - Angela's hacker-combat arsenal ----------------
+        # Ship <install>/security/ (defender + whitelist v2 + UAC launchers +
+        # the persistent automated test) next to the executable, so every
+        # install can harden itself and detect/fight intrusions - for a CTF or a
+        # real ransomware / attacker scenario. Runtime alert logs are NOT shipped.
+        _sec_src = Path("security")
+        _sec_dst = dist_manage / "security"
+        if _sec_src.exists():
+            if _sec_dst.exists():
+                shutil.rmtree(_sec_dst)
+            shutil.copytree(
+                _sec_src,
+                _sec_dst,
+                ignore=shutil.ignore_patterns("security_logs", "*.log", "__pycache__"),
+            )
+            print(f"Copied security assets: {_sec_src} -> {_sec_dst}")
+        else:
+            print("WARNING: security/ not found; skipping security assets copy.")
 
         # ── Companion-app agents manifest (Tlamatini-FlowPills PROP-002) ──────
         # Ship <install>/agents/_tlamatini_agents_manifest.json so a companion app

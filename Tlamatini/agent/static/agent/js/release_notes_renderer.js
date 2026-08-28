@@ -59,7 +59,9 @@
     var GH_ASSET = /(user-attachments\/assets\/|githubusercontent\.com\/)/i;
 
     var MARK = '\u0000';           // placeholder sentinel — never present in real notes
-    var TOKEN_RE = /\u0000(\d+)\u0000/g;
+    // Se arma desde MARK en vez de repetir el centinela dentro del
+    // literal: asi vive en UN solo lugar y no se puede desincronizar.
+    var TOKEN_RE = new RegExp(MARK + '(\\d+)' + MARK, 'g');
 
     function escapeHtml(text) {
         return String(text)

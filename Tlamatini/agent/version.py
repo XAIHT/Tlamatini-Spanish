@@ -219,6 +219,28 @@ def _public_version(build_string: str) -> str:
     return build_string
 
 
+def strip_edition_suffix(version: str) -> str:
+    """Remove this tree's trailing ``s`` edition marker from a version.
+
+    Spanish release tags use ``vMAJOR.MINOR.PATCHs`` so their human-readable
+    version stays distinct from the English edition. The marker is not part
+    of SemVer, however, and must be removed before a version is converted to
+    numbers. Only an ``s`` immediately following the numeric core is removed;
+    prerelease/build text and unrelated strings are left intact.
+    """
+    return re.sub(
+        r"^([vV]?(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))s(?=$|[-+])",
+        r"\1",
+        version,
+        count=1,
+    )
+
+
+def _semver_body(build_string: str) -> str:
+    """Return the strict-SemVer body used by numeric version consumers."""
+    return strip_edition_suffix(_public_version(build_string))
+
+
 # ── SemVer parsing & Win32 VERSIONINFO conversion ──────────────────────────
 
 def parse_semver(version: str) -> Optional[dict]:
@@ -250,7 +272,7 @@ def semver_to_win32_tuple(version: str) -> Tuple[int, int, int, int]:
     the ``ProductVersion`` string entry); ``BUILD`` is hard-coded to ``0``
     because SemVer's ``+build`` metadata is non-comparable per spec.
     """
-    parsed = parse_semver(_public_version(version))
+    parsed = parse_semver(_semver_body(version))
     if parsed is None:
         return (0, 0, 0, 0)
     return (parsed["major"], parsed["minor"], parsed["patch"], 0)
@@ -359,6 +381,7 @@ __all__ = [
     "get_version_info",
     "derive_version_from_git",
     "parse_semver",
+    "strip_edition_suffix",
     "semver_to_win32_tuple",
     "write_version_module",
     "render_pyinstaller_version_file",

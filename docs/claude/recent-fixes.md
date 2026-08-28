@@ -16,6 +16,84 @@
 
 ---
 
+## 2026-08-26 — Blue-hat toolkit in the Spanish tree: evidence survives an update, and the `s` tag stops lying
+
+Three things landed together while sweeping `security/` for this edition. All three were
+**silent** failures — nothing on screen ever looked wrong — so each is pinned by a guard that
+would have gone red before the fix.
+
+**1. A self-update destroyed the operator's security evidence.** `security/` is application
+code and *must* be replaced by a release (a fixed defender has to be able to reach a user who
+already installed a broken one), so it is correctly absent from `apply_update.ps1`'s
+`$Preserve`. But `security/security_logs/` — `alerts.log`, `monitor.log`, the visible
+asset-test proof — lives *inside* that replaced directory, exactly like `db.sqlite3` lives
+inside the replaced `_internal/`. The delete loop wiped it. `apply_update.ps1` now stashes it
+to `Temp/_security_logs_carryover` (**step 3c**) and restores it into the new `security/`
+(**step 5b**), mirroring the database's step 3b. **Both halves are required and ordered**: a
+stash with no restore silently moves the evidence somewhere nobody looks, which is worse than
+deleting it honestly. Both fail **open** — on any error the update still completes and the
+evidence is *left* in the carryover directory rather than removed. Do not "simplify" this by
+adding `security` to `$Preserve`: that would freeze the defender scripts forever.
+
+**2. The Spanish edition letter silently corrupted two numeric version paths.** This tree tags
+releases as `v1.50.0s` so a Spanish build is distinguishable from the English `v1.50.0`. That
+letter is not SemVer, and `version._SEMVER_RE` is strict, so `parse_semver()` returned `None`
+and two callers failed open in opposite, invisible ways:
+
+- `semver_to_win32_tuple()` fell back to `(0, 0, 0, 0)` — **every Spanish `.exe` reported
+  ProductVersion `0.0.0.0`** to Windows Explorer, installers and upgrade-detection logic, while
+  the About dialog and startup banner still showed the correct string.
+- `self_update._version_tuple()` fell through to its crude numeric split, which stops at the
+  first non-digit field and therefore **dropped the patch number**: `1.49.1s` compared equal to
+  `1.49.0s`, so **a Spanish user was never offered a patch release**. Only minor/major bumps
+  got through.
+
+The fix is `version.py::strip_edition_suffix()` reached through the private `_semver_body()`,
+now used by `semver_to_win32_tuple` and by `self_update`. **Keep `parse_semver()` strict** — the
+letter is normalised away before parsing, never accepted as valid SemVer — and **keep the letter
+in every human-readable surface** (`get_version()`, the banner, `GET /agent/version/`, the
+`ProductVersion` string). Anywhere a version becomes NUMBERS, go through `_semver_body()`.
+Guard: `agent/test_edition_version_suffix.py`. Contract: `VERSIONING.md` → *The Spanish edition
+letter*.
+
+**3. The toolkit shipped undocumented, and the docs it did have pointed at nothing.** `security/`
+was a byte-identical copy of the English tree with no Spanish counterpart to the English
+README/Book sections — yet `security/README.md` told the reader to go read *"Enable Tlamatini as
+a Blue-hat agent"* in `README.md` and `BookOfTlamatini.md`, sections that did not exist here.
+Both now carry the Spanish runbook, `security/README.md` is Spanish, and the harness takes its
+screenshots with `toma_foto` (this edition's Shoter convention) instead of `take_shot`.
+⚠️ **The two `.ps1` files keep their English console strings on purpose**: the harness asserts on
+exact phrases inside them (e.g. `verified in Audit mode`), so translating one side without the
+other leaves a test that passes while proving nothing. Translate both in the same commit or
+neither. Guard: `agent/test_security_assets_carriage.py`, which also pins that the docs promise
+only sections that exist.
+
+**4. Her own self-knowledge had rotted a full release behind source.** `agent/Tlamatini.md` is
+not documentation *about* her — `rag/config.py` injects it into the **system prompt** as
+`{self_knowledge}`, so it is what she answers from when a user asks what she is. It still said
+**87 agents / 65 wrapped / 107 tools / 28 skills** while source had **88 / 66 / 108 / 29**:
+NetSpeed-Calculator and the 29th skill landed and her self-description never followed. It
+shipped inside every `--self-modify` build for a whole release. Two things were missing
+outright: **the golden rule** (she could not state that she never speaks English — the single
+defining fact of this edition) and **the Blue-hat toolkit** (she did not know `security/`
+exists, so she would either deny having it or, worse, claim to have run a sweep she cannot
+run). Both are now written in, and `CLAUDE.md`'s migration count was stale too (197 → **198**).
+
+⚠️ **The guard is the point, not the numbers.** `agent/test_self_knowledge_is_current.py`
+**derives** the agent / wrapped / skill counts from source — nothing is hand-typed — and also
+checks the Multi-Turn breakdown *adds up* (`total == core + wrapped + acpx + supervisors`). Add
+agent #89 and it fails and names the file to update. Never hand-type a count into a doc or a
+test again; the prose rotted precisely because nothing could detect it. Note the snapshot
+itself was always fine — a 1224-file audit showed every rebuild input carried and only private
+data (`contacts.json`, `.private_targets.json`), generated files (`_version.py`) and 51 harness
+run-artifacts excluded. **Shipping correctly is not the same as being correct.**
+
+**Also corrected:** the ES docs quoted four English-tree commit hashes (`ae6fec4c`, `d161098e`,
+`834eaa16`, `f948be7b`) that do not exist in this repository. They were replaced with this
+tree's real identity. Never copy a commit hash across the two trees.
+
+---
+
 ## 2026-08-23 — Googler structured dork builder: syntax is a compiled contract
 
 The visual/pool Googler now compiles structured fields rather than trusting every flow author
@@ -320,9 +398,9 @@ audit. Migrations **0195/0196/0197**; catalog prompt **119**
 > (encoding-safe Grepper + the closed verdict vocabulary + updater preservation),
 > `v1.48.16` = `6ee630ca` (themed `tlmAlert`/`tlmConfirm` pop-ups + the
 > frozen-bundle carriage proof in `build.py`), **`v1.48.17` = `f948be7b` — the
-> CURRENT release**, carrying everything below. Docs that name "the latest
-> version" say **1.48.17**; entries that say a change "landed in v1.48.15" are
-> historical statements and remain as written.
+> newest release on that day**, carrying everything below. The current release
+> is now `v1.50.0s`; entries that say a change "landed in v1.48.15" or
+> `v1.48.17` are historical statements and remain as written.
 
 **Angela, verbatim:** *"Standarize in every ... every dialog and all of the
 dialog without exception that if 'Esc' is pressed then the dialog must be
@@ -1131,7 +1209,7 @@ The suite ran **3462 tests → 26 failures + 2 errors**. Almost none were produc
 
 ### A. The secret scrubber silently broke its own tests
 
-`regen_secrets.py` (and the public-release scrubber) rewrite `"password": "..."`-shaped literals. They had rewritten **the test fixtures** to `<REDACTED>` while leaving the assertions expecting the old values — 8 failures in `test_password_quoting.py` plus `test_secret_008_env_secret_real_value`. Two second-order bites:
+`regen_secrets.py` (and the public-release scrubber) rewrite `"password": "<REDACTED>"`-shaped literals. They had rewritten **the test fixtures** to `<REDACTED>` while leaving the assertions expecting the old values — 8 failures in `test_password_quoting.py` plus `test_secret_008_env_secret_real_value`. Two second-order bites:
 
 - `<REDACTED>` has **no spaces**, and the entire point of `test_password_quoting` is proving a *space-bearing* password stays double-quoted in YAML. The scrub did not just break the test, it made it meaningless. Fixtures now use the obviously-fake, space-bearing `fake app pass 0000`.
 - `<REDACTED>` contains `<` and `>`, which **are** markers in `_looks_like_placeholder`. The "a REAL value must NOT be flagged" case therefore asserted the exact opposite of its intent. (My first replacement failed too — it contained the word "placeholder". The value must be opaque gibberish.)

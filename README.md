@@ -10,7 +10,24 @@
   <img src="Tlamatini.jpg" alt="Tlamatini" width="180" height="180" />
 </p>
 
-<h1 align="center">Tlamatini</h1>
+## Habilita a Tlamatini como agente Blue-hat
+
+Tlamatini trae su propio juego de **seguridad defensiva** en `security/`, para
+cuidar la maquina donde corre — no para atacar la de nadie:
+
+- **`tlamatini_defender.ps1`** — vigila y responde; deja su evidencia en
+  `security/security_logs/`.
+- **`tlamatini_whitelist_v2.ps1`** — pone en la lista blanca de Windows
+  Defender lo que Tlamatini necesita ejecutar, sin abrirle la puerta a nada mas.
+- **`run_defender.bat`** / **`enable_tlamatini_v2.bat`** — los lanzadores.
+- **`automated_tests_of_security_assets.py`** — comprueba que los assets estan
+  completos y sanos; la foto de PANTALLA COMPLETA la toma **Shoter**.
+
+Las bitacoras de `security/security_logs/` son **tuyas**: estan en `.gitignore`
+(retratan tu escritorio entero) y el actualizador las conserva a traves de una
+actualizacion guardandolas en `Temp/_security_logs_carryover`.
+
+## Table of contents
 
 <p align="center">
   <b>La asistente de desarrollo con IA local-first, con un diseñador visual de flows — y el alcance para tocar hardware, motores 3D y cualquier herramienta externa.</b><br/>
@@ -49,7 +66,7 @@
 
 La idea completa en una línea: **no pagues $200 al mes por un modelo frontera.** **Tlamatini es gratuita** — tu único costo es **Ollama Pro (~$200 al año, pagados a Ollama, no a nosotros)**; apunta Tlamatini hacia él y maneja **87 agent types y 75+ tools** desde tu propia máquina. Esta es la instalación completa.
 
-### 1 · Instala Tlamatini
+NetSpeed-Calculator measures download, upload, latency, jitter, packet loss, and bufferbloat against several keyless providers. It discards TCP slow start, samples throughput as `d(bytes)/dt`, rejects outliers, publishes Student-t confidence intervals, and fuses providers with fixed- or random-effects meta-analysis plus Cochran's Q/I². Its `full`, `download`, and `upload` actions consume real bandwidth; `validate` only checks provider reachability, while `providers` lists the catalog. A full run commonly transfers about 100-200 MB, so the wrapped tool is in Ask-Execs tier D and must not be repeated casually.
 
 Elige **una** de las dos rutas. **Tlamatini en sí es gratuita** — a nosotros nunca nos pagas nada; el único costo es Ollama (Paso 3).
 
@@ -68,28 +85,25 @@ Lo mejor para la mayoría. El instalador trae su propio **Python 3.12.10** y tod
 
 Lo mejor si quieres leer, modificar o contribuir al código. Requiere **Python 3.12.10** y **git** ya instalados.
 
-```bash
-git clone https://github.com/XAIHT/Tlamatini.git
-cd Tlamatini
-python -m venv venv && venv\Scripts\activate
-pip install -r requirements.txt
-python Tlamatini/manage.py migrate
-python Tlamatini/manage.py runserver --noreload
-# then open http://127.0.0.1:8000/   (default login: user / changeme)
-```
+| Asset | Role |
+|---|---|
+| `security/enable_tlamatini_v2.bat` | Self-elevating launcher for the one-time Windows enablement script. |
+| `security/tlamatini_whitelist_v2.ps1` | Applies persistent Defender, CFA, ASR, execution-policy, firewall, event-log, audit-policy, and logging changes; verifies WMI, Task Scheduler, registry, and service visibility. |
+| `security/run_defender.bat` | Self-elevating launcher for one armed scan using the defender's default mode. |
+| `security/tlamatini_defender.ps1` | Runs one-shot or continuous monitoring in detect-only, armed, or aggressive mode. |
+| `security/automated_tests_of_security_assets.py` | Non-destructive visible regression harness: parses both PowerShell files, exercises the self-safe classifier, validates official ASR/audit GUIDs and launcher contracts, captures the desktop through Shoter, and displays a headed-browser summary. It does **not** enable Windows policies or run an armed scan. |
+| `security/README.md` | Security-specific quick reference kept beside the executable. |
 
 > **`--noreload` es opcional (desde 2026-07-11):** ahora `python Tlamatini/manage.py runserver` a secas arranca limpio y se recarga sola cuando editas el código. Antes levantaba dos veces los puertos auxiliares del MCP `:8765` / `:50051` y reventaba con `WinError 10048`; se corrigió con una compuerta consciente del reloader en `agent/apps.py`.
 
 <details>
 <summary><b>🔌 ¿El puerto 8000 ya está ocupado? ¿Tlamatini no arranca? (<code>WinError 10013</code>) — cambia una línea</b></summary>
 
-<br>
+The six ASR rules are: Office applications creating child processes; LSASS credential stealing; WMI event-subscription persistence; executable content from email/webmail; untrusted or unsigned USB processes; and process creation through PSExec/WMI. The script uses Microsoft's published rule IDs, reads the effective Defender configuration back after each write, and reports `[OK]` only when action `6` (Audit) is verified; otherwise it emits `[WARN]`. Audit mode records matching behavior but does not block it. See the [Microsoft ASR rules reference](https://learn.microsoft.com/en-us/defender-endpoint/attack-surface-reduction-rules-reference).
 
-**`8000` es solo el valor por defecto.** Desde **v1.40.1** el puerto web vive en tu **`config.json`**:
+The script also enables locale-neutral audit subcategories by GUID: success/failure Logon, Credential Validation, Sensitive Privilege Use, and User Account Management, plus success Process Creation. It checks `auditpol`'s exit status rather than assuming each command worked. Process-command-line and PowerShell Script Block Logging can capture sensitive arguments, so protect the Windows event logs as carefully as Tlamatini's own logs.
 
-```jsonc
-"django_port": 8000     // ← put any free port here, e.g. 9000
-```
+Before enabling, create a restore point or record your current Defender exclusions, ASR configuration, execution policies, audit policy, Security-log permissions, and matching firewall rules. The repository currently provides **no automatic rollback script**; restore the recorded baseline through your organisation's Windows security policy if you later disable the toolkit.
 
 Reinicia Tlamatini y ella levanta en el puerto nuevo — **sin recompilar, sin editar código**. Todas las rutas de arranque lo respetan: el acceso directo del escritorio, el doble clic sobre un archivo `.flw`, el navegador que se abre solo, y `runserver` / `startserver` desde el código fuente.
 
@@ -300,6 +314,75 @@ Apágala con `"binary_context_detection": false` en `config.json`; ajústala con
 ## Mírala en acción
 
 - ▶️ **[Teaser de un minuto](https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s)** · 🎬 más demos en **[xaiht.org](https://xaiht.org)**.
+
+---
+
+## 🛡️ Activa a Tlamatini como agente Blue-hat
+
+«Blue-hat» significa usar a Tlamatini como **monitor defensivo y ayudante de respuesta a incidentes, operado por una persona, en una máquina Windows que sea tuya o que tengas autorización explícita para defender**. El directorio `security/` es un kit que vive en el equipo, no un tool nuevo del chat ni un Agent del canvas: una persona administradora lo lanza, revisa su evidencia y decide cuándo la respuesta automática está justificada.
+
+### Los activos de seguridad
+
+| Activo | Papel |
+|---|---|
+| `security/enable_tlamatini_v2.bat` | Lanzador que se autoeleva para la configuración inicial de Windows (una sola vez). |
+| `security/tlamatini_whitelist_v2.ps1` | Aplica los cambios permanentes de Defender, CFA, ASR, política de ejecución, firewall, registro de eventos, política de auditoría y logging; verifica la visibilidad de WMI, Programador de tareas, registro y servicios. |
+| `security/run_defender.bat` | Lanzador que se autoeleva para **un** barrido armado en el modo por defecto. |
+| `security/tlamatini_defender.ps1` | Monitorea una vez o en continuo, en modo detect-only, armado o agresivo. |
+| `security/automated_tests_of_security_assets.py` | Arnés de regresión visible y no destructivo: analiza la sintaxis de los dos `.ps1`, ejercita el clasificador que protege a Tlamatini de sí misma, valida los GUIDs oficiales de ASR/auditoría y los contratos de los lanzadores, captura el escritorio con Shoter y muestra un resumen en un navegador con interfaz. **No** activa políticas de Windows ni corre un barrido armado. |
+| `security/README.md` | Referencia rápida de seguridad, en español, que viaja junto al ejecutable. |
+
+### Detente antes de activar
+
+El script de activación necesita **Windows 10/11, los cmdlets de PowerShell de Microsoft Defender y aprobación de Administrador**. Sus ajustes **persisten** después de que el script termina. Defender y el firewall siguen encendidos, pero la protección se relaja a propósito alrededor de Tlamatini: el árbol de instalación y ciertos procesos entran en las exclusiones de Defender, Tlamatini queda permitida en Controlled Folder Access, seis reglas ASR pasan a **Auditoría** en lugar de Bloqueo, y se crean reglas amplias de salida para Tlamatini/Python. Esas excepciones **reducen la protección** si código malicioso llega a una ruta o a un proceso excluido.
+
+Las seis reglas ASR son: Office creando procesos hijos; robo de credenciales de LSASS; persistencia por suscripción a eventos WMI; contenido ejecutable de correo/webmail; procesos no confiables o sin firma desde USB; y creación de procesos vía PSExec/WMI. El script usa los IDs publicados por Microsoft, vuelve a leer la configuración efectiva de Defender después de cada escritura y reporta `[OK]` sólo cuando verifica la acción `6` (Auditoría); si no, imprime `[WARN]`. Auditar **registra** el comportamiento, no lo bloquea. Consulta la [referencia de reglas ASR de Microsoft](https://learn.microsoft.com/es-es/defender-endpoint/attack-surface-reduction-rules-reference).
+
+También habilita subcategorías de auditoría por GUID (independientes del idioma de Windows): Inicio de sesión, Validación de credenciales, Uso de privilegios confidenciales y Administración de cuentas de usuario (éxito y error), más Creación de procesos (éxito). Revisa el código de salida de `auditpol` en vez de suponer que cada comando funcionó. La línea de comandos de los procesos y el Script Block Logging pueden capturar argumentos sensibles, así que protege los registros de eventos de Windows con el mismo cuidado que los de Tlamatini.
+
+Antes de activar, crea un punto de restauración o anota tus exclusiones de Defender, tu configuración ASR, tus políticas de ejecución, tu política de auditoría, los permisos del registro de Seguridad y las reglas de firewall correspondientes. El repositorio **no trae script de reversión automática**; si más adelante desactivas el kit, restaura esa línea base con la política de seguridad de Windows de tu organización.
+
+### Secuencia recomendada de activación
+
+1. Revisa cada archivo de `security/`, sobre todo los cambios permanentes de la whitelist y las reglas de respuesta a procesos/IPs del defender.
+2. Valida los activos **sin tocar** la política de seguridad: `python security\automated_tests_of_security_assets.py`. La prueba abre a propósito una ventana de PowerShell en primer plano y Chrome con interfaz, y escribe la evidencia en `security\security_logs\asset_tests\`.
+3. Anota la línea base actual de Defender/ASR/CFA, política de ejecución, política de auditoría, registro de Seguridad y reglas de firewall.
+4. Desde `<raíz-de-Tlamatini>\security`, ejecuta `enable_tlamatini_v2.bat` como administradora, aprueba el UAC y reinicia Tlamatini/PowerShell cuando termine.
+5. Establece la línea base de falsos positivos con un barrido elevado en **detect-only**:
+
+```powershell
+cd <raíz-de-Tlamatini>\security
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tlamatini_defender.ps1 -DetectOnly
+```
+
+6. Revisa `security_logs\alerts.log` y `security_logs\monitor.log`. Las entradas `WARNING`, `ALERT` y `CRITICAL` son **pistas para investigar, no prueba de compromiso**.
+7. Sólo después de revisar esa línea base, usa `run_defender.bat` para un barrido armado de una pasada, o abre una sesión de watch deliberada desde PowerShell elevado.
+
+### Defender modes
+
+| Command | Behaviour |
+|---|---|
+| `.\tlamatini_defender.ps1 -DetectOnly` | Reporta lo que **haría**: bloquear o matar. Es la primera corrida más segura. |
+| `.\tlamatini_defender.ps1` | Barrido armado de una pasada; puede crear bloqueos de firewall y detener por la fuerza procesos clasificados como herramientas de atacante. |
+| `.\tlamatini_defender.ps1 -Watch` | Barridos armados continuos cada 60 segundos hasta `Ctrl+C`. |
+| `.\tlamatini_defender.ps1 -Watch -IntervalSeconds 30 -DetectOnly` | Observación continua sin bloquear ni matar. |
+| `.\tlamatini_defender.ps1 -Aggressive` | Además mata herramientas de doble uso como `nmap`, `nc`, `john` o `hashcat` cuando corren fuera de las rutas reconocidas de Tlamatini. Úsalo sólo durante un incidente confirmado. |
+
+`-IntervalSeconds` acepta de `5` a `86400`; un valor inválido se rechaza antes de empezar. El defender vigila diez áreas: salud y detecciones de Defender; inicios de sesión fallidos y remotos/de red; conexiones establecidas y puertos a la escucha sospechosos; nombres y rutas de procesos; tareas programadas que no son de Microsoft; servicios; persistencia en Run/RunOnce, Winlogon, AppInit e IFEO; ejecutables/scripts recientes en directorios críticos; indicadores de ransomware y manipulación de la recuperación; y cambios de cuentas / grupo de administradores.
+
+### Límites de la respuesta, y cómo revisarla
+
+- El modo armado por defecto bloquea una IP de entrada y de salida cuando la muestra revisada del registro de Seguridad contiene al menos **cinco** inicios de sesión fallidos desde esa dirección. Las reglas `Tlamatini Block <IP> Inbound|Outbound` **persisten**: no expiran ni se desbloquean solas.
+- La respuesta a procesos se basa en **nombres**. Las rutas reconocidas de Tlamatini están protegidas; los patrones de herramientas de atacante conocidas se detienen por la fuerza, mientras que las de doble uso sólo alertan salvo que pases `-Aggressive`. Las heurísticas de nombre base y de directorio sospechoso pueden dar falsos positivos.
+- Puertos sospechosos, entradas de persistencia, indicadores de ransomware, eventos de cuentas y muchos hallazgos de ruta **sólo alertan**. El script no es un motor antivirus, ni un EDR, ni un SIEM, ni una conclusión forense, ni un reemplazo de Microsoft Defender y de una respuesta profesional a incidentes.
+- Inspecciona los bloqueos creados con `Get-NetFirewallRule -DisplayName "Tlamatini Block *"`. Elimina un par entrada/salida concreto **sólo** después de validar el incidente y la IP, y guarda constancia de esa decisión.
+- Los registros se anexan en `security/security_logs/`, están deliberadamente en `.gitignore`, se excluyen de las compilaciones públicas y de los snapshots de código, y pueden contener nombres de usuario, rutas de procesos, líneas de comando, direcciones IP, membresía del grupo de administradores y otra telemetría sensible del equipo. Protégelos y consérvalos según tu política.
+
+Los lanzadores `.bat` resuelven su propia ruta con `%~f0`, la pasan a la elevación por UAC en una variable de entorno para que los directorios con espacios sobrevivan intactos, y localizan sus scripts acompañantes con `%~dp0`. Además devuelven el código de error del proceso de PowerShell. Los `.ps1` usan `$PSScriptRoot` y `Split-Path -Parent`. Así el kit funciona igual en un checkout del código y en una instalación. `build.py` copia todo `security/` junto al ejecutable pero omite los registros en tiempo de ejecución; `copy_source_assets.py` lleva su código a los snapshots de auto-modificación excluyendo `security_logs/`; y `apply_update.ps1` **conserva tu evidencia** a través de una actualización (la aparta en `Temp/_security_logs_carryover` y la devuelve al nuevo `security/`), porque los scripts son código que debe reemplazarse pero tus bitácoras son tuyas.
+
+> **Frontera de autorización:** usa estos activos únicamente en sistemas que sean tuyos o que tengas autorización explícita para defender. El kit Blue-hat de Tlamatini ayuda a recolectar señales y a reaccionar; la persona que opera sigue siendo responsable del alcance, de los cambios de política, de los falsos positivos, de las decisiones de contención, de la preservación de evidencia y de la recuperación.
+
+> **Creado por Angela López Mendoza (@angelahack1)** — Tlamatini, la que sabe.
 
 ---
 

@@ -336,6 +336,43 @@ es son era eran ser estar tengo tiene hacer hago muy pero porque cuando
 donde como esto esta este ese esa aqui alli ya no si mas menos
 """.split())
 
+#: ⛔ PALABRAS DE CONTENIDO, no solo palabras funcion (Angela, 2026-08-26).
+#:
+#: `_MARCAS_ES` traia UNICAMENTE palabras funcion (el, la, de, que, para...).
+#: Una frase corta de puro contenido no trae ninguna, asi que "hola",
+#: "Gracias" y "Hola Angela" NO daban marca positiva, se mandaban a traducir,
+#: y sin Ollama prendido Tlamatini SE QUEDABA MUDA EN SU PROPIO IDIOMA.
+#: Angela lo dijo asi: *"so only when there are no accent it will be muted???"*.
+#: La regla "mejor muda que en ingles" es correcta; lo que estaba mal era la
+#: PRUEBA — exigia acento/enye o una palabra funcion, y el castellano cotidiano
+#: mas comun no lleva ninguna de las dos.
+#:
+#: Aqui SOLO van palabras que no existen en ingles. Nada de `red`, `version`,
+#: `total`, `error`, `final`, `real`, `capital`: son identicas en los dos
+#: idiomas y dejarian pasar ingles, que es lo unico prohibido.
+_PALABRAS_ES_CONTENIDO = frozenset("""
+hola adios buenos buenas dias tardes noches bienvenida bienvenido
+gracias perdon disculpa favor senor senora senorita
+listo lista hecho hecha terminado terminada guardado guardada
+borrado borrada creado creada cargando esperando corriendo
+correcto correcta exitoso exitosa fallido fallida
+archivo archivos carpeta carpetas ventana ventanas pantalla teclado
+raton correo mensaje mensajes contrasena usuario usuaria ayuda
+ajustes herramienta herramientas agente agentes respuesta pregunta
+prueba pruebas cambios cambio busqueda resultado resultados
+hacer hago haces hace tengo tienes tiene puedo puedes puede
+quiero quieres quiere voy vamos estoy estas estamos soy eres somos
+dice dijo abrir cerrar guardar borrar buscar encontrar empezar
+terminar seguir poner sacar mostrar decir hablar escuchar
+ahora luego siempre nunca todavia mucho poco bien nada algo
+alguien nadie tambien acabo acaba listo
+""".split())
+
+#: Terminaciones que solo existen en castellano. Cubren lo que ninguna lista
+#: puede enumerar: "configuracion", "rapidamente", "guardando", "seguridad".
+_SUFIJOS_ES = ('cion', 'ción', 'sion', 'sión', 'dad', 'mente',
+               'ando', 'endo', 'iendo', 'aron', 'aban')
+
 
 def _es_ingles(texto: str) -> bool:
     """True cuando el texto es INGLES corrido y por tanto no se pronuncia.
@@ -449,7 +486,17 @@ def _tiene_marca_de_castellano(texto):
     if any(c in s for c in "áéíóúüñÁÉÍÓÚÜÑ¿¡"):
         return True
     palabras = [p.strip('.,;:!?()[]"\'').lower() for p in s.split()]
-    return any(p in _MARCAS_ES for p in palabras if p.isalpha())
+    palabras = [p for p in palabras if p.isalpha()]
+    # Palabras funcion (el, la, de, que...): la senal original.
+    if any(p in _MARCAS_ES for p in palabras):
+        return True
+    # Palabras de CONTENIDO (hola, gracias, archivo...). Sin esto, una frase
+    # corta sin acentos se quedaba muda en su propio idioma.
+    if any(p in _PALABRAS_ES_CONTENIDO for p in palabras):
+        return True
+    # Terminaciones que solo existen en castellano, para lo que ninguna lista
+    # alcanza a enumerar ("configuracion", "rapidamente", "guardando").
+    return any(p.endswith(_SUFIJOS_ES) and len(p) > 5 for p in palabras)
 
 
 def a_castellano(texto):

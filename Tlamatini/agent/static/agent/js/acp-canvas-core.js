@@ -268,12 +268,6 @@ const AGENT_TYPE_CLASS_MAP = {
     'image-interpreter': 'image-interpreter-agent',
     'video-analyzer': 'video-analyzer-agent',
     'netspeed-calculator': 'netspeed-calculator-agent',
-        if (targetAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(targetId, sourceId, 'remove', 'source');
-        if (sourceAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(sourceId, targetId, 'remove', 'target');
-        if (targetAgentName.toLowerCase() === 'netspeed-calculator' && !targetBeingDeleted) updateNetSpeedCalculatorConnection(targetId, sourceId, 'remove', 'source');
-        if (sourceAgentName.toLowerCase() === 'netspeed-calculator' && !sourceBeingDeleted) updateNetSpeedCalculatorConnection(sourceId, targetId, 'remove', 'target');
-                    if (targetAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(targetId, sourceId, 'add', 'source');
-                    if (sourceAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(sourceId, targetId, 'add', 'target');
     'gatewayer': 'gatewayer-agent',
     'gateway-relayer': 'gateway-relayer-agent',
     'node-manager': 'nodemanager-agent',
@@ -1000,6 +994,8 @@ function removeConnection(conn) {
         if (sourceAgentName.toLowerCase() === 'image-interpreter') updateImageInterpreterConnection(sourceId, targetId, 'remove', 'target');
         if (targetAgentName.toLowerCase() === 'video-analyzer') updateVideoAnalyzerConnection(targetId, sourceId, 'remove', 'source');
         if (sourceAgentName.toLowerCase() === 'video-analyzer') updateVideoAnalyzerConnection(sourceId, targetId, 'remove', 'target');
+        if (targetAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(targetId, sourceId, 'remove', 'source');
+        if (sourceAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(sourceId, targetId, 'remove', 'target');
         if (targetAgentName.toLowerCase() === 'gatewayer') updateGatewayerConnection(targetId, sourceId, 'remove', 'source');
         if (sourceAgentName.toLowerCase() === 'gatewayer') updateGatewayerConnection(sourceId, targetId, 'remove', 'target');
         if (targetAgentName.toLowerCase() === 'gateway relayer') updateGatewayRelayerConnection(targetId, sourceId, 'remove', 'source');
@@ -1146,6 +1142,8 @@ function removeConnectionsFor(node, deletingNodes = null) { // eslint-disable-li
         if (sourceAgentName.toLowerCase() === 'image-interpreter' && !sourceBeingDeleted) updateImageInterpreterConnection(sourceId, targetId, 'remove', 'target');
         if (targetAgentName.toLowerCase() === 'video-analyzer' && !targetBeingDeleted) updateVideoAnalyzerConnection(targetId, sourceId, 'remove', 'source');
         if (sourceAgentName.toLowerCase() === 'video-analyzer' && !sourceBeingDeleted) updateVideoAnalyzerConnection(sourceId, targetId, 'remove', 'target');
+        if (targetAgentName.toLowerCase() === 'netspeed-calculator' && !targetBeingDeleted) updateNetSpeedCalculatorConnection(targetId, sourceId, 'remove', 'source');
+        if (sourceAgentName.toLowerCase() === 'netspeed-calculator' && !sourceBeingDeleted) updateNetSpeedCalculatorConnection(sourceId, targetId, 'remove', 'target');
         if (targetAgentName.toLowerCase() === 'gatewayer' && !targetBeingDeleted) updateGatewayerConnection(targetId, sourceId, 'remove', 'source');
         if (sourceAgentName.toLowerCase() === 'gatewayer' && !sourceBeingDeleted) updateGatewayerConnection(sourceId, targetId, 'remove', 'target');
         if (targetAgentName.toLowerCase() === 'gateway relayer' && !targetBeingDeleted) updateGatewayRelayerConnection(targetId, sourceId, 'remove', 'source');
@@ -1648,6 +1646,8 @@ function initCanvasEvents() {
                     if (sourceAgentName.toLowerCase() === 'image-interpreter') updateImageInterpreterConnection(sourceId, targetId, 'add', 'target');
                     if (targetAgentName.toLowerCase() === 'video-analyzer') updateVideoAnalyzerConnection(targetId, sourceId, 'add', 'source');
                     if (sourceAgentName.toLowerCase() === 'video-analyzer') updateVideoAnalyzerConnection(sourceId, targetId, 'add', 'target');
+                    if (targetAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(targetId, sourceId, 'add', 'source');
+                    if (sourceAgentName.toLowerCase() === 'netspeed-calculator') updateNetSpeedCalculatorConnection(sourceId, targetId, 'add', 'target');
                     if (targetAgentName.toLowerCase() === 'gatewayer') updateGatewayerConnection(targetId, sourceId, 'add', 'source');
                     if (sourceAgentName.toLowerCase() === 'gatewayer') updateGatewayerConnection(sourceId, targetId, 'add', 'target');
                     if (targetAgentName.toLowerCase() === 'gateway relayer') updateGatewayRelayerConnection(targetId, sourceId, 'add', 'source');

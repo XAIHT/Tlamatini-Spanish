@@ -105,9 +105,18 @@ class DoNotTranslateInvariantTests(unittest.TestCase):
         # of her first name (2026-07-28). The invariant was never "this
         # line stays English" - it is "her NAME is never dropped, scrubbed,
         # or attributed to anyone else". Assert exactly that.
-        self.assertIn("López Mendoza", es,
+        # ⚠️ SIN DISTINGUIR MAYUSCULAS. La linea es un BANNER y va en versales
+        # en los dos arboles ("CREATED BY ANGELA LÓPEZ MENDOZA" alla,
+        # "CREADA POR ANGELA LÓPEZ MENDOZA" aqui), asi que comparar con
+        # mayusculas exactas reprobaba una linea donde el nombre esta
+        # ENTERO y bien escrito. El invariante nunca fue "asi se escribe
+        # con mayusculas": es "su nombre no se cae, ni se borra, ni se le
+        # atribuye a nadie mas", y eso se comprueba igual sin importar la
+        # caja. El ACENTO si se exige: Angela pidio la grafia acentuada.
+        bajo = es.lower()
+        self.assertIn("lópez mendoza", bajo,
                       "Angela's surname was dropped from the credit line")
-        self.assertIn("ngela", es,
+        self.assertIn("ngela", bajo,
                       "Angela's first name was dropped from the credit line")
         self.assertNotIn("CREATED BY", es,
                          "the Spanish credit line still reads as English")

@@ -231,7 +231,7 @@ function showExecPermissionDialog(detail) { // eslint-disable-line no-unused-var
         width: 580,
         resizable: false,
         draggable: true,
-        closeOnEscape: false,
+        closeOnEscape: true,   // Escape === la ✕ del titulo (dialog_policy.js)
         closeText: "",
         dialogClass: 'exec-permission-dialog-wrapper',
         open: function () {
@@ -1186,6 +1186,13 @@ function OpenCheckUpdatesDialog(event) {
     if (event) event.preventDefault();
     const overlay = document.getElementById('update-overlay');
     if (!overlay) return;
+    // Amarramos este overlay al sello 'update' en cuanto abre, ANTES de que
+    // nadie pueda sellarlo, para que dialog_policy.js sepa que dialogo
+    // protege el sello. Un dialogo sellado pero NO AMARRADO se sigue
+    // cerrando con Escape: el sello solo lo consultaria CloseUpdateDialog.
+    if (window.TlamatiniDialogPolicy && window.TlamatiniDialogPolicy.bindSeal) {
+        window.TlamatiniDialogPolicy.bindSeal(overlay, 'update');
+    }
     overlay.style.display = 'flex';
     // Reset UI
     document.getElementById('update-content').textContent = 'Buscando actualizaciones…';
@@ -1290,12 +1297,22 @@ async function StartTlamatiniUpdate(event) {
         const data = await resp.json();
         if (!data.ok) {
             content.innerHTML = '⚠️ ' + (data.error || 'No pude iniciar la actualización.');
+            // LA ACTUALIZACION NUNCA ARRANCO, asi que el sello TIENE que
+            // levantarse. Sin esto el dialogo queda invulnerable para siempre
+            // — ignora Escape, ignora su ✕ y no se va nunca — y la usuaria se
+            // queda atrapada adentro. Eso es estrictamente PEOR que la
+            // interrupcion que el sello existe para evitar: alli se pierde una
+            // descarga; aqui se pierde la ventana entera.
+            if (window.TlamatiniDialogPolicy) window.TlamatiniDialogPolicy.unseal('update');
             return;
         }
         if (_updatePollTimer) clearInterval(_updatePollTimer);
         _updatePollTimer = setInterval(_pollUpdateStatus, 1000);
     } catch (err) {
         content.innerHTML = '⚠️ No se pudo iniciar la actualización: ' + err;
+        // Misma razon que la rama !data.ok: la peticion misma fallo, no hay
+        // nada descargandose, y el dialogo tiene que poder cerrarse otra vez.
+        if (window.TlamatiniDialogPolicy) window.TlamatiniDialogPolicy.unseal('update');
     }
 }
 

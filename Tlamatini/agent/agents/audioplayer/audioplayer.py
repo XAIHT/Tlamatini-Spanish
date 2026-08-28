@@ -87,6 +87,28 @@ console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(
 logging.getLogger().addHandler(console_handler)
 
 
+#: ⛔ NINGUNA PRUEBA SUENA. Se aceptan los DOS nombres: el de esta edicion
+#: (TLAMATINI_SIN_AUDIO, que manage.py prende al correr `test`) y el del
+#: arbol ingles (TLAMATINI_NO_AUDIO). El nombre de una variable de entorno
+#: es canal de maquina, asi que reconocer ambos evita que una prueba
+#: portada de alla crea que apago el sonido sin haberlo apagado.
+def _sin_audio() -> str:
+    """Razon por la que este proceso NO debe sonar, o ''."""
+    for _var in ("TLAMATINI_SIN_AUDIO", "TLAMATINI_NO_AUDIO"):
+        val = str(os.environ.get(_var, "")).strip().lower()
+        if val and val not in ("0", "false", "no"):
+            return "%s esta puesto" % _var
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        return "se esta corriendo pytest"
+    try:
+        argv = " ".join(sys.argv).lower()
+    except Exception:
+        argv = ""
+    if "pytest" in argv or "unittest" in argv:
+        return "se esta corriendo la suite de pruebas"
+    return ""
+
+
 def load_config(path: str = "config.yaml") -> Dict:
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -765,6 +787,19 @@ def main():
 
         logging.info("🔊 AUDIOPLAYER AGENT STARTED")
         logging.info(f"🎯 Destinos: {target_agents}")
+
+        # ⚠️ UNA PRUEBA JAMAS SUENA. manage.py marca TLAMATINI_SIN_AUDIO=1 en
+        # cuanto el comando es `test`, y el pool lo hereda por get_agent_env.
+        # El 2026-08-26 la suite completa manejo las bocinas reales de Angela a
+        # media noche; una suite capaz de eso es un defecto, en cualquier
+        # idioma. Se sale limpio para NO romper la prueba que lo invoco.
+        _sin_audio = str(os.environ.get('TLAMATINI_SIN_AUDIO', '')).strip().lower()
+        if _sin_audio and _sin_audio not in ('0', 'false', 'no'):
+            logging.warning("🔇 Corrida de pruebas: no se reproduce nada.")
+            for t in target_agents:
+                start_agent(t)
+            remove_pid_file()
+            sys.exit(0)
 
         # Verify the audio stack is importable BEFORE touching a device so the
         # error is unambiguous rather than a cryptic mid-playback traceback.
