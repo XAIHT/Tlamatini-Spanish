@@ -211,7 +211,7 @@ def is_busy(page) -> bool:
 def wait_idle(page, timeout=240) -> bool:
     t0 = time.time()
     while time.time() - t0 < timeout:
-        if btn(page).lower() == "send" and not is_busy(page):
+        if es_enviar(btn(page)) and not is_busy(page):
             return True
         time.sleep(0.3)
     return False
@@ -228,21 +228,49 @@ def wait_idle(page, timeout=240) -> bool:
 # wait_agent_ready() nunca confirmaba readiness: la regresión se colgaba los
 # Se comparan con fold() (sin acentos) porque "Todavía"/"Inténtalo" los llevan.
 NOT_READY_MARKERS = (
-    # inglés (install mixto o viejo)
+    # ingles (instalacion mixta o vieja)
     "agent is not ready",
     "still loading",
     "please wait a moment and try again",
-    # español (acentos ya plegados por fold())
+    # castellano — lo que ESTA edicion responde de verdad, ya plegado sin
+    # acentos porque fold() quita los de 'Todavia' e 'Intentalo'.
+    # Fuente: agent/constants.py::ERROR_AGENT_NOT_READY_SIMPLE / _NOT_READY.
+    "todavia no estoy lista",
+    "intentalo de nuevo",
+    "no puedo procesar tus requests",
 )
-READY_MARKER = "your agent is ready"
-    """lowercase sin acentos — 'Todavía' y 'todavia' deben matchear igual."""
 
+#: El saludo de lista, en los dos idiomas. Con el marker solo en ingles esta
+#: regresion no podia confirmar readiness NUNCA en esta edicion.
+READY_MARKERS = (
+    "your agent is ready",
+    "estoy lista para platicar contigo",
+    "estoy lista",
+)
+
+
+def fold(s: str) -> str:
+    """minusculas y sin acentos — 'Todavia' y 'todavía' deben coincidir."""
+    import unicodedata
+    s = unicodedata.normalize("NFD", str(s or "").lower())
+    return "".join(c for c in s if unicodedata.category(c) != "Mn")
+
+
+#: El boton dice 'Enviar'/'Cancelar' en esta edicion y 'Send'/'Cancel' en la
+#: inglesa. Se aceptan LOS DOS: comparar contra un solo idioma dejaba la
+#: regresion esperando para siempre un boton que aqui nunca dice 'send'.
+def es_enviar(etiqueta) -> bool:
+    return fold(etiqueta) in ("enviar", "send")
+
+
+def es_cancelar(etiqueta) -> bool:
+    return fold(etiqueta) in ("cancelar", "cancel")
 
 def agent_not_ready(page) -> bool:
     txts = bot_texts(page)
     if not txts:
         return False
-    last = txts[-1].lower()
+    last = fold(txts[-1])
     return any(m in last for m in NOT_READY_MARKERS)
 
 
@@ -250,7 +278,7 @@ def wait_agent_ready(page, timeout=300) -> bool:
     """Idle button AND the last bot line is NOT a 'not ready' banner."""
     t0 = time.time()
     while time.time() - t0 < timeout:
-        if btn(page).lower() == "send" and not is_busy(page) and not agent_not_ready(page):
+        if es_enviar(btn(page)) and not is_busy(page) and not agent_not_ready(page):
             return True
         time.sleep(0.5)
     return False
@@ -319,7 +347,7 @@ def cancel_run(page) -> bool:
     painted). If you ever add the jQuery-UI theme, the user would be TRAPPED in the
     prompt with no way to cancel — that is a real hazard worth its own scenario.
     """
-    if btn(page).lower() != "cancel":
+    if not es_cancelar(btn(page)):
         return False
     try:
         page.eval_on_selector(SEL["chat_submit"], "el => el.click()")
@@ -473,7 +501,7 @@ def s3_cancel_while_prompt_open(page) -> None:
     denied_ok = "cancel detected; denying" in tail or "USER CANCELLED" in tail
     check("S3", "the server honoured the cancel", denied_ok,
           "log shows the cancel resolved the prompt" if denied_ok else "no cancel evidence in the log")
-    check("S3", "the button is back to 'Send'", btn(page).lower() == "send", f"button = {btn(page)!r}")
+    check("S3", "the button is back to 'Send'", es_enviar(btn(page)), f"button = {btn(page)!r}")
 
 
 def s4_runtime_relax_auto_proceeds(page) -> None:
@@ -550,7 +578,7 @@ def s6_button_never_sticks_on_cancel(page) -> None:
     relapses = []
     t0 = time.time()
     while time.time() - t0 < 30:
-        if btn(page).lower() == "cancel":
+        if es_cancelar(btn(page)):
             relapses.append(f"t+{time.time()-t0:.1f}s")
         time.sleep(0.25)
     check("S6", "the button never sticks/relapses to 'Cancel' (30 s watch)", not relapses,

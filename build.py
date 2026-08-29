@@ -1269,6 +1269,26 @@ def main():
         # frozen-process code imports unstructured eagerly, so excluding `magic`
         # is safe AND also prevents the same hang at runtime.
         '--exclude-module=magic',
+        # ⛔ NO SE SILENCIA: SE QUITA LA CAUSA (Angela, 2026-08-29).
+        # El arranque congelado escupia DOCE advertencias de torch
+        #   "Unable to retrieve source for @torch.jit._overload function: ..."
+        # y toda la consola parecia rota en cada arranque. La primera version
+        # de este arreglo puso filtros de warnings y Angela la rechazo:
+        # *"Muting?? why not root-fixing!!"*. Tenia razon — tapaba el sintoma
+        # y dejaba 911 modulos inutiles cargando en cada arranque.
+        #
+        # La causa real: langchain_ollama -> langchain_core importa
+        # `transformers` SOLO como respaldo para contar tokens con GPT-2. Todo
+        # modelo de Tlamatini es Ollama o Anthropic y cuenta sus propios
+        # tokens, y nada en agent/** importa transformers ni HuggingFace. El
+        # import viene envuelto en try/except ImportError, asi que excluirlo
+        # es seguro: se degrada solo. Medido: 0 submodulos de transformers,
+        # 0 de torch, y el arranque de 9.47 s a 3.62 s.
+        #
+        # ⚠️ FRONTERA DE INTERPRETES. torch NO se excluye: el Talker lo importa
+        # junto con snac bajo el Python ACARREADO, que es otro interprete y no
+        # lo toca esta bandera. Aqui solo se recorta el _internal congelado.
+        '--exclude-module=transformers',
         '--collect-all', 'django_bootstrap5',
         '--collect-all', 'autobahn',
         '--collect-all', 'filesearch_pb2',

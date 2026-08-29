@@ -554,12 +554,14 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
         or "pentest" in subject
         or "cyber-sec" in subject
         or "cyber sec" in subject
+        or "googler" in subject
         or "startup dialog" in subject
         or "catalog of prompts" in subject
         or "flowpills" in subject
         or "unrealer" in subject
         or "scaffold" in subject
         or "smoothness" in subject
+        or "googler" in subject
         for subject in subjects
     )
     if has_current_release_wave:

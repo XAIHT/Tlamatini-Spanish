@@ -16,6 +16,43 @@
 
 ---
 
+## 2026-08-28 — Googler phase 1: EVERY Bing result was silently thrown away (`agents/googler/googler.py`)
+
+Googler's Tier-0 plain-HTTP path has a per-engine **own-domain skip**: a result that still points at the search engine's own host is not a result, so it is dropped. Bing, however, does not hand out the destination URL — it wraps **every organic result** in its own click-tracker, `https://www.bing.com/ck/a?...&u=a1<base64url>`. `_unwrap_redirect` only knew the plain `uddg` / `q` / `u` / `url` query-parameter forms, so a Bing link **stayed on `bing.com`** and was then eaten by that very skip. The visible symptom was not an error: Bing returned a full page, Googler reported no usable links, and the tier **fell through to whatever the next engine happened to return** — so a search looked like it had "worked" while silently answering from a weaker source. **Do NOT revert.**
+
+**Two things had to be fixed together, and the ordering is the whole trick.** Bing serves that URL with its ampersands HTML-escaped (`&amp;u=a1…`), so `urlsplit` + `parse_qs` never saw a `u` parameter at all — the unwrapper would have failed even once it knew to look. `_unwrap_redirect` therefore now `html.unescape()`s the raw value **first**, before parsing; only then does the `bing.com/ck/a` branch read `u`, strip the leading `a1` / `a2` marker Bing prefixes to the payload, restore the base64 padding (`token + '=' * (-len(token) % 4)`), `urlsafe_b64decode` it, and accept the result **only when it decodes to something starting with `http`**.
+
+**It is fail-open by construction**, and deliberately so: every step sits inside `try/except`, and any failure — an unparseable URL, a marker Bing changes, a payload that is not valid base64, a decode that yields junk — simply falls through to the pre-existing `uddg` / `q` / `u` / `url` loop and then to the raw URL. A tracker format that drifts costs one engine's results, never an exception in the search path.
+
+Also in the same pass: the `mojeek-http` engine's skip list widened from `('mojeek.com',)` to also cover `mastodon.social/@mojeek` and `buttondown.email/mojeek` — the engine's own social and newsletter properties were surviving the own-domain skip and being served back as if they were findings.
+
+**The lesson is the NetSpeed-Calculator lesson again** (2026-08-23, *"a ZERO must always name its cause"*): the failure here was not that Bing broke, it is that **a silent drop is indistinguishable from an empty internet**. When a result-producing path discards candidates, the discard needs a reason a human can read — otherwise the layer degrades quietly and the fallback hides it.
+
+**En este arbol el codigo ya estaba** (llego con el commit `58e3436`, "Googler improvement phase 1 under paired Tlamatinis staging"): verificado antes de portar — `ck/a` x2, `html.unescape` x2 y el filtro de `mastodon.social` presentes e identicos al ingles. Lo que faltaba era ESTA entrada del registro, y un arreglo sin su bitacora es un arreglo que el proximo lector deshace sin saber.
+
+---
+
+## 2026-08-29 — The frozen console's torch warning storm: ROOT-FIXED by keeping `transformers` out of the web process (and NOT by muting)
+
+Ported from the English tree (its `64b29725`). A frozen launch opened with a wall of third-party import-time warnings that say nothing about Tlamatini's health, so **every boot read as "something is wrong"** and the lines that DO matter were buried: **twelve** identical `torch\_jit_internal.py:999: UserWarning: Unable to retrieve source for @torch.jit._overload function`, plus a `LangChainDeprecationWarning` and Django's `Accessing the database during app initialization` note.
+
+**⚠️ THE FIRST ATTEMPT WAS MUTING AND WAS REJECTED.** Angela: *"Muting?? why not root-fixing!!"*. `warnings.filterwarnings` in `manage.py` / `settings.py` hid the symptom and left **911 useless modules loading on every boot**. `agent/test_web_process_stays_lean.py::NoWarningMutingTests` now FAILS the build if `filterwarnings` / `simplefilter` reappears in either startup file.
+
+**Root cause**, found with an import tracer rather than by reasoning: `agent/mcp_agent.py` → `langchain_ollama` → `langchain_core` → `from transformers import GPT2TokenizerFast` → `import torch`. `langchain_core` imports `transformers` **only** as a GPT-2 token-counter FALLBACK and wraps it in `try/except ImportError`. Every Tlamatini model is an Ollama / Anthropic model that counts its own tokens, and nothing in `agent/**` imports transformers or a HuggingFace embedding — so the whole ML stack loaded for a path she never executes.
+
+**The fix — one line in `build.py`: `'--exclude-module=transformers'`**, beside the existing `--exclude-module=magic` (the same "upstream guards the import, so excluding is safe" pattern). Measured in the English tree: 248 → **0** transformers submodules, 663 → **0** torch submodules, chain import 9.47 s → **3.62 s**. The twelve warnings disappear because torch is never imported — cause removed, nothing suppressed.
+
+**⚠️ INTERPRETER BOUNDARY — and in THIS edition it also guards the voice.** Tlamatini ships two interpreters and they are NOT interchangeable. The exclusion applies **only to the FROZEN `_internal`** (the Django/RAG process). The **CARRIED** Python (`<install>/python`) runs the pool agents, and here `agents/talker/talker.py` imports **`torch` (16 refs) + `snac` (18)** and `agents/whisperer/whisperer.py` imports `torch` — so **`torch` is NEVER excluded**. Verified for this tree before porting: `tts_piper.py` imports neither (it shells out to `piper.exe`), and nothing in the voice chain imports `transformers`. **Excluding torch here would silence Tlamatini, which is the one outcome the golden rule forbids.**
+
+**The second warning was OUR OWN CODE.** 13 imports of the deprecated `langchain.tools` shim — `agent/tools.py:15`, `agent/acpx/tools.py:27`, `agent/imaging/image_interpreter.py:14` and 10 in `agent/tests.py` — all switched to the canonical **`langchain_core.tools`**. Root-fixed, not muted.
+
+**The third warning is NOT a defect and stays visible.** Django accurately reports `AgentConfig.ready()`'s **deliberate** agent-table rebuild. Silencing it would be muting again; removing it means restructuring boot ordering — do not do it casually, the agent registry depends on those rows existing before the first request.
+
+**Contract — do NOT weaken:** (1) never re-add startup warning muting — fix the cause; (2) `--exclude-module=transformers` stays and **`torch` is never excluded** (Talker and Whisperer need it under the carried Python, and this edition's voice depends on it); (3) never add `transformers` to `requirements.txt`; (4) the exclusion is safe ONLY because `langchain_core` guards that import — `UpstreamContractTests` AST-checks the installed `langchain_core` for the `try/except ImportError` so a future upgrade fails loudly here instead of crashing a user's frozen app.
+
+Coverage: `agent/test_web_process_stays_lean.py` (10 tests, green in this tree).
+
+---
 ## 2026-08-26 — Blue-hat toolkit in the Spanish tree: evidence survives an update, and the `s` tag stops lying
 
 Three things landed together while sweeping `security/` for this edition. All three were
