@@ -8,11 +8,107 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
+> **Release actual:** `v1.50.4s` (`1339fc7`). Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.50.4s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
+
 > **This file is NOT auto-imported into the AI-assistant context** (unlike the rest of `docs/claude/*.md`). It is the chronological log of surgical fixes and "keep this in mind / do NOT revert" contracts that used to live at the bottom of `gotchas.md`. It was split out so the always-loaded onboarding stays lean — see the "Archive the fix-log" decision recorded in `docs/claude/INDEX.md`.
 >
 > **When to read it**: before modifying or reverting code in any subsystem named below (ACPX, the Flow Compiler, the planner, the Exec Report pipeline, the ACP canvas, wrapped chat-agent parsing, the desktop-UI agents, `prompt.pmt`, `regen_secrets.py`, the logging filters, etc.). Many entries are explicit "DO NOT revert this — here is the failure it prevents" contracts; treat them as binding even though they are not in your auto-context.
 >
 > **When to add to it**: when you land a non-obvious fix whose intent a future assistant could accidentally undo. Prepend new entries at the top of the list, dated, in the same style as the existing bullets.
+
+---
+
+## 2026-08-31 — Torch OUT of the frozen process: gigabytes saved, and the voice protected by the OTHER half
+
+Ported from the English tree (`a27ba13`). **This REVERSES a line written here two days earlier**, and the reversal is the point worth reading.
+
+On 2026-08-29 this log said *"`torch` is NEVER excluded"* — out of a correct fear (the Talker and the Whisperer import torch; excluding it would leave Tlamatini MUTE, the one outcome the golden rule forbids). The fear was right and the remedy was wrong. `--exclude-module=torch` touches **only the FROZEN `_internal`**, and no module of the frozen Django process imports torch at all. Leaving it in did not protect the voice — it just let a build user's CUDA-enabled user-site pour **gigabytes of NVIDIA DLLs** into the package.
+
+**What actually protects the voice is the other half, and both halves must stay:**
+
+| half | what it does |
+|---|---|
+| `--exclude-module=torch` (+ torchvision/torchaudio/torchtext/torchao/snac/whisper) | keeps the ML family out of the FROZEN `_internal` |
+| CPU-only torch installed into the **CARRIED** `<install>/python`, then `_probe_cpu_torch()` | PROVES the interpreter the Talker actually runs on has a working, CUDA-free torch |
+
+Remove the second half and the first one really would mute her — the probe is what turns a hope into a check. It runs `import torch` in an isolated `-I` interpreter, reads `torch.version.cuda`, and **fails the build** rather than shipping a package that goes quiet on the user's machine.
+
+Also in the same pass: `pyinstaller_hooks/hook-torch.py` became a 30-line **no-op hook at priority 2** (upstream's hook called `collect_dynamic_libs('torch')` and copied 2.5 GB of CUDA DLLs even with every `torch.*` module excluded); `verify_frozen_torch_absent()` fails the build if any torch/CUDA binary reached the frozen tree; and `enforce_pkg_zip_size()` caps `pkg.zip` at **2.8 decimal GB**, running BEFORE cleanup so a bloated result stays on disk to be inspected.
+
+**Contract — do NOT weaken:** the two halves ship together. Never exclude torch from the CARRIED Python; never re-add it to the FROZEN one; never delete `_probe_cpu_torch`. Pinned by `agent/test_web_process_stays_lean.py::test_build_excludes_torch_from_the_frozen_process` and `::test_carried_python_cpu_torch_is_probed` — the first of which was deliberately INVERTED from the 08-29 version and must not be flipped back.
+
+---
+## 2026-08-29 — Ctrl+C hung Tlamatini FOREVER: the signal handler did the work, and re-entered itself
+
+**Angela's report, on the live frozen `C:\Tlamatini`: pressing Ctrl+C never quit.** She pressed it
+**eleven times**; `tlamatini.log` recorded every one:
+
+```
+--- Received signal 2, cleaning up...
+--- [SHUTDOWN] Initiating aggressive cleanup protocols...
+--- Scanning for survivors in C:\Tlamatini\agents\pools...
+   (×11 — and then nothing, ever)
+```
+
+**Diagnosed on the wedged process itself, not by reading code.** PID 27308 was still alive with
+**80 threads, ALL in `Wait`, zero progress**. A `py-spy dump` of it showed the MainThread carrying an
+**eleven-deep tower** of `signal_handler → cleanup_pool_on_shutdown` frames — exactly one per press —
+whose top was parked forever in:
+
+```
+submit (thread.py:180) → _adjust_thread_count (thread.py:203)
+  → start (agent\log_identity.py:333) → start (threading.py:999)
+    → wait (threading.py:655) → wait (threading.py:355)    *** FOREVER ***
+```
+
+**Root cause — two independent defects, both in `agent/apps.py`:**
+
+1. **`signal_handler` called `cleanup_pool_on_shutdown()` DIRECTLY, with no re-entrancy guard.** A
+   Python signal handler runs **on the MAIN thread**, interrupting whatever it was doing — and the
+   first thing that cleanup does is `psutil.process_iter(['cmdline'])`, which opens and reads the PEB
+   of **every process on the machine**. So Ctrl+C genuinely *looked* dead for seconds; Angela pressed
+   again; and each new signal **re-entered the handler on top of the previous one**, part-way through
+   **non-reentrant** `threading`/`psutil` internals. The interrupted `Thread.start()` still held
+   threading's global **`_active_limbo_lock`** (a plain, NON-reentrant `Lock`), so the nested
+   `Thread.start()` could never finish and the main thread could never release it. **Self-deadlock on
+   the one thread that had to survive.** `os._exit(0)` sat at the END of the handler, unreachable.
+   ⚠️ Pressing Ctrl+C *more* is what made it *permanent* — the opposite of what a user expects.
+2. **`with ThreadPoolExecutor(max_workers=1) as executor:` wrapped a `future.result(timeout=5)`.**
+   The context manager's `__exit__` calls **`shutdown(wait=True)` — an UNBOUNDED join** that silently
+   defeats the very timeout written beside it. Its workers are also NON-daemon, so
+   `concurrent.futures`' own atexit hook would join them a second time on a normal exit.
+
+**The fix — CONTRACT, do NOT weaken:**
+
+1. **Ctrl+C ALWAYS terminates the process. Cleanup is best-effort; QUITTING IS NOT.**
+2. **A SECOND Ctrl+C exits immediately and unconditionally** — answered with a raw `os.write(2, …)` +
+   `os._exit(1)` that touch **no lock** the rest of the process could be holding. (A `print()` there
+   would go through the buffered log tee and its cross-thread lock.)
+3. **The handler does the MINIMUM safe from a signal context: it sets an `Event`. Nothing else.** The
+   real cleanup runs on a `TlamatiniShutdown` daemon thread **created at boot, in normal context** —
+   ⚠️ **a signal handler must NEVER start a thread**; that creation *is* the deadlock.
+4. **`_shutdown_event.set()` comes BEFORE the announcement print**, so a blocked log write can never
+   delay the shutdown itself.
+5. **A `TlamatiniShutdownWatchdog` daemon hard-exits (`os._exit(3)`) after `_SHUTDOWN_GRACE_SECONDS`
+   (12 s)**, so no cleanup step can ever hold the process hostage.
+6. The tracked-process killer is a plain **daemon `threading.Thread` with `join(5)`** — never
+   `ThreadPoolExecutor`. **`with ThreadPoolExecutor(...)` is now a forbidden pattern in `apps.py`.**
+7. The `atexit.register(cleanup_pool_on_shutdown)` normal-shutdown path is unchanged.
+
+**Proven, not assumed.** `tests_e2e/test_ctrl_c_quits_visible.py` boots the real Django/Daphne stack
+on port 8043, raises a **genuine console `CTRL_C_EVENT`**, and times the exit:
+**PASS — quit 5.5 s after Ctrl+C, exit code 0.** ⚠️ The sender runs in a **throwaway helper process**
+on purpose: `AttachConsole()` requires `FreeConsole()` first, which **detaches the caller from its own
+console** — doing it inline killed the test's stdout and the verdict Angela was watching for never
+appeared. A visible test whose verdict is invisible is not a visible test.
+
+Coverage: `agent/test_ctrl_c_shutdown.py` (11 tests — the handler calls no cleanup, starts no thread,
+guards re-entry, sets before printing; no context-managed executor; the watchdog and the boot-time
+threads exist) + the visible E2E above.
+
+---
+
+**Adaptaciones de esta edicion.** (1) Los dos avisos de consola que la usuaria LEE van en castellano — *"Recibi la senal N, limpiando (aprieta Ctrl+C otra vez para salir de inmediato)"* y *"Ctrl+C otra vez: salgo YA"* —; la ESTRUCTURA es identica, que es lo unico que la guarda revisa. (2) Por eso mismo `test_event_is_set_before_any_printing` dejo de buscar la frase inglesa `'Received signal'` y busca `'{signum}'`: pedir el texto ingles reprobaba un manejador correcto y empujaba a des-traducir el mensaje para contentar a la prueba, justo al reves de la regla de oro. (3) La prueba visible corre en el puerto **8053** y no en el 8043, con el mismo criterio por el que la skill de endurance usa :8000 para el ingles y :8010 para el castellano: los dos arboles viven en la misma maquina y se corren a la vez.
 
 ---
 
@@ -42,13 +138,13 @@ Ported from the English tree (its `64b29725`). A frozen launch opened with a wal
 
 **The fix — one line in `build.py`: `'--exclude-module=transformers'`**, beside the existing `--exclude-module=magic` (the same "upstream guards the import, so excluding is safe" pattern). Measured in the English tree: 248 → **0** transformers submodules, 663 → **0** torch submodules, chain import 9.47 s → **3.62 s**. The twelve warnings disappear because torch is never imported — cause removed, nothing suppressed.
 
-**⚠️ INTERPRETER BOUNDARY — and in THIS edition it also guards the voice.** Tlamatini ships two interpreters and they are NOT interchangeable. The exclusion applies **only to the FROZEN `_internal`** (the Django/RAG process). The **CARRIED** Python (`<install>/python`) runs the pool agents, and here `agents/talker/talker.py` imports **`torch` (16 refs) + `snac` (18)** and `agents/whisperer/whisperer.py` imports `torch` — so **`torch` is NEVER excluded**. Verified for this tree before porting: `tts_piper.py` imports neither (it shells out to `piper.exe`), and nothing in the voice chain imports `transformers`. **Excluding torch here would silence Tlamatini, which is the one outcome the golden rule forbids.**
+**⚠️ INTERPRETER BOUNDARY — and in THIS edition it also guards the voice.** Tlamatini ships two interpreters and they are NOT interchangeable. The exclusion applies **only to the FROZEN `_internal`** (the Django/RAG process). The **CARRIED** Python (`<install>/python`) runs the pool agents, and here `agents/talker/talker.py` imports **`torch` (16 refs) + `snac` (18)** and `agents/whisperer/whisperer.py` imports `torch` — so torch must stay in the CARRIED tree. **⚠️ SUPERSEDED on 2026-08-31 — see the entry above:** torch IS now excluded from the FROZEN `_internal` (it saves gigabytes and the frozen process never imports it); what protects the voice is the OTHER half — the build installs CPU-only torch into the carried Python and PROVES it with `_probe_cpu_torch`. Verified for this tree before porting: `tts_piper.py` imports neither (it shells out to `piper.exe`), and nothing in the voice chain imports `transformers`. **Excluding torch here would silence Tlamatini, which is the one outcome the golden rule forbids.**
 
 **The second warning was OUR OWN CODE.** 13 imports of the deprecated `langchain.tools` shim — `agent/tools.py:15`, `agent/acpx/tools.py:27`, `agent/imaging/image_interpreter.py:14` and 10 in `agent/tests.py` — all switched to the canonical **`langchain_core.tools`**. Root-fixed, not muted.
 
 **The third warning is NOT a defect and stays visible.** Django accurately reports `AgentConfig.ready()`'s **deliberate** agent-table rebuild. Silencing it would be muting again; removing it means restructuring boot ordering — do not do it casually, the agent registry depends on those rows existing before the first request.
 
-**Contract — do NOT weaken:** (1) never re-add startup warning muting — fix the cause; (2) `--exclude-module=transformers` stays and **`torch` is never excluded** (Talker and Whisperer need it under the carried Python, and this edition's voice depends on it); (3) never add `transformers` to `requirements.txt`; (4) the exclusion is safe ONLY because `langchain_core` guards that import — `UpstreamContractTests` AST-checks the installed `langchain_core` for the `try/except ImportError` so a future upgrade fails loudly here instead of crashing a user's frozen app.
+**Contract — do NOT weaken:** (1) never re-add startup warning muting — fix the cause; (2) `--exclude-module=transformers` stays; torch must remain present in the CARRIED Python because Talker and Whisperer need it and this edition's voice depends on it — **but as of 2026-08-31 torch IS excluded from the FROZEN process**, which is a different interpreter, and the carried copy is installed CPU-only and verified by `_probe_cpu_torch`; (3) never add `transformers` to `requirements.txt`; (4) the exclusion is safe ONLY because `langchain_core` guards that import — `UpstreamContractTests` AST-checks the installed `langchain_core` for the `try/except ImportError` so a future upgrade fails loudly here instead of crashing a user's frozen app.
 
 Coverage: `agent/test_web_process_stays_lean.py` (10 tests, green in this tree).
 
@@ -436,7 +532,7 @@ audit. Migrations **0195/0196/0197**; catalog prompt **119**
 > `v1.48.16` = `6ee630ca` (themed `tlmAlert`/`tlmConfirm` pop-ups + the
 > frozen-bundle carriage proof in `build.py`), **`v1.48.17` = `f948be7b` — the
 > newest release on that day**, carrying everything below. The current release
-> is now `v1.50.2s`; entries that say a change "landed in v1.48.15" or
+> is now `v1.50.4s`; entries that say a change "landed in v1.48.15" or
 > `v1.48.17` are historical statements and remain as written.
 
 **Angela, verbatim:** *"Standarize in every ... every dialog and all of the

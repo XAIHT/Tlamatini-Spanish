@@ -153,15 +153,16 @@ including `test_grepper_encodings.py`, `test_status_vocabulary.py`, and
 snapshot preserves `returncode`/`success`/semantic-status fields and the updater's
 `Uninstaller.exe` rule without copying local runtime state or keyed catalogs.
 
-**v1.50.0 release source-coherence gate:** the snapshot must carry the complete
+**v1.50.0 foundation source-coherence gate:** the snapshot must carry the complete
 NetSpeed-Calculator source/config/wiring/tests and migrations 0195-0197, `sqlite_copy.py`
 plus its WAL backup/swap tests, Googler's structured-dork and two-tier plain-HTTP-first resilience
 source/config, `test_googler_dorks.py`, and the optional visible dork-hunt harness,
 migration 0194's Deep Internet Research prompt, and the
 `adding_external_mcp` skill tree. It must also carry the private-builder source that performs
 contact synchronization, but it must never copy `contacts.json`, `contacts.private.json`, a
-frozen-install contact book, or live External-MCP secrets. Verify current 88/66/108/29/197
-counts from the generated snapshot rather than copying prose counts.
+frozen-install contact book, or live External-MCP secrets.
+
+**v1.50.4s current source-coherence gate:** verify the generated snapshot against the current 88/66/108/29/198 counts rather than copied prose. It must carry the lean-build guard and priority Torch hook, while proving the frozen Django process omits Torch/transformers and the carried Python keeps CPU-only Torch for Talker/Whisperer. It must also carry the Ctrl+C shutdown tests, public clean-clone/privacy-preflight tests and inert `private_targets.example.json`, Bing tracker-unwrapping tests, and the Deleter `target_path`/`files_to_delete`/`allow_directory_delete` safety contract. The build-only `.private_targets.json`, `data.keys`, contacts, live configs, generated `_version.py`, and private artifacts must remain absent or redacted.
 
 ### Step 3 — fix every finding, re-run Step 0 until clean, eyeball the notes.
 

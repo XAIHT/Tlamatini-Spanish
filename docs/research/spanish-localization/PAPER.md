@@ -5,7 +5,9 @@
 **Author of the system under study:** Angela López Mendoza (XAIHT / Tlamatini)
 **Analysis:** Claude Opus 5, multi-agent forensic study of the Tlamatini codebase at commit `3e6d514f` (v1.47.0)
 **Date:** 2026-07-27
-**Status:** Research paper — no Tlamatini source code was modified in its production.
+**Historical status:** research paper produced without modifying the `v1.47.0` source baseline.
+
+> **Current implementation note — 2026-09-01 / `v1.50.4s` (`1339fc7`).** The Spanish tree now ships the NEPANTLA channel policy, DNT fence, N1/N2/N3 normalization, Spanish UI catalog, termbase, flags and Stage-0 capability instrumentation under `agent/i18n/`. Spanish is the matrix language; machine symbols and stable technical vocabulary remain English and byte-stable; user prompts and model answers are not mechanically translated. The complete progressive verifier/escalation ladder remains a design target. Historical measurements below retain their `v1.47.0` corpus; current counts are 88/66/108/29/198. See `docs/estado-actual-v1.50.4s.md`.
 
 ---
 
@@ -730,5 +732,4 @@ Every entry below was independently re-verified (title, authors, year, identifie
 ---
 
 *Companion document: `DESIGN.md` — the implementable architecture, diagrams, module map, integration points, phased rollout and test plan. Reference Python under `reference_impl/`.*
-
 

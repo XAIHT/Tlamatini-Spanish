@@ -6,7 +6,9 @@
 **Creator of the system:** Angela López Mendoza (XAIHT)
 **Analysis:** Claude Opus 5 — forensic multi-agent study of the codebase at commit `3e6d514f` (v1.47.0)
 **Date:** 2026-07-27
-**Status:** Research paper. No Tlamatini source code was modified in its production.
+**Historical status:** research paper produced without modifying the `v1.47.0` source baseline.
+
+> **Current implementation note — 2026-09-01 / `v1.50.4s` (`1339fc7`).** Tlamatini-Spanish now implements the NEPANTLA three-channel boundary, DNT fence, N1/N2/N3 scoring normalization, Spanish UI catalog, termbase, runtime flags and Stage-0 capability instrumentation under `agent/i18n/`, with dedicated tests. Spanish is the matrix language; machine symbols and stable technical vocabulary remain English and byte-stable; user prompts and model answers are never mechanically round-tripped. The full progressive verifier/escalation ladder remains prospective, and not every production normalization caller supplies a model name. Counts in this paper describe its dated `v1.47.0` corpus; current source truth is 88 workflow agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 29 skills and 198 migrations. See `docs/estado-actual-v1.50.4s.md`.
 
 ---
 
@@ -1511,6 +1513,5 @@ Every entry was independently re-verified (title, authors, year, identifier) dur
 ---
 
 *Companion documents: `DESIGN.md` — the implementable architecture, module map, integration points, phased rollout and test plan. `reference_impl/` — executable reference modules for the neutralization operators, the closed-set detector, the routing policy and the non-inferiority statistics.*
-
 
 

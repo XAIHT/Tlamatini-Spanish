@@ -310,13 +310,30 @@ class LaLlmTieneOrdenDeContestarEnCastellano(unittest.TestCase):
         self.pmt = _lee(_AQUI, "prompt.pmt")
 
     def test_la_orden_existe_y_es_explicita(self):
-        self.assertIn(
-            "YOU ALWAYS ANSWER IN SPANISH", self.pmt,
+        # ⛔ LA REGLA AHORA ESTA ESCRITA EN CASTELLANO, y asi debe ser: la regla
+        # que ordena hablar castellano no tenia por que estar en ingles. Se busca
+        # la formula actual — "ESPAÑOL COMO LENGUA MATRIZ" — y de paso se acepta
+        # la formula inglesa anterior, para que un arbol a medio migrar no de un
+        # falso rojo. Lo que NO se acepta es que no este ninguna de las dos.
+        tiene_orden = ("ESPAÑOL COMO LENGUA MATRIZ" in self.pmt
+                       or "YOU ALWAYS ANSWER IN SPANISH" in self.pmt)
+        self.assertTrue(
+            tiene_orden,
             "prompt.pmt dejo de exigir castellano: sin esa linea el idioma "
             "de la respuesta queda a criterio del modelo.")
 
     def test_prohibe_el_ingles_sin_excepciones(self):
-        self.assertIn("English is never acceptable", self.pmt)
+        # Misma razon: la prohibicion tambien esta en castellano.
+        # La formula castellana dice "sin excepciones" de otra manera: la regla
+        # PREVALECE sobre cualquier otra instruccion, y aplica "incluso cuando el
+        # usuario o el contexto esten en ingles" — que es exactamente el caso que
+        # esta prueba existe para blindar.
+        bajo = self.pmt.lower()
+        prohibe = (("prevalece sobre cualquier otra instrucci" in bajo
+                    and "incluso cuando el usuario o el contexto" in bajo)
+                   or "english is never acceptable" in bajo)
+        self.assertTrue(prohibe,
+                        "prompt.pmt dejo de prohibir el ingles sin excepciones")
 
     def test_protege_el_canal_de_maquina(self):
         # La orden de "todo en castellano" no debe llevarse por delante los
@@ -326,7 +343,9 @@ class LaLlmTieneOrdenDeContestarEnCastellano(unittest.TestCase):
         self.assertIn("INI_SECTION_", self.pmt)
 
     def test_la_orden_va_temprano_no_sepultada_al_final(self):
-        pos = self.pmt.index("YOU ALWAYS ANSWER IN SPANISH")
+        marca = ("ESPAÑOL COMO LENGUA MATRIZ" if "ESPAÑOL COMO LENGUA MATRIZ" in self.pmt
+                 else "YOU ALWAYS ANSWER IN SPANISH")
+        pos = self.pmt.index(marca)
         self.assertLess(
             pos, len(self.pmt) * 0.10,
             "la regla del idioma quedo enterrada; va en el bloque de "

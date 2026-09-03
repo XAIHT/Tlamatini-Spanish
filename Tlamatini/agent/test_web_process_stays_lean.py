@@ -151,10 +151,39 @@ class NoMlStackInTheWebProcessTests(unittest.TestCase):
         self.assertNotIn('"torch",', prune_block)
         self.assertNotIn("'torch',", prune_block)
 
-    def test_torch_is_never_excluded_from_the_build(self):
-        self.assertNotIn(
-            "'--exclude-module=torch'", _read(_BUILD_PY),
-            "excluding torch outright would break the Talker pool agent",
+    def test_build_excludes_torch_from_the_frozen_process(self):
+        """⚠️ ESTA PRUEBA SE INVIRTIO A PROPOSITO (2026-08-31).
+
+        Antes exigia lo CONTRARIO — que torch NUNCA se excluyera — por miedo a
+        callar al Talker. El miedo era correcto; la prueba estaba equivocada de
+        lado. `--exclude-module=torch` toca UNICAMENTE el _internal congelado, y
+        el proceso Django congelado no importa torch en ningun lado. Sin la
+        exclusion, el user-site con CUDA de quien compila metia GIGAS de DLLs de
+        NVIDIA en el paquete.
+
+        Lo que protege la voz NO es dejar basura en el congelado: es que el build
+        INSTALE torch de solo CPU en el Python ACARREADO y lo COMPRUEBE con
+        `_probe_cpu_torch` — otro interprete, que esta bandera no toca. Las dos
+        mitades van juntas; quitar cualquiera de las dos rompe algo.
+        """
+        src = _read(_BUILD_PY)
+        self.assertIn(
+            "'--exclude-module=torch'", src,
+            "el proceso Django congelado nunca importa torch; sin la exclusion "
+            "explicita, una rueda de CUDA puede sumar gigas al _internal",
+        )
+
+    def test_carried_python_cpu_torch_is_probed(self):
+        """La otra mitad: sin la sonda, la exclusion SI podria dejarla muda."""
+        src = _read(_BUILD_PY)
+        self.assertIn(
+            "def _probe_cpu_torch(", src,
+            "el torch acarreado tiene que comprobarse: si falta o trae CUDA, el "
+            "Talker y la Whisperer no pueden hablar y el build lo daria por bueno",
+        )
+        self.assertIn(
+            "download.pytorch.org/whl/cpu", src,
+            "el build tiene que INSTALAR el torch de solo CPU en el acarreado",
         )
 
 

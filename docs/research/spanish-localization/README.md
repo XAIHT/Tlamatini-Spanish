@@ -1,7 +1,9 @@
 # Spanish Localization of Tlamatini — Research Package
 
-**Date:** 2026-07-27 · **System:** Tlamatini v1.47.0 (commit `3e6d514f`)
-**Status:** Research and design only. **No Tlamatini source code was modified.**
+**Baseline date:** 2026-07-27 · **System studied:** Tlamatini v1.47.0 (commit `3e6d514f`)
+**Historical status:** this package began as research/design and did not modify source while it was produced.
+
+> **Implementation update — 2026-09-01 / `v1.50.4s` (`1339fc7`).** The Spanish tree now implements the NEPANTLA channel boundary and a substantial deterministic layer in `agent/i18n/`: `policy.py`, `dnt.py`, `normalize.py` (N1/N2/N3), `ui_es.py`, `termbase_en.py`, `lexicon_es.py`, `flags.py`, `model_caps.py`, template filters and regression tests. Spanish is the matrix language; technical/machine symbols remain byte-stable English; user prompts and model answers are not mechanically translated. The progressive verifier/escalation theorem remains a design target, and the model-capability tier is not yet supplied by every production caller. Read statements below against their dated baseline, then consult [`../../estado-actual-v1.50.4s.md`](../../estado-actual-v1.50.4s.md) for current source truth.
 
 ---
 
@@ -11,7 +13,7 @@
 |---|---|
 | **[`PAPER-v2.md`](PAPER-v2.md)** | **★ THE PAPER.** Standalone doctoral-level treatment centred on **NEPANTLA**, the algorithm that guarantees Spanish execution is at least as correct as English *for any backend model the user binds* — including models with no Spanish at all. 2 propositions, 1 theorem with proof, 2 corollaries, full pseudocode, 3 worked traces, complexity analysis, falsifiable evaluation protocol. Contains the absolute asset-naming invariant. |
 | [`PAPER.md`](PAPER.md) | Earlier edition. Same evidence base, organised as a comparative analysis of localization architectures. Superseded by v2 for the algorithmic content; still useful for the surface-by-surface inventory. |
-| **[`paper/nepantla.pdf`](paper/nepantla.pdf)** | **★ THE PAPER, TYPESET.** 39 pages, formal LaTeX — numbered theorems, TikZ architecture figure, BibTeX bibliography. Built clean: 0 errors, 0 undefined references, 0 undefined citations. Sources in [`paper/`](paper/): `nepantla.tex` (master + preamble), `sections/*.tex`, `nepantla.bib`. Rebuild with `pdflatex → bibtex → pdflatex → pdflatex`. |
+| **[`paper/nepantla.pdf`](paper/nepantla.pdf)** | **★ THE PAPER, TYPESET.** Formal LaTeX with numbered theorems, TikZ architecture figure, BibTeX bibliography and a current-implementation notice. Sources in [`paper/`](paper/): `nepantla.tex` (master + preamble), `sections/*.tex`, `nepantla.bib`. Rebuild with `pdflatex → bibtex → pdflatex → pdflatex`; page count and warning totals must be derived from the rebuilt artifact rather than copied from this row. |
 | **[`DESIGN.md`](DESIGN.md)** | **★ THE IMPLEMENTATION.** How NEPANTLA is built into Tlamatini: the translation-boundary contract, module map with full interfaces, every integration point verified against the real code (including the exact pre-execution hook in the Multi-Turn executor), config keys, a mandatory **shadow-mode** phase, test plan, packaging and risk register. |
 | [`reference_impl/normalize.py`](reference_impl/normalize.py) | **The core fix.** NFKD-folding tokenizer + word-boundary phrase matching + canonical-key expansion. Identity-preserving on ASCII. |
 | [`reference_impl/detector.py`](reference_impl/detector.py) | Closed-set language ID with prose masking, decoy classes, evidence-weighted confidence. |

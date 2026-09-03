@@ -53,8 +53,8 @@ When solving a problem that needs Angela to do things on her machine (Rethinking
   3. **WAIT**. Only when she sends that string do you give the next step.
   4. Repeat — one step + one reply-string per turn.
 
-### 1.5 Current Release (`v1.50.2s` — Spanish edition)
-- **`v1.50.2s` is the current package/documentation release for this Spanish edition**; the newest annotated tag actually in THIS tree is `v1.50.2s` (`185c736e`). Runtime identity stays git-tag-derived. The trailing **`s` is the edition letter** — kept in every human-readable surface, stripped wherever a version becomes numbers (`agent/version.py::strip_edition_suffix`); see `VERSIONING.md` → *The Spanish edition letter*. Do not quote the English tree's commit hashes: they do not exist in this repository.
+### 1.5 Release actual (`v1.50.4s` — edición en español)
+- **`v1.50.4s` es el release actual del package y la documentación**; el tag anotado de ESTE árbol apunta a `1339fc7`. La identidad de runtime sigue derivándose de Git. La **`s` es la letra de edición**: permanece en toda superficie humana y se elimina donde la versión debe convertirse en números (`agent/version.py::strip_edition_suffix`; véase `VERSIONING.md`). No cites hashes del árbol inglés: no existen en este repository.
 - Historical lineage carried forward: Same-day lineage: `v1.48.15` = encoding-safe Grepper + closed verdict vocabulary, `v1.48.16` = themed popups + frozen-bundle carriage proof, `v1.48.17` = the Escape dismissal standardization and the sealed updater.
 - Grepper uses a BOM-first decoder for UTF-8/16/32 and then cp1252/Latin-1, so Windows PowerShell logs and accented Spanish source are searchable while genuine binary files remain skipped. Keep the BOM test ahead of the NUL test — UTF-16/32 text is legitimately full of `0x00`.
 - **Escape now dismisses EVERY dialog on both pages and means exactly what the titlebar ✕ means; an outside click still never dismisses.** A bubble-phase dispatcher activates each dialog's own dismiss control, so Ask-Execs still answers Deny, confirms resolve `false`, scroll locks release, and a sealed updater still refuses. `closeOnEscape: false` is forbidden tree-wide. The ONE exception is a dialog holding `el.tlmSealKey` (the updater while downloading), whose seal is checked before every other dismissal path.
@@ -63,7 +63,7 @@ When solving a problem that needs Angela to do things on her machine (Rethinking
 - `agent_verdict.py` has five disjoint status classes plus `KNOWN_STATUSES`; `test_status_vocabulary.py` statically guards every pool-agent token. Degraded deliverables are red, named intact completions are green, and unknown tokens fail open but are reported as `R8b.unknown_status`.
 - Kuberneter publishes numeric `returncode`, boolean `success`, and tokenized `status: ok|failed`; never put an exit-code expression in `status:`.
 - Self-update preserves the separately built `Uninstaller.exe`. Public builders clear private External-MCP catalog opt-in; only the explicit keyed/private builder may supply it.
-- Source-verified active surface: 87 workflow agents, 65 wrapped chat agents, 107 built-in Multi-Turn tools, 28 runtime skills, 194 migrations, and 37 JavaScript modules.
+- Superficie activa verificada desde source: 88 workflow agents, 66 wrapped chat agents, 108 tools integradas de Multi-Turn, 29 runtime skills, 198 migrations y 37 módulos JavaScript.
 
 ---
 
@@ -158,7 +158,7 @@ When **Multi-Turn** is checked in the toolbar, Tlamatini shifts from a "text ans
    - **Repetition Breaker**: Detects if the LLM calls the same tool with identical signatures. Polling and management tools (`run_status`, `session_status`, etc.) are explicitly exempt from fingerprinting to avoid tripping this guard during normal wait loops.
 
 ### 4.1 Cost Trimming Measures
-To avoid ballooning LLM token counts with 107 built-in tools plus dynamic External-MCP remotes:
+To avoid ballooning LLM token counts with 108 built-in tools plus dynamic External-MCP remotes:
 - **One-line Tool Summaries**: Standard LangChain JSON schemas are fed to the model, but the textual system prompt lists each tool on a single line.
 - **Ollama Keep-Alive**: The `ChatOllama` connection is instantiated with `keep_alive: -1` (or from `OLLAMA_KEEP_ALIVE`) so the model context cache is preserved between turns on the Ollama daemon.
 
@@ -319,9 +319,9 @@ Tlamatini's web UI + chat WebSocket port is **no longer hardcoded to 8000** — 
 - The browser then splices the returned **absolute path into the chat box at the caret** and renders a thumbnail chip (`#chat-image-chips`). The point is that a *path* — not an attachment — is what **Image-Interpreter** consumes, so the next prompt is immediately actionable. `prompt.pmt` tells the LLM to treat an `image_<timestamp>.jpg` under Temp as *the* image the user means.
 - **Two contracts (do NOT break):** the `paste` listener is on `document` (after Alt+Tab focus sits on `<body>`, so a textarea-scoped listener never fires — the caret is remembered separately), and `agent_page_layout.js::computeFormMinHeight()` **must count the chips row** because it pins `#tools-chat-form-container` to an explicit pixel height (an uncounted row pushes the textarea + Send off-screen). Full contract: `docs/claude/recent-fixes.md` (2026-07-14).
 
-## 9. Complete Visual Agent Catalog (87 Agents)
+## 9. Complete Visual Agent Catalog (88 Agents)
 
-Visual agents are designed to run out of process. The backend compiler generates their config, spawns them, and inspects their logs. Below is the complete catalog of all 87 visual agents:
+Visual agents are designed to run out of process. The backend compiler generates their config, spawns them, and inspects their logs. Below is the complete catalog of all 88 visual agents:
 
 1. **starter**: Flow initiator.
 2. **ender**: Flow terminator; kills targeted processes.
@@ -410,10 +410,11 @@ Visual agents are designed to run out of process. The backend compiler generates
 85. **nmapper**: Local nmap bridge for network scanning and host discovery (NPSL-compliant).
 86. **pdfer**: Creates, edits, merges, splits, extracts, renders, and validates PDF artifacts.
 87. **latexer**: MiKTeX-backed LaTeX authoring, validation, compilation, and deterministic eight-rung repair.
+88. **netspeed_calculator**: Measures download/upload bandwidth, latency, jitter, loss, bufferbloat, confidence intervals, and provider heterogeneity.
 
 ---
 
-## 10. Core Skills Catalog (27 Skills)
+## 10. Core Skills Catalog (29 Skills)
 
 Skills are registered in `agent/skills/` and cataloged in `agent/skills_pkg/`. They are markdown playbooks containing YAML frontmatter contracts.
 
@@ -444,6 +445,8 @@ Skills are registered in `agent/skills/` and cataloged in `agent/skills_pkg/`. T
 25. **create_new_mcp**: Developer onboarding guide for adding new MCP tools.
 26. **flow_making**: Helper script delegator for `make_flow.py`.
 27. **setup_new_acpx_key**: Configures the API key or credential for a registered ACPX agent_id.
+28. **adding_external_mcp**: Imports, diagnoses, activates, waits for, lists, and calls a secret-separated External-MCP server safely.
+29. **roblox_studio**: Guides Roblox Studio project work through the repository's supported workflow.
 
 ---
 

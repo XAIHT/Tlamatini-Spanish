@@ -470,7 +470,6 @@ class AgentConfig(AppConfig):
                     import os
                     import shutil
                     import sys
-                    from concurrent.futures import ThreadPoolExecutor
                     
                     # 1. Kill tracked processes from DB (run in thread to avoid async context issues)
                     def kill_tracked_processes():
@@ -485,10 +484,27 @@ class AgentConfig(AppConfig):
                             print(f"--- Warning: Failed to kill tracked processes: {e}")
                     
                     try:
-                        # Execute DB operations in a separate thread to avoid async context issues
-                        with ThreadPoolExecutor(max_workers=1) as executor:
-                            future = executor.submit(kill_tracked_processes)
-                            future.result(timeout=5)  # Wait max 5 seconds
+                        # El trabajo de base de datos sale de este hilo para no
+                        # chocar con el contexto async.
+                        #
+                        # ⚠️ NO VUELVAS A PONER ``with ThreadPoolExecutor(...)``
+                        # aqui (Angela, 2026-08-29). Su ``__exit__`` llama a
+                        # ``shutdown(wait=True)``: un join SIN LIMITE que anulaba
+                        # en silencio el ``timeout=5`` escrito justo al lado, asi
+                        # que una consulta lenta colgaba el apagado para siempre.
+                        # Ademas sus workers NO son daemon, y el propio atexit de
+                        # ``concurrent.futures`` los volvia a esperar una SEGUNDA
+                        # vez en una salida normal. Un hilo daemon pelado no tiene
+                        # ninguno de los dos problemas: el join de abajo si tiene
+                        # fecha limite, y el interprete no lo espera al salir.
+                        killer = _threading.Thread(
+                            target=kill_tracked_processes,
+                            name="TlamatiniKillTracked", daemon=True)
+                        killer.start()
+                        killer.join(5)
+                        if killer.is_alive():
+                            print("--- Aviso: la limpieza de procesos rastreados sigue "
+                                  "ocupada tras 5 s; sigo sin ella.")
                     except Exception as e:
                         print(f"--- Warning: Thread-based cleanup failed: {e}")
 
@@ -588,16 +604,99 @@ class AgentConfig(AppConfig):
             if not global_state.get_state('shutdown_handler_registered'):
                 atexit.register(cleanup_pool_on_shutdown)
                 
-                # Windows signal handling for Ctrl+C and console close
-                def signal_handler(signum, frame):
-                    print(f"\n--- Received signal {signum}, cleaning up...")
+                # ── CTRL+C SIEMPRE TIENE QUE SALIR (Angela, 2026-08-29) ───────
+                # ⛔ NO regreses la limpieza adentro del manejador de senales, y
+                # NO dejes que una segunda senal vuelva a entrar en el.
+                #
+                # QUE PASABA — diagnosticado con un py-spy sobre el proceso ya
+                # colgado, no adivinado. El manejador viejo llamaba a
+                # ``cleanup_pool_on_shutdown()`` DIRECTO. Un manejador de senales
+                # de Python corre EN EL HILO PRINCIPAL, interrumpiendo lo que ese
+                # hilo estuviera haciendo, y lo primero que hace esa limpieza es
+                # ``psutil.process_iter(['cmdline'])`` — que abre y lee el PEB de
+                # TODOS los procesos de la maquina: segundos de trabajo. Asi que
+                # Ctrl+C parecia muerto, Angela lo apretaba otra vez... y cada
+                # senal nueva RE-ENTRABA al manejador encima de la anterior, a
+                # media faena de partes NO REENTRANTES de threading/psutil.
+                # Once apretones armaron una torre de once niveles de
+                # ``signal_handler → cleanup_pool_on_shutdown`` cuya punta quedo
+                # parada para siempre en ``Thread.start() → _started.wait()``: el
+                # ``Thread.start()`` exterior, interrumpido, seguia deteniendo el
+                # ``_active_limbo_lock`` global de threading (un Lock pelado, NO
+                # reentrante), asi que el worker nuevo no podia terminar de nacer
+                # y el hilo principal no podia soltarlo. Auto-bloqueo, justo en el
+                # UNICO hilo que tenia que sobrevivir. El ``os._exit(0)`` estaba
+                # al FINAL del manejador y no se alcanzaba jamas.
+                #
+                # EL CONTRATO, por orden de prioridad:
+                #   1. Ctrl+C SIEMPRE termina el proceso. La limpieza es de buena
+                #      fe; SALIR NO ES NEGOCIABLE.
+                #   2. Un SEGUNDO Ctrl+C sale de INMEDIATO y sin condiciones — que
+                #      la usuaria diga 'ya no espero' es una orden, y se contesta
+                #      con ``os.write`` + ``os._exit`` crudos, que no tocan ningun
+                #      lock que el resto del proceso pudiera estar deteniendo.
+                #   3. El manejador hace lo MINIMO seguro desde una senal: prender
+                #      un Event. La limpieza de verdad corre en hilos creados AQUI,
+                #      al arranque, en contexto normal — un manejador de senales
+                #      NUNCA debe arrancar un hilo: eso ES el bloqueo.
+                #   4. Un vigilante sale de todos modos si la limpieza se pasa del
+                #      plazo, para que ningun paso secuestre el proceso.
+                #
+                # Guarda: agent/test_ctrl_c_shutdown.py.
+                _shutdown_event = _threading.Event()
+                _SHUTDOWN_GRACE_SECONDS = 12.0
+
+                def _shutdown_worker():
+                    """Corre la limpieza FUERA del manejador, y luego sale."""
+                    import os as _os
+                    _shutdown_event.wait()
                     try:
                         cleanup_pool_on_shutdown()
                     except Exception as e:
-                        print(f"--- Warning: Cleanup error (ignored): {e}")
-                    # Use os._exit to avoid triggering atexit callbacks again
+                        print(f"--- Aviso: error de limpieza (ignorado): {e}")
+                    # os._exit para que la copia de esta misma limpieza colgada de
+                    # atexit no repita cada kill una segunda vez al salir.
+                    _os._exit(0)
+
+                def _shutdown_watchdog():
+                    """La limpieza tiene plazo, no cheque en blanco."""
+                    import os as _os
+                    import time as _time
+                    _shutdown_event.wait()
+                    _time.sleep(_SHUTDOWN_GRACE_SECONDS)
+                    print(
+                        f"\n--- [SHUTDOWN] La limpieza paso de {_SHUTDOWN_GRACE_SECONDS:.0f} s"
+                        " y salgo de todos modos. Si arriba quedo listado algun"
+                        " proceso sobreviviente, puede que haya que cerrarlo desde"
+                        " el Administrador de tareas."
+                    )
+                    _os._exit(3)
+
+                _threading.Thread(target=_shutdown_worker,
+                                  name="TlamatiniShutdown", daemon=True).start()
+                _threading.Thread(target=_shutdown_watchdog,
+                                  name="TlamatiniShutdownWatchdog", daemon=True).start()
+
+                # Windows signal handling for Ctrl+C and console close
+                def signal_handler(signum, frame):
                     import os as os_module
-                    os_module._exit(0)
+                    # SEGUNDO apreton: la usuaria ya no quiere esperar. Se obedece
+                    # al instante y por un camino que no puede trabarse — os.write
+                    # se salta el tee del log y su lock entre hilos.
+                    if _shutdown_event.is_set():
+                        try:
+                            os_module.write(2, "\n--- Ctrl+C otra vez: salgo YA.\n".encode("utf-8"))
+                        except Exception:
+                            pass
+                        os_module._exit(1)
+                    # Primero se suelta al worker y despues se avisa: si el print
+                    # de abajo llegara a trabarse con el lock del log, el apagado
+                    # ya va en marcha en un hilo al que eso no le importa.
+                    _shutdown_event.set()
+                    print(f"\n--- Recibi la senal {signum}, limpiando "
+                          f"(aprieta Ctrl+C otra vez para salir de inmediato)...")
+                    # Se regresa. El resto es del worker — un manejador que hace
+                    # trabajo de verdad es exactamente el bug que esto reemplaza.
                 
                 # Register signal handlers
                 try:

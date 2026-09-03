@@ -1,7 +1,7 @@
 {
   "name": "tlamatini",
-  "version": "1.50.2s",
-  "description": "A sophisticated, locally-run AI developer assistant featuring an advanced Retrieval-Augmented Generation (RAG) system, real-time web interface, visual agentic workflow designer, and multi-model LLM support.",
+  "version": "1.50.4s",
+  "description": "Asistente de desarrollo con IA autoalojado: RAG híbrido, Multi-Turn, 88 agents visuales, ACPX, Skills, voz, hardware y build reproducible para Windows.",
   "private": true,
   "scripts": {
     "lint": "eslint Tlamatini/agent/static/agent/js/",
@@ -10,16 +10,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/angelahack1/Tlamatini.git"
+    "url": "git+https://github.com/XAIHT/Tlamatini-Spanish.git"
   },
   "keywords": [],
   "author": "Angela López Mendoza (XAIHT)",
   "license": "MIT",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/angelahack1/Tlamatini/issues"
+    "url": "https://github.com/XAIHT/Tlamatini-Spanish/issues"
   },
-  "homepage": "https://github.com/angelahack1/Tlamatini#readme",
+  "homepage": "https://github.com/XAIHT/Tlamatini-Spanish#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.0.0",

@@ -446,6 +446,14 @@ def _read_pyz_module_names(dist_root):
     return names or None
 
 
+# Contrato del release publico: el propio pkg.zip no debe pasar de 2.8 GB
+# DECIMALES. Se usan bytes decimales porque asi los reporta el host del release
+# y las propiedades de archivo de Windows — es el numero que la usuaria ve.
+# La guarda corre ANTES de la limpieza del build, para que el resultado quede
+# en disco y se pueda inspeccionar que fue lo que engordo.
+MAX_PKG_ZIP_BYTES = 2_800_000_000
+
+
 def verify_frozen_agent_modules(dist_root):
     """Assert every module in _FROZEN_REQUIRED_AGENT_MODULES is IN the bundle.
 
@@ -471,6 +479,76 @@ def verify_frozen_agent_modules(dist_root):
     print(f"  OK - all {len(_FROZEN_REQUIRED_AGENT_MODULES)} required agent "
           f"module(s) present in the PYZ ({len(names)} modules total).")
     return True
+
+
+def verify_frozen_torch_absent(dist_root):
+    """Tumba el build si PyInstaller metio Torch en la app web congelada.
+
+    Los agents del pool corren bajo ``<install>/python`` y el Talker SI necesita
+    el Torch de solo CPU que se acarrea ahi. El proceso Django congelado no
+    importa Torch en ningun lado y no tiene por que heredar la instalacion de
+    CUDA de varios gigas de quien compila.
+
+    ⚠️ EN ESTA EDICION LA FRONTERA ADEMAS CUIDA LA VOZ: excluir Torch del Python
+    ACARREADO dejaria mudos al Talker y a la Whisperer. Aqui solo se revisa el
+    _internal congelado; el Torch acarreado se queda donde esta.
+    """
+    internal_dir = Path(dist_root) / "_internal"
+    torch_dir = internal_dir / "torch"
+    cuda_dll_prefixes = (
+        "torch", "c10", "cudart", "cudnn", "cublas", "cufft", "cusparse",
+        "cusolver", "curand", "nvjitlink", "nvrtc",
+    )
+    orphaned_dlls = []
+    if internal_dir.exists():
+        orphaned_dlls = [
+            path for path in internal_dir.rglob("*.dll")
+            if path.name.lower().startswith(cuda_dll_prefixes)
+        ]
+    print("\n--- Post-build: verificando que NO haya Torch congelado ---")
+    if torch_dir.exists() or orphaned_dlls:
+        offending_files = {
+            path for path in orphaned_dlls if path.is_file()
+        }
+        if torch_dir.exists():
+            offending_files.update(
+                path for path in torch_dir.rglob("*") if path.is_file()
+            )
+        size_bytes = sum(path.stat().st_size for path in offending_files)
+        samples = "\n".join(f"         - {path}" for path in sorted(offending_files)[:8])
+        print(
+            "ERROR: PyInstaller metio binarios de Torch/CUDA en el proceso Django congelado:\n"
+            f"       Tamano: {size_bytes / 1_000_000_000:.3f} GB\n"
+            f"       Archivos:\n{samples}\n"
+            "       Torch va SOLO en <install>/python, para el agent Talker del pool.\n"
+            "       Deja el pyinstaller_hooks/hook-torch.py que no hace nada y las\n"
+            "       exclusiones de ML del congelado prendidas. Se aborta el build."
+        )
+        sys.exit(1)
+    print("  OK - no hay binarios de Torch/CUDA congelados; el Torch acarreado sigue aparte.")
+    return True
+
+
+def enforce_pkg_zip_size(pkg_zip_path, max_bytes=MAX_PKG_ZIP_BYTES):
+    """Falla cuando ``pkg.zip`` se pasa del presupuesto de tamano del release."""
+    path = Path(pkg_zip_path)
+    actual_bytes = path.stat().st_size
+    if actual_bytes > max_bytes:
+        print(
+            "ERROR: pkg.zip se paso del presupuesto de tamano del release:\n"
+            f"       Archivo: {path}\n"
+            f"       Real  : {actual_bytes / 1_000_000_000:.3f} GB "
+            f"({actual_bytes:,} bytes)\n"
+            f"       Tope  : {max_bytes / 1_000_000_000:.3f} GB "
+            f"({max_bytes:,} bytes)\n"
+            "       El build se deja en disco para inspeccionarlo. Se aborta."
+        )
+        sys.exit(1)
+    print(
+        f"  Guarda de tamano OK: {actual_bytes / 1_000_000_000:.3f} GB "
+        f"<= {max_bytes / 1_000_000_000:.3f} GB."
+    )
+    return actual_bytes
 
 
 def _probe_carried_python(python_exe):
@@ -667,6 +745,36 @@ def bundle_carried_python(dist_manage, frozen_python, build_python):
         )
 
 
+def _probe_cpu_torch(python_exe):
+    """Devuelve ``(es_solo_cpu, detalle)`` para un interprete aislado.
+
+    ⚠️ ESTA SONDA ES LA QUE HACE SEGURO EXCLUIR TORCH DEL CONGELADO. El Talker
+    y la Whisperer importan torch bajo el Python ACARREADO: si ahi faltara, o
+    fuera una rueda de CUDA en una maquina sin CUDA, Tlamatini se quedaria
+    MUDA y el build lo habria dado por bueno. Aqui se comprueba de verdad.
+    """
+    code = (
+        "import torch\n"
+        "cuda = getattr(torch.version, 'cuda', None)\n"
+        "print(str(torch.__version__) + '|cuda=' + str(cuda))\n"
+        "raise SystemExit(0 if cuda is None else 3)\n"
+    )
+    env = dict(os.environ)
+    env["PYTHONNOUSERSITE"] = "1"
+    try:
+        result = subprocess.run(
+            [str(python_exe), "-I", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            env=env,
+        )
+    except Exception as exc:
+        return False, str(exc)
+    detail = ((result.stdout or "") + (result.stderr or "")).strip()
+    return result.returncode == 0, detail
+
+
 def ensure_local_build_python():
     """Provision a standalone, WRITABLE Python kept UNDER the source tree at
     ``<repo>/python`` and install the agent deps into its OWN prefix (``--no-user``),
@@ -719,12 +827,24 @@ def ensure_local_build_python():
     env = dict(os.environ)
     env["PYTHONNOUSERSITE"] = "1"
     print(f"--- Installing agent deps into the source-tree build Python: {local_exe} ---")
-    subprocess.run(
-        [str(local_exe), "-m", "pip", "--disable-pip-version-check",
-         "install", "--no-warn-script-location",
-         "torch", "--index-url", "https://download.pytorch.org/whl/cpu"],
-        env=env, check=False,
-    )
+    # ⚠️ SOLO SE REINSTALA SI HACE FALTA, y se reinstala A LA FUERZA.
+    # Antes se hacia un `pip install torch` incondicional: si el acarreado ya
+    # traia una rueda de CUDA, pip la daba por buena y la dejaba. Entonces la
+    # sonda de abajo tumbaba el build en vez de ARREGLARLO. Ahora se pregunta
+    # primero y, si falta o trae CUDA, se reemplaza con --force-reinstall.
+    cpu_torch_ok, cpu_torch_detail = _probe_cpu_torch(local_exe)
+    if not cpu_torch_ok:
+        print(f"  -> Reemplazo el Torch ausente/CUDA por uno de solo CPU "
+              f"({cpu_torch_detail or 'no importable'}) ...")
+        torch_result = subprocess.run(
+            [str(local_exe), "-m", "pip", "--disable-pip-version-check",
+             "install", "--no-warn-script-location", "--upgrade", "--force-reinstall",
+             "--no-deps", "torch", "--index-url", "https://download.pytorch.org/whl/cpu"],
+            env=env, check=False,
+        )
+        if torch_result.returncode != 0:
+            raise RuntimeError(
+                f"No pude instalar el Torch de solo CPU en el Python acarreado ({local_exe}).")
     if req_file.exists():
         rc = subprocess.run(
             [str(local_exe), "-m", "pip", "--disable-pip-version-check",
@@ -736,6 +856,16 @@ def ensure_local_build_python():
             raise RuntimeError(
                 f"Failed to install requirements into the source-tree build Python "
                 f"({local_exe}). Delete <repo>/python and rebuild. Aborting build.")
+    # La voz depende de esto: si el torch acarreado no esta o trae CUDA, el
+    # Talker no puede hablar. Se comprueba AQUI y se tumba el build, en vez de
+    # entregar un paquete que se queda callado en casa de la usuaria.
+    cpu_torch_ok, cpu_torch_detail = _probe_cpu_torch(local_exe)
+    if not cpu_torch_ok:
+        raise RuntimeError(
+            "El Python acarreado tiene que traer Torch de solo CPU para el Talker, "
+            f"pero la sonda aislada fallo: {cpu_torch_detail or 'error desconocido'}"
+        )
+    print(f"  -> Torch de solo CPU verificado en el acarreado: {cpu_torch_detail}")
     return str(local_exe)
 
 
@@ -1289,6 +1419,28 @@ def main():
         # junto con snac bajo el Python ACARREADO, que es otro interprete y no
         # lo toca esta bandera. Aqui solo se recorta el _internal congelado.
         '--exclude-module=transformers',
+        # ⛔ TORCH FUERA DEL CONGELADO — Y ESTO **NO** DEJA MUDA A TLAMATINI.
+        # Lo unico que importa torch es el Talker (y la Whisperer), y esos corren
+        # como subproceso del pool bajo el Python ACARREADO <install>/python, que es
+        # OTRO interprete y esta bandera no lo toca. Ningun modulo del proceso web
+        # congelado importa torch (lo fija test_web_process_stays_lean.py).
+        #
+        # ⚠️ ANTES esta misma linea estaba PROHIBIDA por miedo a callar la voz. El
+        # miedo era correcto y el remedio estaba equivocado: sin excluirlo, el
+        # user-site con CUDA de quien compila metia GIGAS de DLLs de NVIDIA en
+        # _internal. Lo que protege la voz de verdad es la otra mitad — el build
+        # INSTALA torch de solo CPU en el Python acarreado y lo comprueba con
+        # _probe_cpu_torch — no dejar basura en el congelado.
+        '--exclude-module=torch',
+        # Las cadenas de import opcional (datasets/torchvision) hacen que PyInstaller
+        # ejecute sus hooks aunque torch ya este excluido. Nada de esta familia de ML
+        # la usa el proceso web; todo el Talker / la Whisperer corren en el acarreado.
+        '--exclude-module=torchvision',
+        '--exclude-module=torchaudio',
+        '--exclude-module=torchtext',
+        '--exclude-module=torchao',
+        '--exclude-module=snac',
+        '--exclude-module=whisper',
         '--collect-all', 'django_bootstrap5',
         '--collect-all', 'autobahn',
         '--collect-all', 'filesearch_pb2',
@@ -1363,6 +1515,11 @@ def main():
     # ══════════════════════════════════════════════════════════════════
 
     # ── 5b) PROVE the fail-open agent modules really landed in the bundle ──
+    # ── PROBAR la frontera congelado/acarreado ───────────────────────────
+    # Va ANTES de la verificacion de modulos: si Torch se colo al _internal,
+    # el paquete pesa gigas de mas y en esta edicion ademas se estaria
+    # confundiendo con el Torch acarreado del que depende la VOZ.
+    verify_frozen_torch_absent(Path("dist") / "manage")
     verify_frozen_agent_modules(Path("dist") / "manage")
 
     # ── 6) Copy application files & create directories ───────────────
@@ -1876,6 +2033,9 @@ def main():
                             zf.write(full_path, arcname)
                             file_count += 1
                     print(f"Added {file_count} files to {pkg_zip_path}")
+                    # El tope corre ANTES de la limpieza, a proposito: si se pasa, el
+                    # resultado se queda en disco y se puede ver que fue lo que engordo.
+                    enforce_pkg_zip_size(pkg_zip_path)
                 size_mb = pkg_zip_path.stat().st_size / (1024 * 1024)
                 print(f"pkg.zip created successfully ({size_mb:.1f} MB)")
 

@@ -8,9 +8,11 @@
 -->
 # Tlamatini
 
-In this book, **Blue-hat** means a defensive operator posture: Tlamatini helps inspect and respond to security signals on a Windows machine that you own or are explicitly authorised to defend. It does **not** turn her into an unsupervised endpoint-security authority, add a new database-backed workflow Agent, or make every alert a confirmed intrusion. The `security/` directory is an administrator-operated host toolkit. A human chooses when to enable it, reviews the evidence, decides whether response is justified, and owns the resulting Windows policy changes.
+En este libro, **Blue-hat** significa una postura operativa defensiva: Tlamatini ayuda a inspeccionar y responder a señales de seguridad en una máquina Windows que posees o estás explícitamente autorizada a defender. No la convierte en una autoridad de endpoint sin supervisión, no agrega un workflow Agent nuevo respaldado por la base de datos y no vuelve intrusión confirmada cada alerta. `security/` es un toolkit de host operado por una persona administradora: ella decide cuándo habilitarlo, revisa la evidencia, determina si una respuesta está justificada y asume los cambios resultantes de política de Windows.
 
-> **El Libro de Tlamatini** — una guía paso a paso para ejecutar, usar y dominar un asistente de desarrollo con IA desplegado localmente, con RAG, orquestación de tools Multi-Turn, delegación a CLIs externos por ACPX, un cliente MCP de Unreal para manejar Unreal Engine 5 desde el chat o el canvas, un diseñador visual de workflows, 87 tipos de agent que se arrastran y sueltan, y un Flow Compiler en el backend que convierte el canvas vivo — o un log de tool-calls generado en el chat — en un workflow validado contra el registry, con los secretos redactados y portable tanto en source como en frozen.
+> **El Libro de Tlamatini** — una guía paso a paso para ejecutar, usar y dominar un asistente de desarrollo con IA desplegado localmente, con RAG, orquestación de tools Multi-Turn, delegación a CLIs externos por ACPX, un client MCP de Unreal para manejar Unreal Engine 5 desde el chat o el canvas, un diseñador visual de workflows, 88 tipos de agent que se arrastran y sueltan, y un Flow Compiler en el backend que convierte el canvas vivo — o un log de tool-calls generado en el chat — en un workflow validado contra el registry, con los secrets redactados y portable tanto en source como en frozen.
+>
+> **Estado comprobado:** el release actual es `v1.50.4s` (`1339fc7`), con 88 workflow agents, 66 launchers `chat_agent_*`, 108 tools integradas de Multi-Turn, 105 tools del MCP stdio raíz, 29 skills y 198 migrations. La matriz source→docs y los cambios posteriores al tag están en [`docs/estado-actual-v1.50.4s.md`](docs/estado-actual-v1.50.4s.md).
 >
 > Visita nuestro sitio en **https://xaiht.org**, o date una probadita de un minuto de Tlamatini en YouTube: **https://youtu.be/a51miZ1JIe0**.
 >
@@ -50,25 +52,25 @@ Cuando habilitas, configuras, modificas, encadenas o ejecutas un agent, **ese ag
 
 Antes de los capítulos profundos, aquí está el viaje completo en una sola página. Es lo primero y lo más importante que harás con Tlamatini, así que va al principio.
 
-Hay un argumento económico callado escondido dentro de este software, y vale la pena decirlo en voz alta antes de que instales nada. Una suscripción de frontera — GPT-5.4, Claude Opus y sus parientes — pide alrededor de **$200 cada mes** para hablar con un solo modelo. Tlamatini le da la vuelta a esa aritmética. **La app es gratis** — nunca nos pagas a nosotros; la única cuenta es **Ollama Pro, unos $200 al *año*** (pagados a Ollama), y alrededor de esa única conexión a la nube ella envuelve **86 tipos de agent y más de 75 tools** que corren en *tu* máquina. Poder comparable, por más o menos un doceavo de la cuenta. Por eso este capítulo abre el libro.
+Tlamatini es gratuita y de código abierto. Coordina **88 tipos de agent y 108 tools integradas de Multi-Turn** desde tu máquina, y tú eliges si la inferencia usa un modelo local o un provider cloud compatible. Por eso este capítulo abre con operación y fronteras de datos, no con una suscripción específica.
 
 Cinco pasos te llevan de una máquina en blanco a una Tlamatini que puede flashear una tarjeta, manejar un motor gráfico y correr un workflow entero sin supervisión.
 
 ### Paso uno — Instalar Tlamatini
 
-Hay dos caminos hacia Tlamatini, y le acomodan a dos lectores distintos. La app en sí es **gratis** — nunca nos pagas ni un centavo; la única cuenta en todo este capítulo es la de Ollama, tres pasos más adelante. Escoge **uno** de los caminos.
+Hay dos caminos hacia Tlamatini, y le acomodan a dos lectores distintos. La app en sí es **gratis**; cualquier costo externo depende del provider de modelos elegido. Escoge **uno** de los caminos.
 
-**🟢 Opción A — el instalador del release (recomendado; no requiere Python).** Éste es el camino amable, y el correcto para la mayoría. Abre la **[página de Releases](https://github.com/XAIHT/Tlamatini/releases)**, descarga el instalador más reciente y ejecútalo. Lleva adentro su propio Python 3.12.10 y todas las dependencias, así que no hay nada más que instalar. Inicia Tlamatini desde su acceso directo del menú Inicio y tu browser abre en `http://127.0.0.1:8000/`, detrás del login por defecto **user / changeme**. Cuando salga una versión nueva, actualizas desde dentro de la app — **About ▸ Check for updates** — y conserva intactos tu config, tu base de datos y tus llaves.
+**🟢 Opción A — el instalador del release (recomendado; no requiere Python).** Éste es el camino amable, y el correcto para la mayoría. Abre la **[página de Releases de Tlamatini-Spanish](https://github.com/XAIHT/Tlamatini-Spanish/releases)**, descarga el instalador más reciente y ejecútalo. Lleva adentro su propio Python 3.12.10 y todas las dependencias, así que no hay nada más que instalar. Inicia Tlamatini desde su acceso directo del menú Inicio y tu browser abre en `http://127.0.0.1:8000/`, detrás del login por defecto **user / changeme**. Cuando salga una versión nueva, actualizas desde dentro de la app — **About ▸ Check for updates** — y conserva intactos tu config, tu base de datos y tus keys.
 
 **🔵 Opción B — desde el source (para desarrolladores).** Toma este camino si piensas leer, modificar o contribuir a su código; pide que **Python 3.12.10** y **git** ya estén en tu máquina. Bastan seis comandos:
 
 ```bash
-git clone https://github.com/XAIHT/Tlamatini.git
-cd Tlamatini
+git clone https://github.com/XAIHT/Tlamatini-Spanish.git
+cd Tlamatini-Spanish
 python -m venv venv && venv\Scripts\activate
 pip install -r requirements.txt
 python Tlamatini/manage.py migrate
-python Tlamatini/manage.py runserver --noreload
+python Tlamatini/manage.py runserver
 ```
 
 > **`--noreload` es opcional (desde 2026-07-11):** un simple `python Tlamatini/manage.py runserver` ahora arranca limpio y recarga solo cuando editas el código. Antes levantaba por duplicado los puertos auxiliares de MCP `:8765` / `:50051` y tronaba con `WinError 10048`; quedó resuelto con una compuerta consciente del reloader en `agent/apps.py`.
@@ -81,9 +83,9 @@ Luego abre `http://127.0.0.1:8000/` e inicia sesión con **user / changeme**.
 
 Tlamatini nunca le habla directamente a un modelo; habla a través de **[Ollama](https://ollama.com/download)**, el motor que sirve todos los modelos — el modelo pequeño de embedding que vive en tu propia GPU, y los modelos grandes de chat que viven en la nube. Instálalo una sola vez.
 
-### Paso tres — Suscribirte a Ollama Pro (~$200 / año)
+### Paso tres — Elegir y conectar el provider de modelos
 
-Éste es el paso que se gana su lugar. Entra a **[ollama.com](https://ollama.com)** y toma el plan **Ollama Pro** — más o menos **$200 por un año**. Pro es la llave que abre los **modelos `:cloud`**: mentes de clase frontera que corren en el hardware de Ollama, cobradas por año por casi lo que cuesta un solo mes de un plan rival. Luego preséntale tu máquina a tu cuenta:
+Puedes usar Ollama local, los tags `:cloud` disponibles para tu cuenta u otro provider compatible configurado desde la app. Si eliges Ollama cloud, conecta tu máquina siguiendo las instrucciones vigentes del provider:
 
 ```bash
 ollama signin
@@ -97,7 +99,7 @@ Baja el modelo pequeño de embedding a tu propio disco, y alcanza los modelos de
 # Local — small, runs on your own GPU/CPU
 ollama pull nomic-embed-text
 
-# Cloud — served by Ollama Pro (pull, or simply sign in to use)
+# Cloud — disponible según tu cuenta (pull o sign-in según el provider)
 ollama pull glm-5.2:cloud
 ollama pull qwen3.5:cloud
 ```
@@ -126,11 +128,11 @@ Detrás de **Config ▸ Access Keys Wizard** se sella la conexión a la nube —
 
 Tlamatini hace muchas cosas. Este README está organizado para que puedas dejar de leer a la profundidad que necesites.
 
-- **⭐ Empieza aquí** (el capítulo de aquí arriba): la instalación completa en cinco pasos — install, Ollama, Ollama Pro, modelos, config — en una sola página. *Si no lees nada más, lee esto.*
-- **Parte I — Poner a correr a Tlamatini**: prerrequisitos, Ollama, **suscripción Ollama Pro/Max para los modelos `:cloud` por defecto**, instalación, primer login. *Esto se lee una vez.*
+- **⭐ Empieza aquí** (el capítulo de aquí arriba): la instalación completa en cinco pasos — install, Ollama, provider, modelos, config — en una sola página. *Si no lees nada más, lee esto.*
+- **Parte I — Poner a correr a Tlamatini**: prerrequisitos, Ollama, selección local/cloud, instalación y primer login. *Esto se lee una vez.*
 - **Parte II — Usar el Chat**: las cinco casillas de la barra de herramientas (Multi-Turn, Exec Report, ACPX, Ask Execs, internet) recorridas una por una. *Éste es el corazón del libro, amable con los principiantes.*
 - **Parte III — El Diseñador Visual de Workflows**: flows de arrastrar y soltar, FlowCreator, FlowHypervisor, Parametrizer, Gatewayer.
-- **Parte IV — El Bestiario de Tlamatini**: referencia compacta de un renglón por agent para los 87 workflow agents (82 renglones — algunos agents muy emparejados, p. ej. Ssher / Scper, comparten renglón).
+- **Parte IV — El Bestiario de Tlamatini**: referencia compacta de un renglón por agent para los 88 workflow agents (algunos agents muy emparejados, p. ej. Ssher / Scper, comparten renglón).
 - **Parte V — La Superficie de Tools**: cada tool que el chat puede llamar de cara al LLM, organizada por familia.
 - **Parte VI — Por dentro de Tlamatini**: arquitectura, RAG, la guardia previa de memoria de embedding, el pipeline Multi-Turn, la mecánica del runtime de ACPX. *Para los curiosos.*
 - **Parte VII — Referencia de Configuración**: cada perilla de `config.json`.
@@ -403,14 +405,14 @@ Pre-releases use the standard SemVer suffixes — `2.0.0-alpha.1`, `2.0.0-beta.1
 
 ```powershell
 git status                                          # clean tree, on main
-git tag -a v1.50.2s -m "Release 1.50.2s: <one-liner>"   # annotated tag
-git push origin v1.50.2s
+git tag -a v1.50.4s -m "Release 1.50.4s: <one-liner>"   # annotated tag
+git push origin v1.50.4s
 python build.py
 python build_uninstaller.py
 python build_installer.py
 ```
 
-All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini_Release_v1.50.2s/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. The current `v1.50.2s` tag remains reachable from `HEAD`, so the bare runtime version stays `1.50.2s` even though the worktree is one commit beyond the tagged commit.
+All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini_Release_v1.50.4s/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. At the start of this audit, `v1.50.4s` and `HEAD` both resolve to `1339fc7`; uncommitted working-tree changes do not alter the bare runtime version.
 
 ### Where the version shows up in a running install
 
@@ -418,8 +420,8 @@ The build computes the version once and bakes it into four surfaces:
 
 - **`Tlamatini/agent/_version.py`** — generated at build time, gitignored, read at runtime by `agent.version.get_version()`. This is what every in-process surface reads.
 - **Win32 `VERSIONINFO`** — `Tlamatini.exe`, `Installer.exe`, and `Uninstaller.exe` all carry the version in their resource fork. Right-click the file → Properties → Details → ProductVersion.
-- **Release folder name** — `dist/Tlamatini_Release_v1.50.2s/`.
-- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.50.2s` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.50.2s","commit":"abc1234","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
+- **Release folder name** — `dist/Tlamatini_Release_v1.50.4s/`.
+- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.50.4s` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.50.4s","commit":"1339fc7","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
 
 If the four surfaces ever disagree, your build was run with a stale `$env:TLAMATINI_VERSION` or against an out-of-date `_version.py` — clear them and re-run `build.py`.
 
@@ -1525,7 +1527,7 @@ The other firmware agents make Tlamatini an *embedded engineer*. ESPHomer makes 
 | **Recmailer** | LangGraph IMAP receiver with LLM keyword analysis. |
 | **RRF** | Reciprocal Rank Fusion — method for combining ranked lists. |
 | **Ruff** | Fast Python linter used by Pythonxer. |
-| **Skill** | Markdown-driven extension package — a directory under `agent/skills_pkg/<name>/` with a `SKILL.md` (YAML frontmatter + body). 27 seed skills ship. |
+| **Skill** | Package de extensión dirigido por Markdown: un directorio bajo `agent/skills_pkg/<name>/` con `SKILL.md` (YAML frontmatter + cuerpo). Se distribuyen 29 skills. |
 | **STM32er** | Tlamatini agent that scaffolds, builds, flashes, and observes STM32F407VG firmware through the STM32 Template Project MCP (`https://github.com/XAIHT/STM32TemplateProjectMCP`), via a self-contained inline MCP stdio JSON-RPC client. Zero-config auto-bootstrap downloads the MCP itself and a safety preflight refuses to build/flash on a bad toolchain or wrong device family. Available both as the wrapped Multi-Turn tool `chat_agent_stm32er` and as a visual canvas node. Joined as the 68th entry in the agent catalog (now 70 with ESP32er #69 and Arduiner #70); the first of the microcontroller-firmware trio (STM32er drives an MCP server; ESP32er and Arduiner drive a CLI directly). |
 | **STM32 Template Project MCP** | FastMCP stdio server (`https://github.com/XAIHT/STM32TemplateProjectMCP`) exposing 23 tools for STM32F407VG firmware scaffolding, build, flash, and serial observation. STM32er is a client of it — it does not embed it — and auto-downloads it on first use. |
 | **ESP32 Template Project** | A standalone PlatformIO project (**not yet published**; its intended home is `https://github.com/XAIHT/ESP32TemplateProject`) that blinks an ESP32's onboard LED and prints the LED state over serial — the ESP32 counterpart of the STM32 Template Project MCP. Unlike the STM32 one it is a plain PlatformIO project, not a server, because ESP32er drives the `pio` CLI directly. ESP32er can build/flash/monitor a checkout of it (`project_dir`) or scaffold an equivalent with `action: create_project`. See bonus chapter §58. |
@@ -1546,14 +1548,16 @@ The other firmware agents make Tlamatini an *embedded engineer*. ESPHomer makes 
 
 ### Recent Updates
 
+- **Release `v1.50.4s` y working tree posterior — build lean, voz preservada, cierre acotado, privacidad fresh-clone y seguridad destructiva — 2026-09-01** — El tag anotado `v1.50.4s` apunta a `1339fc7`. El proceso Django frozen deja fuera `transformers` y Torch; `langchain.tools` se reemplaza por `langchain_core.tools`; el Python acarreado conserva y comprueba Torch CPU-only para Talker/Whisperer; el hook local impide que PyInstaller copie DLLs CUDA y el build rechaza una salida con Torch residual o un `pkg.zip` mayor de 2.8 GB. El working tree posterior al tag agrega un cierre Ctrl+C donde el signal handler sólo activa un Event, el cleanup vive en un worker daemon y un watchdog fuerza salida a los 12 s; un build público capaz de partir de un clone limpio con `.private_targets.json` opcional, `privacy_preflight()` y refusal ante evidencia privada sin targets; y un contrato Deleter donde `target_path` es directorio de trabajo, `files_to_delete` contiene los objetivos, borrar un tree exige `allow_directory_delete: true` y roots/protected paths siempre se rechazan. Googler desenvuelve trackers de Bing y filtra links propios/sociales/newsletter de Mojeek. La superficie verificada es **88 workflow agents, 66 launchers wrapped, 108 tools integradas de Multi-Turn, 105 tools del MCP stdio raíz, 29 skills y 198 migrations**. Véase [`docs/estado-actual-v1.50.4s.md`](docs/estado-actual-v1.50.4s.md) para la matriz de source y tests.
+
 - **Release v1.49.1 — Measured networking, WAL-safe data movement, resilient structured web discovery, guided MCP onboarding, and synchronized private contacts — 2026-08-23** — The annotated release tag resolves to `6adf3623`; local and remote `HEAD` are aligned one commit later at `abc7899a`, with the same reachable bare release identity. NetSpeed-Calculator becomes workflow agent 88 and wrapped launcher 66, measuring download/upload/latency/jitter/loss/bufferbloat across keyless providers with slow-start exclusion, derivative sampling, outlier rejection, confidence intervals, random-effects fusion, I² heterogeneity reporting, named zero-byte failures, and an Ask-Execs tier-D bandwidth warning. `agent/sqlite_copy.py` moves Backup DB, Set DB, and pre-Django hot-swap onto SQLite's online backup API, self-contained DELETE-journal destinations, `quick_check`, and WAL/SHM/journal sidecar hygiene. Googler gains a structured Google-dork compiler with syntax normalization, aliases, presets for ordinary and lawful/open-source discovery, grouped site/filetype alternatives, and URL-only file-hunt output. Its execution path now runs four server-rendered routes through plain `urllib` first, then falls back to visible installed Chrome/bundled Chromium across seven direct-results routes with bounded retries and answer-route logging; advanced Google-only operators may broaden on fallback engines. Its dedicated 73-test suite pins query correctness, HTTP-before-browser behavior, browser/config defaults, chain order, retry/fallback stopping, redirect unwrapping, and the direct-tool/canvas contract. The 29th runtime skill adds the guarded External-MCP classify/import/doctor/activate/wait/list/call lifecycle; migration 0194 adds the append-only Deep Internet Research starter; migrations 0195-0197 add NetSpeed's agent/tool/prompt rows. The private builder synchronizes same-machine contacts into gitignored `contacts.private.json`, while public builds and self-modify snapshots remain contact-empty. The source-verified release surface is **88 workflow agents**, **66 wrapped chat agents**, **108 built-in Multi-Turn tools**, **29 skills**, and **197 migrations**.
 
 1. **Un pipeline RAG de verdad** que lee los archivos de tu proyecto, clasifica sus papeles arquitectónicos y aterriza las respuestas en tu código fuente real.
 2. **El modo Multi-Turn** que convierte el chat en un operador de tools: el LLM puede correr comandos de shell, pegarle a APIs, mandar correos, tomar capturas de pantalla, escribir en ventanas, consultar SQL — y encadenar esos pasos para terminar el trabajo.
 3. **ACPX**, que le permite al LLM delegar subtareas a CLIs externos de coding-agents que ya tengas instalados (Claude Code, Cursor, Codex, Gemini CLI, Qwen Code y más).
-4. **Un diseñador visual de workflows** donde arrastras 82 tipos distintos de agent a un canvas (incluido el trío de firmware para microcontroladores **STM32er** / **ESP32er** / **Arduiner**, el **Unrealer** para manejar Unreal Engine 5 — ve el capítulo extra §57 — el **Camcorder** para tomar fotos/video de una webcam, el **Recorder** para capturar audio de un micrófono, sus contrapartes **AudioPlayer** / **VideoPlayer** para reproducir sonido en las bocinas y video en una pantalla, el **Talker** para sintetizar voz a partir de texto, y el **Whisperer** para transcribir la voz de vuelta a texto), los conectas y corres el resultado como un workflow `.flw` sin supervisión. Save, Validate y Start pasan el canvas por un **Flow Compiler** en el backend (`agent/services/flow_compiler.py`) que consulta un solo registry de Agent Contracts — así que un flow que corre en modo source corre idéntico en una instalación frozen de `.exe`.
+4. **Un diseñador visual de workflows** donde arrastras 88 tipos distintos de agent a un canvas (incluidos **STM32er**, **ESP32er**, **Arduiner**, **ESPHomer**, **Unrealer**, **Blenderer**, **NetSpeed-Calculator**, **Camcorder**, **Recorder**, **AudioPlayer**, **VideoPlayer**, **Talker** y **Whisperer**), los conectas y corres el resultado como un workflow `.flw` sin supervisión. Save, Validate y Start pasan el canvas por un **Flow Compiler** en el backend (`agent/services/flow_compiler.py`) que consulta un solo registry de Agent Contracts — así que un flow que corre en modo source corre idéntico en una instalación frozen de `.exe`.
 
-Todo es local. Sin amarre a la nube (aunque los LLMs en la nube son una opción). La app entera se empaqueta en un `.exe` de Windows autónomo si quieres distribuirla.
+La app, el RAG, los agents y el modelo de embeddings viven localmente; la inferencia del LLM es configurable y la configuración incluida puede usar modelos cloud. Cuando eliges un provider cloud, el prompt y el contexto viajan a ese provider; también puedes apuntar a modelos Ollama completamente locales. La app entera se empaqueta como distribución Windows autónoma.
 
 ## 2. Lo que necesitas antes de instalar
 
@@ -1705,7 +1709,7 @@ Cuando terminen las migraciones y ya tengas un superusuario, echa a andar el ser
 
 ### Camino B — Instalador de un clic ya compilado (usuarios finales)
 
-Descarga el ZIP del release más reciente — **[Tlamatini v1.48.2s](https://github.com/XAIHT/Tlamatini/releases/tag/v1.48.2s)** — y descomprímelo (o usa una carpeta `Tlamatini_Release/` que alguien te haya pasado / que tú mismo hayas compilado — ve la Part VIII). Luego:
+Descarga el ZIP del release más reciente — **[Tlamatini v1.50.4s](https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.50.4s)** — y descomprímelo (o usa una carpeta `Tlamatini_Release/` que alguien te haya pasado / que tú mismo hayas compilado — ve la Part VIII). Luego:
 
 1. Abre la carpeta descomprimida.
 2. Da doble clic en **`Installer.exe`**.
@@ -2583,7 +2587,7 @@ Gatewayer escribe marcadores estables en el log (`GATEWAY_EVENT_ACCEPTED`, `GATE
 
 # Part IV — El Bestiario de Tlamatini
 
-Una referencia compacta de los 87 tipos de workflow-agent. Los capítulos destacados de **Parametrizer** (§25) y **Gatewayer** (§26) están arriba; **Unrealer** tiene un capítulo extra completo en §57, **Blenderer** en §59 y **ESPHomer** en §60.
+Una referencia compacta de los 88 tipos de workflow-agent. Los capítulos destacados de **Parametrizer** (§25) y **Gatewayer** (§26) están arriba; **Unrealer** tiene un capítulo extra completo en §57, **Blenderer** en §59 y **ESPHomer** en §60.
 
 > **Recordatorio de nomenclatura.** El `agentDescription` (definido por cada migración) es la única fuente de verdad. La llave del classmap de CSS, el aspecto en la barra lateral y el nombre del connection-handler se derivan todos de él.
 
@@ -2737,7 +2741,7 @@ Todas las tools que el LLM del chat puede llamar en modo Multi-Turn. Las tools s
 | `agent_stopper` | Detiene un agent de workflow de plantilla. |
 | `agent_stat_getter` | Consulta el estado en runtime de un agent de plantilla. |
 
-## 28. Tools de chat-agent envueltas (46)
+## 28. Tools de chat-agent envueltas (66)
 
 Cada tool envuelta lanza una copia aislada y secuenciada del runtime de una plantilla de agent de workflow bajo `agent/agents/pools/_chat_runs_/{agent}_{seq:03d}_{short_id}/`. Las corridas fallidas se conservan.
 
@@ -2789,7 +2793,7 @@ La superficie ACPX/Skill. Toda tool devuelve un sobre JSON. Los sobres de falla 
 | `list_skills(filter_keywords)` | Lista cada skill registrada. |
 
 
-Las 27 skills semilla (`agent/skills_pkg/<name>/SKILL.md`) cubren: `hello-world`, `skill-creator`, `acp-router`, `setup-new-acpx-key`, `summarize`, `weather`, `flow-making` (objetivo → `.flw` cargable en el canvas manejando el motor FlowCreator), `create-new-agent` / `create-new-mcp` (runbooks de autoría para las propias superficies de Tlamatini), `code-review` (revisión de git-diff estilo ingeniero senior con un veredicto), `security-audit` (barrido SAST / de secretos / de dependencias con varios scanners), `kali-pentest` (runbook de evaluación autorizada Kali Linux / MCP-Kali-Server que maneja el agent Kalier), `tlamatini-*` (8 skills de mantenimiento: csrf-exempt-audit, exec-report-row-adder, allowed-hosts-tighten, planner-trace-replay, flow-from-objective — ahora delega en flow-making, flw-doctor, new-acp-agent, static-version-bumper), y ports en formato OpenClaw para `github`, `notion`, `jira`, `slack`, `gmail`, `todoist`, `trello`.
+Las 29 skills (`agent/skills_pkg/<name>/SKILL.md`) cubren: `hello-world`, `skill-creator`, `acp-router`, `setup-new-acpx-key`, `summarize`, `weather`, `flow-making` (objetivo → `.flw` cargable en el canvas manejando el motor FlowCreator), `create-new-agent` / `create-new-mcp`, `adding-external-mcp`, `code-review`, `security-audit`, `kali-pentest`, `roblox-studio`, las ocho `tlamatini-*` de mantenimiento y los ports para `github`, `notion`, `jira`, `slack`, `gmail`, `todoist` y `trello`.
 
 ---
 
@@ -3432,14 +3436,14 @@ Las prelanzamientos usan los sufijos estándar de SemVer — `2.0.0-alpha.1`, `2
 
 ```powershell
 git status                                          # clean tree, on main
-git tag -a v1.48.2s -m "Release 1.48.2s: <one-liner>"   # annotated tag
-git push origin v1.48.2s
+git tag -a v1.50.4s -m "Release 1.50.4s: <one-liner>"   # annotated tag
+git push origin v1.50.4s
 python build.py
 python build_uninstaller.py
 python build_installer.py
 ```
 
-Los tres scripts de build toman el tag de `git describe --tags` automáticamente. El artefacto final aterriza en `dist/Tlamatini_Release_v1.48.2s/`, nombrado según la versión, para que el archivo que le entregues a un usuario sea inequívoco incluso antes de que lo descomprima.
+Los tres scripts de build toman el tag de `git describe --tags` automáticamente. El artefacto final aterriza en `dist/Tlamatini_Release_v1.50.4s/`, nombrado según la versión, para que el archivo que le entregues a un usuario sea inequívoco incluso antes de que lo descomprima.
 
 
 ### Dónde aparece la versión en una instalación en ejecución
@@ -3448,8 +3452,8 @@ El build calcula la versión una sola vez y la hornea en cuatro superficies:
 
 - **`Tlamatini/agent/_version.py`** — generado en tiempo de build, gitignoreado, leído en runtime por `agent.version.get_version()`. Esto es lo que lee toda superficie in-process.
 - **`VERSIONINFO` de Win32** — `Tlamatini.exe`, `Installer.exe` y `Uninstaller.exe` llevan todos la versión en su resource fork. Clic derecho al archivo → Propiedades → Detalles → ProductVersion.
-- **Nombre de la carpeta de release** — `dist/Tlamatini_Release_v1.48.2s/`.
-- **Superficies de runtime** — el diálogo About renderiza `Tlamatini v{{ version }}` (context processor de Django); el banner de arranque imprime `--- [VERSION] Tlamatini 1.47.0` tanto en la consola como en `tlamatini.log`; `GET /agent/version/` devuelve `{"version":"1.47.0","commit":"abc1234","date":"…","source":"generated"}` como un endpoint **abierto**, apto para un health-check.
+- **Nombre de la carpeta de release** — `dist/Tlamatini_Release_v1.50.4s/`.
+- **Superficies de runtime** — el diálogo About renderiza `Tlamatini v{{ version }}` (context processor de Django); el banner de arranque imprime `--- [VERSION] Tlamatini 1.50.4s` tanto en la consola como en `tlamatini.log`; `GET /agent/version/` devuelve `{"version":"1.50.4s","commit":"1339fc7","date":"…","source":"generated"}` como un endpoint **abierto**, apto para un health-check.
 
 Si alguna vez las cuatro superficies no coinciden, tu build corrió con un `$env:TLAMATINI_VERSION` rancio o contra un `_version.py` desactualizado — límpialos y vuelve a correr `build.py`.
 
@@ -4561,7 +4565,7 @@ Los otros agents de firmware hacen de Tlamatini una *ingeniera embebida*. ESPHom
 | **Recmailer** | Receptor IMAP en LangGraph con análisis de palabras clave por LLM. |
 | **RRF** | Reciprocal Rank Fusion — método para combinar listas ordenadas. |
 | **Ruff** | Linter rápido de Python que usa Pythonxer. |
-| **Skill** | Paquete de extensión dirigido por markdown — un directorio bajo `agent/skills_pkg/<name>/` con un `SKILL.md` (frontmatter YAML + cuerpo). Vienen 27 skills semilla. |
+| **Skill** | Paquete de extensión dirigido por Markdown — un directorio bajo `agent/skills_pkg/<name>/` con un `SKILL.md` (frontmatter YAML + cuerpo). Vienen 29 skills. |
 | **STM32er** | Agent de Tlamatini que arma el andamiaje, compila, flashea y observa firmware para STM32F407VG a través del STM32 Template Project MCP (`https://github.com/XAIHT/STM32TemplateProjectMCP`), con un cliente MCP stdio JSON-RPC en línea y autocontenido. El auto-bootstrap de configuración cero descarga el MCP por sí mismo y un preflight de seguridad se niega a compilar/flashear con un toolchain malo o una familia de dispositivo equivocada. Disponible tanto como el tool envuelto de Multi-Turn `chat_agent_stm32er` como nodo visual del canvas. Entró como la entrada 68 del catálogo de agents (ahora 70 con ESP32er #69 y Arduiner #70); el primero del trío de firmware para microcontroladores (STM32er maneja un MCP server; ESP32er y Arduiner manejan un CLI directamente). |
 | **STM32 Template Project MCP** | Servidor stdio de FastMCP (`https://github.com/XAIHT/STM32TemplateProjectMCP`) que expone 23 tools para andamiaje, build, flasheo y observación serial de firmware STM32F407VG. STM32er es cliente de él — no lo embebe — y lo descarga automáticamente en el primer uso. |
 | **ESP32 Template Project** | Un proyecto independiente de PlatformIO (**todavía no publicado**; su hogar previsto es `https://github.com/XAIHT/ESP32TemplateProject`) que parpadea el LED integrado de un ESP32 e imprime el estado del LED por serial — la contraparte ESP32 del STM32 Template Project MCP. A diferencia del de STM32, es un proyecto de PlatformIO simple, no un servidor, porque ESP32er maneja el CLI `pio` directamente. ESP32er puede compilar/flashear/monitorear una copia de él (`project_dir`) o armar el andamiaje de uno equivalente con `action: create_project`. Ve el capítulo extra §58. |

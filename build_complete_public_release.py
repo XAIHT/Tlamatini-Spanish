@@ -42,6 +42,7 @@ Pipeline
 
 from __future__ import annotations
 
+import json
 import argparse
 import glob
 import os
@@ -70,6 +71,11 @@ CHECKER = REPO_ROOT / "check_private_data.py"
 # Auto-discovered local targets file (gitignored) used when no --targets-file /
 # --target / env CHECK_PRIVATE_DATA_TARGETS is given. Values are read at run
 # time -- never hardcoded.
+#: La plantilla que se copia a .private_targets.json. Va COMMITEADA y trae solo
+#: formas de ejemplo — ningun valor real de Angela. Es lo que hace que un clon
+#: nuevo pueda armar su propia lista sin adivinar el formato.
+TARGETS_TEMPLATE = REPO_ROOT / "private_targets.example.json"
+
 DEFAULT_TARGETS_FILES = [REPO_ROOT / ".private_targets.json",
                          REPO_ROOT / "private_targets.json"]
 
@@ -108,14 +114,6 @@ def _is_kept_name(value: str) -> bool:
     tokens = [t for t in re.split(r"[\s.]+", norm) if t]
     return bool(tokens) and all(t in KEEP_NAME_TOKENS for t in tokens)
 
-REGEN_TOUCHED = [
-    REPO_ROOT / "Tlamatini" / "agent" / "config.json",
-    REPO_ROOT / "Tlamatini" / "agent" / "agents" / "telegrammer" / "config.yaml",
-    REPO_ROOT / "Tlamatini" / "agent" / "agents" / "whatsapper" / "config.yaml",
-    REPO_ROOT / "Tlamatini" / "agent" / "agents" / "teletlamatini" / "config.yaml",
-    REPO_ROOT / "Tlamatini" / "agent" / "agents" / "emailer" / "config.yaml",
-    REPO_ROOT / "Tlamatini" / "agent" / "agents" / "recmailer" / "config.yaml",
-]
 
 SKIP_DIRS = {".git", "node_modules", "__pycache__", "venv", ".venv", "dist",
              "build", ".mypy_cache", ".ruff_cache", ".pytest_cache",
@@ -199,6 +197,272 @@ def assert_system_python(py: str) -> None:
     )
 
 
+#: Managed config files that `regen_secrets.py` REWRITES, so STEP 1 can back every
+#: one of them up byte-for-byte BEFORE running it.
+#:
+#: WARNING: DERIVED, never hand-typed. The hand-written list carried only 5 of the
+#: 7 agent config.yaml files regen actually edits -- `zavuerer` and `discoverer`
+#: were missing. On a machine WITHOUT data.keys the `finally` re-key is skipped, so
+#: those two were scrubbed to placeholders with NO backup to restore from: silent
+#: loss of the operator's own keys. Reading the paths out of regen_secrets itself
+#: means the NEXT managed config file is covered the day it is added there.
+#: Pinned by Tlamatini/agent/test_public_release_targets.py.
+_REGEN_MANAGED_BASENAMES = ("config.json", "config.yaml", "external_mcps.json")
+_REGEN_TOUCHED_FALLBACK = [
+    REPO_ROOT / "Tlamatini" / "agent" / "config.json",
+    REPO_ROOT / "Tlamatini" / "agent" / "external_mcps.json",
+] + [REPO_ROOT / "Tlamatini" / "agent" / "agents" / _a / "config.yaml"
+     for _a in ("telegrammer", "whatsapper", "teletlamatini", "emailer",
+                "recmailer", "zavuerer", "discoverer")]
+#: Obvious TEMPLATE stand-ins, not real private data. Stripped from the scrub set
+#: so that copying private_targets.example.json to .private_targets.json and
+#: forgetting to fill it in behaves like "no targets given" (-> the pre-flight
+#: decides) instead of like "targets given" (-> a build that reports VERIFIED
+#: CLEAN having scrubbed the literal text "<your phone number>").
+#
+# NOTE ON THE PREFIX GROUP: it matches with NO word boundary, because the real
+# placeholders in this repo are glued: `YourStrongPassword` (sqler/config.yaml),
+# `YOUR_EMAIL_HERE`, `ChangeMeNow`. A `\b` after the keyword misses every one of
+# them -- `\b` needs a non-word char, and `S`/`_` are word chars. The prefixes are
+# therefore chosen to be ones no real name or value starts with; in particular
+# `my` is DELIBERATELY ABSENT, because it would swallow real names like "Myriam".
+_PLACEHOLDER_RE = re.compile(
+    r"""(?ix)
+    ^\s*(?:
+        <[^>]*>                                            # <your email>, <REDACTED>
+      | (?:your|example|sample|dummy|placeholder|changeme|change[_\- ]me
+          |replace[_\- ]?me|fill[_\- ]?me|todo|tbd|xxx+).*  # glued, no \b
+      | (?:none|n/?a)\b.*                                  # short: boundary needed
+      | [^@\s]*@(?:example|sample|test|invalid|localhost)\.[a-z.]+   # RFC 2606
+      | \+?[\s\-()]*0[\d\s\-()]*                           # +000000000, 000-000-0000
+    )\s*$""")
+#: Credential-shaped config keys. Anchored on purpose -- a bare `token` substring
+#: would match `max_tokens: 4096` in talker/config.yaml and make EVERY tree look
+#: keyed, which would permanently refuse the very clone this feature exists for.
+_SECRET_NAME_RE = re.compile(
+    r"(?i)(?:^|[_.\-])(?:api[_-]?key|apikey|api[_-]?secret|access[_-]?token"
+    r"|auth[_-]?token|bearer[_-]?token|client[_-]?secret|session[_-]?string"
+    r"|password|passwd|secret)(?:$|[_.\-])"
+    r"|(?:^|[_.\-])(?:token|key)$")
+#: Un valor que NO puede ser una credencial viva NI un dato personal. `[\d.]+` cubre
+#: BOTH plain numbers (`max_body_bytes: 1048576`) and dotted-numeric addresses
+#: (`host: 127.0.0.1`, `webhook_host: 0.0.0.0`) -- committed defaults that a
+#: naive phone-shape test happily reads as a phone number. `tlamatini` is the
+#: product's own name, shipped as the default `verify_token` in whatsapper and
+#: instant_messaging_doctor; it is a documented default, never a credential.
+_INERT_VALUE_RE = re.compile(
+    r"(?i)^\s*(?:|<[^>]*>|none|null|false|true|changeme|tlamatini|\d+|[\d.]+)\s*$")
+#: FORMAS DE PII — reconocibles sin conocer los valores reales de Angela.
+_EMAIL_SHAPE_RE = re.compile(r"[^@\s<>\"']+@[^@\s<>\"']+\.[A-Za-z]{2,}")
+#: A written phone number carries a `+` or a separator. Requiring one (and
+#: excluding `.` from the class entirely) is what stops `1048576` and `127.0.0.1`
+#: from reading as phone numbers -- the exact false positives that made a fresh
+#: clone unbuildable when this was first written.
+_PHONE_SHAPE_RE = re.compile(r"^\+?[\d\s\-()]{7,24}$")
+_PHONE_SEPARATORS = ("+", " ", "-", "(")
+#: Una credencial viva mide al menos esto. Los valores cortos son ajustes
+#: (`sort_key: mtime`, `key: id`), not secrets, and treating them as secrets would
+#: make a pristine clone unbuildable.
+_MIN_SECRET_LEN = 8
+
+
+def _regen_touched_files() -> list[Path]:
+    """Toda ruta que regen_secrets.py puede reescribir, leida del propio regen_secrets.
+
+    FALLA HACIA RESPALDAR DE MAS: si el import devuelve menos rutas que el
+    fallback explicito (una constante renombrada, un error de sintaxis, una
+    lectura a medias), gana el fallback. Respaldar un archivo que no hacia falta
+    cuesta una copia; NO respaldar uno cuesta las credenciales de la operadora.
+    """
+    try:
+        import importlib.util as _ilu
+        spec = _ilu.spec_from_file_location("_tlm_regen_paths", REGEN)
+        mod = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        found = sorted({v for name, v in vars(mod).items()
+                        if name.isupper() and isinstance(v, Path)
+                        and v.name in _REGEN_MANAGED_BASENAMES})
+        if len(found) >= len(_REGEN_TOUCHED_FALLBACK):
+            return found
+        print(f"  NOTA: regen_secrets expuso {len(found)} ruta(s) administrada(s); uso "
+              f"el fallback de {len(_REGEN_TOUCHED_FALLBACK)} rutas (respaldo de mas).")
+    except Exception as exc:
+        print(f"  NOTA: no pude leer las rutas de regen_secrets ({exc}); uso la "
+              f"lista de fallback explicita.")
+    return list(_REGEN_TOUCHED_FALLBACK)
+
+#: ⚠️ DERIVADA, NO ESCRITA A MANO. La lista de aqui estaba tecleada y le
+#: FALTABAN `external_mcps.json`, `zavuerer` y `discoverer` — tres archivos que
+#: regen_secrets SI reescribe. Un build publico los habria dejado en placeholders
+#: SIN respaldo, o sea perdiendo las llaves de la operadora sin avisar.
+#: `_regen_touched_files()` se las pregunta al propio regen_secrets y falla hacia
+#: RESPALDAR DE MAS: respaldar de mas cuesta una copia; respaldar de menos cuesta
+#: las credenciales.
+REGEN_TOUCHED = _regen_touched_files()
+
+
+
+def _is_placeholder(value: str) -> bool:
+    """True cuando el valor es un relleno de plantilla.
+
+    CONSERVADORA A PROPOSITO. Un "si" equivocado aqui SACA un valor real del
+    conjunto a limpiar, y ese es EL error que publica datos privados — asi que
+    solo casan formas de plantilla inconfundibles, y todo lo ambiguo se trata
+    como real.
+    """
+    return bool(_PLACEHOLDER_RE.match(value or ""))
+
+
+def _is_live_secret(name, value) -> bool:
+    if not isinstance(value, str) or not _SECRET_NAME_RE.search(str(name)):
+        return False
+    v = value.strip().strip("'\"")
+    if len(v) < _MIN_SECRET_LEN or _INERT_VALUE_RE.match(v) or _is_placeholder(v):
+        return False
+    return "goes here" not in v.lower()
+
+
+def _looks_like_pii(value: str) -> bool:
+    """Un correo o un telefono ESCRITO, juzgado solo por su forma.
+
+    La prueba de valores inertes va PRIMERO, y es la que deja fuera los valores
+    por defecto que si estan commiteados: un conteo de bytes (`1048576`) o una
+    direccion de bind (`127.0.0.1`, `0.0.0.0`) son numeros, no personas. Un
+    telefono ademas tiene que traer un `+` o un separador y entre 7 y 15
+    digitos, asi que un entero pelado nunca califica.
+    """
+    v = (value or "").strip()
+    if not v or _INERT_VALUE_RE.match(v) or _is_placeholder(v):
+        return False
+    if _EMAIL_SHAPE_RE.search(v):
+        return True
+    return bool(_PHONE_SHAPE_RE.match(v)
+                and any(sep in v for sep in _PHONE_SEPARATORS)
+                and 7 <= sum(c.isdigit() for c in v) <= 15)
+
+
+def _json_secret_hits(path: Path) -> list[str]:
+    """Llaves con forma de credencial cuyo valor NO es un relleno, a cualquier profundidad."""
+    hits: list[str] = []
+
+    def walk(node, trail: str) -> None:
+        if isinstance(node, dict):
+            for k, v in node.items():
+                where = f"{trail}.{k}" if trail else str(k)
+                if _is_live_secret(k, v):
+                    hits.append(where)
+                else:
+                    walk(v, where)
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                walk(v, f"{trail}[{i}]")
+
+    walk(json.loads(path.read_text(encoding="utf-8-sig")), "")
+    return sorted(set(hits))
+
+
+def _yaml_scan(path: Path) -> tuple[list[str], list[str]]:
+    """(llaves de credencial, llaves con forma de PII) en UN config.yaml de agent.
+
+    Va por lineas, igual que el parcheador de YAML del propio regen_secrets (que
+    edita linea por linea para no perder los comentarios) — asi no depende de
+    yaml y no reformatea nada.
+    """
+    secrets: list[str] = []
+    pii: list[str] = []
+    for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = raw.split("#", 1)[0]
+        if ":" not in line:
+            continue
+        key, _, val = line.partition(":")
+        key, val = key.strip(), val.strip().strip("'\"")
+        if not key or not val:
+            continue
+        if _is_live_secret(key, val):
+            secrets.append(key)
+        elif _looks_like_pii(val):
+            pii.append(key)
+    return sorted(set(secrets)), sorted(set(pii))
+
+
+def privacy_preflight() -> list[str]:
+    """Evidencia de que este arbol de trabajo trae material privado que limpiar.
+
+    Devuelve lineas de evidencia que una persona puede leer; una lista VACIA
+    significa "arbol limpio".
+
+    ⚠️ POR QUE EXISTE: antes el build del release publico se NEGABA a correr sin
+    `.private_targets.json`, un archivo que esta en .gitignore — o sea que un
+    clon nuevo, otra maquina o un CI JAMAS podian construir el release publico.
+    Pero la negativa no era simplemente un error: sin esa lista, la MISMA
+    ausencia significa dos cosas OPUESTAS, y solo una es segura.
+
+        clon PRISTINO, no hay nada privado en el arbol  -> construir
+        el arbol de Angela, con el archivo borrado      -> NEGARSE
+
+    Esta sonda le pregunta AL ARBOL cual de los dos casos es, sin depender de
+    ninguna lista de objetivos.
+    """
+    evidence: list[str] = []
+
+    def probe(label: str, fn) -> None:
+        """Corre UNA sonda. CUALQUIER excepcion cuenta como evidencia — nunca pasa callando."""
+        try:
+            found = fn()
+        except Exception as exc:
+            evidence.append(
+                f"{label}: ILEGIBLE ({exc}) — cuenta COMO dato privado, porque un "
+                f"archivo que no se pudo revisar jamas debe darse por limpio")
+            return
+        if found:
+            evidence.append(f"{label}: {found}")
+
+    agent_dir = REPO_ROOT / "Tlamatini" / "agent"
+
+    def _vault() -> str:
+        vault = REPO_ROOT / "data.keys"
+        if not vault.is_file():
+            return ""
+        n = sum(1 for ln in vault.read_text(encoding="utf-8",
+                                            errors="replace").splitlines()
+                if "=" in ln and not ln.lstrip().startswith("#"))
+        return f"presente, {n} llave(s) — este es un arbol CON LLAVES, de mantenimiento" if n else ""
+
+    probe("data.keys (la boveda de secretos vivos)", _vault)
+
+    for cfg in (agent_dir / "config.json", agent_dir / "external_mcps.json"):
+        def _json_probe(p=cfg) -> str:
+            return ", ".join(_json_secret_hits(p)) if p.is_file() else ""
+        probe(f"{cfg.name} trae secreto(s) vivo(s)", _json_probe)
+
+    for yml in sorted(agent_dir.glob("agents/*/config.yaml")):
+        def _yaml_probe(p=yml) -> str:
+            secrets, pii = _yaml_scan(p)
+            parts = []
+            if secrets:
+                parts.append("secreto(s) vivo(s): " + ", ".join(secrets))
+            if pii:
+                parts.append("correo/telefono real en: " + ", ".join(pii))
+            return "; ".join(parts)
+        probe(f"agents/{yml.parent.name}/config.yaml", _yaml_probe)
+
+    for book in (agent_dir / "contacts.json", agent_dir / "contacts.private.json",
+                 REPO_ROOT / "contacts.json", REPO_ROOT / "contacts.private.json"):
+        def _book_probe(p=book) -> str:
+            if not p.is_file():
+                return ""
+            data = json.loads(p.read_text(encoding="utf-8-sig") or "null")
+            n = len(data) if isinstance(data, (list, dict)) else 0
+            return f"{n} contacto(s) real(es)" if n else ""
+        probe(f"{book.name} (una libreta de contactos de personas reales)", _book_probe)
+
+    probe("archivo(s) de llave privada en la raiz del repo",
+          lambda: ", ".join(sorted(p.name for p in REPO_ROOT.glob("*.key"))))
+
+    return evidence
+
+
+
 def _utf8_env() -> dict:
     env = dict(os.environ)
     env["PYTHONUTF8"] = "1"
@@ -243,8 +507,20 @@ def load_targets_values(args) -> list[str]:
     ns = SimpleNamespace(targets_file=args.targets_file, target=args.target)
     targets = cpd.load_targets(ns)
     # NEVER scrub Angela's name -- keep her authorship everywhere, in every build.
+    # ⚠️ DOS EXCLUSIONES MAS, y las dos existen para que una PLANTILLA SIN LLENAR
+    # no se haga pasar por una lista de objetivos de verdad (eso callaria la sonda
+    # y produciria un build que imprime VERIFICADO LIMPIO sin haber limpiado nada):
+    #   * las llaves JSON que empiezan con `_` son DOCUMENTACION, no datos.
+    #     cpd.load_targets convierte CADA llave en una `category` y cada valor en
+    #     un objetivo, asi que sin esto un `_README` se vuelve un 'valor privado'
+    #     que ir a cazar por todo el arbol. Es la misma convencion del `_` que ya
+    #     usa external_mcps.json.
+    #   * los valores con forma de relleno se descartan — ver _is_placeholder.
     vals = [t["value"] for t in targets
-            if t.get("value", "").strip() and not _is_kept_name(t["value"])]
+            if t.get("value", "").strip()
+            and not str(t.get("category", "")).startswith("_")
+            and not _is_kept_name(t["value"])
+            and not _is_placeholder(t["value"])]
     return sorted(set(vals), key=len, reverse=True)
 
 
@@ -338,18 +614,32 @@ def resolve_verify_root() -> Path:
     sys.exit("ERROR: neither dist/manage nor pkg.zip exists after build.py.")
 
 
+#: Se le pasa al auditor en MODO ARBOL LIMPIO. check_private_data.py sale con 2
+#: cuando no recibe ningun objetivo, lo que tumbaria el build — pero saltarse la
+#: auditoria entera dejaria caer EN SILENCIO la unica inspeccion post-build. Un
+#: valor que no puede aparecer en ningun artefacto cumple su precondicion, asi
+#: que todas las capas ESTRUCTURALES (bloques PEM, certificados, blobs de alta
+#: entropia, material Kyber, esteganografia) siguen corriendo, y el conteo de PII
+#: es cero de verdad porque nunca se busco PII.
+STRUCTURAL_ONLY_SENTINEL = "TLAMATINI-NO-PII-TARGETS-SENTINEL-8f3c1d47a9b24e60"
+
+
 def verify_clean(py: str, verify_root: Path, targets_file: str,
-                 target: list[str], use_llm: bool) -> int:
+                 target: list[str], use_llm: bool,
+                 structural_only: bool = False) -> int:
     """Run the auditor over the built package. Returns the number of files that
     contain YOUR personal data (the BLOCKING count). Structural/binary pattern
     matches (kyber keyword, certs, high-entropy, PEM) are reported but never block."""
     report = REPO_ROOT / "public_release_verify_report.json"
     cmd = [py, str(CHECKER), "--local", "--repo", str(verify_root),
            "--output", str(report)]
-    if targets_file:
-        cmd += ["--targets-file", targets_file]
-    for t in target or []:
-        cmd += ["--target", t]
+    if structural_only:
+        cmd += ["--target", STRUCTURAL_ONLY_SENTINEL]
+    else:
+        if targets_file:
+            cmd += ["--targets-file", targets_file]
+        for t in target or []:
+            cmd += ["--target", t]
     if not use_llm:
         cmd += ["--no-llm"]
     rc = run(cmd)
@@ -388,6 +678,13 @@ def verify_clean(py: str, verify_root: Path, targets_file: str,
         elif pii:
             name_only += 1
         struct += sum(1 for m in ms if m.get("layer", "").startswith(("struct:", "steg:")))
+    if structural_only:
+        # NO MENTIR: decir exactamente que se reviso y que no. Reportar
+        # "0 fugas de PII" sin esta linea daria a entender una verificacion
+        # de datos personales que nunca ocurrio.
+        print("  MODO: MODO ARBOL LIMPIO — no se dieron objetivos de PII, asi que "
+              "NO se busco ningun dato personal (el 0 es por construccion, no "
+              "por inspeccion).")
     print(f"  sensitive PII leak files (BLOCKING: emails/handles/phones): {personal}")
     print(f"  name-only matches (NOT blocking; common names left as-is): {name_only}")
     print(f"  structural/binary false-positive matches (informational only): {struct}")
@@ -415,6 +712,10 @@ def main(argv=None) -> int:
                     help="let the auditor also run its LLM deep-review layer (slower, deeper)")
     ap.add_argument("--keep-scrubbed", action="store_true",
                     help="DANGEROUS: do not restore the working tree afterwards")
+    ap.add_argument("--assume-clean-tree", action="store_true",
+                    help="PELIGROSO: construir SIN objetivos aunque la sonda de "
+                         "privacidad haya encontrado material privado en este arbol. "
+                         "Estas afirmando que TODO lo reportado se puede publicar.")
     args = ap.parse_args(argv)
     # --no-self-modify is the explicit form of the DEFAULT and always wins, so a
     # wrapper (or muscle memory) can force the small-prompt build unambiguously.
@@ -434,16 +735,64 @@ def main(argv=None) -> int:
             print(f"targets file : auto-loaded {auto.name} (no --targets-file given)")
 
     values = load_targets_values(args)
+
+    # ⛔ SIN LISTA DE OBJETIVOS NO ES UN ERROR POR SI MISMO (Angela, 2026-08-30).
+    # `.private_targets.json` esta en .gitignore, asi que un clon nuevo, otra
+    # maquina o un CI NUNCA pueden tenerlo — y antes eso bastaba para que el
+    # build del release publico se negara a correr. Pero la misma ausencia
+    # significa dos cosas OPUESTAS y solo una es segura:
+    #
+    #   clon PRISTINO (no hay nada privado)  -> construir; la negativa era friccion
+    #   el arbol de Angela, archivo borrado  -> NEGARSE; publicar seria filtrar
+    #
+    # Asi que decide una sonda que le pregunta AL ARBOL, no a la lista, y que
+    # FALLA HACIA LA NEGATIVA: cualquier archivo ilegible cuenta como evidencia.
+    clean_tree = False
     if not values:
-        sys.exit("REFUSING: no leak targets supplied. Create .private_targets.json at "
-                 "the repo root (JSON {\"names\":[],\"phones\":[],\"handles\":[],"
-                 "\"emails\":[]}), or pass --targets-file / --target / env "
-                 "CHECK_PRIVATE_DATA_TARGETS (private data is NEVER hardcoded).")
+        banner("SONDA DE PRIVACIDAD  (sin objetivos — reviso el arbol)")
+        evidence = privacy_preflight()
+        for line in evidence:
+            print(f"  [EVIDENCIA] {line}")
+        if evidence and not args.assume_clean_tree:
+            sys.exit(
+                f"\nME NIEGO: este arbol de trabajo trae material privado "
+                f"({len(evidence)} cosa(s) arriba) pero NO hay lista de que limpiar, "
+                f"asi que un build publico lo publicaria.\n\n"
+                f"Arreglalo como te acomode:\n"
+                f"  1. copia {TARGETS_TEMPLATE.name} -> .private_targets.json y pon "
+                f"TUS valores reales\n"
+                f"     (ese nombre esta en .gitignore, nunca sale de tu maquina)\n"
+                f"  2. --targets-file <ruta>\n"
+                f"  3. --target \"valor\"          (se puede repetir)\n"
+                f"  4. la variable de entorno CHECK_PRIVATE_DATA_TARGETS\n"
+                f"  5. PELIGROSO, solo si estas segura de que TODO lo de arriba se "
+                f"puede publicar: --assume-clean-tree\n\n"
+                f"(Los datos privados NUNCA estan escritos a mano en este repo — por "
+                f"eso la lista tiene que venir de ti.)")
+        if evidence:
+            print("\n  !!! SE PASO --assume-clean-tree: sigo a pesar de la evidencia "
+                  "de arriba.")
+            print("  !!! NO va a correr NI la limpieza NI la verificacion de datos "
+                  "personales.")
+            print("  !!! Estas afirmando que todo lo de arriba se puede publicar.")
+        else:
+            print("  no encontre material privado — este es un clon pristino, asi que "
+                  "no hay nada que limpiar.")
+        clean_tree = True
 
     banner("PUBLIC RELEASE BUILD  (SCRUBBED + LEAK-VERIFIED -- safe to distribute)")
     print(f"repo         : {REPO_ROOT}")
     print(f"python       : {py}")
-    print(f"targets      : {len(values)} value(s) to scrub + verify")
+    if clean_tree:
+        print("targets      : NINGUNO — MODO ARBOL LIMPIO (sin limpieza ni verificacion de PII)")
+        print("               SIGUEN ACTIVAS: regen_secrets --mode push-able; la "
+              "limpieza por regex")
+        print("               de secret-key; una libreta de contactos VACIA; el "
+              "catalogo de MCPs")
+        print("               sembrado desde el codigo; y el aborto duro de build.py "
+              "ante un secreto vivo.")
+    else:
+        print(f"targets      : {len(values)} valor(es) que limpiar y verificar")
     print(f"self-modify  : {'YES (scrubbed snapshot) — source tree + Tlamatini.md bundled' if args.self_modify else 'no (DEFAULT) — no source tree, no self-knowledge, smaller prompt'}")
 
     backup = Backup(REPO_ROOT)
@@ -482,7 +831,7 @@ def main(argv=None) -> int:
         # (extracted) instead of the deleted dist/manage.
         banner("STEP 4/6  VERIFY the built package is clean (check_private_data.py)")
         verify_root = resolve_verify_root()
-        leaks = verify_clean(py, verify_root, args.targets_file, args.target, args.verify_llm)
+        leaks = verify_clean(py, verify_root, args.targets_file, args.target, args.verify_llm, structural_only=clean_tree)
         if VERIFY_EXTRACT.exists():
             shutil.rmtree(VERIFY_EXTRACT, ignore_errors=True)
         if leaks:

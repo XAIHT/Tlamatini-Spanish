@@ -35,17 +35,17 @@ actualizacion guardandolas en `Temp/_security_logs_carryover`.
 </p>
 
 <p align="center">
-  <b>💰 Unos $200 al AÑO — no $200 al MES.</b><br/>
-  Los planes frontera como GPT-5.4 o Claude Opus cuestan alrededor de <b>$200 al mes</b>. <b>Tlamatini es gratuita y de código abierto</b> — tu única factura es <b>Ollama Pro (~$200 al <i>año</i>, pagados a Ollama, no a nosotros)</b>, y encima de eso ella apila <b>87 agent types y 75+ tools</b>: potencia comparable por cerca de <b>una doceava parte</b> del precio, todo en tu propia máquina.
+  <b>✨ Gratuita, abierta y operada desde tu propia máquina.</b><br/>
+  Tlamatini reúne <b>88 agent types</b>, <b>108 tools integradas de Multi-Turn</b>, un canvas de workflows, voz, hardware, motores 3D y un client universal de MCPs externos. Tú eliges el modelo local o cloud y conservas el control del runtime.
 </p>
 
 <p align="center">
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-5865F2?style=for-the-badge&labelColor=2D2D2D&logo=discord&logoColor=white" alt="Únete a nuestro Discord"/></a>
-  <a href="https://github.com/XAIHT/Tlamatini/releases/tag/v1.48.2s"><img src="https://img.shields.io/badge/VERSION-v1.48.2s-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
+  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.50.4s"><img src="https://img.shields.io/badge/VERSION-v1.50.4s-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
   <a href="https://www.python.org/downloads/release/python-31210/"><img src="https://img.shields.io/badge/PYTHON-3.12.10-3776AB?style=for-the-badge&labelColor=2D2D2D&logo=python&logoColor=white" alt="Python"/></a>
   <a href="#instalación"><img src="https://img.shields.io/badge/PLATFORM-WIN%2010%20%7C%2011-0078D6?style=for-the-badge&labelColor=2D2D2D&logo=windows&logoColor=white" alt="Plataforma"/></a>
-  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/AGENT%20TYPES-87-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="87 agent types"/></a>
-  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/TOOLS-75-16A34A?style=for-the-badge&labelColor=2D2D2D" alt="75 tools"/></a>
+  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/AGENT%20TYPES-88-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="88 agent types"/></a>
+  <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/MULTI--TURN%20TOOLS-108-16A34A?style=for-the-badge&labelColor=2D2D2D" alt="108 tools integradas de Multi-Turn"/></a>
   <a href="https://github.com/XAIHT/Tlamatini/blob/main/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Licencia"/></a>
 </p>
 
@@ -62,19 +62,27 @@ actualizacion guardandolas en `Temp/_security_logs_carryover`.
 
 ---
 
+## Estado actual — `v1.50.4s`
+
+El tag anotado `v1.50.4s` apunta a `1339fc7`. La superficie derivada del source es **88 workflow agents**, **66 launchers `chat_agent_*`**, **108 tools integradas de Multi-Turn**, **105 tools del MCP stdio raíz**, **29 skills** y **198 migrations**. La documentación detallada y la matriz de evidencia viven en [`docs/estado-actual-v1.50.4s.md`](docs/estado-actual-v1.50.4s.md).
+
+La línea más reciente separa deliberadamente dos intérpretes: el proceso Django frozen excluye `transformers` y Torch para arrancar limpio y ligero, mientras el Python acarreado conserva Torch CPU-only para **Talker** y **Whisperer**. Googler desenvuelve trackers de Bing; el build público puede partir de un clone limpio y aplica un `privacy_preflight`; el cierre por Ctrl+C es acotado y no ejecuta cleanup complejo dentro del signal handler; y Deleter distingue estrictamente `target_path` (directorio de trabajo) de `files_to_delete` (objetivos). Los cambios posteriores al tag se identifican como estado del working tree, no como contenido ya publicado del tag.
+
+---
+
 ## 🚀 Empieza aquí — 5 pasos para una Tlamatini con potencia en la nube
 
-La idea completa en una línea: **no pagues $200 al mes por un modelo frontera.** **Tlamatini es gratuita** — tu único costo es **Ollama Pro (~$200 al año, pagados a Ollama, no a nosotros)**; apunta Tlamatini hacia él y maneja **87 agent types y 75+ tools** desde tu propia máquina. Esta es la instalación completa.
+La idea completa en una línea: **Tlamatini es gratuita y de código abierto**; desde tu propia máquina coordinas **88 agent types y 108 tools integradas de Multi-Turn**, usando el provider local o cloud que decidas. Esta es la instalación completa.
 
-NetSpeed-Calculator measures download, upload, latency, jitter, packet loss, and bufferbloat against several keyless providers. It discards TCP slow start, samples throughput as `d(bytes)/dt`, rejects outliers, publishes Student-t confidence intervals, and fuses providers with fixed- or random-effects meta-analysis plus Cochran's Q/I². Its `full`, `download`, and `upload` actions consume real bandwidth; `validate` only checks provider reachability, while `providers` lists the catalog. A full run commonly transfers about 100-200 MB, so the wrapped tool is in Ask-Execs tier D and must not be repeated casually.
+NetSpeed-Calculator mide descarga, subida, latencia, jitter, pérdida de paquetes y bufferbloat contra varios providers sin key. Descarta el slow start de TCP, muestrea el throughput como `d(bytes)/dt`, rechaza outliers, publica intervalos Student-t y fusiona providers con meta-análisis de efectos fijos o aleatorios más Q de Cochran/I². Sus acciones `full`, `download` y `upload` consumen ancho de banda real; `validate` sólo comprueba reachability y `providers` lista el catálogo. Una corrida completa suele transferir 100–200 MB, por lo que la tool wrapped pertenece al tier D de Ask Execs y no debe repetirse por rutina.
 
-Elige **una** de las dos rutas. **Tlamatini en sí es gratuita** — a nosotros nunca nos pagas nada; el único costo es Ollama (Paso 3).
+Elige **una** de las dos rutas. **Tlamatini en sí es gratuita**; cualquier costo externo depende únicamente del provider de modelos que tú elijas.
 
 #### 🟢 Opción A — Instalador de la release (recomendado · sin necesidad de Python)
 
 Lo mejor para la mayoría. El instalador trae su propio **Python 3.12.10** y todas las dependencias, así que no instalas nada más.
 
-1. Abre la **[página de Releases](https://github.com/XAIHT/Tlamatini/releases)** y descarga el instalador más reciente (`.exe`).
+1. Abre la **[página de Releases](https://github.com/XAIHT/Tlamatini-Spanish/releases)** y descarga el instalador más reciente (`.exe`).
 2. Ejecútalo y sigue el asistente.
 3. Lanza **Tlamatini** desde el acceso directo del menú Inicio.
 4. Tu navegador se abre en **`http://127.0.0.1:8000/`** — inicia sesión con **user / changeme**. *(`8000` es el puerto por defecto; si está ocupado o si Windows lo tiene reservado, define `django_port` en `config.json` — mira la nota sobre el puerto más abajo.)*
@@ -85,14 +93,14 @@ Lo mejor para la mayoría. El instalador trae su propio **Python 3.12.10** y tod
 
 Lo mejor si quieres leer, modificar o contribuir al código. Requiere **Python 3.12.10** y **git** ya instalados.
 
-| Asset | Role |
+| Asset | Función |
 |---|---|
-| `security/enable_tlamatini_v2.bat` | Self-elevating launcher for the one-time Windows enablement script. |
-| `security/tlamatini_whitelist_v2.ps1` | Applies persistent Defender, CFA, ASR, execution-policy, firewall, event-log, audit-policy, and logging changes; verifies WMI, Task Scheduler, registry, and service visibility. |
-| `security/run_defender.bat` | Self-elevating launcher for one armed scan using the defender's default mode. |
-| `security/tlamatini_defender.ps1` | Runs one-shot or continuous monitoring in detect-only, armed, or aggressive mode. |
-| `security/automated_tests_of_security_assets.py` | Non-destructive visible regression harness: parses both PowerShell files, exercises the self-safe classifier, validates official ASR/audit GUIDs and launcher contracts, captures the desktop through Shoter, and displays a headed-browser summary. It does **not** enable Windows policies or run an armed scan. |
-| `security/README.md` | Security-specific quick reference kept beside the executable. |
+| `security/enable_tlamatini_v2.bat` | Launcher autoelevado para habilitar Windows una sola vez. |
+| `security/tlamatini_whitelist_v2.ps1` | Aplica y verifica cambios persistentes de Defender, CFA, ASR, execution policy, firewall, event logs, audit policy, WMI, Task Scheduler, registry y services. |
+| `security/run_defender.bat` | Launcher autoelevado para una corrida armada con el modo por defecto. |
+| `security/tlamatini_defender.ps1` | Ejecuta monitoreo one-shot o continuo en modo detect-only, armed o aggressive. |
+| `security/automated_tests_of_security_assets.py` | Harness visible y no destructivo: analiza los PowerShell, ejercita el clasificador self-safe, valida GUIDs ASR/audit y contratos de launchers, captura el desktop con Shoter y muestra un resumen en browser visible. **No** habilita políticas ni corre un scan armado. |
+| `security/README.md` | Referencia rápida de seguridad que se conserva junto al executable. |
 
 > **`--noreload` es opcional (desde 2026-07-11):** ahora `python Tlamatini/manage.py runserver` a secas arranca limpio y se recarga sola cuando editas el código. Antes levantaba dos veces los puertos auxiliares del MCP `:8765` / `:50051` y reventaba con `WinError 10048`; se corrigió con una compuerta consciente del reloader en `agent/apps.py`.
 
@@ -131,9 +139,9 @@ Si `8000` cae dentro de alguno de esos rangos, elige un puerto fuera de ellos (9
 
 Instala **[Ollama](https://ollama.com/download)** para Windows. Ollama es el motor que le sirve todos los modelos a Tlamatini — el modelo local de embeddings **y** los modelos de chat en la nube.
 
-### 3 · Suscríbete a Ollama Pro (~$200 / año)
+### 3 · Elige y conecta tu provider de modelos
 
-Entra a **[ollama.com](https://ollama.com)**, inicia sesión y toma el plan **Ollama Pro** (unos **$200 al año**). Pro desbloquea los **modelos `:cloud`** — modelos de clase frontera que corren en los servidores de Ollama — por un precio *anual* cercano a lo que cuesta una sola suscripción frontera en un *único mes*. Después conecta tu máquina:
+Puedes usar modelos de Ollama locales, tags `:cloud` disponibles para tu cuenta, o los providers compatibles configurables desde la app. Si eliges Ollama cloud, conecta tu máquina según las instrucciones vigentes del propio provider:
 
 ```bash
 ollama signin
@@ -147,12 +155,12 @@ Haz pull del pequeño modelo local de embeddings, más los modelos de chat en la
 # Local embedding model (small, runs on your own GPU/CPU)
 ollama pull nomic-embed-text
 
-# Cloud models (served by Ollama Pro) — pull, or just sign in to use
+# Modelos cloud disponibles para tu cuenta — pull o sign-in según el provider
 ollama pull glm-5.2:cloud
 ollama pull qwen3.5:cloud
 ```
 
-Cualquier modelo en la nube funciona — estos dos son la pareja recomendada hoy (algunas capturas de más abajo pueden mostrar todavía nombres de modelos anteriores).
+Cualquier modelo compatible puede funcionar; estos dos reflejan la configuración actualmente incluida (algunas capturas pueden mostrar nombres anteriores).
 
 ### 5 · Apunta Tlamatini hacia los modelos
 
@@ -187,7 +195,7 @@ Claude Code, Codex, Cursor, Gemini — editan archivos de texto. Tlamatini hace 
 | 🛠️ | **Modificar proyectos de software enteros** | Lee, busca, refactoriza, edita y reconstruye codebases completas — no sólo archivos sueltos — con el grounding del RAG híbrido. |
 | 🛡️ | **Evaluaciones de seguridad** | Runbooks autorizados de Kali Linux / pentest + skills de auditoría de seguridad de código, dirigidos desde el chat. |
 | 📟 | **Firmware STM32 · ESP32 · Arduino** | Andamiaje → build → **flashear una tarjeta real conectada** → leer el serial, con un preflight de seguridad que se niega a grabar firmware mal dirigido. |
-| 🧩 | **UN DISEÑADOR VISUAL DE WORKFLOWS** | **87 tipos de agent** de arrastrar y soltar sobre un canvas que cableas hasta volverlo un flow ejecutable y guardable en `.flw`. *Ningún otro coding agent — ni Claude Code, ni Codex, ninguno — te da esto.* Ésta es la joya de la corona. |
+| 🧩 | **UN DISEÑADOR VISUAL DE WORKFLOWS** | **88 tipos de agent** de arrastrar y soltar sobre un canvas que cableas hasta volverlo un flow ejecutable y guardable en `.flw`. *Ningún otro coding agent — ni Claude Code, ni Codex, ninguno — te da esto.* Ésta es la joya de la corona. |
 
 > **El titular que ningún competidor puede copiar:** Tlamatini es el único asistente de desarrollo con IA local-first donde *diseñas el workflow de agents visualmente*, y luego lo pones a flashear firmware, manejar Unreal/Blender, correr herramientas de seguridad y comandar cualquier MCP externo — todo desde una sola máquina.
 
@@ -195,7 +203,7 @@ Claude Code, Codex, Cursor, Gemini — editan archivos de texto. Tlamatini hace 
 
 ## 🔒 Y es sólo tuya
 
-Los embeddings y el chat corren en tu instalación local de [Ollama](https://ollama.com). Los modelos en la nube (Claude API, Ollama Pro/Max) y la delegación a CLIs en la nube son **opcionales, petición por petición, nunca lo predeterminado.** Tu código y tu firmware no salen de la máquina a menos que tú misma los saques.
+La aplicación, los 88 agents, el RAG y el modelo local de embeddings corren en tu máquina. La inferencia del LLM es configurable y la configuración incluida puede apuntar a modelos cloud; cuando usas uno, el prompt y el contexto de código se envían a ese provider. También puedes seleccionar modelos Ollama completamente locales u otros providers compatibles. No describas la configuración incluida como air-gapped: la frontera real depende del modelo activo.
 
 ## ⚠️ CLEAR DISCLAIMER — USER CONTROL, JURISDICTION, AND RESPONSIBILITY FOR AGENTS
 
@@ -222,8 +230,8 @@ Cuando habilitas, configuras, modificas, encadenas o ejecutas un agent, **ese ag
 Todo lo que Tlamatini puede hacer, agrupado:
 
 **🧩 Orquestación y diseño**
-- **Diseñador Visual de Workflows (ACP)** — 87 tipos de agent de arrastrar y soltar, cableados en flows ejecutables; guarda y carga archivos `.flw`; el Flow Compiler valida el canvas y lo convierte en `config.yaml`.
-- **Orquestación Multi-Turn** — un loop de tool-calling con **75 tools** y un planificador global de ejecución; el modo **Step-by-Step** marca el ritmo de una instalación práctica, una acción a la vez; los **model steps auto-reparables** hacen que un tropiezo de red o del modelo nunca la congele — reintenta bajo un watchdog, termina con gracia a partir del trabajo ya hecho, y siempre te cuenta qué pasó.
+- **Diseñador Visual de Workflows (ACP)** — 88 tipos de agent de arrastrar y soltar, cableados en flows ejecutables; guarda y carga archivos `.flw`; el Flow Compiler valida el canvas y lo convierte en `config.yaml`.
+- **Orquestación Multi-Turn** — un loop de tool-calling con **108 tools integradas** (más remotos `ext__*` dinámicos) y un planificador global de ejecución; el modo **Step-by-Step** marca el ritmo de una instalación práctica, una acción a la vez; los **model steps auto-reparables** hacen que un tropiezo de red o del modelo nunca la congele — reintenta bajo un watchdog, termina con gracia a partir del trabajo ya hecho, y siempre te cuenta qué pasó.
 - **FlowCreator / FlowHypervisor** — deja que un LLM diseñe un flow; un watchdog vigila su salud. FlowCreator ahora también se **invoca desde el chat** (`chat_agent_flowcreator`): describe un flow con palabras normales y escribe en disco un archivo `.flw` real, cargable en el canvas.
 - **Parametrizer / Gatewayer / Gateway-Relayer / Node Manager** — encadena la salida de un agent hacia la configuración del siguiente; dispara flows desde webhooks, carpetas vigiladas o GitHub/GitLab.
 - **ACPX** — lanza CLIs externos de coding agents (Claude Code, Codex, Cursor, Gemini, Qwen y más) como tools, y hace de relevo entre ellos.
@@ -274,7 +282,7 @@ Todo lo que Tlamatini puede hacer, agrupado:
 - **Shoter / Mouser / Keyboarder** — capturas de pantalla, mouse, teclado.
 
 **🎙️ Audio, video, visión y habla**
-- **Talker (TTS)** — texto a voz mediante Ollama. **Whisperer (STT)** — voz a texto (faster-whisper local + respaldo en la nube).
+- **Talker (TTS)** — Tlamatini habla en voz alta con una voz femenina. **Whisperer (STT)** — escucha y transcribe tu voz mediante faster-whisper local con respaldo cloud. Ambos corren fuera del proceso frozen principal sobre el Python incluido con Torch CPU-only, para conservar la voz sin inflar ni ralentizar el executable web.
 - **Recorder / Camcorder** — captura de micrófono y de webcam.
 - **AudioPlayer / VideoPlayer** — reproducción de audio y video con control de volumen y de repetición.
 - **Image-Interpreter** — análisis de visión con triple modelo: qwen3.5:cloud + gemma4:cloud interpretan cada imagen **en paralelo** sobre dos conexiones Ollama dedicadas, y luego glm-5.2:cloud fusiona ambas interpretaciones en un solo informe definitivo (inventarios de mockup/GUI en coordenadas %, OCR completo, personas descritas exhaustivamente con pistas de identidad tomadas del nombre del archivo de imagen).
