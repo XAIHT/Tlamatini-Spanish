@@ -1041,7 +1041,7 @@ class AgentConsumer(AsyncWebsocketConsumer):
                 print("--- Received heartbeat message from client.")
                 return
             
-            if 'Pregunta reformulada:' in message:
+            if 'Referenced Rephrase:' in message:
                 print("--- Received rephrased-question message from client. It will be ignored...")
                 print(f"--- The message(rephrased question) is: {message}")
                 return

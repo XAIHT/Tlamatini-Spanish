@@ -34,7 +34,7 @@ def show_rephrased_question(rephrased_question, conversation_user_id=None):
         return False
     try:
         if "pregunta reformulada:" not in rephrased_question.lower():
-            referencedRephrase = "Pregunta reformulada: " + rephrased_question
+            referencedRephrase = "Referenced Rephrase: " + rephrased_question
         else:
             referencedRephrase = rephrased_question
 

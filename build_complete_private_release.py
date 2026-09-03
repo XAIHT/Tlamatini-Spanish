@@ -309,6 +309,12 @@ def main(argv=None) -> int:
     ap.add_argument("--no-self-modify", action="store_true",
                     help="explicit form of the DEFAULT (no source tree, no "
                          "self-knowledge); overrides --self-modify if both given.")
+    ap.add_argument("--exclude-module", action="append", default=[],
+                    metavar="MODULO",
+                    help="Modulo que PyInstaller NO debe empaquetar en el proceso "
+                         "congelado. Se puede repetir. Se reenvia tal cual a build.py. "
+                         "NO afecta al Python ACARREADO (otro interprete), asi que no "
+                         "puede dejar muda a Tlamatini.")
     args = ap.parse_args(argv)
 
     py = args.python
@@ -337,6 +343,8 @@ def main(argv=None) -> int:
     # Pass the decision EXPLICITLY either way, so the intent is recorded in the
     # build log and a stray "--self-modify" in the ambient argv cannot flip it.
     build_cmd.append("--self-modify" if self_modify else "--no-self-modify")
+    # se reenvian las exclusiones extra que pidio quien compila
+    build_cmd += [f"--exclude-module={m}" for m in (args.exclude_module or [])]
     if args.version:
         build_cmd.append(args.version)
     if run(build_cmd) != 0:

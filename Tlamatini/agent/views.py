@@ -53,7 +53,13 @@ def _normalize_agent_purpose_key(value: str) -> str:
     return re.sub(r'[^a-z0-9]+', '', (value or '').lower())
 
 
-def _resolve_agent_descriptions_search_paths() -> list[str]:
+_AGENT_DESCRIPTIONS_BASE_FILENAMES = ('agents_descriptions.md', 'README.md')
+
+# Idioma de las descripciones de agents. '' apaga la capa y deja solo ingles.
+AGENT_DESCRIPTIONS_LANGUAGE = 'es'
+
+
+def _resolve_agent_descriptions_search_paths(filenames=None) -> list[str]:
     """
     Build the ordered list of locations to probe for the workflow-agents
     description tables. ``agents_descriptions.md`` is the authoritative
@@ -64,20 +70,19 @@ def _resolve_agent_descriptions_search_paths() -> list[str]:
     ``manage.py``) and frozen-mode (file is copied next to the executable
     by ``build.py`` and resolved via ``sys.executable``'s directory).
     """
+    # 'filenames' deja pedir OTRO juego de archivos (la capa de idioma pide
+    # solo 'agents_descriptions.es.md') SIN duplicar la logica de raices: el
+    # .es tiene que buscarse en las mismas, o un build frozen no lo encuentra.
+    names = tuple(filenames) if filenames else _AGENT_DESCRIPTIONS_BASE_FILENAMES
+
     candidates: list[str] = []
 
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    candidates.extend([
-        os.path.join(project_root, 'agents_descriptions.md'),
-        os.path.join(project_root, 'README.md'),
-    ])
+    candidates.extend(os.path.join(project_root, name) for name in names)
 
     if getattr(sys, 'frozen', False):
         exe_dir = os.path.dirname(os.path.abspath(sys.executable))
-        candidates.extend([
-            os.path.join(exe_dir, 'agents_descriptions.md'),
-            os.path.join(exe_dir, 'README.md'),
-        ])
+        candidates.extend(os.path.join(exe_dir, name) for name in names)
 
     seen: set[str] = set()
     ordered: list[str] = []
@@ -166,27 +171,42 @@ def _parse_agent_purpose_map(lines) -> dict[str, str]:
 
 def _load_agent_purpose_map() -> dict[str, str]:
     """
-    Load the Workflow Agents description map from the first available source.
-    Probes ``agents_descriptions.md`` first (authoritative) and falls back to
-    ``README.md`` for backward compatibility, in both source-mode and
-    frozen-mode locations.
+    Load the Workflow Agents description map.
+
+    Two layers. The base is always the ENGLISH table (``agents_descriptions.md``,
+    with ``README.md`` as legacy fallback). On top of it, when
+    ``AGENT_DESCRIPTIONS_LANGUAGE`` is set, the localized table
+    (``agents_descriptions.<lang>.md``) is overlaid **agent by agent**.
+
+    CONTRATO (no lo cambies a "si existe el .es, usalo y ya"): la capa se
+    ENCIMA, no reemplaza. Un agent que todavia no esta traducido debe seguir
+    mostrando su texto en ingles; si no, una traduccion a medias deja a los
+    agents faltantes SIN tooltip y SIN dialogo de Descripcion.
+
+    FAIL-OPEN: si el archivo del idioma falta, no se puede leer o no trae la
+    tabla, se devuelve el ingles intacto. Perder los acentos es molesto;
+    quedarse sin descripciones es una regresion.
     """
-    last_error: Optional[Exception] = None
-    for path in _resolve_agent_descriptions_search_paths():
+    purpose_map, last_error = _load_purpose_map_from_paths(
+        _resolve_agent_descriptions_search_paths()
+    )
+
+    localized_name = _localized_agent_descriptions_filename(AGENT_DESCRIPTIONS_LANGUAGE)
+    if purpose_map and localized_name:
         try:
-            with open(path, 'r', encoding='utf-8') as handle:
-                lines = handle.readlines()
-        except OSError as exc:
-            last_error = exc
-            continue
+            localized, _ = _load_purpose_map_from_paths(
+                _resolve_agent_descriptions_search_paths((localized_name,))
+            )
+        except Exception as exc:               # noqa: BLE001 - fail-open a proposito
+            print(f"Warning: localized agent descriptions unusable, keeping English: {exc}")
+        else:
+            for key, text in localized.items():
+                if key in purpose_map and text:
+                    purpose_map[key] = text
 
-        purpose_map = _parse_agent_purpose_map(lines)
-        if purpose_map:
-            return purpose_map
-
-    if last_error is not None:
+    if not purpose_map and last_error is not None:
         print(f"Warning: Could not load agent purposes from any known source: {last_error}")
-    return {}
+    return purpose_map
 
 
 # Legacy alias preserved so any out-of-tree callers (e.g. dev scripts or

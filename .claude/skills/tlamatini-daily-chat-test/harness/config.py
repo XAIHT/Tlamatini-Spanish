@@ -132,6 +132,10 @@ BUSY_MARKERS = (
     # English (upstream build)
     "Your request is being processed by Tlamatini.",
     "Your agent is loading the context.",
+    # El centinela de reformulacion es CANAL DE MAQUINA y va en ingles
+    # (Angela, 2026-09-03). Se dejan LOS DOS: un arbol viejo todavia puede
+    # emitir el espanol, y un marcador de mas nunca hace dano.
+    "referenced rephrase:",
     "pregunta reformulada:",
     "Welcome back, session and context restored",
     "Welcome back, session restored",

@@ -1,4 +1,4 @@
-﻿import json
+import json
 import sys
 
 sys.path.insert(0, '.')

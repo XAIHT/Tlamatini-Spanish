@@ -1474,6 +1474,22 @@ AGENT_DIRECTORY_DISCLAIMER = [
     "Tlamatini's orchestration, documentation, examples, and guardrails do not authorize third-party access and cannot replace the user's security review, permission controls, monitoring, or legal compliance.",
 ]
 
+BLUE_HAT_SECURITY_GUIDE = [
+    "The `security/` directory is an administrator-operated Windows defensive toolkit, not a new chat tool or database-backed workflow Agent row. Tlamatini helps collect and respond to signals only on systems the operator owns or is explicitly authorized to defend.",
+    "The six shipped assets are `README.md`, `enable_tlamatini_v2.bat`, `tlamatini_whitelist_v2.ps1`, `run_defender.bat`, `tlamatini_defender.ps1`, and `automated_tests_of_security_assets.py`; runtime evidence is written under git-ignored `security_logs/`.",
+    "Use the safe sequence validate -> record a Windows baseline -> enable -> restart -> run detect-only -> investigate -> arm only when justified. There is no bundled rollback script, so Defender, ASR, CFA, firewall, execution-policy, audit-policy, and Security-log state must be recorded before elevation.",
+    "The visible non-destructive harness parses both PowerShell files, exercises the self-safe classifier, validates official ASR/audit GUIDs, watch timing, UAC path handling, launcher failure propagation, Shoter capture, and headed-browser proof. The audited run passed 40/40 checks, but it does not apply Windows policy or execute an armed sweep.",
+    "Enablement keeps core Defender/firewall services running but deliberately adds the Tlamatini root and selected executables to Defender exclusions, allows `Tlamatini.exe` through Controlled Folder Access, moves six selected ASR rules to action 6 (Audit), sets current-user PowerShell to RemoteSigned, and creates broad outbound application rules.",
+    "The ASR rules cover Office child processes, LSASS credential stealing, WMI event-subscription persistence, email/webmail executables, untrusted or unsigned USB processes, and PSExec/WMI child processes. The script uses Microsoft's published IDs and reads Defender's effective ID/action arrays back before reporting success.",
+    "Audit setup uses stable subcategory GUIDs for Logon, Credential Validation, Process Creation, Sensitive Privilege Use, and User Account Management, and checks every `auditpol` exit code. Command-line event 4688 and PowerShell Script Block Logging improve evidence but can record sensitive arguments.",
+    "The ten monitor families are Defender health, logons, established TCP/listeners, processes, scheduled tasks, services, registry persistence, recently changed critical files, ransomware/recovery tampering, and account/administrator-group events.",
+    "Detect-only logs `WOULD BLOCK` and `WOULD KILL`. Default armed mode may add persistent inbound/outbound firewall blocks after repeated non-local failed logons and may force-stop known attacker-tool process-name matches; most other findings alert only.",
+    "Dual-use names alert unless `-Aggressive` is supplied. Recognized Tlamatini paths are protected from auto-kill, but that is only a path-prefix check, not signature or provenance proof; malicious content inside an excluded/self path can inherit a blind spot.",
+    "Watch mode is a foreground loop with `-IntervalSeconds` constrained to 5..86400. It is not a service or scheduled task, and `run_defender.bat` deliberately selects one default armed sweep, so baseline runs should invoke the PowerShell script directly with `-DetectOnly`.",
+    "`alerts.log` and `monitor.log` append sensitive usernames, IP addresses, paths, command lines, task/registry details, and response records without built-in rotation, deduplication, automatic unblock, or SIEM forwarding. Treat every severity as triage priority, not certainty.",
+    "The batch launchers preserve paths containing spaces through UAC and propagate PowerShell failures. `build.py` ships the security source while excluding logs; self-modify snapshots likewise prune `security_logs/` so screenshots and host telemetry are not published.",
+]
+
 WHAT_IT_DOES = [
     "Answers codebase questions with loaded file or directory context.",
     "Uses hybrid retrieval to extract metadata, split content, rank source chunks, and respect context budgets.",
@@ -2631,6 +2647,9 @@ def build_pdf(context: dict) -> None:
     story.append(p("Agent-directory disclaimer: user jurisdiction and responsibility", styles["h2"]))
     for item in AGENT_DIRECTORY_DISCLAIMER:
         story.append(bullet(item, styles["bullet"]))
+    story.append(p("Enable Tlamatini as a Blue-hat agent", styles["h2"]))
+    for item in BLUE_HAT_SECURITY_GUIDE:
+        story.append(bullet(item, styles["bullet"]))
     story.append(p("What the system does", styles["h2"]))
     for item in WHAT_IT_DOES:
         story.append(bullet(item, styles["bullet"]))
@@ -3506,6 +3525,60 @@ def build_ppt(context: dict) -> None:
         THEME["copper"],
         "agent-disclaimer-b",
         12,
+    )
+    audit_layout(audit, len(prs.slides))
+
+    slide, audit = add_slide(
+        prs,
+        "Blue-hat Security Toolkit",
+        "operator-controlled Windows defense, not an autonomous Agent row",
+        THEME["jade"],
+    )
+    add_panel(
+        slide, audit, 0.78, 1.6, 5.9, 4.95,
+        "Purpose and assets", BLUE_HAT_SECURITY_GUIDE[:2],
+        THEME["jade"], "bluehat-a", 11,
+    )
+    add_panel(
+        slide, audit, 6.95, 1.6, 5.55, 4.95,
+        "Safe enablement path", BLUE_HAT_SECURITY_GUIDE[2:4],
+        THEME["amber"], "bluehat-b", 11,
+    )
+    audit_layout(audit, len(prs.slides))
+
+    slide, audit = add_slide(
+        prs,
+        "Blue-hat Controls And Monitoring",
+        "persistent host changes plus ten evidence families",
+        THEME["copper"],
+    )
+    add_panel(
+        slide, audit, 0.78, 1.6, 5.9, 4.95,
+        "Enablement and audit controls", BLUE_HAT_SECURITY_GUIDE[4:7],
+        THEME["copper"], "bluehat-controls-a", 10,
+    )
+    add_panel(
+        slide, audit, 6.95, 1.6, 5.55, 4.95,
+        "What the defender examines", BLUE_HAT_SECURITY_GUIDE[7:8],
+        THEME["jade"], "bluehat-controls-b", 12,
+    )
+    audit_layout(audit, len(prs.slides))
+
+    slide, audit = add_slide(
+        prs,
+        "Blue-hat Response Boundaries",
+        "detect first; investigate before containment or attribution",
+        THEME["amber"],
+    )
+    add_panel(
+        slide, audit, 0.78, 1.6, 5.9, 4.95,
+        "Armed behavior and self protection", BLUE_HAT_SECURITY_GUIDE[8:11],
+        THEME["amber"], "bluehat-response-a", 10,
+    )
+    add_panel(
+        slide, audit, 6.95, 1.6, 5.55, 4.95,
+        "Evidence, privacy, and packaging", BLUE_HAT_SECURITY_GUIDE[11:],
+        THEME["jade"], "bluehat-response-b", 10,
     )
     audit_layout(audit, len(prs.slides))
 

@@ -37,6 +37,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import importlib.util
 import re
 import shutil
@@ -228,7 +229,30 @@ def check_redaction(csa, snap: Path) -> None:
             leaked += 1
 
     if leaked == 0:
-        ok("no live secret survives in the snapshot (config.json / agent config.yaml / raw scan)")
+        # Guard ESTRUCTURAL (2026-07-31): un archivo PORTADOR DE CREDENCIAL no debe
+        # existir en el snapshot, PUNTO — sin importar si sus bytes parecen un token.
+        # El escaneo por forma-de-valor de arriba es necesario pero NO suficiente, y ya
+        # lo demostró: se le fue un `open_router.key` de verdad (un .key ni siquiera se
+        # escaneaba — sólo se miran sufijos de config) y un `.creds.env` con una
+        # contraseña humana en claro (que no casa con ninguna regex de token). Los dos
+        # estaban en .gitignore, así que el historial de git quedaba limpio mientras el
+        # BUILD se fugaba: copy_source_assets recorre el ÁRBOL DE TRABAJO. Para un
+        # archivo de credencial, la PRESENCIA sola ya es el hallazgo.
+        cred_ext = {".key", ".keys", ".pem", ".p12", ".pfx", ".jks", ".keystore",
+                    ".env", ".asc", ".gpg", ".ppk"}
+        cred_globs = (".env", ".env.*", "id_rsa", "id_rsa.*", "id_ed25519", "id_ed25519.*")
+        for f in snap.rglob("*"):
+            if not f.is_file():
+                continue
+            if (f.suffix.lower() in cred_ext
+                    or any(fnmatch.fnmatch(f.name, p) for p in cred_globs)):
+                finding(f"archivo PORTADOR DE CREDENCIAL enviado en el snapshot: "
+                        f"{f.relative_to(snap).as_posix()} — sácalo en copy_source_assets.py "
+                        f"(SECRET_FILE_EXTENSIONS / SECRET_FILE_GLOBS)")
+                leaked += 1
+
+        ok("no live secret survives in the snapshot "
+           "(config.json / agent config.yaml / value scan / credential-file presence)")
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -84,7 +84,7 @@ class DBChatHistoryLoader:
                 if not content:
                     continue
 
-                if content.startswith("Pregunta reformulada:") or content.startswith("---"):
+                if content.startswith("Referenced Rephrase:") or content.startswith("---"):
                     continue
 
                 if out and out[-1] and out[-1].content == content:

@@ -145,6 +145,30 @@ def _resolve_python_executable() -> str:
 def _build_child_env() -> dict:
     env = os.environ.copy()
 
+    # TLAMATINI_AGENTS_ROOT — para que un agent pueda encontrar a sus HERMANOS.
+    #
+    # Angela, 2026-08-12: Playwrighter estrenó un paso `shoter` (toda foto la
+    # toma Shoter, nunca PIL) y no lograba ubicar el template de Shoter. Un
+    # wrapped agent corre desde `<app>/Temp/mcp_agent_runs/<run>/`, que NO
+    # tiene ningún ancestro con `agents/`, así que subir por el árbol no puede
+    # funcionar — y nada en el environment decía dónde viven los agents. Todo
+    # agent que quisiera usar a otro agent chocaba con la misma pared.
+    #
+    # Ojo: `views.py` ya lo exportaba para el canvas; faltaba AQUÍ, o sea en la
+    # ruta de CHAT (Multi-Turn), que es justo por donde el LLM lanza al
+    # Playwrighter. Un Playwrighter de chat se quedaba sin Shoter.
+    #
+    # Fail-open: si no se resuelve la raíz, la variable simplemente no aparece
+    # y quien la lea cae a su propia búsqueda, exactamente como antes.
+    try:
+        from agent.services.agent_paths import get_agents_root
+
+        agents_root = str(get_agents_root())
+        if agents_root and os.path.isdir(agents_root):
+            env["TLAMATINI_AGENTS_ROOT"] = agents_root
+    except Exception:
+        pass
+
     if sys.platform.startswith("win"):
         try:
             import ctypes

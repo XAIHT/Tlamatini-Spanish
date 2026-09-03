@@ -29,7 +29,6 @@ Uso:
     python voz_espanol_visible.py
 """
 import os
-import subprocess
 import sys
 import time
 import wave

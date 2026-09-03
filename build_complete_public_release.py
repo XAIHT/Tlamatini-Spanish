@@ -38,6 +38,53 @@ Pipeline
   6. build_uninstaller.py + build_installer.py -> dist/Tlamatini_Release_v<ver>/.
   7. zip -> dist/..._PUBLIC_CLEAN_win11x64.zip
   8. ALWAYS restore the working tree (finally).
+
+Los targets son OPCIONALES, nunca se ASUMEN  (2026-08-30)
+---------------------------------------------------------
+`.private_targets.json` esta en .gitignore, asi que un CLON RECIEN HECHO nunca lo
+trae — y este builder antes se NEGABA a correr sin el. Ahora es OPCIONAL. La
+negativa no se borro sin mas, porque "no hay lista de targets" significa dos cosas
+OPUESTAS:
+
+  * un clon PRISTINO — no hay datos privados en el arbol, asi que no hay nada que
+    limpiar. Negarse aqui es friccion pura: bloquea un build publico a cambio de nada.
+  * el arbol PROPIO de Angela con el archivo borrado / renombrado / mal escrito — SI
+    hay datos privados y acabamos de perder la lista. Seguir aqui publicaria su
+    telefono. Negarse es lo unico seguro.
+
+Un PRE-FLIGHT DE PRIVACIDAD independiente de los targets (`privacy_preflight()`)
+distingue los dos casos buscando EVIDENCIA de que ESTE arbol si puede fugar:
+`data.keys`, un `config.json` o un `config.yaml` de agent con llaves, una libreta de
+contactos, un catalogo External-MCP con llaves, archivos `*.key` en la raiz. Entonces:
+
+  hay evidencia -> SE NIEGA, nombrando la evidencia exacta y las cuatro salidas.
+  no hay        -> construye en modo ARBOL-LIMPIO (CLEAN-TREE).
+
+El modo arbol-limpio NO queda "sin proteccion": siguen corriendo todas las defensas
+independientes de los targets (regen_secrets --mode push-able, el barrido del arbol
+con SECRET_KEY_RE, la libreta de contactos vacia, el catalogo MCP sembrado en codigo,
+y el aborto de build.py ante un secreto MCP vivo). Lo unico ausente es el paso de PII
+— que necesita una lista de PII que buscar — y el banner, la linea de auditoria y el
+resumen final lo DICEN en voz alta, en vez de insinuar una verificacion que no ocurrio.
+
+El pre-flight FALLA HACIA LA NEGATIVA: cualquier error al leer cualquier sonda cuenta
+COMO evidencia. Es lo contrario, a proposito, de la regla fail-open habitual de
+Tlamatini, por la misma razon por la que el guard de bisect de LaTeXer falla seguro:
+publicar los datos privados de Angela es mucho peor que un build que se detiene y
+pregunta.
+
+`private_targets.example.json` es una plantilla RASTREADA e INERTE (solo la forma, sin
+valores reales). A proposito NO esta en DEFAULT_TARGETS_FILES y sus valores de relleno
+se quitan del conjunto a limpiar, porque una plantilla capaz de volver la lista de
+targets meramente no-vacia SILENCIARIA la negativa de arriba y produciria un build que
+reporta "verificado" habiendo limpiado nada real — estrictamente peor que la negativa
+que reemplazo.
+
+EN RUNTIME: nada de esto lo lee jamas la aplicacion corriendo. `.private_targets.json`
+es un artefacto SOLO DE BUILD-TIME — ningun modulo bajo `Tlamatini/agent/` lo abre, y
+ni `build.py` ni `install.py` lo envian o lo mencionan — asi que su ausencia nunca
+puede afectar el primer arranque de Tlamatini ni ninguno posterior. Fijado por
+`Tlamatini/agent/test_public_release_targets.py`.
 """
 
 from __future__ import annotations
@@ -716,6 +763,12 @@ def main(argv=None) -> int:
                     help="PELIGROSO: construir SIN objetivos aunque la sonda de "
                          "privacidad haya encontrado material privado en este arbol. "
                          "Estas afirmando que TODO lo reportado se puede publicar.")
+    ap.add_argument("--exclude-module", action="append", default=[],
+                    metavar="MODULO",
+                    help="Modulo que PyInstaller NO debe empaquetar en el proceso "
+                         "congelado. Se puede repetir. Se reenvia tal cual a build.py. "
+                         "NO afecta al Python ACARREADO (otro interprete), asi que no "
+                         "puede dejar muda a Tlamatini.")
     args = ap.parse_args(argv)
     # --no-self-modify is the explicit form of the DEFAULT and always wins, so a
     # wrapper (or muscle memory) can force the small-prompt build unambiguously.

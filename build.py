@@ -1386,6 +1386,14 @@ def main():
         '--hidden-import=filesearch_pb2_grpc',
         # Server uses Win32 ctypes dialogs, NOT tkinter — exclude Tcl/Tk so it
         # can never be dragged in transitively (no init.tcl bundling headaches).
+        # ── Exclusiones EXTRA que pide quien compila ────────────────────
+        # `--exclude-module=<mod>` en la linea de comandos (repetible) se
+        # reenvia tal cual a PyInstaller. Existe porque Angela lo escribio y
+        # el script la mando a leer un `usage:` en vez de obedecer: si una
+        # bandera tiene sentido evidente, se implementa, no se rechaza.
+        # ⚠️ NO puede sacar torch del Python ACARREADO: esto solo toca el
+        # _internal congelado, que es otro interprete. La voz no corre riesgo.
+        *[a for a in sys.argv if a.startswith('--exclude-module=')],
         '--exclude-module=tkinter',
         '--exclude-module=_tkinter',
         # python-magic (libmagic) hangs the freeze. unstructured pulls in `magic`
