@@ -12,7 +12,7 @@ En este libro, **Blue-hat** significa una postura operativa defensiva: Tlamatini
 
 > **El Libro de Tlamatini** — una guía paso a paso para ejecutar, usar y dominar un asistente de desarrollo con IA desplegado localmente, con RAG, orquestación de tools Multi-Turn, delegación a CLIs externos por ACPX, un client MCP de Unreal para manejar Unreal Engine 5 desde el chat o el canvas, un diseñador visual de workflows, 88 tipos de agent que se arrastran y sueltan, y un Flow Compiler en el backend que convierte el canvas vivo — o un log de tool-calls generado en el chat — en un workflow validado contra el registry, con los secrets redactados y portable tanto en source como en frozen.
 >
-> **Estado comprobado:** el release actual es `v1.50.4s` (`1339fc7`), con 88 workflow agents, 66 launchers `chat_agent_*`, 108 tools integradas de Multi-Turn, 105 tools del MCP stdio raíz, 29 skills y 198 migrations. La matriz source→docs y los cambios posteriores al tag están en [`docs/estado-actual-v1.50.4s.md`](docs/estado-actual-v1.50.4s.md).
+> **Estado comprobado:** el release actual es `v1.50.6s` (`1339fc7`), con 88 workflow agents, 66 launchers `chat_agent_*`, 108 tools integradas de Multi-Turn, 105 tools del MCP stdio raíz, 29 skills y 198 migrations. La matriz source→docs y los cambios posteriores al tag están en [`docs/estado-actual-v1.50.6s.md`](docs/estado-actual-v1.50.6s.md).
 >
 > Visita nuestro sitio en **https://xaiht.org**, o date una probadita de un minuto de Tlamatini en YouTube: **https://youtu.be/a51miZ1JIe0**.
 >
@@ -405,14 +405,14 @@ Pre-releases use the standard SemVer suffixes — `2.0.0-alpha.1`, `2.0.0-beta.1
 
 ```powershell
 git status                                          # clean tree, on main
-git tag -a v1.50.4s -m "Release 1.50.4s: <one-liner>"   # annotated tag
-git push origin v1.50.4s
+git tag -a v1.50.6s -m "Release 1.50.6s: <one-liner>"   # annotated tag
+git push origin v1.50.6s
 python build.py
 python build_uninstaller.py
 python build_installer.py
 ```
 
-All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini_Release_v1.50.4s/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. At the start of this audit, `v1.50.4s` and `HEAD` both resolve to `1339fc7`; uncommitted working-tree changes do not alter the bare runtime version.
+All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini_Release_v1.50.6s/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. At the start of this audit, `v1.50.6s` and `HEAD` both resolve to `1339fc7`; uncommitted working-tree changes do not alter the bare runtime version.
 
 ### Where the version shows up in a running install
 
@@ -420,8 +420,8 @@ The build computes the version once and bakes it into four surfaces:
 
 - **`Tlamatini/agent/_version.py`** — generated at build time, gitignored, read at runtime by `agent.version.get_version()`. This is what every in-process surface reads.
 - **Win32 `VERSIONINFO`** — `Tlamatini.exe`, `Installer.exe`, and `Uninstaller.exe` all carry the version in their resource fork. Right-click the file → Properties → Details → ProductVersion.
-- **Release folder name** — `dist/Tlamatini_Release_v1.50.4s/`.
-- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.50.4s` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.50.4s","commit":"1339fc7","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
+- **Release folder name** — `dist/Tlamatini_Release_v1.50.6s/`.
+- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.50.6s` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.50.6s","commit":"1339fc7","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
 
 If the four surfaces ever disagree, your build was run with a stale `$env:TLAMATINI_VERSION` or against an out-of-date `_version.py` — clear them and re-run `build.py`.
 
@@ -1709,7 +1709,7 @@ Cuando terminen las migraciones y ya tengas un superusuario, echa a andar el ser
 
 ### Camino B — Instalador de un clic ya compilado (usuarios finales)
 
-Descarga el ZIP del release más reciente — **[Tlamatini v1.50.4s](https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.50.4s)** — y descomprímelo (o usa una carpeta `Tlamatini_Release/` que alguien te haya pasado / que tú mismo hayas compilado — ve la Part VIII). Luego:
+Descarga el ZIP del release más reciente — **[Tlamatini v1.50.6s](https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.50.6s)** — y descomprímelo (o usa una carpeta `Tlamatini_Release/` que alguien te haya pasado / que tú mismo hayas compilado — ve la Part VIII). Luego:
 
 1. Abre la carpeta descomprimida.
 2. Da doble clic en **`Installer.exe`**.
@@ -3436,14 +3436,14 @@ Las prelanzamientos usan los sufijos estándar de SemVer — `2.0.0-alpha.1`, `2
 
 ```powershell
 git status                                          # clean tree, on main
-git tag -a v1.50.4s -m "Release 1.50.4s: <one-liner>"   # annotated tag
-git push origin v1.50.4s
+git tag -a v1.50.6s -m "Release 1.50.6s: <one-liner>"   # annotated tag
+git push origin v1.50.6s
 python build.py
 python build_uninstaller.py
 python build_installer.py
 ```
 
-Los tres scripts de build toman el tag de `git describe --tags` automáticamente. El artefacto final aterriza en `dist/Tlamatini_Release_v1.50.4s/`, nombrado según la versión, para que el archivo que le entregues a un usuario sea inequívoco incluso antes de que lo descomprima.
+Los tres scripts de build toman el tag de `git describe --tags` automáticamente. El artefacto final aterriza en `dist/Tlamatini_Release_v1.50.6s/`, nombrado según la versión, para que el archivo que le entregues a un usuario sea inequívoco incluso antes de que lo descomprima.
 
 
 ### Dónde aparece la versión en una instalación en ejecución
@@ -3452,8 +3452,8 @@ El build calcula la versión una sola vez y la hornea en cuatro superficies:
 
 - **`Tlamatini/agent/_version.py`** — generado en tiempo de build, gitignoreado, leído en runtime por `agent.version.get_version()`. Esto es lo que lee toda superficie in-process.
 - **`VERSIONINFO` de Win32** — `Tlamatini.exe`, `Installer.exe` y `Uninstaller.exe` llevan todos la versión en su resource fork. Clic derecho al archivo → Propiedades → Detalles → ProductVersion.
-- **Nombre de la carpeta de release** — `dist/Tlamatini_Release_v1.50.4s/`.
-- **Superficies de runtime** — el diálogo About renderiza `Tlamatini v{{ version }}` (context processor de Django); el banner de arranque imprime `--- [VERSION] Tlamatini 1.50.4s` tanto en la consola como en `tlamatini.log`; `GET /agent/version/` devuelve `{"version":"1.50.4s","commit":"1339fc7","date":"…","source":"generated"}` como un endpoint **abierto**, apto para un health-check.
+- **Nombre de la carpeta de release** — `dist/Tlamatini_Release_v1.50.6s/`.
+- **Superficies de runtime** — el diálogo About renderiza `Tlamatini v{{ version }}` (context processor de Django); el banner de arranque imprime `--- [VERSION] Tlamatini 1.50.6s` tanto en la consola como en `tlamatini.log`; `GET /agent/version/` devuelve `{"version":"1.50.6s","commit":"1339fc7","date":"…","source":"generated"}` como un endpoint **abierto**, apto para un health-check.
 
 Si alguna vez las cuatro superficies no coinciden, tu build corrió con un `$env:TLAMATINI_VERSION` rancio o contra un `_version.py` desactualizado — límpialos y vuelve a correr `build.py`.
 

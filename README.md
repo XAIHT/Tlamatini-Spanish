@@ -41,7 +41,7 @@ actualizacion guardandolas en `Temp/_security_logs_carryover`.
 
 <p align="center">
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-5865F2?style=for-the-badge&labelColor=2D2D2D&logo=discord&logoColor=white" alt="Únete a nuestro Discord"/></a>
-  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.50.4s"><img src="https://img.shields.io/badge/VERSION-v1.50.4s-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
+  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.50.6s"><img src="https://img.shields.io/badge/VERSION-v1.50.6s-1E90FF?style=for-the-badge&labelColor=2D2D2D" alt="Versión"/></a>
   <a href="https://www.python.org/downloads/release/python-31210/"><img src="https://img.shields.io/badge/PYTHON-3.12.10-3776AB?style=for-the-badge&labelColor=2D2D2D&logo=python&logoColor=white" alt="Python"/></a>
   <a href="#instalación"><img src="https://img.shields.io/badge/PLATFORM-WIN%2010%20%7C%2011-0078D6?style=for-the-badge&labelColor=2D2D2D&logo=windows&logoColor=white" alt="Plataforma"/></a>
   <a href="#-la-lista-completa-de-capacidades"><img src="https://img.shields.io/badge/AGENT%20TYPES-88-8A2BE2?style=for-the-badge&labelColor=2D2D2D" alt="88 agent types"/></a>
@@ -62,9 +62,9 @@ actualizacion guardandolas en `Temp/_security_logs_carryover`.
 
 ---
 
-## Estado actual — `v1.50.4s`
+## Estado actual — `v1.50.6s`
 
-El tag anotado `v1.50.4s` apunta a `1339fc7`. La superficie derivada del source es **88 workflow agents**, **66 launchers `chat_agent_*`**, **108 tools integradas de Multi-Turn**, **105 tools del MCP stdio raíz**, **29 skills** y **198 migrations**. La documentación detallada y la matriz de evidencia viven en [`docs/estado-actual-v1.50.4s.md`](docs/estado-actual-v1.50.4s.md).
+El tag anotado `v1.50.6s` apunta a `1339fc7`. La superficie derivada del source es **88 workflow agents**, **66 launchers `chat_agent_*`**, **108 tools integradas de Multi-Turn**, **105 tools del MCP stdio raíz**, **29 skills** y **198 migrations**. La documentación detallada y la matriz de evidencia viven en [`docs/estado-actual-v1.50.6s.md`](docs/estado-actual-v1.50.6s.md).
 
 La línea más reciente separa deliberadamente dos intérpretes: el proceso Django frozen excluye `transformers` y Torch para arrancar limpio y ligero, mientras el Python acarreado conserva Torch CPU-only para **Talker** y **Whisperer**. Googler desenvuelve trackers de Bing; el build público puede partir de un clone limpio y aplica un `privacy_preflight`; el cierre por Ctrl+C es acotado y no ejecuta cleanup complejo dentro del signal handler; y Deleter distingue estrictamente `target_path` (directorio de trabajo) de `files_to_delete` (objetivos). Los cambios posteriores al tag se identifican como estado del working tree, no como contenido ya publicado del tag.
 

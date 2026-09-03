@@ -71,7 +71,7 @@ Every count in this file was **re-verified against source on 2026-08-19 for the 
 **Tlamatini** (Nahuatl for *"one who knows"*) is a **local-first AI developer assistant** created by **Angela López Mendoza** (@angelahack1, XAIHT). It is a Django 5.2 + Channels monolith with a LangChain/LangGraph agent core, a RAG system, a visual agentic workflow designer, an external coding-agent runtime (ACPX), a markdown skill system, and a pool of standalone agent scripts it spawns as subprocesses. Windows-only distribution (PyInstaller-frozen, carried Python 3.12.10).
 
 - **Repository**: `https://github.com/XAIHT/Tlamatini-Spanish.git` · **License**: MIT · **Platform**: Windows 10/11
-- **Release actual**: **`v1.50.4s`** — release actual del package y la documentación de esta edición; el tag anotado de ESTE árbol apunta a `1339fc7`. La **`s` es la letra de edición**: se conserva en superficies humanas y `agent/version.py::strip_edition_suffix` la elimina donde la versión debe volverse numérica (`VERSIONING.md`, fijado por `agent/test_edition_version_suffix.py`). Nunca cites hashes del árbol inglés: no existen aquí. La identidad de runtime se deriva del tag anotado; véase §16.
+- **Release actual**: **`v1.50.6s`** — release actual del package y la documentación de esta edición; el tag anotado de ESTE árbol apunta a `1339fc7`. La **`s` es la letra de edición**: se conserva en superficies humanas y `agent/version.py::strip_edition_suffix` la elimina donde la versión debe volverse numérica (`VERSIONING.md`, fijado por `agent/test_edition_version_suffix.py`). Nunca cites hashes del árbol inglés: no existen aquí. La identidad de runtime se deriva del tag anotado; véase §16.
 - **Python**: 3.12.10 (carried interpreter under `<repo>/python` is build-provisioned — never use it to run builds)
 
 **Conteos verificados el 2026-09-01 desde source y una construcción aislada de tools de Django; lista de skills confirmada desde disk:**
@@ -252,7 +252,7 @@ Tlamatini/                          # Git root (C:\Development\Tlamatini)
 ├── test_author_banner.py           # Author-banner presence guard
 ├── requirements.txt                # Python deps (ruff is a REQUIRED runtime gate — never unpin)
 ├── eslint.config.mjs               # ESLint 10 config (501-line cross-file globals whitelist)
-├── package.json                    # release 1.50.4s; npm run lint / lint:fix
+├── package.json                    # release 1.50.6s; npm run lint / lint:fix
 ├── tlamatini_mcp_server.py         # Root stdio MCP server: 85 agent tools + 7 mgmt + 10 ACPX
 ├── tlamatini_acpx.py               # Self-contained stdlib ACPX runtime port for the MCP server
 ├── Tlamatini.ps1                   # Legacy launcher for the frozen exe
@@ -828,7 +828,7 @@ Hardcoded assumptions (know before changing these subsystems):
 8. The web port is configurable (`django_port`, §5); still genuinely hardcoded: direct `daphne`/`uvicorn` launches, `:8765`/`:50051` helpers, TeleTlamatini's `tlamatini.base_url`.
 9. Carried-Python media libs: Recorder/Camcorder/AudioPlayer/VideoPlayer/Whisperer run under the CARRIED Python (`<install>/python`), NOT the frozen exe — numpy + cv2 must exist in BOTH Pythons; `build.py` aborts otherwise. A dep pinned in `requirements.txt` but missing from the carried Python crashes the pool agent at runtime.
 10. Frontend `let`-not-`const` for cross-file mutable globals (§15, const-poison).
-11. Count discipline: the `v1.50.4s` source inventory is 88 workflow agents, 66 wrapped chat agents, 108 built-in Multi-Turn tools (20 core + 66 wrapped + 12 ACPX/Skill + 10 External-MCP supervisors), 105 root stdio MCP tools, 29 runtime skills, 198 migrations, and 37 JavaScript modules. Dynamic `ext__*` remote tools are reported separately. Historical release notes may retain their dated counts; active guidance must be re-verified from source and updated together.
+11. Count discipline: the `v1.50.6s` source inventory is 88 workflow agents, 66 wrapped chat agents, 108 built-in Multi-Turn tools (20 core + 66 wrapped + 12 ACPX/Skill + 10 External-MCP supervisors), 105 root stdio MCP tools, 29 runtime skills, 198 migrations, and 37 JavaScript modules. Dynamic `ext__*` remote tools are reported separately. Historical release notes may retain their dated counts; active guidance must be re-verified from source and updated together.
 
 Common pitfalls (deduplicated; the dated fix contracts live in `docs/claude/recent-fixes.md`):
 
@@ -960,6 +960,6 @@ From the very start of a session, perform the work with **Tlamatini's OWN** agen
 
 ---
 
-*KIMI.md — alineado el 2026-09-01 contra el source de `v1.50.4s`: 88 templates de agent / 66 specs `chat_agent_*` / 108 tools integradas de Multi-Turn / 105 tools del MCP stdio raíz / 29 skills / 198 migrations / 37 módulos JS / 11 CSS. Incluye el motor WAL-safe `sqlite_copy.py`, NetSpeed-Calculator, External-MCP guiado, el límite lean del proceso frozen, la separación del Python con Torch para Talker/Whisperer, cierre Ctrl+C acotado, build público fresh-clone con preflight de privacidad, el contrato destructivo de Deleter y el unwrap de trackers de Bing en Googler. Los snapshots fechados conservan sus cifras históricas; toda guía activa se deriva del source.*
+*KIMI.md — alineado el 2026-09-01 contra el source de `v1.50.6s`: 88 templates de agent / 66 specs `chat_agent_*` / 108 tools integradas de Multi-Turn / 105 tools del MCP stdio raíz / 29 skills / 198 migrations / 37 módulos JS / 11 CSS. Incluye el motor WAL-safe `sqlite_copy.py`, NetSpeed-Calculator, External-MCP guiado, el límite lean del proceso frozen, la separación del Python con Torch para Talker/Whisperer, cierre Ctrl+C acotado, build público fresh-clone con preflight de privacidad, el contrato destructivo de Deleter y el unwrap de trackers de Bing en Googler. Los snapshots fechados conservan sus cifras históricas; toda guía activa se deriva del source.*
 
 *Tlamatini — "one who knows". Created by Angela López Mendoza · @angelahack1 · XAIHT.*

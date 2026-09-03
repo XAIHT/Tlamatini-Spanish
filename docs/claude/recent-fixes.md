@@ -8,7 +8,7 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> **Release actual:** `v1.50.4s` (`1339fc7`). Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.50.4s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
+> **Release actual:** `v1.50.6s` (`1339fc7`). Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.50.6s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
 
 > **This file is NOT auto-imported into the AI-assistant context** (unlike the rest of `docs/claude/*.md`). It is the chronological log of surgical fixes and "keep this in mind / do NOT revert" contracts that used to live at the bottom of `gotchas.md`. It was split out so the always-loaded onboarding stays lean — see the "Archive the fix-log" decision recorded in `docs/claude/INDEX.md`.
 >
@@ -532,7 +532,7 @@ audit. Migrations **0195/0196/0197**; catalog prompt **119**
 > `v1.48.16` = `6ee630ca` (themed `tlmAlert`/`tlmConfirm` pop-ups + the
 > frozen-bundle carriage proof in `build.py`), **`v1.48.17` = `f948be7b` — the
 > newest release on that day**, carrying everything below. The current release
-> is now `v1.50.4s`; entries that say a change "landed in v1.48.15" or
+> is now `v1.50.6s`; entries that say a change "landed in v1.48.15" or
 > `v1.48.17` are historical statements and remain as written.
 
 **Angela, verbatim:** *"Standarize in every ... every dialog and all of the

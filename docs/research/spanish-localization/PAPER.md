@@ -7,7 +7,7 @@
 **Date:** 2026-07-27
 **Historical status:** research paper produced without modifying the `v1.47.0` source baseline.
 
-> **Current implementation note — 2026-09-01 / `v1.50.4s` (`1339fc7`).** The Spanish tree now ships the NEPANTLA channel policy, DNT fence, N1/N2/N3 normalization, Spanish UI catalog, termbase, flags and Stage-0 capability instrumentation under `agent/i18n/`. Spanish is the matrix language; machine symbols and stable technical vocabulary remain English and byte-stable; user prompts and model answers are not mechanically translated. The complete progressive verifier/escalation ladder remains a design target. Historical measurements below retain their `v1.47.0` corpus; current counts are 88/66/108/29/198. See `docs/estado-actual-v1.50.4s.md`.
+> **Current implementation note — 2026-09-01 / `v1.50.6s` (`1339fc7`).** The Spanish tree now ships the NEPANTLA channel policy, DNT fence, N1/N2/N3 normalization, Spanish UI catalog, termbase, flags and Stage-0 capability instrumentation under `agent/i18n/`. Spanish is the matrix language; machine symbols and stable technical vocabulary remain English and byte-stable; user prompts and model answers are not mechanically translated. The complete progressive verifier/escalation ladder remains a design target. Historical measurements below retain their `v1.47.0` corpus; current counts are 88/66/108/29/198. See `docs/estado-actual-v1.50.6s.md`.
 
 ---
 
