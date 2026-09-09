@@ -722,6 +722,17 @@ def bundle_carried_python(dist_manage, frozen_python, build_python):
         "        importlib.import_module(_m)",
         "    except Exception as _e:",
         "        miss.append(_m + ' (' + type(_e).__name__ + ': ' + str(_e)[:90] + ')')",
+        # El Python acarreado lleva Torch SOLO para Talker/Whisperer y debe ser
+        # CPU-only: un Torch con CUDA mete cientos de MB de DLLs y rompe el
+        # techo del pkg.zip. El bucle de arriba solo ve si `torch` importa, asi
+        # que un Torch CUDA perfectamente importable pasaria sin decir nada.
+        "try:",
+        "    import torch as _torch",
+        "    _cuda = getattr(getattr(_torch, 'version', None), 'cuda', None)",
+        "    if _cuda is not None:",
+        "        miss.append('torch (expected CPU-only build, found CUDA ' + str(_cuda) + ')')",
+        "except Exception:",
+        "    pass",  # el bucle de arriba ya reporta un torch roto o ausente
         "print('MISSING: ' + '; '.join(miss) if miss else 'CARRIED_LIBS_OK')",
         "raise SystemExit(3 if miss else 0)",
     ])

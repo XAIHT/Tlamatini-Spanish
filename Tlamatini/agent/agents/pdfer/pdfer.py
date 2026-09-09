@@ -1767,6 +1767,13 @@ def main():
 
             if ok and os.path.isfile(output_path):
                 _stamp_metadata(output_path, config)
+                # Verdad medida otra vez: se cuenta lo que el ARCHIVO contiene,
+                # nunca lo que quisimos meterle (la leccion de `images_used`,
+                # 2026-08). Reportar la intencion en vez del resultado es la
+                # misma mentira que audita `pdfer_audit` al final.
+                embedded_now = _count_pdf_images(output_path)
+                if embedded_now >= 0:
+                    outcome["images_used"] = embedded_now
                 outcome.update({
                     "output_path": output_path,
                     "output_dir": os.path.dirname(output_path),
