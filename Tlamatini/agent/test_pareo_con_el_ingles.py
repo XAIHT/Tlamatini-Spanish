@@ -408,6 +408,163 @@ class ProcedenciaDeLosHashes(unittest.TestCase):
             % json.dumps(huerfanos, ensure_ascii=False))
 
 
+# ── Tokens que el ingles usa y aqui no aparecen, YA REVISADOS uno por uno ──
+# Cada uno se abrio y se confirmo que es traduccion o reestructuracion, no un
+# hueco. Se declaran con su motivo en vez de aflojar el detector: una lista con
+# razones se puede volver a juzgar; un detector aflojado no.
+TOLERADOS = {
+    "backup_db.py": {
+        # El modulo entero esta traducido: verify->verificar, prune->podar,
+        # back_up->respaldar, y con ellos sus variables locales.
+        ".fromtimestamp", ".items", "ALARM_PATH", "age_days", "counts",
+        "files", "newest", "state", "verified",
+    },
+    "Tlamatini/agent/consumers.py": {
+        # Esta edicion va ADELANTE: usa constants.MSG_OVERSIZED_DOCS_WARNING
+        # donde el ingles todavia incrusta la frase inglesa en la linea.
+        "detected_oversized_docs_warning", "fallback_llm_response",
+    },
+    "Tlamatini/agent/doc_generation/complete_project_docs.py": {
+        ".search",    # regex del ingles para su propia numeracion v1.50.x
+        "auto_fit",   # kwarg de una llamada que aqui esta reestructurada
+    },
+    ".claude/skills/tlamatini-daily-chat-test/harness/run_test.py": {
+        # Las marcas viven en el modulo de constantes del harness español.
+        "BUSY_MARKERS", "NOT_READY_MARKERS",
+    },
+    "Tlamatini/agent/test_watchdog_foreground_exemption.py": {
+        "._await_visible",  # aqui se llama _wait_until_visible
+        ".monotonic",       # el reloj se toma en otro punto de la funcion
+    },
+    "Tlamatini/agent/test_deleter_safety.py": {".refusal_reason"},   # -> por_que_no_se_borra
+    "Tlamatini/agent/agents/kuberneter/kuberneter.py": {".lower"},
+    "Tlamatini/agent/rag/interaction.py": {".lower"},
+    "Tlamatini/agent/test_version_guard.py": {".read_text"},
+}
+
+# Un token machine es lo que NEPANTLA nunca traduce. El `enum` EXIGE guion bajo:
+# sin eso, cualquier palabra inglesa en MAYUSCULAS dentro de prosa traducida
+# ("REFUSING", "PASSED") se reportaba, y una guarda que grita por prosa se
+# desactiva. Con el guion bajo: 66 falsos -> 21 revisados.
+_TOKEN = re.compile(
+    r'(?P<kw>\b[a-z_][a-z0-9_]{4,}\s*=(?!=))'
+    r'|(?P<key>["\'][a-z_][a-z0-9_]{4,}["\']\s*:)'
+    r'|(?P<enum>\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b)'
+    r'|(?P<attr>\.[a-z_][a-z0-9_]{4,}\()')
+
+_TOKEN_RUIDO = {
+    "logger", "config", "result", "status", "return", "import", "except",
+    "continue", "string", "number", "object", "boolean", "properties", "value",
+    "field", "target", "source", "output", "input", "params", "timeout",
+    "content", "message", "encoding", "errors", "utf-8", "default",
+}
+
+
+def _lineas_de_codigo(ruta):
+    """Codigo sin docstrings: aqui la prosa esta en español a proposito."""
+    try:
+        src = io.open(ruta, encoding="utf-8", errors="replace").read()
+    except OSError:
+        return None, ""
+    try:
+        arbol = ast.parse(src)
+    except SyntaxError:
+        return None, src
+    doc = set()
+    for nodo in ast.walk(arbol):
+        if isinstance(nodo, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            d = ast.get_docstring(nodo, clean=False)
+            if d and nodo.body and isinstance(nodo.body[0], ast.Expr):
+                e = nodo.body[0]
+                for i in range(e.lineno, (e.end_lineno or e.lineno) + 1):
+                    doc.add(i)
+    fuera = []
+    for i, linea in enumerate(src.splitlines(), 1):
+        if i in doc:
+            continue
+        s = linea.split("#", 1)[0].strip()
+        if s:
+            fuera.append(s)
+    return fuera, src
+
+
+@saltar
+class HuecosDentroDeUnaFuncion(unittest.TestCase):
+    """El hueco que un diff de NOMBRES no puede ver.
+
+    Las cinco capacidades que faltaban el 2026-09-09 vivian DENTRO de funciones
+    cuyo nombre coincidia en los dos arboles, asi que la comparacion de
+    conjuntos daba vacia por construccion. Preguntar "¿existen los mismos
+    simbolos?" no dice nada sobre el cuerpo.
+
+    La pregunta que si sirve: ¿hay algun TOKEN MACHINE — una key de config, un
+    parametro de API, un campo de schema, un enum — que el ingles use y que
+    aqui no aparezca EN NINGUNA PARTE del archivo? No "escrito distinto":
+    ausente. Eso es un hueco; lo demas es traduccion y portarlo seria la
+    regresion.
+    """
+
+    def test_ningun_token_machine_del_ingles_falta_sin_declarar(self):
+        compartidos = sorted(f for f in (_tracked(RAIZ_EN) & _tracked(RAIZ_ES))
+                             if f.endswith(".py") and not _excluido(f))
+        self.assertGreater(len(compartidos), 100,
+                           "solo %d modulos comparados: el barrido no esta viendo "
+                           "el arbol ingles" % len(compartidos))
+
+        hallazgos, ilegibles = {}, []
+        for rel in compartidos:
+            ingles, _ = _lineas_de_codigo(os.path.join(RAIZ_EN, rel.replace("/", os.sep)))
+            espanol, fuente_es = _lineas_de_codigo(os.path.join(RAIZ_ES, rel.replace("/", os.sep)))
+            if espanol is None:
+                # Un modulo que no parsea desaparecia de la comparacion en
+                # silencio: la guarda salia verde porque no MIRO el archivo, no
+                # porque estuviera bien. Un archivo ilegible es un fallo, no un
+                # `continue`.
+                ilegibles.append(rel)
+                continue
+            if ingles is None:
+                continue
+            ya_estan = set(espanol)
+            perdonados = TOLERADOS.get(rel, set())
+            faltan = set()
+            for linea in ingles:
+                if linea in ya_estan:
+                    continue
+                for m in _TOKEN.finditer(linea):
+                    tok = (m.group("kw") or m.group("key") or m.group("enum")
+                           or m.group("attr") or "").strip().strip("=:(").strip("\"'").strip()
+                    if not tok or tok in _TOKEN_RUIDO or tok.isdigit():
+                        continue
+                    if tok in perdonados or tok in PAREADOS:
+                        continue
+                    # LA PRUEBA: no aparece en NINGUNA parte del archivo español.
+                    if tok not in fuente_es:
+                        faltan.add(tok)
+            if faltan:
+                hallazgos[rel] = sorted(faltan)
+
+        self.assertEqual(
+            ilegibles, [],
+            "estos modulos de ESTA edicion no parsean, asi que quedaron FUERA "
+            "de la comparacion: %s. Verde aqui no significaria 'pareado', "
+            "significaria 'ni siquiera lo mire'. Arregla la sintaxis."
+            % ", ".join(ilegibles))
+
+        self.assertEqual(
+            hallazgos, {},
+            "el arbol ingles usa estos tokens machine y aqui no existen en "
+            "ningun lado: %s.\n\nUn token machine (key de config, parametro, "
+            "campo de schema, enum) NO se traduce, asi que su ausencia total "
+            "significa que la capacidad no esta — aunque la funcion que la "
+            "contiene si exista con el mismo nombre. Asi se escondieron las "
+            "cinco de 2026-09-09: PDFer ignorando el modelo configurado, "
+            "acp_doctor sin `deep`, el tool de PDFer sin `nuance`, `images_used` "
+            "contando intenciones y build.py sin la asercion CPU-only.\n\n"
+            "Abre cada uno. Si es traduccion, declaralo en TOLERADOS con su "
+            "motivo; si es un rename, en PAREADOS; si es un hueco, portalo."
+            % json.dumps(hallazgos, ensure_ascii=False, indent=1))
+
+
 class LaGuardaSeExplicaSola(unittest.TestCase):
     """Esta corre SIEMPRE, aunque no haya arbol ingles."""
 

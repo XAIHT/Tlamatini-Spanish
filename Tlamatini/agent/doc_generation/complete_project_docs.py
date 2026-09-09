@@ -3504,6 +3504,14 @@ def build_ppt(context: dict) -> None:
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
+    # La autoria va en las PROPIEDADES del archivo, no solo en las slides: es lo
+    # que ve quien abre el .pptx en Windows o lo indexa, y sin esto el deck sale
+    # sin autor. El nombre de Angela no se traduce ni se abrevia en ningun deck.
+    prs.core_properties.title = "Tlamatini eXtended Artificial Intelligence Humanly Tempered"
+    prs.core_properties.subject = "Complete technical project dossier"
+    prs.core_properties.author = "Angela López Mendoza"
+    prs.core_properties.last_modified_by = "Angela López Mendoza"
+    prs.core_properties.comments = "Generated from the Tlamatini repository by the deterministic project dossier workflow."
     cover = context["reference_media"][0] if context["reference_media"] else None
 
     slide, audit = add_slide(
@@ -4761,6 +4769,14 @@ def build_ppt_es(context: dict) -> None:
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
+    # Mismas propiedades que el deck inglés, con la prosa en español: el nombre
+    # de Angela es idéntico en las dos ediciones — es autoría, no interfaz, y no
+    # se traduce, ni se abrevia, ni se omite.
+    prs.core_properties.title = "Tlamatini eXtended Artificial Intelligence Humanly Tempered"
+    prs.core_properties.subject = "Dossier técnico completo del proyecto"
+    prs.core_properties.author = "Angela López Mendoza"
+    prs.core_properties.last_modified_by = "Angela López Mendoza"
+    prs.core_properties.comments = "Generado desde el repository de Tlamatini por el flujo determinista de dossier."
     cover = context["reference_media"][0] if context["reference_media"] else None
 
     slide, audit = add_slide(prs, "TLAMATINI", "Dossier técnico completo en español", THEME["copper"], cover)
