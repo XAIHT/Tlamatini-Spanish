@@ -1,0 +1,14 @@
+#!/bin/sh
+# Barrera anti-secretos de Tlamatini.
+#
+# Rechaza el commit ANTES de que exista, si lo que se va a guardar trae una
+# credencial viva. Esto no es paranoia: el 2026-09-08 un `git add -A` normal
+# metio 12 llaves reales en un commit, y sacarlas despues exigio reescribir la
+# historia porque GitHub escanea TODA la historia, no solo la punta.
+#
+# Se instala con:  python scripts/instala_hooks.py
+# (los hooks no se clonan, por eso hay instalador)
+#
+# Para saltarlo a proposito, sabiendo lo que haces:  git commit --no-verify
+
+exec python "$(git rev-parse --show-toplevel)/scripts/revisa_secretos_staged.py"
