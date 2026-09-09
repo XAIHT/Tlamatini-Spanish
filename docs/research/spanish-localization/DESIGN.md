@@ -6,7 +6,7 @@ for a Spanish-Language LLM Operator System under Arbitrary Backend-Model Capabil
 
 **Historical status:** written as a design against `v1.47.0`; no source was modified while this document was originally produced.
 
-> **Actualización actual - 2026-09-06.** El release `v1.51.3s` está en `1339fc7`; `main` auditado está en `272d6ac`, cinco commits posterior. Production contiene `agent/i18n/{policy,dnt,normalize,ui_es,termbase_en,lexicon_es,flags,model_caps}.py`, template tags `nepantla`, catálogos y tests. Channel A localiza GUI; Channel B pasa el prompt verbatim y calcula N1/N2/N3 aparte; Channel C genera español nativo. `agents_descriptions.es.md` se superpone agent por agent y la suite visible incluye 1,000 preguntas. Stage 0 está implementado, pero no todo caller pasa model name y PROPOSE→VERIFY→ESCALATE completo sigue como diseño. Las tablas NEW describen un endpoint previsto salvo marca IMPLEMENTED. La verdad viva está en `docs/estado-actual-v1.51.3s.md`.
+> **Actualización actual - 2026-09-06.** El release `v1.51.3s` está en `212b0bd`; `main` auditado está en `212b0bd`, cero commits posterior. Production contiene `agent/i18n/{policy,dnt,normalize,ui_es,termbase_en,lexicon_es,flags,model_caps}.py`, template tags `nepantla`, catálogos y tests. Channel A localiza GUI; Channel B pasa el prompt verbatim y calcula N1/N2/N3 aparte; Channel C genera español nativo. `agents_descriptions.es.md` se superpone agent por agent y la suite visible incluye 1,000 preguntas. Stage 0 está implementado, pero no todo caller pasa model name y PROPOSE→VERIFY→ESCALATE completo sigue como diseño. Las tablas NEW describen un endpoint previsto salvo marca IMPLEMENTED. La verdad viva está en `docs/estado-actual-v1.51.3s.md`.
 
 ---
 

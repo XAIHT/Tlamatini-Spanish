@@ -576,7 +576,7 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
     )
     if has_current_release_wave:
         highlights.append(
-            "El release vigente es `v1.51.3s` en `1339fc7`; `HEAD` y `origin/main` auditados están en `272d6ac`, cinco commits posteriores. La versión de runtime sigue derivándose de Git/build metadata y el inventario se calcula desde el source tracked."
+            "El release vigente es `v1.51.3s` en `212b0bd`; `HEAD` de `main` esta en el mismo commit, cero commits posteriores. La versión de runtime sigue derivándose de Git/build metadata y el inventario se calcula desde el source tracked."
         )
         highlights.append(
             "La línea actual conserva NetSpeed-Calculator, movimiento SQLite WAL-safe, Googler con dorks y fallback visible, el skill Adding External MCP, Deep Internet Research, sincronización privada de contactos, build frozen ligero, cierre Ctrl+C acotado y privacidad fail-toward-safety."
@@ -768,7 +768,7 @@ def weekly_highlights(commits: list[CommitInfo]) -> list[str]:
         for subject in subjects
     ):
         highlights.append(
-            "Este dossier separa el release `v1.51.3s` (`1339fc7`) del `main` auditado (`272d6ac`) y reconcilia README.md y BookOfTlamatini.md con la verdad de source/Git, instalación, Ollama, arquitectura, uso, árbol, líneas y responsabilidad."
+            "Este dossier separa el release `v1.51.3s` (`212b0bd`) del `main` auditado (`212b0bd`) y reconcilia README.md y BookOfTlamatini.md con la verdad de source/Git, instalación, Ollama, arquitectura, uso, árbol, líneas y responsabilidad."
         )
     elif not has_current_release_wave and any(
         "1.26.5" in subject
@@ -1060,7 +1060,7 @@ def visual_doc_highlights(commits: list[CommitInfo]) -> list[str]:
     )
     if has_current_release_wave:
         highlights.append(
-            "El release `v1.51.3s` apunta a `1339fc7`; el `HEAD` auditado y `origin/main` apuntan a `272d6ac`, cinco commits posteriores. El dossier informa ambas identidades sin mover ni reinventar el tag."
+            "El release `v1.51.3s` apunta a `212b0bd`; ese commit es tambien el `HEAD` de `main`, cero commits posteriores. El dossier informa ambas identidades sin mover ni reinventar el tag."
         )
         highlights.append(
             "Desde el dossier anterior, el source añade la capa española de descripciones con fallback granular, composición Playwrighter→Shoter desde chat, harnesses visibles de diálogos/tema/toggles/1,000 preguntas y un sentinel de rephrase machine estable; conserva además el linaje de build, privacidad, verdicts y dialogs."
@@ -1670,7 +1670,7 @@ def operator_surface_counts_guide(context: dict) -> list[str]:
     ]
 
 CURRENT_RELEASE_GUIDE = [
-    "`v1.51.3s` es el release vigente y su tag anotado apunta a `1339fc7`. El `HEAD` auditado y `origin/main` apuntan a `272d6ac`, cinco commits posteriores. La identidad de runtime se deriva de Git/build metadata; este generador no crea tags, commits ni pushes.",
+    "`v1.51.3s` es el release vigente y su tag anotado apunta a `212b0bd`. El `HEAD` de `main` apunta a `212b0bd`, cero commits posteriores. La identidad de runtime se deriva de Git/build metadata; este generador no crea tags, commits ni pushes.",
     "El español es la lengua matriz según NEPANTLA. La prosa humana vive en español; agents/tools, fields, keys, enums, sentinels, paths, código y vocabulario técnico estable conservan su spelling inglés y byte-stable. El prompt del usuario y la respuesta del modelo nunca se traducen mecánicamente.",
     "`views.py` superpone `agents_descriptions.es.md` sobre la tabla inglesa agent por agent, con fallback granular. `chat_agent_runtime.py` exporta `TLAMATINI_AGENTS_ROOT` para que Playwrighter encuentre a Shoter desde wrapped chat runs.",
     "Los harnesses visibles actuales cubren nueve dialogs ACP, tema, toggles bulk, Playwrighter/Shoter, voz y un corpus reanudable de 1,000 preguntas españolas. `Referenced Rephrase:` queda como sentinel machine único, byte-stable y filtrado del historial.",
@@ -1689,7 +1689,7 @@ CURRENT_RELEASE_GUIDE = [
     "El runtime privado External-MCP, defaults inactivos de Memory/Sequential-Thinking, tombstones, estado persistente de Memory, catálogos con secrets separados, restauración de diagrams anidados, guardas Mover/Deleter y preservación del updater permanecen como linaje implementado. Los nuevos documentos de rediseño de update/Memory MCP son propuestas hasta que source y tests prueben implementación adicional.",
     "The categorized prompt catalog, per-user Hard Cancel epochs, path-native screenshot paste/drop, configurable port, FlowPills discovery, Unreal scaffold, self-healing, robotic loop, firmware/media agents, External MCPs, ACPX skills, and deterministic file tools remain part of the complete product rather than being reduced to a latest-changes summary.",
     "README.md and BookOfTlamatini.md retain the complete MIT-licensed installation, Ollama setup, architecture, everyday-use, agent, and responsibility narrative. The plain-Python agent disclaimer is explicit: transparency enables user control but is not a security warranty, and authorization, review, permissions, and consequences remain the operator's responsibility.",
-    "README.md y BookOfTlamatini.md muestran `v1.51.3s` como release en `1339fc7` y reportan por separado `main` en `272d6ac`. Las cifras se derivan del source: 88 agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 105 root-MCP tools, 29 skills y 198 migrations.",
+    "README.md y BookOfTlamatini.md muestran `v1.51.3s` como release en `212b0bd` y reportan por separado `main` en `212b0bd`. Las cifras se derivan del source: 88 agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 105 root-MCP tools, 29 skills y 200 migrations.",
     "The inventory is rebuilt from Git-tracked plus Git-unignored files without reproducing credentials, endpoints, private values, or machine-specific configuration. This generation pass does not stage, commit, or push anything.",
     "The regenerated PDF/PPTX preserve the whole system, architecture, installation/use guidance, recent Git history, complete file tree, effective-line inventory, and validation evidence; target behavior and tagged historical predecessors are described separately.",
 ]
@@ -1898,7 +1898,7 @@ FRONTEND_HOTFIX_GUIDE = [
 ]
 
 V136_RELEASE_GUIDE = [
-    "Identidad: `v1.51.3s` es el release en `1339fc7`; el `HEAD` auditado y `origin/main` son `272d6ac`, cinco commits posteriores. La línea actual suma español visible con fallback, Playwrighter→Shoter desde chat y pruebas visibles profundas, mientras conserva NetSpeed-Calculator, SQLite WAL-safe, Googler, onboarding External-MCP, Deep Internet Research y privacidad de contactos.",
+    "Identidad: `v1.51.3s` es el release en `212b0bd`; el `HEAD` de `main` es el mismo commit, cero commits posteriores. La línea actual suma español visible con fallback, Playwrighter→Shoter desde chat y pruebas visibles profundas, mientras conserva NetSpeed-Calculator, SQLite WAL-safe, Googler, onboarding External-MCP, Deep Internet Research y privacidad de contactos.",
     "New agent: Video-Analyzer becomes the current media-verdict workflow agent and wrapped `chat_agent_video_analyzer`, complementing Image-Interpreter with video-specific motion analysis.",
     "Implementation assets: `agent/agents/video_analyzer/`, migrations `0166_add_video_analyzer.py`, `0167_add_chat_agent_video_analyzer_tool.py`, `0168_add_video_analyzer_demo_prompt.py`, `test_video_analyzer_agent.py`, `chat_agent_registry.py`, `mcp_agent.py`, and `services/agent_contracts.py` all move together.",
     "Model strategy: `interpreter_model_1` defaults to `qwen3-vl:235b-cloud`, `interpreter_model_2` defaults to `qwen3.5:cloud`, and `merging_model` defaults to `glm-5.2:cloud`, with independent calls merged only after both interpreters report.",
@@ -2084,7 +2084,7 @@ PROMPT_CATALOG_GUIDE = [
     "Version `1.3.2` tightened the HTML answer contract with a Prime Directive on visual readability: explicit background and text color, no grey-on-dark body text, and safer table-body defaults.",
     "The seeded `Prompts` dropdown was also re-sorted into a learner path: context-only Q&A first, then metrics, files search, shell, code generation, vision, specialized single-tool actions, agent control, Unrealer, and heavier Multi-Turn/ACPX demos last.",
     "The `v1.35.0` prompt-search pass then makes that larger catalog easier to operate: prompt cards support substring, word-start, and fuzzy matching, with mode badges that keep one-shot, Multi-Turn, ACPX, Exec Report, and Step-by-Step demos visually distinct.",
-    "Esas reglas de legibilidad siguen vigentes en `v1.51.3s`; el dossier conserva networking medido, base WAL-safe, Googler resiliente, onboarding MCP, búsqueda encoding-safe, ejecución verificable, runtime privado, diagrams, LaTeXer, binary guard, PDFer, FlowCreator y catálogo categorizado, y añade los cambios posteriores al tag con español como matriz.",
+    "Esas reglas de legibilidad siguen vigentes en `v1.51.3s`; el dossier conserva networking medido, base WAL-safe, Googler resiliente, onboarding MCP, búsqueda encoding-safe, ejecución verificable, runtime privado, diagrams, LaTeXer, binary guard, PDFer, FlowCreator y catálogo categorizado, y añade los cambios de esta edición con español como matriz.",
 ]
 
 SELF_KNOWLEDGE_GUIDE = [
@@ -2320,7 +2320,7 @@ DB_SWAP_GUIDE = [
 VERSIONING_GUIDE = [
     "Tlamatini now follows Semantic Versioning 2.0.0 with git tags as the single source of truth: you tag, then you build, instead of hand-editing version strings across files.",
     "The build path resolves a version once and propagates it into generated runtime metadata, Win32 VERSIONINFO resources, and the release-folder naming convention.",
-    "Los documentos se regeneran con `TLAMATINI_VERSION=1.51.3s`; el tag vigente permanece en `1339fc7` y el `HEAD` auditado en `272d6ac`. Sin override, un commit posterior resuelve al tag bare alcanzable en vez de inventar otro release.",
+    "Los documentos se regeneran con `TLAMATINI_VERSION=1.51.3s`; el tag vigente permanece en `212b0bd` y el `HEAD` auditado en `212b0bd`. Sin override, un commit posterior resuelve al tag bare alcanzable en vez de inventar otro release.",
 ]
 
 VERSION_SURFACES_GUIDE = [
@@ -3699,7 +3699,7 @@ def build_ppt(context: dict) -> None:
     ], THEME["jade"], "arp-b", 12)
     audit_layout(audit, len(prs.slides))
 
-    slide, audit = add_slide(prs, "Estado actual", "v1.51.3s: release en 1339fc7 y main auditado en 272d6ac", THEME["amber"])
+    slide, audit = add_slide(prs, "Estado actual", "v1.51.3s: release en 212b0bd y main auditado en 212b0bd", THEME["amber"])
     add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Release line", CURRENT_RELEASE_GUIDE[:2], THEME["amber"], "rel-a", 10)
     add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "MCP, research, service, and privacy", CURRENT_RELEASE_GUIDE[2:4], THEME["jade"], "rel-b", 10)
     audit_layout(audit, len(prs.slides))
@@ -4297,7 +4297,7 @@ def build_ppt(context: dict) -> None:
                 add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Data and operator contract", group[split_at:], THEME["amber"], f"since-more-b-{offset}", 10)
             audit_layout(audit, len(prs.slides))
 
-    slide, audit = add_slide(prs, "Desarrollos recientes", "v1.51.3s más cinco commits auditados de main", THEME["jade"])
+    slide, audit = add_slide(prs, "Desarrollos recientes", "v1.51.3s auditado sobre el `HEAD` de main", THEME["jade"])
     add_panel(slide, audit, 0.78, 1.6, 5.9, 4.95, "Recent agents and execution surfaces", [
         "NetSpeed-Calculator: agent 88 / wrapped launcher 66, with multi-provider confidence intervals, I-squared heterogeneity, bufferbloat, named endpoint failures, and tier-D metered-bandwidth gating.",
         "Googler: four plain-HTTP server-rendered routes first, then visible Chrome/bundled Chromium across seven browser routes, with bounded retries, answer attribution, structured dork presets/aliases, URL-only file hunts, and a lawful-use boundary.",
@@ -4306,7 +4306,7 @@ def build_ppt(context: dict) -> None:
         "Deep Internet Research: append-only prompt 118 requests a long, link-rich Multi-Turn + Exec Report research run without hiding tool prerequisites.",
     ], THEME["copper"], "monday-a", 10)
     add_panel(slide, audit, 6.95, 1.6, 5.55, 4.95, "Lifecycle, policy, and monitoring", [
-        "Identidad resuelta: v1.51.3s es el tag en 1339fc7; HEAD/origin/main auditado es 272d6ac, cinco commits posterior.",
+        "Identidad resuelta: v1.51.3s es el tag en 212b0bd; HEAD de main es 212b0bd, cero commits posterior.",
         "Complete cloud-model operation requires Ollama Pro or higher; this is an operating requirement, not sponsorship, and current plan details belong to Ollama's official site.",
         "Private contact synchronization merges same-machine sources only for the explicit keyed build; public output and source snapshots remain free of contact PII.",
         "The stronger disclaimer says plain-Python transparency enables user control but is not a security warranty; the operator owns authorization, permissions, review, and consequences.",
@@ -4434,7 +4434,7 @@ ES_CAPABILITIES = [
 ]
 
 ES_CURRENT_DEVELOPMENTS = [
-    "Release `v1.51.3s` en `1339fc7`; `main` auditado en `272d6ac`, cinco commits posterior. La versión visible no inventa un tag nuevo y el build registra el commit real.",
+    "Release `v1.51.3s` en `212b0bd`; `main` auditado en `212b0bd`, cero commits posterior. La versión visible no inventa un tag nuevo y el build registra el commit real.",
     "`views.py` carga `agents_descriptions.md` y superpone `agents_descriptions.es.md` agent por agent. Un overlay incompleto falla hacia inglés sin perder tooltips.",
     "`chat_agent_runtime._build_child_env()` exporta `TLAMATINI_AGENTS_ROOT`; Playwrighter puede localizar al agent hermano Shoter desde wrapped runs de chat.",
     "La prueba diaria incorpora barridos visibles de nueve dialogs ACP, tema, toggles bulk, Playwrighter/Shoter y un corpus reanudable de 1,000 preguntas españolas.",
@@ -4807,7 +4807,7 @@ def build_ppt_es(context: dict) -> None:
         ("Seguridad y extensibilidad", THEME["amber"], ES_CAPABILITIES[8:]),
     ], per_column=4, size=13)
 
-    add_themed_column_slides(prs, "Desarrollo actual", "Cinco commits posteriores al tag", THEME["amber"], [
+    add_themed_column_slides(prs, "Desarrollo actual", "Contenido del tag v1.51.3s", THEME["amber"], [
         ("Español y composición", THEME["jade"], ES_CURRENT_DEVELOPMENTS[:4]),
         ("Protocolo y build", THEME["copper"], ES_CURRENT_DEVELOPMENTS[4:8]),
         ("Privacidad y seguridad", THEME["amber"], ES_CURRENT_DEVELOPMENTS[8:]),

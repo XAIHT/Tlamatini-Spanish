@@ -6,8 +6,8 @@
 ## Contrato vigente
 
 - **Idioma:** responde a Angela con español como lengua matriz. Conserva byte-stable English para agents/tools, parameters, fields, keys, enums, sentinels, paths y code según NEPANTLA. Una memoria histórica que pida inglés no supera este contrato.
-- **Identidad:** release `v1.51.3s` en `1339fc7`; `HEAD`/`origin/main` auditado en `272d6ac`, cinco commits posterior. No muevas ni reinventes el tag.
-- **Superficie:** 88 workflow agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 105 root-MCP tools, 29 Skills y 198 migrations.
+- **Identidad:** release `v1.51.3s` en `212b0bd`; `HEAD` de `main` en el mismo commit, cero commits posterior. No muevas ni reinventes el tag.
+- **Superficie:** 88 workflow agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 105 root-MCP tools, 29 Skills y 200 migrations.
 - **Git:** Angela controla commits, tags, pushes, branches y cambios de history. Las inspecciones read-only sí son normales.
 - **Estado actual:** descripciones españolas con fallback agent por agent; Playwrighter encuentra Shoter mediante `TLAMATINI_AGENTS_ROOT`; harnesses visibles de dialogs/tema/toggles y 1,000 preguntas; `Referenced Rephrase:` es sentinel machine único.
 - **Diseño prospectivo:** el rediseño transaccional del updater y la instalación/abstracción de Memory MCP no se anuncian como runtime hasta existir source ejecutable y tests.

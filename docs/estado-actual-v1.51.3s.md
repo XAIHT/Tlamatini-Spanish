@@ -6,7 +6,7 @@
   Tlamatini Author Banner — do not remove
 ═══════════════════════════════════════════════════════════════════
 -->
-# Estado técnico actual de Tlamatini-Spanish — `v1.51.3s` + `main` posterior
+# Estado técnico actual de Tlamatini-Spanish — `v1.51.3s`
 
 Este documento es el punto de reconciliación entre el source, la documentación, los prompts, los skills y los artefactos generados. El español es la **lengua matriz** según NEPANTLA; nombres de agents/tools, fields, keys, enums, sentinels, paths, código y términos técnicos estables permanecen en inglés y byte-stable.
 
@@ -15,9 +15,10 @@ Este documento es el punto de reconciliación entre el source, la documentación
 | Dato | Valor | Fuente |
 |---|---:|---|
 | Release/tag vigente | `v1.51.3s` | `git describe --tags --abbrev=0 HEAD` |
-| Commit del tag | `1339fc7` | `git rev-list -n 1 v1.51.3s` |
-| `HEAD` y `origin/main` auditados | `272d6ac` | `git rev-parse --short HEAD` + `git rev-parse --short origin/main` |
-| Commits de `main` posteriores al tag | 5 | `git rev-list --count v1.51.3s..HEAD` |
+| Commit del tag | `212b0bd` | `git rev-list -n 1 v1.51.3s` |
+| `HEAD` de `main` | `212b0bd` | `git rev-parse --short HEAD` |
+| `origin/main` (aún sin push) | `272d6ac` | `git rev-parse --short origin/main` |
+| Commits de `main` posteriores al tag | 0 | `git rev-list --count v1.51.3s..HEAD` |
 | Workflow agents | 88 | directorios completos `agent/agents/<name>/<name>.py + config.yaml` |
 | Launchers wrapped `chat_agent_*` | 66 | `chat_agent_registry.WRAPPED_CHAT_AGENT_SPECS` |
 | Tools directas/core | 20 | decorators `@tool` activos |
@@ -26,7 +27,7 @@ Este documento es el punto de reconciliación entre el source, la documentación
 | Tools integradas de Multi-Turn | 108 | 20 + 66 + 12 + 10 |
 | Tools del MCP stdio raíz | 105 | 88 launchers + 7 management + 10 ACPX |
 | Skills | 29 | packages con `SKILL.md` bajo `agent/skills_pkg/` |
-| Migrations | 198 | `agent/migrations/*.py`, sin `__init__.py` |
+| Migrations | 200 | `agent/migrations/*.py`, sin `__init__.py` |
 | Frontend | 37 JS · 11 CSS · 4 templates HTML | inventario del tree |
 
 El inventario reproducible del 2026-09-06 mide **1,143 files tracked**, **250,620 líneas efectivas** y **358,520 líneas físicas**. Hay 59 binarios y dos archivos de texto omitidos del conteo por tamaño/legibilidad. El appendix de árbol distribuible se limita exactamente a `git ls-files`; los cambios locales se reportan aparte y nunca se fingen como contenido del tag.
@@ -91,7 +92,7 @@ El dossier documenta los assets defensivos de `security/`, su habilitación cons
 
 - Un número activo se deriva del source; no se copia de un handbook anterior.
 - Las notas de release fechadas conservan sus cifras históricas.
-- `v1.51.3s` nombra el tag `1339fc7`; `main`/`HEAD` auditado es `272d6ac`, cinco commits posterior. Ninguno de esos commits posteriores se presenta como contenido ya publicado del tag.
+- `v1.51.3s` nombra el tag `212b0bd`; `main`/`HEAD` auditado es `212b0bd`, cero commits posterior. Ninguno de esos commits posteriores se presenta como contenido ya publicado del tag.
 - Los configs con secrets no se transcriben en documentos ni artefactos.
 - Los PDFs/PPTX generados incluyen el tree tracked completo, inventario de líneas, arquitectura, uso, cambios recientes y evidencia de validación.
 

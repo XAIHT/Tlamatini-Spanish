@@ -23,7 +23,7 @@ This document is the **authoritative reference** for how Tlamatini is versioned.
    - The release folder name (`dist/Tlamatini_Release_v1.51.3s/`)
 5. **Fallback**: if you don't tag at HEAD, the version is the **bare base tag** that's reachable from HEAD (e.g. `1.1.1`). No `.devN`, no `+gSHA`, no `.dirty` suffix is ever emitted — the displayed version is always a clean SemVer. If no `v*` tag exists at all, the fallback is `0.0.0`.
 
-Current audited example: `v1.51.3s` is an existing annotated tag at `1339fc7`; `HEAD` and `origin/main` are `272d6ac`, five commits later. The visible version remains `1.51.3s`, while generated build metadata records the actual commit. Never describe the later commit as if it moved the tag.
+Current audited example: `v1.51.3s` is an existing annotated tag at `212b0bd`; `HEAD` of `main` is that same commit, 0 commits later. The visible version remains `1.51.3s`, while generated build metadata records the actual commit. Never describe the later commit as if it moved the tag.
 
 ---
 
@@ -44,7 +44,7 @@ Examples:
 ### The Spanish edition letter
 
 **Tlamatini-Spanish tags its releases with a trailing edition letter — `v1.51.3s` —
-so a Spanish build is distinguishable at a glance from the English tree's `v1.50.6`.**
+so a Spanish build is distinguishable at a glance from the English tree's `v1.51.3`.**
 That letter is deliberately **not** part of SemVer, so it is normalised away wherever
 a version is turned into NUMBERS, and kept everywhere a human reads it:
 
@@ -177,7 +177,7 @@ git log --oneline (git describe --tags --abbrev=0)..HEAD
 
 ### Step 3 — Create the annotated tag
 
-The commands below show the current `v1.51.3s` release as a concrete example. That tag already exists at `1339fc7`: **do not rerun these commands, move it, or recreate it**. Substitute the next deliberate version when preparing a future release.
+The commands below show the current `v1.51.3s` release as a concrete example. That tag already exists at `212b0bd`: **do not rerun these commands, move it, or recreate it**. Substitute the next deliberate version when preparing a future release.
 
 ```powershell
 git tag -a v1.51.3s -m "Release 1.51.3s: <one-line summary>"
@@ -222,10 +222,10 @@ After install, the user (or you) should see:
 - **Console banner on startup**: `--- [VERSION] Tlamatini 1.51.3s`
 - **`curl http://localhost:8000/agent/version/`** (after login or with anonymous access since it's open):
   ```json
-  {"version":"1.51.3s","build":"1.51.3s","commit":"272d6ac","date":"2026-09-03T14:24:24-06:00","source":"generated"}
+  {"version":"1.51.3s","build":"1.51.3s","commit":"212b0bd","date":"2026-09-03T14:24:24-06:00","source":"generated"}
   ```
 
-The example above is a build from audited `main`. A build checked out exactly at the release tag instead reports `commit:"1339fc7"`; both correctly display version `1.51.3s`.
+The example above is a build from audited `main`. A build checked out exactly at the release tag instead reports `commit:"212b0bd"`; both correctly display version `1.51.3s`.
 
 If any of those four says something different, you missed Step 3 (the tag), or you've got a stale `_version.py` from a previous build — clean it up and re-run `build.py`.
 

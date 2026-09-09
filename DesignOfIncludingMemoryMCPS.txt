@@ -6,7 +6,7 @@ managers, instalación automática y demás pasos propuestos abajo siguen siendo
 prospectivos hasta que source ejecutable, migrations y tests los prueben. La
 lengua matriz para cualquier implementación o documentación nueva es español
 según NEPANTLA; package names, tools, fields, keys, enums, code y paths quedan
-byte-stable English. Release: v1.51.3s @ 1339fc7; main auditado: 272d6ac.
+byte-stable English. Release: v1.51.3s @ 212b0bd; main auditado: 212b0bd.
 
 -------------------------------------------------------------------------------
 TRANSCRIPCIÓN HISTÓRICA ORIGINAL

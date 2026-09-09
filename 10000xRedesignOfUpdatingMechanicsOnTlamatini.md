@@ -9,7 +9,7 @@
 
 # Rediseño 10,000,000% de la mecánica de actualización de Tlamatini
 
-> **ESTADO: PROPUESTA ARQUITECTÓNICA, NO COMPORTAMIENTO DISTRIBUIDO.** Este documento audita el updater actual y propone un reemplazo transaccional futuro. Salvo cuando una sección cite source y tests implementados, sus mecanismos de shadow swap, rollback, preservación WAL/SHM, registry handoff y two-phase no se describen como capacidades de la aplicación actual. Release vigente: `v1.51.3s` en `1339fc7`; `main` auditado: `272d6ac`.
+> **ESTADO: PROPUESTA ARQUITECTÓNICA, NO COMPORTAMIENTO DISTRIBUIDO.** Este documento audita el updater actual y propone un reemplazo transaccional futuro. Salvo cuando una sección cite source y tests implementados, sus mecanismos de shadow swap, rollback, preservación WAL/SHM, registry handoff y two-phase no se describen como capacidades de la aplicación actual. Release vigente: `v1.51.3s` en `212b0bd`; `main` auditado: `212b0bd`.
 
 ## 📌 Resumen ejecutivo y panorama arquitectónico
 

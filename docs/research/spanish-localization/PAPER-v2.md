@@ -8,7 +8,7 @@
 **Date:** 2026-07-27
 **Historical status:** research paper produced without modifying the `v1.47.0` source baseline.
 
-> **Nota de implementación - 2026-09-06.** El release `v1.51.3s` está en `1339fc7`; `main` auditado está en `272d6ac`, cinco commits posterior. Tlamatini-Spanish implementa la frontera de tres channels, DNT fence, normalización N1/N2/N3, UI española, termbase, runtime flags y Stage-0 bajo `agent/i18n/`, además del overlay de descripciones y un harness visible de 1,000 preguntas. Español es matriz; symbols machine y léxico técnico estable permanecen English byte-stable; prompts/respuestas nunca hacen round-trip mecánico. La escalera completa sigue prospectiva y no todo caller entrega model name. El corpus histórico es `v1.47.0`; la verdad actual es 88 workflow agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 29 skills y 198 migrations. Véase `docs/estado-actual-v1.51.3s.md`.
+> **Nota de implementación - 2026-09-06.** El release `v1.51.3s` está en `212b0bd`; `main` auditado está en `212b0bd`, cero commits posterior. Tlamatini-Spanish implementa la frontera de tres channels, DNT fence, normalización N1/N2/N3, UI española, termbase, runtime flags y Stage-0 bajo `agent/i18n/`, además del overlay de descripciones y un harness visible de 1,000 preguntas. Español es matriz; symbols machine y léxico técnico estable permanecen English byte-stable; prompts/respuestas nunca hacen round-trip mecánico. La escalera completa sigue prospectiva y no todo caller entrega model name. El corpus histórico es `v1.47.0`; la verdad actual es 88 workflow agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 29 skills y 200 migrations. Véase `docs/estado-actual-v1.51.3s.md`.
 
 ---
 

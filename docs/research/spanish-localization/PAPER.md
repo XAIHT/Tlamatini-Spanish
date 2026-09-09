@@ -7,7 +7,7 @@
 **Date:** 2026-07-27
 **Historical status:** research paper produced without modifying the `v1.47.0` source baseline.
 
-> **Nota de implementación - 2026-09-06.** El release `v1.51.3s` está en `1339fc7`; `main` auditado está en `272d6ac`, cinco commits posterior. El tree distribuye policy NEPANTLA, DNT fence, normalización N1/N2/N3, catálogo UI español, termbase, flags y Stage-0 bajo `agent/i18n/`; añade overlay español de descripciones y un harness visible de 1,000 preguntas. Español es matriz; symbols machine y léxico técnico estable permanecen English byte-stable; prompts/respuestas no se traducen mecánicamente. La escalera progresiva completa sigue como diseño. Las mediciones históricas conservan su corpus `v1.47.0`; la superficie actual es 88/66/108/29/198. Véase `docs/estado-actual-v1.51.3s.md`.
+> **Nota de implementación - 2026-09-06.** El release `v1.51.3s` está en `212b0bd`; `main` auditado está en `212b0bd`, cero commits posterior. El tree distribuye policy NEPANTLA, DNT fence, normalización N1/N2/N3, catálogo UI español, termbase, flags y Stage-0 bajo `agent/i18n/`; añade overlay español de descripciones y un harness visible de 1,000 preguntas. Español es matriz; symbols machine y léxico técnico estable permanecen English byte-stable; prompts/respuestas no se traducen mecánicamente. La escalera progresiva completa sigue como diseño. Las mediciones históricas conservan su corpus `v1.47.0`; la superficie actual es 88/66/108/29/198. Véase `docs/estado-actual-v1.51.3s.md`.
 
 ---
 

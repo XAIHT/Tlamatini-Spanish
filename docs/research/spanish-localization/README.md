@@ -3,7 +3,7 @@
 **Baseline date:** 2026-07-27 · **System studied:** Tlamatini v1.47.0 (commit `3e6d514f`)
 **Historical status:** this package began as research/design and did not modify source while it was produced.
 
-> **Actualización de implementación - 2026-09-06.** El release `v1.51.3s` está en `1339fc7`; `main` auditado está en `272d6ac`, cinco commits posterior. El tree implementa la frontera NEPANTLA y la capa determinista `agent/i18n/{policy,dnt,normalize,ui_es,termbase_en,lexicon_es,flags,model_caps}.py`, template filters y regresiones. Además, `views.py` superpone `agents_descriptions.es.md` agent por agent, la suite visible prueba 1,000 preguntas españolas y `Referenced Rephrase:` permanece sentinel machine byte-stable. La escalera progresiva completa sigue como diseño y no todo caller entrega aún el model name. Lee el cuerpo contra su baseline fechado y consulta [`../../estado-actual-v1.51.3s.md`](../../estado-actual-v1.51.3s.md) para la verdad actual.
+> **Actualización de implementación - 2026-09-06.** El release `v1.51.3s` está en `212b0bd`; `main` auditado está en `212b0bd`, cero commits posterior. El tree implementa la frontera NEPANTLA y la capa determinista `agent/i18n/{policy,dnt,normalize,ui_es,termbase_en,lexicon_es,flags,model_caps}.py`, template filters y regresiones. Además, `views.py` superpone `agents_descriptions.es.md` agent por agent, la suite visible prueba 1,000 preguntas españolas y `Referenced Rephrase:` permanece sentinel machine byte-stable. La escalera progresiva completa sigue como diseño y no todo caller entrega aún el model name. Lee el cuerpo contra su baseline fechado y consulta [`../../estado-actual-v1.51.3s.md`](../../estado-actual-v1.51.3s.md) para la verdad actual.
 
 ---
 

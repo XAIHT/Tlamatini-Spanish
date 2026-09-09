@@ -8,7 +8,7 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> **Release actual:** `v1.51.3s` (`1339fc7`). `HEAD`/`origin/main` auditado: `272d6ac`, cinco commits posterior. Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.51.3s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
+> **Release actual:** `v1.51.3s` (`212b0bd`). `HEAD` de `main`: el mismo commit, cero commits posterior. Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.51.3s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
 
 ## 2026-09-07 — ACPX reported four DEAD peers as healthy, and a refusal as a SUCCESS (v1.51.2s)
 
@@ -465,7 +465,7 @@ coherence checks.
 
 ## 2026-09-06 — NEPANTLA visible, composición Playwrighter→Shoter y sentinel de rephrase
 
-El source posterior al tag superpone `agents_descriptions.es.md` sobre el catálogo inglés agent por agent; una traducción parcial nunca elimina el fallback. `chat_agent_runtime._build_child_env()` exporta `TLAMATINI_AGENTS_ROOT`, porque un wrapped run dentro de `Temp/mcp_agent_runs` no puede encontrar por ascendencia a un agent hermano: Playwrighter ya puede delegar su paso `shoter` también desde chat Multi-Turn. La prueba diaria añadió barridos visibles de diálogos ACP/tema/toggles y un corpus reanudable de 1,000 preguntas españolas con guardas contra audio, historial rancio y marcos transitorios.
+El source del tag superpone `agents_descriptions.es.md` sobre el catálogo inglés agent por agent; una traducción parcial nunca elimina el fallback. `chat_agent_runtime._build_child_env()` exporta `TLAMATINI_AGENTS_ROOT`, porque un wrapped run dentro de `Temp/mcp_agent_runs` no puede encontrar por ascendencia a un agent hermano: Playwrighter ya puede delegar su paso `shoter` también desde chat Multi-Turn. La prueba diaria añadió barridos visibles de diálogos ACP/tema/toggles y un corpus reanudable de 1,000 preguntas españolas con guardas contra audio, historial rancio y marcos transitorios.
 
 `Referenced Rephrase:` es ahora el sentinel machine compartido por productor, consumer, history loader y prompt. Debe permanecer byte-stable English por NEPANTLA y añadirse exactamente una vez. El productor todavía comprobaba el prefijo viejo `Pregunta reformulada:` y podía producir `Referenced Rephrase: Referenced Rephrase: ...`; `test_chat_history_window.py::ReferencedRephraseMarkerTests` fija la corrección.
 
