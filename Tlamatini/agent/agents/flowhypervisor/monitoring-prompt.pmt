@@ -144,6 +144,27 @@ ACPXER SPECIAL NOTES:
     for the downstream Parametrizer / Forker to act on).
   - "Command not resolvable on PATH" IS a legitimate error to flag — it
     means the user configured an `agent_id` whose CLI is not installed.
+  - ⚠️ THE CANVAS ACPXer DOES NOT JUDGE DELIVERY, AND NEITHER DO YOU.
+    The in-process ACPX runtime that serves the CHAT classifies what a
+    child actually produced (`agent/acpx/child_health.py`: a closed
+    vocabulary of non-delivery — PERMISSION_BLOCKED, NO_CREDIT,
+    USAGE_LIMIT, AUTH_FAILED, NO_OUTPUT, ...). The canvas ACPXer node you
+    are watching does NOT: it is a self-contained pool subprocess and
+    reports only `settle=done|idle|timeout|child_exited`. So on THIS
+    surface a child that refused the work, ran out of credit, or printed
+    nothing looks EXACTLY like one that succeeded — same settle line, same
+    exit code 0, only the harvested text differs.
+    Two consequences, and they point opposite ways:
+      * Do NOT invent a failure. A refusal in `response_body` is CONTENT
+        for the downstream Parametrizer / Forker to branch on, not a flow
+        fault. Judging it yourself would make you flag healthy flows.
+      * Do NOT invent a success either. Never report an ACPXer step as
+        "completed successfully" on the strength of `settle=done` alone —
+        that line says the drain ended cleanly, NOT that the child did the
+        work. An exit code is one bit and it lies. Say the session settled
+        and leave the verdict to the flow.
+    If a user needs an ACPX leg that actually verifies delivery, the chat
+    surface (the 12 `acp_*` tools) is the one that classifies it today.
 
 UNREALER SPECIAL NOTES:
   - Unrealer drives an Unreal Engine 5 editor via the Unreal MCP plugin's

@@ -269,6 +269,10 @@ Verify `agent/agents/netspeed_calculator/`, migrations 0195-0197, its wrapped-to
 
 Verify the frozen app excludes `transformers` and Torch, the carried Python contains probed CPU-only Torch for Talker/Whisperer, `pyinstaller_hooks/hook-torch.py` cannot collect CUDA DLLs, `verify_frozen_torch_absent()` runs after PyInstaller, and `pkg.zip` obeys the 2.8 decimal-GB budget. Carry `test_ctrl_c_shutdown.py`, the visible Ctrl+C proof, `test_public_release_targets.py`, `private_targets.example.json`, and the current Googler/Deleter contracts. Also carry `agents_descriptions.es.md`, the overlay/fallback tests, wrapped-agent `TLAMATINI_AGENTS_ROOT`, the visible dialog/theme/bulk/1,000-question harnesses, and the rephrase-sentinel regression. A public build from a clean clone may omit private target configuration; a tree showing private evidence without targets must refuse. Confirm the release tag `v1.51.3s` resolves to `212b0bd`, the audited carrier `HEAD` of `main` resolves to `212b0bd` 0 commits later, and report dirty working-tree changes separately.
 
+Four more carriers landed in this line and each fails in a way the build will not shout about. **PDFer's atelier is TEN flat sibling modules**, not a package — `pdfer_nuance` / `_theme` / `_color` / `_typography` / `_tables` / `_ornament` / `_docmodel` / `_atelier` / `_audit` / `_consult` — because the agent runs as `python pdfer.py` from a copied runtime dir; the group import is **fail-open to the legacy engine**, so shipping nine of ten does not crash, it silently downgrades every document. Carry all ten with `pdfer.py` and `config.yaml`, and carry migration `0199`. **`agent/acpx/child_health.py` is imported fail-open too**, on BOTH ACPX surfaces — the Django one and root `tlamatini_acpx.py`, which loads it **by file path** rather than keeping a second copy, so it must physically exist next to the package; lose it and every refused child silently reads as delivered again. **`agent/win_shim.py` is in `build._FROZEN_REQUIRED_AGENT_MODULES` with its own `--hidden-import`** for the same reason: a fail-open import cannot report its own absence, so only the produced archive can answer whether it shipped — `verify_frozen_agent_modules()` opens it and aborts the build if it is missing. Migration `0200` dedupes program/snippet names already on disk, so this edition now carries **200 migrations** against the English tree's 199 (the +1 offset from `0191_translate_prompt_catalog_to_spanish`); state that count from the directory, never from memory.
+
+One repo-tracking check belongs here even though it is not a release carrier: **`git ls-files` and the working tree are different questions.** `.codex/skills/` held two dossier skills, already adapted for this edition, that `.gitignore` swallowed whole — carried by the self-modify snapshot (which walks the working tree, opt-out) yet absent from every clone, while the English tree shipped them. They are developer skills, so `build.py` correctly ships only `agent/skills_pkg/` into the release; the defect was purely that a clone did not get them. Being on disk is not being delivered.
+
 1. `sweep_self_update.py` exits clean (no `[FINDING]`).
 2. Every new top-level repo path from the since-last-tag diff has a wired carrier.
 3. The two preserve lists are byte-identical and equal `empty_dirs`(top-level) + `config.json`.
@@ -278,6 +282,15 @@ Verify the frozen app excludes `transformers` and Torch, the carried Python cont
 7. If a physical bundle was available, the probe in Step 3 shows the new assets `OK`; otherwise
    you stated a build is needed to physically confirm.
 8. `python -m ruff check` clean on any edited `.py`; `apply_update.ps1` still parses.
+9. **Every fail-open import is named in `_FROZEN_REQUIRED_AGENT_MODULES` and proved present
+   in the produced archive.** Reading `build.py` cannot answer "did it really ship?" — only
+   the archive can, which is why `verify_frozen_agent_modules()` opens the built `.exe`'s
+   CArchive and ABORTS on a missing module. A module reached only through
+   `try: … except ImportError:` cannot report its own absence: drop it and Tlamatini boots
+   perfectly and just quietly stops doing something.
+10. **`agent/test_pareo_con_el_ingles.py` is green** (or honestly skipped when the English
+    tree is absent). It pins the +1 migration offset and the surface parity this skill
+    assumes, so a release is not cut while the two editions have silently diverged.
 
 ---
 

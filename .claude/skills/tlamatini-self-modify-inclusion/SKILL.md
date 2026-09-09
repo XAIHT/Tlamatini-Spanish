@@ -162,7 +162,7 @@ migration 0194's Deep Internet Research prompt, and the
 contact synchronization, but it must never copy `contacts.json`, `contacts.private.json`, a
 frozen-install contact book, or live External-MCP secrets.
 
-**v1.51.3s current source-coherence gate:** verify tag `212b0bd` separately from the `HEAD` of `main` at that same commit and verify the generated snapshot against current 88/66/108/29/198 counts plus 1,143 tracked files rather than copied prose. It must carry the lean-build guard and priority Torch hook, while proving the frozen Django process omits Torch/transformers and the carried Python keeps CPU-only Torch for Talker/Whisperer. It must also carry the Ctrl+C shutdown tests, public clean-clone/privacy-preflight tests and inert `private_targets.example.json`, Bing tracker-unwrapping tests, the Deleter `target_path`/`files_to_delete`/`allow_directory_delete` safety contract, the Spanish descriptions overlay/fallback, wrapped-agent `TLAMATINI_AGENTS_ROOT`, the new visible harnesses and the single-sentinel rephrase regression. The build-only `.private_targets.json`, `data.keys`, contacts, live configs, generated `_version.py`, private artifacts and harness reports must remain absent or redacted. Design-only update/Memory-MCP documents may be carried, but must remain labelled prospective.
+**v1.51.3s current source-coherence gate:** verify tag `212b0bd` separately from the `HEAD` of `main` at that same commit and verify the generated snapshot against current 88/66/108/29/200 counts plus 1,143 tracked files rather than copied prose — and DERIVE each of them (count the directory, read the registry) instead of copying this sentence forward, which is exactly how the migration count sat at 198 after `0199` and `0200` had already landed. It must carry the lean-build guard and priority Torch hook, while proving the frozen Django process omits Torch/transformers and the carried Python keeps CPU-only Torch for Talker/Whisperer. It must also carry the Ctrl+C shutdown tests, public clean-clone/privacy-preflight tests and inert `private_targets.example.json`, Bing tracker-unwrapping tests, the Deleter `target_path`/`files_to_delete`/`allow_directory_delete` safety contract, the Spanish descriptions overlay/fallback, wrapped-agent `TLAMATINI_AGENTS_ROOT`, the new visible harnesses and the single-sentinel rephrase regression. The build-only `.private_targets.json`, `data.keys`, contacts, live configs, generated `_version.py`, private artifacts and harness reports must remain absent or redacted. Design-only update/Memory-MCP documents may be carried, but must remain labelled prospective.
 
 ### Step 3 — fix every finding, re-run Step 0 until clean, eyeball the notes.
 
@@ -216,6 +216,24 @@ shapes, but a novel config path needs the redaction rule extended).
 7. `python -m ruff check copy_source_assets.py` is clean.
 8. (Ideal) you eyeballed a `--keep` snapshot and spot-confirmed the newest feature's source
    files are physically present.
+9. **The snapshot and `git ls-files` AGREE about every new asset.** These are two different
+   questions and this skill only used to ask one of them. `copy_source_assets.py` walks the
+   WORKING TREE and is **opt-out** (`EXCLUDED_DIR_NAMES`), so a new file is in the snapshot
+   the moment it exists on disk — even if git never heard of it. Tracking is what decides
+   whether it reaches a **clone**. Measured 2026-09-08: `.codex/skills/` held two dossier
+   skills, already adapted for this edition, that `.gitignore` swallowed whole — **present
+   in the snapshot, absent from every clone**, and the English tree shipped them. Being on
+   disk is not being delivered. So for each new asset check BOTH: `git ls-files <path>`
+   returns it, and the generated snapshot contains it. A `.gitignore` rule that must keep a
+   sub-tree carves it back out (`.codex/*` plus `!.codex/skills/`), exactly as `.claude/`
+   is handled.
+10. **`agent/test_pareo_con_el_ingles.py` is green** (or honestly skipped when the English
+    tree is not cloned). It is the cheapest proof that this edition did not silently drift
+    from the tree it is paired with: it compares agent templates, skills, frontend modules,
+    `config.json` keys, `chat_agent_*` launchers and the AST of every shared `.py`, pins the
+    **+1 migration offset** (English N ↔ Spanish N+1; **200** here against the English 199),
+    and requires every commit hash cited in the docs to resolve here, declare it belongs to
+    the English tree, or sit in `HUERFANOS_CONOCIDOS` with its reason.
 
 ---
 

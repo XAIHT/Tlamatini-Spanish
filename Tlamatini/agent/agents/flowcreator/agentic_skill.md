@@ -1546,6 +1546,21 @@ system_prompt: |
 - **Application example**: A Croner fires at 02:00 → ACPXer (agent_id=`claude`, task=`"Audit yesterday's git diff for security regressions and write a 5-bullet report"`) → Parametrizer copies its `response_body` into a downstream ACPXer (agent_id=`gemini`, task=`"Critique this audit and add anything you'd flag"`) → File-Creator writes the combined output → Telegrammer DMs the on-call. Zero LLM operator turns; the entire multi-CLI pipeline runs unattended.
 - **Pool name pattern**: `acpxer_<n>`
 - **Starts other agents**: YES (starts `target_agents` after the session ends, regardless of success or failure — so a downstream Raiser can branch on the failure mode)
+- **⚠️ ACPXer DOES NOT KNOW WHETHER THE CHILD DID THE WORK — DESIGN THE FLOW FOR THAT.**
+  ACPXer is a self-contained pool subprocess, so it reports only how the drain ended
+  (`settle: done | idle | timeout | child_exited`). It does NOT classify delivery. The
+  chat-side ACPX runtime does (`agent/acpx/child_health.py`, with a closed vocabulary:
+  PERMISSION_BLOCKED, NO_CREDIT, USAGE_LIMIT, AUTH_FAILED, NO_OUTPUT, …), but that engine
+  is not in the canvas node. Measured on 2026-09-07: an external CLI that refused the task,
+  had no credit left, or printed nothing at all still exited **0** — so on the canvas it is
+  indistinguishable from a perfect run, and only `response_body` differs.
+  **Therefore never wire ACPXer straight into the agent that consumes its output.** Put a
+  **Forker** (or a Raiser) between them, branching on the harvested text, so a refusal takes
+  the failure path instead of being carried downstream as if it were research. The shape to
+  prefer is `ACPXer → Forker(pattern_a = the marker a real answer contains) → [good path] /
+  [retry-or-alert path]`, and for a relay chain put one after EVERY leg — a multi-CLI relay
+  built without them silently hands leg B whatever leg A refused to produce, and the flow
+  ends by writing a confident report about work that never happened.
 - **Config parameters**:
   - `agent_id`: "claude" (which external CLI to spawn — see registry below for built-in IDs)
   - `command`: "" (optional explicit command override; empty = use the registry default for `agent_id`. Use this when the CLI is at a non-PATH location, e.g. `"C:/Users/me/AppData/Roaming/npm/claude.cmd"`)
