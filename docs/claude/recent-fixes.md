@@ -8,6 +8,8 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
+
 > **Release actual:** `v1.51.3s` (`212b0bd`). `HEAD` de `main`: el mismo commit, cero commits posterior. Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.51.3s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
 
 ## 2026-09-07 — ACPX reported four DEAD peers as healthy, and a refusal as a SUCCESS (v1.51.2s)

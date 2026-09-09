@@ -8,6 +8,8 @@ metadata:
   modified: 2026-07-26T21:45:11.901Z
 ---
 
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
+
 **PDFer = agent #86, Tlamatini's DOCUMENT COMPOSER** — the WRITE side of the document family
 (File-Extractor / File-Interpreter READ documents; PDFer AUTHORS them). Built 2026-07-26.
 

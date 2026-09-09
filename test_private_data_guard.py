@@ -48,6 +48,7 @@ REPO = Path(__file__).resolve().parent
 
 # --- Git invariants captured when the guard was installed (2026-06-27) --------
 # The root (very first) commit. Rewriting history necessarily changes this SHA.
+# Commit del árbol INGLÉS (XAIHT/Tlamatini): no resuelve en este repository.
 ROOT_COMMIT = "137a0d70e1466fc69b50a8c3ac1740cf5b57c41d"
 # History only ever grows; it must never be shorter than this floor.
 MIN_COMMITS = 523

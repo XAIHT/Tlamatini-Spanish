@@ -4,6 +4,8 @@ description: Reverses the canvas-as-source-of-truth contract for connection fiel
 type: project
 originSessionId: 5b46eeaf-e53d-4b54-86fc-dc587a138e19
 ---
+
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
 <!--
 ═══════════════════════════════════════════════════════════════════
   ✦  T L A M A T I N I  ✦   —   "one who knows"

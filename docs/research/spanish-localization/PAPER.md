@@ -1,5 +1,7 @@
 # Asymmetric Localization of an LLM Operator System
 
+> **Procedencia de los hashes:** los commits citados en este archivo que **no resuelven en este repository** pertenecen al **árbol INGLÉS** (`XAIHT/Tlamatini`) y se conservan como procedencia del trabajo portado. La identidad de ESTA edición es `v1.51.3s` en `212b0bd`. Comprobado con `git cat-file -t` contra los dos árboles.
+
 ### Why a Spanish Tlamatini must not translate, and what must change instead
 
 **Author of the system under study:** Angela López Mendoza (XAIHT / Tlamatini)

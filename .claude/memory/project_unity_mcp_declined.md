@@ -6,6 +6,8 @@ metadata:
   type: project
   originSessionId: d193b695-d7fe-4b71-922d-23fdd6e12d4a
 ---
+
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
 <!--
 ═══════════════════════════════════════════════════════════════════
   ✦  T L A M A T I N I  ✦   —   "one who knows"

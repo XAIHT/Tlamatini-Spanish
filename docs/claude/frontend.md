@@ -8,6 +8,8 @@
 -->
 # Tlamatini — Frontend Architecture
 
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
+
 ## Chat Interface (10 modules)
 - `agent_page_init.js` - WebSocket setup, app initialization, **Context-menu "Set directory as context"** handler (see *Context directory picker* below)
 - `agent_page_chat.js` - Chat message handling; handles the `exec-permission-request` frame (Ask Execs — see below) by opening the permission dialog. `appendChatMessage` keeps the Send button on **Cancel** during self-healing "🔁 Tactic…" status frames (via `isSelfHealingStatusMessage()` in `agent_page_ui.js`) instead of re-enabling the controls, so the button only returns to **Send** on the real final answer (see `docs/claude/multi-turn.md` → *Self-healing model steps* and `recent-fixes.md` 2026-07-07)

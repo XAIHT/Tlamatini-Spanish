@@ -4,6 +4,8 @@ description: CLAUDE.md + docs/claude/* updated for Flow Compiler / Agent Contrac
 type: project
 originSessionId: ee628161-0643-45df-ad17-1919d3121c35
 ---
+
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
 <!--
 ═══════════════════════════════════════════════════════════════════
   ✦  T L A M A T I N I  ✦   —   "one who knows"

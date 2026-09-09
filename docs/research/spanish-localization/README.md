@@ -1,5 +1,7 @@
 # Localización española de Tlamatini - paquete de investigación
 
+> **Procedencia de los hashes:** los commits citados en este archivo que **no resuelven en este repository** pertenecen al **árbol INGLÉS** (`XAIHT/Tlamatini`) y se conservan como procedencia del trabajo portado. La identidad de ESTA edición es `v1.51.3s` en `212b0bd`. Comprobado con `git cat-file -t` contra los dos árboles.
+
 **Baseline date:** 2026-07-27 · **System studied:** Tlamatini v1.47.0 (commit `3e6d514f`)
 **Historical status:** this package began as research/design and did not modify source while it was produced.
 

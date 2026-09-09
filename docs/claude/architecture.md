@@ -8,6 +8,8 @@
 -->
 # Tlamatini — Architecture & Core Systems
 
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
+
 ## Configuration
 
 Main config: `Tlamatini/agent/config.json`

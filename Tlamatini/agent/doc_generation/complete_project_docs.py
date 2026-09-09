@@ -1761,7 +1761,7 @@ STRUCTURED_CONTENT_1414_GUIDE = [
     "`isError` still returns an explicit error and can now include structured-only error details; non-dict results are stringified safely.",
     "Structured payloads are capped at 24,000 characters by default with an explicit truncation marker, protecting the model context from unexpectedly huge tool responses.",
     "Seven tests cover pointer-plus-data, unchanged plain text, envelope unwrapping, text and structured-only errors, payload capping, and non-dict input.",
-    "The fix is released as `v1.41.4` at `cec16594` and is present on `origin/main`.",
+    "The fix is released as `v1.41.4` at `cec16594` (English tree) and is present on that tree's `origin/main`.",
 ]
 
 STM32ER_PLATFORMIO_WORKTREE_GUIDE = [
@@ -1849,7 +1849,7 @@ NMAPPER_GUIDE = [
 
 STARTUP_PROMPT_POLISH_GUIDE = [
     "`v1.39.4` restored first-run/startup dialog closeability so a fresh launch can no longer be trapped behind an unclosable overlay.",
-    "Commit `a45fe0e0` followed the public `v1.39.4` tag with Catalog-of-Prompts localization cleanup; ese pulido histórico permanece en el linaje del release `v1.51.3s`.",
+    "Commit `a45fe0e0` (English tree) followed the public `v1.39.4` tag with Catalog-of-Prompts localization cleanup; ese pulido histórico permanece en el linaje del release `v1.51.3s`.",
     "The prompt catalog path stays centralized through the secure one-call `/agent/list_prompts/` endpoint ordered by category rank and stable surviving id, while the gap-tolerant probe loop remains only as an offline fallback.",
     "Frontend mutable-state tests and dialog templates continue to guard the chat/startup/overlay surfaces so future cleanup passes do not reintroduce const-poison or close-button regressions.",
 ]
@@ -1890,7 +1890,7 @@ ROBOTIC_LOOP_GUIDE = [
 ]
 
 FRONTEND_HOTFIX_GUIDE = [
-    "`v1.38.1` was the same-week frontend-state-recovery hotfix: `package.json` was aligned at the tagged commit `08efa1d2`, while the functional fix landed in `af356c31` after the `85ee4e6c` const-poison incident.",
+    "`v1.38.1` was the same-week frontend-state-recovery hotfix: `package.json` was aligned at the tagged commit `08efa1d2`, while the functional fix landed in `af356c31` after the `85ee4e6c` const-poison incident — all three are English-tree commits.",
     "The core contract is explicit: cross-file runtime globals in `agent_page_state.js` and `acp-globals.js` that other modules reassign must remain `let`, because per-file ESLint cannot see those cross-file writes.",
     "`agent/test_frontend_mutable_state.py` now guards both source files and collected staticfiles so an automated cleanup cannot silently turn chat state, ACP state, tools, agents, skills, history, or busy flags back into `const`.",
     "The Catalog of Prompts now loads through one secure `GET /agent/list_prompts/` endpoint ordered by `idPrompt`, eliminating expected-404 console spam and preventing an `idPrompt` gap from hiding later prompts.",

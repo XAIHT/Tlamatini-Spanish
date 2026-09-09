@@ -1,5 +1,7 @@
 # NEPANTLA
 
+> **Procedencia de los hashes:** los commits citados en este archivo que **no resuelven en este repository** pertenecen al **árbol INGLÉS** (`XAIHT/Tlamatini`) y se conservan como procedencia del trabajo portado. La identidad de ESTA edición es `v1.51.3s` en `212b0bd`. Comprobado con `git cat-file -t` contra los dos árboles.
+
 ## Guaranteed Non-Inferior Execution for a Spanish-Language LLM Operator System under Arbitrary Backend-Model Capability
 
 **System under study:** Tlamatini — 86 workflow agents, 44 direct tools, a Multi-Turn operator loop, a visual flow designer

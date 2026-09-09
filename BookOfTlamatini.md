@@ -8,6 +8,8 @@
 -->
 # Tlamatini
 
+> **Procedencia de los hashes:** los commits citados en este archivo que **no resuelven en este repository** pertenecen al **árbol INGLÉS** (`XAIHT/Tlamatini`) y se conservan como procedencia del trabajo portado. La identidad de ESTA edición es `v1.51.3s` en `212b0bd`. Comprobado con `git cat-file -t` contra los dos árboles.
+
 En este libro, **Blue-hat** significa una postura operativa defensiva: Tlamatini ayuda a inspeccionar y responder a señales de seguridad en una máquina Windows que posees o estás explícitamente autorizada a defender. No la convierte en una autoridad de endpoint sin supervisión, no agrega un workflow Agent nuevo respaldado por la base de datos y no vuelve intrusión confirmada cada alerta. `security/` es un toolkit de host operado por una persona administradora: ella decide cuándo habilitarlo, revisa la evidencia, determina si una respuesta está justificada y asume los cambios resultantes de política de Windows.
 
 > **El Libro de Tlamatini** — una guía paso a paso para ejecutar, usar y dominar un asistente de desarrollo con IA desplegado localmente, con RAG, orquestación de tools Multi-Turn, delegación a CLIs externos por ACPX, un client MCP de Unreal para manejar Unreal Engine 5 desde el chat o el canvas, un diseñador visual de workflows, 88 tipos de agent que se arrastran y sueltan, y un Flow Compiler en el backend que convierte el canvas vivo — o un log de tool-calls generado en el chat — en un workflow validado contra el registry, con los secrets redactados y portable tanto en source como en frozen.

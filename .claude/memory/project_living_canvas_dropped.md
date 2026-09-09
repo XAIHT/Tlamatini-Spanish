@@ -4,6 +4,8 @@ description: 2026-04-29 — Living Canvas v0 commits (2fc441d, 0705a9c, d496cda)
 type: project
 originSessionId: c4ba907a-c91d-4c2c-8f86-5b38594aaca7
 ---
+
+> **Hash provenance:** commit hashes cited in this file that **do not resolve in this repository** belong to the **ENGLISH tree** (`XAIHT/Tlamatini`) and are kept as provenance for ported work. This edition's own identity is `v1.51.3s` at `212b0bd`. Verified with `git cat-file -t` against both trees.
 <!--
 ═══════════════════════════════════════════════════════════════════
   ✦  T L A M A T I N I  ✦   —   "one who knows"

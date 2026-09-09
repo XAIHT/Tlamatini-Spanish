@@ -644,7 +644,8 @@ if __name__ == "__main__":
 
 
 # ⛔ PORTADO DEL INGLES. Estas pruebas fijan las guardas del build que llegaron
-# con `a27ba13`: que torch quede FUERA del congelado, que el hook de PyInstaller
+# con `a27ba13` (commit del árbol inglés): que torch quede FUERA del congelado,
+# que el hook de PyInstaller
 # no deje que upstream copie 2.5 GB de DLLs de CUDA, que pkg.zip no pase de
 # 2.8 GB, y que el torch de solo CPU del Python ACARREADO se COMPRUEBE — esa
 # ultima es la que impide que excluir torch deje muda a Tlamatini.
