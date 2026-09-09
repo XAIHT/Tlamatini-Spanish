@@ -8,7 +8,7 @@
 **Date:** 2026-07-27
 **Historical status:** research paper produced without modifying the `v1.47.0` source baseline.
 
-> **Current implementation note — 2026-09-01 / `v1.50.6s` (`1339fc7`).** Tlamatini-Spanish now implements the NEPANTLA three-channel boundary, DNT fence, N1/N2/N3 scoring normalization, Spanish UI catalog, termbase, runtime flags and Stage-0 capability instrumentation under `agent/i18n/`, with dedicated tests. Spanish is the matrix language; machine symbols and stable technical vocabulary remain English and byte-stable; user prompts and model answers are never mechanically round-tripped. The full progressive verifier/escalation ladder remains prospective, and not every production normalization caller supplies a model name. Counts in this paper describe its dated `v1.47.0` corpus; current source truth is 88 workflow agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 29 skills and 198 migrations. See `docs/estado-actual-v1.50.6s.md`.
+> **Nota de implementación - 2026-09-06.** El release `v1.51.3s` está en `1339fc7`; `main` auditado está en `272d6ac`, cinco commits posterior. Tlamatini-Spanish implementa la frontera de tres channels, DNT fence, normalización N1/N2/N3, UI española, termbase, runtime flags y Stage-0 bajo `agent/i18n/`, además del overlay de descripciones y un harness visible de 1,000 preguntas. Español es matriz; symbols machine y léxico técnico estable permanecen English byte-stable; prompts/respuestas nunca hacen round-trip mecánico. La escalera completa sigue prospectiva y no todo caller entrega model name. El corpus histórico es `v1.47.0`; la verdad actual es 88 workflow agents, 66 wrapped launchers, 108 built-in Multi-Turn tools, 29 skills y 198 migrations. Véase `docs/estado-actual-v1.51.3s.md`.
 
 ---
 
@@ -1513,5 +1513,4 @@ Every entry was independently re-verified (title, authors, year, identifier) dur
 ---
 
 *Companion documents: `DESIGN.md` — the implementable architecture, module map, integration points, phased rollout and test plan. `reference_impl/` — executable reference modules for the neutralization operators, the closed-set detector, the routing policy and the non-inferiority statistics.*
-
 

@@ -18,6 +18,7 @@ docs/claude/acpx.md and ACPX.md.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import time
@@ -1306,3 +1307,334 @@ class AcpRelayTests(TestCase):
             envelope = json.loads(raw)
             self.assertFalse(envelope["ok"])
             self.assertEqual(envelope["code"], "EMPTY_RELAY")
+
+
+# ══════════════════════════════════════════════════════════════════════
+#  2026-09-07 — the three ACPX repairs, pinned against REAL captured output
+#
+#  Every string in ChildHealthClassifierTests below was copied verbatim out
+#  of C:\Tlamatini\.tlamatini\acpx-state on the morning a five-peer
+#  research relay collapsed while acp_doctor reported everything healthy.
+#  If any of these regress, that morning happens again.
+# ══════════════════════════════════════════════════════════════════════
+
+
+class ChildHealthClassifierTests(TestCase):
+    """child_health must name real failures AND never invent new ones."""
+
+    def _v(self, out, err="", rc=0):
+        from agent.acpx.child_health import classify_child_output
+        return classify_child_output(out, err, rc)
+
+    # ── the failures that were reported as successes ──────────────────
+    def test_permission_refusal_with_exit_zero_is_not_delivered(self) -> None:
+        from agent.acpx import child_health as ch
+        v = self._v(
+            "Angela, the web search was blocked - permission wasn't granted, "
+            "so I can't look up the current Python version.\n\nIf you approve "
+            "the WebSearch permission (or run `/permissions` and allow it), "
+            "I'll fetch it.", "", 0)
+        self.assertFalse(v.delivered)
+        self.assertEqual(v.code, ch.PERMISSION_BLOCKED)
+
+    def test_awaiting_permission_leg_a(self) -> None:
+        from agent.acpx import child_health as ch
+        v = self._v(
+            "Angela, I'm blocked at the first step: both `WebSearch` and "
+            "`WebFetch` are awaiting your permission in this session.\n\n"
+            "**What I need from you:** approve `WebSearch`.", "", 0)
+        self.assertEqual(v.code, ch.PERMISSION_BLOCKED)
+
+    # ── the noisy failures acp_doctor called healthy ───────────────────
+    def test_gemini_auth_failure_on_stderr(self) -> None:
+        from agent.acpx import child_health as ch
+        v = self._v("", "Warning: 256-color support not detected.\n"
+                        "Error authenticating: IneligibleTierError: This "
+                        "client is no longer supported.", 1)
+        self.assertEqual(v.code, ch.AUTH_FAILED)
+
+    def test_codex_invalid_config_toml(self) -> None:
+        from agent.acpx import child_health as ch
+        v = self._v("", "Error loading config.toml: unknown variant `default`, "
+                        "expected `fast` or `flex`\nin `service_tier`", 1)
+        self.assertEqual(v.code, ch.CONFIG_INVALID)
+
+    def test_no_credit(self) -> None:
+        from agent.acpx import child_health as ch
+        self.assertEqual(self._v("Credit balance is too low", "", 1).code,
+                         ch.NO_CREDIT)
+
+    def test_usage_limit(self) -> None:
+        from agent.acpx import child_health as ch
+        self.assertEqual(
+            self._v("You've hit your session limit - resets 1pm "
+                    "(America/Mexico_City)", "", 1).code, ch.USAGE_LIMIT)
+
+    def test_silent_tui_produces_no_output(self) -> None:
+        from agent.acpx import child_health as ch
+        self.assertEqual(self._v("", "", 0).code, ch.NO_OUTPUT)
+
+    def test_box_drawing_chrome_is_not_an_answer(self) -> None:
+        from agent.acpx import child_health as ch
+        box = "+" + "-" * 70 + "+\n|" + " " * 70 + "|\n+" + "-" * 70 + "+"
+        self.assertEqual(self._v(box, "", 0).code, ch.NO_OUTPUT)
+
+    def test_untrusted_workspace_named(self) -> None:
+        from agent.acpx import child_health as ch
+        self.assertEqual(
+            self._v("", "Ignoring 5 permissions.allow entries from "
+                        ".claude/settings.json: this workspace has not been "
+                        "trusted.", 0).code, ch.WORKSPACE_NOT_TRUSTED)
+        self.assertEqual(
+            self._v("", "Not inside a trusted directory and "
+                        "--skip-git-repo-check was not specified.", 1).code,
+            ch.WORKSPACE_NOT_TRUSTED)
+
+    def test_upstream_server_error(self) -> None:
+        from agent.acpx import child_health as ch
+        self.assertEqual(
+            self._v("Error code: 500 - {'error': {'message': 'The server had "
+                    "an error'}}", "", 75).code, ch.UPSTREAM_ERROR)
+
+    # ── THE FALSE-POSITIVE GUARDS (the half that matters most) ─────────
+    def test_a_short_correct_answer_is_delivered(self) -> None:
+        """SHORT IS NOT EMPTY. An early draft failed exactly this case."""
+        self.assertTrue(self._v("PEER_OK", "", 0).delivered)
+        self.assertTrue(self._v("3.14.7", "", 0).delivered)
+
+    def test_short_answer_with_a_noisy_stderr_banner_is_delivered(self) -> None:
+        self.assertTrue(
+            self._v("PEER_OK", "Warning: 256-color support not detected.",
+                    0).delivered)
+
+    def test_a_long_answer_mentioning_rate_limit_is_still_delivered(self) -> None:
+        """A real deliverable is NEVER re-read for refusal markers."""
+        text = ("Here is the full analysis. One caveat: the provider applies a "
+                "rate limit of 60 requests/min and the session limit for free "
+                "accounts is lower. " + ("More real content. " * 90))
+        self.assertTrue(self._v(text, "", 0).delivered)
+
+    def test_classifier_never_raises(self) -> None:
+        for out, err, rc in ((None, None, None), (12345, [], "x"),
+                             (object(), {}, 3.5)):
+            self._v(out, err, rc)   # must not raise
+
+    def test_vocabulary_sets_are_disjoint_from_delivered(self) -> None:
+        from agent.acpx import child_health as ch
+        self.assertNotIn(ch.DELIVERED, ch.NON_DELIVERY_CODES)
+
+
+class AgentRegistrySpecOverrideTests(TestCase):
+    """config.json must be able to repair a peer WITHOUT a rebuild."""
+
+    def _registry(self, agents_block):
+        from agent.acpx.agent_registry import build_agent_registry
+        cfg = load_acpx_config({"acpx": {"agents": agents_block}})
+        return build_agent_registry(cfg.agents, cfg.agents_env, cfg.agents_spec)
+
+    def test_copilot_can_be_repaired_entirely_from_config(self) -> None:
+        """The exact repair copilot needed: transport + prompt flag + args."""
+        reg = self._registry({
+            "copilot": {
+                "transport": "oneshot-prompt",
+                "prompt_arg_flag": "-p",
+                "args": ["--allow-all-tools"],
+                "spawn_returns_immediately": False,
+            }
+        })
+        spec = reg["copilot"]
+        self.assertEqual(spec.transport, "oneshot-prompt")
+        self.assertEqual(spec.prompt_arg_flag, "-p")
+        self.assertEqual(spec.args, ["--allow-all-tools"])
+        self.assertFalse(spec.spawn_returns_immediately)
+        self.assertEqual(spec.command, "copilot")   # untouched
+
+    def test_opencode_prompt_subcommand_and_null_flag(self) -> None:
+        """`opencode run <prompt>` — positional, so the flag must be null."""
+        reg = self._registry({
+            "opencode": {
+                "transport": "oneshot-prompt",
+                "prompt_subcommand_args": ["run"],
+                "prompt_arg_flag": None,
+            }
+        })
+        spec = reg["opencode"]
+        self.assertEqual(spec.prompt_subcommand_args, ["run"])
+        self.assertIsNone(spec.prompt_arg_flag)
+
+    def test_command_and_spec_override_together(self) -> None:
+        reg = self._registry({
+            "qwen": {"command": "qwen", "args": ["--yolo"]},
+        })
+        self.assertEqual(reg["qwen"].command, "qwen")
+        self.assertEqual(reg["qwen"].args, ["--yolo"])
+
+    def test_untouched_agents_share_the_builtin_spec_object(self) -> None:
+        from agent.acpx.agent_registry import DEFAULT_ACP_AGENTS
+        reg = self._registry({"copilot": {"args": ["-p"]}})
+        self.assertIs(reg["claude"], DEFAULT_ACP_AGENTS["claude"])
+
+    # ── fail-open: a typo must never brick the runtime ─────────────────
+    def test_unknown_transport_is_ignored(self) -> None:
+        from agent.acpx.agent_registry import DEFAULT_ACP_AGENTS
+        reg = self._registry({"claude": {"transport": "carrier-pigeon"}})
+        self.assertEqual(reg["claude"].transport,
+                         DEFAULT_ACP_AGENTS["claude"].transport)
+
+    def test_wrong_types_are_dropped(self) -> None:
+        from agent.acpx.agent_registry import DEFAULT_ACP_AGENTS
+        reg = self._registry({"claude": {
+            "args": "not-a-list",
+            "default_timeout_seconds": -5,
+            "spawn_returns_immediately": "yes",
+        }})
+        base = DEFAULT_ACP_AGENTS["claude"]
+        self.assertEqual(reg["claude"].args, base.args)
+        self.assertEqual(reg["claude"].default_timeout_seconds,
+                         base.default_timeout_seconds)
+        self.assertEqual(reg["claude"].spawn_returns_immediately,
+                         base.spawn_returns_immediately)
+
+    def test_env_only_override_still_works(self) -> None:
+        reg = self._registry({"gemini": {"env": {"GEMINI_API_KEY": "k"}}})
+        self.assertEqual(reg["gemini"].env["GEMINI_API_KEY"], "k")
+
+    def test_coercer_and_registry_agree_on_the_field_list(self) -> None:
+        """The two halves must not drift apart."""
+        from agent.acpx.agent_registry import OVERRIDABLE_SPEC_FIELDS
+        from agent.acpx import config as acpx_config
+        declared = set(acpx_config._SPEC_STR_FIELDS)
+        declared |= set(acpx_config._SPEC_LIST_FIELDS)
+        declared |= set(acpx_config._SPEC_FLOAT_FIELDS)
+        declared |= set(acpx_config._SPEC_BOOL_FIELDS)
+        declared.add("prompt_arg_flag")
+        self.assertEqual(declared, set(OVERRIDABLE_SPEC_FIELDS))
+
+
+class BlockedChildIsNotASuccessTests(TestCase):
+    """acp_* tools must refuse to call a refusal a success."""
+
+    def _envelope(self, delivered, **extra):
+        from agent.acpx import tools as acpx_tools
+        done = {"done": True, "_synthetic": "child_exited", "exit_code": 0,
+                "delivered": delivered}
+        done.update(extra)
+        events = [{"event": "assistant_message", "text": "..."}, done]
+        return json.loads(
+            acpx_tools._ok_unless_blocked({"session_id": "s1"}, events))
+
+    def test_blocked_child_yields_ok_false_with_a_named_code(self) -> None:
+        env = self._envelope(False, code="PERMISSION_BLOCKED",
+                             failure_reason="stopped at its own prompt",
+                             failure_evidence="permission wasn't granted")
+        self.assertFalse(env["ok"])
+        self.assertEqual(env["code"], "PERMISSION_BLOCKED")
+        self.assertIn("evidence", env)
+
+    def test_failure_envelope_keeps_the_session_id(self) -> None:
+        """The LLM still has to read the transcript and kill the session."""
+        env = self._envelope(False, code="NO_OUTPUT", failure_reason="silent")
+        self.assertEqual(env["session_id"], "s1")
+
+    def test_delivered_child_is_a_plain_success(self) -> None:
+        env = self._envelope(True)
+        self.assertTrue(env["ok"])
+        self.assertNotIn("code", env)
+
+    def test_transports_without_a_verdict_are_untouched(self) -> None:
+        from agent.acpx import tools as acpx_tools
+        events = [{"done": True, "_synthetic": "idle"}]
+        env = json.loads(
+            acpx_tools._ok_unless_blocked({"session_id": "s1"}, events))
+        self.assertTrue(env["ok"])
+
+
+class WindowsShimDeShimTests(TestCase):
+    """A .cmd shim must be BYPASSED, never invoked -- cmd.exe truncates prompts.
+
+    Measured 2026-09-07: a 2,205-character multi-line ACPX prompt reached the
+    child as 40 characters through the shell, cut at the first newline, silently.
+    """
+
+    def _npm_shim(self, root, script_name="tool.js", write_script=True):
+        """Write a realistic npm .cmd shim plus the .js it wraps."""
+        pct = chr(37)
+        if write_script:
+            with open(os.path.join(root, script_name), "w", encoding="utf-8") as fh:
+                fh.write("// tool\n")
+        body = (
+            "@ECHO off\r\nGOTO start\r\n:find_dp0\r\nSET dp0=@@~dp0\r\nEXIT /b\r\n"
+            ":start\r\nSETLOCAL\r\nCALL :find_dp0\r\n\r\n"
+            'IF EXIST "@@dp0@@\\node.exe" (\r\n'
+            '  SET "_prog=@@dp0@@\\node.exe"\r\n'
+            ") ELSE (\r\n"
+            '  SET "_prog=node"\r\n'
+            ")\r\n\r\n"
+            'endLocal & goto #_undefined_# 2>NUL || title @@COMSPEC@@ & "@@_prog@@"  '
+            '"@@dp0@@\\' + script_name + '" @@*\r\n'
+        ).replace("@@", pct)
+        shim = os.path.join(root, "faketool.cmd")
+        with open(shim, "w", encoding="utf-8") as fh:
+            fh.write(body)
+        # A node.exe next to the shim keeps the test independent of the host.
+        node = os.path.join(root, "node.exe")
+        with open(node, "wb") as fh:
+            fh.write(b"MZ")
+        return shim, node, os.path.join(root, script_name)
+
+    def test_npm_shim_is_rewritten_to_a_direct_node_argv(self) -> None:
+        from agent.acpx.windows_spawn import resolve_command
+        with tempfile.TemporaryDirectory() as root:
+            shim, node, script = self._npm_shim(root)
+            r = resolve_command(shim)
+            self.assertFalse(r.use_shell, "a de-shimmed command must NOT use the shell")
+            self.assertEqual(os.path.normcase(r.executable), os.path.normcase(node))
+            self.assertEqual([os.path.normcase(a) for a in r.extra_args],
+                             [os.path.normcase(script)])
+
+    def test_deshimmed_argv_lands_in_extra_args_so_call_sites_need_no_change(self) -> None:
+        """Every caller builds [executable, *extra_args, *spec.args, ...]."""
+        from agent.acpx.windows_spawn import resolve_command
+        with tempfile.TemporaryDirectory() as root:
+            shim, node, script = self._npm_shim(root)
+            r = resolve_command(shim)
+            argv = [r.executable, *r.extra_args, "-p", "task"]
+            self.assertEqual(len(argv), 4)
+            self.assertTrue(argv[1].endswith("tool.js"))
+
+    def test_unparseable_shim_falls_back_to_the_shell(self) -> None:
+        """Fail-open: an unknown shim shape still runs, it just needs the shell."""
+        from agent.acpx.windows_spawn import resolve_command
+        with tempfile.TemporaryDirectory() as root:
+            shim = os.path.join(root, "weird.cmd")
+            with open(shim, "w", encoding="utf-8") as fh:
+                fh.write("@echo off\r\necho nothing recognisable\r\n")
+            r = resolve_command(shim)
+            self.assertTrue(r.use_shell)
+            self.assertEqual(r.extra_args, [])
+
+    def test_shim_whose_script_is_missing_is_not_rewritten(self) -> None:
+        from agent.acpx.windows_spawn import resolve_command
+        with tempfile.TemporaryDirectory() as root:
+            shim, _node, _script = self._npm_shim(root, write_script=False)
+            r = resolve_command(shim)
+            self.assertTrue(r.use_shell, "never point at a script that is not there")
+
+    def test_a_real_exe_is_never_sent_through_the_shell(self) -> None:
+        from agent.acpx.windows_spawn import resolve_command
+        with tempfile.TemporaryDirectory() as root:
+            exe = os.path.join(root, "real.exe")
+            with open(exe, "wb") as fh:
+                fh.write(b"MZ")
+            r = resolve_command(exe)
+            self.assertFalse(r.use_shell)
+            self.assertEqual(r.extra_args, [])
+
+    def test_version_probes_keep_extra_args(self) -> None:
+        """A probe that drops extra_args runs a bare `node --version`."""
+        import inspect
+        from agent.acpx import runtime as acpx_runtime
+        src = inspect.getsource(acpx_runtime)
+        self.assertNotIn('[resolved.executable, "--version"]', src,
+                         "a --version probe must include *resolved.extra_args")
+        self.assertIn('[resolved.executable, *resolved.extra_args, "--version"]', src)

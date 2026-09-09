@@ -102,7 +102,17 @@ async def save_files_from_db(message, channel_layer, room_group_name):
 
     @sync_to_async
     def get_program(name):
-        return LLMProgram.objects.get(programName=name)
+        # A PRUEBA DE COLISIONES (Angela, 2026-09-06): `.get()` lanzaba
+        # MultipleObjectsReturned con dos bloques de codigo del mismo segundo,
+        # y quien llama aqui abajo lo reportaba como `!!! ERROR while saving
+        # file` — para LAS DOS gemelas, asi que ninguno de los dos archivos se
+        # podia escribir jamas al disco. Gana la fila mas nueva; un nombre que
+        # de verdad no existe sigue lanzando DoesNotExist, igual que antes.
+        # Ver services/response_parser._uniquify_name.
+        program = LLMProgram.objects.filter(programName=name).order_by('-idProgram').first()
+        if program is None:
+            raise LLMProgram.DoesNotExist(f"No LLMProgram named '{name}'")
+        return program
 
     for file in files:
         print("Saving file: " + file + "...")

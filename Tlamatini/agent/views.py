@@ -275,19 +275,25 @@ def agent_page(request):
     })
 
 def load_canvas_view(request, filename):
-    try:
-        program = LLMProgram.objects.get(programName=filename)
-        content = program.programContent
-        return HttpResponse(content, content_type="text/plain")
-    except LLMProgram.DoesNotExist:
-        pass  # Try LLMSnippet if not found in LLMProgram
+    # LECTOR A PRUEBA DE COLISIONES (Angela, 2026-09-06). Esto lanzaba
+    # MultipleObjectsReturned — un 500 SIN ATRAPAR, porque el viejo
+    # `except LLMProgram.DoesNotExist` NO lo cacha — cada vez que dos bloques
+    # de codigo de la MISMA respuesta caian en la misma llave
+    # `<marca_de_tiempo>_<nombre>` (get_time_stamp tiene resolucion de un
+    # SEGUNDO). Lo que se guarda nuevo ya se desambigua en
+    # services/response_parser._uniquify_name, pero una base escrita por un
+    # build VIEJO todavia puede traer duplicados, asi que se lee la fila
+    # MAS NUEVA que coincida en vez de negarse a abrir el archivo.
+    # NO regreses esto a .get().
+    program = LLMProgram.objects.filter(programName=filename).order_by('-idProgram').first()
+    if program is not None:
+        return HttpResponse(program.programContent, content_type="text/plain")
 
-    try:
-        snippet = LLMSnippet.objects.get(snippetName=filename)
-        content = snippet.snippetContent
-        return HttpResponse(content, content_type="text/plain")
-    except LLMSnippet.DoesNotExist:
-        return HttpResponse("File not found in database", status=404)
+    snippet = LLMSnippet.objects.filter(snippetName=filename).order_by('-idSnippet').first()
+    if snippet is not None:
+        return HttpResponse(snippet.snippetContent, content_type="text/plain")
+
+    return HttpResponse("File not found in database", status=404)
     
 def load_prompt_view(request, prompt_name):
     try:

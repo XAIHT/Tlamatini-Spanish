@@ -8,7 +8,470 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> **Release actual:** `v1.50.6s` (`1339fc7`). Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.50.6s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
+> **Release actual:** `v1.51.3s` (`1339fc7`). `HEAD`/`origin/main` auditado: `272d6ac`, cinco commits posterior. Los números y gates vigentes están reconciliados en `docs/estado-actual-v1.51.3s.md`; las versiones dentro de entradas fechadas siguen siendo evidencia histórica.
+
+## 2026-09-07 — ACPX reported four DEAD peers as healthy, and a refusal as a SUCCESS (v1.51.2s)
+
+**Angela's report, verbatim:** *"in the very last chain invocation of multi-turn, she had a
+way to lot of huge problems, in the end she could give me an answer, but was terrific for
+her."* A five-peer ACPX research relay collapsed; Tlamatini self-healed to an answer, but
+four of five legs had failed and **nothing in the system said so out loud**.
+
+Ground truth came from the installed build's own transcripts —
+`C:\Tlamatini\.tlamatini\acpx-state\*.transcript.ndjson` — not from the log, which never
+records ACPX tool results. Six sessions, five broken:
+
+| session | agent | what actually happened |
+|---|---|---|
+| `46a800c8` | claude | *"both `WebSearch` and `WebFetch` are awaiting your permission"* — **exit 0** |
+| `de8be8e9` | gemini | `Error authenticating: IneligibleTierError` |
+| `e762f911` | codex | `Error loading config.toml: unknown variant 'default', expected 'fast' or 'flex'` |
+| `d005f3bb` | kimi | box-drawing chrome, no words |
+| `585ccbb3` | copilot | no output at all |
+| `7c3cf41e` | claude | worked — only after being told to use NO tools |
+
+### Three root causes, all verified live
+
+**1. ACPX never passes an auto-approve flag to any child.** `runtime.py` builds
+`[exe, *args, *prompt_subcommand_args, prompt_arg_flag, task]` and there is **no** flag
+anywhere in `agent/acpx/` that grants a child its tools. So `claude -p "<task needing
+WebSearch>"` sits at its own permission prompt with stdin closed. Reproduced exactly, then
+fixed and re-proved: `claude --allowedTools "WebSearch,WebFetch" -p "…"` returned the real
+answer with sources. ⚠️ The flag is **variadic** — `--allowedTools A B -p "task"` swallows
+the prompt; use a comma list BEFORE `-p`.
+
+**2. `acp_doctor` tested presence, not readiness.** It runs `<cmd> --version` and nothing
+else. Measured: **all eight** installed CLIs answered `--version` with exit 0 while four were
+dead. The doctor handed the orchestrating LLM a green light on every one of them.
+
+**3. An exit code is one bit, and it lied.** The claude permission refusal exited **0**, so
+`_ok()` returned `ok: true`, the Exec Report row went GREEN, and the LLM built six further
+tool calls on research that did not exist. Same silent-plausible-WRONG class as the PDFer
+missing-images bug and the LaTeXer linter verdict.
+
+### The fixes
+
+- **NEW `agent/acpx/child_health.py`** (stdlib-only, imports nothing from `agent.*`) — the
+  ONE definition of "did this child deliver?", used by both the runtime and the doctor.
+  Closed vocabulary: `PERMISSION_BLOCKED`, `WORKSPACE_NOT_TRUSTED`, `NO_CREDIT`,
+  `USAGE_LIMIT`, `AUTH_FAILED`, `CONFIG_INVALID`, `UPSTREAM_ERROR`, `NO_OUTPUT`,
+  `CHILD_ERROR`, `DELIVERED`.
+- **`runtime.AcpxRuntime.readiness_probe()` + `doctor(deep=True)`** — sends a real one-line
+  prompt down the agent's real transport and NAMES the failure. OFF by default (it costs the
+  user real quota), cached 10 minutes, and `ready: null` for transports that cannot be probed
+  without opening a session — an honest "unknown", never an invented verdict.
+- **`tools._ok_unless_blocked()`** — `acp_spawn` / `acp_send` / `acp_send_and_wait` now
+  return `ok: false` with a named `code` when the child demonstrably did no work. The full
+  payload (session_id, transcript_path, events) is preserved on the failure envelope, because
+  the LLM still has to read the transcript and kill the session.
+- **`build_agent_registry(spec_overrides=…)` + `config._coerce_agents_spec()`** — `config.json`
+  can now retune `args`, `transport`, `prompt_arg_flag`, `prompt_subcommand_args`, the three
+  drain budgets and `spawn_returns_immediately`, not just `command` and `env`. This is the
+  leverage fix: **repairing a peer no longer requires a rebuild.** Five installed peers
+  (copilot, kimi, opencode, kilocode, qwen) each sat one flag away from working while the
+  only way to pass that flag was to edit `agent_registry.py` and rebuild.
+
+### CONTRACTS — do NOT weaken
+
+1. **A long, real answer is NEVER reclassified as a failure.** Only short, empty or
+   letter-less output is even scanned for refusal markers, and markers are read from the HEAD
+   of the output only. A 3 KB briefing that merely *mentions* "rate limit" stays a success.
+2. **SHORT IS NOT EMPTY.** The first draft of `child_health` tested the letter count alone
+   and flagged a perfectly good 7-character `PEER_OK` as `NO_OUTPUT` — the exact
+   false-failure class this module exists to prevent. "Chrome" now requires BOTH
+   `len >= DECORATIVE_MIN_CHARS` AND `alnum < MIN_ALNUM_CHARS`.
+3. **FAIL-OPEN everywhere.** Unrecognised output is DELIVERED; a malformed `config.json`
+   override is dropped and the built-in default survives; an unknown `transport` is discarded
+   (honouring one would silently hang every spawn). Neither module may raise into a caller.
+4. **`deep` stays OFF by default.** A readiness probe spends the user's money.
+5. `child_health` is stdlib-only and imports nothing from `agent.*` — same discipline as
+   `agent_verdict.py`, so it can never create an import cycle and behaves identically frozen
+   and from source.
+
+### Also found (environment, not code — these are Angela's to fix)
+
+- **`acpx.agents.claude.env.ANTHROPIC_API_KEY` was actively harmful**: it forced claude off
+  her claude.ai subscription onto an API account whose *"Credit balance is too low"*. Disabled
+  in the installed `config.json` (renamed, not deleted) so claude uses her login. ⚠️ The Pro
+  **session limit is a hard stop for the CLI** — measured: it refused at 100 % and the
+  claude.ai *usage credits* pool did **not** absorb it.
+- **codex**: the installed npm shim was `0.128.0` while the Codex desktop app had written a
+  `config.toml` for **0.153.4**. Repointed `acpx.agents.codex.command` at the newer binary.
+- **`codex exec` requires a git repo**; `trust_level = "trusted"` alone does NOT satisfy it,
+  and ACPX cannot pass `--skip-git-repo-check`. Resolved by pointing `acpx.cwd` at a
+  dedicated empty git workspace, `C:\Tlamatini\Temp\acpx-workspace`, which also carries the
+  child's `.claude/settings.json` permission grant.
+- **gemini is unrecoverable from code**: OAuth tier retired (`IneligibleTierError`) AND the
+  API key's project returns `403 "Lightning dunning decision is deny"` — a Google billing
+  matter.
+- **ACPX looks for `qwen-code`; the installed binary is `qwen`.**
+- ⚠️ **THERE ARE TWO ACPX IMPLEMENTATIONS — both were repaired, and they now SHARE one
+  definition.** `Tlamatini/agent/acpx/` powers the Django chat; **`tlamatini_acpx.py`** (repo
+  ROOT) is a deliberately separate Django-free implementation backing
+  `tlamatini_mcp_server.py` for external MCP clients (Claude Code, Kimi). Its `doctor()`
+  reported **resolvability only** — not even a `--version` probe — and it **injected no `env`
+  at all**, so an API key configured in `acpx.agents.<id>.env` had never reached a child on
+  that surface. All three fixes are ported, and `tlamatini_acpx.py` loads
+  `agent/acpx/child_health.py` **by file path** instead of keeping a second copy: a duplicated
+  verdict vocabulary drifts, and a drifted copy mis-classifies silently. That load is
+  fail-open, and `doctor()` prints the degradation in its own message rather than hiding it.
+  Both surfaces read the same `acpx.agents` block, so one config edit repairs a peer on both.
+
+### The `.cmd` shim gap — and the MUCH worse bug found while closing it
+
+`tlamatini_acpx.resolve_command` split the command string itself with **no `.cmd` / `.bat`
+handling**, so spawning codex through the npm `codex.cmd` shim produced **no output at all**
+and hung for its full 180 s timeout. The obvious fix was the Django side's answer —
+`windows_spawn.resolve_command` sets `use_shell=True` for a shim — so that was implemented
+first, and then **measured**. It is wrong:
+
+> **cmd.exe TRUNCATES the command line at the first newline.** A 2,205-character multi-line
+> research prompt arrived at the child as **40 characters**, cut exactly at the first line
+> break — silently, with the child then answering the fragment as if it were the whole task.
+> Re-measured on a real npm-shaped shim: 40 of 2,647 bytes.
+
+ACPX prompts are long and multi-line by nature, so **the shell is not an acceptable channel
+for them at all**. Both `shell=True` and an explicit `cmd.exe /d /s /c` fail the same way; the
+limit is cmd.exe itself, not Python's quoting.
+
+**The fix is to bypass the shim, not to invoke it.** `_deshim()` parses the npm/pnpm wrapper —
+they all end in `"%_prog%" "%dp0%\node_modules\<pkg>\bin\<tool>.js" %*` — and rewrites the
+command to `node.exe <script.js>`, spawned with `shell=False`. Verified against the real
+`codex.cmd`: `node.exe codex.js --version` → `codex-cli 0.128.0`, exit 0. Verified for
+byte-exactness on an npm-shaped shim: **2,647 of 2,647 characters, exact**, where the shell
+control still delivered 40. This is the same trick `runtime_provisioner.resolve_spawn()`
+already uses for `npx` (CLAUDE.md → *spawn without a shell*); the ACPX surfaces simply never
+adopted it. Resolution also now prefers a real `.exe` over a shim (`_WIN_EXTS` puts `.exe`
+first — the old `_which` tried `.cmd` before `.exe`, so `claude` was driven through the shell
+even though `claude.exe` sits right next to it).
+
+When a shim cannot be rewritten, the shell is still used as a last resort — but a multi-line
+prompt on that path now emits a **loud `acpx` log event** saying the child may have received
+only the first line. A silently truncated prompt yields a confident answer to the wrong
+question, which is the whole failure class this work exists to end.
+
+**Both surfaces carry the fix.** `_deshim` is in `agent/acpx/windows_spawn.py` as well —
+the Django side had the identical latent bug (`resolve_command` returned `use_shell=True`
+for a `.cmd` and `runtime._oneshot_send_turn` passed it straight to `Popen`), dormant only
+because Angela's live `config.json` had been repointed off `codex.cmd` onto the real
+`codex.exe` earlier the same day. There it lands in **`ResolvedSpawn.extra_args`**, which is
+exactly the right slot: every caller already builds
+`[executable, *extra_args, *spec.args, …]`, so bypassing the shim needed **no change at any
+call site**. Two `--version` probes (`probe_availability`, `_capture_cli_version`) were
+updated to keep `extra_args` — dropping it would have probed a bare `node --version` and
+learned nothing about the agent.
+
+Both npm (`"%dp0%\…"`) and pnpm (`"%~dp0\…"`) wrappers are recognised. Measured on Angela's
+nine installed peers: **7 now spawn with no shell at all** — claude and kimi as real `.exe`s,
+and codex / gemini / qwen / copilot / cursor rewritten to `node.exe <tool>.js` (verified live:
+`node.exe gemini.js --version` → `0.55.1`, exit 0). **kilocode and opencode still need the
+shell** — their shims are a shape `_deshim` does not recognise — so they take the fail-open
+path and emit the loud multi-line warning. That residual is visible by design, not silent.
+
+Coverage: `agent/acpx/tests.py::WindowsShimDeShimTests` (6 tests — de-shim, the `extra_args`
+call-site contract, fail-open on an unparseable shim, refusing a shim whose script is
+missing, a real `.exe` never going through the shell, and a source guard that the `--version`
+probes keep `extra_args`). Suite: 92 → **98**.
+
+### The SAME bug, third subsystem: External MCPs died with `[WinError 2]`
+
+Hours later Angela hit it again, from a completely different direction:
+
+```
+[agent.external_mcp_manager] WARNING [ExternalMCP] 'deepwebresearch' failed to
+connect: [WinError 2] The system cannot find the file specified
+```
+
+`external_mcp_manager._resolve_argv` **already had the correct repair** — resolve through
+PATHEXT, route a `.cmd` through COMSPEC — sitting right there at lines 692-695. It was
+**unreachable dead code**, because it runs only after:
+
+```python
+argv, note = runtime_provisioner.resolve_spawn(self.command, self.args)
+if argv:
+    return argv                     # <- always taken
+```
+
+and `resolve_spawn` did this for every command outside its six `MANAGED_TOOLS`:
+
+```python
+if tool not in MANAGED_TOOLS:
+    return [raw, *args], ""         # <- a NON-EMPTY bare pass-through
+```
+
+So **any** npm/pnpm-installed MCP server with a bare command name (`mcp-deepwebresearch`,
+and every server like it) was spawned as a name `CreateProcess` cannot execute. Tlamatini
+diagnosed this herself from the live install and worked around it by re-pointing the catalog
+entry at `node` + the real `index.js` — which is exactly what `_deshim` does automatically.
+
+**ROOT FIX — one definition for the whole tree.** `agent/win_shim.py` (new, stdlib-only,
+imports nothing from `agent.*`) is now the single place that answers *"how do we spawn this
+on Windows?"*: prefer a real `.exe`, rewrite an npm (`"%dp0%\…"`) or pnpm (`"%~dp0\…"`) shim
+to `node.exe <script.js>`, and ask for the shell only when neither is possible. All three
+subsystems delegate to it — `runtime_provisioner.resolve_spawn`,
+`agent/acpx/windows_spawn.py`, and the Django-free `tlamatini_acpx.py` (which loads it by
+path, like `child_health.py`). The duplicated copies were deleted, not left to drift.
+
+In `resolve_spawn`, "outside `MANAGED_TOOLS`" now means **"we do not PROVISION this"**, never
+**"we cannot RESOLVE this"**. The managed batch-shim branch also de-shims before falling back
+to COMSPEC.
+
+**Measured end to end** with a fake npm-installed MCP server: spawning the bare name still
+raises `[WinError 2]`; `resolve_spawn` returns `['node.EXE', 'index.js', '--stdio']` with the
+note *"de-shimmed to node.EXE"*, and the server runs and answers.
+
+⚠️ **`agent.win_shim` is imported behind `try/except ImportError` in two places, so it is in
+`build._FROZEN_REQUIRED_AGENT_MODULES` and has a `--hidden-import`.** A fail-open import
+cannot report its own absence: without those, a frozen build could silently drop it and every
+`.cmd`-backed MCP server would break again with no error naming the cause. This is the same
+contract that already protects `runtime_provisioner` and `agent_verdict`.
+
+**Two tests were CORRECTED, not deleted** (`agent/test_runtime_provisioner.py`):
+`test_unmanaged_command_passes_through_untouched` asserted the very pass-through that caused
+the bug — it now asserts the fixed contract (argv[0] RESOLVED, **arguments untouched**, an
+unresolvable command still returned verbatim) and is renamed
+`test_unmanaged_command_is_RESOLVED_not_passed_through_blind`. The second failure was stale
+and unrelated: it looked for the literal `verify_frozen_agent_modules(Path("dist") /
+"manage")` while `build.py` calls it with the `dist_manage` variable.
+
+Coverage: **`agent/test_win_shim.py` (27 tests)** — resolution order (`.exe` beats a
+same-named shim), both shim dialects, `.mjs`/`.cjs` payloads, node-beside-the-shim, every
+refusal path (missing payload, unknown shape, missing file, absent command), explicit paths,
+the exact `deepwebresearch` regression through `resolve_spawn`, argument order preservation,
+never-raises, and four source-level contracts including *"only `win_shim` may parse a shim
+path"* so a copy can never reappear.
+
+**Coverage:** `agent/acpx/tests.py` grew 65 → **92 tests** — `ChildHealthClassifierTests`
+(every string copied verbatim from the failed run, plus the three false-positive guards),
+`AgentRegistrySpecOverrideTests` (including a drift check that the coercer and the registry
+agree on the field list), and `BlockedChildIsNotASuccessTests`.
+
+---
+
+## 2026-09-06 — Two code blocks in one answer destroyed each other's file (`MultipleObjectsReturned`)
+
+**Angela's report** — the tail of `tlamatini.log` on the installed build in `C:\Tlamatini`:
+
+```
+agent.models.LLMProgram.MultipleObjectsReturned: get() returned more than one LLMProgram -- it returned 2!
+  ... agent\views.py, line 222, in load_canvas_view
+[django.channels.server] ERROR HTTP GET /agent/load_canvas/20260907030945_Without_Name/ 500
+--- Received save-files-from-db message from client.
+Saving file: 20260907030945_Without_Name...
+!!! ERROR while saving file: get() returned more than one LLMProgram -- it returned 2!
+Saving file: 20260907030945_Without_Name...
+!!! ERROR while saving file: get() returned more than one LLMProgram -- it returned 2!
+```
+
+**ROOT CAUSE — a file name that carries only a one-SECOND timestamp.**
+`services/filesystem.get_time_stamp()` is `strftime("%Y%m%d%H%M%S")`, and
+`response_parser` built every name as `get_time_stamp() + "_" + <name>` (unnamed
+blocks: `+ "_Without_Name"`). **Two code blocks in the SAME answer are parsed in
+the same second, so both rows were `LLMProgram.objects.create(...)`d under the
+IDENTICAL name.** Verified in her live database: `idProgram` 3 and 4, both
+`20260907030945_Without_Name`, 489 and 506 bytes of DIFFERENT content. The
+`_seen_unnamed_blocks` dedupe does not help — it only suppresses blocks with
+identical CONTENT, and these were two genuinely different files.
+
+**WHY IT WAS TOTAL, NOT PARTIAL.** Every reader looked the file up by NAME with
+`.get()`, and `MultipleObjectsReturned` is **NOT caught by
+`except LLMProgram.DoesNotExist`** — so it escaped as an unhandled 500 and BOTH
+twins became permanently unreachable: "Load in canvas" 500'd and *"save files
+from DB"* refused both. The user's code was never lost — only unopenable under
+its own name — which is exactly the *silent, plausible, WRONG* failure class:
+the chat still showed two cheerful `---Load in canvas: …---` links, and both
+were dead, and both pointed at the same name.
+
+**THE FIX HAS TWO HALVES — do NOT drop either one.**
+
+1. **WRITE side** (`services/response_parser.py`): `_uniquify_name(model, field,
+   name)` returns the first free `name_2` / `name_3` … variant, and
+   `save_program` / `save_snippet` now **RETURN the name they actually stored**.
+   ⚠️ The five call sites MUST use that return value
+   (`finalProgramName = _resolved_name(finalProgramName, await save_program(...))`) —
+   otherwise the second block's canvas link still points at the FIRST block's
+   row, which looks fixed and is not. `_uniquify_name` is **FAIL-OPEN**: any DB
+   error resolves to the original name, because failing to uniquify must never
+   stop the user's code being saved. `_resolved_name` ignores a non-string
+   return so the existing `mock.AsyncMock` patches of `save_program` keep working.
+2. **READ side** — every name lookup became `filter(...).first()` (newest row
+   wins), in **all four** places: `views.load_canvas_view` (programs AND
+   snippets), `services/filesystem.save_files_from_db::get_program`,
+   `consumers.get_program_by_name`, `rag/interface.get_program_by_name`. This is
+   what lets a database written by an OLDER build open its files instead of
+   erroring. A genuinely absent name still raises `DoesNotExist` / returns
+   `None` / 404s, exactly as before.
+
+**REPAIR for databases that already hold duplicates** — migration
+`0199_dedupe_llm_program_snippet_names.py`. **NON-DESTRUCTIVE**: nothing is ever
+deleted; the lowest-id row keeps the original name and each later twin is
+RENAMED to `<name>_2` / `<name>_3`, so both files become loadable and savable
+again under distinct names. Idempotent, and **FAIL-OPEN** — it swallows any
+error rather than aborting the post-update `migrate`, because a migrate that
+stops leaves the user without her new agents/tools/prompts, which is far worse
+than one unrepaired duplicate.
+
+**Corollary for future work:** `LLMProgram.programName` / `LLMSnippet.snippetName`
+are **not unique in the schema** (plain `CharField`), so `.get()` on them is
+always a latent 500. Coverage: `agent/test_program_name_collisions.py`
+(13 tests — the uniquifier, the fail-open path, the returned-name contract, the
+two-unnamed-blocks end-to-end regression, an old duplicate-carrying database
+loading through the view, and a **source contract** that fails on any
+re-introduced `objects.get(programName=…)` / `.get(snippetName=…)`).
+
+---
+
+## 2026-09-06 — PDFer: the overlap bug, the one brown scheme, the one font (v1.51.0s)
+
+**Angela's report, verbatim:** *"actually is way too flaky, way too mediocre … this
+version always overlaps the cell's contents into another cells, it only uses an ugly
+brown scheme of color, the same stupid font."* All three were real; all three are fixed;
+and the first one was **worse than reported**.
+
+### 1. THE OVERLAP — and why `err=0` must never again be treated as evidence
+
+Measured against the shipping `DEFAULT_CSS` on three ordinary tables:
+
+| case | `pisa_status.err` | what the PDF actually contained |
+|---|---|---|
+| long paths / URLs | **0** | a Windows path printed **54pt off the right edge of the A4 sheet** |
+| 8-column agent matrix | **0** | `netspeed_calculator` printed **on top of** `streamable-http` (15.1pt) |
+| 5-column config table | **0** | `unified_agent_llm_step_…` over `agent.self_healing.…` (15.1pt) |
+
+**xhtml2pdf reported SUCCESS on all three.** That is the same "silent, plausible, WRONG
+deliverable" class as the 2026-08 missing-images bug, and it is why `_resolve_asset_uri`
+and `_count_pdf_images` exist. Two independent causes:
+
+1. **The width estimate was wrong.** A half-em-per-character guess is **+116 % wrong** on
+   `lllllllllll` and **−43 % wrong** on `WWWWWWWWWWW` (measured with
+   `pdfmetrics.stringWidth`). A 43 % under-estimate reserves 58pt for a word needing
+   102pt, and the extra 44pt is drawn into the next column.
+2. **A token with no spaces cannot break at all** — `C:\Users\…`, `https://…`.
+
+**THE FIX IS STRUCTURAL, NOT A TOLERANCE.** `pdfer_tables.TableSolver` measures every
+column's true `min` (widest unbreakable atom) and `nat` (single-line want) with the real
+registered face at the real size, then water-fills the frame width subject to those
+floors. Platypus `Paragraph` cells are then handed **exactly** those widths — and a
+Paragraph given a width *cannot draw outside it*. There is no "usually" here; the
+geometry forbids it. **Measured after: 0 overlaps, 0 off-sheet, across 22 documents /
+92 pages, including a 24-column table.**
+
+⚠️ **Do NOT weaken these:** `solve_widths` must always clamp so the widths sum ≤ the
+frame (`TableLayout.validate` re-checks); the repair ladder's only destructive rung
+(`split_columns`) stays **LAST**, exactly like LaTeXer's `bisect`; and long tokens get
+`wordWrap='CJK'` — **never** injected spaces or hyphens, because a path with a space in
+it is *wrong data* and a document that corrupts the path it documents is worse than one
+that wraps it awkwardly.
+
+### 2. NUANCE — the look is computed from the CONTENT, before rendering
+
+`pdfer_nuance.classify()` reads the document and picks one of **20 treatments** from three
+weighted evidence families — **structure** (~3×: an abstract, IMRaD headings, citations, a
+DOI, numbered clauses, an ingredients list), **lexicon** (log-damped so breadth beats
+repetition), and **register** (sentence length, person, exclamations) as tie-breaker.
+`pdfer_theme` turns that into a complete design system: 38 colour roles, three type
+families, a modular scale, spacing and an ornament programme. Angela's two named cases are
+implemented literally — `scientific_dark` is `#07090F` ground / `#F2F6FF` text / cyan→violet
+gradients; `academic_paper` is `#FFFFFF` / `#101010` / Palatino / **justified** / one
+hairline rule.
+
+⚠️ **A CORROBORATION RULE, added after a measured miss.** A tokamak article scored
+`engineering_spec` 9.4 vs `scientific_dark` 7.2 — on SI units alone, with **zero**
+engineering vocabulary — and would have been dressed as a parts list. Ambiguous structural
+signals are now damped when the domain has no lexical support: **structure establishes the
+SHAPE, vocabulary establishes the FIELD.** The root cause was also fixed: the
+`scientific_dark` lexicon had been quantum-mechanics-only, so plasma physics, materials,
+optics, astronomy and aerospace matched nothing. Accuracy 15/15 after.
+
+### 3. COLOUR AND TYPE — and the contrast floor that is not negotiable
+
+`pdfer_color` is real colour science: sRGB ⇄ linear ⇄ **OKLab/OKLCh**, so every gradient
+and tint is perceptually even (blue→yellow midpoints stay at `#6CABC7` instead of collapsing
+to dead grey `#808080`). `predominant_color` derives a whole 38-role palette from ONE seed,
+with the nuance still choosing the register. **`Palette.validated()` runs last, always** —
+324/324 hue×lightness×ground combinations reach WCAG AA. `pdfer_typography` registers **31
+TrueType families** off the host and resolves 11 named *pairings*, degrading to the base-14
+rather than failing.
+
+⚠️ `CONTRAST_SAFETY = 1.04` is **not a fudge factor**. `ensure_contrast` used to stop the
+instant it TOUCHED the floor, so a role landed at exactly 4.50:1 — and the rendered-page
+auditor, rasterising the glyph, measured 4.48:1 and reported a failure for a colour the
+palette had certified. Sitting exactly on a threshold is a bug on either side of it.
+
+⚠️ **Captions and footers take the FULL body floor (4.5), not the large-text one.** They
+are the SMALLEST type in the document. Real folios were measuring 2.78:1 before this.
+
+### 4. IMAGES — generated, on-palette, and only when it is SAFE
+
+`pdfer_ornament` draws 14 motifs with Pillow, in the document's own palette, seeded from the
+content hash so a re-render is byte-identical. **No image files, no downloads, nothing in
+the installer.** The judgement matters more than the drawing: `DesignSystem.may_decorate()`
+gates every surface behind the nuance verdict's **decoration budget**, which config can only
+ever LOWER. `legal_instrument`, `medical_clinical` and `financial_ledger` get **nothing** —
+a decorated contract looks forged and a decorated dosage chart is dangerous — and low
+classifier confidence holds ornament back too.
+
+### 5. THE AUDITOR — and three bugs of its own that it exposed
+
+`pdfer_audit` re-opens the finished PDF and measures the real glyph boxes. It found three
+genuine defects in the new renderer during development, which is the whole argument for it:
+
+* **cover text at 2.53:1** — the cover title used the `text_inverse` role, which on a DARK
+  theme is near-black, on DARK cover art. Cover ink is now *solved* against the gradient
+  midpoint (`Atelier._cover_ink`), giving 16:1.
+* **body text on cover art** — ReportLab does **not** advance through the template list on
+  its own, so every page kept the COVER template. Fixed with `NextPageTemplate("body")`.
+* **its own false alarms** — the first version compared every span to the *page* background,
+  flagging white table-header text on its dark header band. It now rasterises the span and
+  reads the ground it really sits on, and takes the ink from the PDF's own content stream
+  (deriving both from pixels fails on gradients, comparing two background tones).
+
+⚠️ `bleeds` (off the SHEET) and `frame_intrusions` (outside the text frame, on the sheet)
+are **separate severities**, and only the former fails `clean`. Conflating them reported
+every correctly-placed page folio as a defect — and a check that fires on correct documents
+is a check that gets switched off.
+
+### Files, and the contracts that hold it together
+
+`agent/agents/pdfer/` gains eight sibling modules — `pdfer_color`, `pdfer_typography`,
+`pdfer_nuance`, `pdfer_theme`, `pdfer_ornament`, `pdfer_docmodel`, `pdfer_tables`,
+`pdfer_atelier`, `pdfer_audit`, `pdfer_consult`. **Flat siblings, not a package**, for the
+same reason FlowCreator vendors `result_to_flw.py`: the agent is copied to a runtime dir and
+run as `python pdfer.py`, so `sys.path[0]` is that directory. The group import is
+**fail-open** — a partial copy drops to the legacy xhtml2pdf engine rather than failing.
+
+* `engine: auto` picks the atelier **unless the user supplied `css`**, which is written in
+  the xhtml2pdf dialect; silently ignoring somebody's stylesheet would be the same class of
+  bug this whole entry is about.
+* The `INI_SECTION_PDFER` KV header **appended** its design fields and renamed none, so
+  every existing flow keeps resolving. Kept in step with
+  `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS['pdfer']` by an AST test that reads BOTH
+  sides — never a typed count.
+* `verbatim_fields=("input_text", …)` was added: PDFer takes literal source text and had the
+  **same `\\`→`\` exposure that flattened every table in Angela's OpenMP report** in 2026-08.
+* `tools._seed_global_agent_defaults` seeds `ollama_url`/`ollama_model` from
+  `ollama_base_url`/`unified_agent_model`, so the optional design consultation uses
+  Tlamatini's own configured model.
+* `ollama_design` is **OFF by default and must stay off**: the deterministic path is already
+  complete, validated and audited, so the model is an upgrade, not a dependency — and a
+  document that looks different every render is one nobody trusts.
+
+Coverage: **`agent/test_pdfer_nuance_layout.py` (37 tests)** — the three real broken tables
+solved AND rendered AND audited, both named nuances, every theme's contrast, seeded palettes,
+the decoration safety gate in both directions, ornament determinism, and the contract
+coherence checks.
+
+---
+
+## 2026-09-06 — NEPANTLA visible, composición Playwrighter→Shoter y sentinel de rephrase
+
+El source posterior al tag superpone `agents_descriptions.es.md` sobre el catálogo inglés agent por agent; una traducción parcial nunca elimina el fallback. `chat_agent_runtime._build_child_env()` exporta `TLAMATINI_AGENTS_ROOT`, porque un wrapped run dentro de `Temp/mcp_agent_runs` no puede encontrar por ascendencia a un agent hermano: Playwrighter ya puede delegar su paso `shoter` también desde chat Multi-Turn. La prueba diaria añadió barridos visibles de diálogos ACP/tema/toggles y un corpus reanudable de 1,000 preguntas españolas con guardas contra audio, historial rancio y marcos transitorios.
+
+`Referenced Rephrase:` es ahora el sentinel machine compartido por productor, consumer, history loader y prompt. Debe permanecer byte-stable English por NEPANTLA y añadirse exactamente una vez. El productor todavía comprobaba el prefijo viejo `Pregunta reformulada:` y podía producir `Referenced Rephrase: Referenced Rephrase: ...`; `test_chat_history_window.py::ReferencedRephraseMarkerTests` fija la corrección.
+
+Los archivos de rediseño de updater y Memory MCP añadidos al tree son especificaciones prospectivas. No se anuncian como runtime hasta que source ejecutable, migrations y tests demuestren su implementación.
+
+---
 
 > **This file is NOT auto-imported into the AI-assistant context** (unlike the rest of `docs/claude/*.md`). It is the chronological log of surgical fixes and "keep this in mind / do NOT revert" contracts that used to live at the bottom of `gotchas.md`. It was split out so the always-loaded onboarding stays lean — see the "Archive the fix-log" decision recorded in `docs/claude/INDEX.md`.
 >
@@ -38,6 +501,79 @@ Also in the same pass: `pyinstaller_hooks/hook-torch.py` became a 30-line **no-o
 **Contract — do NOT weaken:** the two halves ship together. Never exclude torch from the CARRIED Python; never re-add it to the FROZEN one; never delete `_probe_cpu_torch`. Pinned by `agent/test_web_process_stays_lean.py::test_build_excludes_torch_from_the_frozen_process` and `::test_carried_python_cpu_torch_is_probed` — the first of which was deliberately INVERTED from the 08-29 version and must not be flipped back.
 
 ---
+## 2026-08-30 — the PUBLIC release needed `.private_targets.json`, a file no clone can have
+
+**Angela: "improve the build of the public release to not be necessary the file
+`.private_targets.json` … and analyze that it should be no runtime problem if in the first run
+Tlamatini can't run 'cause the file may be missing."**
+
+`build_complete_public_release.py` **REFUSED to run at all** without a leak-targets list. The file
+is **gitignored**, so a fresh clone, a new machine or CI could *never* build a public release —
+only the one machine that already had it. But the refusal was not simply wrong: with no list, the
+same absence means two **opposite** things, and only one of them is safe to build.
+
+| no targets list, because… | right answer |
+|---|---|
+| a PRISTINE clone — there is nothing private in the tree | **build**; the refusal was pure friction |
+| Angela's OWN tree, file deleted/renamed/typo'd | **refuse**; proceeding publishes her phone number |
+
+**The fix is a target-INDEPENDENT `privacy_preflight()`** that asks the *tree* which case it is —
+`data.keys`, a keyed `config.json` / agent `config.yaml`, a contacts book, a keyed External-MCP
+catalog, root `*.key` files. Evidence → refuse, **naming the evidence** and the four ways to fix it
+(plus an explicit, loudly-logged `--assume-clean-tree`). No evidence → **CLEAN-TREE mode**, which
+still runs every target-independent defence (`regen --mode push-able`, the `SECRET_KEY_RE` scrub,
+an empty contacts book, the code-seeded MCP catalog, build.py's live-MCP-secret abort).
+
+**DO NOT REVERT / DO NOT WEAKEN:**
+
+1. **The pre-flight FAILS TOWARD REFUSAL.** Any unreadable/malformed probe counts *as* evidence —
+   the deliberate inverse of the usual fail-open rule, for the same reason LaTeXer's bisect rung
+   fails safe: publishing Angela's data is worse than a build that stops.
+2. **The template is INERT.** `private_targets.example.json` is tracked documentation and is
+   **NEVER** in `DEFAULT_TARGETS_FILES`. If it were auto-loaded — or if its `<placeholder>` values
+   counted as targets — an unfilled copy would make the list non-empty, **silence the refusal**,
+   and print `VERIFIED CLEAN` having scrubbed nothing real. Strictly worse than the refusal.
+   `_is_placeholder()` strips those values and `_`-prefixed JSON keys are documentation, because
+   `cpd.load_targets` otherwise turns a `_README` string into a "private value".
+3. **CLEAN-TREE mode never claims a check it did not run.** `check_private_data.py` exits 2 with no
+   targets, so `STRUCTURAL_ONLY_SENTINEL` keeps every structural layer running and the banner,
+   audit line and summary all say *structural-only, no personal-data matching was performed*.
+4. **`_looks_like_pii` / `_is_live_secret` must stay shape-tight.** The first version passed every
+   hand-written case and **still refused a fresh clone** on SEVEN committed defaults:
+   `host: 127.0.0.1`, `webhook_host: 0.0.0.0`, `max_body_bytes: 1048576`, `max_bytes_per_stream:
+   100000000`, `verify_token: "tlamatini"`, `password: "YourStrongPassword"`. Dotted-numeric and
+   plain integers are inert; a phone needs a `+`/separator and 7-15 digits; placeholder prefixes
+   match **glued** (`YourStrongPassword`, `YOUR_EMAIL_HERE` — a `\b` misses both), and `my` is
+   deliberately absent from that list so real names like "Myriam" are never dropped from the scrub.
+   *Testing the maintainer's keyed tree proves nothing about a clone* — the test reconstructs the
+   **committed** blobs of all 89 tracked configs and runs the real pre-flight over them.
+
+**Two real bugs found and fixed on the way:**
+
+- **`REGEN_TOUCHED` backed up 5 of the 7** agent `config.yaml` files `regen_secrets.py` rewrites —
+  **`zavuerer` and `discoverer` were missing**. On a machine without `data.keys` the `finally`
+  re-key is skipped, so those two were scrubbed to placeholders **with no backup to restore from**:
+  silent loss of the operator's own keys. Now **derived** from `regen_secrets` itself (9 paths), so
+  the next managed config is covered the day it is added.
+- **`private_targets.json` (dotless) was auto-discovered but NOT gitignored** — a leading-dot typo
+  would have committed a file full of real PII. Both spellings are now ignored; the `.example.`
+  template stays tracked.
+
+`regen_secrets.py --mode push-able` was already automatic inside this builder (STEP 1) and remains
+so — it is now stated in the banner, and it still runs strictly **before** `build.py` reads the tree.
+
+**RUNTIME: there is none, and that is now enforced.** `.private_targets.json` is **build-time
+only** — no module under `Tlamatini/agent/` opens it, and neither `build.py` nor `install.py`
+ships or references it, so a missing file can never affect a first run or any later one. That was
+already true; it is now *pinned*, so nobody can quietly wire it into runtime and break first launch
+for every user (its absence is the normal state on every machine but Angela's).
+
+Coverage: **`Tlamatini/agent/test_public_release_targets.py` (26 tests)** — runtime independence,
+the fresh-clone contract over the committed blobs, the seven false positives by value, template
+inertness, the surviving refusal, fail-toward-refusal, and the derived regen backup list.
+
+---
+
 ## 2026-08-29 — Ctrl+C hung Tlamatini FOREVER: the signal handler did the work, and re-entered itself
 
 **Angela's report, on the live frozen `C:\Tlamatini`: pressing Ctrl+C never quit.** She pressed it
@@ -112,22 +648,6 @@ threads exist) + the visible E2E above.
 
 ---
 
-## 2026-08-28 — Googler phase 1: EVERY Bing result was silently thrown away (`agents/googler/googler.py`)
-
-Googler's Tier-0 plain-HTTP path has a per-engine **own-domain skip**: a result that still points at the search engine's own host is not a result, so it is dropped. Bing, however, does not hand out the destination URL — it wraps **every organic result** in its own click-tracker, `https://www.bing.com/ck/a?...&u=a1<base64url>`. `_unwrap_redirect` only knew the plain `uddg` / `q` / `u` / `url` query-parameter forms, so a Bing link **stayed on `bing.com`** and was then eaten by that very skip. The visible symptom was not an error: Bing returned a full page, Googler reported no usable links, and the tier **fell through to whatever the next engine happened to return** — so a search looked like it had "worked" while silently answering from a weaker source. **Do NOT revert.**
-
-**Two things had to be fixed together, and the ordering is the whole trick.** Bing serves that URL with its ampersands HTML-escaped (`&amp;u=a1…`), so `urlsplit` + `parse_qs` never saw a `u` parameter at all — the unwrapper would have failed even once it knew to look. `_unwrap_redirect` therefore now `html.unescape()`s the raw value **first**, before parsing; only then does the `bing.com/ck/a` branch read `u`, strip the leading `a1` / `a2` marker Bing prefixes to the payload, restore the base64 padding (`token + '=' * (-len(token) % 4)`), `urlsafe_b64decode` it, and accept the result **only when it decodes to something starting with `http`**.
-
-**It is fail-open by construction**, and deliberately so: every step sits inside `try/except`, and any failure — an unparseable URL, a marker Bing changes, a payload that is not valid base64, a decode that yields junk — simply falls through to the pre-existing `uddg` / `q` / `u` / `url` loop and then to the raw URL. A tracker format that drifts costs one engine's results, never an exception in the search path.
-
-Also in the same pass: the `mojeek-http` engine's skip list widened from `('mojeek.com',)` to also cover `mastodon.social/@mojeek` and `buttondown.email/mojeek` — the engine's own social and newsletter properties were surviving the own-domain skip and being served back as if they were findings.
-
-**The lesson is the NetSpeed-Calculator lesson again** (2026-08-23, *"a ZERO must always name its cause"*): the failure here was not that Bing broke, it is that **a silent drop is indistinguishable from an empty internet**. When a result-producing path discards candidates, the discard needs a reason a human can read — otherwise the layer degrades quietly and the fallback hides it.
-
-**En este arbol el codigo ya estaba** (llego con el commit `58e3436`, "Googler improvement phase 1 under paired Tlamatinis staging"): verificado antes de portar — `ck/a` x2, `html.unescape` x2 y el filtro de `mastodon.social` presentes e identicos al ingles. Lo que faltaba era ESTA entrada del registro, y un arreglo sin su bitacora es un arreglo que el proximo lector deshace sin saber.
-
----
-
 ## 2026-08-29 — The frozen console's torch warning storm: ROOT-FIXED by keeping `transformers` out of the web process (and NOT by muting)
 
 Ported from the English tree (its `64b29725`). A frozen launch opened with a wall of third-party import-time warnings that say nothing about Tlamatini's health, so **every boot read as "something is wrong"** and the lines that DO matter were buried: **twelve** identical `torch\_jit_internal.py:999: UserWarning: Unable to retrieve source for @torch.jit._overload function`, plus a `LangChainDeprecationWarning` and Django's `Accessing the database during app initialization` note.
@@ -149,6 +669,42 @@ Ported from the English tree (its `64b29725`). A frozen launch opened with a wal
 Coverage: `agent/test_web_process_stays_lean.py` (10 tests, green in this tree).
 
 ---
+## 2026-08-28 — Googler phase 1: EVERY Bing result was silently thrown away (`agents/googler/googler.py`)
+
+Googler's Tier-0 plain-HTTP path has a per-engine **own-domain skip**: a result that still points at the search engine's own host is not a result, so it is dropped. Bing, however, does not hand out the destination URL — it wraps **every organic result** in its own click-tracker, `https://www.bing.com/ck/a?...&u=a1<base64url>`. `_unwrap_redirect` only knew the plain `uddg` / `q` / `u` / `url` query-parameter forms, so a Bing link **stayed on `bing.com`** and was then eaten by that very skip. The visible symptom was not an error: Bing returned a full page, Googler reported no usable links, and the tier **fell through to whatever the next engine happened to return** — so a search looked like it had "worked" while silently answering from a weaker source. **Do NOT revert.**
+
+**Two things had to be fixed together, and the ordering is the whole trick.** Bing serves that URL with its ampersands HTML-escaped (`&amp;u=a1…`), so `urlsplit` + `parse_qs` never saw a `u` parameter at all — the unwrapper would have failed even once it knew to look. `_unwrap_redirect` therefore now `html.unescape()`s the raw value **first**, before parsing; only then does the `bing.com/ck/a` branch read `u`, strip the leading `a1` / `a2` marker Bing prefixes to the payload, restore the base64 padding (`token + '=' * (-len(token) % 4)`), `urlsafe_b64decode` it, and accept the result **only when it decodes to something starting with `http`**.
+
+**It is fail-open by construction**, and deliberately so: every step sits inside `try/except`, and any failure — an unparseable URL, a marker Bing changes, a payload that is not valid base64, a decode that yields junk — simply falls through to the pre-existing `uddg` / `q` / `u` / `url` loop and then to the raw URL. A tracker format that drifts costs one engine's results, never an exception in the search path.
+
+Also in the same pass: the `mojeek-http` engine's skip list widened from `('mojeek.com',)` to also cover `mastodon.social/@mojeek` and `buttondown.email/mojeek` — the engine's own social and newsletter properties were surviving the own-domain skip and being served back as if they were findings.
+
+**The lesson is the NetSpeed-Calculator lesson again** (2026-08-23, *"a ZERO must always name its cause"*): the failure here was not that Bing broke, it is that **a silent drop is indistinguishable from an empty internet**. When a result-producing path discards candidates, the discard needs a reason a human can read — otherwise the layer degrades quietly and the fallback hides it.
+
+**En este arbol el codigo ya estaba** (llego con el commit `58e3436`, "Googler improvement phase 1 under paired Tlamatinis staging"): verificado antes de portar — `ck/a` x2, `html.unescape` x2 y el filtro de `mastodon.social` presentes e identicos al ingles. Lo que faltaba era ESTA entrada del registro, y un arreglo sin su bitacora es un arreglo que el proximo lector deshace sin saber.
+
+---
+
+## 2026-08-27 — Deleter directory-wipe fix, silent test audio, JS parse gate (Tlamatini-Spanish cross-tree glitch report, round 2)
+
+Three fixes ported from findings in the Spanish tree (each verified against THIS English tree first). **Do NOT revert any of them.**
+
+**The Deleter no longer deletes the directory it was told to work IN.** `agent/agents/deleter/deleter.py`: `target_path` is now the WORKING DIRECTORY, removed from the delete-alias tuple — relative `files_to_delete` JOIN onto it, so `target_path=<folder>` + `files_to_delete=[a,b,c]` deletes the three files and NEVER the folder (a lone `target_path` still acts on itself for back-compat, but a directory is refused unless opted in). New `refusal_reason(path, base_dir)` runs before EVERY delete and refuses — with a logged reason and a `total_refused` count — protected app dirs by name (`agent`, `agents`, `tlamatini`, `migrations`, `security`, `windows`, `system32`, `users`, `python`, …), the working dir or an ancestor, the Deleter's own tree, git-repo roots, and drive roots; fail-toward-safety. New config `allow_directory_delete` (default **false**) is required to delete a whole tree. The identical bug erased a 764-file `agent/` tree in the Spanish tree. Pinned by `agent/test_deleter_safety.py` (9 tests). Ask-Execs is NOT the mitigation (canvas / `.flw` / Croner / TeleTlamatini run unattended) — the guard lives IN the agent.
+
+**A test run never makes a sound.** `manage.py::_silence_the_tests()` sets `TLAMATINI_NO_AUDIO=1` when `sys.argv[1] == 'test'`, called BEFORE `_enforce_app_temp_dir()` so every spawned pool agent inherits it via `get_agent_env()`'s `os.environ.copy()`. The audio agents check it at the SINGLE point where sound leaves the machine: Talker's `play_pcm` (returns the real `(device_index, device_name, clipped)` shape), AudioPlayer's `sd.OutputStream` block, and VideoPlayer's `open_backend` (guarded BEFORE it, because the ffpyplayer `MediaPlayer` starts audio on construction). Pinned by `agent/test_no_audio_in_tests.py` (which asserts the flag is live during its own run). **Judge the ENV flag, not a config field** — and do NOT port the Spanish English-voice-kill guard.
+
+**Two JS process gates.** `no-undef` is enforced as an ERROR in `eslint.config.mjs` (a module that exports an identifier it never declared throws `ReferenceError` at load and silently loses `window.Tlamatini*`). NEW `scripts/check_js_parse.mjs` runs `node --check` on every `agent/static/agent/js/*.js` (a pasted-broken file is a dead page with no visible error) and is wired into `npm run lint` (`eslint … && node scripts/check_js_parse.mjs`), plus a standalone `check-js-parse` script. Pinned by `agent/test_js_gates.py`. Check the lint EXIT CODE, never grep its output for "error" (the compact formatter was removed from ESLint core).
+
+## 2026-08-26 — Blue-hat security toolkit: self-update evidence carryover + guards (G1-G7, Tlamatini-Spanish cross-tree report, round 1)
+
+The `security/` toolkit (defender + whitelist v2.1) shipped in v1.50.0s; these harden it. **Do NOT revert.**
+
+**G1 (data loss) — a self-update no longer destroys the operator's evidence.** `security/` is application code and MUST be replaced (a fixed defender has to reach a user who installed a broken one), so `'security'` stays OUT of `apply_update.ps1`'s `$Preserve`. But `security/security_logs/` (alerts.log, monitor.log, the visible asset-test proof) is the operator's evidence living INSIDE that replaced dir — the same situation as `db.sqlite3`. So step 3c STASHES it to `Temp/_security_logs_carryover` before the delete, and step 5b RESTORES it into the new `security/` after the move-in; both fail-open (a failed restore LEAVES the stash rather than deleting it). `self_update.py`'s docstring mirrors it. Proven with a scratch delete-and-replace simulation.
+
+**G2** — `"security_logs"` added to `SKIP_DIRS` in BOTH `build_complete_public_release.py` and `check_private_data.py` (kept mirrored): the release scrubber must not rewrite forensic artifacts, and the private-data scanner must not drown in the operator's own usernames / IPs / command lines (it never ships, so it cannot leak).
+
+**G3-G7 guards** — `agent/test_security_assets_carriage.py` pins the whole carriage + carryover contract; `agent/test_version_guard.py` pins `semver_to_win32_tuple` + `is_newer` (the English tree is plain SemVer — do NOT port the Spanish `strip_edition_suffix`); `agent/test_self_knowledge_is_current.py` DERIVES the agent/wrapped/skill/tool counts from source so `agent/Tlamatini.md` cannot drift (it fixed a stale "(87 of them)" → 88 and checks the Multi-Turn tool total adds up). `Tlamatini.md` §1 gained a Blue-hat bullet: she knows the toolkit exists AND that she CANNOT invoke it (operator-launched only). The docs (BookOfTlamatini / README / security-README) were rewritten from the misleading "runtime logs are not shipped" to the real carryover.
+
 ## 2026-08-26 — Blue-hat toolkit in the Spanish tree: evidence survives an update, and the `s` tag stops lying
 
 Three things landed together while sweeping `security/` for this edition. All three were
@@ -532,7 +1088,7 @@ audit. Migrations **0195/0196/0197**; catalog prompt **119**
 > `v1.48.16` = `6ee630ca` (themed `tlmAlert`/`tlmConfirm` pop-ups + the
 > frozen-bundle carriage proof in `build.py`), **`v1.48.17` = `f948be7b` — the
 > newest release on that day**, carrying everything below. The current release
-> is now `v1.50.6s`; entries that say a change "landed in v1.48.15" or
+> is now `v1.51.3s`; entries that say a change "landed in v1.48.15" or
 > `v1.48.17` are historical statements and remain as written.
 
 **Angela, verbatim:** *"Standarize in every ... every dialog and all of the

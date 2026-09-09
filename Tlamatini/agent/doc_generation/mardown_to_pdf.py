@@ -53,11 +53,13 @@ th, td {
 
 
 def markdown_text_to_pdf(md_text: str, output_pdf: Path, base_dir: Path | None = None, css_text: str = DEFAULT_CSS) -> None:
+    """Convierte Markdown a PDF estilizado.
+
+    ``base_dir`` conserva el directorio de referencia para imágenes relativas como
+    ``![](images/a.png)``; se mantiene en el contrato aunque xhtml2pdf resuelva el
+    contenido inline actual sin necesitarlo.
     """
-    Convert Markdown text to a styled PDF.
-    base_dir is used to resolve relative paths like images: ![](images/a.png)
-    """
-    # Good baseline extensions (tables + fenced code blocks):
+    # Extensiones base: tablas y bloques de código cercados.
     html_body = markdown(
         md_text,
         extensions=["fenced_code", "tables", "toc"],
@@ -68,7 +70,8 @@ def markdown_text_to_pdf(md_text: str, output_pdf: Path, base_dir: Path | None =
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Document</title>
+    <title>Documento Tlamatini</title>
+    <meta name="author" content="Angela López Mendoza">
     <style>
       {css_text}
     </style>
@@ -87,14 +90,14 @@ def markdown_text_to_pdf(md_text: str, output_pdf: Path, base_dir: Path | None =
         )
 
     if pisa_status.err:
-        raise RuntimeError(f"xhtml2pdf encountered {pisa_status.err} error(s) during conversion.")
+        raise RuntimeError(f"xhtml2pdf encontró {pisa_status.err} error(es) durante la conversión.")
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Convert Markdown to PDF using Markdown + xhtml2pdf.")
-    ap.add_argument("input", help="Path to a .md file (or '-' to read from stdin)")
-    ap.add_argument("output", help="Path to output .pdf")
-    ap.add_argument("--css", help="Optional path to a CSS file for styling", default=None)
+    ap = argparse.ArgumentParser(description="Convierte Markdown a PDF con Markdown + xhtml2pdf.")
+    ap.add_argument("input", help="Ruta de un archivo .md (o '-' para leer stdin)")
+    ap.add_argument("output", help="Ruta del PDF de salida")
+    ap.add_argument("--css", help="Ruta opcional de una hoja CSS", default=None)
     args = ap.parse_args()
 
     output_pdf = Path(args.output)
@@ -112,7 +115,7 @@ def main() -> None:
         css_text = Path(args.css).read_text(encoding="utf-8")
 
     markdown_text_to_pdf(md_text, output_pdf, base_dir=base_dir, css_text=css_text)
-    print(f"Wrote: {output_pdf.resolve()}")
+    print(f"Escrito: {output_pdf.resolve()}")
 
 
 if __name__ == "__main__":

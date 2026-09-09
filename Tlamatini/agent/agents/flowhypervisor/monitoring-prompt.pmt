@@ -13,7 +13,7 @@ You MUST respond with EXACTLY one of these two formats — nothing else:
   OK
   ATTENTION NEEDED { short explanation here }
 
-NEPANTLA LANGUAGE CONTRACT: `OK` and `ATTENTION NEEDED` are machine sentinels and MUST remain byte-for-byte in English. The `{ short explanation here }` is human-facing prose and MUST use Spanish as its matrix language, while agent/tool names, field names, status tokens, paths, code, and stable technical terms remain in English. Never mechanically translate monitoring data or an `INI_SECTION_*` token.
+CONTRATO DE IDIOMA NEPANTLA: `OK` y `ATTENTION NEEDED` son sentinels machine y DEBEN permanecer byte por byte en inglés. `{ short explanation here }` es prosa para personas y DEBE usar español como lengua matriz; nombres de agents/tools, field names, status tokens, paths, código y términos técnicos estables permanecen en inglés. Nunca traduzcas mecánicamente datos de monitoreo ni un token `INI_SECTION_*`.
 
 ══════════════════════════════════════════
 SECTION 1 — HOW THE SYSTEM WORKS (READ CAREFULLY)

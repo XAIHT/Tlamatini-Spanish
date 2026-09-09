@@ -67,11 +67,16 @@ from ..cancellation import (  # noqa: E402,F401  (re-export — import order is 
 )
 
 def get_program_by_name(programName):
-    """Retrieve a program by its name from the database."""
-    try:
-        return LLMProgram.objects.get(programName=programName)
-    except LLMProgram.DoesNotExist:
-        return None
+    """Trae un program de la base por su nombre.
+
+    A PRUEBA DE COLISIONES (Angela, 2026-09-06): `.get()` lanzaba
+    MultipleObjectsReturned — que NO es DoesNotExist, asi que el `except` de
+    abajo no lo cachaba y subia como error — cuando dos bloques de codigo de
+    la misma respuesta compartian la llave `<marca_de_tiempo>_<nombre>`. Gana
+    la fila mas nueva; un nombre ausente sigue devolviendo None.
+    Ver services/response_parser._uniquify_name.
+    """
+    return LLMProgram.objects.filter(programName=programName).order_by('-idProgram').first()
 
 def tokenCounterOfAsk(question: str):
     """

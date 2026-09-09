@@ -1809,6 +1809,18 @@ WRAPPED_CHAT_AGENT_SPECS: tuple[ChatWrappedAgentSpec, ...] = (
     ChatWrappedAgentSpec(
         key="pdfer",
         template_dir="pdfer",
+        # El parser generico de argumentos colapsa ``\\`` a ``\``. En Markdown
+        # eso corrompe EN SILENCIO cada ruta de Windows de la que habla el
+        # documento (``C:\Users\angel\...`` queda ``C:Usersangel...``), cada
+        # caracter escapado y cada fragmento de matematicas inline — en un
+        # documento cuyo proposito entero es reproducir ese texto fielmente.
+        # LaTeXer lo aprendio en 2026-08, cuando los saltos de renglon ``\\``
+        # se destruyeron en transito y se aplano cada tabla del reporte de
+        # OpenMP de Angela.
+        #
+        # Declarar los fields aqui hace que ``tools.py`` honre ``<field>_b64``
+        # primero y, si no, vuelva a extraer los bytes crudos.
+        verbatim_fields=("input_text", "content", "css", "footer_note"),
         tool_name="chat_agent_pdfer",
         tool_description="Chat-Agent-PDFer",
         display_name="PDFer",

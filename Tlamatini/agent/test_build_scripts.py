@@ -119,6 +119,15 @@ def _agent_third_party_imports() -> dict:
     """{import_name: [agent files]} for every NON-stdlib top-level import across
     the agents/ pool tree."""
     std = set(sys.stdlib_module_names)
+    # Los subprocesses del pool importan módulos hermanos directamente porque
+    # su propio directorio está en sys.path. Cada .py distribuido dentro del
+    # árbol es, por tanto, source local (PDFer ahora reparte su runtime entre
+    # varios pdfer_*.py), no una dependencia de PyPI que deba fijarse.
+    local_modules = {
+        candidate.stem
+        for candidate in AGENTS_DIR.rglob("*.py")
+        if "__pycache__" not in candidate.parts
+    }
     found: dict = {}
     for py in AGENTS_DIR.rglob("*.py"):
         if "__pycache__" in py.parts:
@@ -136,7 +145,7 @@ def _agent_third_party_imports() -> dict:
                 if node.level == 0 and node.module:
                     mods.add(node.module.split(".")[0])
         for m in mods:
-            if m in std or m in _NOT_THIRD_PARTY:
+            if m in std or m in _NOT_THIRD_PARTY or m in local_modules:
                 continue
             found.setdefault(m, []).append(py.name)
     return found

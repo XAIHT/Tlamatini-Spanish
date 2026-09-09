@@ -226,11 +226,15 @@ class _LogCapture:
                 outer.records.append(record.getMessage())
 
         self._handler = _H()
-        logging.getLogger().addHandler(self._handler)
+        self._root = logging.getLogger()
+        self._previous_level = self._root.level
+        self._root.setLevel(logging.INFO)
+        self._root.addHandler(self._handler)
         return self
 
     def __exit__(self, *_a):
-        logging.getLogger().removeHandler(self._handler)
+        self._root.removeHandler(self._handler)
+        self._root.setLevel(self._previous_level)
         return False
 
 
@@ -546,6 +550,16 @@ class AudioPlayerPlaybackTests(unittest.TestCase):
 
 class AudioPlayerMainTests(unittest.TestCase):
     def setUp(self):
+        # Estos casos prueban main() con un stack de audio totalmente falso y
+        # seguro. manage.py silencia por diseño toda la suite mediante esta
+        # variable; desactívala sólo dentro de la clase para alcanzar y fijar
+        # los contratos de success/error que siguen debajo.
+        self._audio_env = unittest.mock.patch.dict(
+            os.environ,
+            {'TLAMATINI_SIN_AUDIO': '0', 'TLAMATINI_NO_AUDIO': '0'},
+        )
+        self._audio_env.start()
+        self.addCleanup(self._audio_env.stop)
         self.mod = _load_audioplayer_module()
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)

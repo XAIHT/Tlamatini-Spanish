@@ -6,7 +6,7 @@
   Tlamatini Author Banner — do not remove
 ═══════════════════════════════════════════════════════════════════
 -->
-# Estado técnico actual de Tlamatini-Spanish — `v1.50.6s`
+# Estado técnico actual de Tlamatini-Spanish — `v1.51.3s` + `main` posterior
 
 Este documento es el punto de reconciliación entre el source, la documentación, los prompts, los skills y los artefactos generados. El español es la **lengua matriz** según NEPANTLA; nombres de agents/tools, fields, keys, enums, sentinels, paths, código y términos técnicos estables permanecen en inglés y byte-stable.
 
@@ -14,8 +14,10 @@ Este documento es el punto de reconciliación entre el source, la documentación
 
 | Dato | Valor | Fuente |
 |---|---:|---|
-| Tag anotado actual | `v1.50.6s` | `git describe --tags --exact-match HEAD` |
-| Commit del tag al iniciar la auditoría | `1339fc7` | `git rev-parse --short HEAD` |
+| Release/tag vigente | `v1.51.3s` | `git describe --tags --abbrev=0 HEAD` |
+| Commit del tag | `1339fc7` | `git rev-list -n 1 v1.51.3s` |
+| `HEAD` y `origin/main` auditados | `272d6ac` | `git rev-parse --short HEAD` + `git rev-parse --short origin/main` |
+| Commits de `main` posteriores al tag | 5 | `git rev-list --count v1.51.3s..HEAD` |
 | Workflow agents | 88 | directorios completos `agent/agents/<name>/<name>.py + config.yaml` |
 | Launchers wrapped `chat_agent_*` | 66 | `chat_agent_registry.WRAPPED_CHAT_AGENT_SPECS` |
 | Tools directas/core | 20 | decorators `@tool` activos |
@@ -27,7 +29,7 @@ Este documento es el punto de reconciliación entre el source, la documentación
 | Migrations | 198 | `agent/migrations/*.py`, sin `__init__.py` |
 | Frontend | 37 JS · 11 CSS · 4 templates HTML | inventario del tree |
 
-El inventario del dossier del 2026-09-01, incluyendo cuatro adiciones visibles y no ignoradas del working tree, midió 1,134 files, 248,088 líneas efectivas y 354,763 líneas físicas de texto. El appendix de árbol distribuible se limita a files tracked; las adiciones del working tree se reportan aparte para no fingir que ya pertenecen a un release.
+El inventario reproducible del 2026-09-06 mide **1,143 files tracked**, **250,620 líneas efectivas** y **358,520 líneas físicas**. Hay 59 binarios y dos archivos de texto omitidos del conteo por tamaño/legibilidad. El appendix de árbol distribuible se limita exactamente a `git ls-files`; los cambios locales se reportan aparte y nunca se fingen como contenido del tag.
 
 ## Desarrollo actual derivado del source
 
@@ -57,6 +59,24 @@ Googler ejecuta `html.unescape()` antes de analizar links, desenvuelve redirects
 
 `services/agent_contracts.py` mantiene los fields promovidos de Summarizer, Shoter, Reviewer, Analyzer, Telegrammer y Whatsapper alineados con sus bloques `INI_SECTION_*`. Para Globber, Grepper, Analyzer y demás agentes diagnósticos, `no_matches`, `findings`, `invalid` o `listed` pueden ser resultados exitosos porque la observación es el entregable; un `refused`, `not_found`, `engine_unavailable` o entregable degradado no es éxito limpio.
 
+### Descripciones españolas con fallback granular
+
+`agent/views.py` carga primero la tabla inglesa autoritativa de `agents_descriptions.md` y superpone `agents_descriptions.es.md` **agent por agent**. `AGENT_DESCRIPTIONS_LANGUAGE='es'` activa la capa; un file ausente, ilegible o incompleto falla hacia la tabla inglesa sin borrar tooltips ni el diálogo Description. Source y build frozen buscan ambos archivos en las mismas raíces. Ésta es localización de chrome/descripción, no traducción de IDs ni display names.
+
+### Playwrighter, Shoter y pruebas visibles propias
+
+`chat_agent_runtime._build_child_env()` exporta `TLAMATINI_AGENTS_ROOT` para que un wrapped agent iniciado desde `Temp/mcp_agent_runs/...` encuentre agents hermanos. La ruta desbloquea el paso `shoter` de Playwrighter también desde chat Multi-Turn, no sólo desde canvas. El harness `playwrighter_run.py` delega browser en Playwrighter y cada captura full-desktop en Shoter; no sustituye silenciosamente ninguno por una utilidad ajena.
+
+La matriz visible agregada en `.claude/skills/tlamatini-daily-chat-test/harness/` cubre: nueve diálogos ACP, tema y geometría, toggles bulk, Playwrighter+Shoter, voz española y un corpus reanudable de **1,000 preguntas**. Este último vuelve a activar Multi-Turn antes de cada envío, limpia historial para evitar respuestas rancias, rechaza marcos transitorios de self-healing, compara gemelas con/sin acento, valida español y registro técnico, exige servidor mudo y persiste evidencia por pregunta.
+
+### Sentinel de rephrase y contratos machine
+
+`Referenced Rephrase:` reemplaza la frase visible española como sentinel de protocolo en productor, WebSocket, historial y prompt. Se mantiene en inglés por NEPANTLA, se filtra del historial y no se duplica si ya venía prefijado; `test_chat_history_window.py::ReferencedRephraseMarkerTests` fija ese contrato. Los campos promovidos nuevos incluyen `target_words`, `all_screens`, `error`, `min_severity`, `mode` y `direction` según el agent correspondiente.
+
+### Seguridad Blue-hat y artefactos de diseño
+
+El dossier documenta los assets defensivos de `security/`, su habilitación consciente, el modo armed/aggressive y la preservación privada de `security_logs`. `.scanning/finding-policy.json` registra excepciones Bandit/Semgrep justificadas y acotadas. `10000xRedesignOfUpdatingMechanicsOnTlamatini.md`, `DesignOfIncludingMemoryMCPS.txt` y `MCPMemoriesFlowCreation.flw` son **diseño/propuesta**: se inventarían capacidades si se presentaran como runtime implementado. La documentación los etiqueta como trabajo prospectivo hasta que source, migrations y tests prueben lo contrario.
+
 ## Contrato NEPANTLA
 
 1. El chrome de GUI sí se localiza mediante `agent/i18n/ui_es.py` y la normalización N1/N2/N3.
@@ -71,7 +91,7 @@ Googler ejecuta `html.unescape()` antes de analizar links, desenvuelve redirects
 
 - Un número activo se deriva del source; no se copia de un handbook anterior.
 - Las notas de release fechadas conservan sus cifras históricas.
-- `v1.50.6s` nombra el tag `1339fc7`; cambios no commiteados se describen como **working tree posterior al tag**, no como contenido ya publicado.
+- `v1.51.3s` nombra el tag `1339fc7`; `main`/`HEAD` auditado es `272d6ac`, cinco commits posterior. Ninguno de esos commits posteriores se presenta como contenido ya publicado del tag.
 - Los configs con secrets no se transcriben en documentos ni artefactos.
 - Los PDFs/PPTX generados incluyen el tree tracked completo, inventario de líneas, arquitectura, uso, cambios recientes y evidencia de validación.
 
@@ -80,6 +100,6 @@ Googler ejecuta `html.unescape()` antes de analizar links, desenvuelve redirects
 - `python -m unittest` para contratos de versión, self-knowledge, NEPANTLA, build lean, Ctrl+C, build público, Googler, Deleter y artifacts.
 - `python Tlamatini/manage.py makemigrations --check --dry-run`.
 - `npm run lint`.
-- Regeneración determinista del dossier con `TLAMATINI_VERSION=1.50.6s`.
+- Regeneración determinista del dossier con `TLAMATINI_VERSION=1.51.3s`.
 - Extracción y render de todos los PDFs; render de todas las slides y prueba de geometría/overlap del PPTX.
 - Ejecución de `build_complete_private_release.py --self-modify` sólo después de que los gates rápidos sean verdes, sin imprimir secrets.

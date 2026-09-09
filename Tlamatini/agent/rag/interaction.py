@@ -33,7 +33,10 @@ def show_rephrased_question(rephrased_question, conversation_user_id=None):
         print("\n--- Rephrased question is None, empty, or whitespace. Skipping...")
         return False
     try:
-        if "pregunta reformulada:" not in rephrased_question.lower():
+        # ``Referenced Rephrase:`` is a protocol sentinel, not GUI prose.  It
+        # must remain byte-stable English under the NEPANTLA channel policy and
+        # must never be added twice when a caller already supplied it.
+        if not rephrased_question.casefold().startswith("referenced rephrase:"):
             referencedRephrase = "Referenced Rephrase: " + rephrased_question
         else:
             referencedRephrase = rephrased_question

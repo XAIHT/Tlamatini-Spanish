@@ -6,7 +6,7 @@
       "text": "Starter",
       "left": "50px",
       "top": "80px",
-      "agentPurpose": "Entry point, launches first agents",
+      "agentPurpose": "Punto de entrada; inicia los primeros agents",
       "configData": {
         "target_agents": [
           "crawler_1"
@@ -18,10 +18,10 @@
       "text": "Crawler",
       "left": "270px",
       "top": "80px",
-      "agentPurpose": "Web crawling with LLM analysis",
+      "agentPurpose": "Web crawling con análisis LLM",
       "configData": {
         "url": "https://www.npmjs.com/package/@modelcontextprotocol/server-memory",
-        "system_prompt": "Extract ALL details about this package: description, version, installation instructions, dependencies, API surface, tools exposed, configuration options, usage examples, and any architecture details. Be exhaustive.",
+        "system_prompt": "Extrae TODOS los detalles de este package: descripción, versión, instalación, dependencies, API surface, tools expuestas, opciones de configuración, ejemplos y arquitectura. Sé exhaustiva y redacta en español; conserva exactos package names, tools, fields, code y paths.",
         "content_mode": "text",
         "target_agents": [
           "crawler_2"
@@ -36,10 +36,10 @@
       "text": "Crawler",
       "left": "490px",
       "top": "80px",
-      "agentPurpose": "Web crawling with LLM analysis",
+      "agentPurpose": "Web crawling con análisis LLM",
       "configData": {
         "url": "https://www.npmjs.com/package/@modelcontextprotocol/server-sequential-thinking",
-        "system_prompt": "Extract ALL details about this package: description, version, installation instructions, dependencies, API surface, tools exposed, configuration options, usage examples, and any architecture details. Be exhaustive.",
+        "system_prompt": "Extrae TODOS los detalles de este package: descripción, versión, instalación, dependencies, API surface, tools expuestas, opciones de configuración, ejemplos y arquitectura. Sé exhaustiva y redacta en español; conserva exactos package names, tools, fields, code y paths.",
         "content_mode": "text",
         "target_agents": [
           "crawler_3"
@@ -54,10 +54,10 @@
       "text": "Crawler",
       "left": "710px",
       "top": "80px",
-      "agentPurpose": "Web crawling with LLM analysis",
+      "agentPurpose": "Web crawling con análisis LLM",
       "configData": {
         "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory",
-        "system_prompt": "Extract ALL details about the memory MCP server: source code structure, tools exposed (create_entities, create_relations, add_observations, delete_entities, delete_relations, delete_observations, read_graph, search_nodes, open_nodes), data model, how the knowledge graph works, file storage format, and all configuration options. Be completely exhaustive.",
+        "system_prompt": "Extrae TODOS los detalles del memory MCP server: estructura de source code, tools expuestas (create_entities, create_relations, add_observations, delete_entities, delete_relations, delete_observations, read_graph, search_nodes, open_nodes), data model, funcionamiento del knowledge graph, formato de storage y opciones de configuración. Sé exhaustiva y redacta en español sin traducir identifiers machine.",
         "content_mode": "text",
         "target_agents": [
           "crawler_4"
@@ -72,10 +72,10 @@
       "text": "Crawler",
       "left": "930px",
       "top": "80px",
-      "agentPurpose": "Web crawling with LLM analysis",
+      "agentPurpose": "Web crawling con análisis LLM",
       "configData": {
         "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking",
-        "system_prompt": "Extract ALL details about the sequential thinking MCP server: source code structure, the sequentialthinking tool, input schema (thought, nextThoughtNeeded, thoughtNumber, totalThoughts, isRevision, revisesThought, branchFromThought, branchId, needsMoreThoughts), how branching works, how revision works, and all configuration options. Be completely exhaustive.",
+        "system_prompt": "Extrae TODOS los detalles del sequential-thinking MCP server: estructura de source code, tool sequentialthinking, input schema (thought, nextThoughtNeeded, thoughtNumber, totalThoughts, isRevision, revisesThought, branchFromThought, branchId, needsMoreThoughts), branching, revision y opciones de configuración. Sé exhaustiva y redacta en español sin traducir identifiers machine.",
         "content_mode": "text",
         "target_agents": [
           "apirer_1"
@@ -90,7 +90,7 @@
       "text": "Apirer",
       "left": "1150px",
       "top": "80px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/src/memory/README.md",
         "method": "GET",
@@ -107,7 +107,7 @@
       "text": "Apirer",
       "left": "1370px",
       "top": "80px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/src/sequentialthinking/README.md",
         "method": "GET",
@@ -124,7 +124,7 @@
       "text": "Apirer",
       "left": "1370px",
       "top": "250px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/src/memory/index.ts",
         "method": "GET",
@@ -141,7 +141,7 @@
       "text": "Apirer",
       "left": "1150px",
       "top": "250px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/src/sequentialthinking/index.ts",
         "method": "GET",
@@ -158,7 +158,7 @@
       "text": "Apirer",
       "left": "930px",
       "top": "250px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/src/memory/knowledgeGraphManager.ts",
         "method": "GET",
@@ -175,7 +175,7 @@
       "text": "Executer",
       "left": "710px",
       "top": "250px",
-      "agentPurpose": "Shell commands",
+      "agentPurpose": "Comandos de shell",
       "configData": {
         "script": "where npx 2>nul & where npm 2>nul & where pnpm 2>nul & where uv 2>nul & where uvx 2>nul & where node 2>nul & node --version 2>nul & npm --version 2>nul & npx --version 2>nul",
         "target_agents": [
@@ -191,7 +191,7 @@
       "text": "Executer",
       "left": "490px",
       "top": "250px",
-      "agentPurpose": "Shell commands",
+      "agentPurpose": "Comandos de shell",
       "configData": {
         "script": "pnpm --version 2>nul & uv --version 2>nul & uvx --version 2>nul",
         "target_agents": [
@@ -207,7 +207,7 @@
       "text": "Apirer",
       "left": "270px",
       "top": "250px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/src/memory/knowledgeGraphManager.ts",
         "method": "GET",
@@ -224,7 +224,7 @@
       "text": "Apirer",
       "left": "50px",
       "top": "250px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://api.github.com/repos/modelcontextprotocol/servers/contents/src/memory",
         "method": "GET",
@@ -241,7 +241,7 @@
       "text": "Apirer",
       "left": "50px",
       "top": "420px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/src/memory/package.json",
         "method": "GET",
@@ -258,7 +258,7 @@
       "text": "Apirer",
       "left": "270px",
       "top": "420px",
-      "agentPurpose": "HTTP REST API calls",
+      "agentPurpose": "Llamadas HTTP REST API",
       "configData": {
         "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/src/sequentialthinking/package.json",
         "method": "GET",
@@ -275,7 +275,7 @@
       "text": "Ender",
       "left": "490px",
       "top": "420px",
-      "agentPurpose": "Terminates all agents, launches Cleaners",
+      "agentPurpose": "Termina todos los agents y lanza Cleaners",
       "configData": {
         "target_agents": [
           "crawler_1",

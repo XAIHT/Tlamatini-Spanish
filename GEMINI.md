@@ -39,6 +39,7 @@
 - The internal voice resolver `resolve_voice()` in `agent/agents/talker/talker.py` enforces this. If a male voice is requested, it throws `MaleVoiceForbiddenError` and exits the agent with a hard error: `"NOW CLOSING.. BYE"`. Do NOT modify or bypass this constraint.
 
 ### 1.3 How to talk to Angela (Mandatory Rules)
+- **Responde en español latinoamericano como lengua matriz.** Conserva byte-stable English sólo para names de agents/tools, parámetros, keys, enums, sentinels, paths y code; el prompt y la respuesta no hacen traducción mecánica de ida y vuelta (contrato NEPANTLA).
 - **Answer short and in plain language.**
 - **Lead with the single key fact in bold.**
 - Use a few short numbered points at most. Use everyday words, **no jargon**, **no giant multi-section walls of text**, and **no long source lists**.
@@ -53,8 +54,9 @@ When solving a problem that needs Angela to do things on her machine (Rethinking
   3. **WAIT**. Only when she sends that string do you give the next step.
   4. Repeat — one step + one reply-string per turn.
 
-### 1.5 Release actual (`v1.50.6s` — edición en español)
-- **`v1.50.6s` es el release actual del package y la documentación**; el tag anotado de ESTE árbol apunta a `1339fc7`. La identidad de runtime sigue derivándose de Git. La **`s` es la letra de edición**: permanece en toda superficie humana y se elimina donde la versión debe convertirse en números (`agent/version.py::strip_edition_suffix`; véase `VERSIONING.md`). No cites hashes del árbol inglés: no existen en este repository.
+### 1.5 Release actual (`v1.51.3s` — edición en español)
+- **`v1.51.3s` es el release actual del package y la documentación**; el tag de ESTE árbol apunta a `1339fc7`, mientras el `HEAD` auditado y `origin/main` están en `272d6ac`, cinco commits posteriores. Reporta esas identidades por separado. La identidad de runtime sigue derivándose de Git. La **`s` es la letra de edición**: permanece en toda superficie humana y se elimina donde la versión debe convertirse en números (`agent/version.py::strip_edition_suffix`; véase `VERSIONING.md`). No cites hashes del árbol inglés: no existen en este repository.
+- **Estado posterior al tag derivado del source:** `views.py` superpone `agents_descriptions.es.md` agent por agent con fallback inglés; los wrapped agents reciben `TLAMATINI_AGENTS_ROOT` para la ruta Playwrighter→Shoter desde chat; la suite visible cubre diálogos, tema, toggles y 1,000 preguntas españolas; `Referenced Rephrase:` es sentinel interno estable y no duplicable. Los documentos de rediseño de update/Memory MCP siguen siendo propuestas.
 - Historical lineage carried forward: Same-day lineage: `v1.48.15` = encoding-safe Grepper + closed verdict vocabulary, `v1.48.16` = themed popups + frozen-bundle carriage proof, `v1.48.17` = the Escape dismissal standardization and the sealed updater.
 - Grepper uses a BOM-first decoder for UTF-8/16/32 and then cp1252/Latin-1, so Windows PowerShell logs and accented Spanish source are searchable while genuine binary files remain skipped. Keep the BOM test ahead of the NUL test — UTF-16/32 text is legitimately full of `0x00`.
 - **Escape now dismisses EVERY dialog on both pages and means exactly what the titlebar ✕ means; an outside click still never dismisses.** A bubble-phase dispatcher activates each dialog's own dismiss control, so Ask-Execs still answers Deny, confirms resolve `false`, scroll locks release, and a sealed updater still refuses. `closeOnEscape: false` is forbidden tree-wide. The ONE exception is a dialog holding `el.tlmSealKey` (the updater while downloading), whose seal is checked before every other dismissal path.

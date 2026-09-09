@@ -1,3 +1,17 @@
+NOTA DE ESTADO - AUDITORÍA 2026-09-06
+Este archivo conserva una especificación/transcripción histórica de diseño; NO
+demuestra implementación actual. Memory y Sequential Thinking existen como
+defaults inactivos del catálogo External-MCP, pero la abstracción de package
+managers, instalación automática y demás pasos propuestos abajo siguen siendo
+prospectivos hasta que source ejecutable, migrations y tests los prueben. La
+lengua matriz para cualquier implementación o documentación nueva es español
+según NEPANTLA; package names, tools, fields, keys, enums, code y paths quedan
+byte-stable English. Release: v1.51.3s @ 1339fc7; main auditado: 272d6ac.
+
+-------------------------------------------------------------------------------
+TRANSCRIPCIÓN HISTÓRICA ORIGINAL
+-------------------------------------------------------------------------------
+
 Tlamatini (2026/08/15 16:04:42.921)
 
 I now have all the source code, package.json files, README files, and system package-manager detection results. I have everything I need to produce the complete detailed design. Let me compile it now.

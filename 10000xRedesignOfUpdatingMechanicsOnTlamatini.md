@@ -7,17 +7,17 @@
 ═══════════════════════════════════════════════════════════════════
 -->
 
-# 10,000,000% Redesign of Updating Mechanics on Tlamatini
+# Rediseño 10,000,000% de la mecánica de actualización de Tlamatini
 
-> **STATUS: ARCHITECTURAL PROPOSAL, NOT SHIPPED BEHAVIOR.** This document audits the current updater and proposes a future transactional replacement. Unless a section explicitly cites implemented source and tests, its shadow swap, rollback, WAL/SHM preservation, registry handoff, and two-phase mechanics must not be described as capabilities of the current application.
+> **ESTADO: PROPUESTA ARQUITECTÓNICA, NO COMPORTAMIENTO DISTRIBUIDO.** Este documento audita el updater actual y propone un reemplazo transaccional futuro. Salvo cuando una sección cite source y tests implementados, sus mecanismos de shadow swap, rollback, preservación WAL/SHM, registry handoff y two-phase no se describen como capacidades de la aplicación actual. Release vigente: `v1.51.3s` en `1339fc7`; `main` auditado: `272d6ac`.
 
-## 📌 Executive Summary & Architectural Overview
+## 📌 Resumen ejecutivo y panorama arquitectónico
 
-This document presents an exhaustive architectural analysis of Tlamatini's in-app self-update system (**About ▸ Check for updates**), audits the existing implementation (`self_update.py`, `apply_update.ps1`, `install.py`, `manage.py`, `preserved_user_state.json`), details five critical architectural vulnerabilities discovered during live testing, and proposes the **Next-Generation Atomic 2-Phase Transactional Updater**.
+Este documento presenta un análisis exhaustivo del self-update dentro de Tlamatini (**About ▸ Check for updates**), audita la implementación existente (`self_update.py`, `apply_update.ps1`, `install.py`, `manage.py`, `preserved_user_state.json`), detalla cinco riesgos arquitectónicos encontrados mediante pruebas vivas y propone un **updater transaccional atómico de dos fases**. Conforme a NEPANTLA, la explicación usa español como matriz y conserva exactos los identifiers, paths y nombres técnicos.
 
 ---
 
-## 1. Audit of the Current Self-Update Architecture
+## 1. Auditoría de la arquitectura actual de self-update
 
 The existing self-update architecture was designed to solve the fundamental Windows constraint: **a running binary cannot replace its own executable or locked dependency runtimes (`python/`, `jre/`, `git/`, `ms-playwright/`)**.
 

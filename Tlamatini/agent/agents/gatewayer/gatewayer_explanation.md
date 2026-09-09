@@ -6,11 +6,13 @@
   Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
 ═══════════════════════════════════════════════════════════════════
 -->
-# Gatewayer Agent — Deep-Dive Explanation & Usage Samples
+# Gatewayer Agent - explicación profunda y ejemplos de uso
+
+> **Contrato NEPANTLA:** la documentación viva y toda respuesta para personas usan español como lengua matriz; `Gatewayer`, config keys, fields, status tokens, code y paths permanecen byte-stable English. Las secciones inglesas heredadas abajo conservan detalle técnico, pero los links ya apuntan al source tracked actual.
 
 ## 1. What Is It?
 
-**Gatewayer** is an *inbound gateway agent* — the front door of the [Tlamatini](file:///c:/Tlamatini) multi-agent system. Its single job is:
+**Gatewayer** is an *inbound gateway agent* - the front door of the [Tlamatini](../../../../README.md) multi-agent system. Its single job is:
 
 > **Receive external events → Authenticate → Validate → Normalize → Persist → Queue → Dispatch to downstream agents.**
 
@@ -61,7 +63,7 @@ Script starts → set CWD to script dir → configure logging (file + console)
 - If the environment variable `AGENT_REANIMATED=1` is set, the log file is **appended to** (crash-recovery resume). Otherwise it is **truncated** (fresh start).
 - The log file is named after the containing directory: e.g. `gatewayer.log`.
 
-### 3.2 Config Loading — [config.yaml](file:///c:/Tlamatini/applications/gatewayer/config.yaml)
+### 3.2 Config Loading - [config.yaml](config.yaml)
 
 `load_config()` reads the YAML and exits hard if it's missing or unparseable. Every downstream function receives the full config dict.
 
@@ -80,7 +82,7 @@ Key config sections:
 | `target_agents` | List of downstream agent names to launch after dispatch |
 | `runtime` | Idle sleep, graceful shutdown timeout |
 
-### 3.3 Authentication — [authenticate_request()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L309-L355)
+### 3.3 Authentication - [authenticate_request()](gatewayer.py#L309-L355)
 
 Three modes, configured via `auth.mode`:
 
@@ -93,7 +95,7 @@ Three modes, configured via `auth.mode`:
 > [!TIP]
 > When `auth.bearer_token` is empty (the default), bearer mode is effectively **open** — any request passes.
 
-### 3.4 Validation — [validate_request()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L469-L493)
+### 3.4 Validation - [validate_request()](gatewayer.py#L469-L493)
 
 Three checks in order:
 
@@ -103,7 +105,7 @@ Three checks in order:
 
 Returns an error string on failure, `None` on success.
 
-### 3.5 Normalization — [build_event_envelope()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L362-L412)
+### 3.5 Normalization - [build_event_envelope()](gatewayer.py#L362-L412)
 
 Every accepted request (HTTP or file-drop) is transformed into a **canonical event envelope**:
 
@@ -130,7 +132,7 @@ Key behaviors:
 - `correlation_id` is pulled from the `X-Correlation-ID` header.
 - A SHA-256 hash of the raw body is computed for dedup and integrity.
 
-### 3.6 Deduplication — [compute_dedup_key() / is_duplicate()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L500-L519)
+### 3.6 Deduplication - [compute_dedup_key() / is_duplicate()](gatewayer.py#L500-L519)
 
 When `queue.dedup_enabled: true`:
 
@@ -139,7 +141,7 @@ When `queue.dedup_enabled: true`:
 3. Expired entries are pruned each time.
 4. The dedup state is persisted to `reanim_dedup.json` for crash recovery.
 
-### 3.7 Persistence — [persist_event()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L526-L557)
+### 3.7 Persistence - [persist_event()](gatewayer.py#L526-L557)
 
 Each event creates a directory `gateway_events/<event_id>/` containing:
 
@@ -152,7 +154,7 @@ Each event creates a directory `gateway_events/<event_id>/` containing:
 
 A `latest_event.json` symlink-style file is overwritten in the output root.
 
-### 3.8 Payload Logging — [_log_event_payload()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L419-L462)
+### 3.8 Payload Logging - [_log_event_payload()](gatewayer.py#L419-L462)
 
 Writes **two log formats** designed for consumption by downstream Tlamatini agents:
 
@@ -168,7 +170,7 @@ Writes **two log formats** designed for consumption by downstream Tlamatini agen
 - Overflow policy: `reject_new` → returns HTTP 500 when full.
 - Queue state is snapshotted to `reanim_queue.json` after every enqueue/dequeue for crash recovery.
 
-### 3.10 Dispatch Loop — [dispatch_loop()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L803-L841)
+### 3.10 Dispatch Loop - [dispatch_loop()](gatewayer.py#L803-L841)
 
 Runs in a background thread:
 
@@ -180,7 +182,7 @@ Runs in a background thread:
 > [!IMPORTANT]
 > Dispatch is **serial** — it waits for all target agents to stop before starting the next event's dispatch cycle. This is a deliberate concurrency guard.
 
-### 3.11 Folder-Drop Watcher — [folder_watch_loop()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L698-L796)
+### 3.11 Folder-Drop Watcher - [folder_watch_loop()](gatewayer.py#L698-L796)
 
 An alternative ingress mode that polls a filesystem directory:
 
@@ -209,7 +211,7 @@ If the process crashes and restarts with `AGENT_REANIMATED=1`:
 - **Dedup state** → restored from `reanim_dedup.json`
 - **Log file** → appended to (not truncated)
 
-### 3.14 Old-Event Cleanup — [cleanup_old_events()](file:///c:/Tlamatini/applications/gatewayer/gatewayer.py#L848-L867)
+### 3.14 Old-Event Cleanup - [cleanup_old_events()](gatewayer.py#L848-L867)
 
 Runs once at startup. Deletes event directories older than `storage.keep_days` (default 7).
 

@@ -626,14 +626,14 @@ function updateLiveIndicator() {
         liveDot.classList.add('live-running');
         liveIndicator.classList.remove('indicator-stopped');
         liveIndicator.classList.add('indicator-running');
-        if (liveText) liveText.textContent = 'Live';
+        if (liveText) liveText.textContent = 'En vivo';
     } else {
         // Gray and static
         liveDot.classList.remove('live-running');
         liveDot.classList.add('live-stopped');
         liveIndicator.classList.remove('indicator-running');
         liveIndicator.classList.add('indicator-stopped');
-        if (liveText) liveText.textContent = 'Stopped';
+        if (liveText) liveText.textContent = 'Detenido';
     }
 }
 

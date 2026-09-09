@@ -8,9 +8,11 @@
 -->
 # Tlamatini Flow Creation Skill
 
-You are an expert flow designer for the Tlamatini platform. Your task is to design an agent flow (a directed graph of connected agents) that accomplishes a user-specified objective.
+Eres especialista en diseñar flows para la plataforma Tlamatini. Tu tarea es construir un flow de agents (un grafo dirigido) que cumpla el objetivo indicado por la persona.
 
-## How Flows Work
+> **Contrato NEPANTLA de esta edición:** redacta toda explicación, decisión, warning y guía para personas con español como lengua matriz. Conserva byte-stable los nombres de agents/tools, config keys, fields, enums, sentinels, paths, código y términos técnicos establecidos. El JSON `.flw` es canal machine y no se traduce. Las secciones inglesas debajo documentan el schema heredado; no autorizan una respuesta general en inglés.
+
+## Cómo funcionan los Flows
 
 > **Not a flow concept: "Ask Execs".** The chat toolbar has an **Ask Execs** checkbox that makes the *interactive Multi-Turn chat* ask the user Proceed/Deny before each tool runs. That is a **chat runtime modifier only** — it has **no canvas node, no `config.yaml` field, and no connection**. Do **not** invent an "Ask Execs" agent or reference it in a generated `.flw`. Canvas/`.flw` flows run unattended; per-step approval is a chat feature, not a flow feature.
 
@@ -1831,7 +1833,7 @@ system_prompt: |
 ### 74. Talker
 - **Purpose**: TEXT-TO-SPEECH (TTS): SPEAKS `input_text` aloud through a system audio OUTPUT device (speakers) by driving an OLLAMA connection that runs a neural TTS model (default `Orpheus-3b-FT`). On trigger it builds an Orpheus prompt (`<voice>: <text>`, with an optional emotive tag and language hint), streams the model's audio TOKENS over the Ollama HTTP API, decodes them to a 24 kHz waveform with the SNAC neural codec, saves a WAV, plays it, emits an `INI_SECTION_TALKER` block (`output_path`, `output_dir`, `filename`, `model`, `language`, `voice`, `gender`, `emotion`, `sample_rate`, `audio_seconds`, `char_count`, `played`, `status`, plus a `response_body`), and ALWAYS triggers `target_agents`. The voice-synthesis sibling of the media family — AudioPlayer plays an existing FILE, Talker GENERATES speech from text; observational/output, so it does NOT appear in the Exec Report. NOTE: hearing audio needs `snac` + `torch` installed; without them Talker saves the audio tokens and reports `status: tokens_only`.
 - **Used for**: Speaking a generated/known string as an unattended flow step — an audible spoken alert, a voice prompt or announcement, reading back an LLM-generated message (from Prompter/Summarizer via Parametrizer), or pronouncing a word/phrase. Distinct from AudioPlayer (plays an existing file) and Notifier (in-browser popup); Talker SYNTHESISES speech.
-- **Aimed at**: TTS steps. **FEMALE VOICE ONLY (Tlamatini is female — a male voice is FORBIDDEN BY DESIGN).** `voice` selects one of the permitted FEMALE Orpheus voices: tara [default], leah, jess, mia, zoe (the only accepted `gender` is `female`). NEVER set `voice` to a male voice (leo/dan/zac) or `gender: male` — the agent refuses such a request by closing its execution entirely ("male voice is forbidden by design — NOW CLOSING.. BYE"), so the flow step produces no audio. `language` passes a hint to the model (base model is English-only; a multilingual fine-tune speaks others). `emotion` weaves a paralinguistic tag (laugh/chuckle/sigh/cough/sniffle/groan/yawn/gasp) into the speech. `model`/`ollama_url`/`ollama_token` configure the Ollama connection; generation knobs are `temperature`/`top_p`/`top_k`/`min_p`/`repetition_penalty`/`max_tokens`/`seed`. Playback uses `device_index`/`device_name`/`volume_percent`/`sample_rate`; the WAV is always saved to `output_dir`. Pair with Parametrizer to carry a `{response_body}` from a Prompter/Summarizer into Talker's `input_text`, or a Forker to branch on `{status}`.
+- **Aimed at**: pasos TTS. **SÓLO VOZ FEMENINA.** `voice` selecciona una voz femenina permitida (`tara`, `leah`, `jess`, `mia`, `zoe`) y `gender` sólo acepta `female`; una voz masculina cierra la ejecución. En esta edición `language` usa `es` por defecto. Como Orpheus base es English-only, el runtime usa Piper `es_MX-claude-high` para español y sólo permite la ruta Orpheus cuando el model declara capacidad multilingüe; nunca cae silenciosamente a audio inglés. `emotion` conserva tags paralingüísticos machine. `model`/`ollama_url`/`ollama_token` configuran Ollama; los knobs de generación y playback mantienen sus keys exactas. El WAV se guarda en `output_dir`. Usa Parametrizer para llevar `{response_body}` a `input_text` o Forker para ramificar por `{status}`.
 - **Application example**: Starter → Prompter (ask the LLM for a one-line greeting) → Parametrizer (map Prompter's `{response_body}` into Talker's `input_text`) → Talker (`voice: leah`, `emotion: chuckle`) → Ender (have the LLM write a line and speak it aloud). Or a spoken alert: Starter → Monitor-Log → Raiser (on `FATAL`) → Talker (`input_text: "A fatal error was detected"`, `voice: tara`) → Ender. (Always a female voice — leah/tara above.)
 - **Pool name pattern**: `talker_<n>`
 - **Starts other agents**: YES (always, success or failure)
@@ -1840,7 +1842,7 @@ system_prompt: |
   - `ollama_url`: "http://localhost:11434" (Ollama server hosting the TTS model)
   - `ollama_token`: "" (optional bearer token for an authenticated Ollama gateway)
   - `model`: "Orpheus-3b-FT" (the Ollama TTS model; e.g. legraphista/Orpheus:3b-ft-q8)
-  - `language`: "en" (language hint; base model is English-only, multilingual fine-tunes accept others)
+  - `language`: "es" (español; Piper `es_MX-claude-high` es el fallback válido, nunca una voz inglesa)
   - `voice`: "tara" (FEMALE voices ONLY: tara/leah/jess/mia/zoe — a male voice is FORBIDDEN BY DESIGN and aborts the agent)
   - `gender`: "" (optional; only `female` accepted, only used when `voice` is empty/"auto"; a non-female value aborts the agent)
   - `emotion`: "" (optional emotive tag: laugh/chuckle/sigh/cough/sniffle/groan/yawn/gasp)
@@ -2065,8 +2067,21 @@ system_prompt: |
 - **Aimed at**: The LAST hop of a reporting flow — the agent that produces the human-readable deliverable. Prefer it over File-Creator whenever the output should be a real document rather than a text file, and NEVER hand-roll a PDF through Executer/Pythonxer.
 - **Application example**: Starter → File-Interpreter (read a repo) → Parametrizer (map `{response_body}` into PDFer's `input_text`) → PDFer (`mode: markdown`, `title: Project Review`) → Parametrizer (map `{output_path}` into Emailer's attachment) → Emailer → Ender. A second common shape is Starter → Shoter → Parametrizer (map `{output_path}` into PDFer's `images`) → PDFer (`mode: mixed`) → Ender.
 - **Pool name pattern**: `pdfer_<n>`
-- **Parametrizer source**: emits `INI_SECTION_PDFER` with fields `mode`, `source_type`, `output_path`, `output_dir`, `filename`, `page_count`, `bytes`, `images_used`, `engine`, `status`, and body=`response_body`.
-- **Starts other agents**: YES (always — success, failure OR a fail-safe refusal — so a Forker can branch on `{status}` / `{page_count}`)
+- **Parametrizer source**: emits `INI_SECTION_PDFER` with fields `mode`, `source_type`, `output_path`, `output_dir`, `filename`, `page_count`, `bytes`, `images_used`, `engine`, `nuance`, `nuance_confidence`, `nuance_source`, `palette`, `predominant_color`, `background_mode`, `font_pairing`, `decorations`, `overlaps`, `layout_clean`, `repairs`, `status`, and body=`response_body`.
+- **Starts other agents**: YES (always — success, failure OR a fail-safe refusal — so a Forker can branch on `{status}` / `{page_count}` / `{layout_clean}`)
+- **THE LOOK IS COMPUTED FROM THE CONTENT (2026-09-06)**: PDFer classifies the document
+  before rendering and dresses it accordingly, so in most flows you set NOTHING here and
+  still get a document that suits its subject. A science/technology piece renders near-black
+  with white type and gradients; a paper with an abstract renders white, black and justified
+  like a typeset journal; a contract renders plain with no ornament. Two overrides matter
+  when you are designing a flow deliberately:
+  - `nuance` — force the treatment when the flow's purpose is known in advance (a compliance
+    flow should pass `nuance: legal`, a sales flow `nuance: marketing`).
+  - `predominant_color` — pass a brand colour ONCE, and consider carrying it between
+    documents: `PDFer → Parametrizer (map {predominant_color} into the next PDFer) → PDFer`
+    keeps a multi-part report visually consistent instead of each part choosing its own.
+  Also note `{layout_clean}` — a Forker can route a document whose layout audit was not clean
+  to a review step instead of straight to Emailer.
 - **Config parameters**:
   - `mode`: "auto" (auto | markdown | html | text | images | mixed | merge | info | validate). `auto` sniffs the content: HTML-looking text → html, images only → images, text+images → mixed, otherwise markdown.
   - `input_text`: "" (the Markdown / HTML / plain text to render — this is the field a Parametrizer usually writes into)
@@ -2074,13 +2089,40 @@ system_prompt: |
   - `images`: [] (image paths for `images` / `mixed`; a comma-separated string is accepted)
   - `input_pdfs`: [] (existing PDFs to append when `mode: merge`)
   - `title`: "" (a cover page is added when set) / `subtitle`: "" / `author`: ""
-  - `page_size`: "A4" (A4 | Letter | Legal) / `orientation`: "portrait" (portrait | landscape) / `margins_mm`: 18
-  - `css`: "" (empty = the built-in stylesheet) / `toc`: false / `page_numbers`: true
+  - `page_size`: "A4" (A4 | Letter | Legal | A3 | A5 | Tabloid) / `orientation`: "portrait" (portrait | landscape) / `margins_mm`: 18
+  - `toc`: false / `cover`: true / `page_numbers`: true / `footer_note`: ""
+  - `nuance`: "" (empty = DETECT from the content. scientific_dark | academic_paper |
+    software_manual | engineering_spec | business_report | financial_ledger |
+    legal_instrument | medical_clinical | security_briefing | data_analysis |
+    editorial_feature | creative_literary | marketing_brochure | educational_course |
+    government_policy | historical_archive | culinary_recipe | personal_letter |
+    presentation_deck | minimal_note. Short aliases work: science, paper, manual, spec,
+    business, financial, legal, medical, security, data, editorial, fiction, marketing,
+    course, government, history, recipe, letter, presentation, minimal — and their Spanish
+    equivalents. An explicit value WINS over detection.)
+  - `predominant_color`: "" (ONE colour — "#RRGGBB", "rgb(...)", "hsl(...)", "oklch(...)" or
+    a name like "teal"/"midnightblue"/"obsidian" — from which the WHOLE palette is derived)
+  - `accent_color` / `text_color` / `background_color` / `heading_color` / `link_color` /
+    `table_header_color` / `rule_color`: "" (per-role overrides; each wins over the nuance
+    and over `predominant_color`)
+  - `background_mode`: "auto" (auto | dark | light) / `font_pairing`: "" (scholarly |
+    technical | technical_mono | corporate | editorial | literary | legal | promotional |
+    dense | friendly | neutral) / `font_size`: 0 (0 = the nuance's own) / `scale_ratio`: 0
+    (0 = the nuance's own; 1.2 calm · 1.25 clear · 1.333 confident · 1.414 dramatic) /
+    `justify`: null (null = the nuance decides)
+  - `decorations`: "auto" (auto | none | restrained | moderate | rich — SAFETY, not taste:
+    it can only LOWER the ceiling PDFer computed from the content, never raise it) /
+    `ornament`: "" (constellation | circuitry | waveform | scholarly_rule | corporate_band |
+    editorial_flourish | botanical | bold_geometry | alert_grid | none)
+  - `engine`: "auto" (auto | atelier | legacy — `auto` uses the atelier unless `css` is set) /
+    `layout_audit`: true (re-open the finished PDF and MEASURE it) / `css`: "" (supplying
+    your own stylesheet switches to the legacy xhtml2pdf engine, which is the dialect it is
+    written in)
   - `document_language`: "es" | "en" (language of PDFer's OWN chrome: the page
     footer and the fallback title. It never translates the content, and it does
     not affect ollama_polish, which always keeps the content's own language.)
   - `image_layout`: "one-per-page" (one-per-page | fit | grid) / `image_caption`: true / `grid_columns`: 2 / `max_image_px`: 1600
-  - `ollama_polish`: false (true = let an Ollama model restructure the text into clean Markdown first; a failed polish keeps the raw content) / `ollama_url`: "http://localhost:11434" / `ollama_model`: "glm-5.2:cloud" / `ollama_token`: "" / `ollama_prompt`: "" / `ollama_timeout`: 180
+  - `ollama_polish`: false (true = let an Ollama model restructure the text into clean Markdown first; a failed polish keeps the raw content) / `ollama_design`: false (true = ask Tlamatini's own configured model to art-direct the colours; every field it returns is validated, and a failure leaves the deterministic design standing) / `ollama_url` / `ollama_model` / `ollama_token` / `ollama_prompt` / `ollama_timeout`: 180
   - `output_dir`: "" (empty = Documents/TlamatiniPDF) / `filename`: "" (empty = a timestamped name) / `overwrite`: false
   - `preflight`: true (fail-safe: REFUSE rather than write an empty or wrong PDF) / `command_timeout`: 300
   - `source_agents`: [] (upstream agents — canvas connection tracking)

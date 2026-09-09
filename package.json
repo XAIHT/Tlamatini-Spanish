@@ -1,6 +1,6 @@
 {
   "name": "tlamatini",
-  "version": "1.50.6s",
+  "version": "1.51.3s",
   "description": "Asistente de desarrollo con IA autoalojado: RAG híbrido, Multi-Turn, 88 agents visuales, ACPX, Skills, voz, hardware y build reproducible para Windows.",
   "private": true,
   "scripts": {

@@ -1,9 +1,9 @@
-# Spanish Localization of Tlamatini — Research Package
+# Localización española de Tlamatini - paquete de investigación
 
 **Baseline date:** 2026-07-27 · **System studied:** Tlamatini v1.47.0 (commit `3e6d514f`)
 **Historical status:** this package began as research/design and did not modify source while it was produced.
 
-> **Implementation update — 2026-09-01 / `v1.50.6s` (`1339fc7`).** The Spanish tree now implements the NEPANTLA channel boundary and a substantial deterministic layer in `agent/i18n/`: `policy.py`, `dnt.py`, `normalize.py` (N1/N2/N3), `ui_es.py`, `termbase_en.py`, `lexicon_es.py`, `flags.py`, `model_caps.py`, template filters and regression tests. Spanish is the matrix language; technical/machine symbols remain byte-stable English; user prompts and model answers are not mechanically translated. The progressive verifier/escalation theorem remains a design target, and the model-capability tier is not yet supplied by every production caller. Read statements below against their dated baseline, then consult [`../../estado-actual-v1.50.6s.md`](../../estado-actual-v1.50.6s.md) for current source truth.
+> **Actualización de implementación - 2026-09-06.** El release `v1.51.3s` está en `1339fc7`; `main` auditado está en `272d6ac`, cinco commits posterior. El tree implementa la frontera NEPANTLA y la capa determinista `agent/i18n/{policy,dnt,normalize,ui_es,termbase_en,lexicon_es,flags,model_caps}.py`, template filters y regresiones. Además, `views.py` superpone `agents_descriptions.es.md` agent por agent, la suite visible prueba 1,000 preguntas españolas y `Referenced Rephrase:` permanece sentinel machine byte-stable. La escalera progresiva completa sigue como diseño y no todo caller entrega aún el model name. Lee el cuerpo contra su baseline fechado y consulta [`../../estado-actual-v1.51.3s.md`](../../estado-actual-v1.51.3s.md) para la verdad actual.
 
 ---
 

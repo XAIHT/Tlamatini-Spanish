@@ -1701,7 +1701,14 @@ class AgentConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_program_by_name(self, programName):
-        return LLMProgram.objects.get(programName=programName)
+        # A PRUEBA DE COLISIONES (Angela, 2026-09-06) - ver
+        # services/response_parser._uniquify_name. Dos bloques de codigo de la
+        # misma respuesta compartian un nombre, y entonces `.get()` lanzaba
+        # MultipleObjectsReturned en vez de devolver el archivo.
+        program = LLMProgram.objects.filter(programName=programName).order_by('-idProgram').first()
+        if program is None:
+            raise LLMProgram.DoesNotExist(f"No LLMProgram named '{programName}'")
+        return program
 
     @database_sync_to_async
     def save_snippet(self, snippetName, snippetLanguage, snippetContent):

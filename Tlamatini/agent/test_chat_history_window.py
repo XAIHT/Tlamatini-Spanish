@@ -7,7 +7,7 @@
 #   Every line of this file was written by Angela López Mendoza.
 # ═══════════════════════════════════════════════════════════════════
 #   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
-"""Regression tests for the conversation-memory window (chat_history_loader).
+"""Regression tests for conversation memory and its rephrase sentinel.
 
 Reproduces the Step-by-Step continuity bug seen with the create-user wizard:
 after Clear-history, the FIRST follow-up turn loaded almost no history because the
@@ -21,12 +21,15 @@ The window is now a HARD UPPER bound of 8 (inclusive 0..8), independent of that
 counter. Session isolation is still guaranteed because Clear-history DELETES the
 rows (consumers.clear_chat_history) and the loader filters by conversation_user.
 """
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 
 from agent.chat_history_loader import DBChatHistoryLoader
 from agent.global_state import global_state
 from agent.models import AgentMessage
+from agent.rag.interaction import show_rephrased_question
 
 
 class ChatHistoryWindowTests(TestCase):
@@ -92,3 +95,26 @@ class ChatHistoryWindowTests(TestCase):
         self._say(self.bot, 'only answer')
         msgs = DBChatHistoryLoader.load(limit=8, conversation_user=self.human)
         self.assertEqual(len(msgs), 2)
+
+
+class ReferencedRephraseMarkerTests(TestCase):
+    """El sentinel de protocolo NEPANTLA se escribe exactamente una vez."""
+
+    def setUp(self):
+        self.conversation_user = User.objects.create(username="operadora")
+
+    @patch("agent.rag.interaction.get_channel_layer", return_value=None)
+    def test_plain_rephrase_gets_the_machine_marker_once(self, _layer):
+        self.assertTrue(show_rephrased_question(
+            "explica el resultado", self.conversation_user.pk
+        ))
+        self.assertEqual(
+            AgentMessage.objects.get().message,
+            "Referenced Rephrase: explica el resultado",
+        )
+
+    @patch("agent.rag.interaction.get_channel_layer", return_value=None)
+    def test_existing_machine_marker_is_not_duplicated(self, _layer):
+        value = "Referenced Rephrase: conserva el sentinel"
+        self.assertTrue(show_rephrased_question(value, self.conversation_user.pk))
+        self.assertEqual(AgentMessage.objects.get().message, value)

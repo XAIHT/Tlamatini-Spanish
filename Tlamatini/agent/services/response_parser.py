@@ -9,6 +9,7 @@
 #   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
 import os
 import re
+import uuid
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from ..models import LLMProgram, LLMSnippet, AgentMessage
@@ -31,13 +32,78 @@ _LOG_FULL_ANSWERS = (
 def save_message(user, message, conversation_user=None):
     AgentMessage.objects.create(user=user, conversation_user=conversation_user, message=message)
 
+# ── NOMBRES DUPLICADOS (Angela, 2026-09-06) ────────────────────────────
+# Los nombres de program y de snippet se arman como
+# `<marca de tiempo UTC al SEGUNDO>_<nombre>` (filesystem.get_time_stamp),
+# asi que DOS bloques de codigo emitidos en la MISMA respuesta recibian el
+# MISMO nombre — y todos los lectores lo buscaban por NOMBRE con `.get()`.
+# Ese par de filas quedaba inalcanzable para siempre: `load_canvas_view`
+# lanzaba `MultipleObjectsReturned` (un 500 sin atrapar, porque
+# `except LLMProgram.DoesNotExist` NO lo cacha) y `save_files_from_db`
+# fallaba igual para LAS DOS gemelas. El codigo nunca se perdio, solo se
+# volvia inalcanzable por su propio nombre.
+#
+# El arreglo es de los DOS lados y ninguna mitad se puede quitar:
+#   (1) el nombre se hace UNICO aqui, al guardar, para que un segundo
+#       bloque tenga su propia fila Y su propio link de canvas que sirva, y
+#   (2) todos los lectores se hicieron a prueba de colisiones
+#       (`filter(...).first()`), para que una base que YA trae duplicados
+#       cargue en vez de tronar.
+_NAME_COLLISION_SUFFIX_LIMIT = 999
+
+
+def _uniquify_name(model, field, name):
+    """Devuelve `name`, o la primera variante libre `name_2` / `name_3` / ...
+
+    FAIL-OPEN: cualquier error de base de datos cae al nombre ORIGINAL,
+    porque no poder desambiguar JAMAS debe impedir que el codigo de la
+    usuaria se guarde.
+    """
+    try:
+        if not model.objects.filter(**{field: name}).exists():
+            return name
+        for n in range(2, _NAME_COLLISION_SUFFIX_LIMIT + 1):
+            candidate = f"{name}_{n}"
+            if not model.objects.filter(**{field: candidate}).exists():
+                return candidate
+        return f"{name}_{uuid.uuid4().hex[:8]}"
+    except Exception as exc:
+        print(f"--- [NAME-GUARD] no se pudo desambiguar '{name}': {exc}")
+        return name
+
+
+def _resolved_name(requested, returned):
+    """Usa el nombre con el que la base REALMENTE guardo, con respaldo al pedido.
+
+    Defensivo a proposito: en las pruebas se parchan `save_program` /
+    `save_snippet`, y un mock devuelve algo que no es string y que jamas
+    debe terminar empalmado dentro de un link.
+    """
+    return returned if isinstance(returned, str) and returned else requested
+
+
 @sync_to_async
 def save_program(programName, programLanguage, programContent):
-    LLMProgram.objects.create(programName=programName, programLanguage=programLanguage, programContent=programContent)
+    """Guarda la fila y DEVUELVE el nombre con el que quedo guardada.
+
+    Quien llama DEBE usar el nombre devuelto para el link del canvas y para
+    `setLastProgramName` — si no, un segundo bloque escrito en el mismo
+    segundo apuntaria de vuelta a la fila del PRIMERO.
+    """
+    finalName = _uniquify_name(LLMProgram, 'programName', programName)
+    if finalName != programName:
+        print(f"--- [NAME-GUARD] el program '{programName}' ya existia - se guardo como '{finalName}'")
+    LLMProgram.objects.create(programName=finalName, programLanguage=programLanguage, programContent=programContent)
+    return finalName
 
 @sync_to_async
 def save_snippet(snippetName, snippetLanguage, snippetContent):
-    LLMSnippet.objects.create(snippetName=snippetName, snippetLanguage=snippetLanguage, snippetContent=snippetContent)
+    """Guarda la fila y DEVUELVE el nombre con el que quedo guardada."""
+    finalName = _uniquify_name(LLMSnippet, 'snippetName', snippetName)
+    if finalName != snippetName:
+        print(f"--- [NAME-GUARD] el snippet '{snippetName}' ya existia - se guardo como '{finalName}'")
+    LLMSnippet.objects.create(snippetName=finalName, snippetLanguage=snippetLanguage, snippetContent=snippetContent)
+    return finalName
 
 @sync_to_async
 def get_or_create_bot_user():
@@ -404,7 +470,7 @@ async def process_llm_response(llm_response, rag_chain, channel_layer, room_grou
         snippetContent = snippet[1]
         extension = constants.EXTENSION_MAP.get(snippetLanguage, '.txt')
         snippetName = get_time_stamp() + "_" + snippetLanguage + extension
-        await save_snippet(snippetName, snippetLanguage, snippetContent)
+        snippetName = _resolved_name(snippetName, await save_snippet(snippetName, snippetLanguage, snippetContent))
         print("\n--- Saved snippet: "+snippetName)
 
         # ALWAYS escape HTML entities for display to prevent browser rendering of tags
@@ -453,7 +519,7 @@ async def process_llm_response(llm_response, rag_chain, channel_layer, room_grou
             programName = re.sub(r'[\s]+', '(space)', programName)
             finalProgramName = get_time_stamp() + "_" + programName
             
-            await save_program(finalProgramName, lang, program2Save)
+            finalProgramName = _resolved_name(finalProgramName, await save_program(finalProgramName, lang, program2Save))
             if rag_chain:
                 rag_chain.setLastProgramName(finalProgramName)
             print("\n--- Saved program: "+finalProgramName)
@@ -467,7 +533,7 @@ async def process_llm_response(llm_response, rag_chain, channel_layer, room_grou
             programName = re.sub(r'[\s]+', '(space)', programName)
             finalProgramName = get_time_stamp() + "_" + programName
             
-            await save_program(finalProgramName, 'by-extension', program2Save)
+            finalProgramName = _resolved_name(finalProgramName, await save_program(finalProgramName, 'by-extension', program2Save))
             if rag_chain:
                 rag_chain.setLastProgramName(finalProgramName)
             print("\n--- Saved program: "+finalProgramName)
@@ -494,14 +560,14 @@ async def process_llm_response(llm_response, rag_chain, channel_layer, room_grou
         if programCodeInAposLang:
             contentInner = programCodeInAposLang.group(2)
             program2Save = contentInner.replace('```', '')
-            await save_program(programName, programCodeInAposLang.group(1), program2Save)
+            programName = _resolved_name(programName, await save_program(programName, programCodeInAposLang.group(1), program2Save))
             if rag_chain:
                 rag_chain.setLastProgramName(programName)
             print("\n--- Saved program: "+programName)
             llm_response = llm_response.replace(m.group(0), "<a href='#' style='font-weight: 600; color: white !important;' onclick='loadCanvas(" + '"' + programName + '"' + ");'>---Cargar en el canvas: "+programName+"---</a><br>")
         else:
             program2Save = programContent.replace('```', '')
-            await save_program(programName, 'by-extension', program2Save)
+            programName = _resolved_name(programName, await save_program(programName, 'by-extension', program2Save))
             if rag_chain:
                 rag_chain.setLastProgramName(programName)
             print("\n--- Saved program: "+programName)
