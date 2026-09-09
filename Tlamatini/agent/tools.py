@@ -2118,6 +2118,45 @@ def _seed_global_agent_defaults(template_dir, runtime_config):
                     field, cfg_key, value,
                 )
 
+    if template_dir in ("talker", "whisperer", "latexer"):
+        # Talker (TTS), Whisperer (its optional transcript cleanup) and LaTeXer
+        # (the model rung of the repair ladder) all reach the SAME Ollama that
+        # PDFer does, so the endpoint and token belong in config.json once
+        # instead of being repeated in three agent files.
+        #
+        # ⚠️ ONLY the CONNECTION is seeded, never the model. Each of these runs
+        # a model of a different KIND: Talker an Orpheus TTS voice, Whisperer a
+        # faster-whisper size, LaTeXer a separate `repair_model`. Seeding the
+        # chat model over any of them would break the agent while making it
+        # look configured — the exact failure this whole branch exists to stop.
+        for cfg_key, field in (
+            ("ollama_base_url", "ollama_url"),
+            ("ollama_token", "ollama_token"),
+        ):
+            try:
+                configured = get_config_value(cfg_key, "")
+            except Exception as exc:  # pragma: no cover - config read is best-effort
+                logger.warning("[tools._seed_global_agent_defaults] could not read %s: %s", cfg_key, exc)
+                continue
+            if not isinstance(configured, str) or not configured.strip():
+                continue
+            value = configured.strip()
+            # A placeholder token is worse than no token: it turns a working
+            # anonymous call into an authenticated rejection.
+            if field == "ollama_token" and value.startswith("<"):
+                continue
+            runtime_config[field] = value
+            if field == "ollama_token":
+                logger.info(
+                    "[tools._seed_global_agent_defaults] %s ollama_token seeded from config (length=%d)",
+                    template_dir, len(value),
+                )
+            else:
+                logger.info(
+                    "[tools._seed_global_agent_defaults] %s %s seeded from config %s: %s",
+                    template_dir, field, cfg_key, value,
+                )
+
     if template_dir == "zavuerer":
         # Zavuerer is the "embedded client" for the Zavu unified-messaging API:
         # the secret zavu_api_key lives once in config.json (Config -> Access Keys
