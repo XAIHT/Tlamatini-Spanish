@@ -230,7 +230,12 @@ open_router.key
 # uploaded to GitHub. ONLY settings.local.json stays ignored — it holds
 # machine-local permission rules that embed live API-key fragments.
 .claude/settings.local.json
-.codex
+# .codex/skills/ IS tracked, exactly like .claude/ and .gemini/: el arbol
+# ingles publica esas dos skills de dossier y esta edicion las tenia en disco,
+# ya adaptadas, pero SIN trackear — asi que no llegaban a un clone ni al build.
+# Lo que Codex escriba localmente fuera de skills/ sigue fuera del repository.
+.codex/*
+!.codex/skills/
 .vscode
 *.pos
 *.log
