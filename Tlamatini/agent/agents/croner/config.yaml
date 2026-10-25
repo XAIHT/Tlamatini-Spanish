@@ -1,7 +1,0 @@
-# Croner Agent Configuration
-# Triggers target agents at a specific time, optionally checking for a log pattern.
-
-trigger_time: ""
-trigger_time: ""
-target_agents: []
-poll_interval: 2
