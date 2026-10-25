@@ -1,0 +1,119 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/pdf/canvas.html",
+ "segmentos": [
+  {
+   "en": "lang=\"en\"",
+   "es": "lang=\"es-MX\"",
+   "n": 1
+  },
+  {
+   "en": ">PDF canvas<",
+   "es": ">Canvas de PDF<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"PDF controls\"",
+   "es": "aria-label=\"Controles del PDF\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Previous page\"",
+   "es": "aria-label=\"Página anterior\"",
+   "n": 1
+  },
+  {
+   "en": ">Previous<",
+   "es": ">Anterior<",
+   "n": 1
+  },
+  {
+   "en": ">Page <",
+   "es": ">Página <",
+   "n": 1
+  },
+  {
+   "en": ">of …<",
+   "es": ">de …<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Next page\"",
+   "es": "aria-label=\"Página siguiente\"",
+   "n": 1
+  },
+  {
+   "en": ">Next<",
+   "es": ">Siguiente<",
+   "n": 1
+  },
+  {
+   "en": ">Fit width<",
+   "es": ">Ajustar al ancho<",
+   "n": 1
+  },
+  {
+   "en": ">Fit page<",
+   "es": ">Ajustar a la página<",
+   "n": 1
+  },
+  {
+   "en": ">Rotate<",
+   "es": ">Girar<",
+   "n": 1
+  },
+  {
+   "en": ">View\n      <",
+   "es": ">Vista\n      <",
+   "n": 1
+  },
+  {
+   "en": ">Continuous<",
+   "es": ">Continua<",
+   "n": 1
+  },
+  {
+   "en": ">Single page<",
+   "es": ">Una página<",
+   "n": 1
+  },
+  {
+   "en": ">Opening PDF…<",
+   "es": ">Abriendo el PDF…<",
+   "n": 1
+  },
+  {
+   "en": ">Password for this PDF<",
+   "es": ">Contraseña de este PDF<",
+   "n": 1
+  },
+  {
+   "en": ">Unlock<",
+   "es": ">Desbloquear<",
+   "n": 1
+  },
+  {
+   "en": ">Cancel<",
+   "es": ">Cancelar<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"PDF document\"",
+   "es": "aria-label=\"Documento PDF\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": ">Zoom\n      <",
+   "motivo": "se dice igual en español"
+  },
+  {
+   "en": "value=\"page-width\"",
+   "motivo": "valor de máquina de la opción"
+  },
+  {
+   "en": "value=\"page-fit\"",
+   "motivo": "valor de máquina de la opción"
+  }
+ ]
+}

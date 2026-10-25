@@ -1,0 +1,566 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0140_add_esphomer_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **ESPHOME GENESIS** demo, please &mdash; a basic, end-to-end \"",
+   "es": "\"Tlamatini, ejecuta la demo **ESPHOME GENESIS**, por favor &mdash; una muestra básica, de principio a fin, \"",
+   "n": 1
+  },
+  {
+   "en": "\"showcase of ESPHomer's *zero-config self-provisioning* and *safety preflight*, driven \"",
+   "es": "\"del *autoaprovisionamiento zero-config* y del *preflight de seguridad* de ESPHomer, controlada \"",
+   "n": 1
+  },
+  {
+   "en": "\"entirely from chat through the wrapped **chat_agent_esphomer** tool: from a clean machine \"",
+   "es": "\"por completo desde el chat a través del tool wrapper **chat_agent_esphomer**: desde una máquina limpia \"",
+   "n": 1
+  },
+  {
+   "en": "\"it pip-INSTALLS ESPHome itself, validates the whole environment, GENERATES a smart-home \"",
+   "es": "\"hace pip-INSTALL de ESPHome ella misma, valida todo el entorno, GENERA el YAML de un dispositivo \"",
+   "n": 1
+  },
+  {
+   "en": "\"device YAML, validates and compiles it to a firmware image, then lists the .bin &mdash; all \"",
+   "es": "\"de smart-home, lo valida y lo compila a una imagen de firmware, y luego lista el .bin &mdash; todo \"",
+   "n": 1
+  },
+  {
+   "en": "\"WITHOUT a board attached (this is a pure provision + build demo). \"",
+   "es": "\"SIN una placa conectada (esta es una demo pura de aprovisionar + construir). \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; trust them and go straight \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; confía en ellas y ve directo \"",
+   "n": 1
+  },
+  {
+   "en": "\"to Step 1): (a) **the user installed ONLY Tlamatini** (plus, for a real upload later, the \"",
+   "es": "\"al Paso 1): (a) **el usuario instaló SÓLO Tlamatini** (más, para un upload real después, el \"",
+   "n": 1
+  },
+  {
+   "en": "\"board's USB-serial driver) &mdash; you do NOT need to install or configure ESPHome, ESPHomer \"",
+   "es": "\"driver USB-serial de la placa) &mdash; NO necesitas instalar ni configurar ESPHome, ESPHomer \"",
+   "n": 1
+  },
+  {
+   "en": "\"pip-installs it automatically; (b) NO board is needed &mdash; nothing is flashed; (c) tick \"",
+   "es": "\"lo hace pip-install automáticamente; (b) NO hace falta placa &mdash; no se flashea nada; (c) marca \"",
+   "n": 1
+  },
+  {
+   "en": "\"ONLY the **Multi-Turn** checkbox before sending (ACPX is NOT required &mdash; \"",
+   "es": "\"SÓLO la casilla **Multi-Turn** antes de enviar (NO se necesita ACPX &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_esphomer is the ONLY tool you may use; do NOT use chat_agent_executer / \"",
+   "es": "\"chat_agent_esphomer es el ÚNICO tool que puedes usar; no uses chat_agent_executer / \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_pythonxer / acp_spawn). Every step is exactly ONE chat_agent_esphomer call shaped \"",
+   "es": "\"chat_agent_pythonxer ni tools de ACPX). Cada paso es exactamente UNA llamada a chat_agent_esphomer con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run ESPHomer with action='<action>' and <k>='<v>' ...\\\". After each call read the JSON \"",
+   "es": "\"\\\"Run ESPHomer with action='<action>' and <k>='<v>' ...\\\". Después de cada llamada lee el JSON \"",
+   "n": 1
+  },
+  {
+   "en": "\"return (an INI_SECTION_ESPHOMER block under the run's log_excerpt) and capture action / tool / \"",
+   "es": "\"que devuelve (un bloque INI_SECTION_ESPHOMER bajo el log_excerpt de la ejecución) y captura action / tool / \"",
+   "n": 1
+  },
+  {
+   "en": "\"ok / returncode / success / config_path / name / stage plus the body. If a step returns \"",
+   "es": "\"ok / returncode / success / config_path / name / stage, además del body. Si un paso devuelve \"",
+   "n": 1
+  },
+  {
+   "en": "\"ok=false / success=false, record it verbatim, DO NOT abort, continue. \"",
+   "es": "\"ok=false / success=false, regístralo tal cual, NO canceles, continúa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 2
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127968; ESPHOME GENESIS &#9889;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127968; ESPHOME GENESIS &#9889;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini ESPHomer &mdash; provision &middot; validate &middot; author &middot; compile</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini ESPHomer &mdash; aprovisionar &middot; validar &middot; escribir &middot; compilar</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (ZERO-CONFIG provision): call **chat_agent_esphomer** with request \"",
+   "es": "\"Paso 1 (aprovisionamiento ZERO-CONFIG): llama a **chat_agent_esphomer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run ESPHomer with action='bootstrap'\\\". This makes ESPHomer `pip install esphome` into its \"",
+   "es": "\"\\\"Run ESPHomer with action='bootstrap'\\\". Esto hace que ESPHomer haga `pip install esphome` en su \"",
+   "n": 1
+  },
+  {
+   "en": "\"Python with NO manual setup. From the body capture the install action (present / pip-install) \"",
+   "es": "\"Python SIN configuración manual. Del body captura la acción de instalación (present / pip-install) \"",
+   "n": 1
+  },
+  {
+   "en": "\"and 'overall : OK'. If overall is FAILED, the host likely has no internet &mdash; skip to the \"",
+   "es": "\"y 'overall : OK'. Si overall es FAILED, lo más probable es que el host no tenga internet &mdash; salta al \"",
+   "n": 1
+  },
+  {
+   "en": "\"closing banner with a 'PROVISION FAILED' verdict. \"",
+   "es": "\"banner de cierre con un veredicto 'ERROR DE APROVISIONAMIENTO'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (safety preflight): call **chat_agent_esphomer** with request \"",
+   "es": "\"Paso 2 (preflight de seguridad): llama a **chat_agent_esphomer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run ESPHomer with action='validate'\\\". This validates the environment WITHOUT building: \"",
+   "es": "\"\\\"Run ESPHomer with action='validate'\\\". Esto valida el entorno SIN construir: \"",
+   "n": 1
+  },
+  {
+   "en": "\"capture esphome_resolvable and (since validate also probes for hardware) the serial summary \"",
+   "es": "\"captura esphome_resolvable y (como validate también sondea el hardware) el resumen del serial \"",
+   "n": 1
+  },
+  {
+   "en": "\"(present). A missing serial port is FINE here &mdash; this demo never flashes. \"",
+   "es": "\"(present). Que falte un puerto serial está BIEN aquí &mdash; esta demo nunca flashea. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (GENERATE the device YAML): call **chat_agent_esphomer** with request \\\"Run ESPHomer \"",
+   "es": "\"Paso 3 (GENERA el YAML del dispositivo): llama a **chat_agent_esphomer** con el request \\\"Run ESPHomer \"",
+   "n": 1
+  },
+  {
+   "en": "\"with action='new_config' and config_path='<TEMPLATES>/esphome/genesis/tlamatini-genesis.yaml' \"",
+   "es": "\"with action='new_config' and config_path='<TEMPLATES>/esphome/genesis/tlamatini-genesis.yaml' \""
+  },
+  {
+   "en": "\"and name='tlamatini-genesis' and platform='esp32' and board='esp32dev'\\\", where <TEMPLATES> is \"",
+   "es": "\"and name='tlamatini-genesis' and platform='esp32' and board='esp32dev'\\\", donde <TEMPLATES> es \"",
+   "n": 1
+  },
+  {
+   "en": "\"your Templates directory (the absolute path the system prompt gives you). CAPTURE the \"",
+   "es": "\"tu directorio Templates (el path absoluto que te da el system prompt). CAPTURA el \"",
+   "n": 1
+  },
+  {
+   "en": "\"**config_path** &mdash; pass it to every later step. \"",
+   "es": "\"**config_path** &mdash; pásalo a cada paso posterior. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (validate the YAML): call **chat_agent_esphomer** with request \\\"Run ESPHomer with \"",
+   "es": "\"Paso 4 (valida el YAML): llama a **chat_agent_esphomer** con el request \\\"Run ESPHomer with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='config' and config_path='<the path from Step 3>'\\\". Confirm returncode=0 (ESPHome \"",
+   "es": "\"action='config' and config_path='<the path from Step 3>'\\\". Confirma returncode=0 (ESPHome \"",
+   "n": 1
+  },
+  {
+   "en": "\"expanded and validated the YAML). \"",
+   "es": "\"expandió y validó el YAML). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (compile &rarr; firmware): call **chat_agent_esphomer** with request \\\"Run ESPHomer \"",
+   "es": "\"Paso 5 (compila &rarr; firmware): llama a **chat_agent_esphomer** con el request \\\"Run ESPHomer \"",
+   "n": 1
+  },
+  {
+   "en": "\"with action='compile' and config_path='<the path from Step 3>'\\\". Confirm returncode=0. NOTE: \"",
+   "es": "\"with action='compile' and config_path='<the path from Step 3>'\\\". Confirma returncode=0. NOTA: \"",
+   "n": 1
+  },
+  {
+   "en": "\"the FIRST compile downloads the platform + toolchain (via PlatformIO under the hood) so it can \"",
+   "es": "\"el PRIMER compile descarga la plataforma + el toolchain (vía PlatformIO por debajo), así que puede \"",
+   "n": 1
+  },
+  {
+   "en": "\"take a few minutes &mdash; that is normal. \"",
+   "es": "\"tardar unos minutos &mdash; eso es normal. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (artifacts): call **chat_agent_esphomer** with request \\\"Run ESPHomer with \"",
+   "es": "\"Paso 6 (artefactos): llama a **chat_agent_esphomer** con el request \\\"Run ESPHomer with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='list_artifacts' and config_path='<the path from Step 3>'\\\". Capture the firmware.bin \"",
+   "es": "\"action='list_artifacts' and config_path='<the path from Step 3>'\\\". Captura el path de firmware.bin \"",
+   "n": 1
+  },
+  {
+   "en": "\"path from the body. \"",
+   "es": "\"del body. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 7: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 2
+  },
+  {
+   "en": "\"'<strong>ESPHome Genesis &mdash; Provision &amp; Build Report</strong>' and columns \"",
+   "es": "\"'<strong>ESPHome Genesis &mdash; Reporte de aprovisionamiento y build</strong>' y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>step</em>, <em>stage</em> (bootstrap|validate|author|config|compile), <em>esphome_action</em>, \"",
+   "es": "\"<em>paso</em>, <em>stage</em> (bootstrap|validate|author|config|compile), <em>esphome_action</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>status</em> (ok|error), <em>headline</em> (overall for bootstrap; esphome_resolvable for \"",
+   "es": "\"<em>status</em> (ok|error), <em>resumen</em> (overall para bootstrap; esphome_resolvable para \"",
+   "n": 1
+  },
+  {
+   "en": "\"validate; config_path for new_config; returncode for config/compile; the firmware path for \"",
+   "es": "\"validate; config_path para new_config; returncode para config/compile; el path del firmware para \"",
+   "n": 1
+  },
+  {
+   "en": "\"list_artifacts) &mdash; one row per call in execution order, status verbatim from the \"",
+   "es": "\"list_artifacts) &mdash; una fila por cada llamada en orden de ejecución, status tal cual del \"",
+   "n": 1
+  },
+  {
+   "en": "\"INI_SECTION_ESPHOMER block (do NOT re-classify). Light body cells \"",
+   "es": "\"bloque INI_SECTION_ESPHOMER (NO lo reclasifiques). Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9), green tint ok, subtle red error. \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9), tono verde ok, rojo suave error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 8: cierra con un banner HTML que reutilice el estilo del Paso 0, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; ESPHOME PROVISIONED &amp; FIRMWARE BUILT' (bootstrap OK, validate resolved esphome, \"",
+   "es": "\"'&#9989; ESPHOME APROVISIONADO &amp; FIRMWARE CONSTRUIDO' (bootstrap OK, validate resolvió esphome, \"",
+   "n": 1
+  },
+  {
+   "en": "\"compile returncode=0 and artifacts listed), '&#9888;&#65039; GENESIS PARTIAL' (some steps ok, \"",
+   "es": "\"compile returncode=0 y artefactos listados), '&#9888;&#65039; GÉNESIS PARCIAL' (algunos pasos ok, \"",
+   "n": 1
+  },
+  {
+   "en": "\"some error), or '&#10060; PROVISION FAILED' (bootstrap overall FAILED), and underneath a \"",
+   "es": "\"algunos error) o '&#10060; ERROR DE APROVISIONAMIENTO' (overall de bootstrap FAILED), y debajo una \"",
+   "n": 1
+  },
+  {
+   "en": "\"one-line metric 'esphome: <install action> &middot; config: <config_path> &middot; compile rc: \"",
+   "es": "\"métrica de una línea 'esphome: <install action> &middot; config: <config_path> &middot; compile rc: \"",
+   "n": 1
+  },
+  {
+   "en": "\"<0> &middot; artifact: firmware.bin'. End with END-RESPONSE.\"",
+   "es": "\"<0> &middot; artefacto: firmware.bin'. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **SMART LIGHT** demo, please &mdash; a medium-complexity showcase that \"",
+   "es": "\"Tlamatini, ejecuta la demo **SMART LIGHT**, por favor &mdash; una muestra de complejidad media que \"",
+   "n": 1
+  },
+  {
+   "en": "\"builds a *phone-controlled light* with ESPHome, driven entirely from chat through the wrapped \"",
+   "es": "\"construye una *luz controlada por el teléfono* con ESPHome, controlada por completo desde el chat a través del tool wrapper \"",
+   "n": 1
+  },
+  {
+   "en": "\"**chat_agent_esphomer** tool: it preflight-validates the environment, GENERATES a device YAML \"",
+   "es": "\"**chat_agent_esphomer**: valida el entorno en preflight, GENERA un YAML de dispositivo \"",
+   "n": 1
+  },
+  {
+   "en": "\"for an on/off light on the board's onboard LED (exposed over the ESPHome native API so a \"",
+   "es": "\"para una luz on/off en el LED on-board de la placa (expuesta por la API nativa de ESPHome para que un \"",
+   "n": 1
+  },
+  {
+   "en": "\"smart-home hub can toggle it from a phone), validates and compiles it, lists the artifacts, \"",
+   "es": "\"hub de smart-home pueda conmutarla desde un teléfono), lo valida y lo compila, lista los artefactos \"",
+   "n": 1
+  },
+  {
+   "en": "\"then attempts to upload it to a board. \"",
+   "es": "\"y luego intenta subirlo a una placa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify; go straight to Step 1): (a) the user \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques; ve directo al Paso 1): (a) el usuario \"",
+   "n": 1
+  },
+  {
+   "en": "\"installed ONLY Tlamatini &mdash; ESPHomer pip-installs ESPHome itself on first use, so you \"",
+   "es": "\"instaló SÓLO Tlamatini &mdash; ESPHomer hace pip-install de ESPHome ella misma en el primer uso, así que \"",
+   "n": 1
+  },
+  {
+   "en": "\"NEVER configure tool paths; (b) the build needs NO board; the UPLOAD step needs an ESP32 board \"",
+   "es": "\"NUNCA configuras paths de tools; (b) el build NO necesita placa; el paso de UPLOAD necesita una placa ESP32 \"",
+   "n": 1
+  },
+  {
+   "en": "\"on USB (ESPHome flashes the first time over USB-serial, OTA after) &mdash; BUT ESPHomer's \"",
+   "es": "\"por USB (ESPHome flashea la primera vez por USB-serial, OTA después) &mdash; PERO el preflight de seguridad de ESPHomer \"",
+   "n": 1
+  },
+  {
+   "en": "\"safety preflight will REFUSE the upload with 'No serial port detected' if no board is \"",
+   "es": "\"RECHAZARÁ el upload con 'No serial port detected' si no hay placa \"",
+   "n": 1
+  },
+  {
+   "en": "\"connected, which is EXPECTED and routable, NOT a crash: record it verbatim and CONTINUE; \"",
+   "es": "\"conectada, lo cual es ESPERADO y enrutable, NO un crash: regístralo tal cual y CONTINÚA; \"",
+   "n": 1
+  },
+  {
+   "en": "\"(c) tick ONLY the **Multi-Turn** checkbox (ACPX is NOT required). Use ONLY chat_agent_esphomer, \"",
+   "es": "\"(c) marca SÓLO la casilla **Multi-Turn** (NO se necesita ACPX). Usa SÓLO chat_agent_esphomer, \"",
+   "n": 1
+  },
+  {
+   "en": "\"ONE call per step shaped \\\"Run ESPHomer with action='<action>' and <k>='<v>' ...\\\". Read each \"",
+   "es": "\"UNA llamada por paso con la forma \\\"Run ESPHomer with action='<action>' and <k>='<v>' ...\\\". Lee cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"JSON return (INI_SECTION_ESPHOMER block under log_excerpt), capture \"",
+   "es": "\"JSON que devuelve (bloque INI_SECTION_ESPHOMER bajo log_excerpt), captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"action/tool/ok/returncode/success/config_path/name/port/stage, and on ok=false record verbatim \"",
+   "es": "\"action/tool/ok/returncode/success/config_path/name/port/stage, y con ok=false regístralo tal cual \"",
+   "n": 1
+  },
+  {
+   "en": "\"and CONTINUE. \"",
+   "es": "\"y CONTINÚA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128161; SMART LIGHT &#128241;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128161; SMART LIGHT &#128241;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini ESPHomer &mdash; validate &middot; author &middot; compile &middot; upload</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini ESPHomer &mdash; validar &middot; escribir &middot; compilar &middot; subir</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (safety preflight): \\\"Run ESPHomer with action='validate'\\\" &mdash; capture \"",
+   "es": "\"Paso 1 (preflight de seguridad): \\\"Run ESPHomer with action='validate'\\\" &mdash; captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"esphome_resolvable and the serial summary (present) as the 'before' baseline (ESPHomer \"",
+   "es": "\"esphome_resolvable y el resumen del serial (present) como la base 'before' (ESPHomer \"",
+   "n": 1
+  },
+  {
+   "en": "\"auto-provisions ESPHome as part of this if needed). \"",
+   "es": "\"auto-aprovisiona ESPHome como parte de esto si hace falta). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (GENERATE the smart-light YAML): \\\"Run ESPHomer with action='new_config' and \"",
+   "es": "\"Paso 2 (GENERA el YAML de la smart-light): \\\"Run ESPHomer with action='new_config' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"config_path='<TEMPLATES>/esphome/light/tlamatini-light.yaml' and name='tlamatini-light' and \"",
+   "es": "\"config_path='<TEMPLATES>/esphome/light/tlamatini-light.yaml' and name='tlamatini-light' and \""
+  },
+  {
+   "en": "\"platform='esp32' and board='esp32dev' and led_pin='GPIO2' and wifi_ssid='YOUR_WIFI' and \"",
+   "es": "\"platform='esp32' and board='esp32dev' and led_pin='GPIO2' and wifi_ssid='YOUR_WIFI' and \""
+  },
+  {
+   "en": "\"wifi_password='YOUR_PASS'\\\", where <TEMPLATES> is your Templates directory. This writes a valid \"",
+   "es": "\"wifi_password='YOUR_PASS'\\\", donde <TEMPLATES> es tu directorio Templates. Esto escribe un config \"",
+   "n": 1
+  },
+  {
+   "en": "\"ESPHome config with esp32/logger/api/ota/wifi blocks and a binary light named 'Tlamatini Light' \"",
+   "es": "\"ESPHome válido con bloques esp32/logger/api/ota/wifi y una luz binaria llamada 'Tlamatini Light' \"",
+   "n": 1
+  },
+  {
+   "en": "\"on GPIO2. CAPTURE the **config_path**. \"",
+   "es": "\"en GPIO2. CAPTURA el **config_path**. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (validate the YAML): \\\"Run ESPHomer with action='config' and config_path='<the path \"",
+   "es": "\"Paso 3 (valida el YAML): \\\"Run ESPHomer with action='config' and config_path='<the path \"",
+   "n": 1
+  },
+  {
+   "en": "\"from Step 2>'\\\". Confirm returncode=0. \"",
+   "es": "\"from Step 2>'\\\". Confirma returncode=0. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (compile): \\\"Run ESPHomer with action='compile' and config_path='<the path from Step \"",
+   "es": "\"Paso 4 (compila): \\\"Run ESPHomer with action='compile' and config_path='<the path from Step \"",
+   "n": 1
+  },
+  {
+   "en": "\"2>'\\\". Confirm returncode=0. (First compile pulls the toolchain &mdash; can take a few minutes.) \"",
+   "es": "\"2>'\\\". Confirma returncode=0. (El primer compile jala el toolchain &mdash; puede tardar unos minutos.) \"",
+   "n": 1
+  },
+  {
+   "en": "\"If returncode is non-zero, capture the diagnostic from stderr &mdash; routable evidence; you \"",
+   "es": "\"Si returncode es distinto de cero, captura el diagnóstico del stderr &mdash; evidencia enrutable; puedes \"",
+   "n": 1
+  },
+  {
+   "en": "\"may stop after the report with a 'BUILD FAILED' verdict. \"",
+   "es": "\"detenerte después del reporte con un veredicto 'ERROR DE BUILD'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (artifacts): \\\"Run ESPHomer with action='list_artifacts' and config_path='<the path \"",
+   "es": "\"Paso 5 (artefactos): \\\"Run ESPHomer with action='list_artifacts' and config_path='<the path \"",
+   "n": 1
+  },
+  {
+   "en": "\"from Step 2>'\\\". Capture the firmware.bin path. \"",
+   "es": "\"from Step 2>'\\\". Captura el path de firmware.bin. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (upload &mdash; flash over USB-serial): \\\"Run ESPHomer with action='upload' and \"",
+   "es": "\"Paso 6 (upload &mdash; flashea por USB-serial): \\\"Run ESPHomer with action='upload' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"config_path='<the path from Step 2>'\\\". If a board is connected, the body shows esphome writing \"",
+   "es": "\"config_path='<the path from Step 2>'\\\". Si hay una placa conectada, el body muestra a esphome escribiendo \"",
+   "n": 1
+  },
+  {
+   "en": "\"+ verifying the firmware; if not, ESPHomer's preflight returns ok=false with 'No serial port \"",
+   "es": "\"+ verificando el firmware; si no, el preflight de ESPHomer devuelve ok=false con 'No serial port \"",
+   "n": 1
+  },
+  {
+   "en": "\"detected' &mdash; record it verbatim and CONTINUE (board-absent is the expected soft-fail). \"",
+   "es": "\"detected' &mdash; regístralo tal cual y CONTINÚA (placa ausente es el soft-fail esperado). \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Smart Light &mdash; Run Report</strong>' and columns <em>step</em>, <em>stage</em> \"",
+   "es": "\"'<strong>Smart Light &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, <em>stage</em> \"",
+   "n": 1
+  },
+  {
+   "en": "\"(validate|author|config|compile|upload), <em>esphome_action</em>, <em>status</em> (ok|error), \"",
+   "es": "\"(validate|author|config|compile|upload), <em>esphome_action</em>, <em>status</em> (ok|error), \""
+  },
+  {
+   "en": "\"<em>headline</em> (esphome resolved; config_path; compile returncode; firmware.bin path; upload \"",
+   "es": "\"<em>resumen</em> (esphome resolved; config_path; compile returncode; path de firmware.bin; upload \"",
+   "n": 1
+  },
+  {
+   "en": "\"verify or 'preflight refused: no board') &mdash; one row per call in execution order, status \"",
+   "es": "\"verify o 'preflight refused: no board') &mdash; una fila por cada llamada en orden de ejecución, status \"",
+   "n": 1
+  },
+  {
+   "en": "\"verbatim from the INI_SECTION_ESPHOMER block. Light body cells \"",
+   "es": "\"tal cual del bloque INI_SECTION_ESPHOMER. Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9); green tint ok, subtle red error. \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9); tono verde ok, rojo suave error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 8: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; LIGHT READY' (compile returncode=0 AND upload verified), \"",
+   "es": "\"'&#9989; LUZ LISTA' (compile returncode=0 AND upload verified), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9888;&#65039; BUILT, NO BOARD' (compile ok but the preflight refused the upload / no board), \"",
+   "es": "\"'&#9888;&#65039; CONSTRUIDO, SIN PLACA' (compile ok pero el preflight rechazó el upload / sin placa), \"",
+   "n": 1
+  },
+  {
+   "en": "\"or '&#10060; BUILD FAILED' (compile returncode &ne; 0), and underneath a one-line metric \"",
+   "es": "\"o '&#10060; ERROR DE BUILD' (compile returncode &ne; 0), y debajo una métrica de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"'config: <config_path> &middot; compile rc: <0> &middot; upload: <verified|no-board> &middot; \"",
+   "es": "\"'config: <config_path> &middot; compile rc: <0> &middot; upload: <verified|no-board> &middot; \""
+  },
+  {
+   "en": "\"light: \\\"Tlamatini Light\\\" on GPIO&nbsp;2'. End with END-RESPONSE.\"",
+   "es": "\"luz: \\\"Tlamatini Light\\\" en GPIO&nbsp;2'. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#06281C 0%,#0E8A4F 33%,#36D399 66%,#D7FBE8 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

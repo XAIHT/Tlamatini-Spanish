@@ -1,0 +1,63 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-globals.js",
+ "segmentos": [
+  {
+   "en": "'button:contains(\"Save\"), button:contains(\"Go!\"), '",
+   "es": "'button:contains(\"Guardar\"), button:contains(\"¡Adelante!\"), '",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'button:contains(\"Continue\"), button:contains(\"OK\"), '",
+   "es": "'button:contains(\"Continuar\"), button:contains(\"Aceptar\"), '",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'button:contains(\"Proceed\"), button:contains(\"Start\"), '",
+   "es": "'button:contains(\"Permitir\"), button:contains(\"Iniciar\"), '",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'button:contains(\"Run\")'",
+   "es": "'button:contains(\"Ejecutar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'OK'",
+   "es": "'Aceptar'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 1
+  },
+  {
+   "en": "'Continue'",
+   "es": "'Continuar'",
+   "n": 1
+  },
+  {
+   "en": "'Please confirm'",
+   "es": "'Confirmación'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'false'",
+   "motivo": "valor de máquina (aria-disabled)"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor de máquina (aria-disabled)"
+  },
+  {
+   "en": "'Tlamatini'",
+   "motivo": "nombre del producto"
+  }
+ ]
+}

@@ -1,0 +1,838 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+from django.apps import AppConfig
+import threading as _threading
+
+
+# ── Companion-app discovery (Tlamatini-FlowPills) — process-local gate ──────────
+# Dedicated to discovery publication and DELIBERATELY separate from the MCP
+# ``mcp_server_running`` flag, so (a) an MCP-running state can never suppress
+# discovery and (b) a duplicate ``AgentConfig.ready()`` can never start two
+# publisher threads (REQ-S2-PUB-003). See docs/companion-app-discovery.md and
+# Tlamatini-FlowPills-Lookup-2nd-Sprint.md.
+_DISCOVERY_GATE_LOCK = _threading.Lock()
+_discovery_thread_started = False
+
+
+def _canonical_agent_display_name(folder_name, fallback):
+    """Canonical sidebar/canvas display name for an ``agents/<folder>`` template.
+
+    THE naming bug this fixes (Angela, 2026-07-26): ``AgentConfig.ready()`` WIPES the
+    ``Agent`` table on every single startup and rebuilds it from the folder listing,
+    so whatever this function returns IS the display name — a migration's carefully
+    cased ``agentDescription`` is overwritten on the very next launch. The old logic
+    was ``str.title()`` plus five ad-hoc overrides, which mangled 22 of the then-86 agents
+    ("Pdfer", "Sqler", "Esp32Er", "Videoplayer", ...) and, worse, produced SPACED
+    names for six agents whose canvas connection handlers only ever test the
+    HYPHENATED literal ('kyber-keygen', 'j-decompiler', 'video-analyzer',
+    'de-compresser', 'kyber-cipher', 'kyber-decipher') — so those connections were
+    silently never persisted.
+
+    ``services.agent_paths.display_name_from_agent_type`` is the single source of
+    truth (the same map the Flow Compiler and Agent Contracts use), so the DB row,
+    the sidebar label, the canvas connection handlers and the wrapped-agent enable
+    gate (``agent_<display>_status``) all agree by construction.
+
+    FAIL-OPEN: any import/lookup problem falls back to the caller's legacy value —
+    a naming refinement must never stop the app from booting.
+    """
+    try:
+        from .services.agent_paths import display_name_from_agent_type
+        resolved = (display_name_from_agent_type(folder_name) or '').strip()
+        return resolved or fallback
+    except Exception:                                    # noqa: BLE001 - fail-open
+        return fallback
+
+
+def _discovery_publish_eligible(argv_str, run_main):
+    """Pure predicate: is this an eligible application-server launch that should
+    publish companion discovery? ``argv_str`` = ``' '.join(sys.argv).lower()`` and
+    ``run_main`` = ``os.environ.get('RUN_MAIN')``. Application modes are
+    ``runserver`` / ``startserver`` / ``daphne`` / ``asgi`` (REQ-S2-PUB-004); under
+    the ``runserver`` autoreloader only the worker child (``RUN_MAIN == 'true'``)
+    publishes, never the watcher parent.
+    """
+    if not (
+        'runserver' in argv_str
+        or 'startserver' in argv_str
+        or 'daphne' in argv_str
+        or 'asgi' in argv_str
+    ):
+        return False
+    reloader = ('runserver' in argv_str) and ('--noreload' not in argv_str)
+    if reloader and run_main != 'true':
+        return False
+    return True
+
+
+def _schedule_companion_discovery():
+    """Schedule companion-app discovery publication on an INDEPENDENT daemon thread.
+
+    Uses ONLY stdlib imports and is called FIRST in ``ready()`` — before any optional
+    runtime subsystem (``global_state`` / the two MCP servers / ``models`` / ACPX /
+    skills) is imported — so an import or startup failure in any of those can NEVER
+    prevent publication (REQ-S2-PUB-001/002). Idempotent via a dedicated lock + flag,
+    independent of ``mcp_server_running`` (REQ-S2-PUB-003). Fail-open, HKCU-only, off
+    the hot path. Returns ``True`` iff it started the publisher thread this call.
+    """
+    global _discovery_thread_started
+    try:
+        import sys
+        import os
+        import logging
+
+        if not _discovery_publish_eligible(
+            ' '.join(sys.argv).lower(), os.environ.get('RUN_MAIN')
+        ):
+            return False
+
+        with _DISCOVERY_GATE_LOCK:
+            if _discovery_thread_started:
+                return False
+            _discovery_thread_started = True
+
+        def _run_discovery_publish():
+            try:
+                from . import agent_manifest
+                from .version import get_version
+                agent_manifest.publish_discovery(version=get_version())
+            except Exception:
+                logging.exception("Companion-app discovery publish failed")
+
+        _threading.Thread(
+            target=_run_discovery_publish, name="DiscoveryPublish", daemon=True
+        ).start()
+        return True
+    except Exception:
+        try:
+            import logging
+            logging.exception("Could not schedule companion-app discovery")
+        except Exception:
+            pass
+        return False
+
+
+class AgentConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'agent'
+
+    def ready(self):
+        """
+        Ensure the MCP system server runs in the background for the lifetime
+        of the Django process (e.g., `runserver` with OR without `--noreload`,
+        or our custom `startserver`). We start it once in a daemon thread — the
+        RUN_MAIN gate below makes plain `runserver` (reloader ON) start it in the
+        worker only, so the two MCP helper ports are never double-bound.
+        """
+        # ── Companion-app discovery (Tlamatini-FlowPills) ──────────────
+        # Scheduled FIRST — before ANY optional-subsystem import below — on its own
+        # daemon thread with a dedicated idempotency gate, so an import or startup
+        # failure in MCP / models / ACPX / skills can NEVER prevent publication
+        # (REQ-S2-PUB-001/002/003). Fail-open. See docs/companion-app-discovery.md.
+        _schedule_companion_discovery()
+
+        from .context_governor import register_usage_sink
+        from .usage_tracking import enqueue_usage
+        register_usage_sink(enqueue_usage)
+
+        # Contacts book: export TLAMATINI_CONTACTS so every spawned pool agent
+        # (Telegrammer / Whatsapper) inherits the resolved contacts.json path —
+        # the same mechanism as TLAMATINI_TEMP. Fail-open; cheap on every init.
+        try:
+            import os as _os
+            from . import contacts as _contacts
+            _os.environ.setdefault('TLAMATINI_CONTACTS', _contacts.get_contacts_path())
+        except Exception:
+            pass
+        try:
+            # Lazy imports to avoid impacting management commands that scan apps
+            import sys
+            import threading
+            import asyncio
+            import logging
+            from .global_state import global_state
+            from .mcp_system_server import main as mcp_main
+            from .mcp_files_search_server import serve as files_serve
+            from .models import AgentProcess, ChatAgentRun
+
+            # Do not start multiple times
+            if global_state.get_state('mcp_server_running'):
+                return
+
+            # Only start during typical server runs
+            argv = ' '.join(sys.argv).lower()
+            should_start = (
+                'runserver' in argv or
+                'startserver' in argv or
+                'daphne' in argv or
+                'asgi' in argv
+            )
+            if not should_start:
+                return
+
+            # Reloader-awareness (fixes plain `runserver` colliding on :8765 / :50051).
+            # `runserver` WITHOUT --noreload runs TWO processes — the autoreload watcher
+            # AND the worker child — and BOTH execute ready(). Without this gate the MCP
+            # helper servers (System-Metrics ws :8765 / Files-Search grpc :50051) get
+            # started twice and the second bind fails with WinError 10048
+            # ("only one usage of each socket address ..."). Django's autoreloader sets
+            # RUN_MAIN=true ONLY in the worker child; the watcher parent leaves it unset.
+            # So under the runserver reloader, start everything below ONLY in the worker.
+            # --noreload / daphne / asgi / startserver run a SINGLE process (no reloader,
+            # RUN_MAIN unset) and correctly fall through and start exactly once.
+            import os as _os
+            _runserver_reloader = ('runserver' in argv) and ('--noreload' not in argv)
+            if _runserver_reloader and _os.environ.get('RUN_MAIN') != 'true':
+                return
+
+            # Terminater: export the loopback token + publish the rendezvous file
+            # BEFORE any pool agent can be spawned (they inherit this environment).
+            # No hub, thread or shell is created here -- the hub is built lazily on
+            # the first browser connection or agent call.
+            try:
+                from . import terminal_hub as _terminal_hub
+                _terminal_hub.ensure_ready()
+            except Exception:
+                logging.exception("Failed to publish the Terminater rendezvous")
+
+            # GPU max-performance + Ollama keep_alive=-1 pin. Runs on a
+            # daemon thread so a slow nvidia-smi or cold-loading model
+            # never delays Daphne. See agent/gpu_perf.py for the full
+            # contract and the reason this fixes the "context loading
+            # sometimes takes hours" PC-GPU thermal-throttle +
+            # model-eviction symptom.
+            try:
+                from .gpu_perf import start_in_background as _start_gpu_perf
+                from .config_loader import load_config as _load_config_for_perf
+                try:
+                    _perf_cfg = _load_config_for_perf()
+                except Exception:
+                    _perf_cfg = None
+                _start_gpu_perf(_perf_cfg)
+            except Exception:
+                logging.exception("Failed to launch gpu_perf boot")
+
+            # Autonomous command watchdog. An independent daemon thread that
+            # kills hung console children (a malformed/interactive shell stuck
+            # waiting on stdin) on its own, so a blocked tool call can never
+            # freeze the whole chat. Runs off the worker thread, so it stays
+            # alive even while a Multi-Turn tool is wedged. Fail-open.
+            # See agent/command_watchdog.py for the full contract.
+            try:
+                from .command_watchdog import start_in_background as _start_cmd_watchdog
+                try:
+                    _wd_cfg = _load_config_for_perf()
+                except Exception:
+                    _wd_cfg = None
+                _start_cmd_watchdog(_wd_cfg)
+            except Exception:
+                logging.exception("Failed to launch command watchdog boot")
+
+            # Cleanup AgentProcess records on startup
+            try:
+                AgentProcess.objects.all().delete()
+                print("--- Cleaned up all AgentProcess records on startup.")
+            except Exception:
+                logging.exception("Failed to cleanup AgentProcess records")
+
+            try:
+                ChatAgentRun.objects.all().delete()
+                print("--- Cleaned up all ChatAgentRun records on startup.")
+            except Exception:
+                logging.exception("Failed to cleanup ChatAgentRun records")
+
+            # Repopulate Agent table on startup to ensure all agents in the directory are discovered
+            # This is critical for "frozen" mode where migrations might not reflect the actual file system state
+            try:
+                from .models import Agent
+                import os
+                import sys
+
+                # Determine agents directory logic (duplicate of pool path logic but for source agents)
+                if getattr(sys, "frozen", False):
+                    # In frozen mode, executable is in the root of the bundle
+                    exe_dir = os.path.dirname(sys.executable)
+                    agents_dir = os.path.join(exe_dir, 'agents')
+                else:
+                    # In dev mode, agents are in the agent app directory
+                    module_dir = os.path.dirname(os.path.abspath(__file__))
+                    agents_dir = os.path.join(module_dir, 'agents')
+
+                if os.path.exists(agents_dir):
+                    # Get all agent folders
+                    agent_folders = []
+                    for item in os.listdir(agents_dir):
+                        item_path = os.path.join(agents_dir, item)
+                        # Skip pools, pycache, and non-directories
+                        if os.path.isdir(item_path) and item.lower() not in ['pools', '__pycache__']:
+                            agent_folders.append(item)
+                    
+                    agent_folders.sort()
+                    
+                    # Keep each agent's Configure Agents choice across the
+                    # rebuild (Angela, 2026-10-02): the table is wiped and
+                    # re-created from the folders, but an agent she ticked or
+                    # unticked stays exactly as she left it.  A NEW agent starts
+                    # unticked while Compact mode is on, ticked otherwise.
+                    previous_flags = {}
+                    try:
+                        previous_flags = {
+                            str(desc or '').lower(): content
+                            for desc, content in Agent.objects.values_list(
+                                'agentDescription', 'agentContent')
+                        }
+                    except Exception:
+                        previous_flags = {}
+                    new_agent_flag = 'true'
+                    try:
+                        from .models import CompactState
+                        state_row = CompactState.objects.filter(pk=1).first()
+                        if state_row is not None and state_row.active:
+                            new_agent_flag = 'false'
+                    except Exception:
+                        new_agent_flag = 'true'
+
+                    # Clear existing agents
+                    Agent.objects.all().delete()
+                    
+                    print(f"--- Repopulating {len(agent_folders)} agents from {agents_dir}...")
+
+                    # Populate new agents
+                    for index, folder_name in enumerate(agent_folders, start=1):
+                        # Create display name logic
+                        display_name = folder_name.replace('_', ' ')
+                        
+                        # Consistent casing logic
+                        if len(display_name) <= 3:
+                            display_name = display_name.upper()
+                        else:
+                            display_name = display_name.title()
+                            
+                        # Specific overrides
+                        if display_name.lower() == 'and':
+                            display_name = 'AND'
+                        elif display_name.lower() == 'or':
+                            display_name = 'OR'
+                        elif display_name.lower() == 'monitor log':
+                            display_name = 'Monitor-Log'
+                        elif display_name.lower() == 'monitor netstat':
+                            display_name = 'Monitor Netstat'
+                        elif display_name.lower() == 'recmailer':
+                             display_name = 'RecMailer'
+                        elif display_name.lower() == 'stm32er':
+                            # str.title() mangles 'stm32er' -> 'Stm32Er' (it
+                            # capitalises the letter after the digit). The agent's
+                            # canonical display name is EXACTLY 'STM32er'
+                            # (chat_agent_registry.display_name). This is the single
+                            # source the canvas sidebar renders verbatim, so it MUST
+                            # be exact — never STM32Er / Stm32Er / STM32ER.
+                            display_name = 'STM32er'
+
+                        # CANONICAL NAME WINS (2026-07-26). Everything above is now
+                        # only a fail-open fallback: the display name comes from the
+                        # single source of truth, services.agent_paths. Do NOT revert
+                        # to str.title() — it renders "Pdfer"/"Sqler"/"Esp32Er"/
+                        # "Latexer" and breaks the hyphenated canvas connection
+                        # handlers.
+                        display_name = _canonical_agent_display_name(
+                            folder_name, display_name)
+
+                        agent_name = f"agent-{index}"
+                        
+                        Agent.objects.create(
+                            idAgent=index,
+                            agentName=agent_name,
+                            agentDescription=display_name,
+                            agentContent=previous_flags.get(display_name.lower(), new_agent_flag)
+                        )
+                    print("--- Agent repopulation complete.")
+                else:
+                    print(f"--- Warning: Agents directory not found at {agents_dir} during startup population")
+
+            except Exception as e:
+                logging.exception(f"Failed to repopulate agents on startup: {e}")
+
+            # Cleanup pool directory on startup
+            try:
+                import os
+                import shutil
+
+                # Determine pool path based on frozen mode
+                if getattr(sys, "frozen", False):
+                    exe_dir = os.path.dirname(sys.executable)
+                    pool_path = os.path.join(exe_dir, 'agents', 'pools')
+                else:
+                    module_dir = os.path.dirname(os.path.abspath(__file__))
+                    pool_path = os.path.join(module_dir, 'agents', 'pools')
+
+                if os.path.exists(pool_path):
+                    for item in os.listdir(pool_path):
+                        item_path = os.path.join(pool_path, item)
+                        if os.path.isdir(item_path):
+                            shutil.rmtree(item_path)
+                        else:
+                            os.remove(item_path)
+                    print(f"--- Cleaned up pools directory on startup: {pool_path}")
+                else:
+                    print(f"--- Pools directory does not exist, skipping cleanup: {pool_path}")
+            except Exception:
+                logging.exception("Failed to cleanup pool directory")
+
+            # Cleanup .tlamatini runtime artifact directories on startup.
+            # Two siblings live under <app-base>/.tlamatini/ and accumulate
+            # garbage every run:
+            #   - acpx-state/   ACPX session JSON + per-session transcript
+            #                   NDJSON written by AcpSession.send_turn /
+            #                   _oneshot_send_turn (agent/acpx/runtime.py)
+            #   - skill-audit/<YYYY-MM>/  one NDJSON per SkillHarness invocation
+            #                             written by SkillAuditLog
+            #                             (agent/skills/harness.py)
+            # We wipe their CONTENTS (not the parent .tlamatini/ folder) so
+            # any future sibling under .tlamatini/ is preserved untouched.
+            # Path resolution mirrors _app_base_dir() in agent/acpx/config.py
+            # and SkillAuditLog.__init__ in agent/skills/harness.py — the
+            # writers' authoritative source of truth.
+            try:
+                import os
+                import shutil
+
+                if getattr(sys, "frozen", False):
+                    app_base = os.path.dirname(sys.executable)
+                else:
+                    app_base = os.path.dirname(os.path.abspath(__file__))  # agent/
+
+                for subdir in ('acpx-state', 'skill-audit'):
+                    target = os.path.join(app_base, '.tlamatini', subdir)
+                    if not os.path.exists(target):
+                        print(f"--- {subdir} directory does not exist, skipping cleanup: {target}")
+                        continue
+
+                    removed = 0
+                    for item in os.listdir(target):
+                        item_path = os.path.join(target, item)
+                        try:
+                            if os.path.isdir(item_path):
+                                shutil.rmtree(item_path)
+                            else:
+                                os.remove(item_path)
+                            removed += 1
+                        except Exception as inner_err:
+                            print(f"--- Warning: failed to remove {item_path}: {inner_err}")
+                    print(f"--- Cleaned up {removed} entr{'y' if removed == 1 else 'ies'} from {target}")
+            except Exception:
+                logging.exception("Failed to cleanup .tlamatini runtime artifact directories")
+
+            # Register cleanup handlers for shutdown (Ctrl+C, window close, etc.)
+            import atexit
+            import signal
+            import psutil
+            
+            def recursive_kill(pid):
+                """Recursively kill a process and all its children (God Mode)."""
+                try:
+                    parent = psutil.Process(pid)
+                    children = parent.children(recursive=True)
+                except psutil.NoSuchProcess:
+                    return
+
+                # Kill children first
+                for child in children:
+                    try:
+                        print(f"--- [GOD MODE] Killing child process PID {child.pid} ({child.name()})...")
+                        child.kill()
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        pass
+
+                # Kill parent
+                try:
+                    print(f"--- [GOD MODE] Killing process PID {parent.pid} ({parent.name()})...")
+                    parent.kill()
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+
+            def namu_kill_recon_gods():
+                """NAMU — the God of Gods (Angela, 2026-07-19). When Tlamatini herself is
+                shutting down, the OOB_shift_reaper free-run window is VOID: every running
+                Kalier / Nmapper / Discoverer pool process AND its scan children (nmap.exe,
+                nuclei.exe, subfinder.exe, naabu.exe, go.exe, ...) is tree-killed IMMEDIATELY,
+                no matter how long it has run. These three are gods within a run — but the
+                gods die the instant NAMU dies. Runs FIRST, before the generic sweeps.
+                Never raises into the shutdown path."""
+                try:
+                    import os as _os
+                    import sys as _sys
+                    if getattr(_sys, "frozen", False):
+                        _pool = _os.path.join(_os.path.dirname(_sys.executable), 'agents', 'pools')
+                    else:
+                        _pool = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'agents', 'pools')
+                    _pool = _pool.lower()
+                    _gods = ('nmapper', 'discoverer', 'kalier')
+                    try:
+                        _procs = list(psutil.process_iter(['pid', 'cmdline'], ad_value=None))
+                    except Exception:
+                        _procs = []
+                    _hit = 0
+                    for _p in _procs:
+                        try:
+                            _s = ' '.join(_p.info.get('cmdline') or []).lower()
+                            if _pool in _s and any(g in _s for g in _gods):
+                                _hit += 1
+                                recursive_kill(_p.info['pid'])
+                        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess, OSError, KeyError):
+                            continue
+                        except Exception:
+                            continue
+                    if _hit:
+                        _bar = "=" * 70
+                        print("\n" + _bar
+                              + "\n--- NAMU — GOD OF GODS: Tlamatini is shutting down. Killed "
+                              + "%d running Kalier / Nmapper / Discoverer scan(s) and their " % _hit
+                              + "children NOW, regardless of the OOB_shift_reaper window.\n" + _bar)
+                except Exception as _namu_err:
+                    print(f"--- [NAMU] shutdown hunt failed (non-fatal): {_namu_err}")
+
+            def cleanup_pool_on_shutdown():
+                """Clear pool directory contents on application shutdown."""
+                print("\n--- [SHUTDOWN] Initiating aggressive cleanup protocols...")
+                # NAMU — God of Gods: reap the three recon gods FIRST, unconditionally.
+                namu_kill_recon_gods()
+                try:
+                    import os
+                    import shutil
+                    import sys
+                    
+                    # 1. Kill tracked processes from DB (run in thread to avoid async context issues)
+                    def kill_tracked_processes():
+                        try:
+                            processes = list(AgentProcess.objects.all())
+                            if processes:
+                                print(f"--- Found {len(processes)} tracked processes to exterminate.")
+                                for proc in processes:
+                                    recursive_kill(proc.agentProcessPid)
+                                AgentProcess.objects.all().delete()
+                        except Exception as e:
+                            print(f"--- Warning: Failed to kill tracked processes: {e}")
+                    
+                    try:
+                        # Execute DB operations off this thread to avoid async
+                        # context issues.
+                        #
+                        # ⚠️ DO NOT restore ``with ThreadPoolExecutor(...)`` here
+                        # (Angela, 2026-08-29). Its ``__exit__`` calls
+                        # ``shutdown(wait=True)`` — an UNBOUNDED join that
+                        # silently defeated the ``timeout=5`` right next to it,
+                        # so a slow DB call hung shutdown forever. Its workers
+                        # are also NON-daemon, so ``concurrent.futures``' own
+                        # atexit hook would join them a SECOND time on a normal
+                        # exit. A plain DAEMON thread has neither problem: the
+                        # join below has a real deadline, and the interpreter
+                        # never waits on it at exit.
+                        killer = _threading.Thread(
+                            target=kill_tracked_processes,
+                            name="TlamatiniKillTracked", daemon=True)
+                        killer.start()
+                        killer.join(5)
+                        if killer.is_alive():
+                            print("--- Warning: tracked-process cleanup still busy "
+                                  "after 5s - moving on without it.")
+                    except Exception as e:
+                        print(f"--- Warning: Thread-based cleanup failed: {e}")
+
+                    # 2. Kill untracked processes running from pool directory
+                    if getattr(sys, "frozen", False):
+                        exe_dir = os.path.dirname(sys.executable)
+                        pool_path = os.path.join(exe_dir, 'agents', 'pools')
+                    else:
+                        module_dir = os.path.dirname(os.path.abspath(__file__))
+                        pool_path = os.path.join(module_dir, 'agents', 'pools')
+                    
+                    try:
+                        print(f"--- Scanning for survivors in {pool_path}...")
+                        # Wrap entire iteration in try-except since process_iter can raise
+                        # exceptions if processes disappear during iteration (race condition)
+                        try:
+                            # Get process list snapshot first to reduce race conditions
+                            proc_list = list(psutil.process_iter(['pid', 'name', 'cmdline'], ad_value=None))
+                        except Exception:
+                            proc_list = []
+                        
+                        for proc in proc_list:
+                            try:
+                                cmdline = proc.info.get('cmdline')
+                                if cmdline:
+                                    cmdline_str = ' '.join(cmdline)
+                                    if pool_path in cmdline_str:
+                                        print(f"--- [GOD MODE] Found untracked survivor PID {proc.info['pid']}: {cmdline_str[:50]}...")
+                                        recursive_kill(proc.info['pid'])
+                            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess, OSError, KeyError):
+                                # Process disappeared or became inaccessible - this is expected during shutdown
+                                continue
+                            except Exception:
+                                # Catch any other unexpected errors gracefully
+                                continue
+                    except Exception as e:
+                        print(f"--- Warning: Failed to scan for survivors: {e}")
+
+                    # 3. Nuke the directories
+                    if os.path.exists(pool_path):
+                        for item in os.listdir(pool_path):
+                            item_path = os.path.join(pool_path, item)
+                            try:
+                                if os.path.isdir(item_path):
+                                    shutil.rmtree(item_path)
+                                else:
+                                    os.remove(item_path)
+                            except Exception:
+                                pass  # Best effort cleanup
+                        print(f"--- Cleaned up pools directory on shutdown: {pool_path}")
+
+                    # 4. Tier-3 final sweep: kill any conhost.exe orphans
+                    #    that the tracked / pool-cmdline passes above
+                    #    missed. This is the LAST chance to keep
+                    #    Tlamatini-iconned conhost.exe processes from
+                    #    surviving the parent — once Tlamatini.exe exits
+                    #    the user will see them in Task Manager with our
+                    #    icon and reasonably assume we leaked them.
+                    #
+                    #    Any survivor is logged with name + PID to
+                    #    tlamatini.log so the user can post-mortem the
+                    #    surviving processes if they need to.
+                    try:
+                        from .orphan_reaper import reap_orphans
+                        result = reap_orphans(
+                            scope="tier3:shutdown",
+                            include_self_tree=True,
+                            include_pool_scan=True,
+                            include_console_host_sweep=True,
+                            # At app exit EVERY spawned child must die so no
+                            # Tlamatini-icon process is left orphaned — so the
+                            # running-media protection is intentionally OFF here
+                            # (it is ON for the Tier-1/Tier-2 in-session sweeps,
+                            # where a Talker/AudioPlayer/VideoPlayer must keep
+                            # playing to its natural end).
+                            protect_running_tracked=False,
+                        )
+                        print(
+                            f"--- [Tier-3 reaper] killed={result.killed_count} "
+                            f"survivors={result.survivor_count} "
+                            f"errors={len(result.errors)}"
+                        )
+                        if result.survivors:
+                            print(
+                                "--- [Tier-3 reaper] WARNING: the following "
+                                "Tlamatini-spawned process(es) refused to "
+                                "terminate. End them manually from Task Manager:"
+                            )
+                            for name, pid in result.survivors:
+                                print(f"---   {name} (PID {pid})")
+                    except Exception as reap_err:
+                        print(f"--- [Tier-3 reaper] failed (non-fatal): {reap_err}")
+                except Exception as e:
+                    print(f"--- Warning: Failed to cleanup pools on shutdown: {e}")
+            
+            # Register atexit handler for normal shutdown
+            if not global_state.get_state('shutdown_handler_registered'):
+                atexit.register(cleanup_pool_on_shutdown)
+                
+                # ── Ctrl+C MUST ALWAYS QUIT (Angela, 2026-08-29) ──────────────
+                # ⛔ DO NOT put the cleanup work back inside the signal handler,
+                # and DO NOT let a second signal re-enter it.
+                #
+                # WHAT WENT WRONG — proven with a live py-spy dump of the hung
+                # C:\Tlamatini install, not guessed. The old handler called
+                # ``cleanup_pool_on_shutdown()`` DIRECTLY. A Python signal
+                # handler runs ON THE MAIN THREAD, interrupting whatever that
+                # thread was doing, and the very first thing this cleanup does is
+                # ``psutil.process_iter(['cmdline'])`` — which opens and reads the
+                # PEB of EVERY process on the machine, i.e. seconds of work. So
+                # Ctrl+C looked dead and the user pressed it again... and each new
+                # signal RE-ENTERED the handler on top of the previous one, part
+                # way through NON-REENTRANT ``threading``/``psutil`` internals.
+                # Eleven presses built an eleven-deep tower of
+                # ``signal_handler → cleanup_pool_on_shutdown`` frames whose top
+                # was parked forever in ``Thread.start() → self._started.wait()``:
+                # the outer, interrupted ``Thread.start()`` still held threading's
+                # global ``_active_limbo_lock`` (a plain, NON-reentrant Lock), so
+                # the new worker could never finish booting and the main thread
+                # could never release it. Self-deadlock, on the ONE thread that
+                # had to survive. ``os._exit(0)`` sat at the END of the handler
+                # and was never reached.
+                #
+                # THE CONTRACT NOW, in priority order:
+                #   1. Ctrl+C ALWAYS terminates the process. Cleanup is
+                #      best-effort; QUITTING IS NOT.
+                #   2. A SECOND Ctrl+C exits IMMEDIATELY and unconditionally —
+                #      the user saying "I am done waiting" is an order, and it is
+                #      answered with a raw ``os.write`` + ``os._exit`` that touch
+                #      no lock the rest of the process could be holding.
+                #   3. The handler does the MINIMUM that is safe from a signal
+                #      context: set an Event. The real cleanup runs on threads
+                #      created HERE, at boot, in a normal context — a signal
+                #      handler must NEVER start a thread (that is the deadlock).
+                #   4. A watchdog exits anyway if cleanup overruns the grace
+                #      period, so no cleanup step can hold the process hostage.
+                #
+                # Guarded by agent/test_ctrl_c_shutdown.py.
+                _shutdown_event = _threading.Event()
+                _SHUTDOWN_GRACE_SECONDS = 12.0
+
+                def _shutdown_worker():
+                    """Run the real cleanup OFF the signal handler, then exit."""
+                    import os as _os
+                    _shutdown_event.wait()
+                    try:
+                        cleanup_pool_on_shutdown()
+                    except Exception as e:
+                        print(f"--- Warning: Cleanup error (ignored): {e}")
+                    # os._exit so the atexit copy of this same cleanup does not
+                    # run every kill a second time on the way out.
+                    _os._exit(0)
+
+                def _shutdown_watchdog():
+                    """Cleanup gets a deadline, never a blank cheque."""
+                    import os as _os
+                    import time as _time
+                    _shutdown_event.wait()
+                    _time.sleep(_SHUTDOWN_GRACE_SECONDS)
+                    print(
+                        f"\n--- [SHUTDOWN] Cleanup exceeded {_SHUTDOWN_GRACE_SECONDS:.0f}s"
+                        " - exiting anyway. Any pool process listed above as a"
+                        " survivor may still need ending from Task Manager."
+                    )
+                    _os._exit(3)
+
+                _threading.Thread(target=_shutdown_worker,
+                                  name="TlamatiniShutdown", daemon=True).start()
+                _threading.Thread(target=_shutdown_watchdog,
+                                  name="TlamatiniShutdownWatchdog", daemon=True).start()
+
+                # Windows signal handling for Ctrl+C and console close
+                def signal_handler(signum, frame):
+                    import os as os_module
+                    # SECOND press: the user is done waiting. Obey instantly,
+                    # through nothing that can block — os.write bypasses the
+                    # buffered log tee and its cross-thread lock entirely.
+                    if _shutdown_event.is_set():
+                        try:
+                            os_module.write(2, b"\n--- Ctrl+C again: exiting NOW.\n")
+                        except Exception:
+                            pass
+                        os_module._exit(1)
+                    # Release the worker FIRST, announce afterwards: if the print
+                    # below ever blocked on the log lock, shutdown is already
+                    # under way on a thread that does not care.
+                    _shutdown_event.set()
+                    print(f"\n--- Received signal {signum}, cleaning up "
+                          f"(press Ctrl+C again to quit immediately)...")
+                    # Return. The worker thread owns the rest — a signal handler
+                    # that does real work is exactly the bug this replaced.
+                
+                # Register signal handlers
+                try:
+                    signal.signal(signal.SIGINT, signal_handler)
+                    # SIGBREAK is Windows-specific (console close button)
+                    if hasattr(signal, 'SIGBREAK'):
+                        signal.signal(signal.SIGBREAK, signal_handler)
+                except Exception as sig_err:
+                    print(f"--- Warning: Could not register signal handler: {sig_err}")
+                
+                global_state.set_state('shutdown_handler_registered', True)
+                print("--- Registered pool cleanup handlers for shutdown")
+
+
+            def run_mcp():
+                try:
+                    # Windows compatibility: ensure a selector loop if needed
+                    if sys.platform.startswith('win'):
+                        try:
+                            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+                        except Exception:
+                            pass
+                    asyncio.run(mcp_main())
+                except Exception:
+                    logging.exception("MCP system server crashed")
+
+            t = threading.Thread(target=run_mcp, name="MCPSystemServer", daemon=True)
+            t.start()
+            global_state.set_state('mcp_server_running', True)
+
+            # Start the File Search gRPC server as well
+            if not global_state.get_state('mcp_files_server_running'):
+                def run_mcp_files():
+                    try:
+                        if sys.platform.startswith('win'):
+                            try:
+                                asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+                            except Exception:
+                                pass
+                        files_serve()
+                    except Exception:
+                        logging.exception("MCP files search server crashed")
+
+                t2 = threading.Thread(target=run_mcp_files, name="MCPFilesSearchServer", daemon=True)
+                t2.start()
+                global_state.set_state('mcp_files_server_running', True)
+
+            # ── Windows "Installed apps" / Programs-and-Features entry ──
+            # Self-heal the per-user (HKCU, no-admin) Add/Remove-Programs entry
+            # on every frozen launch so Tlamatini shows up in Windows' uninstall
+            # list — including installs made before this feature existed. No-ops
+            # in source mode (no Uninstaller.exe next to a python.exe). Fail-open.
+            try:
+                from . import windows_app_registration
+                from .version import get_version
+                windows_app_registration.self_heal_for_frozen(version=get_version())
+            except Exception:
+                logging.exception("Windows app registration failed (non-fatal)")
+
+            # ── ACPX runtime + skill registry boot ──────────────────
+            # Both of these are best-effort: if ACPX cannot probe a CLI
+            # or the skills package is missing, Django keeps starting.
+            try:
+                from .acpx.service import boot_acpx, boot_skills
+                # Run on a background thread so health-probes don't block startup.
+                def run_acpx_boot():
+                    try:
+                        boot_acpx()
+                        boot_skills()
+                    except Exception:
+                        logging.exception("ACPX/Skills boot failed")
+                threading.Thread(target=run_acpx_boot,
+                                 name="ACPXBoot", daemon=True).start()
+            except Exception:
+                logging.exception("Could not import agent.acpx.service")
+
+            # ── JS / Python toolchain pre-warm (node/npm/npx/pnpm/uv/uvx) ───
+            # The External MCP ecosystem ships almost entirely as
+            # `npx -y <pkg>` / `uvx <pkg>`, so Tlamatini keeps her OWN private
+            # copies instead of depending on whatever the user happens to have
+            # installed. This is a pure NO-OP (one resolve, zero network, no
+            # thread started) once they are present, and a one-time background
+            # download otherwise. It never blocks startup and never raises.
+            try:
+                from . import runtime_provisioner
+                runtime_provisioner.provision_async()
+            except Exception:
+                logging.exception("Runtime pre-warm failed (non-fatal)")
+
+            # ── External MCP catalog: seed the shipped default servers ──────
+            # external_mcps.json is USER STATE that a self-update PRESERVES, so
+            # a new default has to be seeded from CODE to reach EXISTING
+            # installs and not just fresh ones. Adds them INACTIVE, never
+            # overwrites a user's own entry, never resurrects one they deleted.
+            try:
+                from . import external_mcp_manager
+                external_mcp_manager.load_catalog()
+            except Exception:
+                logging.exception("External MCP default seeding failed (non-fatal)")
+        except Exception:
+            # Never block Django startup if MCP fails; just log.
+            import logging
+            logging.exception("Failed to initialize MCP system server background thread")

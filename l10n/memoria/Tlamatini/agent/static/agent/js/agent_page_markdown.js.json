@@ -1,0 +1,71 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_markdown.js",
+ "segmentos": [
+  {
+   "en": "'Image'",
+   "es": "'Imagen'",
+   "n": 1
+  },
+  {
+   "en": "'The Markdown renderer could not load. The complete source is available.'",
+   "es": "'No se pudo cargar el renderizador de Markdown. El código fuente completo está disponible.'",
+   "n": 1
+  },
+  {
+   "en": "'Completed task'",
+   "es": "'Tarea completada'",
+   "n": 1
+  },
+  {
+   "en": "'Incomplete task'",
+   "es": "'Tarea pendiente'",
+   "n": 1
+  },
+  {
+   "en": "`Local link: ${href}. Choose its folder to open Markdown files.`",
+   "es": "`Link local: ${href}. Elige su carpeta para abrir archivos Markdown.`",
+   "n": 1
+  },
+  {
+   "en": "`choose the document folder to load ${src || 'this image'}`",
+   "es": "`elige la carpeta del documento para cargar ${src || 'this image'}`",
+   "n": 1
+  },
+  {
+   "en": "'this image'",
+   "es": "'esta imagen'",
+   "n": 1
+  },
+  {
+   "en": "'image could not be loaded'",
+   "es": "'no se pudo cargar la imagen'",
+   "n": 1
+  },
+  {
+   "en": "'Markdown table; scroll horizontally if needed'",
+   "es": "'Tabla de Markdown; desplázate horizontalmente si hace falta'",
+   "n": 1
+  },
+  {
+   "en": "'Local images or links need their folder. Choose folder keeps files on this device.'",
+   "es": "'Las imágenes o los links locales necesitan su carpeta. Elegir carpeta conserva los archivos en este dispositivo.'",
+   "n": 1
+  },
+  {
+   "en": "'This Markdown file is empty.'",
+   "es": "'Este archivo Markdown está vacío.'",
+   "n": 1
+  },
+  {
+   "en": "`${error.message} Select Source to read the file.`",
+   "es": "`${error.message} Selecciona Código para leer el archivo.`",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'region'",
+   "motivo": "valor de atributo (role)"
+  }
+ ]
+}

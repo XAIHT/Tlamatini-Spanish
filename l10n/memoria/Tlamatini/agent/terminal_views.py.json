@@ -1,0 +1,22 @@
+{
+ "archivo": "Tlamatini/agent/terminal_views.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Terminater's API only answers on the loopback interface.\"",
+   "motivo": "respuesta de la API loopback que lee el agent Terminater; sólo va a su log"
+  },
+  {
+   "en": "\"Missing or wrong X-Terminater-Token.\"",
+   "motivo": "respuesta de la API loopback que lee el agent Terminater; sólo va a su log"
+  },
+  {
+   "en": "\"Request body is too large.\"",
+   "motivo": "respuesta de la API loopback que lee el agent Terminater; sólo va a su log"
+  },
+  {
+   "en": "\"Body must be a JSON object.\"",
+   "motivo": "respuesta de la API loopback que lee el agent Terminater; sólo va a su log"
+  }
+ ]
+}

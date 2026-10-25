@@ -1,0 +1,221 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/interactor/bridge.js",
+ "segmentos": [
+  {
+   "en": "'Live tutoring supports up to 256 Ki characters. The editor keeps the complete file; no content was sent or truncated.'",
+   "es": "'El tutor en vivo admite hasta 256 Ki caracteres. El editor conserva el archivo completo; no se envió ni se recortó ningún contenido.'",
+   "n": 1
+  },
+  {
+   "en": "'Guided field closed · your changes are kept'",
+   "es": "'Se cerró el campo guiado · tus cambios se conservan'",
+   "n": 1
+  },
+  {
+   "en": "'Editing paused · return to this tab to resume · Stop cancels'",
+   "es": "'Edición en pausa · regresa a esta pestaña para reanudar · “Detener el tutor” cancela'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini is editing · Esc or type to take over'",
+   "es": "'Tlamatini está editando · presiona Esc o escribe para tomar el control'",
+   "n": 1
+  },
+  {
+   "en": "'Live editor paused'",
+   "es": "'Editor en vivo en pausa'",
+   "n": 2
+  },
+  {
+   "en": "'Live editor connected'",
+   "es": "'Editor en vivo conectado'",
+   "n": 1
+  },
+  {
+   "en": "'Connecting to live editor…'",
+   "es": "'Conectando con el editor en vivo…'",
+   "n": 1
+  },
+  {
+   "en": "`Your turn · ${guide.label}`",
+   "es": "`Tu turno · ${guide.label}`",
+   "n": 1
+  },
+  {
+   "en": "'Tab accepts · Ctrl+Right accepts a word · Esc dismisses'",
+   "es": "'Tab acepta · Ctrl+→ acepta una palabra · Esc descarta'",
+   "n": 1
+  },
+  {
+   "en": "'Your own value is welcome. Continue when you are ready.'",
+   "es": "'Puedes poner tu propio valor. Usa “Continuar en el chat” cuando quieras.'",
+   "n": 1
+  },
+  {
+   "en": "'Start typing in the marked space. Suggestions are optional.'",
+   "es": "'Empieza a escribir en el espacio marcado. Las sugerencias son opcionales.'",
+   "n": 1
+  },
+  {
+   "en": "'Typing stopped. Your changes are kept.'",
+   "es": "'Se detuvo la escritura. Tus cambios se conservan.'",
+   "n": 1
+  },
+  {
+   "en": "'The user paused or took over the editor. Wait for their next chat request.'",
+   "es": "'El usuario pausó el editor o tomó el control. Espera su siguiente solicitud en el chat.'",
+   "n": 1
+  },
+  {
+   "en": "'The document changed. Read the live editor again; this edit was not applied.'",
+   "es": "'El documento cambió. Vuelve a leer el editor en vivo; esta edición no se aplicó.'",
+   "n": 1
+  },
+  {
+   "en": "'Wait for the current save or typing action to finish.'",
+   "es": "'Espera a que termine la acción actual de guardar o escribir.'",
+   "n": 1
+  },
+  {
+   "en": "'This document is not an editable text file.'",
+   "es": "'Este documento no es un archivo de texto editable.'",
+   "n": 1
+  },
+  {
+   "en": "'Editor action ended. Your content is kept; read it before continuing.'",
+   "es": "'La acción del Editor en vivo terminó. Tu contenido se conserva; léelo antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini handed the editor back to you.'",
+   "es": "'Tlamatini te devolvió el editor.'",
+   "n": 1
+  },
+  {
+   "en": "'File opened · edits stay unsaved until Save'",
+   "es": "'Archivo abierto · los cambios quedan sin guardar hasta que presiones Guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini finished this step · changes are unsaved'",
+   "es": "'Tlamatini terminó este paso · los cambios no están guardados'",
+   "n": 1
+  },
+  {
+   "en": "'Your turn · fill the marked field'",
+   "es": "'Tu turno · llena el campo marcado'",
+   "maquina": "acoplada con su productor",
+   "n": 2
+  },
+  {
+   "en": "'Saved earlier content · newer changes remain unsaved'",
+   "es": "'Se guardó el contenido anterior · los cambios más recientes siguen sin guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Saved the editor content'",
+   "es": "'Se guardó el contenido del editor'",
+   "n": 1
+  },
+  {
+   "en": "'The chat action stopped. Your editor content is kept.'",
+   "es": "'La acción del chat se detuvo. El contenido de tu editor se conserva.'",
+   "n": 1
+  },
+  {
+   "en": "'Live editor disconnected · your unsaved text is kept'",
+   "es": "'Editor en vivo desconectado · tu texto sin guardar se conserva'",
+   "n": 1
+  },
+  {
+   "en": "'Live editor connection unavailable'",
+   "es": "'La conexión con el editor en vivo no está disponible'",
+   "n": 1
+  },
+  {
+   "en": "'Your chat draft is kept. Send or clear it before asking about the editor.'",
+   "es": "'Tu borrador del chat se conserva. Envíalo o bórralo antes de preguntar sobre el editor.'",
+   "n": 1
+  },
+  {
+   "en": "'Enable Multi-Turn to let Tlamatini read and guide the live editor.'",
+   "es": "'Activa Multi-Turn para que Tlamatini pueda leer y guiar el editor en vivo.'",
+   "n": 1
+  },
+  {
+   "en": "'Tutor stopped. Your editor content is kept.'",
+   "es": "'Tutor detenido. El contenido de tu editor se conserva.'",
+   "n": 2
+  },
+  {
+   "en": "'Please read the fresh unsaved content in your text editor and explain my selection (or the current file if nothing is selected). Guide me without changing it.'",
+   "es": "'Por favor, lee el contenido sin guardar más reciente de tu editor de texto y explícame mi selección (o el archivo actual si no hay nada seleccionado). Guíame sin cambiarlo.'",
+   "n": 1
+  },
+  {
+   "en": "`Read my live editor and give me another hint for “${guide.label}”. Do not fill it in for me.`",
+   "es": "`Lee mi editor en vivo y dame otra pista para “${guide.label}”. No lo llenes por mí.`",
+   "n": 1
+  },
+  {
+   "en": "`I have filled “${guide.label}” in your text editor. Read the fresh unsaved content, review my choice, and guide me through the next small step.`",
+   "es": "`Ya llené “${guide.label}” en tu editor de texto. Lee el contenido sin guardar más reciente, revisa lo que elegí y guíame en el siguiente paso pequeño.`",
+   "n": 1
+  },
+  {
+   "en": "'Chat cancelled. Your editor content is kept.'",
+   "es": "'Se canceló el chat. El contenido de tu editor se conserva.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'aborted'",
+   "motivo": "status de máquina del receipt"
+  },
+  {
+   "en": "'Live editor access is paused.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  },
+  {
+   "en": "'This editor action expired before it arrived.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  },
+  {
+   "en": "'read'",
+   "motivo": "status de máquina del receipt"
+  },
+  {
+   "en": "'stopped'",
+   "motivo": "status de máquina del receipt"
+  },
+  {
+   "en": "'Save your unsaved changes before opening another file.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  },
+  {
+   "en": "'ready'",
+   "motivo": "status de máquina del receipt"
+  },
+  {
+   "en": "'Unsaved changes were kept. Save before opening another file.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  },
+  {
+   "en": "'Invalid file payload.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  },
+  {
+   "en": "'Choose a destination with Save first. Tlamatini cannot grant browser file permissions for you.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  },
+  {
+   "en": "'The file was not saved.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  },
+  {
+   "en": "'Unsupported editor action.'",
+   "motivo": "resultado del tool para el LLM (receipt); nunca se muestra en pantalla"
+  }
+ ]
+}

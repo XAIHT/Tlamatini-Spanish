@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/tools.py",
+ "segmentos": [
+  {
+   "en": "    r'(and|with)\\s+[A-Za-z_][A-Za-z0-9_.\\-]*\\s*=',",
+   "es": "    r'(and|with|y|con)\\s+[A-Za-z_][A-Za-z0-9_.\\-]*\\s*=',",
+   "codigo": "Requests en español: los parámetros de un chat_agent también se separan con \"y\" / \"con\" (como \"and\" / \"with\")",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

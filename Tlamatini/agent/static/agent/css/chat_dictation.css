@@ -1,0 +1,129 @@
+/* Tlamatini — Created by Angela López Mendoza · @angelahack1
+ * Tlamatini Author Banner — do not remove */
+#chat-form { gap: 10px; }
+#chat-message-input { min-width: 0; width: 0; }
+.chat-composer-actions {
+  display: flex; gap: 8px; align-self: flex-end; align-items: stretch;
+  width: 25%; min-width: 140px; height: 60px; flex: 0 0 auto;
+}
+.chat-composer-actions #chat-message-submit {
+  margin: 0; width: auto; min-width: 0; flex: 1; padding: 0 12px;
+}
+#chat-microphone {
+  --voice-level: 0; --silence-turn: 0deg;
+  position: relative; isolation: isolate; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px; flex: 0 0 62px;
+  min-width: 62px; height: 60px; padding: 6px; border: 1px solid #a9bcff;
+  border-radius: 17px; color: #f4fbff; cursor: pointer;
+  background: radial-gradient(ellipse at 20% 0%, #4f5c92 0%, transparent 65%),
+              linear-gradient(145deg, #292840, #151b32 65%, #233b4c);
+  box-shadow: inset 0 1px 1px #d4faff66, inset 0 -2px 4px #071226bb,
+              0 4px 14px #09152877, 0 0 14px #a376fc26;
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+#chat-microphone::before {
+  content: ''; pointer-events: none; position: absolute; inset: -3px; z-index: -1;
+  border-radius: 20px; background: conic-gradient(from 215deg, #55dccc, #8293ff, #c296ff, #55dccc);
+  opacity: .38; filter: blur(4px); transition: opacity .2s;
+}
+#chat-microphone::after {
+  content: ''; position: absolute; inset: 3px; pointer-events: none; border-radius: 13px;
+  border-top: 1px solid #effbff40; border-bottom: 1px solid #8390dd22;
+}
+#chat-microphone:hover:not(:disabled) {
+  transform: translateY(-2px); border-color: #dcfcff;
+  box-shadow: inset 0 1px 1px #e8ffff88, 0 6px 20px #02061488, 0 0 21px #9887ff66;
+}
+#chat-microphone:hover::before { opacity: .8; }
+#chat-microphone:active:not(:disabled) { transform: translateY(0) scale(.96); }
+#chat-microphone:focus-visible { outline: 2px solid #bbf8f1; outline-offset: 5px; }
+#chat-microphone:disabled { opacity: .42; cursor: not-allowed; }
+#chat-microphone .mic-glyph { width: 25px; height: 25px; overflow: visible; }
+#chat-microphone .mic-label { font-family: inherit; font-weight: 700; font-size: 9px; line-height: 1.2; letter-spacing: .04em; }
+#chat-microphone .mic-live-dot {
+  position: absolute; top: 7px; right: 7px; width: 5px; height: 5px;
+  border-radius: 50%; background: #85edda; box-shadow: 0 0 6px #7cf9df; opacity: .7;
+}
+#chat-microphone[data-state="recording"] {
+  border-color: #ffb9d8; background: radial-gradient(ellipse at 20% 0%, #763d77, transparent 70%),
+  linear-gradient(145deg, #422444, #211e37 65%, #4b2339);
+  box-shadow: inset 0 1px 1px #ffd9ec66, 0 0 calc(12px + var(--voice-level) * 26px) #ef69ad77;
+}
+#chat-microphone[data-state="recording"]::before {
+  background: conic-gradient(#fcb8df var(--silence-turn), #936cff 0deg, #fd80b4, #936cff);
+  opacity: .8; animation: mic-breathe 1.8s ease-in-out infinite;
+}
+#chat-microphone[data-state="recording"] .mic-live-dot { background: #ff7caf; box-shadow: 0 0 7px #ff7caf; opacity: 1; }
+#chat-microphone[data-state="transcribing"]::before,
+#chat-microphone[data-state="preparing"]::before { animation: mic-breathe 1s ease-in-out infinite; }
+#chat-microphone[data-state="error"] { border-color: #ffa998; }
+#dictation-status {
+  margin: 7px 8px 0; padding: 10px 12px; border-radius: 12px; flex: 0 0 auto;
+  background: linear-gradient(110deg, #272b40, #252838); border: 1px solid #6e739366;
+  color: #f2f4ff; display: flex; align-items: center; flex-wrap: wrap; gap: 9px;
+  box-shadow: 0 3px 12px #11152333;
+}
+#dictation-status[hidden] { display: none; }
+#dictation-status[data-state="recording"] { border-color: #e48cbb88; }
+#dictation-status[data-state="error"] { border-color: #ffa99888; }
+.dictation-copy { flex: 1; min-width: 140px; }
+#dictation-label { display: block; font-size: 12px; font-weight: 700; line-height: 1.3; }
+#dictation-detail { display: block; font-size: 10px; color: #c5ccdf; margin-top: 3px; line-height: 1.3; }
+#dictation-clock { font: 600 11px/1.2 ui-monospace, monospace; color: #efd5ea; }
+#dictation-meter { --voice-level: 0; display: flex; align-items: center; gap: 3px; width: 35px; height: 28px; }
+#dictation-meter i { display: block; flex: 1; height: calc(3px + var(--voice-level) * 23px);
+  min-height: 3px; border-radius: 3px; background: linear-gradient(#efaddb, #9dece4); transition: height 70ms linear; }
+#dictation-meter i:nth-child(2), #dictation-meter i:nth-child(4) { height: calc(4px + var(--voice-level) * 15px); }
+#dictation-meter i:first-child, #dictation-meter i:last-child { height: calc(3px + var(--voice-level) * 8px); }
+@keyframes mic-breathe { 50% { opacity: .45; filter: blur(6px); } }
+@media (prefers-reduced-motion: reduce) {
+  #chat-microphone, #chat-microphone::before, #dictation-meter i { transition: none; animation: none !important; }
+}
+
+/* Mic settings uses the shared Voice/system modal shell and theme variables. */
+.tlm-mic-modal { width: min(720px, 100%); }
+.tlm-mic-modes label { display: flex; align-items: flex-start; gap: 8px; }
+.tlm-mic-modes input { margin-top: 5px; flex: none; }
+.tlm-mic-modes small { display: block; color: var(--tlm-dlg-muted,#9ca2ba); font-size: .8rem; margin-top: 2px; }
+.tlm-mic-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.tlm-mic-field { display: block; font-size: .8rem; font-weight: 700; color: var(--tlm-dlg-body,#c1c5d0); }
+.tlm-mic-field input,.tlm-mic-field select { display: block; width: 100%; margin-top: 5px; }
+.tlm-mic-modal input:not([type=radio],[type=checkbox],[type=range]),.tlm-mic-modal select {
+  box-sizing: border-box; min-width: 0; padding: 8px 10px; border-radius: 8px;
+  border: var(--tlm-dlg-input-border);
+  background: var(--tlm-dlg-input-bg); color: var(--tlm-dlg-title);
+  font-family: var(--tlm-dlg-font); color-scheme: dark;
+}
+.tlm-mic-modal select option { background: var(--tlm-dlg-chrome); color: var(--tlm-dlg-title); }
+.tlm-mic-modal :is(input,select,button,summary):focus-visible { outline: 2px solid #55bbaa; outline-offset: 2px; }
+.tlm-mic-modal input[type=range] { width: 100%; accent-color: var(--tlm-dlg-accent,#55bbaa); }
+.tlm-mic-modal input[type=checkbox] { accent-color: var(--tlm-dlg-accent,#55bbaa); }
+.tlm-mic-device-row { display: flex; gap: 8px; margin-top: 6px; }
+.tlm-mic-device-row select { flex: 1; width: 0; }
+.tlm-mic-device-row button,
+#tlm-mic-reset,
+#tlm-mic-cancel {
+  border: var(--tlm-dlg-border); border-radius: var(--tlm-dlg-radius-sm);
+  color: var(--tlm-dlg-title); background: var(--tlm-dlg-btn-secondary);
+  font-family: var(--tlm-dlg-font); font-size: .88rem; font-weight: 700;
+  line-height: 1.2; cursor: pointer; transition: background-color .18s ease-out;
+}
+.tlm-mic-device-row button { padding: 8px 14px; }
+.tlm-mic-device-row button:hover:not(:disabled),
+#tlm-mic-reset:hover,
+#tlm-mic-cancel:hover { background: var(--tlm-dlg-btn-secondary-hover); }
+.tlm-mic-modal button:disabled { opacity: .7; cursor: wait; }
+.tlm-mic-help { color: var(--tlm-dlg-muted,#9ca2ba); font-size: .78rem; line-height: 1.4; margin: 7px 0 14px; }
+.tlm-mic-advanced summary { color: var(--tlm-dlg-body,#c1c5d0); cursor: pointer; font-size: .85rem; font-weight: 700; }
+.tlm-mic-advanced[open] summary { margin-bottom: 14px; }
+.tlm-mic-check { display: flex; gap: 8px; align-items: center; font-size: .8rem; color: var(--tlm-dlg-body,#c1c5d0); }
+.tlm-mic-feedback { padding: 9px; color: #f3d29a; border: 1px solid #826534; border-radius: 8px; font-size: .82rem; }
+#tlm-mic-gain-value { float: right; color: #64d5bd; }
+#tlm-mic-save { background: var(--tlm-dlg-accent,#55bbaa); }
+#tlm-mic-save:hover { background: var(--tlm-dlg-accent-hover,#469f91); }
+#tlm-mic-threshold-row[hidden] { display: none; }
+@media (max-width: 520px) {
+  .tlm-mic-grid { grid-template-columns: minmax(0,1fr); }
+  .tlm-mic-device-row { flex-wrap: wrap; }
+  .tlm-mic-device-row select { flex-basis: 100%; width: 100%; }
+}

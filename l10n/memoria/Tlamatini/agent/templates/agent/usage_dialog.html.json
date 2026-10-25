@@ -1,0 +1,227 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/usage_dialog.html",
+ "segmentos": [
+  {
+   "en": ">ABOUT USAGE<",
+   "es": ">ACERCA DEL USO<",
+   "n": 1
+  },
+  {
+   "en": ">Your credits, tokens, and model activity at a glance.<",
+   "es": ">Tus créditos, tokens y actividad de modelos de un vistazo.<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Close Usage\"",
+   "es": "aria-label=\"Cerrar el panel de uso\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Usage views\"",
+   "es": "aria-label=\"Vistas del uso\"",
+   "n": 1
+  },
+  {
+   "en": ">Cloud credits<",
+   "es": ">Créditos en la nube<",
+   "n": 1
+  },
+  {
+   "en": ">Chat activity<",
+   "es": ">Actividad del chat<",
+   "n": 1
+  },
+  {
+   "en": ">Models<",
+   "es": ">Modelos<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Usage date range\"",
+   "es": "aria-label=\"Periodo del uso\"",
+   "n": 1
+  },
+  {
+   "en": ">7 days<",
+   "es": ">7 días<",
+   "n": 1
+  },
+  {
+   "en": ">30 days<",
+   "es": ">30 días<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Usage details\"",
+   "es": "aria-label=\"Detalles del uso\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Account connection\"",
+   "es": "aria-label=\"Conexión de la cuenta\"",
+   "n": 1
+  },
+  {
+   "en": ">Checking<",
+   "es": ">Revisando<",
+   "n": 1
+  },
+  {
+   "en": ">Connecting to your account…<",
+   "es": ">Conectando con tu cuenta…<",
+   "n": 1
+  },
+  {
+   "en": ">Retry account<",
+   "es": ">Reintentar conexión<",
+   "n": 1
+  },
+  {
+   "en": ">Connection details<",
+   "es": ">Detalles de la conexión<",
+   "n": 1
+  },
+  {
+   "en": ">Ollama cloud account<",
+   "es": ">Cuenta de Ollama en la nube<",
+   "n": 1
+  },
+  {
+   "en": ">Account totals include usage outside Tlamatini.<",
+   "es": ">Los totales de la cuenta incluyen el uso fuera de Tlamatini.<",
+   "n": 1
+  },
+  {
+   "en": ">Ollama Usage ↗<",
+   "es": ">Uso en Ollama ↗<",
+   "n": 1
+  },
+  {
+   "en": ">Daily credit usage<",
+   "es": ">Uso diario de créditos<",
+   "n": 1
+  },
+  {
+   "en": ">Token traffic<",
+   "es": ">Tráfico de tokens<",
+   "n": 1
+  },
+  {
+   "en": ">Input (includes cached)<",
+   "es": ">Input (incluye caché)<",
+   "n": 1
+  },
+  {
+   "en": ">Token composition<",
+   "es": ">Composición de tokens<",
+   "n": 1
+  },
+  {
+   "en": ">Daily account statistics · exact values<",
+   "es": ">Estadísticas diarias de la cuenta · valores exactos<",
+   "n": 1
+  },
+  {
+   "en": ">Your Tlamatini activity<",
+   "es": ">Tu actividad en Tlamatini<",
+   "n": 1
+  },
+  {
+   "en": ">MEASURED TOKENS<",
+   "es": ">TOKENS MEDIDOS<",
+   "n": 1
+  },
+  {
+   "en": ">Tokens by day<",
+   "es": ">Tokens por día<",
+   "n": 1
+  },
+  {
+   "en": ">When you use models most<",
+   "es": ">Cuándo usas más los modelos<",
+   "n": 1
+  },
+  {
+   "en": ">Measured calls<",
+   "es": ">Llamadas medidas<",
+   "n": 1
+  },
+  {
+   "en": ">Daily chat statistics · exact values<",
+   "es": ">Estadísticas diarias del chat · valores exactos<",
+   "n": 1
+  },
+  {
+   "en": ">Models in your workflow<",
+   "es": ">Modelos en tu flujo de trabajo<",
+   "n": 1
+  },
+  {
+   "en": ">Measured Tlamatini chat calls in the selected period. For account-wide model history, open Ollama Usage.<",
+   "es": ">Llamadas medidas del chat de Tlamatini en el periodo seleccionado. Para ver el historial de modelos de toda la cuenta, abre Uso en Ollama.<",
+   "n": 1
+  },
+  {
+   "en": ">Tokens by model<",
+   "es": ">Tokens por modelo<",
+   "n": 1
+  },
+  {
+   "en": ">Calls by model<",
+   "es": ">Llamadas por modelo<",
+   "n": 1
+  },
+  {
+   "en": ">Model statistics<",
+   "es": ">Estadísticas de modelos<",
+   "n": 1
+  },
+  {
+   "en": ">Available &amp; loaded models<",
+   "es": ">Modelos disponibles y cargados<",
+   "n": 1
+  },
+  {
+   "en": ">Waiting for data<",
+   "es": ">Esperando datos<",
+   "n": 1
+  },
+  {
+   "en": ">Account figures refresh automatically. Your recorded chat activity stays available independently.<",
+   "es": ">Las cifras de la cuenta se actualizan solas. Tu actividad registrada en el chat sigue disponible por separado.<",
+   "n": 1
+  },
+  {
+   "en": ">Refresh<",
+   "es": ">Actualizar<",
+   "n": 1
+  },
+  {
+   "en": ">Close<",
+   "es": ">Cerrar<",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": ">USD · UTC<",
+   "motivo": "unidades y zona horaria"
+  },
+  {
+   "en": ">Input / output<",
+   "motivo": "términos técnicos"
+  },
+  {
+   "en": ">Output<",
+   "motivo": "término técnico"
+  },
+  {
+   "en": ">UTC<",
+   "motivo": "zona horaria"
+  },
+  {
+   "en": ">Input<",
+   "motivo": "término técnico"
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+---
+name: trello
+description: Manage Trello boards, lists, and cards via the Trello REST API.
+metadata:
+  openclaw:
+    emoji: "🟦"
+    requires:
+      env: ["TRELLO_KEY","TRELLO_TOKEN"]
+    primaryEnv: "TRELLO_TOKEN"
+  tlamatini:
+    runtime: in-process
+    requires_tools: ["chat_agent_apirer"]
+    requires_mcps: []
+    budget:
+      max_iterations: 4
+      max_seconds: 30
+      max_tokens: 6000
+    permissions:
+      filesystem: { read: [], write: [] }
+      shell:     []
+      network:   allow
+      db:        deny
+    inputs:
+      - { name: action, type: enum,
+          values: ["list-boards","list-cards","add-card","move-card","comment-card"],
+          required: true }
+      - { name: payload, type: object, required: false }
+    outputs:
+      - { name: response, type: object, required: true }
+    triggers:
+      keywords: ["trello","board","card","kanban"]
+---
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+
+# Trello skill
+
+> Current release: **[v1.90.0](../../../../docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+
+> **HEADLESS IS FORBIDDEN. VISIBLE FOREGROUND EXECUTION ONLY.** Every command, automated test, diagnostic, script, build, agent and browser must run in a visible foreground window on Angela's real desktop. Use forked CMD/PowerShell windows, `execute_forked_window: true`, and `headless: false`. Monitor live; if visibility cannot be confirmed, do not run. Read the [mandatory execution policy](../../../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+Base URL: `https://api.trello.com/1/`. Append
+`?key=$TRELLO_KEY&token=$TRELLO_TOKEN` to every URL.
+
+Endpoints:
+- `list-boards` → `GET /members/me/boards`
+- `list-cards`  → `GET /boards/{boardId}/cards`
+- `add-card`    → `POST /cards` with `idList`, `name`, `desc`
+- `move-card`   → `PUT /cards/{id}` with `idList`
+- `comment-card`→ `POST /cards/{id}/actions/comments` with `text`

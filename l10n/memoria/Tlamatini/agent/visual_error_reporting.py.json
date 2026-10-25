@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/visual_error_reporting.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'Could not deliver visual error dialog event'",
+   "motivo": "log de consola"
+  }
+ ]
+}

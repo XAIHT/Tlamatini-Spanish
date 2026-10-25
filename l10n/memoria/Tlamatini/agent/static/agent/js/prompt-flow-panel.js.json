@@ -1,0 +1,1016 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/prompt-flow-panel.js",
+ "segmentos": [
+  {
+   "en": "`Draft could not be stored in this browser. Save a .fpmt file: ${error.message}`",
+   "es": "`No se pudo guardar el borrador en este browser. Guarda un archivo .fpmt: ${error.message}`",
+   "n": 1
+  },
+  {
+   "en": "'Edit comment'",
+   "es": "'Editar comentario'",
+   "n": 3
+  },
+  {
+   "en": "'Configure'",
+   "es": "'Configurar'",
+   "n": 1
+  },
+  {
+   "en": "'Description'",
+   "es": "'Descripción'",
+   "maquina": "acoplada con su productor",
+   "n": 2
+  },
+  {
+   "en": "'Duplicate'",
+   "es": "'Duplicar'",
+   "n": 1
+  },
+  {
+   "en": "'Write a note…'",
+   "es": "'Escribe una nota…'",
+   "n": 1
+  },
+  {
+   "en": "'This comment has reached its formatting limit.'",
+   "es": "'Este comentario llegó a su límite de formato.'",
+   "n": 2
+  },
+  {
+   "en": "'A comment can contain up to 100,000 characters.'",
+   "es": "'Un comentario puede tener hasta 100,000 caracteres.'",
+   "n": 2
+  },
+  {
+   "en": "'Comment fitted to its text. Drag any edge or corner to reshape it.'",
+   "es": "'El comentario se ajustó a su texto. Arrastra cualquier borde o esquina para cambiar su forma.'",
+   "n": 1
+  },
+  {
+   "en": "'Comment'",
+   "es": "'Comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Edit'",
+   "es": "'Editar'",
+   "n": 1
+  },
+  {
+   "en": "'top edge'",
+   "es": "'el borde superior'",
+   "n": 1
+  },
+  {
+   "en": "'right edge'",
+   "es": "'el borde derecho'",
+   "n": 1
+  },
+  {
+   "en": "'bottom edge'",
+   "es": "'el borde inferior'",
+   "n": 1
+  },
+  {
+   "en": "'left edge'",
+   "es": "'el borde izquierdo'",
+   "n": 1
+  },
+  {
+   "en": "'top left corner'",
+   "es": "'la esquina superior izquierda'",
+   "n": 1
+  },
+  {
+   "en": "'top right corner'",
+   "es": "'la esquina superior derecha'",
+   "n": 1
+  },
+  {
+   "en": "'bottom left corner'",
+   "es": "'la esquina inferior izquierda'",
+   "n": 1
+  },
+  {
+   "en": "'bottom right corner'",
+   "es": "'la esquina inferior derecha'",
+   "n": 1
+  },
+  {
+   "en": "`Resize comment ${label}`",
+   "es": "`Cambiar el tamaño del comentario desde ${label}`",
+   "n": 1
+  },
+  {
+   "en": "'Comment saved.'",
+   "es": "'Comentario guardado.'",
+   "n": 1
+  },
+  {
+   "en": "'Comment changes discarded.'",
+   "es": "'Se descartaron los cambios del comentario.'",
+   "n": 1
+  },
+  {
+   "en": "'Static User Commentary text'",
+   "es": "'Texto del comentario estático'",
+   "n": 1
+  },
+  {
+   "en": "'Write directly in the note. Drag its borders to resize; Done saves, Escape cancels.'",
+   "es": "'Escribe directamente en la nota. Arrastra sus bordes para cambiar el tamaño; Listo guarda y Esc cancela.'",
+   "n": 1
+  },
+  {
+   "en": "'Comment formatting'",
+   "es": "'Formato del comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Select text to format'",
+   "es": "'Selecciona texto para darle formato'",
+   "n": 1
+  },
+  {
+   "en": "'Commentary'",
+   "es": "'Comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Comment color'",
+   "es": "'Color del comentario'",
+   "n": 1
+  },
+  {
+   "en": "`${name} comment`",
+   "es": "`Comentario ${name}`",
+   "n": 1
+  },
+  {
+   "en": "'Comment font'",
+   "es": "'Fuente del comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Mixed fonts'",
+   "es": "'Fuentes mixtas'",
+   "n": 1
+  },
+  {
+   "en": "'Comment text size'",
+   "es": "'Tamaño del texto del comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Fine'",
+   "es": "'Muy pequeño'",
+   "n": 1
+  },
+  {
+   "en": "'Small'",
+   "es": "'Pequeño'",
+   "n": 1
+  },
+  {
+   "en": "'Body'",
+   "es": "'Normal'",
+   "n": 1
+  },
+  {
+   "en": "'Large'",
+   "es": "'Grande'",
+   "n": 1
+  },
+  {
+   "en": "'Heading'",
+   "es": "'Encabezado'",
+   "n": 1
+  },
+  {
+   "en": "'Title'",
+   "es": "'Título'",
+   "n": 1
+  },
+  {
+   "en": "'Display'",
+   "es": "'Muy grande'",
+   "n": 1
+  },
+  {
+   "en": "'Mixed sizes'",
+   "es": "'Tamaños mixtos'",
+   "n": 1
+  },
+  {
+   "en": "'Text color'",
+   "es": "'Color del texto'",
+   "n": 2
+  },
+  {
+   "en": "'Text color palette'",
+   "es": "'Paleta de colores del texto'",
+   "n": 1
+  },
+  {
+   "en": "`${name} text`",
+   "es": "`Texto ${name}`",
+   "n": 1
+  },
+  {
+   "en": "'Bold'",
+   "es": "'Negrita'",
+   "n": 1
+  },
+  {
+   "en": "'Italic'",
+   "es": "'Cursiva'",
+   "n": 1
+  },
+  {
+   "en": "'Underline'",
+   "es": "'Subrayado'",
+   "n": 1
+  },
+  {
+   "en": "'Comment alignment'",
+   "es": "'Alineación del comentario'",
+   "n": 1
+  },
+  {
+   "en": "`Align ${value}`",
+   "es": "`Alinear: ${value}`",
+   "n": 1
+  },
+  {
+   "en": "'Fit text'",
+   "es": "'Ajustar al texto'",
+   "n": 1
+  },
+  {
+   "en": "'Fit bubble to text'",
+   "es": "'Ajusta la burbuja al texto'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 3
+  },
+  {
+   "en": "'Cancel comment changes'",
+   "es": "'Cancela los cambios del comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Done'",
+   "es": "'Listo'",
+   "n": 2
+  },
+  {
+   "en": "'Edit text'",
+   "es": "'Editar texto'",
+   "n": 1
+  },
+  {
+   "en": "'Edit comment text'",
+   "es": "'Edita el texto del comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Saved size'",
+   "es": "'Tamaño guardado'",
+   "n": 1
+  },
+  {
+   "en": "'Add an operation'",
+   "es": "'Agregar una operación'",
+   "n": 1
+  },
+  {
+   "en": "'✎ Edit comment'",
+   "es": "'✎ Editar comentario'",
+   "n": 1
+  },
+  {
+   "en": "'⚙ Configure'",
+   "es": "'⚙ Configurar'",
+   "n": 1
+  },
+  {
+   "en": "'▶ Resume'",
+   "es": "'▶ Reanudar'",
+   "n": 1
+  },
+  {
+   "en": "'Ⅱ Pause'",
+   "es": "'Ⅱ Pausar'",
+   "n": 1
+  },
+  {
+   "en": "'Comment added. Double-click to write; drag any edge or corner to resize.'",
+   "es": "'Comentario agregado. Haz doble clic para escribir; arrastra cualquier borde o esquina para cambiar el tamaño.'",
+   "n": 1
+  },
+  {
+   "en": "'Operation added. Double-click it to configure.'",
+   "es": "'Operación agregada. Haz doble clic en ella para configurarla.'",
+   "n": 1
+  },
+  {
+   "en": "'Drag to an input triangle. Escape cancels.'",
+   "es": "'Arrastra hasta un triángulo de input. Esc cancela.'",
+   "n": 1
+  },
+  {
+   "en": "'Connection saved. Each output leads to one next operation.'",
+   "es": "'Conexión guardada. Cada output lleva a una sola operación siguiente.'",
+   "n": 1
+  },
+  {
+   "en": "'The canvas supports up to 500 operations.'",
+   "es": "'El canvas admite hasta 500 operaciones.'",
+   "n": 1
+  },
+  {
+   "en": "'Save'",
+   "es": "'Guardar'",
+   "n": 1
+  },
+  {
+   "en": "`Configure · ${M.operations[kind].label}`",
+   "es": "`Configurar · ${M.operations[kind].label}`",
+   "n": 1
+  },
+  {
+   "en": "'Label'",
+   "es": "'Etiqueta'",
+   "n": 1
+  },
+  {
+   "en": "'Question (when asking the user)'",
+   "es": "'Pregunta (si se le pregunta al usuario)'",
+   "n": 1
+  },
+  {
+   "en": "'Message to the user'",
+   "es": "'Mensaje para el usuario'",
+   "n": 1
+  },
+  {
+   "en": "'Text to embed'",
+   "es": "'Texto para los embeddings'",
+   "n": 1
+  },
+  {
+   "en": "'Command to type (use <<USER:hint>> to hand the keyboard to the user)'",
+   "es": "'Comando que se va a escribir (usa <<USER:hint>> para darle el teclado al usuario)'",
+   "n": 1
+  },
+  {
+   "en": "'Use {{last_output}} to insert the previous prompt answer or user reply.'",
+   "es": "'Usa {{last_output}} para insertar la respuesta del prompt anterior o la del usuario.'",
+   "n": 1
+  },
+  {
+   "en": "'Multi-Turn — allow enabled tools and agents'",
+   "es": "'Multi-Turn — permitir los tools y agents activados'",
+   "n": 1
+  },
+  {
+   "en": "'ACPX — allow external coding agents'",
+   "es": "'ACPX — permitir agents de programación externos'",
+   "n": 1
+  },
+  {
+   "en": "'Delay before sending (seconds of active playback)'",
+   "es": "'Retraso antes de enviar (segundos de ejecución activa)'",
+   "n": 1
+  },
+  {
+   "en": "'Scheduled time (optional, your local timezone)'",
+   "es": "'Hora programada (opcional, en tu zona horaria local)'",
+   "n": 1
+  },
+  {
+   "en": "'Wait until this time, then apply the delay. Past times run immediately. Keep the page and Tlamatini open.'",
+   "es": "'Espera hasta esta hora y luego aplica el retraso. Las horas que ya pasaron se ejecutan de inmediato. Mantén abiertos la página y Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "'What to do'",
+   "es": "'Qué hacer'",
+   "n": 1
+  },
+  {
+   "en": "'Run a command (type it, wait, read the result)'",
+   "es": "'Ejecutar un comando (escribirlo, esperar y leer el resultado)'",
+   "n": 1
+  },
+  {
+   "en": "'Open a new terminal'",
+   "es": "'Abrir una terminal nueva'",
+   "n": 1
+  },
+  {
+   "en": "'Type into a terminal'",
+   "es": "'Escribir en una terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Type part of a command, then hand over to the user'",
+   "es": "'Escribir parte de un comando y luego pasarle el control al usuario'",
+   "n": 1
+  },
+  {
+   "en": "'Press keys (Ctrl+C, Enter, ...)'",
+   "es": "'Presionar teclas (Ctrl+C, Enter, ...)'",
+   "n": 1
+  },
+  {
+   "en": "'Wait for the running command'",
+   "es": "'Esperar el comando en ejecución'",
+   "n": 1
+  },
+  {
+   "en": "'Read terminal output'",
+   "es": "'Leer el output de la terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Interrupt the running command'",
+   "es": "'Interrumpir el comando en ejecución'",
+   "n": 1
+  },
+  {
+   "en": "'Close a terminal'",
+   "es": "'Cerrar una terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Force-kill a terminal'",
+   "es": "'Forzar el cierre de una terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Force-kill every terminal'",
+   "es": "'Forzar el cierre de todas las terminales'",
+   "n": 1
+  },
+  {
+   "en": "'List the terminals'",
+   "es": "'Listar las terminales'",
+   "n": 1
+  },
+  {
+   "en": "'Focus a terminal'",
+   "es": "'Enfocar una terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Change the layout (tabs, tile, ...)'",
+   "es": "'Cambiar la distribución (pestañas, mosaico, ...)'",
+   "n": 1
+  },
+  {
+   "en": "'Clear a screen'",
+   "es": "'Limpiar una pantalla'",
+   "n": 1
+  },
+  {
+   "en": "'Watch what the user types'",
+   "es": "'Observar lo que escribe el usuario'",
+   "n": 1
+  },
+  {
+   "en": "'Warn the user'",
+   "es": "'Avisar al usuario'",
+   "n": 1
+  },
+  {
+   "en": "'Terminal type'",
+   "es": "'Tipo de terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Terminal (id or title; empty = the active one)'",
+   "es": "'Terminal (id o título; vacío = la activa)'",
+   "n": 1
+  },
+  {
+   "en": "'Start folder (optional)'",
+   "es": "'Carpeta inicial (opcional)'",
+   "n": 1
+  },
+  {
+   "en": "'Press Enter after typing'",
+   "es": "'Presionar Enter después de escribir'",
+   "n": 1
+  },
+  {
+   "en": "'Secret text (never logged or returned)'",
+   "es": "'Texto secreto (nunca se guarda en el log ni se devuelve)'",
+   "n": 1
+  },
+  {
+   "en": "'Wait for the command to finish'",
+   "es": "'Esperar a que termine el comando'",
+   "n": 1
+  },
+  {
+   "en": "'Close the terminal when it finishes'",
+   "es": "'Cerrar la terminal cuando termine'",
+   "n": 1
+  },
+  {
+   "en": "'Typing speed (words per minute, 20-160)'",
+   "es": "'Velocidad de escritura (palabras por minuto, 20-160)'",
+   "n": 1
+  },
+  {
+   "en": "'Give up waiting after (seconds)'",
+   "es": "'Dejar de esperar después de (segundos)'",
+   "n": 1
+  },
+  {
+   "en": "'No output for this long = hung (seconds)'",
+   "es": "'Sin output durante este tiempo = colgado (segundos)'",
+   "n": 1
+  },
+  {
+   "en": "\"Wait for the user's part (seconds)\"",
+   "es": "\"Esperar la parte del usuario (segundos)\"",
+   "n": 1
+  },
+  {
+   "en": "'Decision rule'",
+   "es": "'Regla de decisión'",
+   "n": 1
+  },
+  {
+   "en": "'Last output contains'",
+   "es": "'El último output contiene'",
+   "n": 1
+  },
+  {
+   "en": "'Last output does not contain'",
+   "es": "'El último output no contiene'",
+   "n": 1
+  },
+  {
+   "en": "'Last output equals'",
+   "es": "'El último output es igual a'",
+   "n": 1
+  },
+  {
+   "en": "'Last output is empty'",
+   "es": "'El último output está vacío'",
+   "n": 1
+  },
+  {
+   "en": "'Ask the user: Yes or No'",
+   "es": "'Preguntar al usuario: Sí o No'",
+   "n": 1
+  },
+  {
+   "en": "'Comparison value'",
+   "es": "'Valor de comparación'",
+   "n": 1
+  },
+  {
+   "en": "'Match case'",
+   "es": "'Distinguir mayúsculas y minúsculas'",
+   "n": 1
+  },
+  {
+   "en": "'Stop playback before editing.'",
+   "es": "'Detén la ejecución antes de editar.'",
+   "n": 1
+  },
+  {
+   "en": "'Configure connection'",
+   "es": "'Configurar la conexión'",
+   "n": 1
+  },
+  {
+   "en": "'Destination'",
+   "es": "'Destino'",
+   "n": 1
+  },
+  {
+   "en": "'Yes'",
+   "es": "'Sí'",
+   "n": 2
+  },
+  {
+   "en": "'Next'",
+   "es": "'Siguiente'",
+   "n": 1
+  },
+  {
+   "en": "'Replace the current diagram?'",
+   "es": "'¿Quieres reemplazar el diagrama actual?'",
+   "n": 1
+  },
+  {
+   "en": "'Unsaved changes will be replaced. Save a .fpmt file first to keep them.'",
+   "es": "'Se van a reemplazar los cambios sin guardar. Para conservarlos, primero guarda un archivo .fpmt.'",
+   "n": 1
+  },
+  {
+   "en": "`Opened ${filename}`",
+   "es": "`Se abrió ${filename}`",
+   "n": 1
+  },
+  {
+   "en": "'Choose a .fpmt Prompt Flow Panel file.'",
+   "es": "'Elige un archivo .fpmt de Prompt Flow Panel.'",
+   "n": 1
+  },
+  {
+   "en": "'The .fpmt file must be smaller than 5 MiB.'",
+   "es": "'El archivo .fpmt debe pesar menos de 5 MiB.'",
+   "n": 1
+  },
+  {
+   "en": "`Could not open ${file.name}: ${e.message}`",
+   "es": "`No se pudo abrir ${file.name}: ${e.message}`",
+   "n": 1
+  },
+  {
+   "en": "'Save prompt flow'",
+   "es": "'Guardar el prompt flow'",
+   "n": 1
+  },
+  {
+   "en": "'File name'",
+   "es": "'Nombre del archivo'",
+   "n": 1
+  },
+  {
+   "en": "'The .fpmt file includes the diagram and operation settings. Run output stays in this page.'",
+   "es": "'El archivo .fpmt incluye el diagrama y la configuración de las operaciones. El output de la ejecución se queda en esta página.'",
+   "n": 1
+  },
+  {
+   "en": "'Enter a file name without path separators or reserved characters.'",
+   "es": "'Escribe un nombre de archivo sin separadores de path ni caracteres reservados.'",
+   "n": 1
+  },
+  {
+   "en": "'The diagram exceeds the 5 MiB file limit.'",
+   "es": "'El diagrama supera el límite de 5 MiB por archivo.'",
+   "n": 1
+  },
+  {
+   "en": "`Downloaded ${name}`",
+   "es": "`Se descargó ${name}`",
+   "n": 1
+  },
+  {
+   "en": "'Download .fpmt'",
+   "es": "'Descargar .fpmt'",
+   "n": 1
+  },
+  {
+   "en": "'Flow settings'",
+   "es": "'Configuración del flow'",
+   "n": 1
+  },
+  {
+   "en": "'Flow name'",
+   "es": "'Nombre del flow'",
+   "n": 1
+  },
+  {
+   "en": "'Maximum executed operations per run'",
+   "es": "'Máximo de operaciones por ejecución'",
+   "n": 1
+  },
+  {
+   "en": "'Loops are supported. The step limit stops a flow that keeps cycling.'",
+   "es": "'Se admiten ciclos. El límite de pasos detiene un flow que se queda dando vueltas.'",
+   "n": 1
+  },
+  {
+   "en": "'Live connection lost. Use Reconnect or refresh before continuing.'",
+   "es": "'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Connection lost. Playback stopped; the server cancels the active run.'",
+   "es": "'Se perdió la conexión. Se detuvo el flow; el servidor cancela la ejecución activa.'",
+   "n": 1
+  },
+  {
+   "en": "'Disconnected'",
+   "es": "'Desconectado'",
+   "n": 1
+  },
+  {
+   "en": "'The connection was lost. Save your diagram, reconnect and explicitly start a new run.'",
+   "es": "'Se perdió la conexión. Guarda tu diagrama, vuelve a conectarte e inicia de forma explícita una ejecución nueva.'",
+   "n": 1
+  },
+  {
+   "en": "'The live connection is unavailable. Use Reconnect or refresh before continuing.'",
+   "es": "'La conexión en vivo no está disponible. Usa Reconectar o actualiza la página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Timed out connecting to Tlamatini.'",
+   "es": "'Hubo un timeout al conectar con Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "'The live connection is unavailable.'",
+   "es": "'La conexión en vivo no está disponible.'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini stopped responding. Use Reconnect when the server is available.'",
+   "es": "'Tlamatini dejó de responder. Usa Reconectar cuando el servidor esté disponible.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not connect to Tlamatini. Check that the server is running.'",
+   "es": "'No se pudo conectar con Tlamatini. Revisa que el servidor esté corriendo.'",
+   "n": 1
+  },
+  {
+   "en": "'Connected to Tlamatini. Press Play to start a new run.'",
+   "es": "'Conexión establecida con Tlamatini. Presiona Ejecutar para iniciar una ejecución nueva.'",
+   "n": 1
+  },
+  {
+   "en": "'Connection error'",
+   "es": "'Error de conexión'",
+   "n": 1
+  },
+  {
+   "en": "'Connection closed. Sign in to Tlamatini and use Reconnect to try again.'",
+   "es": "'Se cerró la conexión. Inicia sesión en Tlamatini y usa Reconectar para intentarlo otra vez.'",
+   "n": 1
+  },
+  {
+   "en": "'The flow exceeds the 5 MiB playback limit.'",
+   "es": "'El flow supera el límite de 5 MiB para ejecutarse.'",
+   "n": 1
+  },
+  {
+   "en": "'Connecting to Tlamatini…'",
+   "es": "'Conectando con Tlamatini…'",
+   "n": 1
+  },
+  {
+   "en": "'Flow is playing'",
+   "es": "'El flow se está ejecutando'",
+   "n": 1
+  },
+  {
+   "en": "'Paused. The current model request may finish; the next operation waits.'",
+   "es": "'En pausa. La solicitud actual al modelo puede terminar; la siguiente operación espera.'",
+   "n": 1
+  },
+  {
+   "en": "'Stopping. Waiting for the active request to finish cancelling…'",
+   "es": "'Deteniendo. Esperando a que la solicitud activa termine de cancelarse…'",
+   "n": 1
+  },
+  {
+   "en": "'Flow failed'",
+   "es": "'Error en el flow'",
+   "n": 1
+  },
+  {
+   "en": "'Run finished'",
+   "es": "'Ejecución terminada'",
+   "n": 1
+  },
+  {
+   "en": "`Step ${data.step}: ${node?.label || data.node_id}`",
+   "es": "`Paso ${data.step}: ${node?.label || data.node_id}`",
+   "n": 1
+  },
+  {
+   "en": "`Step ${data.step}`",
+   "es": "`Paso ${data.step}`",
+   "n": 1
+  },
+  {
+   "en": "'Progress'",
+   "es": "'Progreso'",
+   "n": 1
+  },
+  {
+   "en": "'Flow error'",
+   "es": "'Error del flow'",
+   "n": 1
+  },
+  {
+   "en": "'Decision · choose a branch'",
+   "es": "'Decisión · elige un branch'",
+   "n": 1
+  },
+  {
+   "en": "'User Input'",
+   "es": "'Input del usuario'",
+   "n": 1
+  },
+  {
+   "en": "'Which branch should the flow take?'",
+   "es": "'¿Qué branch debe tomar el flow?'",
+   "n": 1
+  },
+  {
+   "en": "'Enter your reply to continue.'",
+   "es": "'Escribe tu respuesta para continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Your reply'",
+   "es": "'Tu respuesta'",
+   "n": 1
+  },
+  {
+   "en": "'Continue flow'",
+   "es": "'Continuar el flow'",
+   "n": 1
+  },
+  {
+   "en": "'The flow is ready to play. Cycles stop at the configured step limit.'",
+   "es": "'El flow está listo para ejecutarse. Los ciclos se detienen en el límite de pasos configurado.'",
+   "n": 1
+  },
+  {
+   "en": "'Flow validated'",
+   "es": "'Flow validado'",
+   "n": 1
+  },
+  {
+   "en": "'Drag or click an operation to add it. Double-click a figure to edit its settings. Drag a right-side output triangle to a left-side input triangle, then release to connect, just like the Agentic Control Panel. The curve follows your pointer and the triangles highlight. Release on empty canvas or press Escape to cancel. Reconnecting an occupied output replaces that connection. Decision figures have Y and N outputs on the right. With the keyboard, activate an output, Tab to an input and activate it.\\n\\nCtrl+click selects multiple figures; drag empty canvas to select a group. Delete removes the selection, Ctrl+D duplicates, Ctrl+Z undoes, Ctrl+Shift+Z redoes. Use arrow keys to move selected figures.\\n\\nUser Commentary is a static speech-bubble note. Double-click to write in it; Done or Ctrl+Enter saves, Escape cancels. Select a passage to mix fonts, sizes, text colors, bold, italic and underline using the floating mini toolbar. With a caret, formatting styles newly typed text. Bubble color and alignment apply to the note. Drag any edge or corner to resize; Fit text removes spare vertical space. There is no commentary configuration dialog. The bubble grows to fit the text without scrollbars. Notes are saved with the diagram and never run. User Input uses the notched figure and asks for a runtime reply.\\n\\nChoose Start, Validate, then Play. Each run has its own conversation and embeddings. {{last_output}} inserts the last answer or user input. Clean History clears that run’s conversation and last output; Flush Embeddings clears its retrieval context.\\n\\nPause takes effect between operations. Stop requests cancellation and waits for the active model call to drain. Closing an input dialog stops the flow. Keep this page and Tlamatini open for scheduled prompts. Files never run merely by opening them.\\n\\nSave downloads a versioned .fpmt diagram. The panel also keeps a local draft in this browser. Legacy system prompt.pmt text files remain separate.'",
+   "es": "'Arrastra una operación o haz clic en ella para agregarla. Haz doble clic en una figura para editar su configuración. Arrastra un triángulo de output del lado derecho hasta un triángulo de input del lado izquierdo y suéltalo para conectarlos, igual que en Agentic Control Panel. La curva sigue a tu puntero y los triángulos se resaltan. Suelta sobre el canvas vacío o presiona Esc para cancelar. Si vuelves a conectar un output ocupado, se reemplaza esa conexión. Las figuras de Decisión tienen a la derecha los outputs Y (sí) y N (no). Con el teclado, activa un output, ve con Tab hasta un input y actívalo.\\n\\nCtrl+clic selecciona varias figuras; arrastra sobre el canvas vacío para seleccionar un grupo. Delete elimina la selección, Ctrl+D duplica, Ctrl+Z deshace y Ctrl+Shift+Z rehace. Usa las flechas del teclado para mover las figuras seleccionadas.\\n\\n“Comentario del usuario” es una nota estática en forma de burbuja de diálogo. Haz doble clic para escribir en ella; “Listo” o Ctrl+Enter guarda y Esc cancela. Selecciona un fragmento para combinar fuentes, tamaños, colores de texto, negrita, cursiva y subrayado con la mini barra de herramientas flotante. Si no hay selección, el formato se aplica al texto que escribas a continuación. El color de la burbuja y la alineación se aplican a toda la nota. Arrastra cualquier borde o esquina para cambiar el tamaño; “Ajustar al texto” quita el espacio vertical sobrante. Los comentarios no tienen diálogo de configuración. La burbuja crece hasta que quepa el texto, sin barras de desplazamiento. Las notas se guardan con el diagrama y nunca se ejecutan. “Input del usuario” usa la figura con muesca y pide una respuesta durante la ejecución.\\n\\nElige la operación de Inicio, presiona Validar y luego Ejecutar. Cada ejecución tiene su propia conversación y sus propios embeddings. {{last_output}} inserta la última respuesta o el último input del usuario. “Limpiar historial” borra la conversación y el último output de esa ejecución; “Vaciar embeddings” borra su contexto de recuperación.\\n\\nLa pausa surte efecto entre una operación y otra. Detener pide la cancelación y espera a que termine la llamada activa al modelo. Si cierras un diálogo de input, el flow se detiene. Mantén abiertos esta página y Tlamatini para los prompts programados. Los archivos nunca se ejecutan sólo por abrirlos.\\n\\nGuardar descarga un diagrama .fpmt con versión. El panel también guarda un borrador local en este browser. Los antiguos archivos de texto prompt.pmt del system prompt se manejan por separado.'",
+   "n": 1
+  },
+  {
+   "en": "'Using the Prompt Flow Panel'",
+   "es": "'Cómo usar Prompt Flow Panel'",
+   "n": 1
+  },
+  {
+   "en": "'The diagram cannot be replaced while a run is active or a note is being edited.'",
+   "es": "'No se puede reemplazar el diagrama mientras hay una ejecución activa o se está editando una nota.'",
+   "n": 1
+  },
+  {
+   "en": "'Opened '",
+   "es": "'Se abrió '",
+   "n": 1
+  },
+  {
+   "en": "'; the panel holds one diagram, so the others were not opened.'",
+   "es": "'; el panel admite un solo diagrama, así que no se abrieron los demás.'",
+   "n": 1
+  },
+  {
+   "en": "'Prompt flow (.fpmt) \\u2192 opens as the current diagram'",
+   "es": "'Prompt flow (.fpmt) → se abre como el diagrama actual'",
+   "n": 1
+  },
+  {
+   "en": "`Operations bar ${Math.round(percent)}%, canvas ${Math.round(100 - percent)}%`",
+   "es": "`Barra de operaciones ${Math.round(percent)}%, canvas ${Math.round(100 - percent)}%`",
+   "n": 1
+  },
+  {
+   "en": "`${Math.round(outputPercent)}% Run output`",
+   "es": "`${Math.round(outputPercent)}% Output de la ejecución`",
+   "n": 1
+  },
+  {
+   "en": "'Selection cleared'",
+   "es": "'Se quitó la selección'",
+   "n": 1
+  },
+  {
+   "en": "'Restored your local draft. Save a .fpmt file to keep a portable copy.'",
+   "es": "'Se restauró tu borrador local. Guarda un archivo .fpmt para conservar una copia portátil.'",
+   "n": 1
+  },
+  {
+   "en": "`Local draft could not be restored: ${e.message}`",
+   "es": "`No se pudo restaurar el borrador local: ${e.message}`",
+   "n": 1
+  },
+  {
+   "en": "'Could not open flow'",
+   "es": "'No se pudo abrir el flow'",
+   "n": 2
+  },
+  {
+   "en": "'Opening cancelled. Your current diagram was kept.'",
+   "es": "'Se canceló la apertura. Se conservó tu diagrama actual.'",
+   "n": 1
+  },
+  {
+   "en": "['⌫', 'Delete', deleteSelection]",
+   "es": "['⌫', 'Eliminar', deleteSelection]",
+   "n": 1
+  },
+  {
+   "en": "const counted = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;",
+   "es": "const counted = (n, word) => `${n} ${n === 1 ? word : ({ 'operación': 'operaciones', 'conexión': 'conexiones' }[word] || word + 's')}`;",
+   "codigo": "plural en español del contador de operaciones, comentarios y conexiones",
+   "n": 1
+  },
+  {
+   "en": "counted(operations.length, 'operation')",
+   "es": "counted(operations.length, 'operación')",
+   "n": 1
+  },
+  {
+   "en": "counted(flow.nodes.length - operations.length, 'comment')",
+   "es": "counted(flow.nodes.length - operations.length, 'comentario')",
+   "n": 1
+  },
+  {
+   "en": "counted(flow.edges.length, 'connection')",
+   "es": "counted(flow.edges.length, 'conexión')",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt Flow Panel'",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": "'Delete'",
+   "motivo": "el mismo literal es la tecla Delete (event.key === 'Delete'); la etiqueta del menú se traduce con contexto en la decisión manual"
+  },
+  {
+   "en": "`pmt-comment-handle handle-${direction}`",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'pmt-comment-text pmt-comment-editor'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'textbox'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor de atributo ARIA"
+  },
+  {
+   "en": "'region'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "'group'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "`pmt-port ${direction} ${direction}-triangle${slot}`",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'pmt-port-label output-label'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "`${dirty ? '• ' : ''}${flow.name} — Prompt Flow Panel`",
+   "motivo": "nombre del producto en el título de la pestaña"
+  },
+  {
+   "en": "'alert'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "término del producto"
+  },
+  {
+   "en": "'PowerShell 7'",
+   "motivo": "nombre de producto"
+  },
+  {
+   "en": "'Output'",
+   "motivo": "término técnico"
+  },
+  {
+   "en": "'No'",
+   "motivo": "se dice igual en español"
+  },
+  {
+   "en": "'Untitled'",
+   "motivo": "nombre predeterminado del flow (coincide con el modelo y con Untitled.fpmt)"
+  },
+  {
+   "en": "'Prompting kickoff.fpmt'",
+   "motivo": "nombre de archivo del ejemplo"
+  }
+ ]
+}

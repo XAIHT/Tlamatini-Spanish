@@ -1,0 +1,851 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0100_add_unrealer_extended_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **UNREAL SNAPSHOT** demo, please &mdash; a basic, end-to-end \"",
+   "es": "\"Tlamatini, ejecuta la demo **UNREAL SNAPSHOT**, por favor &mdash; una muestra básica, de principio a fin, \"",
+   "n": 1
+  },
+  {
+   "en": "\"showcase of the *observe&rarr;act loop* on a live Unreal Engine 5 editor: it reads \"",
+   "es": "\"del *loop observar&rarr;actuar* en un editor de Unreal Engine 5 en vivo: lee \"",
+   "n": 1
+  },
+  {
+   "en": "\"the current level, spawns one actor, captures a viewport screenshot to disk so you \"",
+   "es": "\"el nivel actual, genera un actor, captura un screenshot del viewport en disco para que \"",
+   "n": 1
+  },
+  {
+   "en": "\"can SEE the change, and saves the level &mdash; all from chat through the wrapped \"",
+   "es": "\"puedas VER el cambio, y guarda el nivel &mdash; todo desde el chat a través del tool wrapper \"",
+   "n": 1
+  },
+  {
+   "en": "\"**chat_agent_unrealer** tool. \"",
+   "es": "\"**chat_agent_unrealer**. \"",
+   "n": 2
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; trust them and go \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; confía en ellas y ve \"",
+   "n": 1
+  },
+  {
+   "en": "\"straight to Step 1): (a) UE5 is open in dev mode with a project loaded; (b) the \"",
+   "es": "\"directo al Paso 1): (a) UE5 está abierto en modo dev con un proyecto cargado; (b) el \"",
+   "n": 1
+  },
+  {
+   "en": "\"Unreal MCP plugin is installed and its in-engine TCP listener is bound to \"",
+   "es": "\"plugin Unreal MCP está instalado y su listener TCP dentro del engine está escuchando en \"",
+   "n": 1
+  },
+  {
+   "en": "\"**127.0.0.1:55557**; (c) tick ONLY the **Multi-Turn** checkbox before sending \"",
+   "es": "\"**127.0.0.1:55557**; (c) marca SÓLO la casilla **Multi-Turn** antes de enviar \"",
+   "n": 1
+  },
+  {
+   "en": "\"(ACPX is NOT required &mdash; chat_agent_unrealer is the ONLY tool you may use to \"",
+   "es": "\"(NO se necesita ACPX &mdash; chat_agent_unrealer es el ÚNICO tool que puedes usar para \"",
+   "n": 1
+  },
+  {
+   "en": "\"talk to Unreal; do NOT use chat_agent_pythonxer / execute_command / acp_spawn). \"",
+   "es": "\"hablar con Unreal; no uses chat_agent_pythonxer / execute_command ni tools de ACPX). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Every step is exactly ONE chat_agent_unrealer call shaped \"",
+   "es": "\"Cada paso es exactamente UNA llamada a chat_agent_unrealer con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='<verb>' and params.<k>=<v> ...\\\". After each call, \"",
+   "es": "\"\\\"Run Unreal command with command='<verb>' and params.<k>=<v> ...\\\". Después de cada llamada, \"",
+   "n": 1
+  },
+  {
+   "en": "\"read the JSON return (the Unreal response is an INI_SECTION_UNREALER block under the \"",
+   "es": "\"lee el JSON que devuelve (la respuesta de Unreal es un bloque INI_SECTION_UNREALER bajo el \"",
+   "n": 1
+  },
+  {
+   "en": "\"run's log_excerpt) and capture command/status/error plus response_body. If a step \"",
+   "es": "\"log_excerpt de la ejecución) y captura command/status/error más response_body. Si un paso \"",
+   "n": 1
+  },
+  {
+   "en": "\"returns status='error', record it verbatim, DO NOT abort, continue. \"",
+   "es": "\"devuelve status='error', regístralo tal cual, NO canceles, continúa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 3
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128247; UNREAL SNAPSHOT &#128247;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128247; UNREAL SNAPSHOT &#128247;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; spawn &rarr; screenshot &rarr; save</div></div>. \"",
+   "es": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; spawn &rarr; screenshot &rarr; guardar</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (level &mdash; where are we): call **chat_agent_unrealer** with request \"",
+   "es": "\"Paso 1 (nivel &mdash; dónde estamos): llama a **chat_agent_unrealer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='get_current_level'\\\". Capture the level name / \"",
+   "es": "\"\\\"Run Unreal command with command='get_current_level'\\\". Captura el nombre del nivel / \"",
+   "n": 1
+  },
+  {
+   "en": "\"package path / actor count from response_body. If THIS errors, the plugin listener \"",
+   "es": "\"el package path / el conteo de actores de response_body. Si ESTO da error, el listener del plugin \"",
+   "n": 1
+  },
+  {
+   "en": "\"is almost certainly not bound &mdash; skip to the closing banner with an \"",
+   "es": "\"casi seguro no está escuchando &mdash; salta al banner de cierre con un \"",
+   "n": 1
+  },
+  {
+   "en": "\"'UNREACHABLE' verdict and suggest checking the UE Output Log for \"",
+   "es": "\"veredicto 'INACCESIBLE' y sugiere revisar el UE Output Log en busca de \"",
+   "n": 1
+  },
+  {
+   "en": "\"'UnrealMCP listening on 127.0.0.1:55557'. \"",
+   "es": "\"'UnrealMCP listening on 127.0.0.1:55557'. \""
+  },
+  {
+   "en": "\"Step 2 (editor &mdash; spawn something to look at): call **chat_agent_unrealer** with \"",
+   "es": "\"Paso 2 (editor &mdash; genera algo que mirar): llama a **chat_agent_unrealer** con \"",
+   "n": 1
+  },
+  {
+   "en": "\"request \\\"Run Unreal command with command='spawn_actor' and \"",
+   "es": "\"el request \\\"Run Unreal command with command='spawn_actor' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"params.name='SnapshotProbe_Cube' and params.type='StaticMeshActor' and \"",
+   "es": "\"params.name='SnapshotProbe_Cube' and params.type='StaticMeshActor' and \""
+  },
+  {
+   "en": "\"params.location=[0,0,200] and params.rotation=[0,0,0]\\\". \"",
+   "es": "\"params.location=[0,0,200] and params.rotation=[0,0,0]\\\". \""
+  },
+  {
+   "en": "\"Step 3 (editor &mdash; OBSERVE the change): call **chat_agent_unrealer** with request \"",
+   "es": "\"Paso 3 (editor &mdash; OBSERVA el cambio): llama a **chat_agent_unrealer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='take_screenshot' and \"",
+   "es": "\"\\\"Run Unreal command with command='take_screenshot' and \""
+  },
+  {
+   "en": "\"params.filepath='C:/Temp/unreal_snapshot.png'\\\". Note that params.filepath is a DISK \"",
+   "es": "\"params.filepath='C:/Temp/unreal_snapshot.png'\\\". Nota que params.filepath es un path de DISCO \"",
+   "n": 1
+  },
+  {
+   "en": "\"path on the machine running the editor (NOT a /Game content path), so the agent does \"",
+   "es": "\"en la máquina donde corre el editor (NO un path de contenido /Game), así que el agent no \"",
+   "n": 1
+  },
+  {
+   "en": "\"not rewrite it. Capture the saved path the plugin returns. \"",
+   "es": "\"lo reescribe. Captura el path guardado que devuelve el plugin. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (level &mdash; persist): call **chat_agent_unrealer** with request \"",
+   "es": "\"Paso 4 (nivel &mdash; persiste): llama a **chat_agent_unrealer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='save_current_level'\\\". \"",
+   "es": "\"\\\"Run Unreal command with command='save_current_level'\\\". \""
+  },
+  {
+   "en": "\"Step 5: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 5: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Unreal Snapshot &mdash; Run Report</strong>' and columns <em>step</em>, \"",
+   "es": "\"'<strong>Unreal Snapshot &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>category</em>, <em>unreal_command</em>, <em>status</em> (ok|error), \"",
+   "es": "\"<em>categoría</em>, <em>unreal_command</em>, <em>status</em> (ok|error), \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>headline</em> (one-line summary from response_body or error) &mdash; one row per \"",
+   "es": "\"<em>resumen</em> (resumen de una línea del response_body o del error) &mdash; una fila por cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"call in execution order. Use the status verbatim from the INI_SECTION_UNREALER block; \"",
+   "es": "\"llamada en orden de ejecución. Usa el status tal cual del bloque INI_SECTION_UNREALER; \"",
+   "n": 1
+  },
+  {
+   "en": "\"do NOT re-classify. Light body cells (background:#ffffff;color:#0f172a; or striped \"",
+   "es": "\"NO lo reclasifiques. Celdas del cuerpo claras (background:#ffffff;color:#0f172a; o rayado \"",
+   "n": 1
+  },
+  {
+   "en": "\"#f1f5f9), green tint for ok and subtle red for error, no row hidden. \"",
+   "es": "\"#f1f5f9), tono verde para ok y rojo suave para error, sin ocultar ninguna fila. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: close with one HTML banner reusing the Step 0 style that prints, in big \"",
+   "es": "\"Paso 6: cierra con un banner HTML que reutilice el estilo del Paso 0 y muestre, en letras \"",
+   "n": 1
+  },
+  {
+   "en": "\"letters, '&#9989; SNAPSHOT CAPTURED' (if every step returned ok), \"",
+   "es": "\"grandes, '&#9989; SNAPSHOT CAPTURADO' (si todos los pasos devolvieron ok), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9888;&#65039; SNAPSHOT PARTIAL' (if some ok, some error), or \"",
+   "es": "\"'&#9888;&#65039; SNAPSHOT PARCIAL' (si algunos ok, algunos error) o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#10060; UNREAL UNREACHABLE' (if Step 1 errored), and underneath a one-line metric \"",
+   "es": "\"'&#10060; UNREAL INACCESIBLE' (si el Paso 1 dio error), y debajo una métrica de una línea \"",
+   "n": 2
+  },
+  {
+   "en": "\"'level: <name> &middot; calls ok: <K>/<N> &middot; screenshot: \"",
+   "es": "\"'nivel: <name> &middot; llamadas ok: <K>/<N> &middot; screenshot: \"",
+   "n": 1
+  },
+  {
+   "en": "\"C:/Temp/unreal_snapshot.png'. End with END-RESPONSE.\"",
+   "es": "\"C:/Temp/unreal_snapshot.png'. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **UNREAL SCENE FORGE** demo, please &mdash; a medium-complexity \"",
+   "es": "\"Tlamatini, ejecuta la demo **UNREAL SCENE FORGE**, por favor &mdash; un pipeline de creación de \"",
+   "n": 1
+  },
+  {
+   "en": "\"content-authoring pipeline that exercises the Unreal MCP **Asset** and **Material** \"",
+   "es": "\"contenido de complejidad media que ejercita las categorías **Asset** y **Material** de Unreal MCP \"",
+   "n": 1
+  },
+  {
+   "en": "\"categories (plus a level read/save and a screenshot), driven entirely from chat \"",
+   "es": "\"(más una lectura/guardado de nivel y un screenshot), controlado por completo desde el chat \"",
+   "n": 1
+  },
+  {
+   "en": "\"through the wrapped **chat_agent_unrealer** tool: it inventories the project, makes a \"",
+   "es": "\"a través del tool wrapper **chat_agent_unrealer**: inventaría el proyecto, crea una \"",
+   "n": 1
+  },
+  {
+   "en": "\"content folder, authors a material + material instance, tints the instance, spawns a \"",
+   "es": "\"carpeta de contenido, escribe un material + una material instance, tiñe la instance, genera un \"",
+   "n": 1
+  },
+  {
+   "en": "\"mesh actor, assigns the material to it, screenshots the result and saves the level. \"",
+   "es": "\"actor de mesh, le asigna el material, le toma un screenshot al resultado y guarda el nivel. \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify; go straight to Step 1): (a) UE5 \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques; ve directo al Paso 1): (a) UE5 \"",
+   "n": 2
+  },
+  {
+   "en": "\"open in dev mode with a project loaded; (b) the Unreal MCP plugin's TCP listener is \"",
+   "es": "\"abierto en modo dev con un proyecto cargado; (b) el listener TCP del plugin Unreal MCP está \"",
+   "n": 2
+  },
+  {
+   "en": "\"bound to **127.0.0.1:55557**; (c) tick ONLY the **Multi-Turn** checkbox (ACPX is NOT \"",
+   "es": "\"escuchando en **127.0.0.1:55557**; (c) marca SÓLO la casilla **Multi-Turn** (ACPX NO se \"",
+   "n": 1
+  },
+  {
+   "en": "\"required). Use ONLY chat_agent_unrealer to talk to Unreal, ONE call per step shaped \"",
+   "es": "\"necesita). Usa SÓLO chat_agent_unrealer para hablar con Unreal, UNA llamada por paso con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='<verb>' and params.<k>=<v> ...\\\". Read each JSON \"",
+   "es": "\"\\\"Run Unreal command with command='<verb>' and params.<k>=<v> ...\\\". Lee cada JSON \"",
+   "n": 1
+  },
+  {
+   "en": "\"return (the Unreal response is an INI_SECTION_UNREALER block under log_excerpt), \"",
+   "es": "\"que devuelve (la respuesta de Unreal es un bloque INI_SECTION_UNREALER bajo el log_excerpt), \"",
+   "n": 1
+  },
+  {
+   "en": "\"capture command/status/error/response_body, and on status='error' record it verbatim \"",
+   "es": "\"captura command/status/error/response_body, y con status='error' regístralo tal cual \"",
+   "n": 1
+  },
+  {
+   "en": "\"and CONTINUE (do not abort). \"",
+   "es": "\"y CONTINÚA (no canceles). \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127912; UNREAL SCENE FORGE &#127912;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127912; UNREAL SCENE FORGE &#127912;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; folder &middot; material &middot; assign &middot; shoot</div></div>. \"",
+   "es": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; carpeta &middot; material &middot; asignar &middot; disparar</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (level): \\\"Run Unreal command with command='get_current_level'\\\" &mdash; capture \"",
+   "es": "\"Paso 1 (nivel): \\\"Run Unreal command with command='get_current_level'\\\" &mdash; captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"the level name and actor count as the 'before' baseline. \"",
+   "es": "\"el nombre del nivel y el conteo de actores como la base 'before'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (system &mdash; inventory): \\\"Run Unreal command with command='list_assets' and \"",
+   "es": "\"Paso 2 (system &mdash; inventario): \\\"Run Unreal command with command='list_assets' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"params.path='/Game' and params.recursive=true\\\". Capture the asset count from \"",
+   "es": "\"params.path='/Game' and params.recursive=true\\\". Captura el conteo de assets de \"",
+   "n": 1
+  },
+  {
+   "en": "\"response_body (count or result.count). \"",
+   "es": "\"response_body (count o result.count). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (asset &mdash; make a home for our content): \\\"Run Unreal command with \"",
+   "es": "\"Paso 3 (asset &mdash; hazle un hogar a nuestro contenido): \\\"Run Unreal command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='create_folder' and params.path='/Game/TlamatiniForge'\\\". \"",
+   "es": "\"command='create_folder' and params.path='/Game/TlamatiniForge'\\\". \""
+  },
+  {
+   "en": "\"Step 4 (material &mdash; create the base material): \\\"Run Unreal command with \"",
+   "es": "\"Paso 4 (material &mdash; crea el material base): \\\"Run Unreal command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='create_material' and params.name='M_TlamatiniForge' and \"",
+   "es": "\"command='create_material' and params.name='M_TlamatiniForge' and \""
+  },
+  {
+   "en": "\"params.path='/Game/TlamatiniForge'\\\". Capture the created material path. \"",
+   "es": "\"params.path='/Game/TlamatiniForge'\\\". Captura el path del material creado. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (material &mdash; derive an instance): \\\"Run Unreal command with \"",
+   "es": "\"Paso 5 (material &mdash; deriva una instance): \\\"Run Unreal command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='create_material_instance' and params.name='MI_TlamatiniForge' and \"",
+   "es": "\"command='create_material_instance' and params.name='MI_TlamatiniForge' and \""
+  },
+  {
+   "en": "\"params.parent_material='/Game/TlamatiniForge/M_TlamatiniForge' and \"",
+   "es": "\"params.parent_material='/Game/TlamatiniForge/M_TlamatiniForge' and \""
+  },
+  {
+   "en": "\"Step 6 (material &mdash; tint it): \\\"Run Unreal command with \"",
+   "es": "\"Paso 6 (material &mdash; tíñelo): \\\"Run Unreal command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='set_material_parameter' and \"",
+   "es": "\"command='set_material_parameter' and \""
+  },
+  {
+   "en": "\"params.material='/Game/TlamatiniForge/MI_TlamatiniForge' and params.parameter='BaseColor' \"",
+   "es": "\"params.material='/Game/TlamatiniForge/MI_TlamatiniForge' and params.parameter='BaseColor' \""
+  },
+  {
+   "en": "\"and params.value=[1,0,0]\\\". IMPORTANT &mdash; a brand-new BLANK material declares no \"",
+   "es": "\"and params.value=[1,0,0]\\\". IMPORTANTE &mdash; un material EN BLANCO recién creado no declara \"",
+   "n": 1
+  },
+  {
+   "en": "\"named parameters, so this step MAY legitimately return status='error' \"",
+   "es": "\"parámetros con nombre, así que este paso PUEDE legítimamente devolver status='error' \"",
+   "n": 1
+  },
+  {
+   "en": "\"(\\\"parameter 'BaseColor' not found\\\"). That is EXPECTED for a material created in \"",
+   "es": "\"(\\\"parameter 'BaseColor' not found\\\"). Eso es ESPERADO para un material creado en el \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 with no parameter graph; record the error verbatim and CONTINUE. (In a real \"",
+   "es": "\"Paso 4 sin grafo de parámetros; registra el error tal cual y CONTINÚA. (En un proyecto \"",
+   "n": 1
+  },
+  {
+   "en": "\"project you would point params.material at a parent material that actually exposes a \"",
+   "es": "\"real apuntarías params.material a un material padre que de verdad exponga un \"",
+   "n": 1
+  },
+  {
+   "en": "\"BaseColor parameter, or add the parameter via an execute_python step first.) \"",
+   "es": "\"parámetro BaseColor, o agregarías el parámetro con un paso de execute_python primero.) \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7 (editor &mdash; something to paint): \\\"Run Unreal command with \"",
+   "es": "\"Paso 7 (editor &mdash; algo que pintar): \\\"Run Unreal command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='spawn_actor' and params.name='ForgeProbe_Cube' and \"",
+   "es": "\"command='spawn_actor' and params.name='ForgeProbe_Cube' and \""
+  },
+  {
+   "en": "\"params.type='StaticMeshActor' and params.location=[0,0,200]\\\". \"",
+   "es": "\"params.type='StaticMeshActor' and params.location=[0,0,200]\\\". \""
+  },
+  {
+   "en": "\"Step 8 (material &mdash; assign): \\\"Run Unreal command with command='assign_material' \"",
+   "es": "\"Paso 8 (material &mdash; asigna): \\\"Run Unreal command with command='assign_material' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and params.actor='ForgeProbe_Cube' and \"",
+   "es": "\"and params.actor='ForgeProbe_Cube' and \""
+  },
+  {
+   "en": "\"params.material='/Game/TlamatiniForge/MI_TlamatiniForge' and params.slot=0\\\". \"",
+   "es": "\"params.material='/Game/TlamatiniForge/MI_TlamatiniForge' and params.slot=0\\\". \""
+  },
+  {
+   "en": "\"Step 9 (editor &mdash; OBSERVE): \\\"Run Unreal command with command='take_screenshot' \"",
+   "es": "\"Paso 9 (editor &mdash; OBSERVA): \\\"Run Unreal command with command='take_screenshot' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and params.filepath='C:/Temp/unreal_scene_forge.png'\\\" (a disk path on the editor host; \"",
+   "es": "\"and params.filepath='C:/Temp/unreal_scene_forge.png'\\\" (un path de disco en el host del editor; \"",
+   "n": 1
+  },
+  {
+   "en": "\"not normalized). \"",
+   "es": "\"no normalizado). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 10 (level &mdash; persist material + level): \\\"Run Unreal command with \"",
+   "es": "\"Paso 10 (nivel &mdash; persiste material + nivel): \\\"Run Unreal command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='save_all'\\\" so the new content folder, material, instance and the level are \"",
+   "es": "\"command='save_all'\\\" para que la nueva carpeta de contenido, el material, la instance y el nivel \"",
+   "n": 1
+  },
+  {
+   "en": "\"all written to disk. \"",
+   "es": "\"se escriban todos a disco. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 11: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 11: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Unreal Scene Forge &mdash; Run Report</strong>' and columns <em>step</em>, \"",
+   "es": "\"'<strong>Unreal Scene Forge &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>category</em> (level|system|asset|material|editor), <em>unreal_command</em>, \"",
+   "es": "\"<em>categoría</em> (level|system|asset|material|editor), <em>unreal_command</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>params (compact JSON)</em>, <em>status</em> (ok|error), <em>headline</em> \"",
+   "es": "\"<em>params (JSON compacto)</em>, <em>status</em> (ok|error), <em>resumen</em> \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; one row per call in execution order, status verbatim from the \"",
+   "es": "\"&mdash; una fila por cada llamada en orden de ejecución, status tal cual del \"",
+   "n": 1
+  },
+  {
+   "en": "\"INI_SECTION_UNREALER block (do NOT re-classify). Light body cells \"",
+   "es": "\"bloque INI_SECTION_UNREALER (NO lo reclasifiques). Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9); green tint ok, subtle red \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9); tono verde ok, rojo suave \"",
+   "n": 1
+  },
+  {
+   "en": "\"error, nothing hidden. \"",
+   "es": "\"error, nada oculto. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 12: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 12: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; SCENE FORGED' (every step ok), '&#9888;&#65039; SCENE FORGE PARTIAL' \"",
+   "es": "\"'&#9989; ESCENA FORJADA' (todos los pasos ok), '&#9888;&#65039; SCENE FORGE PARCIAL' \"",
+   "n": 1
+  },
+  {
+   "en": "\"(set_material_parameter is the expected soft-fail; if ONLY it errored you may still \"",
+   "es": "\"(set_material_parameter es el soft-fail esperado; si SÓLO ese dio error, igual puedes \"",
+   "n": 1
+  },
+  {
+   "en": "\"call it a successful demo of the surface), or '&#10060; UNREAL UNREACHABLE' (Step 1 \"",
+   "es": "\"llamarlo una demo exitosa de la superficie) o '&#10060; UNREAL INACCESIBLE' (el Paso 1 \"",
+   "n": 1
+  },
+  {
+   "en": "\"errored), and underneath a one-line metric 'assets before: <N> &middot; created: \"",
+   "es": "\"dio error), y debajo una métrica de una línea 'assets antes: <N> &middot; creados: \"",
+   "n": 1
+  },
+  {
+   "en": "\"folder+material+instance &middot; calls ok: <K>/<N> &middot; screenshot: \"",
+   "es": "\"folder+material+instance &middot; llamadas ok: <K>/<N> &middot; screenshot: \"",
+   "n": 1
+  },
+  {
+   "en": "\"C:/Temp/unreal_scene_forge.png'. End with END-RESPONSE.\"",
+   "es": "\"C:/Temp/unreal_scene_forge.png'. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **UNREAL PYTHON & INTROSPECTION** demo, please &mdash; an advanced \"",
+   "es": "\"Tlamatini, ejecuta la demo **UNREAL PYTHON & INTROSPECTION**, por favor &mdash; una muestra avanzada \"",
+   "n": 1
+  },
+  {
+   "en": "\"showcase of the Unreal MCP **System** category: it runs an editor console command, \"",
+   "es": "\"de la categoría **System** de Unreal MCP: corre un comando de consola del editor, \"",
+   "n": 1
+  },
+  {
+   "en": "\"reflects an engine class, enumerates assets, and then uses **execute_python** &mdash; \"",
+   "es": "\"refleja una clase del engine, enumera assets y luego usa **execute_python** &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"the universal in-editor escape hatch that can reach ANYTHING in UE5's `unreal` Python \"",
+   "es": "\"el escape hatch universal dentro del editor que puede alcanzar CUALQUIER COSA de la API Python `unreal` \"",
+   "n": 1
+  },
+  {
+   "en": "\"API &mdash; before screenshotting the viewport, all from chat through the wrapped \"",
+   "es": "\"de UE5 &mdash; antes de hacer un screenshot del viewport, todo desde el chat a través del tool wrapper \"",
+   "n": 1
+  },
+  {
+   "en": "\"bound to **127.0.0.1:55557**; (c) the project has the **Python Editor Script Plugin** \"",
+   "es": "\"escuchando en **127.0.0.1:55557**; (c) el proyecto tiene el **Python Editor Script Plugin** \"",
+   "n": 1
+  },
+  {
+   "en": "\"enabled (required for execute_python); (d) tick ONLY the **Multi-Turn** checkbox \"",
+   "es": "\"activado (requerido para execute_python); (d) marca SÓLO la casilla **Multi-Turn** \"",
+   "n": 1
+  },
+  {
+   "en": "\"(ACPX is NOT required). Use ONLY chat_agent_unrealer, ONE call per step. Read each \"",
+   "es": "\"(NO se necesita ACPX). Usa SÓLO chat_agent_unrealer, UNA llamada por paso. Lee cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"JSON return (INI_SECTION_UNREALER block under log_excerpt), capture \"",
+   "es": "\"JSON que devuelve (bloque INI_SECTION_UNREALER bajo log_excerpt), captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"command/status/error/response_body, and on status='error' record verbatim and \"",
+   "es": "\"command/status/error/response_body, y con status='error' regístralo tal cual y \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128013; UNREAL PYTHON &amp; INTROSPECTION &#128013;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128013; UNREAL PYTHON &amp; INTROSPECTION &#128013;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; console &middot; reflect &middot; list &middot; execute_python</div></div>. \"",
+   "es": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; consola &middot; reflejar &middot; listar &middot; execute_python</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (system &mdash; console / CVar): call **chat_agent_unrealer** with request \"",
+   "es": "\"Paso 1 (system &mdash; consola / CVar): llama a **chat_agent_unrealer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='execute_console_command' and \"",
+   "es": "\"\\\"Run Unreal command with command='execute_console_command' and \""
+  },
+  {
+   "en": "\"params.console_command='stat fps'\\\". NOTE: the console line goes in \"",
+   "es": "\"params.console_command='stat fps'\\\". NOTA: la línea de consola va en \"",
+   "n": 1
+  },
+  {
+   "en": "\"params.console_command (NOT params.command) &mdash; the Unrealer agent remaps it to the \"",
+   "es": "\"params.console_command (NO en params.command) &mdash; el agent Unrealer la remapea al \"",
+   "n": 1
+  },
+  {
+   "en": "\"wire's params.command automatically so it does not collide with the top-level command \"",
+   "es": "\"params.command del wire automáticamente para que no choque con el command selector de \"",
+   "n": 1
+  },
+  {
+   "en": "\"selector. This toggles the on-screen FPS stat. \"",
+   "es": "\"nivel superior. Esto conmuta el stat de FPS en pantalla. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (system &mdash; reflection): call **chat_agent_unrealer** with request \"",
+   "es": "\"Paso 2 (system &mdash; reflexión): llama a **chat_agent_unrealer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='get_class_info' and params.class_name='StaticMeshActor'\\\". \"",
+   "es": "\"\\\"Run Unreal command with command='get_class_info' and params.class_name='StaticMeshActor'\\\". \""
+  },
+  {
+   "en": "\"From response_body capture the parent class and a few of the property names it reports \"",
+   "es": "\"De response_body captura la clase padre y algunos de los nombres de propiedad que reporta \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; this is how you discover valid property names before a set_actor_property call. \"",
+   "es": "\"&mdash; así es como descubres nombres de propiedad válidos antes de una llamada a set_actor_property. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (system &mdash; asset enumeration): call **chat_agent_unrealer** with request \"",
+   "es": "\"Paso 3 (system &mdash; enumeración de assets): llama a **chat_agent_unrealer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='list_assets' and params.path='/Game' and \"",
+   "es": "\"\\\"Run Unreal command with command='list_assets' and params.path='/Game' and \""
+  },
+  {
+   "en": "\"params.recursive=true\\\". Capture the asset count. \"",
+   "es": "\"params.recursive=true\\\". Captura el conteo de assets. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (system &mdash; THE escape hatch, execute_python): call **chat_agent_unrealer** \"",
+   "es": "\"Paso 4 (system &mdash; EL escape hatch, execute_python): llama a **chat_agent_unrealer** \"",
+   "n": 1
+  },
+  {
+   "en": "\"with a request whose params.code is a TRIPLE-QUOTED multi-line Python literal (use \"",
+   "es": "\"con un request cuyo params.code sea un literal Python multilínea con comillas triples (usa \"",
+   "n": 1
+  },
+  {
+   "en": "\"''' ... ''' so the newlines and inner quotes survive the parser), exactly: \"",
+   "es": "\"''' ... ''' para que los newlines y las comillas internas sobrevivan al parser), exactamente: \"",
+   "n": 1
+  },
+  {
+   "en": "\"The execute_python handler returns `success`, `result` (the repr of the last \"",
+   "es": "\"El handler de execute_python devuelve `success`, `result` (el repr de la última \"",
+   "n": 1
+  },
+  {
+   "en": "\"expression &mdash; here the actor count) and `log` (the unreal.log lines). Capture the \"",
+   "es": "\"expresión &mdash; aquí el conteo de actores) y `log` (las líneas de unreal.log). Captura el \"",
+   "n": 1
+  },
+  {
+   "en": "\"actor count and the engine-version log line from response_body. If this step errors \"",
+   "es": "\"conteo de actores y la línea de log de la versión del engine de response_body. Si este paso da error \"",
+   "n": 1
+  },
+  {
+   "en": "\"with a 'Python' / 'plugin' message, the Python Editor Script Plugin is probably \"",
+   "es": "\"con un mensaje de 'Python' / 'plugin', el Python Editor Script Plugin probablemente está \"",
+   "n": 1
+  },
+  {
+   "en": "\"disabled &mdash; record it and continue. \"",
+   "es": "\"deshabilitado &mdash; regístralo y continúa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (editor &mdash; OBSERVE): call **chat_agent_unrealer** with request \"",
+   "es": "\"Paso 5 (editor &mdash; OBSERVA): llama a **chat_agent_unrealer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: render a STATUS SCOREBOARD &mdash; a row of HTML chips of the form \"",
+   "es": "\"Paso 6: muestra un MARCADOR DE STATUS &mdash; una fila de chips HTML con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: a 'console: <ok|err>' \"",
+   "es": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: un chip 'console: <ok|err>', \"",
+   "n": 1
+  },
+  {
+   "en": "\"chip, a 'reflect: <ok|err>' chip, a 'list_assets: <ok|err>' chip, a \"",
+   "es": "\"un chip 'reflect: <ok|err>', un chip 'list_assets: <ok|err>', un \"",
+   "n": 1
+  },
+  {
+   "en": "\"'execute_python: <ok|err>' chip (CHIP_BG #16a34a when ok else #dc2626), and an \"",
+   "es": "\"chip 'execute_python: <ok|err>' (CHIP_BG #16a34a cuando es ok, si no #dc2626), y un \"",
+   "n": 1
+  },
+  {
+   "en": "\"'actors: <N>' chip (CHIP_BG #2563EB). \"",
+   "es": "\"chip 'actors: <N>' (CHIP_BG #2563EB). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 7: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Unreal Python &amp; Introspection &mdash; Run Report</strong>' and columns \"",
+   "es": "\"'<strong>Unreal Python &amp; Introspection &mdash; Reporte de ejecución</strong>' y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>step</em>, <em>unreal_command</em>, <em>status</em> (ok|error), <em>headline</em> \"",
+   "es": "\"<em>paso</em>, <em>unreal_command</em>, <em>status</em> (ok|error), <em>resumen</em> \"",
+   "n": 1
+  },
+  {
+   "en": "\"(parent class for get_class_info; asset count for list_assets; actor count + engine \"",
+   "es": "\"(clase padre para get_class_info; conteo de assets para list_assets; conteo de actores + versión del \"",
+   "n": 1
+  },
+  {
+   "en": "\"version for execute_python; etc.) &mdash; one row per call in execution order, status \"",
+   "es": "\"engine para execute_python; etc.) &mdash; una fila por cada llamada en orden de ejecución, status \"",
+   "n": 1
+  },
+  {
+   "en": "\"verbatim from the INI_SECTION_UNREALER block. Light body cells \"",
+   "es": "\"tal cual del bloque INI_SECTION_UNREALER. Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9). \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 8: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; PYTHON BRIDGE LIVE' (if execute_python returned ok), \"",
+   "es": "\"'&#9989; PUENTE DE PYTHON EN VIVO' (si execute_python devolvió ok), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9888;&#65039; SYSTEM SURFACE PARTIAL' (some system calls ok, some error), or \"",
+   "es": "\"'&#9888;&#65039; SUPERFICIE SYSTEM PARCIAL' (algunas llamadas de system ok, algunas error) o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'engine: <version> &middot; actors: <N> &middot; assets: <M> &middot; system calls ok: \"",
+   "es": "\"'engine: <version> &middot; actors: <N> &middot; assets: <M> &middot; llamadas de system ok: \"",
+   "n": 1
+  },
+  {
+   "en": "\"<K>/4 &middot; screenshot: C:/Temp/unreal_python_introspection.png'. End with \"",
+   "es": "\"<K>/4 &middot; screenshot: C:/Temp/unreal_python_introspection.png'. Termina con \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#0B1220 0%,#1F3A8A 33%,#10B981 66%,#22D3EE 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='execute_python' and params.code='''import unreal\\n\"",
+   "motivo": "request con código Python de la demo (execute_python); conservar"
+  },
+  {
+   "en": "\"actors = unreal.EditorLevelLibrary.get_all_level_actors()\\n\"",
+   "motivo": "código Python de la demo (execute_python); conservar"
+  },
+  {
+   "en": "\"unreal.log('Tlamatini execute_python: %d actors in the active level' % len(actors))\\n\"",
+   "motivo": "código Python de la demo (execute_python); conservar"
+  },
+  {
+   "en": "\"ver = unreal.SystemLibrary.get_engine_version()\\n\"",
+   "motivo": "código Python de la demo (execute_python); conservar"
+  },
+  {
+   "en": "\"unreal.log('Engine version: %s' % ver)\\n\"",
+   "motivo": "código Python de la demo (execute_python); conservar"
+  },
+  {
+   "en": "\"<span style='display:inline-block;padding:8px 16px;margin:3px;border-radius:10px;\"",
+   "motivo": "CSS del chip (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

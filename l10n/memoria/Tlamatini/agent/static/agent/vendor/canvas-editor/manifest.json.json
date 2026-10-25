@@ -1,0 +1,18 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/vendor/canvas-editor/manifest.json",
+ "segmentos": [
+  {
+   "en": "\"bytes\": 990166,",
+   "es": "\"bytes\": 990261,",
+   "codigo": "tamaño del bundle del editor con sus mensajes traducidos",
+   "n": 1
+  },
+  {
+   "en": "\"sha256\": \"1e32235b982822a50579bab4e75d7157c8fef958e79cf65a5af24528ece94292\",",
+   "es": "\"sha256\": \"f7cbb062e4de36733a2046b945f7bbf4ab87c739b12dc2492366523e62de33e1\",",
+   "codigo": "hash del bundle del editor con sus mensajes traducidos",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

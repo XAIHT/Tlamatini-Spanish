@@ -1,0 +1,440 @@
+---
+name: tlamatini-self-update-inclusion
+description: Sweep the whole codebase and keep the SELF-UPDATE pipeline complete — so every new asset/feature added to Tlamatini is actually carried into a release by build.py AND survives (or is correctly replaced by) the self-update swap. Invoke whenever you add/rename a new agent, top-level file or directory, dependency, bundled runtime, migration, static/template asset, or any "ship it next to the exe" artifact — and ALWAYS after a feature like Blenderer or the self-update capability lands. Audits the three files that own the pipeline (build.py, agent/self_update.py, apply_update.ps1) against four hard invariants, with a runnable sweep script that never forgets the minimal thing. Pairs with copy_source_assets.py (the self-modify snapshot) and VERSIONING.md.
+---
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+
+# Tlamatini — Self-Update Inclusion Sweep
+
+> Current release: **[v1.90.0](../../../docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+
+> **HEADLESS IS FORBIDDEN. VISIBLE FOREGROUND EXECUTION ONLY.** Every command, automated test, diagnostic, script, build, agent and browser must run in a visible foreground window on Angela's real desktop. Use forked CMD/PowerShell windows, `execute_forked_window: true`, and `headless: false`. Monitor live; if visibility cannot be confirmed, do not run. Read the [mandatory execution policy](../../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+> **Audience:** Claude Code working ON the Tlamatini codebase for **Angela**.
+> **Goal:** guarantee that *every* asset a new feature introduces is (1) **carried into
+> the release** by `build.py`, and (2) **handled correctly by the self-update swap** —
+> either preserved (user data) or replaced (app code). Nothing minimal forgotten, ever.
+
+This skill is the **safety net for shipping**. A feature can be 100% correct in source and
+still be invisible to every existing user after they click *About ▸ Check for updates* —
+because the asset was never bundled, or because the swap deleted/kept the wrong thing. This
+sweep makes that class of bug impossible to ship silently.
+
+---
+
+## Shared loose-file inventory and no-Git audits (2026-09-27)
+
+The build copies every `ROOT_SOURCES` entry through `copy_root_sources()`.
+The receipt floor requires every destination, including `chat_voice_settings.py`
+and `agents/whisperer/chat_worker.py`. Do not maintain another required-file
+copy list: that drift caused the missing-helper release failure.
+
+When the user forbids Git, run the sweep with `--no-git` in a verified visible
+foreground console kept open afterward. This retains file/carrier/vendor,
+preservation and update-order checks, while explicitly skipping tracked-file
+census and release-history comparisons. Default runs retain those Git checks.
+Do not run the history commands elsewhere in this skill under that constraint;
+report the skipped coverage. Unit tests must execute the actual carrier and
+compare bytes, then validate ZIP and extracted staging membership/hashes.
+
+## Pipeline files this skill owns
+
+| File | Role in the pipeline |
+|---|---|
+| **`build.py`** (repo root) | Assembles the release tree (`dist/manage` → `pkg.zip`). If an asset isn't carried by one of its 7 mechanisms (below), it is **not in the download**, so a self-update can never deliver it. |
+| **`Tlamatini/agent/self_update.py`** | In-app updater: checks GitHub, downloads + unzips + stages the new build, hands off to the PowerShell swapper. Its **docstring preserve list** documents what survives. |
+| **`apply_update.ps1`** (repo root) | The external file-swapper. Its **`$Preserve` array** is the *authoritative, executed* contract for what is kept vs replaced. Renames `agents → agents_backup`, then full-replaces everything not preserved. |
+
+> `apply_update.ps1` must itself be shipped by `build.py` (`copy_root_sources()`) so a self-updated
+> install carries the *next* updater. The pipeline is self-hosting — this is invariant #1's
+> most easily-forgotten case.
+
+---
+
+## How the release is assembled — the 7 carrier mechanisms in `build.py`
+
+Every runtime asset needs at least one of these carriers (some deliberately have two destinations). When you add an asset, ask
+"which carrier moves it?" If the answer is "none", it will NOT ship.
+
+| # | Mechanism (`build.py`) | Carries | Auto-includes new files? |
+|---|---|---|---|
+| 1 | **PyInstaller import graph → PYZ** | every `.py` reachable from the import graph (incl. lazy `from . import x`) — views, tools, registries, `self_update.py`, **migrations** | ✅ yes, if imported/in a collected package |
+| 2 | **`--add-data` list** | whole trees: `agent/templates`, `agent/static`, `staticfiles`, `agent/skills_pkg`; single files: `config.json`, `prompt.pmt`, `Tlamatini.md`; dependency data files | ✅ for files *inside* an already-listed tree; ❌ for a **new** top-level tree |
+| 3 | **`optional_dir_copies` → install root** | `agent/images`, **`agent/agents`** (the whole agent-template tree → new agents auto-ship), `agent/skills_pkg` | ✅ new agents/skills inside these dirs |
+| 4 | **`copy_root_sources()` → destinations in `build_runtime_assets.ROOT_SOURCES`** | Required loose files, including `chat_voice_settings.py`, update helpers, docs, config and prompt; optional identity remains gated by `self_modify` | ✅ every new `ROOT_SOURCES` entry is copied and required by the runtime receipt automatically |
+| 5 | **`support_files` → install root** | the `.ps1` helpers (`Tlamatini.ps1`, `register_flw`/`unregister_flw`, `CreateShortcut`/`RemoveShortcut`), `Tlamatini.ico`, `CreateShortcut.json`, `cat_art.py` | ❌ a **new** root-level support file must be added by hand |
+| 6 | **bundled runtimes + deps** | carried Python, `jre`, `git`, `ms-playwright`; PyInstaller **hidden imports**, **`--collect-all`** (e.g. `ffpyplayer`); **`requirements.txt`** | ❌ a **new** runtime / hidden import / collect-all / pip dep must be added by hand |
+| 7 | **bespoke `shutil.copytree` block → install root** | **`security/`** (Angela's Blue-hat operator toolkit: `tlamatini_defender.ps1`, `tlamatini_whitelist_v2.ps1`, the `.bat` UAC launchers, `README.md`, and `automated_tests_of_security_assets.py`), copied near the end of the build with `ignore_patterns("security_logs", "*.log", "__pycache__")` | ✅ new files *inside* `security/`; ❌ a **new** bespoke tree needs its own block |
+| — | **DB delivery** | `build.py` step 8a runs `migrate`, so the shipped `db.sqlite3` carries every migration's seeded rows (new agent row, `chat_agent_*` tool row, demo prompts) | ✅ rows ship; ⚠️ see the DB special case |
+
+**The forgettable carriers are 2 (new top-level tree), 4, 5, 6, and 7** — anything that lives at
+the repo root or needs an explicit PyInstaller flag or its own copy block. Mechanisms 1 and 3 are
+automatic, which is exactly why a new *agent* needs no build edit but a new *root-level script* does.
+
+> `security/` is mandatory. Missing source/copy failures abort the build, and
+> `build_runtime_assets.py` inventories the tree (excluding evidence/logs) and checks
+> every carried file. Register new runtime trees in `SOURCE_TREES` as well as their
+> actual copy/add-data carrier; optional copying is unsuitable for required code.
+
+---
+
+## How an update swaps — preserve vs replace
+
+`apply_update.ps1` does: validate staged build and backup helpers → stop running app
+→ verify a WAL-aware SQLite backup → `agents → agents_backup` → **delete** old install
+except `$Preserve` → **move in** new build except `$Preserve` → relaunch and migrate.
+
+So every top-level entry is in one of three buckets:
+
+- **PRESERVED** (`$Preserve`) — user data / runtime state. Kept across updates. Must equal the
+  shared `preserved_user_state.json` contract, including runtime-writable dirs.
+- **SWAP-BACKED** — `agents` only (renamed to `agents_backup`, then replaced). One backup kept.
+- **REPLACED** — everything else (the exe, `python`/`jre`/`git`, `.ps1`/`.ico`, `prompt.pmt`,
+  `Tlamatini.md`, `README.md`, `agents_descriptions.md`, `images`, `skills_pkg`, **`db.sqlite3`**).
+
+---
+
+## The FOUR invariants (this is the whole job)
+
+### Invariant 1 — CARRY: every new asset reaches the release
+For each asset a feature adds, a carrier (table above) moves it into `dist/manage`/`pkg.zip`.
+The high-risk cases: a **new repo-root file** (→ `support_files` or `*_file_copies`), a **new
+top-level tree** (→ `--add-data` or `optional_dir_copies`), a **new dependency** (→
+`requirements.txt` + maybe hidden-import / `--collect-all`), a **new bundled runtime**.
+
+### Invariant 2 — PRESERVE PARITY: the two preserve lists are identical
+`apply_update.ps1` `$Preserve` (executed) **==** `self_update.py` docstring "Preserved across
+the swap" list (documented). A drift here means the docs lie about what survives.
+
+### Invariant 3 — PRESERVE CORRECTNESS: state preserved, code replaced
+`$Preserve` **==** the names in `preserved_user_state.json` **==** the installer fallback
+**==** the updater docstring list (case-insensitive sets). The top-level names from
+`build.py::empty_dirs` must be a subset; catalogs, contacts and the separately built
+uninstaller are also legitimate preserved entries. Add new state to all consumers.
+`uninstall.py` intentionally has a different removal policy. Conversely an
+**app-code** top-level entry (anything under `optional_dir_copies` like `images`/`skills_pkg`,
+or `python`/`jre`/`git`) must **NOT** be preserved, or users get stuck on stale code forever.
+
+### Invariant 4 — DB DELIVERY: new migration rows actually reach users
+The live database sits inside replaced `_internal/`, but its data is preserved
+through `DB/ToLoad`. After stopping the app, carried Python runs the shipped
+`sqlite_copy.py` helper to produce a verified online backup including committed WAL
+pages. Only success permits the swap and creates `post_update_migrate.flag`.
+The next startup restores that database and applies new migrations. Never replace
+this with a plain copy of `db.sqlite3`, and never preserve the old DB without
+the first-launch migration path.
+
+---
+
+## THE SWEEP — run this every time
+
+### Step 0 — run the deterministic checker (does 90% of the work)
+
+```bash
+python .gemini/skills/tlamatini-self-update-inclusion/scripts/sweep_self_update.py
+```
+
+It parses the three files and reports `[PASS]` / `[FINDING]` for invariants 2, 3, the
+root-`.ps1` census (invariant 1's worst case), app-dir-must-not-be-preserved (invariant 3),
+and a migrations-since-last-tag count (invariant 4). Exit code is non-zero if any finding —
+so it's usable as a pre-release gate. Fix every `[FINDING]` before shipping.
+
+### Step 1 — diff since the last release and classify every new path
+
+```bash
+# what changed since the last shipped tag
+git diff --name-status "$(git describe --tags --abbrev=0 --match 'v[0-9]*')"..HEAD
+# any brand-new TOP-LEVEL repo entries (the highest-risk for "forgot to ship")
+git diff --name-status "$(git describe --tags --abbrev=0 --match 'v[0-9]*')"..HEAD \
+  | awk '$1=="A"{print $2}' | awk -F/ '{print $1}' | sort -u
+```
+
+For each **new top-level file or dir**, run it through the **asset taxonomy** below and confirm
+its carrier is wired. New nested files inside `agent/static`, `agent/templates`,
+`agent/agents/<x>`, `agent/skills_pkg`, or any `.py` in a package are auto-carried — note them
+but they need no edit.
+
+### Step 2 — the carrier checks the script can't fully judge (do by eye)
+
+Run these greps and reconcile each hit against `build.py`:
+
+```bash
+# (a) New third-party imports in pool agents / app → requirements.txt + maybe hidden-imports/collect-all
+grep -rnE "^\s*(import|from)\s+([a-z0-9_]+)" Tlamatini/agent/agents --include=*.py \
+  | grep -ivE "import (os|sys|json|re|time|subprocess|socket|threading|pathlib|typing|shutil|logging|urllib|zipfile|tarfile|wave|base64|struct|math|datetime|tempfile|argparse|queue|signal|ctypes|glob|io|collections|functools|itertools)\b"
+grep -nE "hiddenimports|--hidden-import|--collect-all|--collect-submodules" build.py
+# (b) Any external EXE/runtime a new agent shells out to (like jre/git) → must be bundled
+grep -rnE "subprocess|Popen|shutil.which|\.exe\b" Tlamatini/agent/agents --include=*.py | grep -iE "\.exe|which\(" | head
+# (c) New requirements vs what build pins
+grep -nE "_agent_libs|AGENT_DEP|pip install|requirements" build.py | head
+```
+
+If a new agent imports a new library, it must be in `requirements.txt` **and** importable by the
+**carried Python** (see `bundle_carried_python` / the `_agent_libs` verify list) — otherwise the
+frozen pool agent crashes at runtime even though the source is correct.
+
+### Step 3 — confirm the asset actually lands in `pkg.zip` (ground truth)
+
+The only 100%-sure check is to look at a real bundle. If a recent `dist/manage` or `pkg.zip`
+exists, list it; otherwise note that a build is required to verify physically:
+
+```bash
+[ -f pkg.zip ] && python - <<'PY'
+import zipfile
+names = zipfile.ZipFile("pkg.zip").namelist()
+for probe in ("apply_update.ps1","db.sqlite3","agents/blenderer/blenderer.py","Tlamatini.exe"):
+    print(("OK  " if any(probe in n for n in names) else "MISS"), probe)
+PY
+```
+
+If no bundle exists, do NOT claim it ships — say "verified in source/wiring; physical bundle
+check needs a `python build.py` run."
+
+### Step 4 — fix every finding, then re-run Step 0 until clean.
+
+---
+
+## Asset taxonomy — type → carrier → preserve?
+
+| New asset | Carry via (build.py) | Preserve on update? |
+|---|---|---|
+| New **agent** (`agent/agents/<x>/`) | mech 3 (`optional_dir_copies` agents) + mech 1 (PYZ) — **automatic** | No (arrives via `agents` swap) |
+| New **migration** (seeds rows) | mech 1 (PYZ) + build-time `migrate`; first-launch `migrate` applies it to the preserved user DB | User data survives; new schema/seed changes are applied |
+| New **repo-root `.ps1`/script** | mech 5 `support_files`, or mech 4 `ROOT_SOURCES` for mandatory helpers such as `apply_update.ps1` — **manual** | No (app code, replaced) |
+| New **repo-root required data file** | mech 4 `ROOT_SOURCES` — declare once; carrier and receipt follow | No |
+| New **top-level source tree** (new package dir to ship as data) | mech 2 `--add-data` / mech 3 `optional_dir_copies` — **manual** | No |
+| New **static/template/skill** file (inside existing tree) | mech 2 / 3 — **automatic** | No |
+| New **pip dependency** | mech 6 `requirements.txt` (+ hidden-import / `--collect-all` if dynamic) — **manual** | n/a |
+| New **bundled runtime** (CLI the agent shells out to) | mech 6 bundler (mirror `bundle_git`/`bundle_java_runtime`) — **manual** | No (replaced) |
+| New **runtime-writable dir** (app writes user data here) | mech `empty_dirs` (ship empty) — **manual** | **YES — update shared JSON, installer fallback, swapper and updater docs** |
+| New **operator-facing toolkit tree** at the repo root (e.g. `security/`) | mech 3 `optional_dir_copies` (preferred) or mech 7 a bespoke `copytree` — **manual** | **No — it is APP CODE.** A fixed defender must reach a user who installed a broken one. Preserve only the *evidence* inside it (see below) |
+| New **evidence/log dir INSIDE a replaced app tree** (e.g. `security/security_logs/`) | ignored by the carrier (never shipped) | **Not via `$Preserve`** — it would pin the whole parent. Stash-and-restore around the swap instead |
+| New **config key with a secret** | already in `config.json` (preserved) | Yes (config.json preserved) |
+
+The single most dangerous omission is the last-but-one row: a **new runtime-state dir** added to
+`empty_dirs` but not to `$Preserve` + the `self_update.py` docstring → **wiped on every update.**
+The sweep script flags exactly this.
+
+---
+
+## Where to make each fix
+
+- **Carry a required root file** → add its source/destination to
+  `build_runtime_assets.ROOT_SOURCES`, with a comment explaining its installed
+  consumer. `build.py` copies that inventory directly.
+- **Carry a new tree** → add an `--add-data` line (if read from the bundle) or an
+  `optional_dir_copies` entry (if read from the install root).
+- **Carry a dep** → `requirements.txt`; if PyInstaller can't see it, add a hidden-import or
+  `--collect-all`; if a pool agent imports it, confirm the **carried Python** has it
+  (`_agent_libs`).
+- **Preserve a new state dir** → add the top-level name to `apply_update.ps1` `$Preserve`
+  **and** shared JSON, installer fallback and `self_update.py` docs (keep them identical), and ship it empty via
+  `build.py` `empty_dirs`.
+- **Stop preserving stale app code** → remove it from `$Preserve` (+ docstring).
+- **DB** → preserve committed data with verified SQLite online backup into `DB/ToLoad`, then restore it and run first-launch `migrate`. Keep `db.sqlite3` out of the top-level preserve set because it lives inside replaced `_internal/`.
+
+---
+
+## Done criteria (all must hold)
+
+### PDF and database-helper carrier gate (2026-09-16)
+
+The PDF backend and Image-Interpreter engine run inside the frozen web process.
+Keep their explicit hidden imports / archive requirements and
+`pyinstaller_hooks/hook-pymupdf.py`; the separate carried Python cannot satisfy
+imports inside `Tlamatini.exe`. PDF.js assets are carried by the static trees,
+and `context_files/pdf_canvas/` survives through the existing preserved
+`context_files` directory.
+
+`apply_update.ps1`, `preserved_user_state.json` and standalone `sqlite_copy.py`
+are REQUIRED root assets, not warning-only support copies. The in-app updater
+prefers the incoming swap script so new preservation rules apply immediately.
+The swapper checks the backup helper/runtime before shutdown, requires verified
+online backup before changing application files, and uses carried Python with
+`-I` rather than a machine-installed interpreter. Keep helper source in the
+self-modify snapshot and `agent.sqlite_copy` in the frozen archive too.
+
+### Frontend carrier gate (v1.48.13)
+
+Because `agent/static` is tree-carried, `dialog_theme.css`, `dialog_policy.js`, and `release_notes_renderer.js` ship automatically only if they remain inside that tree and are referenced by both source templates and collected-static output. Verify template load order and the startup-derived static cache stamp after JavaScript/CSS/template changes. Run tests only when the user's instructions permit them. Confirm the updater still uses the shared renderer/policy and that long-operation locks restore `data-bs-toggle`.
+
+### External-MCP runtime/default carrier gate (v1.48.14 target)
+
+`runtime_provisioner.py` and `external_mcp_defaults.py` are application code and must ship through the normal frozen/source carriers. The downloaded private runtime and persistent Memory graph live under `%LOCALAPPDATA%\Tlamatini`, outside the install swap, so they must **not** be added to installer payloads, `empty_dirs`, or `$Preserve`. `external_mcps.json` is different: it is preserved user state and a gitignored local catalog, replaced with maintained inactive defaults for public builds. Verify public `build.py` output contains only inactive `memory` + `sequential-thinking`, keyed/private builds take the explicit private path, `regen_secrets.py` handles catalog env secrets, and the public live-secret gate aborts unsafe output.
+
+### v1.48.17 updater/parser and public-private build gate
+
+The staged swap must retain `Uninstaller.exe`; Windows comments that explain this policy stay on standalone PowerShell lines so parser-sensitive continuations remain valid. Verify `agent/test_preserved_user_state.py` source-derives the code-seeded default catalog, proves the public builder clears `TLAMATINI_BUNDLE_EXTERNAL_MCPS`, and proves only the explicit private builder supplies it. Do not reintroduce an assertion that the environment variable is absent from `build.py`: the variable is intentionally read by the shared builder, while release entry points control whether it exists.
+
+### v1.50.0 security-toolkit carrier + evidence-carryover gate
+
+**`security/` is the first asset to use carrier mechanism 7** (a bespoke `copytree`, not a list),
+and the first to need a **third bucket** beyond preserve/replace. Verify all three halves:
+
+1. **CARRIED** — `build.py`'s security block copies `security/` to the install root, skipping
+   `security_logs` / `*.log` / `__pycache__`. It fails CLOSED, with per-file receipt
+   validation as well as the Step-0 source census.
+2. **REPLACED, deliberately** — `'security'` is **NOT** in `apply_update.ps1` `$Preserve` and must
+   stay out. It is application code: a corrected defender has to be able to reach a user running a
+   broken one. Do **not** "protect" it by preserving it — that would freeze the toolkit forever.
+3. **EVIDENCE CARRIED OVER** — `security/security_logs/` (alerts.log, monitor.log, the visible
+   asset-test proof) is the operator's forensic evidence living *inside* that replaced tree, the
+   same shape of problem as `db.sqlite3`. `apply_update.ps1` step **3c stashes** it to
+   a unique `Temp/_security_logs_carryover_<id>` before deletion and step **5b restores** it.
+   A failed stash ABORTS before deletion; failed restore LEAVES the stash, never
+   overwriting other evidence. `self_update.py`'s
+   docstring mirrors this. Never "fix" a failed restore by dropping the stash.
+
+Also verify `security_logs` remains in `SKIP_DIRS` in **both** `build_complete_public_release.py`
+and `check_private_data.py` (kept mirrored): the release scrubber must not rewrite forensic
+artifacts, and the private-data scanner must not drown in the operator's own usernames / IPs.
+
+### v1.50.0 release carrier gate
+
+Verify `agent/agents/netspeed_calculator/`, migrations 0195-0197, its wrapped-tool wiring, prompt harness, and CSS/JS connector assets ship through the normal agents/static/migrations carriers. Verify `agent/sqlite_copy.py` is present in the frozen application and both DB menu views plus pre-Django swap import it. Verify Googler's updated `googler.py`, `config.yaml`, `test_googler_dorks.py`, and optional visible dork-hunt harness are carried together so neither the structured builder nor the two-tier plain-HTTP-first/browser-fallback resilience path can ship without its syntax/preset/retry/fallback contract. Verify the four HTTP routes, seven browser routes, explicit-engine Tier-0 bypass, tolerant booleans, and answer-route attribution together. Verify `skills_pkg/adding_external_mcp/` and all references ship with the skill tree. Private contact synchronization may create gitignored `contacts.private.json` for an explicit keyed build, but public output and `TlamatiniSourceCode/` must remain contact-empty; preserved runtime user state remains `contacts.json`, not the private build staging file. Resolve the current annotated release and `HEAD` using Git; do not reuse historical version/count claims.
+
+1. `sweep_self_update.py` exits clean (no `[FINDING]`).
+2. Every new top-level repo path from the since-last-tag diff has a wired carrier.
+3. Shared JSON, swapper, installer fallback and updater docs agree; all `empty_dirs` top-level names are covered.
+4. No app-code dir is preserved; no runtime-state dir is left unpreserved.
+5. New deps are in `requirements.txt` and importable by the carried Python.
+6. The DB story is coherent (replaced + honest docs, OR preserved + first-run migrate).
+7. If a physical bundle was available, the probe in Step 3 shows the new assets `OK`; otherwise
+   you stated a build is needed to physically confirm.
+8. `python -m ruff check` clean on any edited `.py`; `apply_update.ps1` still parses.
+
+---
+
+
+### Integrity and release-mode gate (2026-09-16)
+
+- Read `build_runtime_assets.py`, `preserved_user_state.json`, `install.py` and
+  both complete-release wrappers as well as the three primary pipeline files.
+- The checker detects `copy_root_sources(repo_root, dist_manage)` with AST and
+  reads the shared inventory; it also understands legacy literal copy dictionaries
+  and `support_files`. A filename in a comment is not evidence of carriage.
+- Carry `build_runtime_assets.py` at the install root AND in the frozen module
+  archive. The installer imports the same checker. `runtime-assets.json` records
+  every file's size/hash, exact membership, version and boolean self-modify mode.
+- Validate ZIP paths, membership and streamed hashes before publication,
+  installer extraction and updater staging. Recheck staged bytes before shutdown.
+  Reject legacy packages without receipts; rebuild them. A receipt is NOT a
+  signature and cannot establish publisher authenticity.
+- `--self-modify` requires both identity locations and the complete snapshot;
+  default/`--no-self-modify` requires neither. Missing `pkg.zip` aborts wrappers.
+- The PowerShell swapper requires the exact install-local `Temp/_update/staging`
+  boundary, rejects reparse ancestors, and never falls back to a self-killing
+  `taskkill /T`. Existing user state wins; absent state receives new defaults.
+- Reinstallation retains the live `_internal/db.sqlite3` and WAL companions and
+  requests first-launch migration; preserving only top-level `DB/` is insufficient.
+- Retain the 1,990,000,000-byte final outer ZIP ceiling. Never prune required
+  assets to meet it. Local frontend and PDF.js bytes stay pinned and CDN-free.
+- Respect a no-tests request: these sweeps inspect/copy files only. Do not launch
+  Django, rebuild, migrate, install, swap, or execute application test suites.
+  Report source/snapshot evidence separately from a freshly built runtime.
+
+## Companion references
+- `copy_source_assets.py` (repo root) — the **self-modify** snapshot generator; its
+  `REQUIRED_SNAPSHOT_FILES` completeness check is a sibling guarantee (that the *source* tree
+  ships), distinct from this skill (that the *runnable release* ships + survives an update).
+- `VERSIONING.md` — the git-tag version contract (a self-update compares tags via
+  `self_update.is_newer`).
+- `docs/claude/architecture.md` → *Self-Knowledge & Self-Modification* for the build flags.
+### Prompt Flow Panel and menu carrier gate (2026-09-25)
+
+The Prompt Flow Panel executes inside the frozen **web process** (`routing.py` imports its consumer), so the carried Python cannot satisfy it. `build.py::_FROZEN_PROMPT_FLOW_PANEL_MODULES` hidden-imports AND frozen-requires `agent.prompt_flow_panel_consumer`, `agent.prompt_flow_panel_runtime`, `agent.services.prompt_flow_panel` and `agent.management.commands.check_prompt_flow_panel`, and the build runs `check_prompt_flow_panel` inside the freshly frozen app right after `check_agent_runtimes` — a failure aborts packaging. `build_runtime_assets.py` must keep `agent/css/prompt_flow_panel.css`, `agent/js/prompt-flow-panel-model.js` and `agent/js/prompt-flow-panel.js` in `REQUIRED_STATIC`, and the template, `docs/prompting-flow-designer.md` and `docs/examples/prompting-kickoff.fpmt` in `ROOT_SOURCES` and in the receipt floor; `build.py`'s `copy_root_sources()` carries those two docs files to `dist/manage/docs/`. They are application assets that updates REPLACE — never add them to `$Preserve`. A user's saved `.fpmt` files live wherever the user saved them and browser drafts live in browser storage, so there is no panel state to preserve.
+
+`acp-editor-tools.js` and the reorganized menus ride the existing static/template tree carriers, but every JS/CSS/template change still needs a `STATIC_VERSION` suffix bump (currently `-flow-file-opening-2`). `.fpmt` must stay a TEXT extension in `rag/binary_guard.py` and a scrubbed extension in `build_complete_public_release.py`.
+
+⚠️ **Carriage is only real once the files are COMMITTED.** On 2026-09-25 all 22 new files of this work (backend, frontend, tests, visible scripts, the guide and the example) were untracked. `build_runtime_assets.py` requires the guide and the example, so a release built from a clean clone or tag fails until they are committed, and a self-update can only deliver what a release contains. The source sweep walks the working tree, so it passes either way — check `git ls-files --others --exclude-standard` before trusting a CLEAN. Guard: `agent/test_prompt_flow_panel_carriage.py`.
+
+### Prompt Flow commentary/input refactor carriage (2026-10-03, shipped in `v1.76.0`)
+
+New `.fpmt` documents are version 2: `user_input` is the existing runtime reply step with the supplied notched figure; `user_commentary` is a static speech-bubble annotation. Preserve version 1 migration, identifiers, connections, settings and cancellation behavior. Static notes have no ports/Start state and do not enter prompts, history or playback steps. The 2026-10-04 graphical redesign removes commentary configuration dialogs and numeric dimension forms: a floating mini toolbar formats selected text or subsequent typing with mixed fonts/sizes/colors/emphasis/underline, and all borders/corners resize directly. Preserve allowlisted rich `runs` plus matching plain `text`, legacy plain-note normalization, native rich copy/paste between comments, Undo/Redo and repeated file/draft rendering equivalence. Their full wrapped text and inline editors grow at the chosen width/font without internal scrollbars; saved height is a minimum. The compatible browser-draft key still ends in `.draft.v1.<user id>`.
+
+The existing backend/template/static/guide/example carriers cover these changes. Keep the frontend and backend version/validation contracts synchronized, carry the updated kickoff example (seven operations plus one note), and verify source/collected-static byte parity. `scripts/prompt_flow_commentary_visible.py` travels through the generic source snapshot walk; do not claim it is explicitly required unless the live manifest lists it. The 2026-10-03 split passed 61 backend/packaging tests and nine foreground Chrome checks. Current redesign evidence is in `docs/changes/2026-10-04-commentary-graphical-redesign.md`; that dated source-only record preceded the local release rebuild. Read `docs/changes/2026-10-04-release-validation.md` for actual frozen and installer evidence and remaining limits. A source sweep does not establish release delivery. Current cache suffix is `-flow-file-opening-2`; retain the timestamp/environment expression. See `docs/prompting-flow-designer.md` and `docs/changes/2026-10-03-prompt-commentary-input.md`.
+
+Run checks only in a verified visible foreground console and explicitly headed Chrome. Stop the task-owned harness/browser/server when Angela asks; use its `Temp/prompt-commentary-redesign-visible/close.confirmed` marker and verify owned processes/listeners are gone. Do not stop unrelated user processes.
+
+### Skill boundary, Context Governor and dossier carrier gate (2026-09-26)
+
+- `agent/skills/validation.py` is the ONE skill validator, and Skills Diagnostics imports it inside a `try/except Exception: pass`. If it were missing from the frozen app, Diagnostics would silently report "no invalid skills". It and `agent/skills/redaction.py` (imported by the skill harness) are therefore `--hidden-import`s AND entries in `_FROZEN_REQUIRED_AGENT_MODULES`, so `verify_frozen_agent_modules()` proves they landed. A future skill-boundary module imported fail-open joins them.
+- `REQUIRED_STATIC` also names `acp-editor-tools.js` and the Context Governor gauge (`context_gauge.js` / `context_gauge.css`), which every chat page loads.
+- The project-dossier generator (`agent/doc_generation/complete_project_docs.py` + five `dossier_*.py` modules) is developer tooling. Nothing in the web app imports it, so it is not in the frozen archive; it reaches a self-modify install only through the source snapshot.
+- The 22 Prompt Flow Panel files that were untracked on 2026-09-25 were committed in `ca66745` (2026-09-26), so a clean clone now carries them.
+- ⚠️ The `v1.70.0` tag points at `cf62bd8` (2026-09-23), which is BEFORE `ca66745`. A release built from that tag does not contain the Prompt Flow Panel. Build the release from a commit at or after `ca66745`, and never move or delete a pushed tag to fix this. `sweep_self_update.py` counts migrations against the nearest TAG, so also compare by hand against the last PUBLISHED release (`gh release list`); no migration was added after `v1.65.4`.
+
+### Compact mode carrier gate (2026-10-01)
+
+- `REQUIRED_STATIC` (`build_runtime_assets.py`) also names `model_capacity.js`, `model_capacity.css` and `chat_table_contrast.js` — every chat page loads them.
+- `agent/context_fitter.py` is imported at module level by `mcp_agent.py`, so the frozen import graph carries it; the tool-less chains import it fail-open.
+- No migration and no new `config.json` key are required: `context_compact_mode` falls back to `auto` in code.
+- ⚠️ **Superseded 2026-10-02 — the Compact mode SWITCH added a migration.** Model `CompactState` (pk=1) arrives with migration `0211_compact_state.py`. `agent/compact_mode.py` is imported at module level by `mcp_agent.py`, so the frozen import graph carries it. `REQUIRED_STATIC` also names `compact_costs.js` (the per-row token prices in the Configure dialogs). The line above still holds for `config.json` (no new key), not for the database.
+
+### Self-modify switch carrier gate (2026-10-03)
+
+- Migration `0212_compact_state_self_modify.py` adds `CompactState.self_modify` (ON by default). It reaches EXISTING users exactly like every migration: the updater stages their database through `DB/ToLoad`, and the first launch after the swap runs `migrate` (Invariant 4). Nothing extra to wire — ship the migration.
+- `REQUIRED_STATIC` (`build_runtime_assets.py`) names `agent/js/self_modify_switch.js` (verified 2026-10-03). The chat template renders the box and this script only where `rag/config.self_modify_available()` is True — always from source, and in a FROZEN build only when `build.py --self-modify` bundled `TlamatiniSourceCode/`. A release built WITHOUT `--self-modify` (the default of both `build_complete_*` wrappers) still carries the file but never renders it; that is correct, not a missing asset.
+- `0211` shipped in the `v1.75.0` tag (annotated, `f7eb53ff`, 2026-10-03, pushed); `0212` landed on `main` right after that tag (commit `70aeeb87`) and ships in the `v1.76.0` tag (annotated, `953ad2d8`, 2026-10-08, pushed), which adds no migration after it. `v1.75.0` was published on GitHub on 2026-10-03 and `v1.76.0` on 2026-10-09; `v1.77.0` (annotated, `052bfe0f`, 2026-10-09, pushed) adds no migration and was published on 2026-10-09; `0213` (`UsageDaily`, About ▸ Usage) landed on `main` in `7460a147`, one commit after the `v1.78.0` tag (annotated, `0e6fc72d`, 2026-10-10, pushed), and `v1.78.0` — published on 2026-10-10 from `main` (its zip matches `113eddc4`) — carries it; `v1.82.0` (annotated, `880a335e`, 2026-10-12, pushed; published 2026-10-12) and `v1.83.0` (annotated, `a2914019`, 2026-10-14, pushed; published 2026-10-14, then marked Latest; the current release is v1.85.0) add no migration, and `v1.79.0` / `v1.80.0` are tags without a published release; Angela's own v1.75.0 install, built from `main` that morning just before the release went up, already carries BOTH migrations. Count migrations against the last published release (`gh release list`), not the nearest tag.
+- ⚠️ `build.py` ERASES `Tlamatini/db.sqlite3` and wipes `dist/` before it builds — never run it just to check carriage.
+
+### Model Brain carrier gate (2026-10-08, `v1.76.0`)
+
+- `agent.model_brain`, `agent.model_brain_chat` and `agent.model_brain_views` are named in `build._FROZEN_REQUIRED_AGENT_MODULES` AND passed as `--hidden-import` (the first two are imported fail-open, so a missing module cannot report itself). The sourced knowledge base ships as `--add-data=Tlamatini/agent/model_profiles.json;agent` and is read beside the module when frozen. No migration and no required `config.json` key: `model_brain` falls back to `auto` in code.
+- Learned profiles live OUTSIDE the install, in `%LOCALAPPDATA%\Tlamatini\model_brain\model_profiles.learned.json`, so a self-update neither ships nor erases them.
+- The Auto-tuning dialog's `model_brain_tuning.js` / `.css` reach a frozen build through `collectstatic` like every page asset.
+
+### Uninstaller carriage gate (2026-10-09)
+
+`uninstall.py` gained `Templates` and `doc_generated` in its keep-list (commit `0520dc97`) after uninstalling `C:\Tlamatini` erased Angela's code in `Templates/`. ⚠️ **That fix does NOT travel through an in-app update.** `Uninstaller.exe` is built after `pkg.zip` (`build.py` → `build_uninstaller.py` → `build_installer.py`), `apply_update.ps1` keeps it through `$Preserve`, and the update that runs is the OLD install's `self_update.py`, which extracts only `pkg.zip` and deletes the extracted bundle (where the new `Uninstaller.exe` sits) before the swap. Fresh installs and reinstalls with the new Installer do get it (`install.py::_copy_uninstaller` overwrites). Check **[9] UNINSTALLER DELIVERY** in `sweep_self_update.py` prints an advisory note whenever `uninstall.py`, `uninstall_processes.py` or `build_uninstaller.py` changed since the last release tag — put that limit in the release notes. Do NOT simply drop `Uninstaller.exe` from `$Preserve`: the staged build has no uninstaller, so every update would delete it. A real delivery path needs the new `Uninstaller.exe` inside the staged payload and its receipts, a swap step that replaces it only when a new one is present, and a real release test. See `docs/self-management-carriage.md`.
+
+### Usage carrier gate (2026-10-10, `v1.78.0`)
+
+- `agent.usage_tracking`, `agent.usage_provider` and `agent.usage_views` are named in `build._FROZEN_REQUIRED_AGENT_MODULES` AND passed as `--hidden-import`; `usage_dashboard.js` / `.css`, `usage_dialog.html` and `docs/usage-dashboard.md` are in `build_runtime_assets.py`'s required asset lists (commit `7460a147`). Migration `0213_usage_ledger.py` (`UsageDaily`) reaches existing installs through the post-update `migrate` (Invariant 4). Checked on 2026-10-10 in the published v1.78.0 zip: its served `usage_dashboard.js`, `agent_page_layout.js`, `avatar_size.js` and `dialog_policy.js` match `113eddc4`, one and two commits after the tag.
+
+### Setup and Markdown carrier gate (2026-10-12, `v1.82.0`)
+
+- `install.py` / `uninstall.py` import `setup_wizard`, `setup_recovery`, `setup_windows` (which imports `setup_recovery`) and `setup_logging`, so PyInstaller carries them into `Installer.exe` / `Uninstaller.exe` through the import graph; `build_installer.py` and `build_uninstaller.py` add `--icon` / `--add-data Tlamatini.ico`. The snapshot's generic walk carries the four modules and the `scripts/setup_*` harnesses. ⚠️ An in-app update still keeps the OLD `Uninstaller.exe` (see above): the new setup window reaches users only through a fresh install or a reinstall with the new Installer.
+- The Markdown canvas's `agent_page_markdown.js`, `markdown_canvas.css`, `marked/lib/marked.umd.js`, `dompurify/dist/purify.min.js` and both LICENSE files are in `build_runtime_assets.py` `REQUIRED_STATIC` and `copy_source_assets.py` `REQUIRED_SNAPSHOT_FILES`; `dompurify/dist` is a `KEEP_DIR_PATHS` entry and is un-ignored in `.gitignore`. v1.80.0's `ui_tokens.css`, `ui_shell.css`, `ui_splitters.css`, `ui_splitters.js`, `entry_pages.css`, `admin_theme.css` and `templates/admin/base_site.html` are in both inventories.
+- Checked 2026-10-12 in the published v1.82.0 zip: its `pkg.zip` carries `agent_page_markdown.js`, `purify.min.js`, `ui_splitters.js`, `ui_tokens.css` and `markdown_canvas.css` (the served `_internal/staticfiles/` copies and the snapshot) and `agents/video_analyzer/video_fetch.py`; its frozen `agent.tools` lacks `_is_visual_start_failure`; `91ff8453` ships in `v1.83.0`.
+
+### File-drop router carrier gate (2026-10-14, `v1.83.0`)
+
+- `file_drop_router.js` is a plain static file in `agent/static/agent/js/`, loaded by the `<head>` of `agent_page.html`, `agentic_control_panel.html`, `prompt_flow_panel.html`, `welcome.html`, `login.html`, `admin/base_site.html` and `static/agent/pdf/canvas.html`. It ships through `collectstatic` (the served `staticfiles/` copy is pinned by `agent/test_file_drop_router.py`) and the snapshot's generic walk. No migration, no new Python module, no new dependency: an in-app update delivers it like any static file.
+
+### Central model settings runtime gate (2026-09-20)
+
+The model registry must ship as compiled `agent.agents.model_settings` and as
+portable `agents/model_settings.py`. Frozen services import compiled code and
+resolve portable data with `get_agents_root()`, never a synthetic `__file__`
+source path inside `_internal`. Require `check_agent_runtimes` in the frozen
+archive and self-modify snapshot. The build executes this command before ZIP
+creation: every template must prepare, reusable helpers and planner catalogs
+must refresh, actual model loaders must resolve saved settings, and File-Creator
+must write exact scratch bytes with the selected runtime Python. File-only
+inclusion sweeps are not a substitute for this execution check.
+
+The complete operational contract is `docs/model_configuration.md`; dated executed
+checks are in `docs/model-configuration-verification.md`. Preserve saved global
+values and explicit agent overrides during updates. Absent new keys use registry
+fallbacks/defaults; existing choices must not be silently replaced. Document model
+key changes, empty-value semantics, next-load/reconnect behavior and helper carriage
+in README, BookOfTlamatini, self-knowledge, prompts and agent/MCP creation guides.
+UTF-8/BOM loader checks must include Windows default-codepage execution. The current
+gate checks 89 templates and 21 model loaders; derive future counts from source.
+
+### Prompt Flow Run output carriage (2026-10-04, shipped in `v1.76.0`)
+
+Carry the updated panel template, `prompt-flow-panel.js`, `prompt_flow_panel.css` and shared `flow-canvas-interactions.js` together with the current guide and `scripts/prompt_flow_output_resize_visible.py`. Preserve the 5–95% viewport-only split, explicit native-details log height, independent scrolling and separate per-user layout preference. The horizontal Operations divider must keep its original axis behavior. Verify source/collected-static parity and inclusion from a verified visible foreground console; browser checks require explicit `headless=False`. The dated 14-check browser result and three carriage tests are source evidence, not proof of a newly built executable. Current cache suffix: `-flow-file-opening-2`; retain its environment/timestamp prefix. See `docs/changes/2026-10-04-run-output-resize.md`.
+
+## v1.85.0 Views and Refresh carriage
+
+Require `agent_page.html`, `agent_page_layout.js`, `avatar_size.js`, `agent_page_canvas.js` and `agent_page_init.js` through the shared runtime inventory. The self-modify snapshot also requires both Views harnesses. Keep Refresh support, the avatar stylesheet and the existing PDF/Markdown assets together. Verify these from a confirmed visible foreground console.

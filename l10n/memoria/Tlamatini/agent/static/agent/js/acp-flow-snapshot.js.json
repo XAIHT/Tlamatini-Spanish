@@ -1,0 +1,11 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-flow-snapshot.js",
+ "segmentos": [
+  {
+   "en": "`Flow compile failed with HTTP ${response.status}`",
+   "es": "`Error al compilar el flow (HTTP ${response.status})`",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

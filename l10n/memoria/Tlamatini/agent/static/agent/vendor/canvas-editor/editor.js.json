@@ -1,0 +1,26 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/vendor/canvas-editor/editor.js",
+ "segmentos": [
+  {
+   "en": "\"\\u2039your choice\\u203A\"",
+   "es": "\"\\u2039tu elecci\\u00F3n\\u203A\"",
+   "n": 1
+  },
+  {
+   "en": "\"Finish the current input composition before Tlamatini types.\"",
+   "es": "\"Termina la composici\\u00F3n de texto actual (IME) antes de que Tlamatini escriba.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Typing stopped; your editor content is kept.\"",
+   "es": "\"Se detuvo la escritura; el contenido de tu editor se conserva.\"",
+   "n": 2
+  },
+  {
+   "en": "\"Typing stopped because the source editor is hidden. Your content is kept.\"",
+   "es": "\"Se detuvo la escritura porque el editor del c\\u00F3digo fuente est\\u00E1 oculto. Tu contenido se conserva.\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

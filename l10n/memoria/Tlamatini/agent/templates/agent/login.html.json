@@ -1,0 +1,46 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/login.html",
+ "segmentos": [
+  {
+   "en": "lang=\"en\"",
+   "es": "lang=\"es-MX\"",
+   "n": 1
+  },
+  {
+   "en": ">Login - Tlamatini<",
+   "es": ">Iniciar sesión - Tlamatini<",
+   "n": 1
+  },
+  {
+   "en": ">Tlamatini Login<",
+   "es": ">Iniciar sesión en Tlamatini<",
+   "n": 1
+  },
+  {
+   "en": ">Username<",
+   "es": ">Nombre de usuario<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Enter your username\"",
+   "es": "placeholder=\"Escribe tu nombre de usuario\"",
+   "n": 1
+  },
+  {
+   "en": ">Password<",
+   "es": ">Contraseña<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Enter your password\"",
+   "es": "placeholder=\"Escribe tu contraseña\"",
+   "n": 1
+  },
+  {
+   "en": ">Login<",
+   "es": ">Iniciar sesión<",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

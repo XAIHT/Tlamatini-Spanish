@@ -1,0 +1,506 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# Tlamatini — Frontend Architecture
+
+> Current release: **[v1.90.0](../changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+## v1.90.0 — editable canvas and Interactor
+
+The current source has **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 direct/module + 67 wrapped + 12 ACPX/Skills + 10 supervisors), and 219 migrations**. Interactor adds a module/tool; do not register it as an Agent. The annotated tag resolves to `ebc5c3b4`; its GitHub release was published on 2026-10-22 and is marked Latest. `main` continues after the tag (`d274f89c`, `8c577d3a`, `939acf6b`, `5403fa49`) and still reports 1.90.0; migration 0219 (`939acf6b`) makes the catalog's account wizard request local Notifier pop-ups at its checkpoints (`docs/user-creation-wizard.md`). Dated source and frozen runs remain separate.
+
+- **Editor:** `agent_page_editing.js` owns the CodeMirror document, dirty baseline, encoding and save snapshot. `agent_page_canvas.js` owns load/refresh generation and cancellation. Markdown Preview and Source share the buffer; HTML/SVG remain inert source; PDF saving copies the original PDF. Never read a hidden compatibility element instead of the editor.
+- **Native files:** `canvas_file_views.py` and `native_dialogs.py` provide local Save As/read/save. Authentication, CSRF, loopback-only host access, account/session-bound capabilities and full revision checks prevent a browser name from becoming an arbitrary host path. Existing Windows replacement preserves metadata; DB backup/restore mechanics are unchanged.
+- **Interactor:** `agent/interactor/` connects the synchronous tool loop to the browser through session-authenticated `ws/interactor/`. Server-issued tab identity travels through ContextVar; bounded commands and receipts verify document/revision and full buffer. Browser messages acknowledge/access/stop; they cannot request arbitrary host-path commands.
+- **Tutor:** read fresh unsaved text, type a small segment, guide the next field and end mutations for the turn. Continue begins a fresh chat/read. Prepared choices match locally, with no per-key model call. User input and Stop win; hidden tabs pause with bounded recovery rather than repeating edits.
+- **Carriage:** migration 0218 seeds the Tool/catalog rows; `tool_gate_table()` supplies binding, Compact selection and cost labels. The offline editor bundle, Interactor browser files, frozen imports and source/static inventories must travel together.
+- **Intent:** password input is not ownership of every command; a wizard email field or DONE reply is not notification consent. Preserve genuine user-runs tutorials. The catalog wizard uses createsuperuser and therefore creates an administrative account.
+
+Contracts and evidence: [v1.90.0](../changes/2026-10-22-v1.90.0.md), [Canvas editing](../canvas-editing.md), [Interactor](../interactor.md), [Account wizard](../user-creation-wizard.md). Source/frozen rendering tests do not certify a rebuilt installed executable.
+
+
+> **Carried from v1.88.0 (tagged 2026-10-20):** [Terminater](../terminater.md) (workflow agent #86 and the Terminals area) and a private release that carries the builder's own data. Counts: 86 workflow agents, 67 wrapped chat agents, 109 built-in tools, 217 migrations. See the [v1.88.0 release record](../changes/2026-10-20-v1.88.0.md) and the change records [Terminater](../changes/2026-10-19-terminater.md) and [private-release data](../changes/2026-10-19-private-release-data.md).
+
+
+## v1.87.0 — Leaner catalog, safer removal, smaller release (carried)
+
+**v1.87.0** (tagged 2026-10-18; it also carries
+v1.86.0, tagged 2026-10-17) came before v1.88.0. Its catalog was **85 workflow agents, 66 wrapped
+chat agents and 108 built-in tools**: Gatewayer, Gateway-Relayer, Node-Manager
+and Zavuerer were removed, and migration **0214** deletes their rows and the
+Zavuerer prompts without renumbering. Removal moves application entries into a
+same-drive recovery folder (schema 2 journal, **Retry cleanup**,
+`.tlamatini-removal.json`) instead of copying the payload. `build.py` keeps the
+carried-Python-only media and browser packages out of the frozen interpreter
+(`test_release_payload_ownership.py`). About ▸ Usage waits for real data and
+sends a bodyless `POST /api/me`. `npm run lint:python` runs
+`scripts/check_python_quality.py`. From v1.86.0: Mover creates a missing
+destination name as a folder (`_names_a_file()`), and `scripts/architecture_atlas/`
+rebuilds `Tlamatini-Architecture.pdf` with LaTeXer. The static suffix for that release was
+`-agent-catalog-1-quality-cleanup-1-usage-status-2`.
+
+See [the v1.87.0 release record](../changes/2026-10-18-v1.87.0.md).
+
+## v1.85.0 — Refresh, Views and centered avatar (carried)
+
+**v1.85.0** (2026-10-16) added Refresh, Views and the centered avatar. `agent_page_canvas.js` owns Refresh
+source access, complete-text comparison, cancellation and status. Retain browser
+file handles during the drop event; snapshot-only access cannot refresh a path.
+PDF replacement stages a ready viewer and keeps its iframe attached at commit.
+
+`agent_page_layout.js` exposes `TlamatiniViews.setCanvasVisible`,
+`isCanvasVisible` and `resetLayout`. Hiding toggles `tlm-canvas-hidden`, preserves
+the canvas DOM and context, cancels divider gestures and moves focus only when
+its current region disappears. The account/browser preference is
+`tlamatini.chat.views.v1.<user id>`. `avatar_size.js::setDockedOnly` enforces the
+hidden-canvas docking rule in pointer, keyboard and public API paths. Reset shows
+both panes, resets their sizes and docks the portrait without clearing content.
+
+The docked frame uses `--tlm-avatar-docked-right` measured from the full Mic/Send
+row. Its square size and 120 px minimum stay independent of floating geometry.
+v1.85.0's static suffix was `-avatar-center-1`; Views scripts retain `_views1`.
+`build_runtime_assets.py` and `copy_source_assets.py` require the Views template,
+scripts and snapshot harnesses. No migration or dependency was added.
+
+See [the release implementation and evidence matrix](../changes/2026-10-16-v1.85.0.md),
+[Refresh](../canvas-refresh.md) and [carriage](../self-management-carriage.md).
+
+
+
+Markdown files now have a themed, sanitized Preview/Source canvas with local
+resource support. See [Markdown canvas](../markdown-canvas.md) for supported
+syntax, source-preserving actions, packaging and visible verification.
+
+The 2026-10-21 source change makes canvas text editable with locally bundled
+CodeMirror 6. `agent_page_editing.js` owns the saved snapshot, encoding, dirty
+guards and native Save As flow; `agent_page_canvas.js` retains file/context
+lifecycle. Markdown previews use the edited source, while PDF saving exports
+original bytes. See [canvas editing](../canvas-editing.md) for the complete
+contract, authenticated save capabilities, research and visible test harness.
+
+> **HEADLESS IS FORBIDDEN. ALL EXECUTION MUST BE VISIBLE.** Every automated test, command, diagnostic, script, build, agent, prompt and browser must run in a visible, forked foreground window on Angela's real desktop. Use visible CMD/PowerShell consoles and headed browsers (`headless=False`); keep output on screen and monitor live. No hidden/background execution, including CI or quick checks. If visibility cannot be confirmed, do not run. Mandatory policy: [visible execution](../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+> **Developer/product boundary (Angela, 2026-09-27):** these visibility requirements govern development and verification. They must not create extra windows, steal focus or expose internal diagnostics in the shipped UX. Direct chat dictation keeps status in chat and uses only Tlamatini's main console/log.
+
+## Shared site theme and resizing (2026-10-11, shipped in `v1.80.0`)
+
+All first-party pages use `ui_tokens.css`; workspaces add `ui_shell.css` and
+`ui_splitters.css` before the final `dialog_theme.css`. Dialog tokens alias the
+page palette. Login/welcome share `entry_pages.css`; the first-party admin base
+and `admin_theme.css` preserve Django's light/dark/auto switch. Required runtime
+and self-modify inventories carry the new assets. Cache suffix at that change: `-ui-sweep-1`.
+
+`ui_splitters.js` owns the five pane bars' pointer capture and cancellation;
+adapters still own bounds, layout and storage. Preserve composer fitting and
+the Prompt output 5–95% ratio. The Prompt sidebar strip stays in the flex flow.
+The eight commentary grips keep zoom-aware geometry and text containment.
+Avatar resizing now has pointer capture/cancellation and accessible size state.
+
+The jQuery footer selector must cover plain button-pane buttons as well as
+`.ui-button`. Its overlay requires fixed viewport geometry and a stacking level
+above navigation; the expanded menu otherwise covers dialogs at 400% zoom.
+Resizable dialogs need the explicit eight edge/corner hit areas; their southeast
+grip is the single keyboard resize stop. Cancel remains a secondary action.
+See the [complete sweep and visible evidence](../changes/2026-10-11-ui-sweep.md).
+
+## About → Usage (2026-10-10, shipped in `v1.78.0`)
+
+`usage_dashboard.js` opens `usage_dialog.html` from About → Usage with the heading
+**ABOUT USAGE**. `usage_dashboard.css` uses the shared dialog tokens: desktop
+80vw × 74dvh (59.2% client area, width capped at 1440 px), narrow 94vw × 63dvh,
+body .88rem and title 1rem. Preserve clear button borders, visible footer actions,
+keyboard chart tooltips, escaped tables, focus trapping and the normal Escape/✕
+path; an outside click never closes it. The About entry remains enabled while busy.
+
+Cloud credits, Chat activity and Models are separate scopes. Credit cards come
+from `/api/balance`, with refill weeks and UTC date, not from rolling spend.
+Legacy responses omit unsupported cost/token panels. Fractions have at most two
+decimals; missing fields have explanations rather than invented values or Unknown.
+A changed signed-in user hides the old data. Gauge events, focus/visibility,
+opening and the visible 30-second timer refresh the view; events coalesce over
+900 ms and the provider cache limits cloud requests to once per minute.
+
+See [the data contract and dated evidence](../usage-dashboard.md). It ships in
+the published `v1.78.0` release (cache suffix `-usage-recovery-1`).
+
+## Docked avatar alignment (v1.85.0, 2026-10-16)
+
+The portrait and its outer frame stay horizontally centered over the full Mic/Send
+row, including when the composer height shrinks the portrait to 120 px. The existing
+layout pass measures the action row and sets `--tlm-avatar-docked-right` on the form;
+`avatar.css` consumes it only while docked. This follows both dividers, the action
+row's minimum width, browser resizing and redocking without changing floating
+geometry or the independent composer minimum. Cache suffix at that change: `-avatar-center-1`.
+
+## The docked avatar follows both dividers (2026-10-13, commit `63a62cc1`, shipped in `v1.83.0`)
+
+The vertical composer divider now shrinks the docked portrait as well as the message
+box. Its side is max(120 px, floor(min(25% of the form width, available portrait
+height))). Available height excludes the measured Send/Mic row and the existing
+portrait insets. The 120 px dock leaves a 106 px square portrait inside its border
+and padding; its resize handle remains 22 px. This reuses the existing legibility floor.
+
+The initial quarter-width portrait is preserved until the user moves the composer
+bar. Thereafter its minimum reserves only 120 px plus controls and spacing; never
+use the avatar's current width as the minimum, since that prevents vertical shrinking.
+The form's CSS variable fits the dock; floating size and persistence remain owned by
+`avatar_size.js`. Both dividers, keyboard controls, transient rows and viewport
+changes retain square geometry without feeding the current size back into the minimum.
+Cache suffix at that change: `-avatar-divider-1`.
+
+Verification: [the change record](../changes/2026-10-13-docked-avatar-divider.md).
+
+
+## The message box and the undocked avatar (2026-10-10, shipped in `v1.78.0`)
+
+`agent_page_layout.js` sizes `#tools-chat-form-container` from its measured parts
+(toolbar, context gauge, image chips, dictation status and the `.chat-composer-actions`
+row). With the avatar floating it may shrink to those action controls plus a 6 px guard;
+the old 30% floor is gone. Docking the avatar restores room for the portrait above the
+buttons. The vertical divider is keyboard-operable (arrows 1 %, Shift+arrows 5 %, Home
+and double-click = smallest box, End = tallest; Escape ends a pointer drag) and reports
+`aria-valuetext="Message composer N pixels high"`. A ResizeObserver re-clamps on every
+row change. Short windows scroll the composer internally; the page fills the real
+viewport, a collapsed navbar opens over the workspace, and a 640 px minimum workspace
+pans horizontally. `dialog_policy.js::fitDialog` re-bounds jQuery UI dialogs after
+opening, dragging and viewport changes; short native dialogs scroll as whole cards; the
+avatar never covers a modal. Evidence and the visible harness:
+`docs/changes/2026-10-10-composer-resize.md`.
+
+## The side divider looks like the composer divider (2026-10-11, shipped in `v1.80.0`)
+
+`#drag-divider` (chat ↔ canvas on the Chat page; Agents list / Operations bar on the
+Agentic Control Panel and the Prompt Flow Panel) now has the same look and feel as
+`#vertical-drag-divider`, turned on its side: a teal `#55BBAA` grip pill (4×42 px,
+`::before`, centred), a grey line that turns teal on hover, keyboard focus and while
+`body.resizing` is set, a 2px teal focus ring, `role="separator"` with a label and a
+tooltip, and Shift+arrow = 5 % (the chat page used to move 1 % only). Rules live in
+`agent_page.css` and `agentic_control_panel.css` (the latter also serves the Prompt
+Flow Panel). Coverage: `agent/test_drag_divider_look.py`; visible proof
+`scripts/drag_divider_look_visible.py` (26/26 on 2026-10-11 — reads Shoter's photo to
+prove the pill is really painted). Cache suffix `-divider-pill-1`.
+
+## Config → Models: metadata-driven form
+
+The dialog renders 38 fields in Core (7), Vision (7), Speech (7), Workflows (6),
+Documents (5), Monitoring & messaging (6). Search crosses categories. Wide screens
+use two columns, narrow screens one; keep the body scrollable and actions reachable.
+`fields` metadata from `load_config_section/models/` drives labels, kind, optional
+state, choices and help. Ollama entries use catalog suggestions, local/provider
+fields use text inputs, engine/voice fields use selects. Do not hardcode another
+per-agent form or force local speech IDs into the Ollama catalog.
+
+Save collects all 38 values, including hidden panels. Changed Ollama values are
+checked against the catalog; backend validation covers strings, size, requiredness
+and enumerations, not provider inference. Show the reconnect notice for changed
+client choices. Credentials stay outside this dialog. Visible verification should
+cover all tabs, cross-category search, narrow layout, invalid values, save/reopen
+and an actual loader reading the saved value. Restore any test choice afterwards.
+See [the full model contract](../model_configuration.md).
+
+**Save opens the Auto-tuning dialog (2026-10-08, `v1.76.0`).** After a successful save, `agent_page_init.js` calls `window.TlmModelBrainTuning.open({onClose})` (`model_brain_tuning.js` / `.css`); the reconnect notice for changed choices follows when it closes. For every configured model it shows four stages - Ask Ollama (`/api/show`), Vendor settings (the sourced profile, or the researched `generation_config.json`), Calibrate (the sampling that will really be sent) and Reasoning (thinking level, reasoning kept inside the tool loop) - each from the server's real answer (`GET /agent/model_brain/models/`, `POST /agent/model_brain/tune/`), revealed one by one (instantly under reduced motion). Escape and the ✕ close it through `overlay.tlmDismiss`; an outside click never does. Fail-open: a broken dialog never blocks saving the models.
+
+## Chat Interface (26 modules)
+
+**Canvas Refresh (v1.85.0, 2026-10-15).** The existing
+`#reopen-canvas-button` DOM hook now says **Refresh** and calls `refreshCanvas()`;
+only Open launches a picker. `agent_page_canvas.js` owns the retained local
+handle/entry or authenticated saved-content reader, feedback and cancellation.
+All control reset paths defer to `TlamatiniCanvasRefresh.sync()`; never blindly
+enable Refresh because `canvasLoaded` is true. The drop router captures file
+access synchronously and forwards it even through byte classification and PDF
+iframe relay. Text compares complete content; PDFs stage a range-backed viewer
+and never claim byte equality from metadata. Clear/replacement/operation locks
+invalidate in-flight work. See [behavior and visible verification](../canvas-refresh.md).
+Static cache suffix: `-canvas-refresh-1`.
+- `usage_dashboard.js` — About → Usage: credit/legacy layouts, chart rendering, model activity, account-safe refresh and accessible dialog controls.
+
+- `agent_page_init.js` - WebSocket setup, app initialization, **Context-menu "Set directory as context"** handler (see *Context directory picker* below)
+- `agent_page_chat.js` - Chat message handling. **Every card carries Copy + Drop (2026-09-30):** a saved message keeps its `AgentMessage` id in `data-message-id` (from `message_id` on live frames, `id` in `initial_messages`); **Drop** asks with a themed `tlmConfirm` (red Drop, Cancel focused), sends `drop-message`, and removes the card(s) on the `message-dropped` reply — the LLM's history is re-read from the DB every request, so no reconnect is needed. A card without an id is a live status line and is only cleared from the screen. Contract: `recent-fixes.md` (2026-09-30). Also handles the `exec-permission-request` frame (Ask Execs — see below) by opening the permission dialog. `appendChatMessage` keeps the Send button on **Cancel** during self-healing "🔁 Tactic…" status frames (via `isSelfHealingStatusMessage()` in `agent_page_ui.js`) instead of re-enabling the controls, so the button only returns to **Send** on the real final answer (see `docs/claude/multi-turn.md` → *Self-healing model steps* and `recent-fixes.md` 2026-07-07)
+- `agent_page_canvas.js` - Canvas file loading, refresh and replacement ownership
+- `agent_page_editing.js` - Authoritative CodeMirror buffer, dirty state, encoding and save controls
+- `agent_page_markdown.js` - **Markdown canvas** (2026-10-11, shipped in `v1.82.0`). `.md` / `.markdown` (any case) open in a sanitized **Preview** (locally vendored Marked 18.1.0 + DOMPurify 3.4.16, no CDN) with a **Source** view and line numbers; **Choose folder** resolves relative images/links from user-selected files; Copy, Use as context and Save always take the SOURCE (Save keeps the original bytes, BOM and CRLF). Styles in `markdown_canvas.css`. Contract: `docs/markdown-canvas.md`; visible proof `scripts/markdown_canvas_visible.py` (30/30)
+- `agent_page_context.js` - RAG context management
+- `agent_page_dialogs.js` - Modal dialogs (incl. `showExecPermissionDialog(detail)` — the Ask-Execs Proceed/Deny prompt)
+- `agent_page_layout.js` - UI layout
+- `agent_page_state.js` - Client state (incl. the Ask-Execs checkbox helpers `isAskExecsEnabled` / `applyStoredAskExecsState` / `syncAskExecsAvailability`, and `syncExecReportAvailability` which disables+greys the **Exec report** checkbox whenever Multi-Turn is off — mirrors Ask-Execs)
+- `agent_page_ui.js` - General UI utilities, plus the long-operation lock: `disableControlsDuringOperation()` / `enableControlsAfterOperation()` and, since 2026-09-25, **`restoreMenuControlsAfterOperation()`** — the ONE re-arm path for the navbar locks, shared by normal completion, **Reconnect**, **Clean History**, the chat **Cancel** reset and a socket disconnect (see *Chat navbar* below). `updateOpenInMenuState()` now keeps **Open in…** hidden while `inLongOperation` or `lapseLoadingContext` is set. Its `isBusyMessageRequest` / `isBusyMessageContext` / `isSessionRestoredInfoMessage` recognise Tlamatini's fixed lines BY THEIR WORDS — first person since 2026-10-09 (*"I'm working on your request"*, *"I'm loading the context you gave me"*, *"I restored our session"*), with the old third-person wording still matched; keep them in step with `agent/constants.py`
+- `agent_page_pdf.js` - PDF canvas lifecycle and request bridge (v1.62.0). PDF.js runs in an **isolated frame**; removing that browsing context terminates its worker, rendering tasks and range reads, even mid-password/loading/extraction. Uses `crypto.getRandomValues` because a frozen install served over plain HTTP on a LAN address has no `randomUUID`
+- `pdf_canvas_viewer.js` - The offline PDF.js viewer, loaded ONLY inside `agent/pdf/canvas.html`. `File.slice` reads only the byte ranges it needs — never `arrayBuffer` the whole file, upload it, base64 it, or prefetch its tail
+- `pdf_context_progress.js` - Accessible native modal for loading a PDF as context. Closing it during RAG only HIDES the dialog; the work is still running. **On a refusal (2026-10-08)** `fail()` marks the stage that was running **Failed** (bar emptied, `[data-state="failed"]`) instead of leaving "Working…", and `agent_page_context.js::restorePendingContextSelection()` puts the context header back; an account mismatch (a second account signed in from the same browser) arrives with a message naming the cause and the fix (reload with F5)
+- `model_brain_tuning.js` - **The Auto-tuning dialog of the Model Brain** (2026-10-08, `v1.76.0`), opened after Config ▸ Models ▸ Save (see *Config → Models* above). Self-contained IIFE; exports only `window.TlmModelBrainTuning` (`open(options)`, `close()`); styles in `model_brain_tuning.css`
+- `context_gauge.js` - The context ring between the toolbar and the message box (Context Governor, 2026-09-20, v1.65.x; REAL Ollama token counts since v1.72.1). The **backend** measures the real request and pushes a `context-gauge` frame, which `agent_page_chat.js` re-dispatches as a DOM event — the page never sees the system prompt or bound tool schemas, so anything measured here would be a guess. Bytes are measured; since 2026-09-28 the token figure becomes **REAL** (`N tokens REAL`, Ollama's own `prompt_eval_count` for that exact request, paired by `seq`) and only an unanswered request shows `≈N tokens est.`. At rest the ring shows the NEXT request, recalculated at every change point; the JS asks for that with a `context-gauge-refresh` frame (debounced 250 ms) on socket open and on every Multi-Turn / ACPX / Step-by-Step toggle. The bar carves the loaded context out of history (`ctx · hist · loop`); the sparkline keeps ONE point per `seq`. ⚠️ A harness must read the ring at the moment a frame is drawn (the live frame is replaced by the at-rest one within a second) - see `context_gauge_real_lab.py`, which wraps `dispatchEvent`. Contract: `docs/claude/architecture.md` → *The REAL context gauge*
+- `avatar_presence.js` - The avatar's presence compositor. Her portrait is pre-scaled to EXACTLY the frame: no overscan, no zoom, no breath/sway transform (see memory *avatar-presence-engine*)
+- `avatar_size.js` - Persists the avatar dock size. ⚠️ Keep its **re-entrancy guard** — `apply()` dispatches a synthetic `resize` and the `resize` handler calls `apply()`, which once threw "Maximum call stack size exceeded" on every resize
+- `model_capacity.js` - **The Compact mode box** (2026-10-01; the switch 2026-10-02). Owns the toolbar's `#compact-mode-enabled` (label `#compact-mode-toggle`): reads the switch from `compact-mode-state` frames (re-dispatched by `agent_page_chat.js` as `tlm:compact-mode-state`) and the request's verdict from `detail.capacity` on every `context-gauge` frame. Ticking/unticking sends `set-compact-mode` (the server rewrites the Configure rows and tells every tab); a STRICT model shows the box checked, greyed and `Compact mode 🔒`, and a click on it opens the explanation instead of unticking. The dialog (`#tlm-compact-overlay`) opens once per model per browser session when a small model locks the box: the window vs everything activated, what is sent now (the ticked tools), how to add more (Configure Agents / MCPs, watch the CONTEXT-WINDOW gauge), *Open Configure Agents* / *Open Config ▸ Models* / *OK*; Escape and ✕ close it via `overlay.tlmDismiss`. A gauge frame carrying a newer `toggles_version` (or a different switch) sends `compact-mode-sync`, so the Configure dialogs always show the REAL rows. ⚠️ The badge and the ACPX lock are GONE: ACPX follows the rows the user ticks. Styles in `model_capacity.css` (`--tlm-dlg-*` tokens; `.tlmpop-card.tlmcap-card`). Exports only `window.TlmModelCapacity` (`isCompact`, `isLocked`, `capacity`, `state`, `open`). Contract: `architecture.md` → *Compact mode*
+- `self_modify_switch.js` - **The Self-modify box** (2026-10-03). Rendered ONLY in a build that can self-modify (always from source; a frozen build only with `--self-modify`) - `{% if self_modify_available %}` wraps both the box `#self-modify-enabled` (label `#self-modify-toggle`) and this script, so a build that cannot has neither. Reads the switch (`self_modify`, `self_modify_fits`, `self_modify_tokens`, `self_modify_need_tokens`) from `tlm:compact-mode-state` and the per-request verdict from `detail.capacity.self_modify` on every gauge frame. Checked = ON; a model that cannot hold the self-knowledge shows it unticked, greyed and `Self-modify 🔒` (`compact-locked` styling, `data-tlm-self-modify="locked"` on `<html>`), and a click explains why with `tlmAlert` instead of ticking. Ticking/unticking sends `set-self-modify`; the server answers in the chat ("Self-modify is ON/OFF", or "stays OFF" for a refused tick). No toast before the first verdict. Self-contained IIFE; exports only `window.TlmSelfModify` (`isOn`, `isLocked`, `view`). Contract: `architecture.md` → *The Self-modify switch*
+- `compact_costs.js` - **The price of every Configure row** (2026-10-02). Decorates the lists `agent_page_dialogs.js` builds (`#tool-mcps-list`, `#agents-list`) - never what they save: every row gets a `.tlm-cost` label ("≈1.2K" tokens it adds to every request) and a budget line (`#tlm-budget-tools` / `#tlm-budget-agents`) projects the selection AS TICKED RIGHT NOW against the usable window (green / amber / red "does NOT fit … not everything will work"), from `GET /agent/compact_mode/costs/` (the server's `tools.tool_gate_table()` with measured schema tokens: a tool counts only when its Tool row AND its Agent row are ticked). Labelled "est." - the CONTEXT-WINDOW gauge measures the real request after Continue. Self-contained IIFE, no globals, fail-open
+- `chat_table_contrast.js` - **Every answer table stays readable** (2026-10-01, every model). After an answer is drawn (a `MutationObserver` on `#chat-log`, plus the history already on the page) each `td`/`th` is measured against the first opaque background behind it; below WCAG 3:1 it gets dark text on light, light on dark. A readable table keeps the model's colours; Exec Report tables and gradient/image backgrounds are never touched. Self-contained IIFE, no globals, fail-open
+- `chat_image_paste.js` - **Screenshot → chat box** (2026-07-14). PrtScn → Alt+Tab → **Ctrl+V** (or drop image files onto any page) saves the image to `<app>/Temp` as `image_<timestamp>.jpg` via `POST /agent/paste_image/` and splices its **absolute path into the chat box at the caret**, with a thumbnail chip (`#chat-image-chips`) above the input — so the user can immediately ask Tlamatini to analyze that path. Self-contained IIFE (declares **no** cross-file globals). The `paste` listener is on `document` (after Alt+Tab the focus is on `<body>`, so a textarea-scoped listener would never fire) and the caret is remembered separately; dropped images arrive from the page-wide `file_drop_router.js` (this module only registers the `image` handler; its old chat-column drag listeners and the private `#chat-drop-overlay` are gone). **`agent_page_layout.js::computeFormMinHeight()` must keep counting the chips row** — it pins `#tools-chat-form-container` to an explicit pixel height, so an uncounted row pushes the textarea + Send off-screen. Contract: `docs/claude/recent-fixes.md` (2026-07-14)
+- `chat_dictation.js` - Direct microphone button beside Send. Authenticated `/ws/chat-voice/` opens the resident Whisperer host microphone without LLM planning. Real sample feedback, configured silence gate and cached ASR; the per-recording mode selects automatic normal-form submission or an editable draft. The avatar acknowledges only actual dispatch. Escape/second click cancel; late results cannot submit. Count `dictation-status` in `computeFormMinHeight()` and its ResizeObserver, or the buttons fall off-screen. See [design and verification](../chat-microphone-design.md).
+- `mic_settings.js` - Config → Mic (last entry), system-style modal and browser-local `tlm_mic_settings_v1`. Exposes `OpenMicDialog` and `TLM_MIC` (`snapshot`, `applyMetadata`, `isOpen`); input discovery never records. Captures send/draft preference and validated device/gain/gate/recognition overrides for the next recording.
+- `avatar.js` - **Chat-avatar + browser speech engine** (extracted out of `agent_page.html`, 2026-07-17; animation Tier-2 2026-07-18). Drives the clickable talking portrait in the chat input footer and speaks Tlamatini's replies through the **browser's** `speechSynthesis` (distinct from the **Talker** agent, which synthesizes a WAV server-side through Ollama). **FEMALE VOICE ONLY, same as Talker** — `femaleVoices()` filters the installed voices with a female allow-pattern and a male deny-pattern, falls back to "any voice that is not male", and only then to whatever exists; Tlamatini is female and a male voice is not an acceptable substitute. Long answers are `chunk()`ed to ~170 chars on sentence boundaries because the Web Speech API truncates long utterances, `queue: true` means consecutive messages are ALL spoken rather than cutting each other off, a `keepAlive` interval works around the Chrome bug that silently stops long speech, and `prime()` satisfies the browser's user-gesture requirement. Settings (mode / voiceURI / volume / rate / pitch) persist in `localStorage` under `tlm_voice_settings`. Since 2026-10-09 its own fixed lines speak in the first person and name the user (*"I've finished your request, Angela."*, *"Okay, Angela - I've stopped that task. …"*), and `classify()` sorts the server's lines by their words, old and new wording alike (*"I can't process your requests"* is an error, never the answer). Self-contained IIFE
+
+### Microphone composer contract
+
+`#chat-microphone` sits immediately left of `#chat-message-submit`;
+`#dictation-status` contains live text, meter, elapsed time and gate countdown.
+`chat_dictation.css` provides the gradient microphone, focus treatment,
+recording state and reduced-motion rules. Mic settings consume the shared
+`--tlm-dlg-*` tokens; the border token is a whole border declaration, not a color.
+Load `avatar.js`, then `mic_settings.js`, then `chat_dictation.js`; dictation connects only to the same-origin `/ws/chat-voice/` route.
+
+Preparation leaves the host microphone closed. Show Listening only after real
+samples. Lock the draft against edits during capture and prevent all submit
+paths, including Enter/legacy submit dispatch. Escape or a second click cancels.
+A matching result clears ownership, appends the transcript and restores editing.
+Automatic mode then calls the normal form once; review mode focuses the draft
+and starts no model task or processing speech. Each run snapshots its preferences;
+cancelled, duplicate and stale frames cannot submit. Restore the original
+read-only lock even after chat disconnects. If sending becomes unavailable, keep
+the recognized text in the draft.
+
+The avatar is quiet while listening. `voiceSubmitting` marks the form handoff;
+the avatar acknowledges successful dispatch and deduplicates the matching
+server acknowledgment, respecting Silent mode. The button preserves current
+flags. Do not replace this with a second submission implementation.
+
+All recording UI belongs in the composer; no product console is created or
+activated. This captures the Tlamatini host microphone, not a remote browser
+device. See [states, limits and evidence](../chat-microphone-design.md).
+
+### Config → Mic settings contract
+
+`#config-mic` opens `#tlm-mic-overlay` / `#tlm-mic-form`. The native system shell
+uses the common Escape/✕ policy; outside clicks never dismiss it, and Cancel
+loses only unsaved edits. Tab stays inside; closing returns focus to Config.
+Use the shared secondary/hover tokens for Reset, Cancel and Refresh, and the
+accent token for Save. Keep footer actions visible on narrow viewports.
+
+The browser stores `{mode, capture}` overrides in `tlm_mic_settings_v1`.
+Unsaved inputs survive asynchronous metadata refreshes. Storage events affect
+future captures; they do not change a running job or overwrite an open editor.
+Reset previews inherited defaults; Save applies. Storage failure is reported as
+tab-only application. The UI exposes input/gain, gate timing/threshold/ceiling,
+language/translation, rate/channels and local beam/VAD. Config → Models owns
+engine/model selection; Config → Voice owns avatar playback.
+
+`ready` and `options` expose public defaults/devices; `start.settings` carries
+only capture overrides. Device identity includes name and host API. The shared
+Python validator checks settings at both transport and worker boundaries.
+See [all ranges and persistence rules](../chat-microphone-design.md#config--mic).
+
+### Chat navbar — menu layout (reorganized 2026-09-25)
+
+`agent_page.html`'s navbar, left to right: **Open · Save · Context ▾ · Panels ▾ · ACPX-Skills ▾ · External ▾ · Config ▾ · DB ▾ · Reconnect · About ▾** (plus the conditional **Open in…** entry and the mobile Context button).
+
+| Menu | Entries |
+|---|---|
+| **Panels** (`#panels-menu-button`) | **Agentic Control Panel** (`#agentic-control-panel`) · **Prompt Flow Panel** (`#prompt-flow-panel`) · **Admin Panel** (`#open-admin`, staff users only) — each opens in a new tab |
+| **Config** (`#config-menu-button`) | **Configure MCPs** (`#enable-mcps`) · **Configure Agents** (`#enable-agents`) · Models · URLs · Contacts · Access Keys Wizard · Voice · **Mic** (`#config-mic`, last) |
+
+**What moved.** The standalone **MCPs** menu (`#mcps-menu-button`) and **Agents** menu (`#agents-menu-button`) no longer exist: **Configure MCPs** and **Configure Agents** now live in **Config**, and **Agentic Control Panel** moved into the new **Panels** menu. The staff-only **Admin** menu (`#admin-menu-button`, "Open Admin page") is gone too — it is now **Panels ▸ Admin Panel**. The dialog ids, the `OpenMcpsDialog` / `OpenAgentsDialog` handlers and the `set-mcps` / `set-agents` WebSocket protocol did NOT change. ⚠️ Harnesses and tests must wait on `#config-menu-button`, never on the removed ids — `scripts/menu_browser_checks.py` asserts that `#mcps-menu-button, #agents-menu-button` match nothing.
+
+**Long-operation lock.** `LONG_OPERATION_DISABLED_MENU_BUTTONS` = `open-button`, `save-as-button`, `context-menu-button`, `skills-menu-button`, `external-menu-button`, `config-menu-button`, `db-menu-button`, `re-connect-button`. **Panels stays usable** during a run — opening the ACP or the Prompt Flow Panel in a new tab never touches the chat's request — and so does **About** (only its *Check for updates* entry is disabled). Configure MCPs / Configure Agents are unreachable because their parent **Config** is locked; `#enable-agents` is additionally greyed. Contracts (do NOT weaken):
+
+1. `disableControlsDuringOperation()` **closes an already-open dropdown** (`bootstrap.Dropdown.getInstance(toggle).hide()`) before it removes the toggle's `data-bs-toggle`; otherwise that menu's entries stay clickable under a locked parent.
+2. `restoreMenuControlsAfterOperation()` is the **single** re-arm path. Normal completion, **Reconnect**, **Clean History**, the chat **Cancel** reset and `applyDisconnectedSocketUi()` all call it. The disconnect path also sets `reConnectEnabled = true`, so a socket lost during context loading leaves **Reconnect** clickable instead of stranding the page.
+3. `OpenConfigModelsDialog` / `OpenConfigUrlsDialog` recheck `inLongOperation` when their asynchronous config fetch resolves. A load that started meanwhile must not open the dialog.
+4. Only the lifecycle handling in `appendChatMessage` may clear the chat's busy title. `chatSocket.onmessage` no longer clears it for every `Tlamatini` frame, because informational and structured frames arrive during context loading.
+5. `panelsMenuButton` replaced `mcpsMenuButton` / `agentsMenuButton` in `agent_page_state.js` and in `eslint.config.mjs`; `restoreMenuControlsAfterOperation` is a declared ESLint global.
+
+Coverage: `scripts/menu_browser_checks.py` (25 headed-Chrome checks against the real templates with deterministic transport — menu hierarchy, busy locks, the moved Configure dialogs' protocols, Panels usable while busy, the Prompt Flow Panel's play/pause/stop states) and `scripts/menu_live_checks.py` (the live app: real login, HTTP, WebSocket and model — no interception), both launched by **`scripts/run_menu_state_checks.py`** in a verified visible `-NoExit` console. That runner has **no headless fallback**: Shoter photographs every screen and the runner waits for the operator to confirm the browser is visible before the browser tests start. `scripts/menu_reference_graph.mjs` builds the scope-aware static reference graph that `agent/test_frontend_mutable_state.py` now uses for its cross-file const-poison check (text matching could not tell a local `canvas` from the ACP global).
+
+### Ask Execs — per-tool permission prompt (toolbar checkbox + modal dialog)
+
+The toolbar checkbox **Ask Execs** (`#ask-execs-enabled`, between **ACPX** and **Step-by-Step**) is **enabled only while Multi-Turn is checked** — `syncAskExecsAvailability()` in `agent_page_state.js` toggles its `disabled` attribute and the `.toolbar-toggle-disabled` class, called on load and on every Multi-Turn change (`agent_page_init.js`). `agent_page_init.js` sends `ask_execs_enabled: isAskExecsEnabled()` on every chat submit. When the backend blocks before a state-changing tool it broadcasts an `exec_permission_request` group frame; `agent_page_chat.js`'s `onmessage` catches `data.type === 'exec-permission-request'` and calls `showExecPermissionDialog(data.detail)` (`agent_page_dialogs.js`). That modal shows the Tool/MCP/Agent, parameters, program (textarea), and shell (textarea), with **Proceed** (green) / **Deny** (red); the dialog hides its own titlebar X to push for an explicit choice (`dialog_policy.js` restores it a tick later, so there is always a way out), **Esc dismisses it like any other dialog (2026-08-16)**, and closing without a button choice counts as **Deny** (decision is idempotent) — so Escape is fail-safe here, never a silent Proceed. It POSTs an `exec-permission-response` frame (which **must** include a `message` key — `consumers.receive` reads `text_data_json['message']` unconditionally) carrying `request_id` + `decision`. CSS: `.exec-perm-*` (dialog) and `.exec-denied-*` (the red "Execution interrupted" banner appended to a denied answer) in `agent_page.css`. Backend contract: `docs/claude/multi-turn.md` → *Ask Execs*. **Runtime relax (2026-05-29):** the checkbox `change` handler also sends a `set-ask-execs-runtime` frame (`ask_execs_runtime_enabled`) **while `inLongOperation === true`**, so unchecking Ask Execs mid-run stops the prompts for the rest of that run (and re-checking resumes them); when relaxing it calls `dismissExecPermissionDialogForRuntimeProceed()` to silently close any open prompt (sets `_execPermDecisionSent` so the close handler doesn't fire a stale Deny). The toolbar toggles are intentionally left clickable during a run (`disableControlsDuringOperation()` does not touch them).
+
+### Step-by-Step — one-action-at-a-time toolbar modifier
+
+The toolbar checkbox **Step-by-Step** (`#step-by-step-enabled`, between **Ask Execs** and **Add internet context**) is a **Multi-Turn runtime modifier** that puts the LLM into a guided, one-action-at-a-time cadence: it performs a single action, then WAITS for the user's `READY` before doing the next — the hands-on setup/debugging style. Like the other toggles it is sent per-request on every chat submit. Distinct from **Ask Execs**, which is a per-tool Proceed/Deny *permission* gate; Step-by-Step is a *pacing* directive (one step, then wait for the user to drive the next).
+
+### The busy UI on a RESTORED context — the spinner must survive the history render (2026-09-22)
+
+When Tlamatini starts with a context already saved in `SessionState`, the consumer sends `session-restored` with `loading: true` the instant the socket opens and the page goes busy **at script-parse time** — long before `window.onload` fires. `#wait-spinner` is a **child of `#chat-log`**, and `agent_page_chat.js::renderInitialMessages()` (called from `window.onload`) wipes `#chat-log` with `innerHTML = ''`, so it used to **destroy the spinner that already existed**. `disableControlsDuringOperation()` is idempotent, so nothing put it back: the button stayed 'Cancel', every menu stayed greyed, and the page looked idle while being completely frozen.
+
+**Two layers, both required — do NOT drop either:**
+
+1. **`renderInitialMessages()` captures the live spinner before the wipe and re-appends it after.** A history render is a RENDER: it repaints old rows and must not delete a live UI widget.
+2. **`window.onload` RE-ASSERTS the busy UI as its LAST statement**, guarded on `inLongOperation === true || lapseLoadingContext === true`. ⚠️ It must stay last — anything running after it could undo it, which is the exact failure class. Both calls are idempotent and both flags start `false` on every page load, so it is a strict no-op on an idle page and can never freeze one.
+
+⚠️ **This is a place where SOURCE and FROZEN genuinely differ.** Source mode (`DEBUG=True`) serves the **source** JS through Django's dev static handler; a frozen install (`DEBUG=False`) serves the **collected `staticfiles/`** tree through WhiteNoise. A JS fix that has not been `collectstatic`-ed is invisible to a frozen build. `build.py` runs `collectstatic --noinput --clear` on every build and aborts if it fails, and `agent/test_context_restore_spinner.py::test_collected_static_carries_the_same_fix` pins the collected copy so a stale one cannot ship the bug while the source looks fixed. Verified in BOTH modes, pre- and post-fix, in the real GUI.
+
+⚠️ **Never identify the chat window by its title.** `agent_page_layout.js::rotateTitle()` rewrites `document.title` on a timer (it scrolls "Tlamatini" one character per tick and prefixes an hourglass while busy), so any title match is a moving target — a visible-test harness was once handed `'X amatini Tl'`. Coverage: `agent/test_context_restore_spinner.py` + the visible runner `.claude/skills/tlamatini-daily-chat-test/harness/context_restore_spinner_visible.py` (`--release` exercises the frozen web path). Full story: `docs/claude/recent-fixes.md` (2026-09-22).
+
+### Context directory picker — native, nested-dir-capable (2026-05-25)
+
+The chat **Context ▸ Set directory as context** menu loads a project at **any depth** under the app root. The browser `window.showDirectoryPicker()` was dropped because its `FileSystemDirectoryHandle.name` exposes only the **leaf folder name** (a browser-security limitation), which broke every directory that wasn't a direct child of the runtime root. `agent_page_init.js`'s `setDirContextMenu` handler now `fetch`es the backend native folder picker — `views.pick_context_directory_view` (route `pick_context_directory/`), which drives the Win32 dialog and returns the **real absolute path** — then sends that full path in `set-directory-as-context`. A `_promptForContextDirectory()` manual-entry fallback covers non-Windows hosts. The backend accepts the path because `path_guard.is_within_application_root()` + `resolve_runtime_agent_path` now allow the application root or **any descendant** at any depth. **Do NOT revert to `showDirectoryPicker()`** — it structurally cannot send the full path (see `docs/claude/recent-fixes.md`, 2026-05-25).
+
+## ACP Workflow Designer (15 modules + 1 entry point)
+- `agentic_control_panel.js` - Entry point
+- `acp-connection-status.js` - **"Backend is down" banner for the ACP designer** (2026-08-01). The chat page already surfaced a dead backend (`agent_page_state.js` paints `#connection-status` from its WebSocket `onclose`/`onerror`); the designer had **nothing** — if the server died the canvas still looked perfectly healthy and every Validate / Start / Save click failed silently, leaving the user staring at a page that looked alive but was talking to nobody. It could not be copied verbatim from the chat page because the ACP designer is **HTTP-driven, not WebSocket-driven**, so there is no socket close event to hang the banner on
+- `acp-globals.js` - Shared global state (incl. `ACP.zoom` and `ACP.editorBusy`, 2026-09-25), plus `updateCanvasContentSize()` (canvas-growth helper — see ACP Canvas DOM Contract below). Since 2026-09-25 it sizes `#canvas-content` in **unzoomed** units: `min-width`/`min-height` = viewport ÷ `ACP.zoom`, and `width`/`height` = max(viewport ÷ zoom, furthest item edge + 240 px headroom)
+- `acp-editor-tools.js` - **The flow-editor toolbar** (NEW 2026-09-25; loaded LAST among the `acp-*` modules, just before `checkbox_bulk_toggle.js`, and it edits only through the existing canvas APIs). Owns `ACP.canEdit()` (true only when the flow is STOPPED, nothing is busy processing, no editor action or `.flw` load is in progress and the undo manager is idle), `ACP.performEdit(action)` (runs one edit with `ACP.editorBusy` set and shows failures in `acpAlert`), and `ACP.refreshEditor()` (re-derives every toolbar button's enabled state; driven by MutationObservers on the canvas and on `#monitor-controls`). Buttons: **Undo / Redo · Configure** (exactly one selected agent) **· Duplicate** (copies the selected agents WITH their saved configurations, re-maps ids inside those configs, and recreates only the connections internal to the selection; refuses FlowCreator / FlowHypervisor, which are one per flow; a failed read or deploy removes every partial copy) **· Delete · Starters** (a select that locates each Starter; Start still runs all of them) **· Flow settings** (dot grid on/off, canvas zoom, quick Configure for Starter/FlowCreator/FlowHypervisor; preferences are per browser in `localStorage` key `acp-canvas-grid`) **· − / + / Fit** (zoom 25 %–200 % in 10 % steps). Also the empty-canvas card (`#acp-empty`, "Try an example" loads a Starter → Sleeper → Ender flow as one undoable action) and the navbar **Help** dialog
+- `acp-canvas-core.js` - Canvas rendering, drag-and-drop, classMap, connection handlers. Since 2026-09-25: every pointer-to-canvas conversion divides by `ACP.zoom`; creating, dragging, connecting and double-click-configuring an agent are refused while `ACP.canEdit()` is false; double-click delegates to **`ACP.configureItem(item)`** (shared with the toolbar's Configure); a drag that really moved something records ONE undoable `MOVE_ITEMS` action and only then marks the flow dirty; `populateAgentsList()` wires the **agent search box** (`#acp-agent-search`, case-insensitive substring over each agent's display name, "No agents match your search." status line, usable while the catalogue is still loading); `clearAllCanvasItems()` also clears `ACP.nodeConfigs` and the undo history
+- `acp-canvas-undo.js` - Undo/redo state (1024 actions). Since 2026-09-25 a captured item state also carries its **`configData`** (and drops the transient `selected` class), and `recreateCanvasItem()` POSTs that configuration back to `/agent/save_agent_config/<id>/` — so undoing a delete, or redoing a duplicate, restores the agent's settings, not just its box. The **Delete** key and the toolbar's Delete share ONE path, `ACP.deleteSelection()` (run through `ACP.performEdit` when available), and every keyboard shortcut is ignored while `ACP.canEdit()` is false
+- `acp-undo-manager.js` - Undo stack manager (works with `acp-canvas-undo.js`); calls `ACP.refreshEditor()` around undo/redo and on `clear()` so the toolbar's Undo/Redo buttons always match the stacks
+- `acp-agent-connectors.js` - 50+ agent connection handlers
+- `acp-control-buttons.js` - Start/stop/pause/hypervisor
+- `acp-file-io.js` - .flw save/load (calls `buildACPFlowSnapshot()` for save; calls `getSavedParametrizerMappings()` on load to re-hydrate Parametrizer artifacts whether they were persisted in `_parametrizer_mappings` per-node or in the snapshot's `artifacts.parametrizerMappings` map). Since 2026-09-25 `loadDiagram()` sets `ACP.fileLoading` for the whole load (so no edit can interleave with it), clears the undo history before rebuilding, and always releases the flag in a `finally`
+- `acp-flow-snapshot.js` - **Canvas-snapshot bridge to the backend Flow Compiler** — `buildACPFlowSnapshot()` produces the `schemaVersion: 2` JSON the backend understands (nodes with `id`, `text`, position, `agentPurpose`, `configData`; connections with both indexes AND ids; `artifacts.parametrizerMappings` keyed by node id). `compileCurrentACPFlow({mode})` POSTs it to `/agent/compile_flow/`; called by Save (mode=dry-run via Validate) and by the Start sequence (mode=`write`) so the live canvas is recompiled into `config.yaml` files before any agent runs
+- `acp-running-state.js` - LED indicators, process monitoring; `updateControlButtonStates()` also refreshes the editor toolbar, which is how editing locks the moment a flow starts and unlocks when it stops
+- `acp-session.js` - Session pool management
+- `acp-layout.js` - Canvas layout utilities; the rotating browser title now starts with **`• `** while the flow has unsaved changes. ⚠️ Never identify the ACP window by its title in a harness — it is rewritten on a timer
+- `acp-parametrizer-dialog.js` - Parametrizer's interconnection-mapping dialog
+- `acp-validate.js` - Flow validation engine (POSTs the snapshot to `/agent/compile_flow/` mode=`dry_run` and renders the returned warnings + per-agent compiled config — same path Start uses with mode=`write`)
+
+## ACP Canvas DOM Contract (scrollable, zoomable canvas)
+
+The ACP canvas is a **two-layer DOM**. Confusing the two layers is the single most common source of coordinate-math bugs in ACP code, so the contract is called out explicitly here:
+
+1. `#submonitor-container` — the **viewport**. `overflow: auto`, fixed to the available panel size, owns the themed scrollbars. It is NOT where canvas items live; it is only the window you look through.
+2. `#canvas-content` — the **content layer** that lives inside `#submonitor-container`. `position: relative`, `min-width: 100%`, `min-height: 100%`, and grows in pixel width/height whenever items extend past the viewport (managed by `updateCanvasContentSize()` in `acp-globals.js`). Every `.canvas-item`, the SVG `#connections-layer`, and the rubber-band `#selection-box` are all children of `#canvas-content`.
+
+Consequences that MUST be respected by any new canvas code:
+
+- **Coordinate reference frame is `canvasContent`, not `submonitor`.** All math that translates pointer events into `style.left` / `style.top` on a canvas item must use `canvasContent.getBoundingClientRect()`. `canvasContent`'s rect already reflects the current scroll offset, so you do NOT manually add `submonitor.scrollLeft` / `scrollTop`. Mixing `submonitor.getBoundingClientRect()` with a `canvasContent`-positioned child (or vice versa) produces items that jump under the cursor as soon as the user has scrolled.
+- **Appending items goes to `canvasContent`, never to `submonitor`.** `createCanvasItem()` and `cloneAndRegister()` both call `canvasContent.appendChild(newItem)`. Appending to `submonitor` places the item above the scrollable layer and out of the coordinate frame used by connections.
+- **No upper clamp on item positions.** Item positions are clamped `>= 0` only. The canvas intentionally grows to the right and bottom — do not re-add `rect.width - width` / `rect.height - height` upper bounds. After any position or size change that could extend the content envelope (item creation, drag end, `.flw` load, undo/redo item restoration) call `updateCanvasContentSize()` so the viewport's scrollbars stay in sync.
+- **Selection-box rect frame.** `startSelectionBox()` uses `canvasContent.getBoundingClientRect()` and does NOT add `submonitor.scrollLeft/scrollTop` — the rect already carries the scroll offset. The selection box is itself a child of `#canvas-content`, so it scrolls with the content.
+- **Mousedown dispatch.** The "begin selection box" branch in `initCanvasEvents()` accepts `e.target === submonitor || e.target === canvasContent || e.target.id === 'connections-layer'`. New clickable layers added on top of the canvas must either stop propagation or be whitelisted here explicitly, otherwise they silently disable rubber-band selection.
+
+- **⚠️ ZOOM — divide every pointer delta by `ACP.zoom` (2026-09-25).** The toolbar's − / + / Fit and **Flow settings** zoom the canvas by setting the CSS `zoom` property on `#canvas-content` (range 0.25–2). Saved coordinates stay in **unzoomed** content units, so a `.flw` saved at 50 % reopens identically at 100 %. Every conversion from a pointer to content space therefore has the form `(e.clientX - canvasContent.getBoundingClientRect().left) / ACP.zoom` — `createCanvasItem()`, the drag deltas in `makeDraggable()`, `startSelectionBox()` and its mousemove, `getCenter()` (which every connection path goes through) and the temporary connection line all do exactly that. A new pointer handler that forgets the division places items and wires at the wrong spot whenever zoom ≠ 100 %, and looks perfectly correct at 100 %. Scrolling, conversely, is in **zoomed** pixels: `submonitor.scrollLeft = contentX * ACP.zoom - …`.
+- **⚠️ EDIT LOCK — every editing entry point checks `ACP.canEdit()` first (2026-09-25).** It is false while a flow runs or is paused, while the canvas is busy processing, while an editor action (`ACP.editorBusy`) or a `.flw` load (`ACP.fileLoading`) is in flight, and while the undo manager is processing. Drop-to-create, drag, output-triangle connect, double-click configure, and the Ctrl+Z / Ctrl+Y / Delete shortcuts all return early on it. A new editing gesture MUST check it too, and multi-step edits belong inside `ACP.performEdit(action)` so the toolbar greys out and a failure surfaces in `acpAlert`.
+- **The shell layer.** `#submonitor-container` now sits inside `#acp-canvas-shell` (`position: relative`) together with the `#acp-empty` overlay card, and the editor toolbar `#acp-editor-toolbar` sits above both. `#acp-empty` has `pointer-events: none` (only its button takes clicks), so it never swallows a drop or a selection-box start. The dot grid is a `background-image` on `#canvas-content`; the `acp-grid-hidden` class removes it and zoom scales it with the content.
+
+If you add a new canvas-level feature (layout grid, minimap, overlay HUD, etc.), it almost always belongs as a child of `#canvas-content`, not `#submonitor-container`, so it shares the coordinate frame with the items it visualizes.
+
+## Shared / chat-runtime auxiliary (15 modules)
+- `canvas_item_dialog.js` - Agent config dialog on canvas
+- `contextual_menus.js` - Right-click menus
+- `tools_dialog.js` - Tool enable/disable dialog + the **Catalog of Prompts** (`#prompts-catalog`): primary load is ONE `GET /agent/list_prompts/` call (v1.38.1) rendering every seeded prompt card; the legacy `prompt-1..N` probe loop is kept as the offline fallback (it still breaks at the first `idPrompt` gap). **The section list is entirely data-driven** from that call's `categories` array, so a NEW catalog section needs only the `views.PROMPT_CATEGORY_ORDER` entry + its migration — **no JS, no CSS, no template edit and no `STATIC_VERSION` bump** (proved by `voice_commands`, 2026-09-12). Section headers render uppercase (`.prompt-category-label { text-transform: uppercase }`), which is why the label `'Voice Commands'` reads **VOICE COMMANDS** on screen. **⚠️ `classifyPromptModes` DERIVES each card's mode badges from the prompt TEXT** — it scrubs `do not use …` clauses first, then an `acp_*` / `invoke_skill` / `list_skills` token ⇒ ACPX (implies Multi-turn), `chat_agent_*` or "multi-turn" ⇒ Multi-turn, the **hyphenated** `step-by-step` token ⇒ Step-by-Step, and every non-one-shot card also gets Exec-report — and `applyPromptModesToToggles` then sets all four toolbar checkboxes to exactly that, so clicking a card CLEARS the modes it does not need as well as setting the ones it does
+- `skills_dialog.js` - **ACPX-Skills navbar dropdown** dialogs (Configure checkbox grid mirroring the Mcps/Tools/Agents pattern + Browse list-and-detail + Diagnostics cross-check report + Reload single-action). Backed by `GET /agent/skills/` / `GET /agent/skills/<name>/` / `GET /agent/skills/_/diagnostics/` / `POST /agent/skills/_/reload/` plus the WebSocket `set-skills` channel for the toggle persistence. Per-skill state cached in the module-level `skills = []` array populated by `type: 'skill'` system messages — see `agent_page_chat.js`. The Configure dialog only ever writes `Skill.enabled`; everything else (description, runtime, frontmatter, sha256) is owned by `agent/acpx/service.py::boot_skills()` and reloaded from SKILL.md on disk.
+- `chat_page_runtime_poller.js` - Chat-side wrapped-runtime poller (status / log / wait helpers)
+- `shared-runtime-dialogs.js` - Shared modal dialog widgets used by chat + ACP runtime views
+- `dialog_policy.js` - Central fail-open dismissal policy. Guarded dialogs close only through titlebar X, explicit Cancel/dismiss, Continue/OK, **or ESCAPE**; an outside click still does not dismiss, X is semantically Cancel, **and Escape is semantically X** (standardised 2026-08-16 on Angela's instruction — before that date Escape was deliberately swallowed). §4 is a **bubble-phase `document` keydown dispatcher**: it finds the *topmost open dialog* (shape-based selector + z-index rank, backdrops excluded) and **invokes that dialog's own dismiss control** — never a blind hide — so the exec-permission prompt still answers DENY, `acpConfirm`/`tlmConfirm` still resolve `false`, every `body.style.overflow` is still restored, and a **sealed updater still refuses** (`CloseUpdateDialog` → `mayClose`). Bubble phase is load-bearing (the Catalog's search box clears the query on the first Escape and only the second closes the catalog); `stopImmediatePropagation()` stops one keystroke closing two stacked layers. A dialog with no X/Cancel must expose `el.tlmDismiss` (the Catalog does). Sealed updater states may still block dismissal. **Also owns the THEMED popups `tlmAlert(message, title)` / `tlmConfirm(primary, secondary, title)` (2026-08-16)** — the chat-page counterparts of the canvas's `acpAlert`/`acpConfirm`, replacing the last nine `alert()`/`confirm()` calls (`contacts_dialog.js` ×2, `external_mcps_dialog.js` ×7). Both return a **Promise** (`tlmConfirm` → `Promise<boolean>`; anything but Continue is `false`). Since 2026-09-30 `tlmConfirm` takes an optional 4th `options` object — `confirmLabel` / `cancelLabel` rename the buttons, `danger: true` paints the confirm button red (`.tlmpop-btn-danger`), and `focusCancel: true` puts the keyboard focus on Cancel so a stray Enter cannot confirm a destructive action (the chat card's **Drop** uses all four). Escape and ✕ still resolve `false`. Both popups are styled from `dialog_theme.css` tokens (`.tlmpop-*`), and **fail open** to the native popup — a lost warning is worse than an ugly one. ⚠️ They are deliberately NOT jQuery-UI dialogs: they are raised BY native modals at `z-index: 20000` (`.emx-dialog` / `.ctb-dialog`) while `.ui-front` is ~100, so a jQuery-UI confirm would render *under* the dialog that asked for it — an invisible modal, i.e. a hang. The overlay sits at **100001**. Pinned by `agent/test_dialog_dismissal_policy.py::NoNativePopupSurvivesInThemedDialogsTests`.
+- `release_notes_renderer.js` - Safe renderer for Check-for-Updates release notes; keeps release text out of raw HTML while preserving readable formatting.
+- `external_mcps_dialog.js` - **External ▸ MCPs navbar dialog** (entry point `OpenExternalMcpsDialog`, navbar item `#external-mcps`). The user-facing surface of the universal External MCP CLIENT (see `docs/claude/architecture.md` → *External MCPs*): a searchable catalog of every server in `external_mcps.json`, an **at-most-5-active** selection, and **drag-a-`.json` import** (since `v1.83.0` done by the page-wide `file_drop_router.js` on every page; this dialog only refreshes itself on the `tlm:external-mcps-imported` event). Backed by three endpoints — `GET /agent/external_mcps/` (list catalog + active set), `POST /agent/external_mcps/activate/` (set the active ≤5), `POST /agent/external_mcps/import/` (add a server from a dropped/pasted `mcpServers` JSON). Pure HTTP (NOT a WebSocket toggle channel like Mcps/Tools/Agents/Skills); CSS in `external_mcps_dialog.css` (`.emx-*` classes). This is a SEPARATE surface from the two `Mcp`-model context-provider checkboxes — see the architecture doc. **Runtime strip (2026-08-15):** the dialog renders an `.emx-runtime` bar above the list showing whether `node`/`npm`/`npx`/`pnpm`/`uv`/`uvx` are available (a ★ on a pill = it came from Tlamatini's own private runtime, not the user's system install), plus an **Install now** button posting to `POST /agent/external_mcps/runtime_install/`. Without it, a user on a machine with no Node sees a perfectly valid catalog row that simply never connects and nothing on screen explaining why. The `runtime` block rides along on the existing `GET /agent/external_mcps/` payload and is fail-open — if the provisioner cannot be imported the strip is simply hidden.
+- `access_keys_wizard.js` - **Config ▸ Access Keys Wizard** dialog — ONE guided place to set every provider secret (Anthropic, ProjectDiscovery/PDCP, Meta WhatsApp, Telegram, …); each key is written into `config.json` and auto-injected into the matching agent runs (and redacted from `.flw` exports / by `regen_secrets.py`)
+- `contacts_dialog.js` - **Contacts book** dialog — manages `contacts.json` (user state, preserved across self-update) so the messaging agents (Telegrammer / Whatsapper / Emailer) resolve a `contact_name` into the real address / phone / `@username`
+- `checkbox_bulk_toggle.js` - **SPACE-bar bulk check/uncheck** (2026-08-04). Drag an ORDINARY TEXT SELECTION across several checkbox labels and press SPACE once: every checkbox the selection overlaps flips — **ANY selected one checked → uncheck them ALL; all unchecked → check them ALL**. Generic by construction (targets are the checkboxes the *live selection* overlaps, never a dialog id), so **every** checkbox dialog gets it with ZERO per-dialog wiring — Configure Mcps/Tools, Configure Agents, Configure Skills, External MCPs, the ACP canvas agent-config dialogs, and any future one. Loaded on **BOTH** pages (`agent_page.html` + `agentic_control_panel.html`, `_bulktoggle` cache-buster). Self-contained IIFE declaring **no** cross-file globals (same shape as `chat_image_paste.js`). **Contracts that must NOT be reverted**: the keydown listener is **CAPTURE-phase on `document`** (bubble phase lets `external_mcps_dialog.js`'s own Space handler toggle the focused row first, so the bulk pass toggles it a second time and nets it back — a silent data-corrupting bug), and `stopPropagation()` fires ONLY for a Space actually consumed so Escape/Tab/Enter/Ctrl+Z are untouched; it bails on `input`/`textarea`/`select`/`contenteditable` checking **both** `event.target` and `document.activeElement` (after a mouse-drag the target is `<body>`), so SPACE still types a space in every search box; it toggles with `checkbox.click()` — a REAL click — so existing change/click handlers still run (state persistence, the External-MCPs 5-active cap); range overlap is **STRICT** (a zero-length boundary touch does not count); a row must own **exactly one** checkbox, else a whole list container is taken for one row and any selection toggles the entire dialog; self-re-rendering lists (External MCPs rebuilds every row per toggle) are handled by re-resolving each checkbox immediately before clicking it. The chat toolbar toggles (`#multi-turn-enabled` etc.) are **unreachable by design** — `.toolbar-toggle` has `user-select: none` in `agent_page.css`, so no text selection can be made over them. Guarded by `agent/test_checkbox_bulk_toggle.py` (15 tests: source contract + template wiring + collected-static sync); full contract in `docs/claude/recent-fixes.md` (2026-08-04)
+- `file_drop_router.js` - **ONE smart listener for every file dropped on ANY page** (2026-10-14, shipped in `v1.83.0`). Loaded in the `<head>` of the chat, the Agentic Control Panel, the Prompt Flow Panel, welcome, login (`data-auth="none"`), the Django admin and the PDF viewer iframe (a separate document: it relays the drop to its parent). It claims every `Files` drag in the **capture phase on `window`** (text drags and the palette's `application/x-tlamatini-operation` are never touched; a drop on a native `<input type="file">` is left to the browser), **classifies each file by its bytes** (extension → MIME → magic numbers → BOM-aware text/binary → a real JSON parse that recognises an MCP config in every shape seen in the wild, UTF-16 files from PowerShell included) and **dispatches each kind to a different mechanism**: `mcp-json` → confirm, then the External MCP catalog (built in, every page); `flow-agent` (`.flw`) → loads into the ACP canvas, or opens the ACP in a new tab; `flow-prompt` (`.fpmt`) → loads in the Prompt Flow Panel, or opens it in a new tab; `image` → chat: saved to Temp, path in the message; `pdf` / `markdown` / `text` (incl. plain JSON) → the chat canvas; folder / archive / binary → a plain-words toast saying where the file CAN be used. A page teaches the router what it can do with `TlamatiniFileDrop.register(kinds, fn, { label })` (`fn(files, items)` may return `{ ignored, note }`); the same label drives the drag-time overlay, which tells the user what will happen on THIS page from the MIME types the browser exposes. **Contracts (do NOT weaken):** capture phase, Files only; an MCP import is NEVER silent (the confirm lists the servers and warns they can launch programs); the flow tab is reserved synchronously inside the drop task (popup blockers refuse `window.open` after an `await`); one drop at a time; the BOM test precedes the NUL test; a bare name→server map qualifies only when EVERY value is a server, so generic JSON is never hijacked; the login page never imports and never navigates. Fires `tlm:external-mcps-imported` so an open External ▸ MCPs dialog refreshes. Self-contained IIFE, no cross-file globals. Tests: `scripts/file_drop_router_cases.mjs` (138 checks against the real router in a stub browser), `agent/test_file_drop_router.py`, visible `.claude/skills/tlamatini-daily-chat-test/harness/file_drop_visible.py`. Story: `docs/claude/recent-fixes.md` (2026-10-14)
+- `flow-canvas-interactions.js` - Canvas mechanics SHARED by the Agentic Control Panel and the Prompt Flow Panel (with `flow_canvas.css`): triangle highlighting, connection capture/cancellation, curve geometry, wire hover/selection glow, Fit/zoom, context-menu placement and divider gestures. See *Prompt Flow Panel* below
+- `ui_splitters.js` - **One gesture model for all five pane dividers** (2026-10-11, shipped in `v1.80.0`): pointer capture, Escape / blur / pointer-cancel / lost-capture cleanup and the shared active/focus state for the chat ↔ canvas seam, the composer seam, the ACP and Prompt Flow sidebars and the Prompt Run-output seam. Each layout adapter keeps its own bounds, clamping and storage, and `FlowCanvasInteractions.bindDivider` delegates to it. Loaded on all three workspaces with `ui_tokens.css` / `ui_shell.css` / `ui_splitters.css` (keep `dialog_theme.css` last). Record: `docs/changes/2026-10-11-ui-sweep.md`
+
+## Terminals area — `terminater_dock.js` (1 module, 2026-10-19, shipped in `v1.88.0`)
+
+One self-contained module mounted by three pages through `data-tlm-terminals-host="chat|acp|pfp"`; any
+element with `data-tlm-terminals-toggle` becomes the **Terminals** check item (chat: **Views ▸ Terminals**;
+Agentic Control Panel and Prompt Flow Panel: a new **View** menu). Ctrl+` toggles it. Styles in
+`terminater_dock.css`; the renderer is locally vendored xterm.js 5.5.0 with `xterm-addon-fit` 0.10.0 and
+`xterm-addon-web-links` 0.11.0 (`scripts/vendor_frontend.py` pins the integrity; no CDN, no source maps).
+Full behaviour in [docs/terminater.md](../terminater.md); what a maintainer must keep:
+
+* **Keystrokes are never swallowed by the page.** The server drops them only while Tlamatini is typing and
+  tells the user how to take over (Esc). Hiding the dock keeps every shell alive and now reports the change
+  to the hub (`layout` frame with `show`).
+* **The line the dock reports is read from xterm's own screen** (`scheduleLine`) and is re-read when output
+  arrives within 2.5 s of a keystroke, because a shell echoes after the key is sent.
+* **Hand-over.** When a terminal enters `awaiting_user` the dock emits `tlm:terminals-handover` before it
+  focuses the terminal; the Agentic Control Panel listens and closes its Start dialog (a jQuery UI modal traps
+  the keyboard), also when a terminal is already waiting at that moment.
+* **With the canvas hidden** (`tlm-canvas-hidden`) the chat page keeps its canvas column when
+  `tlm-terminals-on` is set, so the dock is not cut off; `agent_page_layout.js` no longer returns early from its divider handlers while the terminals are on, and `TlamatiniViews` gained `setTerminalsVisible` / `isTerminalsVisible`.
+* **Fail-open.** A missing renderer or a dead socket shows a message in the dock and never breaks the host
+  page. `dialog_policy.js`, `tlmAlert`/`tlmConfirm` and the shared theme tokens are reused; no native pop-up.
+* Static cache suffix at this change: `-terminater-1` appended to the live `STATIC_VERSION`; the two assets carry `_term1`.
+
+## Welcome page (1 module)
+
+- `welcome_enter_default.js` - **ENTER is the default action on `welcome.html`** (2026-09-10). The post-login page offers exactly two things — **Go to Chat** and **Logout** — and everybody who lands there is going to the chat, so the keyboard should not have to hunt for it: **press Enter and you are in the chat**, with nothing clicked, tabbed or focused first. **TWO LAYERS, deliberately:** (1) the `#go-to-chat` link is **focused** as soon as the page is ready, so the **browser itself** activates it on Enter — and its focus ring shows the user exactly where the key will go (`welcome.css` sets no `outline: none`, so Bootstrap's own ring stays visible); (2) a **document-level `keydown` fallback** catches Enter when focus was never granted (a stray click on the card body, or a browser that refuses the programmatic focus). Layer 1 normally wins and layer 2 stands down. **⚠️ THE DEFERRAL IS THE WHOLE POINT — do not "simplify" it away:** the fallback inspects `document.activeElement` and does nothing whenever something activatable already holds focus (`a, button, input, textarea, select, [contenteditable="true"]`), because firing Enter blindly would send a user who Tabbed to **Logout** to the **chat** instead — the exact opposite of what they asked for. **Enter belongs to the browser whenever the browser already has a target for it.** For the same reason it ignores a keypress carrying Alt/Ctrl/Meta/Shift, one mid-IME-composition (`event.isComposing` — Enter commits the candidate, it does not mean "go"), and one another handler already claimed (`event.defaultPrevented`). **FAIL-OPEN**: a missing link returns early, `focus({preventScroll: true})` degrades to a bare `focus()` and then to nothing, and every path leaves both buttons working by mouse — a broken shortcut must never cost the user the page itself. Self-contained IIFE declaring **no** cross-file globals (same shape as `chat_image_paste.js` / `checkbox_bulk_toggle.js`). The template carries only two lines: `id="go-to-chat"` on the existing link, and the `<script>` with the usual `?v={{ STATIC_VERSION }}` cache-bust. No backend, no view, no config key, no dependency.
+
+## Prompt Flow Panel page (2 modules)
+
+- `prompt-flow-panel-model.js` - The `.fpmt` document contract, frozen as `window.PromptFlowPanelModel` (`FORMAT = 'tlamatini-prompting-flow'`, `EXTENSION = '.fpmt'`, `isFlowFilename`, `flowFilename`, the eight `operations` entries (seven executable operations and static User Commentary) with their SVG outlines and executable port positions, `blank`, `node`, `validate(flow, playable)`, `example`). Pure data: no DOM, no network. Its validator mirrors `agent/services/prompt_flow_panel.py::validate_flow` rule for rule, and the backend re-validates every document anyway
+- `prompt-flow-panel.js` - The editor/controller for `prompt_flow_panel.html`: eight-operation palette (the seven prompting operations plus Terminater) plus static User Commentary, drag/click-to-add, ACP-style press-drag-release connections (white side triangles, horizontal curves, Decision has right-side Y/N outputs; one destination per output), marquee and Ctrl-click selection, undo/redo, zoom 25 %–200 % (Ctrl+wheel) and Fit, the per-operation configure dialogs (shared `dialog_policy.js` / `dialog_theme.css`), file Open/Save/drop, the per-user browser draft (`localStorage` key `tlamatini.prompting-flow.draft.v1.<user id>`), and playback over the connection-scoped **`/ws/prompt-flow-panel/`** WebSocket (8 s `ping` heartbeat, explicit **Reconnect**; a connection never starts or resumes a run by itself). Full contract: *Prompt Flow Panel* below and [the user guide](../prompting-flow-designer.md)
+
+**Total: 61 JS modules** (26 chat + 15 ACP + 1 ACP entry-point + 15 shared/chat-runtime auxiliary + 1 welcome + 2 Prompt Flow Panel + 1 Terminals dock). Count them with a file listing (`agent/static/agent/js/*.js`), never by hand.
+
+### Uniform dialog and long-operation contract (v1.48.13)
+
+- `dialog_theme.css` is the shared visual identity for jQuery UI, Bootstrap modals, and custom overlays. New dialogs must reuse it rather than inventing local titlebars, shadows, spacing, buttons, or z-index layers.
+- `dialog_policy.js` owns dismissal semantics. Do not reintroduce **outside-click** close handlers in individual modules, and **never set `closeOnEscape: false`** on a dialog — Escape must dismiss every dialog on both pages and is routed centrally. `agent/test_dialog_dismissal_policy.py` fails the build on either offence (`closeOnEscape\s*[:=]\s*false` is a forbidden pattern tree-wide, comments stripped first). Preserve fail-open behavior if policy installation cannot complete.
+- **No native browser pop-ups in a themed dialog.** `alert()` / `confirm()` / `prompt()` render OS chrome (a grey strip carrying the page URL) that no CSS can reach, and they BLOCK the page, so a headed Playwright run cannot photograph the dialog behind them. Use `tlmAlert` / `tlmConfirm` (chat + canvas) or `acpAlert` / `acpConfirm` (canvas-only, jQuery-UI-hosted). When you migrate a module, add it to `_THEMED_DIALOG_MODULES` in `agent/test_dialog_dismissal_policy.py` so a regression fails loudly.
+- `agent_page_ui.js::LONG_OPERATION_DISABLED_MENU_BUTTONS` is the single navigation-lock list for Open, Save, Context, ACPX-Skills, External, Config, DB, and Reconnect (the separate **MCPs** menu no longer exists — Configure MCPs lives in Config since 2026-09-25). **Panels** is deliberately NOT in it. Disable/enable paths must remain mirrored and preserve/restore each element's `data-bs-toggle`; re-arming goes through `restoreMenuControlsAfterOperation()` only.
+- During a long operation only **About ▸ Check for Updates** and **Config ▸ Configure Agents** are additionally disabled as individual entries; **Panels** (Agentic Control Panel / Prompt Flow Panel / Admin Panel) stays open. Do not indiscriminately freeze unrelated menu inspection.
+- Any JavaScript, CSS, or template change must bump `STATIC_VERSION` through the `tlamatini-static-version-bumper` skill and pass `npm run lint` plus focused frontend tests.
+
+### Cross-file mutable globals MUST stay `let` (const-poison contract — 2026-07-08, v1.38.1)
+
+Module-level state that ANY other JS file reassigns at runtime — the `tools` / `agents` / `skills` arrays, chat history, canvas running/validation state, and busy flags in `agent_page_state.js` and `acp-globals.js` — MUST be declared `let`, never `const`. Per-file ESLint structurally CANNOT see cross-file reassignment, so a `let`→`const` "cleanup" lints green and then kills the chat page AND the ACP designer at load with `TypeError: Assignment to constant variable` (the 2026-07-08 const-poison incident, commit `85ee4e6c`, fixed by `af356c31`). `agent/test_frontend_mutable_state.py` guards BOTH the source tree and the collected `staticfiles` copies against re-poisoning. Full contract: `docs/claude/recent-fixes.md` (2026-07-08).
+
+## Flow Compiler Pipeline (canvas / chat → backend → pool)
+
+Two browser surfaces produce flows; both compile through the **same** backend Agent Contract registry before they ever reach disk:
+
+1. **ACP canvas → `/agent/compile_flow/`** — Save / Validate / Start all build a snapshot via `buildACPFlowSnapshot()` (`acp-flow-snapshot.js`) and POST it. Start passes `mode: 'write'` so the canvas state lands in the session pool before agents launch (this is why an edited-but-unsaved canvas now behaves identically to a freshly loaded `.flw`); Validate passes `mode: 'dry_run'` and renders the returned compiled-config preview without touching disk.
+2. **Chat Create-Flow → `/agent/flow_from_tool_calls/`** — The button appears whenever Multi-Turn ran with **≥1 successfully-executed agent** (no whole-answer classifier — removed 2026-07-06). When it fires, `_normalizeChatFlowBeforeDownload()` in `agent_page_chat.js` POSTs the draft (built from **only the successfully-executed** entries of `tool_calls_log`) to the backend, which runs it through `normalize_flow_payload()` → `flow_spec_to_legacy_json(redact=True)` and returns a `.flw` JSON whose secrets are redacted and whose canonical agent / pool names match the registry. The browser then downloads that normalized blob (with a graceful fallback to the legacy un-normalized draft if the backend is unreachable, so an offline frozen install still produces a usable `.flw`).
+
+Both surfaces share `agent/services/flow_spec.py` (the in-memory `FlowSpec` representation), `agent/services/agent_contracts.py` (per-agent connection-field shape and `parametrizer_fields`), and `agent/services/flow_compiler.py` (the compile + write pipeline). The `_parametrizer_mappings` array on a Parametrizer node's config and the `artifacts.parametrizerMappings` object on the snapshot are **two valid persistence shapes for the same data** — `getSavedParametrizerMappings()` in `acp-file-io.js` accepts either when a `.flw` is loaded, so older files keep working.
+
+## Prompt Flow Panel — 2026-09-25 (first drafted 2026-09-23 as the "Prompting Flow Designer")
+
+`agent/templates/agent/prompt_flow_panel.html` is a separate, login-protected diagram editor at **`/agent/prompt_flow_panel/`** (view `views.prompt_flow_panel`, URL name `prompt_flow_panel`), opened from **Panels ▸ Prompt Flow Panel** in the chat navbar and **File ▸ Prompt Flow Panel** in the Agentic Control Panel (both in a new tab). It reuses the ACP page skeleton and CSS (`agentic_control_panel.css` then `prompt_flow_panel.css`, with `dialog_theme.css` LAST) plus the shared `dialog_policy.js`, and its body class `pmt-panel` scopes every rule. The Operations bar holds nine assets — Prompt, Programmed Prompt, Decision, Feed embeddings, Flush embeddings, Clean History, User Input, Terminater (shipped in `v1.88.0`), static User Commentary — and diagrams are saved as versioned JSON **`.fpmt`** files (`format: "tlamatini-prompting-flow"`, `version: 2` (version 1 imports migrate executable commentary to User Input)).
+
+**Commentary layout (2026-10-04):** Add independent **User Commentary** bubbles within the 500-asset limit. Double-click a bubble or press Enter to write directly inside it. Select a word or passage, then use the **floating mini toolbar** to choose its font, text size, text color, bold, italic or underline. One note can mix styles: an Arial italic sentence, a large Verdana heading and a Georgia paragraph. With no text selected, a formatting choice sets the style for the next text you type. When the note is selected outside editing, formatting applies to the entire note. The color swatches change the bubble; the underlined **A** opens text colors. Alignment applies to the whole note. Drag **any border or corner** to reshape the bubble; the handles also respond to arrow keys (Shift moves farther). Resizing works while writing. **Fit text** removes spare height. There are no numeric dimension fields or commentary configuration dialogs. **Edit comment** in the main toolbar or context menu starts the same inline editor. **Done** or Ctrl+Enter saves the complete edit; **Cancel** or Escape restores its original text, styles, size and position. Ctrl+Z/Y undoes/redoes changes while writing. Completed edits, moving, resizing, copying and deletion also support flow Undo/Redo. Bubbles grow to contain every wrapped line at the chosen width and mixed fonts, without internal scrollbars. The chosen height is a minimum. Text stays literal, including `<script>` and `{{last_output}}`. Notes have no ports or Start status and never enter model context, history or playback steps. Notes save/open and recover with the diagram. The palettes offer eight bubble colors and eight text colors; fonts are Nunito, Arial, Verdana, Georgia, Times New Roman and Courier New. Text sizes range from 10 to 48, with named choices from Fine through Display. Each note holds up to 100,000 characters and 10,000 formatted runs. Internal geometry limits are width 200–2,400 and minimum height 128–2,400; automatic containment can grow taller. A notes-only diagram can be saved; Play requires an executable operation.
+
+**Run output split (2026-10-04):** `#pmt-workspace` owns the scrollable canvas, status strip, horizontal `#pmt-output-divider` and collapsible output. Output takes 5–95% of the two pane heights, excluding fixed chrome. `ResizeObserver` preserves the ratio when the workspace changes; native details content needs an explicit log viewport height. Never call Fit, change zoom, scale fonts, or re-render nodes from this divider. The shared `bindDivider` supports axis `y` and inverted arrow direction while keeping the Operations divider on axis `x`. Up/Down, Shift+arrows, Home/End and pointer cancellation work. Layout storage is `tlamatini.prompting-flow.layout.v1.<user id>`, outside the flow draft and Undo stack. Visible checks: `scripts/prompt_flow_output_resize_visible.py`.
+
+Contracts (do NOT weaken):
+
+- **Connection parity (2026-09-26):** use the ACP stylesheet's `input-triangle`, `output-triangle`, `output-label`, `connection-group`, `connection-path` and `connection-hit-area` classes directly. Do not reintroduce circular ports, arrowhead markers or a Connection palette tool. Curves follow ACP's horizontal half-distance Bezier construction, anchored at triangle centers. Pointer capture belongs to the viewport; resolve the input under the pointer with `elementFromPoint`, since captured events target the viewport. Commit only on release over an input. Empty/body drops, Escape, pointer cancellation, lost capture and blur remove the preview and port highlights without changing the document. Decision Y/N previews start from the selected branch. Gold port highlighting is retained; shared hover/selection colors override playback wire colors while interacting. `STATIC_VERSION` suffix at that change: `-flow-file-opening-2`. Visible regression runner: `scripts/prompt_flow_connections_visible.py`.
+
+- **Selection styling:** Static commentary uses a mint outline and eight edge/corner grips (specificity must override shared canvas gold). Executable nodes in `prompt_flow_panel.css` match ACP's `#ffcc00` outline and yellow halo. Use an SVG `drop-shadow` so diamonds, triangles, trapezoids glow around their contours, never a rectangular box shadow on `.pmt-node`. Selected nodes sit above other nodes but below the marquee. Playback status strokes take precedence while the selection halo stays visible; deselection removes only that halo. Selected wires inherit ACP's gold stroke/shadow; traversed wires are green only when neither hovered nor selected. The real headed checks are `scripts/prompt_flow_selection_visible.py`, using ordinary file-open, selection, zoom and User Input playback on port 8001 (called User Commentary in that historical run); its 2026-09-25 20:26 run passed all 14 checks with exit code 0. ⚠️ Keep node `.selected` rules ABOVE `.running` / `.completed` / `.failed`, load `flow_canvas.css` after both panel styles and before `dialog_theme.css`. Keep `.pmt-edge.traversed` restricted to `:not(.selected):not(:hover)` so interaction feedback remains identical. `STATIC_VERSION` suffix at that change: `-flow-file-opening-2`.
+
+1. **`.fpmt`, never `.pmt`.** The file picker is `accept=".fpmt"`, the open guard refuses any other name (including `prompt.pmt` itself) with *"Choose a .fpmt Prompt Flow Panel file."*, and `flowFilename()` turns a legacy `name.pmt` save name or browser draft into `name.fpmt`. The JSON `format` string deliberately did NOT change, so renaming an old flow file is enough to open it. The plain-text system prompts (`agent/prompt.pmt`, `monitoring-prompt.pmt`) keep `.pmt`.
+2. **Opening never runs anything.** Load, drop, draft recovery and even a WebSocket (re)connection are passive; only **Play** starts a run.
+3. **Validate twice.** `prompt-flow-panel-model.js` validates in the browser and `services/prompt_flow_panel.py::validate_flow` re-validates on the server before playback: ≤ 5 MiB, ≤ 500 assets (executable operations plus static notes), ≤ 1,000 connections, unique ids, one destination per output (Decisions use `yes`/`no`), every executable operation reachable from Start, both Decision branches connected, ACPX only with Multi-Turn, a Programmed Prompt's `scheduled_at` must carry a timezone. Decisions compare strings or ask the user; nothing from a file is ever evaluated as code.
+4. **Completion comes from the interpreter, never from model prose.** `FlowRunner` reports `completed` / `stopped` / `failed`; `max_steps` (default 500, max 5,000) bounds cycles.
+5. **Stop drains, it does not abandon.** Stop, closing a reply dialog (✕ / Cancel / Escape) and closing the page all request cancellation, and the consumer waits for the model worker to finish — cancelling only the `asyncio.to_thread` awaiter would leave it running. Pause holds the NEXT operation; the current one completes.
+6. **Each run is isolated.** Its own chain, history (last 16 messages sent), embeddings (≤ 2,000,000 characters, fed through a fresh uniquely-named file under `<app>/Temp/prompt-flow-panel-*` on every rebuild) and cancellation identity (`prompt_flow_panel_<user>_<uuid>`, which clears the legacy process-wide cancel flag so stopping a flow never cancels another chat tab). A run starts with empty history and embeddings, calls `setup_llm(..., include_application_context=False)` so it never loads the shared `application/` corpus, and fails loudly if context setup falls back to a prompt-only chain. Chat history and global embedding configuration are never edited.
+
+See [operations, format, shortcuts, maintenance and carriage](../prompting-flow-designer.md). Coverage: `agent/test_prompt_flow_panel.py` (validator + runner, no model), `test_prompt_flow_panel_runtime.py` (adapter with fake providers), `test_prompt_flow_panel_websocket.py` (real ASGI route + consumer), `test_prompt_flow_panel_carriage.py` (build/receipt omission regressions), the `check_prompt_flow_panel` management command (also a frozen-build gate), and the visible scripts `scripts/prompt_flow_commentary_visible.py` (23 October 4 graphical-commentary checkpoints, including three mixed-style notes through three save/open/save cycles with equal JSON and rendered line boxes), `scripts/prompt_flow_output_resize_visible.py` (14 October 4 checks of the divider and independent scrolling), `scripts/prompt_flow_extension_visible.py` (15 `.fpmt` checkpoints), `scripts/panel_search_title_visible.py` and `scripts/menu_browser_checks.py`.
+
+## Desktop control and flow contracts — 2026-09-15
+
+`canvas_item_dialog.js` now exposes Mouser's `inspect` mode and enables coordinate/click fields according to all eight movement modes, including drag and image/window clicks. Fractional coordinates are accepted for normalized spaces. Deployment refreshes the local helper files required by the updated agent scripts.
+
+Mouser now resolves explicit physical, window and screenshot coordinates; Keyboarder binds Unicode/key delivery to a verified window; Shoter publishes capture geometry. `input_sent` is delivery evidence, not application success, and a failed or interrupted input segment must be observed before replay.
+
+Parametrizer derives its parser registry from current contracts and validates complete typed mappings. FlowCreator selects from all 86 installed agents and validates the generated graph before publishing; FlowHypervisor separates execution, kill and observation relationships and uses current desktop receipts/timing. GUI-Manager remains design only.
+
+See [configuration, examples and limitations](../desktop-input-and-flow-contracts.md), the [complete generated coverage inventory](../agent-coverage.md), and the [GUI-Manager design](../GUI-Manager-design.md).
+
+## LaTeXer settings in Create Flow — 2026-09-15
+
+`agent_page_chat.js::_mapToolArgsToAgentConfig` preserves LaTeXer's six design settings: `style`, `subtitle`, `style_mode`, `style_decoration`, `style_cover` and `predominant_color`. Keep `style_cover` as a boolean, including an explicit false; do not drop it as an empty value. These settings belong in the generated agent config along with `template` and the existing source/base64 channels. The visual style is independent of the document structure.
+
+Use `action: list_styles` for the current 30-style catalogue, and preserve canonical design fields in results without treating them as build success. No separate canvas agent type or additional frontend style catalogue is needed. [Supported controls and routes](../../Tlamatini/agent/agents/latexer/STYLES.md).
+
+## PPTXer style configuration — 2026-09-15
+
+PPTXer's 12 added visual styles use the existing `nuance` setting; 36 named treatments and 17 font pairings are available. Preserve an explicit `nuance` such as `blueprint` through chat-to-flow configuration and retain empty `nuance` for automatic classification. Existing color, background, font, and density controls still apply. Surface `created_with_findings` and the layout/native-evidence fields honestly when presenting results. See [style keys, output semantics, and test scope](../../Tlamatini/agent/agents/pptxer/STYLES.md).
+
+## Image/video error reporting and recovery (2026-09-26)
+
+Image/video model failures accumulate in one shared, themed, non-modal fatal-error dialog with an audible notification. Tlamatini keeps running: preserve its retry/tactic ladder, cancellation controls and configured flow recovery routes. Keep the configured model identities; never report a surviving observer or raw concatenation as successful analysis. Dismiss hides the dialog while retaining its history; new failures reopen it. See [the shared behavior and verification contract](../visual-analysis-errors.md).
+
+
+## Windows flow-file lifecycle — 2026-10-04, shipped in `v1.76.0`
+
+Both `.flw` agent flows and `.fpmt` prompting flows now have Windows registration, repair, removal, status and Default Apps handling. Explorer/source command-line opening validates a bounded snapshot, reuses a matching running server before database startup, and returns through login to the correct editor without execution. Main-chat Open/drop routes both formats into separate editor tabs while preserving the chat document. The historical `.flw` installer wrappers cover both types for old installer/uninstaller binaries; independent management uses `flow_file_associations.ps1 -Extensions`. Never erase UserChoice or another application’s Open With entries. Update Repair respects explicit unregistration and installation ownership. See [Windows flow files](../windows-flow-files.md). Cache suffix at that change: `-flow-file-opening-2`. Committed to `main` on 2026-10-04. The October 4 local release-validation campaign also rebuilds isolated frozen artifacts; its dated evidence distinguishes build completion from runtime acceptance.

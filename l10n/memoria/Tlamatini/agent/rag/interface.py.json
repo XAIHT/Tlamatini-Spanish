@@ -1,0 +1,639 @@
+{
+ "archivo": "Tlamatini/agent/rag/interface.py",
+ "segmentos": [
+  {
+   "en": "'Please rephrase your input as a clear question or command. '",
+   "es": "'Reformula tu input como una pregunta o una instrucción clara. '",
+   "n": 1
+  },
+  {
+   "en": "'Examples: \"How do I...?\", \"What is...?\", \"Show me...\", \"Create a...\", or \"Explain...\"'",
+   "es": "'Ejemplos: \"¿Cómo...?\", \"¿Qué es...?\", \"Muéstrame...\", \"Crea un...\" o \"Explica...\"'",
+   "n": 1
+  },
+  {
+   "en": "        'reply', 'respond', 'answer',\n    ]",
+   "es": "        'reply', 'respond', 'answer',\n        # Tlamatini-Spanish: las mismas formas en español (preguntas, verbos en imperativo de tú\n        # e infinitivo) para que una solicitud en español no se rechace con \"Reformula tu input\".\n        'qué', 'que', 'quién', 'quien', 'quiénes', 'dónde', 'donde', 'cuándo', 'cuando', 'cómo', 'como',\n        'cuál', 'cual', 'cuáles', 'cuánto', 'cuánta', 'cuántos', 'cuántas', 'por', 'para', 'puedes',\n        'podrías', 'podrias', 'quiero', 'necesito', 'me', 'hay', 'es', 'son', 'está', 'están', 'tienes',\n        'haz', 'hazme', 'crea', 'créame', 'crear', 'genera', 'genérame', 'generar', 'escribe', 'escríbeme',\n        'escribir', 'redacta', 'muestra', 'muéstrame', 'mostrar', 'enseña', 'enséñame', 'lista', 'listar',\n        'enlista', 'enumera', 'explica', 'explícame', 'explicar', 'describe', 'descríbeme', 'dime', 'dame',\n        'busca', 'búscame', 'buscar', 'encuentra', 'localiza', 'identifica', 'determina', 'calcula',\n        'analiza', 'analízame', 'revisa', 'revísame', 'checa', 'verifica', 'valida', 'prueba', 'depura',\n        'corrige', 'arregla', 'repara', 'modifica', 'actualiza', 'cambia', 'mejora', 'optimiza',\n        'refactoriza', 'documenta', 'comenta', 'resume', 'resúmeme', 'ayuda', 'ayúdame', 'ejecuta',\n        'ejecútame', 'corre', 'inicia', 'arranca', 'lanza', 'detén', 'deten', 'termina', 'mata', 'cierra',\n        'abre', 'ábreme', 'lee', 'léeme', 'guarda', 'borra', 'elimina', 'mueve', 'copia', 'renombra',\n        'descarga', 'sube', 'instala', 'compila', 'despliega', 'toma', 'graba', 'reproduce', 'manda',\n        'envía', 'envia', 'envíame', 'conecta', 'convierte', 'traduce', 'compara', 'cuenta', 'cuéntame',\n        'responde', 'contesta', 'descomprime', 'comprime', 'decompila', 'descompila', 'parametriza',\n        'obtén', 'obten', 'consigue', 'programa', 'codifica', 'implementa', 'construye', 'desarrolla',\n        'diseña', 'produce', 'dibuja', 'configura', 'agrega', 'añade', 'quita', 'limpia', 'reinicia',\n        'apaga', 'enciende', 'activa', 'desactiva', 'continúa', 'continua', 'sigue', 'platícame',\n    ]",
+   "codigo": "el validador de forma del prompt también reconoce solicitudes en español",
+   "n": 1
+  },
+  {
+   "en": "\"the current model\"",
+   "es": "\"el modelo actual\"",
+   "n": 1
+  },
+  {
+   "en": "f\" ({window:,}-token window)\"",
+   "es": "f\" (ventana de {window:,} tokens)\"",
+   "n": 1
+  },
+  {
+   "en": "f\"because {model} is a small model{size}\"",
+   "es": "f\"porque {model} es un modelo pequeño{size}\"",
+   "n": 1
+  },
+  {
+   "en": "\"because Compact mode is switched on\"",
+   "es": "\"porque Compact mode está activado\"",
+   "n": 1
+  },
+  {
+   "en": "f\"I can't do that right now - Tlamatini is in Compact mode {because}, so she has \"",
+   "es": "f\"Ahorita no puedo hacer eso: Tlamatini está en Compact mode {because}, así que no tiene \"",
+   "n": 1
+  },
+  {
+   "en": "\"no tools to read, create, edit, move or delete files, run commands or launch agents. \"",
+   "es": "\"tools para leer, crear, editar, mover ni borrar archivos, ni para ejecutar comandos o lanzar agents. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tick the agent you need in Config > Configure Agents (the CONTEXT-WINDOW gauge \"",
+   "es": "\"Marca el agent que necesitas en Config > Configurar Agents (el medidor CONTEXT-WINDOW \"",
+   "n": 1
+  },
+  {
+   "en": "\"shows whether it fits), or choose a larger model in Config > Models.\"",
+   "es": "\"muestra si cabe) o elige un modelo más grande en Config > Modelos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The actions to routes or files must exclusively be in absolute \"",
+   "es": "\"Sólo puedo actuar sobre archivos o paths escritos en formato \"",
+   "n": 1
+  },
+  {
+   "en": "\"format (not relative routes/paths are allowed) and within the \"",
+   "es": "\"absoluto (no se permiten paths relativos) y dentro de los \"",
+   "n": 1
+  },
+  {
+   "en": "\"allowed paths previously configured, so you must re-formulate \"",
+   "es": "\"paths permitidos que ya se configuraron, así que reformula \"",
+   "n": 1
+  },
+  {
+   "en": "\"your prompt.\"",
+   "es": "\"tu prompt.\"",
+   "n": 1
+  },
+  {
+   "en": "\"In order to implement any actions to files or routes within \"",
+   "es": "\"Para hacer cualquier acción sobre archivos o paths de \"",
+   "n": 1
+  },
+  {
+   "en": "\"the local computer you must provide explicit and absolute \"",
+   "es": "\"la computadora local, dame paths explícitos y absolutos \"",
+   "n": 1
+  },
+  {
+   "en": "\"routes/paths to elements only in the allowed paths configured, \"",
+   "es": "\"a elementos que estén sólo dentro de los paths permitidos en la configuración, \"",
+   "n": 1
+  },
+  {
+   "en": "\"and not suggested locations.\"",
+   "es": "\"no ubicaciones sugeridas.\"",
+   "n": 1
+  },
+  {
+   "en": "f'Your input exceeds the {max_input_tokens} token limit. Please break it into smaller, '",
+   "es": "f'Tu input rebasa el límite de {max_input_tokens} tokens. Divídelo en preguntas más pequeñas '",
+   "n": 1
+  },
+  {
+   "en": "f'more focused questions or remove unnecessary details to fit within the limit.'",
+   "es": "f'y más concretas, o quita los detalles que no hagan falta para no rebasar el límite.'",
+   "n": 1
+  },
+  {
+   "en": "\"Generation was cancelled.\"",
+   "es": "\"Se canceló la generación.\"",
+   "n": 6
+  },
+  {
+   "en": "\"I was unable to generate a response. Please try rephrasing your question or check the system status.\"",
+   "es": "\"No pude generar una respuesta. Intenta reformular tu pregunta o revisa el status del sistema.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"Number of tokens in input (estimated): {num_tokens}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'tell me'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'show me'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'provide me'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'give me'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'help me'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'can you'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'could you'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'would you'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please help'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please show'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please explain'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please analyze'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please review'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please check'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please verify'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please validate'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please test'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please debug'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please fix'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please repair'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please modify'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please update'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please change'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please improve'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please optimize'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please refactor'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please enhance'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please document'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please comment'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please annotate'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please summarize'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please outline'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please assist'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please unzip'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "'please decompile'",
+   "motivo": "frase que se busca en el input del usuario (validador de forma del prompt)"
+  },
+  {
+   "en": "f\"Bearer {token}\"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "\"You are a strict classifier.  Decide whether the user's question \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"INTENDS to access, read, write, execute, move, copy, delete, or \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"manipulate files/folders at the routes or paths mentioned in the \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"question, OR whether the routes/paths are merely informative, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"contextual, or illustrative (the user is NOT asking the system to \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"touch those paths).\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- If the user wants the system to perform any action ON or WITH \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"the paths (open, run, view, unzip, decompile, move, copy, delete, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"list, search), answer INTENT.\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- If the paths are just part of an explanation, comparison, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"example, or informational discussion, answer NOT-INTENT.\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "f\"Question: {question}\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"Answer ONLY with the single word: INTENT or NOT-INTENT\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "f\"--- _acces_aimed_prompt LLM response: '{output}'\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"NOT INTENT\"",
+   "motivo": "valor que se compara (in)"
+  },
+  {
+   "en": "\"You are a security classifier for a local computer assistant. \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"Determine whether the user's question tries to ACCESS, EXECUTE, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"RUN, OPEN, READ, WRITE, MOVE, COPY, DELETE, LIST, SEARCH, UNZIP, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"or MANIPULATE a specific file or folder on the LOCAL computer, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"but WITHOUT providing an explicit absolute file system path \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"(e.g. C:\\\\\\\\Users\\\\\\\\... or /home/user/...).\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"CRITICAL RULES — answer NO for ALL of the following:\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- The user asks to download from a URL or the internet \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"(e.g. curl, wget, download from http/https/ftp).\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- The user asks to ACCESS, FETCH, or READ a remote URL or web \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"resource (API calls, web scraping, browsing).\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- The user asks to GENERATE a command, script, or code snippet \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"(even if it involves files — the user wants the command text, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"not for you to touch local files).\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- The user asks a general/conceptual question about files, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"formats, tools, or best practices.\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- The user asks about already loaded/provided context, \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"documents, or code.\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- The user asks to explain, summarize, or analyze something.\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"Only answer YES when the user is clearly requesting the system \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"to directly touch, open, read, write, move, copy, delete, or \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"execute a SPECIFIC LOCAL file or folder using a relative or \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"ambiguous local reference (not an absolute path).\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"Examples of INDIRECT access (answer YES):\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Open the config file in the downloads folder.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Run the script on my desktop.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Show me the logs from the server folder.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Delete the temp files in this project.'\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"Examples of NO indirect access (answer NO):\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'What is a Python file?'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Explain how config.json works in general.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'How do I unzip a file?'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'What are the best practices for logging?'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Summarize the project source code in the provided context.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Create a curl command to download a file.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Download this file from https://example.com/data.zip'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Fetch the API response from the endpoint.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Generate a script that reads a CSV file.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'Write me a Python program to process images.'\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"- 'How do I read a file in Python?'\\n\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"Does this question attempt to directly access or manipulate a \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"specific LOCAL file or folder WITHOUT providing an explicit \"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"absolute path?\\n\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "\"Answer ONLY with: YES or NO\"",
+   "motivo": "prompt del clasificador para el LLM"
+  },
+  {
+   "en": "f\"--- _indirect_file_access_prompt LLM response: '{output}'\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: prompt references allowed paths/locations -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: prompt references loaded context -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: system/time query -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: command execution -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: image description via model -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: code/content generation -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: listing available dirs -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: decompile request -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: script execution -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: image view request -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: URL/download request -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: agent operation command -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: wrapped chat-agent request -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: deterministic relative-path access request -> reject\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- _validate_accesses_in_prompt: detected paths: {found_paths}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- _validate_accesses_in_prompt: paths outside allowed: {outside_paths}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: outside paths allowed for wrapped chat-agent request -> proceed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- _validate_accesses_in_prompt: deterministic outside-path access intent detected -> reject\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- _validate_accesses_in_prompt: LLM intent classification: {is_intent}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- ask_rag: >>>>>>>>>>{question}<<<<<<<<<<\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- ask_rag: {reason} enabled; bypassing prompt-shape validation ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- ask_rag: {reason} enabled; bypassing prompt access-validation chain ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- ask_rag: prompt rejected by access validation\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Generation cancelled before starting ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- inet classifier failed: {exc}; defaulting to False ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- Internet may be required: {inet_required}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Cancelled before web search ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Internet search required. Enriching with web context before answering. ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Web search component unavailable; proceeding without web context ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Cancelled before LLM invoke ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Generation cancelled during streaming ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CANCEL] Error during cancelled generation: {e} ---\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

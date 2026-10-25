@@ -1,0 +1,697 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/usage_dashboard.js",
+ "segmentos": [
+  {
+   "en": "'<p class=\"usage-empty\">No data is available for this period.</p>'",
+   "es": "'<p class=\"usage-empty\">No hay datos disponibles para este periodo.</p>'",
+   "n": 1
+  },
+  {
+   "en": "'<p class=\"usage-empty\">No usage data is available for this period.</p>'",
+   "es": "'<p class=\"usage-empty\">No hay datos de uso disponibles para este periodo.</p>'",
+   "n": 1
+  },
+  {
+   "en": "'Daily credit usage in USD'",
+   "es": "'Uso diario de créditos en USD'",
+   "n": 1
+  },
+  {
+   "en": "'Daily input and output tokens'",
+   "es": "'Tokens diarios de input y output'",
+   "n": 1
+  },
+  {
+   "en": "' · partial day'",
+   "es": "' · día parcial'",
+   "n": 1
+  },
+  {
+   "en": "`Peak: ${date(best.date)} · ${formatter(best[key])}${best.partial ? ' (partial day)' : ''}`",
+   "es": "`Pico: ${date(best.date)} · ${formatter(best[key])}${best.partial ? ' (partial day)' : ''}`",
+   "n": 1
+  },
+  {
+   "en": "' (partial day)'",
+   "es": "' (día parcial)'",
+   "n": 1
+  },
+  {
+   "en": "'No measured usage in this period.'",
+   "es": "'No hay uso medido en este periodo.'",
+   "n": 1
+  },
+  {
+   "en": "' calls · '",
+   "es": "' llamadas · '",
+   "n": 1
+  },
+  {
+   "en": "'<p class=\"usage-empty\">Model statistics appear after your first measured chat call.</p>'",
+   "es": "'<p class=\"usage-empty\">Las estadísticas de modelos aparecen después de tu primera llamada medida del chat.</p>'",
+   "n": 1
+  },
+  {
+   "en": "'Monthly credits are due to refill; refreshing the account will confirm the new period.'",
+   "es": "'Los créditos mensuales ya deberían recargarse; al actualizar la cuenta se confirmará el periodo nuevo.'",
+   "n": 1
+  },
+  {
+   "en": "'Monthly credits refill in '",
+   "es": "'Los créditos mensuales se recargan en '",
+   "n": 1
+  },
+  {
+   "en": "'Usage credits · available'",
+   "es": "'Créditos de uso · disponibles'",
+   "n": 1
+  },
+  {
+   "en": "'Monthly credits left: '",
+   "es": "'Créditos mensuales restantes: '",
+   "n": 1
+  },
+  {
+   "en": "'Added credits: '",
+   "es": "'Créditos agregados: '",
+   "n": 1
+  },
+  {
+   "en": "'Monthly credits · available'",
+   "es": "'Créditos mensuales · disponibles'",
+   "n": 1
+  },
+  {
+   "en": "'Added-credit balance was not returned by Ollama.'",
+   "es": "'Ollama no devolvió el saldo de créditos agregados.'",
+   "n": 1
+  },
+  {
+   "en": "'Monthly credits used'",
+   "es": "'Créditos mensuales usados'",
+   "n": 2
+  },
+  {
+   "en": "'% of the monthly allowance'",
+   "es": "'% de la asignación mensual'",
+   "n": 1
+  },
+  {
+   "en": "'No monthly credit allowance'",
+   "es": "'Sin asignación mensual de créditos'",
+   "n": 1
+  },
+  {
+   "en": "'Monthly allowance'",
+   "es": "'Asignación mensual'",
+   "n": 2
+  },
+  {
+   "en": "'Refills on '",
+   "es": "'Se recarga el '",
+   "n": 1
+  },
+  {
+   "en": "'Refill date was not returned by Ollama.'",
+   "es": "'Ollama no devolvió la fecha de recarga.'",
+   "n": 1
+  },
+  {
+   "en": "'Included credits are used first, then added credits. Unused monthly credits do not carry over.'",
+   "es": "'Primero se usan los créditos incluidos y luego los agregados. Los créditos mensuales que no uses no se acumulan.'",
+   "n": 1
+  },
+  {
+   "en": "'Session allowance remaining'",
+   "es": "'Asignación restante de la sesión'",
+   "n": 1
+  },
+  {
+   "en": "'Weekly allowance remaining'",
+   "es": "'Asignación semanal restante'",
+   "n": 1
+  },
+  {
+   "en": "'Resets '",
+   "es": "'Se restablece el '",
+   "n": 1
+  },
+  {
+   "en": "'Reset date was not returned by Ollama.'",
+   "es": "'Ollama no devolvió la fecha de restablecimiento.'",
+   "n": 1
+  },
+  {
+   "en": "'Added credits'",
+   "es": "'Créditos agregados'",
+   "n": 2
+  },
+  {
+   "en": "'Unexpired purchased credits'",
+   "es": "'Créditos comprados vigentes'",
+   "n": 2
+  },
+  {
+   "en": "'This account uses legacy session and weekly limits. Ollama supplies request counts; dollar costs and token totals may be omitted for legacy requests.'",
+   "es": "'Esta cuenta usa los límites antiguos por sesión y por semana. Ollama da el número de solicitudes; los costos en dólares y los totales de tokens pueden faltar en las solicitudes antiguas.'",
+   "n": 1
+  },
+  {
+   "en": "'Ollama returned purchased credits without a monthly allowance or reset schedule.'",
+   "es": "'Ollama devolvió créditos comprados sin asignación mensual ni calendario de restablecimiento.'",
+   "n": 1
+  },
+  {
+   "en": "'Refreshing your account credits…'",
+   "es": "'Actualizando los créditos de tu cuenta…'",
+   "n": 1
+  },
+  {
+   "en": "'<div class=\"usage-panel usage-credit-message\"><h3>Credits are unavailable</h3><p>We’ll check again automatically. You can also use Refresh or open Ollama Usage.</p></div>'",
+   "es": "'<div class=\"usage-panel usage-credit-message\"><h3>Los créditos no están disponibles</h3><p>Se volverá a revisar automáticamente. También puedes usar Actualizar o abrir Uso en Ollama.</p></div>'",
+   "n": 1
+  },
+  {
+   "en": "'Some chat calls could not be saved during this app session; totals are incomplete.'",
+   "es": "'No se pudieron guardar algunas llamadas del chat durante esta sesión de la app; los totales están incompletos.'",
+   "n": 1
+  },
+  {
+   "en": "`Automatic check at ${next}.`",
+   "es": "`Próxima revisión automática: ${next}.`",
+   "n": 1
+  },
+  {
+   "en": "'Showing the last available account snapshot; figures may have changed.'",
+   "es": "'Se muestra el último snapshot disponible de la cuenta; las cifras pueden haber cambiado.'",
+   "n": 1
+  },
+  {
+   "en": "'Credits show the last verified balance; use Refresh to check again.'",
+   "es": "'Los créditos muestran el último saldo verificado; usa Actualizar para volver a revisar.'",
+   "n": 1
+  },
+  {
+   "en": "`${count(chatTotals.missing_output_calls)} measured calls did not report output tokens. Output totals are partial.`",
+   "es": "`${count(chatTotals.missing_output_calls)} llamadas medidas no reportaron tokens de output. Los totales de output son parciales.`",
+   "n": 1
+  },
+  {
+   "en": "'Checking'",
+   "es": "'Revisando'",
+   "n": 2
+  },
+  {
+   "en": "'Refreshing your account. Available figures stay visible.'",
+   "es": "'Actualizando tu cuenta. Las cifras disponibles siguen visibles.'",
+   "n": 1
+  },
+  {
+   "en": "'Partial data'",
+   "es": "'Datos parciales'",
+   "n": 1
+  },
+  {
+   "en": "'Unavailable'",
+   "es": "'No disponible'",
+   "n": 2
+  },
+  {
+   "en": "'Some figures could not refresh. Available data is shown below; details explain what needs attention.'",
+   "es": "'No se pudieron actualizar algunas cifras. Abajo se muestran los datos disponibles; los detalles explican qué requiere atención.'",
+   "n": 1
+  },
+  {
+   "en": "'Credits available'",
+   "es": "'Créditos disponibles'",
+   "n": 1
+  },
+  {
+   "en": "'Your figures loaded. Sign in to Ollama to verify the account name.'",
+   "es": "'Tus cifras se cargaron. Inicia sesión en Ollama para verificar el nombre de la cuenta.'",
+   "n": 1
+  },
+  {
+   "en": "'Your figures loaded. The account name is unavailable.'",
+   "es": "'Tus cifras se cargaron. El nombre de la cuenta no está disponible.'",
+   "n": 1
+  },
+  {
+   "en": "'Connected'",
+   "es": "'Conectado'",
+   "n": 1
+  },
+  {
+   "en": "'Latest account figures are shown below. Your chat activity is recorded separately.'",
+   "es": "'Abajo se muestran las cifras más recientes de la cuenta. Tu actividad del chat se registra por separado.'",
+   "n": 1
+  },
+  {
+   "en": "`${provider.account_available ? provider.account : 'Ollama account'}${provider.plan ? ' · ' + provider.plan.toUpperCase() : ''} · Account activity includes usage outside Tlamatini. Dates are UTC.`",
+   "es": "`${provider.account_available ? provider.account : 'Ollama account'}${provider.plan ? ' · ' + provider.plan.toUpperCase() : ''} · La actividad de la cuenta incluye el uso fuera de Tlamatini. Las fechas están en UTC.`",
+   "n": 1
+  },
+  {
+   "en": "'Ollama account'",
+   "es": "'Cuenta de Ollama'",
+   "n": 1
+  },
+  {
+   "en": "'Period spend'",
+   "es": "'Gasto del periodo'",
+   "n": 1
+  },
+  {
+   "en": "'Rolling '",
+   "es": "'Últimos '",
+   "n": 1
+  },
+  {
+   "en": "' · separate from monthly credits'",
+   "es": "' · aparte de los créditos mensuales'",
+   "n": 1
+  },
+  {
+   "en": "'Requests'",
+   "es": "'Solicitudes'",
+   "n": 2
+  },
+  {
+   "en": "'Your account · rolling '",
+   "es": "'Tu cuenta · últimos '",
+   "n": 1
+  },
+  {
+   "en": "'Input tokens'",
+   "es": "'Tokens de input'",
+   "n": 2
+  },
+  {
+   "en": "'Includes cached input · rolling '",
+   "es": "'Incluye el input en caché · últimos '",
+   "n": 1
+  },
+  {
+   "en": "'Output tokens'",
+   "es": "'Tokens de output'",
+   "n": 2
+  },
+  {
+   "en": "'Received · rolling '",
+   "es": "'Recibidos · últimos '",
+   "n": 1
+  },
+  {
+   "en": "' Amber marks partial days.'",
+   "es": "' El ámbar marca los días parciales.'",
+   "n": 1
+  },
+  {
+   "en": "`<div class=\"usage-stack\" aria-label=\"Token composition\"><span style=\"width:${100 * fresh / denom}%;background:#70c5ed\"></span><span style=\"width:${100 * cached / denom}%;background:#75d8ba\"></span><span style=\"width:${100 * output / denom}%;background:#c0a0f3\"></span></div><div class=\"usage-legend\"><span class=\"usage-dot\" style=\"--dot:#70c5ed\">Fresh input: ${count(fresh)}</span><span class=\"usage-dot\" style=\"--dot:#75d8ba\">Cached input: ${count(cached)}</span><span class=\"usage-dot usage-output\">Output: ${count(output)}</span></div><p>Total: ${count(grand)} tokens · Cache hit rate: ${input ? (cached / input * 100).toFixed(1) + '%' : 'No input tokens'}</p>`",
+   "es": "`<div class=\"usage-stack\" aria-label=\"Composición de tokens\"><span style=\"width:${100 * fresh / denom}%;background:#70c5ed\"></span><span style=\"width:${100 * cached / denom}%;background:#75d8ba\"></span><span style=\"width:${100 * output / denom}%;background:#c0a0f3\"></span></div><div class=\"usage-legend\"><span class=\"usage-dot\" style=\"--dot:#70c5ed\">Input nuevo: ${count(fresh)}</span><span class=\"usage-dot\" style=\"--dot:#75d8ba\">Input en caché: ${count(cached)}</span><span class=\"usage-dot usage-output\">Output: ${count(output)}</span></div><p>Total: ${count(grand)} tokens · Tasa de aciertos de caché: ${input ? (cached / input * 100).toFixed(1) + '%' : 'No input tokens'}</p>`",
+   "n": 1
+  },
+  {
+   "en": "'No input tokens'",
+   "es": "'Sin tokens de input'",
+   "n": 1
+  },
+  {
+   "en": "'<p>Complete token composition is unavailable from this response.</p>'",
+   "es": "'<p>Esta respuesta no trae la composición completa de tokens.</p>'",
+   "n": 1
+  },
+  {
+   "en": "'Credits (USD)'",
+   "es": "'Créditos (USD)'",
+   "n": 1
+  },
+  {
+   "en": "'Cached input'",
+   "es": "'Input en caché'",
+   "n": 1
+  },
+  {
+   "en": "'Date (UTC)'",
+   "es": "'Fecha (UTC)'",
+   "n": 2
+  },
+  {
+   "en": "' · partial'",
+   "es": "' · parcial'",
+   "n": 1
+  },
+  {
+   "en": "'Waiting for recorded usage.'",
+   "es": "'Esperando el uso registrado.'",
+   "n": 1
+  },
+  {
+   "en": "` Tracking since ${date(activity.since)}.`",
+   "es": "` Con registro desde ${date(activity.since)}.`",
+   "n": 1
+  },
+  {
+   "en": "' Tracking begins with your next measured chat call.'",
+   "es": "' El registro empieza con tu siguiente llamada medida del chat.'",
+   "n": 1
+  },
+  {
+   "en": "'Model calls'",
+   "es": "'Llamadas a modelos'",
+   "n": 1
+  },
+  {
+   "en": "'Completed, measured calls'",
+   "es": "'Llamadas completadas y medidas'",
+   "n": 1
+  },
+  {
+   "en": "'Processed by your chat models'",
+   "es": "'Procesados por tus modelos del chat'",
+   "n": 1
+  },
+  {
+   "en": "'Partial · some calls omitted counts'",
+   "es": "'Parcial · algunas llamadas no reportaron conteos'",
+   "n": 1
+  },
+  {
+   "en": "'Reported by your chat models'",
+   "es": "'Reportados por tus modelos del chat'",
+   "n": 1
+  },
+  {
+   "en": "'Models used'",
+   "es": "'Modelos usados'",
+   "n": 1
+  },
+  {
+   "en": "'Unique model names in this period'",
+   "es": "'Nombres de modelo distintos en este periodo'",
+   "n": 1
+  },
+  {
+   "en": "'Calls'",
+   "es": "'Llamadas'",
+   "n": 2
+  },
+  {
+   "en": "'Missing output counts'",
+   "es": "'Conteos de output faltantes'",
+   "n": 2
+  },
+  {
+   "en": "'Model'",
+   "es": "'Modelo'",
+   "n": 2
+  },
+  {
+   "en": "'Total tokens'",
+   "es": "'Tokens totales'",
+   "n": 1
+  },
+  {
+   "en": "'Peak date (UTC)'",
+   "es": "'Fecha pico (UTC)'",
+   "n": 1
+  },
+  {
+   "en": "'Peak calls'",
+   "es": "'Llamadas en el pico'",
+   "n": 1
+  },
+  {
+   "en": "'Loaded: '",
+   "es": "'Cargados: '",
+   "n": 1
+  },
+  {
+   "en": "`${m.name} (${size(m.size)}, expires ${m.expires_at ? new Date(m.expires_at).toLocaleString() : 'not reported'})`",
+   "es": "`${m.name} (${size(m.size)}, expira ${m.expires_at ? new Date(m.expires_at).toLocaleString() : 'not reported'})`",
+   "n": 1
+  },
+  {
+   "en": "'not reported'",
+   "es": "'sin reportar'",
+   "n": 1
+  },
+  {
+   "en": "'No models are currently loaded.'",
+   "es": "'No hay modelos cargados en este momento.'",
+   "n": 1
+  },
+  {
+   "en": "'Origin'",
+   "es": "'Origen'",
+   "n": 1
+  },
+  {
+   "en": "'State'",
+   "es": "'Estado'",
+   "n": 1
+  },
+  {
+   "en": "'Size'",
+   "es": "'Tamaño'",
+   "n": 1
+  },
+  {
+   "en": "'Family'",
+   "es": "'Familia'",
+   "n": 1
+  },
+  {
+   "en": "'Parameters'",
+   "es": "'Parámetros'",
+   "n": 1
+  },
+  {
+   "en": "'Quantization'",
+   "es": "'Cuantización'",
+   "n": 1
+  },
+  {
+   "en": "'Modified'",
+   "es": "'Modificado'",
+   "n": 1
+  },
+  {
+   "en": "'Cloud · '",
+   "es": "'Nube · '",
+   "n": 1
+  },
+  {
+   "en": "'Loaded'",
+   "es": "'Cargado'",
+   "n": 1
+  },
+  {
+   "en": "'Available'",
+   "es": "'Disponible'",
+   "n": 1
+  },
+  {
+   "en": "'Chat checked '",
+   "es": "'Chat revisado: '",
+   "n": 1
+  },
+  {
+   "en": "' · Credits '",
+   "es": "' · Créditos: '",
+   "n": 1
+  },
+  {
+   "en": "' · Account refresh needed'",
+   "es": "' · Hace falta actualizar la cuenta'",
+   "n": 1
+  },
+  {
+   "en": "'Checking…'",
+   "es": "'Revisando…'",
+   "n": 1
+  },
+  {
+   "en": "'Refreshing your account…'",
+   "es": "'Actualizando tu cuenta…'",
+   "n": 1
+  },
+  {
+   "en": "'Checking usage…'",
+   "es": "'Revisando el uso…'",
+   "n": 3
+  },
+  {
+   "en": "'Your session expired. Reload the chat to sign in again.'",
+   "es": "'Tu sesión expiró. Recarga el chat para volver a iniciar sesión.'",
+   "n": 1
+  },
+  {
+   "en": "`Usage could not refresh (server HTTP ${response.status}). Retrying automatically in 15 seconds.`",
+   "es": "`No se pudo actualizar el uso (HTTP ${response.status} del servidor). Se reintentará automáticamente en 15 segundos.`",
+   "n": 1
+  },
+  {
+   "en": "'The signed-in user changed in this browser. Reload the chat before viewing usage.'",
+   "es": "'Cambió el usuario con sesión iniciada en este browser. Recarga el chat antes de ver el uso.'",
+   "n": 1
+  },
+  {
+   "en": "'Usage could not be displayed. Retrying automatically.'",
+   "es": "'No se pudo mostrar el uso. Se reintentará automáticamente.'",
+   "n": 1
+  },
+  {
+   "en": "'Refresh timed out. Existing figures may be stale. Retrying automatically in 15 seconds.'",
+   "es": "'Hubo un timeout al actualizar. Las cifras actuales pueden estar desactualizadas. Se reintentará automáticamente en 15 segundos.'",
+   "n": 1
+  },
+  {
+   "en": "'The Tlamatini server could not be reached. Retrying automatically in 15 seconds.'",
+   "es": "'No se pudo contactar al servidor de Tlamatini. Se reintentará automáticamente en 15 segundos.'",
+   "n": 1
+  },
+  {
+   "en": "'Reload the chat to verify your session.'",
+   "es": "'Recarga el chat para verificar tu sesión.'",
+   "n": 1
+  },
+  {
+   "en": "'Usage is temporarily unavailable. Checking again automatically.'",
+   "es": "'El uso no está disponible por ahora. Se volverá a revisar automáticamente.'",
+   "n": 1
+  },
+  {
+   "en": "'Session changed'",
+   "es": "'La sesión cambió'",
+   "n": 1
+  },
+  {
+   "en": "'Connection interrupted'",
+   "es": "'Conexión interrumpida'",
+   "n": 1
+  },
+  {
+   "en": "'Usage could not refresh. '",
+   "es": "'No se pudo actualizar el uso. '",
+   "n": 1
+  },
+  {
+   "en": "'Reload the chat to continue.'",
+   "es": "'Recarga el chat para continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Retrying automatically; any existing figures may be stale.'",
+   "es": "'Se reintentará automáticamente; las cifras actuales pueden estar desactualizadas.'",
+   "n": 1
+  },
+  {
+   "en": "'Refresh'",
+   "es": "'Actualizar'",
+   "n": 1
+  },
+  {
+   "en": "'Loading '",
+   "es": "'Cargando '",
+   "n": 1
+  },
+  {
+   "en": "'en-US'",
+   "es": "'es-MX'",
+   "maquina": "formato es-MX",
+   "n": 1
+  },
+  {
+   "en": "' week'",
+   "es": "' semana'",
+   "n": 1
+  },
+  {
+   "en": "' weeks'",
+   "es": "' semanas'",
+   "n": 1
+  },
+  {
+   "en": "' day'",
+   "es": "' día'",
+   "n": 1
+  },
+  {
+   "en": "' days'",
+   "es": "' días'",
+   "n": 1
+  },
+  {
+   "en": "' usage…'",
+   "es": "' de uso…'",
+   "n": 1
+  },
+  {
+   "en": "' calls'",
+   "es": "' llamadas'",
+   "n": 1
+  },
+  {
+   "en": "' calls\\n'",
+   "es": "' llamadas\\n'",
+   "n": 1
+  },
+  {
+   "en": "`<svg viewBox=\"0 0 ${width} ${height}\" role=\"img\" aria-label=\"${esc(currency ? 'Daily credit usage in USD' : 'Daily input and output tokens')}. Exact values are in the table below.\">`",
+   "es": "`<svg viewBox=\"0 0 ${width} ${height}\" role=\"img\" aria-label=\"${esc(currency ? 'Daily credit usage in USD' : 'Daily input and output tokens')}. Los valores exactos están en la tabla de abajo.\">`",
+   "n": 1
+  },
+  {
+   "en": "`<div tabindex=\"0\" class=\"usage-calendar-cell\" style=\"--cell-bg:rgba(85,187,170,${.08 + r.calls / maxCalls * .6})\" data-tip=\"${esc(r.date + ' UTC\\n' + count(r.calls) + ' calls\\n' + count(r.input_tokens + r.output_tokens) + ' tokens')}\">${esc(r.date.slice(8))}<small>${count(r.calls)} calls</small></div>`",
+   "es": "`<div tabindex=\"0\" class=\"usage-calendar-cell\" style=\"--cell-bg:rgba(85,187,170,${.08 + r.calls / maxCalls * .6})\" data-tip=\"${esc(r.date + ' UTC\\n' + count(r.calls) + ' calls\\n' + count(r.input_tokens + r.output_tokens) + ' tokens')}\">${esc(r.date.slice(8))}<small>${count(r.calls)} llamadas</small></div>`",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "' input · '",
+   "motivo": "término técnico (input)"
+  },
+  {
+   "en": "'checking'",
+   "motivo": "estado de máquina (data-state)"
+  },
+  {
+   "en": "'attention'",
+   "motivo": "estado de máquina (data-state)"
+  },
+  {
+   "en": "'partial'",
+   "motivo": "estado de máquina (data-state)"
+  },
+  {
+   "en": "'connected'",
+   "motivo": "estado de máquina (data-state)"
+  },
+  {
+   "en": "'Input'",
+   "motivo": "término técnico"
+  },
+  {
+   "en": "'Output'",
+   "motivo": "término técnico"
+  },
+  {
+   "en": "'Ollama '",
+   "motivo": "nombre de producto"
+  },
+  {
+   "en": "'Local'",
+   "motivo": "se dice igual en español"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor de aria-busy"
+  },
+  {
+   "en": "'false'",
+   "motivo": "valor de aria-busy"
+  }
+ ]
+}

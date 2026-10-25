@@ -1,0 +1,688 @@
+{
+ "archivo": "README.md",
+ "segmentos": [
+  {
+   "en": "<h1 align=\"center\">Your ideas deserve more than a chat window.</h1>",
+   "es": "<h1 align=\"center\">Tus ideas merecen más que una ventana de chat.</h1>",
+   "n": 1
+  },
+  {
+   "en": "<p align=\"center\">\n  <b>Build software. Shape 3D worlds. Bring hardware to life.</b><br />\n  Tlamatini is a local-first AI development and automation environment for Windows.<br />\n  Talk to her, work beside her in the editor, and connect specialized agents into visual workflows.\n</p>",
+   "es": "<p align=\"center\">\n  <b>Crea software. Da forma a mundos 3D. Dale vida al hardware.</b><br />\n  Tlamatini es un entorno local-first de desarrollo y automatización con IA para Windows.<br />\n  Platica con ella, trabaja a su lado en el editor y conecta agents especializados en workflows visuales.\n</p>",
+   "n": 1
+  },
+  {
+   "en": "<p align=\"center\">\n  <a href=\"https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s\"><b>▶ Watch the teaser</b></a> ·\n  <a href=\"https://xaiht.org\">Website</a> ·\n  <a href=\"BookOfTlamatini.md\">Full guide</a> ·\n  <a href=\"Tlamatini-Architecture.pdf\">Architecture atlas</a> ·\n  <a href=\"docs/changes/2026-10-22-v1.90.0.md\">What's new</a>\n</p>",
+   "es": "<p align=\"center\">\n  <a href=\"https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s\"><b>▶ Ver el teaser</b></a> ·\n  <a href=\"https://xaiht.org\">Sitio web</a> ·\n  <a href=\"BookOfTlamatini.md\">Guía completa</a> ·\n  <a href=\"Tlamatini-Architecture.pdf\">Atlas de arquitectura</a> ·\n  <a href=\"docs/changes/2026-10-22-v1.90.0.md\">Novedades</a>\n</p>",
+   "n": 1
+  },
+  {
+   "en": "> [!IMPORTANT]\n> **FULL POWER STARTS WITH OLLAMA PRO.** An active **Ollama Pro subscription or higher** is a prerequisite for Tlamatini's complete intended experience. Tlamatini itself is **free and open source**; the Ollama subscription is a separate purchase made directly from [Ollama](https://ollama.com/pricing). Long agent runs, large project contexts, repeated tool calls and parallel vision work need meaningful cloud capacity. Pro is the minimum intended tier; heavier workloads may need more capacity. [Understand the requirements →](#requirements)",
+   "es": "> > [!IMPORTANT]\n> **EL PODER COMPLETO EMPIEZA CON OLLAMA PRO.** Una **suscripción Ollama Pro o superior** activa es un prerrequisito para la experiencia completa que Tlamatini busca ofrecer. Tlamatini en sí es **gratis y de código abierto**; la suscripción de Ollama es una compra aparte que se hace directamente con [Ollama](https://ollama.com/pricing). Las ejecuciones largas de agents, los contextos grandes de proyecto, las llamadas repetidas a tools y el trabajo de visión en paralelo necesitan una capacidad de nube considerable. Pro es el nivel mínimo previsto; las cargas de trabajo más pesadas pueden necesitar más capacidad. [Entiende los requisitos →](#requirements)",
+   "n": 1
+  },
+  {
+   "en": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents callable from chat</b> &nbsp;·&nbsp; <b>110 built-in tools</b><br />\n  <sub>Current v1.90.0 source inventory. The 67 chat wrappers are included in the 110 tools; enabled external MCP servers add their own tools.</sub>\n</p>",
+   "es": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que puedes llamar desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />\n  <sub>Inventario del código fuente actual v1.90.0. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores External MCP activados agregan sus propios tools.</sub>\n</p>",
+   "n": 1
+  },
+  {
+   "en": "<p align=\"center\">\n  <a href=\"#the-crown-jewels\">Explore</a> ·\n  <a href=\"#edit-learn-run\">Edit · Learn · Run</a> ·\n  <a href=\"#speak-and-be-heard\">Voice</a> ·\n  <a href=\"#visual-workflows\">Workflows</a> ·\n  <a href=\"#installation\">Get started</a> ·\n  <a href=\"#documentation\">Go deeper</a>\n</p>",
+   "es": "<p align=\"center\">\n  <a href=\"#las-joyas-de-la-corona\">Explorar</a> ·\n  <a href=\"#edita-aprende-ejecuta\">Editar · Aprender · Ejecutar</a> ·\n  <a href=\"#habla-y-escucha\">Voz</a> ·\n  <a href=\"#workflows-visuales\">Workflows</a> ·\n  <a href=\"#instalación\">Empezar</a> ·\n  <a href=\"#documentación\">Profundizar</a>\n</p>",
+   "n": 1
+  },
+  {
+   "en": "## The crown jewels",
+   "es": "## Las joyas de la corona",
+   "n": 1
+  },
+  {
+   "en": "**The interesting part starts when an idea reaches the world outside the editor.** Tlamatini brings code, creative engines and connected devices into one workspace, with agents you can configure, combine and inspect.",
+   "es": "**La parte interesante empieza cuando una idea llega al mundo fuera del editor.** Tlamatini reúne el código, los motores creativos y los dispositivos conectados en un solo espacio de trabajo, con agents que puedes configurar, combinar e inspeccionar.",
+   "n": 1
+  },
+  {
+   "en": "| Build your world | What Tlamatini brings to the workbench |",
+   "es": "| Construye tu mundo | Lo que Tlamatini trae a la mesa de trabajo |",
+   "n": 1
+  },
+  {
+   "en": "| 🎮 **Unreal Engine · Unrealer** | Work with your Unreal Engine environment from chat. Bring engine operations into the same conversation as your code and project tasks. |",
+   "es": "| 🎮 **Unreal Engine · Unrealer** | Trabaja con tu entorno de Unreal Engine desde el chat. Lleva las operaciones del motor a la misma conversación que tu código y las tareas del proyecto. |",
+   "n": 1
+  },
+  {
+   "en": "| 🎬 **Blender · Blenderer** | Work with scenes, objects, rendering and Python through a connected Blender MCP integration. Turn creative operations into steps in a larger workflow. |",
+   "es": "| 🎬 **Blender · Blenderer** | Trabaja con escenas, objetos, rendering y Python a través de una integración conectada de Blender MCP. Convierte las operaciones creativas en pasos de un workflow más grande. |",
+   "n": 1
+  },
+  {
+   "en": "| ⚡ **STM32 · STM32er** | Build firmware, flash a connected board and inspect serial output through supported STM32 backends, with a preflight that checks the target before flashing. |",
+   "es": "| ⚡ **STM32 · STM32er** | Compila firmware, flashea una board conectada y revisa el output serial con los backends de STM32 soportados, con un preflight que revisa el target antes de flashear. |",
+   "n": 1
+  },
+  {
+   "en": "| 📡 **ESP32 · ESP32er** | Start from the included blink-and-print template, choose your board, then build, flash and monitor through PlatformIO. Move from a project idea to a device you can observe. |",
+   "es": "| 📡 **ESP32 · ESP32er** | Empieza desde el template de blink-and-print incluido, elige tu board y luego compila, flashea y monitorea con PlatformIO. Pasa de la idea de un proyecto a un dispositivo que puedes observar. |",
+   "n": 1
+  },
+  {
+   "en": "**Arduino and ESPHome join the bench, too.** Arduiner works through `arduino-cli`; ESPHomer creates and manages ESPHome device configurations. Each integration needs its compatible application, toolchain, hardware or service. The [agent catalog](agents_descriptions.md) explains what each specialist does.",
+   "es": "**Arduino y ESPHome también se suman a la mesa.** Arduiner trabaja a través de `arduino-cli`; ESPHomer crea y administra las configuraciones de dispositivos de ESPHome. Cada integración necesita su aplicación, toolchain, hardware o servicio compatible. El [catálogo de agents](agents_descriptions.md) explica qué hace cada especialista.",
+   "n": 1
+  },
+  {
+   "en": "## Edit, learn, run",
+   "es": "## Edita, aprende, ejecuta",
+   "n": 1
+  },
+  {
+   "en": "The latest development brings Tlamatini closer to the work itself: **an editable canvas, a tutor that reads your live text, and real terminals you can watch.**",
+   "es": "El desarrollo más reciente acerca a Tlamatini al trabajo mismo: **un canvas editable, una tutora que lee tu texto en vivo y terminales reales que puedes ver.**",
+   "n": 1
+  },
+  {
+   "en": "### ✍️ Edit the file beside the conversation",
+   "es": "### ✍️ Edita el archivo junto a la conversación",
+   "n": 1
+  },
+  {
+   "en": "Open or drop a source file, JSON, configuration file or Markdown document into the canvas. Edit it with **Undo, Redo, Find/replace and Wrap**, then **Save** or **Save as**. On a local connection, the native Windows picker lets you choose the destination in your project.",
+   "es": "Abre o suelta un archivo de código, un JSON, un archivo de configuración o un documento Markdown en el canvas. Edítalo con **Deshacer, Rehacer, Buscar/reemplazar y Ajustar**, luego usa **Guardar** o **Guardar como**. En una conexión local, el selector nativo de Windows te deja elegir el destino dentro de tu proyecto.",
+   "n": 1
+  },
+  {
+   "en": "- **Markdown:** switch between editable Source and sanitized Preview, sharing one buffer.",
+   "es": "- **Markdown:** cambia entre Source editable y una Vista previa saneada, compartiendo un mismo buffer.",
+   "n": 1
+  },
+  {
+   "en": "- **Text and code:** Copy and Use as context take the current edited source.",
+   "es": "- **Texto y código:** Copiar y Usar como contexto toman el código que estás editando.",
+   "n": 1
+  },
+  {
+   "en": "- **PDFs:** read in the embedded viewer; Save copies the original PDF.",
+   "es": "- **PDF:** se leen en el visor integrado; Guardar copia el PDF original.",
+   "n": 1
+  },
+  {
+   "en": "- **Disk changes:** a conflicting external edit is refused instead of silently overwritten.",
+   "es": "- **Cambios en disco:** una edición externa en conflicto se rechaza en vez de sobrescribirse en silencio.",
+   "n": 1
+  },
+  {
+   "en": "The dirty marker tells you what still needs saving. **Save before closing the page**: unsaved buffers live in memory. Use as context is a snapshot; use it again after editing to update ordinary chat context. [Explore the editor →](docs/canvas-editing.md)",
+   "es": "El marcador de cambios sin guardar te dice qué falta guardar. **Guarda antes de cerrar la página**: los buffers sin guardar viven en memoria. Usar como contexto es un snapshot; úsalo otra vez después de editar para actualizar el contexto normal del chat. [Explora el editor →](docs/canvas-editing.md)",
+   "n": 1
+  },
+  {
+   "en": "### 🧠 Learn by doing with Interactor",
+   "es": "### 🧠 Aprende haciendo con Interactor",
+   "n": 1
+  },
+  {
+   "en": "Ask Tlamatini to teach inside her editor. **Interactor reads the exact unsaved buffer**, types a short segment, explains the next field and hands it to you. You fill it in; **Continue** starts a fresh turn so she can read your work and guide the next step.",
+   "es": "Pídele a Tlamatini que te enseñe dentro de su editor. **Interactor lee el buffer exacto sin guardar**, escribe un segmento corto, te explica el siguiente campo y te lo pasa. Tú lo completas; **Continuar** inicia un turno nuevo para que ella pueda leer tu trabajo y guiarte en el siguiente paso.",
+   "n": 1
+  },
+  {
+   "en": "> Help me create a Dockerfile for a Java servlet application using your text editor. Teach one step at a time.",
+   "es": "> > Ayúdame a crear un Dockerfile para una aplicación de servlets de Java usando tu editor de texto. Enséñame un paso a la vez.",
+   "n": 1
+  },
+  {
+   "en": "Turn on **Multi-Turn**, enable **Interactor** in **Config ▸ Configure MCPs/Tools**, and enable **Live editor** above the canvas. Prepared suggestions can appear as you type: **Tab** accepts, **Ctrl+Right** accepts one word, and **Escape** dismisses. Matching happens locally, without a model call for every keystroke.",
+   "es": "Activa **Multi-Turn**, habilita **Interactor** en **Config ▸ Configurar MCPs/Tools** y activa **Live editor** arriba del canvas. Pueden aparecer sugerencias preparadas mientras escribes: **Tab** acepta, **Ctrl+Right** acepta una palabra y **Escape** descarta. La coincidencia ocurre localmente, sin una llamada al modelo por cada tecla.",
+   "n": 1
+  },
+  {
+   "en": "**You keep control.** Typing, selection changes, Escape or Stop interrupt AI typing. Typing a lesson neither saves the file nor executes code. Interactor is a built-in tool, not another workflow agent. [Meet your editor tutor →](docs/interactor.md)",
+   "es": "**Tú mantienes el control.** Escribir, cambiar la selección, Escape o Stop interrumpen el tecleo de la IA. Teclear una lección no guarda el archivo ni ejecuta código. Interactor es un tool integrado, no otro workflow agent. [Conoce a tu tutora del editor →](docs/interactor.md)",
+   "n": 1
+  },
+  {
+   "en": "### ⌨️ Watch commands happen with Terminater",
+   "es": "### ⌨️ Mira cómo pasan los comandos con Terminater",
+   "n": 1
+  },
+  {
+   "en": "Open **Views ▸ Terminals** to work with real **CMD and PowerShell** sessions. Tlamatini types commands key by key, waits for the result and reads it back. You can use tabs, split views or a grid, and press **Esc** to take over the keyboard.",
+   "es": "Abre **Views ▸ Terminals** para trabajar con sesiones reales de **CMD y PowerShell**. Tlamatini escribe los comandos tecla por tecla, espera el resultado y lo lee de vuelta. Puedes usar pestañas, vistas divididas o una cuadrícula, y presionar **Esc** para tomar el teclado.",
+   "n": 1
+  },
+  {
+   "en": "Terminater works from **Multi-Turn chat**, the **Agentic Control Panel** and the **Prompt Flow Panel**. Start with **Catalog of Prompts ▸ Run & Execute** for a first look, a handover and a guided tour. [Explore Terminater →](docs/terminater.md)",
+   "es": "Terminater funciona desde el **chat Multi-Turn**, el **Agentic Control Panel** y el **Prompt Flow Panel**. Empieza con **Catálogo de prompts ▸ Run & Execute** para un primer vistazo, una entrega y un recorrido guiado. [Explora Terminater →](docs/terminater.md)",
+   "n": 1
+  },
+  {
+   "en": "**Release trail:** canvas editing arrived with v1.89.0; live editor tutoring headlines [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), alongside the visible terminals introduced in [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). The release record distinguishes tagged source, later `main` changes and dated installed-build evidence.",
+   "es": "**Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El registro de releases distingue el código fuente etiquetado, los cambios posteriores en `main` y la evidencia fechada del build instalado.",
+   "n": 1
+  },
+  {
+   "en": "## Speak and be heard",
+   "es": "## Habla y escucha",
+   "n": 1
+  },
+  {
+   "en": "**Speak your ideas. Hear the answer. Keep building.** Whisperer brings speech-to-text into your workflow, the chat avatar can read replies aloud, and Talker adds model-based speech generation.",
+   "es": "**Di tus ideas. Escucha la respuesta. Sigue construyendo.** Whisperer trae el reconocimiento de voz a tu workflow, el avatar del chat puede leer las respuestas en voz alta y Talker agrega generación de voz basada en modelos.",
+   "n": 1
+  },
+  {
+   "en": "| You speak | Tlamatini speaks |",
+   "es": "| Tú hablas | Tlamatini habla |",
+   "n": 1
+  },
+  {
+   "en": "| Click **Mic** beside Send, wait for **Listening**, and talk. Whisperer transcribes your words into the chat. | The **chat avatar** reads replies through browser speech synthesis, configured in **Config ▸ Voice**. |",
+   "es": "| Haz clic en **Mic** junto a Enviar, espera a **Listening** y habla. Whisperer transcribe tus palabras en el chat. | El **avatar del chat** lee las respuestas con la síntesis de voz del browser, que se configura en **Config ▸ Voz**. |",
+   "n": 1
+  },
+  {
+   "en": "| Recording status, input level and elapsed time appear in chat. The default silence window is **3.5 seconds**. | **Talker** separately generates model-based speech. Its model and voice settings are in **Config ▸ Models**. |",
+   "es": "| El status de la grabación, el nivel de input y el tiempo transcurrido aparecen en el chat. La ventana de silencio predeterminada es de **3.5 segundos**. | **Talker** genera voz basada en modelos por separado. Su modelo y sus ajustes de voz están en **Config ▸ Modelos**. |",
+   "n": 1
+  },
+  {
+   "en": "| In **Config ▸ Mic**, choose **Send automatically** or **Keep in the chat input** to review the transcript first. | Explore the **Voice Commands** section at the start of the Catalog of Prompts for guided examples. |",
+   "es": "| En **Config ▸ Micrófono**, elige **Enviar automáticamente** o **Dejar en el input del chat** para revisar primero la transcripción. | Explora la sección **Voice Commands** al inicio del Catálogo de prompts para ver ejemplos guiados. |",
+   "n": 1
+  },
+  {
+   "en": "Direct dictation uses the microphone on the **computer running Tlamatini**. It keeps status in chat and opens no extra recording console. Click Mic again or press Escape to cancel; empty or failed recognition does not send a prompt. [Voice setup and controls →](docs/chat-microphone-design.md)",
+   "es": "El dictado directo usa el micrófono de la **computadora donde corre Tlamatini**. Mantiene el status en el chat y no abre una consola de grabación aparte. Haz clic en Mic otra vez o presiona Escape para cancelar; un reconocimiento vacío o fallido no envía ningún prompt. [Configuración y controles de voz →](docs/chat-microphone-design.md)",
+   "n": 1
+  },
+  {
+   "en": "## Visual workflows",
+   "es": "## Workflows visuales",
+   "n": 1
+  },
+  {
+   "en": "**Draw the process. Connect the specialists. Run it again.** Open **Panels** to choose the workspace that fits your task.",
+   "es": "**Dibuja el proceso. Conecta a los especialistas. Ejecútalo otra vez.** Abre **Paneles** para elegir el espacio de trabajo que le queda a tu tarea.",
+   "n": 1
+  },
+  {
+   "en": "| Agentic Control Panel · `.flw` | Prompt Flow Panel · `.fpmt` |",
+   "es": "| Agentic Control Panel · `.flw` | Prompt Flow Panel · `.fpmt` |"
+  },
+  {
+   "en": "| Arrange **86 agent types**, configure their work and connect them into runnable flows. | Compose prompts, decisions, embeddings, user questions and executable operations. |",
+   "es": "| Acomoda **86 tipos de agent**, configura su trabajo y conéctalos en flows ejecutables. | Compón prompts, decisiones, embeddings, preguntas al usuario y operaciones ejecutables. |",
+   "n": 1
+  },
+  {
+   "en": "| Use **Parametrizer** to pass one agent's output into the next agent's configuration. | **User Input** pauses for a real reply; **User Commentary** adds rich-text notes to explain the design. |",
+   "es": "| Usa **Parametrizer** para pasar el output de un agent a la configuración del siguiente. | **User Input** se detiene a esperar una respuesta real; **User Commentary** agrega notas con formato para explicar el diseño. |",
+   "n": 1
+  },
+  {
+   "en": "| Ask **FlowCreator** to turn an objective into a canvas-loadable flow, then inspect and refine it. | Save reusable prompt sequences, follow their run output and resize the canvas/output panes independently. |",
+   "es": "| Pídele a **FlowCreator** que convierta un objetivo en un flow que se pueda cargar en el canvas, y luego inspecciónalo y refínalo. | Guarda secuencias de prompts reutilizables, sigue su output de ejecución y cambia el tamaño de los paneles de canvas y de output por separado. |",
+   "n": 1
+  },
+  {
+   "en": "| Search agents, duplicate configured nodes, undo, redo, zoom and fit. | Keep explanatory notes on the canvas while the executable flow does the work. |",
+   "es": "| Busca agents, duplica nodos ya configurados, deshaz, rehaz, haz zoom y ajusta. | Mantén notas explicativas en el canvas mientras el flow ejecutable hace el trabajo. |",
+   "n": 1
+  },
+  {
+   "en": "Both formats open in their own editors. Drop a `.flw` or `.fpmt` file onto a supported page, or use the registered Windows file association. [Prompt Flow guide →](docs/prompting-flow-designer.md) · [Windows flow files →](docs/windows-flow-files.md)",
+   "es": "Ambos formatos se abren en sus propios editores. Suelta un archivo `.flw` o `.fpmt` sobre una página compatible, o usa la asociación de archivos registrada en Windows. [Guía del Prompt Flow →](docs/prompting-flow-designer.md) · [Archivos de flow en Windows →](docs/windows-flow-files.md)",
+   "n": 1
+  },
+  {
+   "en": "## One workspace, many ways to build",
+   "es": "## One workspace, many ways to build"
+  },
+  {
+   "en": "| Your next task | The tools behind it |",
+   "es": "| Tu siguiente tarea | Los tools detrás de ella |",
+   "n": 1
+  },
+  {
+   "en": "| **Understand and change a project** | Hybrid **FAISS + BM25** retrieval, project context, file operations, Git and shell/Python agents. Binary detection keeps inappropriate file content out of text retrieval. |",
+   "es": "| **Entender y cambiar un proyecto** | Recuperación híbrida **FAISS + BM25**, contexto de proyecto, operaciones de archivos, agents de Git y de shell/Python. La detección de binarios mantiene el contenido de archivos inapropiados fuera de la recuperación de texto. |",
+   "n": 1
+  },
+  {
+   "en": "| **Create something worth sharing** | **PDFer** composes documents, **PPTXer** creates editable slide decks, and **LaTeXer** typesets mathematics, references and structured publications, each with its own style options. |",
+   "es": "| **Crear algo que valga la pena compartir** | **PDFer** compone documentos, **PPTXer** crea presentaciones editables y **LaTeXer** compone matemáticas, referencias y publicaciones estructuradas, cada uno con sus propias opciones de estilo. |",
+   "n": 1
+  },
+  {
+   "en": "| **Read documents beside the conversation** | Embedded **PDF.js**, Markdown Preview/Source and an editable text canvas. PDF context processing can include image analysis when you choose it. |",
+   "es": "| **Leer documentos junto a la conversación** | **PDF.js** integrado, Vista previa/Source de Markdown y un canvas de texto editable. El procesamiento del contexto de un PDF puede incluir análisis de imágenes cuando tú lo eliges. |",
+   "n": 1
+  },
+  {
+   "en": "| **Understand pictures and video** | **Image-Interpreter** combines independent visual interpretations. **Video-Analyzer** supports robotics analysis, transcription and summaries, with named failures when a required model cannot complete the analysis. |",
+   "es": "| **Entender imágenes y video** | **Image-Interpreter** combina interpretaciones visuales independientes. **Video-Analyzer** admite análisis de robótica, transcripción y resúmenes, con errores con nombre cuando un modelo requerido no puede completar el análisis. |",
+   "n": 1
+  },
+  {
+   "en": "| **Work across the desktop and browser** | **Playwrighter, Windower, Shoter, Mouser and Keyboarder** provide browser, window, screenshot and input operations. |",
+   "es": "| **Trabajar en el escritorio y el browser** | **Playwrighter, Windower, Shoter, Mouser y Keyboarder** dan operaciones de browser, ventana, screenshot e input. |",
+   "n": 1
+  },
+  {
+   "en": "| **Connect outside tools** | The **External MCP** client supports stdio, streamable HTTP, SSE and WebSocket transports, with up to **five active servers** and **MCP Doctor** for diagnosis. |",
+   "es": "| **Conectar tools externos** | El cliente **External MCP** admite los transportes stdio, HTTP streamable, SSE y WebSocket, con hasta **cinco servidores activos** y **MCP Doctor** para el diagnóstico. |",
+   "n": 1
+  },
+  {
+   "en": "| **Bring coding agents into a workflow** | **ACPX** connects configured external coding-agent CLIs; **Skills** provide reusable instructions and task procedures. Provider accounts and tools have their own setup. |",
+   "es": "| **Llevar agents de código a un workflow** | **ACPX** conecta las CLIs de agents de código externos ya configuradas; los **Skills** dan instrucciones y procedimientos de tareas reutilizables. Las cuentas y los tools de los proveedores tienen su propia configuración. |",
+   "n": 1
+  },
+  {
+   "en": "| **Connect messaging** | **Telegrammer, Whatsapper and TeleTlamatini** add configured messaging and a Telegram bridge. The WhatsApp Web route is unofficial; the Cloud API is the official route. |",
+   "es": "| **Conectar mensajería** | **Telegrammer, Whatsapper y TeleTlamatini** agregan mensajería configurada y un bridge de Telegram. La vía de WhatsApp Web es no oficial; la Cloud API es la vía oficial. |",
+   "n": 1
+  },
+  {
+   "en": "| **Inspect systems you are authorized to assess** | **Kalier, Discoverer and Nmapper**, plus an optional Windows **Blue-hat** monitoring toolkit. [Read its setup and response boundaries first.](security/README.md) |",
+   "es": "| **Inspeccionar sistemas que tienes autorización de evaluar** | **Kalier, Discoverer y Nmapper**, más un toolkit opcional de monitoreo **Blue-hat** de Windows. [Lee primero su configuración y sus límites de respuesta.](security/README.md) |",
+   "n": 1
+  },
+  {
+   "en": "[Browse every agent →](agents_descriptions.md) · [PDF styles →](Tlamatini/agent/agents/pdfer/STYLES.md) · [PowerPoint styles →](Tlamatini/agent/agents/pptxer/STYLES.md) · [External MCP architecture →](docs/external_mcp_bulletproof_architecture.md)",
+   "es": "[Explora todos los agents →](agents_descriptions.md) · [Estilos de PDF →](Tlamatini/agent/agents/pdfer/STYLES.md) · [Estilos de PowerPoint →](Tlamatini/agent/agents/pptxer/STYLES.md) · [Arquitectura de External MCP →](docs/external_mcp_bulletproof_architecture.md)",
+   "n": 1
+  },
+  {
+   "en": "### Keep the intelligence under your control",
+   "es": "### Mantén la inteligencia bajo tu control",
+   "n": 1
+  },
+  {
+   "en": "- **Multi-Turn** lets Tlamatini work through a task with successive tool calls; **Step-by-Step** pauses for your participation during guided work.",
+   "es": "- **Multi-Turn** deja que Tlamatini avance en una tarea con llamadas sucesivas a tools; **Paso a paso** se detiene para que participes durante el trabajo guiado.",
+   "n": 1
+  },
+  {
+   "en": "- **Ask Execs** offers **Proceed/Deny** before covered state-changing Multi-Turn actions; **Exec Report** makes agent results available for inspection.",
+   "es": "- **Ask Execs** ofrece **Permitir/Denegar** antes de las acciones de Multi-Turn que cambian estado y están cubiertas; **Exec Report** deja disponibles los resultados de los agents para inspeccionarlos.",
+   "n": 1
+  },
+  {
+   "en": "- **Compact mode** changes the actual enabled tool selections. It starts with System-Metrics, Files-Search and Current-Time, then lets you add what the task needs. A model with insufficient capacity locks it on.",
+   "es": "- **Compact mode** cambia la selección real de tools habilitados. Empieza con System-Metrics, Files-Search y Current-Time, y luego te deja agregar lo que la tarea necesite. Un modelo con capacidad insuficiente lo deja fijo en activado.",
+   "n": 1
+  },
+  {
+   "en": "- **Model Brain** tunes configured models using their profiles and available model information. Saving **Config ▸ Models** shows the Auto-tuning dialog.",
+   "es": "- **Model Brain** ajusta los modelos configurados usando sus perfiles y la información disponible del modelo. Al guardar **Config ▸ Modelos** se muestra el diálogo de Auto-tuning.",
+   "n": 1
+  },
+  {
+   "en": "- **Self-modify** controls whether her own source knowledge enters the request. It appears only in source runs or builds that include the self-modification source tree, and locks off when the model cannot fit that knowledge.",
+   "es": "- **Self-modify** controla si su propio autoconocimiento entra en la solicitud. Aparece sólo en las ejecuciones desde el código fuente o en los builds que incluyen el árbol de código de la automodificación, y se bloquea en apagado cuando el modelo no puede contener ese conocimiento.",
+   "n": 1
+  },
+  {
+   "en": "- **About ▸ Usage** shows available cloud credits, usage and refill information alongside locally recorded activity. Missing provider fields are explained rather than invented.",
+   "es": "- **Acerca de ▸ Uso** muestra los créditos de nube disponibles, el uso y la información de recarga junto con la actividad registrada localmente. Los campos faltantes de un proveedor se explican en vez de inventarse.",
+   "n": 1
+  },
+  {
+   "en": "- **Views, Refresh and adjustable dividers** let you arrange the workspace around the task. **Drop** on a chat card removes that message from the conversation without reconnecting.",
+   "es": "- **Views, Actualizar y los divisores ajustables** te dejan acomodar el espacio de trabajo alrededor de la tarea. **Soltar** sobre una tarjeta del chat quita ese mensaje de la conversación sin reconectar.",
+   "n": 1
+  },
+  {
+   "en": "### Ollama Pro is the full-experience baseline",
+   "es": "### Ollama Pro es la base para la experiencia completa",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini was designed around the **large cloud models exposed through Ollama** for demanding reasoning, coding, planning, tool use and vision. A single Multi-Turn task can make many model calls; image analysis and orchestration can need concurrent requests.",
+   "es": "Tlamatini se diseñó en torno a los **modelos grandes de nube expuestos a través de Ollama** para razonamiento, código, planeación, uso de tools y visión exigentes. Una sola tarea de Multi-Turn puede hacer muchas llamadas al modelo; el análisis de imágenes y la orquestación pueden necesitar solicitudes concurrentes.",
+   "n": 1
+  },
+  {
+   "en": "**Use an active Ollama Pro plan or higher for complete intended operation.** A free account or a local model may let you launch the application or experiment with limited requests, but that is not Tlamatini's supported full-workload baseline. This is a Tlamatini system requirement, not a claim that Ollama requires Pro for every cloud request. A subscription also does not make usage unlimited or guarantee compatibility with every model.",
+   "es": "**Usa un plan Ollama Pro o superior activo para la operación completa prevista.** Una cuenta gratis o un modelo local pueden dejarte abrir la aplicación o experimentar con solicitudes limitadas, pero esa no es la base de carga completa que Tlamatini soporta. Este es un requisito del sistema de Tlamatini, no una afirmación de que Ollama requiera Pro para cada solicitud de nube. Una suscripción tampoco vuelve ilimitado el uso ni garantiza la compatibilidad con cada modelo.",
+   "n": 1
+  },
+  {
+   "en": "See [Ollama's current plans, prices and usage limits](https://ollama.com/pricing) before subscribing. **XAIHT/Tlamatini is not sponsored by, affiliated with, endorsed by or paid by Ollama, and receives no referral fee or commission.**",
+   "es": "Consulta los [planes, precios y límites de uso actuales de Ollama](https://ollama.com/pricing) antes de suscribirte. **XAIHT/Tlamatini no está patrocinada, afiliada, respaldada ni pagada por Ollama, y no recibe ninguna comisión ni pago por referidos.**",
+   "n": 1
+  },
+  {
+   "en": "| Requirement | What to prepare |",
+   "es": "| Requisito | Qué preparar |",
+   "n": 1
+  },
+  {
+   "en": "| **Windows** | Windows **10 or 11**; Terminater requires Windows 10 version **1809 or newer**. |",
+   "es": "| **Windows** | Windows **10 u 11**; Terminater requiere Windows 10 versión **1809 o más reciente**. |",
+   "n": 1
+  },
+  {
+   "en": "| **Ollama** | Install Ollama, sign in and use **Pro or higher** for the complete experience. Internet access is needed for cloud inference and service-backed integrations. |",
+   "es": "| **Ollama** | Instala Ollama, inicia sesión y usa **Pro o superior** para la experiencia completa. Se necesita acceso a internet para la inferencia en la nube y las integraciones basadas en servicios. |",
+   "n": 1
+  },
+  {
+   "en": "| **Models** | The local `nomic-embed-text` embedding model and compatible configured chat/vision models. Speech has separate model and engine requirements. |",
+   "es": "| **Modelos** | El modelo de embedding local `nomic-embed-text` y los modelos de chat/visión configurados y compatibles. La voz tiene requisitos de modelo y de motor aparte. |",
+   "n": 1
+  },
+  {
+   "en": "| **Python** | The Windows release bundles **Python 3.12.10**. Source installations need Python 3.12.10 and Git. |",
+   "es": "| **Python** | El release de Windows incluye **Python 3.12.10**. Las instalaciones desde el código fuente necesitan Python 3.12.10 y Git. |",
+   "n": 1
+  },
+  {
+   "en": "| **Your chosen integrations** | Their applications, toolchains, boards, permissions and credentials. Some third-party services carry separate charges. |",
+   "es": "| **Las integraciones que elijas** | Sus aplicaciones, toolchains, boards, permisos y credenciales. Algunos servicios de terceros cobran por separado. |",
+   "n": 1
+  },
+  {
+   "en": "### Local control, cloud reasoning",
+   "es": "### Control local, razonamiento en la nube",
+   "n": 1
+  },
+  {
+   "en": "The application, database, agent programs, workflow files, credentials and local embeddings live on your machine. **Cloud models process the prompts and context you send to them.** Direct model APIs, external coding-agent CLIs, remote MCP servers and messaging integrations also have their own data paths and provider terms.",
+   "es": "La aplicación, la base de datos, los programas de los agents, los archivos de flow, las credenciales y los embeddings locales viven en tu máquina. **Los modelos de nube procesan los prompts y el contexto que les envías.** Las APIs directas de modelos, las CLIs de agents de código externos, los servidores MCP remotos y las integraciones de mensajería también tienen sus propios caminos de datos y términos del proveedor.",
+   "n": 1
+  },
+  {
+   "en": "You choose the projects, tools and services involved. “Local-first” describes where the application and control live; it does not promise that every configured operation stays offline. [How Ollama cloud works →](https://docs.ollama.com/cloud)",
+   "es": "Tú eliges los proyectos, los tools y los servicios involucrados. «Local-first» describe dónde viven la aplicación y el control; no promete que cada operación configurada se quede offline. [Cómo funciona la nube de Ollama →](https://docs.ollama.com/cloud)",
+   "n": 1
+  },
+  {
+   "en": "## Installation",
+   "es": "## Instalación",
+   "n": 1
+  },
+  {
+   "en": "### 1 · Install Tlamatini",
+   "es": "### 1 · Instala Tlamatini",
+   "n": 1
+  },
+  {
+   "en": "Download the Windows package from **[the latest release](https://github.com/XAIHT/Tlamatini/releases/latest)**. If supplied as an archive, extract it first and keep the installer with its accompanying payload. Run **Installer.exe**, follow the setup window, then launch Tlamatini from its shortcut. The release includes its Python runtime; a separate Python installation is unnecessary.",
+   "es": "Descarga el paquete de Windows desde **[el release más reciente](https://github.com/XAIHT/Tlamatini/releases/latest)**. Si viene como un archivo comprimido, extráelo primero y mantén el instalador junto con el payload que lo acompaña. Ejecuta **Installer.exe**, sigue la ventana de instalación y luego abre Tlamatini desde su acceso directo. El release incluye su runtime de Python; no hace falta una instalación de Python aparte.",
+   "n": 1
+  },
+  {
+   "en": "Open **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)** if your browser does not open automatically. The documented default installer login is **`user` / `changeme`**; change the default password before using the account for your own work. [Installation and recovery guide →](docs/setup-wizards.md)",
+   "es": "Abre **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)** si tu browser no se abre automáticamente. El login predeterminado documentado del instalador es **`user` / `changeme`**; cambia la contraseña predeterminada antes de usar la cuenta para tu propio trabajo. [Guía de instalación y recuperación →](docs/setup-wizards.md)",
+   "n": 1
+  },
+  {
+   "en": "<details>\n<summary><b>Developer route: run from source</b></summary>",
+   "es": "<details>\n<summary><b>Para desarrolladores: ejecutar desde el código fuente</b></summary>",
+   "n": 1
+  },
+  {
+   "en": "Install Python **3.12.10** and Git. Run these commands from a **visible foreground PowerShell window**, and keep it open to read the output:",
+   "es": "Instala Python **3.12.10** y Git. Ejecuta estos comandos desde una **ventana de PowerShell visible en primer plano**, y mantenla abierta para leer el output:",
+   "n": 1
+  },
+  {
+   "en": "Open `http://127.0.0.1:8000/` and sign in with the account you just created. The explicit virtual-environment interpreter avoids needing a shell activation script. `--noreload` is optional; omit it when you want development reloads. For contributor execution and browser checks, follow the [visible execution policy](TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).",
+   "es": "Abre `http://127.0.0.1:8000/` e inicia sesión con la cuenta que acabas de crear. El intérprete explícito del entorno virtual evita necesitar un script de activación de la shell. `--noreload` es opcional; omítelo cuando quieras los reloads de desarrollo. Para la ejecución de contribuidores y las verificaciones en el browser, sigue la [política de ejecución visible](TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).",
+   "n": 1
+  },
+  {
+   "en": "### 2 · Install Ollama and activate Pro or higher",
+   "es": "### 2 · Instala Ollama y activa Pro o superior",
+   "n": 1
+  },
+  {
+   "en": "Install **[Ollama for Windows](https://ollama.com/download)** and activate **[Ollama Pro or a higher plan](https://ollama.com/pricing)** on your account. Connect the local installation to that account. In a visible foreground terminal:",
+   "es": "Instala **[Ollama para Windows](https://ollama.com/download)** y activa **[Ollama Pro o un plan superior](https://ollama.com/pricing)** en tu cuenta. Conecta la instalación local a esa cuenta. En una terminal visible en primer plano:",
+   "n": 1
+  },
+  {
+   "en": "### 3 · Prepare the models",
+   "es": "### 3 · Prepara los modelos",
+   "n": 1
+  },
+  {
+   "en": "Pull the local embedding model and register the cloud tags used by the current application defaults. Run these in the same visible terminal:",
+   "es": "Descarga el modelo de embedding local y registra los tags de nube que usan los valores predeterminados actuales de la aplicación. Ejecuta esto en la misma terminal visible:",
+   "n": 1
+  },
+  {
+   "en": "The embedding model runs locally; **cloud model weights run in Ollama's cloud**. Availability and access can change. Choose models compatible with each role: orchestration needs tool support, visual observers need image support, and Talker needs its supported audio output. These commands do not configure every optional agent. [Model roles, defaults and overrides →](docs/model_configuration.md)",
+   "es": "El modelo de embedding corre localmente; **los pesos de los modelos de nube corren en la nube de Ollama**. La disponibilidad y el acceso pueden cambiar. Elige modelos compatibles con cada rol: la orquestación necesita soporte de tools, los observadores visuales necesitan soporte de imágenes y Talker necesita su salida de audio soportada. Estos comandos no configuran cada agent opcional. [Roles de modelo, valores predeterminados y overrides →](docs/model_configuration.md)",
+   "n": 1
+  },
+  {
+   "en": "### 4 · Configure your workspace",
+   "es": "### 4 · Configura tu espacio de trabajo",
+   "n": 1
+  },
+  {
+   "en": "Open **Config ▸ Models** to set chat, vision, speech and other model roles, then **Save** and review **Auto-tuning**. Saving settings does not download models. Reconnect chat afterward and restart already-running agents when needed.",
+   "es": "Abre **Config ▸ Modelos** para definir los roles de modelo de chat, visión, voz y otros, luego usa **Guardar** y revisa **Auto-tuning**. Guardar la configuración no descarga modelos. Reconecta el chat después y reinicia los agents que ya estén corriendo cuando haga falta.",
+   "n": 1
+  },
+  {
+   "en": "Use **Config ▸ URLs** for service endpoints and **Config ▸ Access Keys Wizard** for integrations that require credentials. A normal local Ollama endpoint does not need a separate Tlamatini bearer token; its cloud access still uses your signed-in Ollama account. Remote endpoints may require authentication.",
+   "es": "Usa **Config ▸ URLs** para los endpoints de servicios y **Config ▸ Access Keys Wizard** para las integraciones que requieren credenciales. Un endpoint local normal de Ollama no necesita un bearer token aparte de Tlamatini; su acceso a la nube sigue usando tu cuenta de Ollama con sesión iniciada. Los endpoints remotos pueden requerir autenticación.",
+   "n": 1
+  },
+  {
+   "en": "<details>\n<summary><b>See the configuration menu and credential wizard</b></summary>",
+   "es": "<details>\n<summary><b>Mira el menú de configuración y el wizard de credenciales</b></summary>",
+   "n": 1
+  },
+  {
+   "en": "### 5 · Give her something to build",
+   "es": "### 5 · Dale algo que construir",
+   "n": 1
+  },
+  {
+   "en": "Turn on **Multi-Turn**, enable the tools needed for your task, and open **Catalog of Prompts**. Its guided examples are the easiest way to discover a capability with its required modes and setup.",
+   "es": "Activa **Multi-Turn**, habilita los tools que necesita tu tarea y abre el **Catálogo de prompts**. Sus ejemplos guiados son la forma más fácil de descubrir una capacidad con sus modos y configuración requeridos.",
+   "n": 1
+  },
+  {
+   "en": "Try a first task with a clear scope:",
+   "es": "Prueba una primera tarea con un alcance claro:",
+   "n": 1
+  },
+  {
+   "en": "> Explain the structure of the project I loaded and identify its main entry points.",
+   "es": "> > Explica la estructura del proyecto que cargué e identifica sus puntos de entrada principales.",
+   "n": 1
+  },
+  {
+   "en": "> Using your text editor, teach me to create a Dockerfile one small step at a time. Wait for my input between steps.",
+   "es": "> > Usando tu editor de texto, enséñame a crear un Dockerfile paso a pequeño paso. Espera mi input entre pasos.",
+   "n": 1
+  },
+  {
+   "en": "> Help me set up an ESP32 blink-and-print project. Confirm my board and port with me before flashing.",
+   "es": "> > Ayúdame a configurar un proyecto de blink-and-print para ESP32. Confirma conmigo mi board y mi puerto antes de flashear.",
+   "n": 1
+  },
+  {
+   "en": "Use **Step-by-Step** when you want a guided pace. Open **About ▸ Usage** to keep an eye on your model activity.",
+   "es": "Usa **Paso a paso** cuando quieras un ritmo guiado. Abre **Acerca de ▸ Uso** para no perder de vista la actividad de tus modelos.",
+   "n": 1
+  },
+  {
+   "en": "<details>\n<summary><b>Port conflicts, updates and everyday file handling</b></summary>",
+   "es": "<details>\n<summary><b>Conflictos de puerto, actualizaciones y manejo diario de archivos</b></summary>",
+   "n": 1
+  },
+  {
+   "en": "- **Port 8000 unavailable?** Set `django_port` to an available port in `config.json`, then restart. The file sits beside `Tlamatini.exe` in an installation, or at `Tlamatini/agent/config.json` in a source checkout. A source command-line port overrides the setting.",
+   "es": "- **¿El puerto 8000 no está disponible?** Define `django_port` con un puerto disponible en `config.json`, luego reinicia. El archivo está junto a `Tlamatini.exe` en una instalación, o en `Tlamatini/agent/config.json` en un checkout del código fuente. Un puerto en la línea de comandos del código fuente tiene prioridad sobre el ajuste.",
+   "n": 1
+  },
+  {
+   "en": "- **Updating?** Use **About ▸ Check for updates**. See the [carriage guide](docs/self-management-carriage.md) for preserved state and release behavior. The separate **`data.keys` vault is not currently preserved by in-app update**; retain a secure backup if you use it.",
+   "es": "- **¿Vas a actualizar?** Usa **Acerca de ▸ Buscar actualizaciones**. Consulta la [guía de carriage](docs/self-management-carriage.md) para ver el estado conservado y el comportamiento de los releases. El **vault aparte `data.keys` por ahora no lo conserva la actualización dentro de la app**; guarda un backup seguro si lo usas.",
+   "n": 1
+  },
+  {
+   "en": "- **Dropping files?** Text, code, Markdown and PDFs open in the chat canvas; images attach to chat; `.flw` and `.fpmt` open in their designers. An MCP JSON configuration asks for confirmation before import.",
+   "es": "- **¿Vas a soltar archivos?** El texto, el código, el Markdown y los PDF se abren en el canvas del chat; las imágenes se adjuntan al chat; los `.flw` y `.fpmt` se abren en sus diseñadores. Una configuración JSON de MCP pide confirmación antes de importarla.",
+   "n": 1
+  },
+  {
+   "en": "- **Need more room?** Use **Views**, drag the dividers, or reset the layout. Refresh rereads an accessible source and asks before discarding unsaved changes; it does not merge edits.",
+   "es": "- **¿Necesitas más espacio?** Usa **Views**, arrastra los divisores o restablece la distribución. Actualizar vuelve a leer un código fuente accesible y pregunta antes de descartar cambios sin guardar; no fusiona ediciones.",
+   "n": 1
+  },
+  {
+   "en": "## Documentation",
+   "es": "## Documentación",
+   "n": 1
+  },
+  {
+   "en": "Pick a doorway and go as deep as your project needs.",
+   "es": "Elige una puerta de entrada y profundiza tanto como lo necesite tu proyecto.",
+   "n": 1
+  },
+  {
+   "en": "| Start here | What you will find |",
+   "es": "| Empieza aquí | Lo que vas a encontrar |",
+   "n": 1
+  },
+  {
+   "en": "| [Book of Tlamatini](BookOfTlamatini.md) | The full guide, architecture, workflows and development history. |",
+   "es": "| [Book of Tlamatini](BookOfTlamatini.md) | La guía completa, la arquitectura, los workflows y la historia del desarrollo. |",
+   "n": 1
+  },
+  {
+   "en": "| [Every agent](agents_descriptions.md) | The specialist catalog and each agent's role. |",
+   "es": "| [Todos los agents](agents_descriptions.md) | El catálogo de especialistas y el rol de cada agent. |",
+   "n": 1
+  },
+  {
+   "en": "| [v1.90.0 release record](docs/changes/2026-10-22-v1.90.0.md) | Recent developments, source inventory and dated verification evidence. |",
+   "es": "| [Registro del release v1.90.0](docs/changes/2026-10-22-v1.90.0.md) | Desarrollos recientes, inventario del código fuente y evidencia de verificación fechada. |",
+   "n": 1
+  },
+  {
+   "en": "| [Canvas editing](docs/canvas-editing.md) · [Interactor](docs/interactor.md) · [Terminater](docs/terminater.md) | Edit, learn and run with direct control. |",
+   "es": "| [Edición en el canvas](docs/canvas-editing.md) · [Interactor](docs/interactor.md) · [Terminater](docs/terminater.md) | Edita, aprende y ejecuta con control directo. |",
+   "n": 1
+  },
+  {
+   "en": "| [Model configuration](docs/model_configuration.md) · [Voice](docs/chat-microphone-design.md) · [Usage](docs/usage-dashboard.md) | Models, speech, cloud usage and configuration. |",
+   "es": "| [Configuración de modelos](docs/model_configuration.md) · [Voz](docs/chat-microphone-design.md) · [Uso](docs/usage-dashboard.md) | Modelos, voz, uso de nube y configuración. |",
+   "n": 1
+  },
+  {
+   "en": "| [Prompt Flow Panel](docs/prompting-flow-designer.md) · [Desktop and flow contracts](docs/desktop-input-and-flow-contracts.md) | Visual processes and the rules behind their execution. |",
+   "es": "| [Prompt Flow Panel](docs/prompting-flow-designer.md) · [Contratos de escritorio y de flow](docs/desktop-input-and-flow-contracts.md) | Los procesos visuales y las reglas detrás de su ejecución. |",
+   "n": 1
+  },
+  {
+   "en": "| [PDF canvas](docs/pdf-canvas.md) · [Canvas Refresh](docs/canvas-refresh.md) | Document context and keeping open files current. |",
+   "es": "| [Canvas de PDF](docs/pdf-canvas.md) · [Canvas Refresh](docs/canvas-refresh.md) | El contexto de documentos y mantener al día los archivos abiertos. |",
+   "n": 1
+  },
+  {
+   "en": "| [External MCPs](docs/external_mcp_bulletproof_architecture.md) · [ACPX](ACPX.md) | External tools and coding-agent orchestration. |",
+   "es": "| [External MCPs](docs/external_mcp_bulletproof_architecture.md) · [ACPX](ACPX.md) | Tools externos y orquestación de agents de código. |",
+   "n": 1
+  },
+  {
+   "en": "| [Setup and recovery](docs/setup-wizards.md) · [Blue-hat toolkit](security/README.md) | Installation, recovery and optional Windows security tooling. |",
+   "es": "| [Instalación y recuperación](docs/setup-wizards.md) · [Toolkit Blue-hat](security/README.md) | Instalación, recuperación y tooling de seguridad opcional de Windows. |",
+   "n": 1
+  },
+  {
+   "en": "| [Architecture atlas · PDF](Tlamatini-Architecture.pdf) | A visual map of the system and its recorded repository inventory. |",
+   "es": "| [Atlas de arquitectura · PDF](Tlamatini-Architecture.pdf) | Un mapa visual del sistema y el inventario registrado de su repositorio. |",
+   "n": 1
+  },
+  {
+   "en": "| [Project dossier · PDF](tlamatini_app_summary.pdf) · [Technical deck · PowerPoint](Tlamatini_eXtended_Artificial_Intelligence_Humanly_Tempered.pptx) | Downloadable project overviews. |",
+   "es": "| [Dossier del proyecto · PDF](tlamatini_app_summary.pdf) · [Deck técnico · PowerPoint](Tlamatini_eXtended_Artificial_Intelligence_Humanly_Tempered.pptx) | Resúmenes del proyecto que puedes descargar. |",
+   "n": 1
+  },
+  {
+   "en": "| [Contributor documentation](docs/claude/INDEX.md) · [Versioning](VERSIONING.md) | Engineering contracts and release history. |",
+   "es": "| [Documentación para contribuidores](docs/claude/INDEX.md) · [Versioning](VERSIONING.md) | Contratos de ingeniería e historia de releases. |",
+   "n": 1
+  },
+  {
+   "en": "<details>\n<summary><b>Under the hood</b></summary>",
+   "es": "<details>\n<summary><b>Por dentro</b></summary>",
+   "n": 1
+  },
+  {
+   "en": "Python 3.12 · Django · Django Channels / Daphne · LangChain / LangGraph · FAISS + BM25 · SQLite · Ollama and configured model providers · CodeMirror · PDF.js · PyMuPDF · PyInstaller.",
+   "es": "Python 3.12 · Django · Django Channels / Daphne · LangChain / LangGraph · FAISS + BM25 · SQLite · Ollama y los proveedores de modelos configurados · CodeMirror · PDF.js · PyMuPDF · PyInstaller.",
+   "n": 1
+  },
+  {
+   "en": "The [architecture documentation](docs/claude/architecture.md) explains model context, tool binding, Compact mode and optional self-modification. The [generated agent coverage inventory](docs/agent-coverage.md) maps capabilities to their contracts. The [avatar walkthrough](BookOfTlamatini.md#avatar-animation-repair-and-reproducible-visible-tests) retains the animation repair and reproducible verification record.",
+   "es": "La [documentación de arquitectura](docs/claude/architecture.md) explica el contexto del modelo, el binding de tools, el Compact mode y la automodificación opcional. El [inventario generado de cobertura de agents](docs/agent-coverage.md) mapea las capacidades a sus contratos. El [recorrido del avatar](BookOfTlamatini.md#avatar-animation-repair-and-reproducible-visible-tests) conserva el registro de la reparación de la animación y de la verificación visible reproducible.",
+   "n": 1
+  },
+  {
+   "en": "All development commands, diagnostics and tests must run in verified **visible foreground windows**. Browser automation must explicitly use `headless: false` or `headless=False`. Keep output available afterward and follow the [repository execution policy](TestsVisiblesAndVisibleExecutionFromClaude2Codex.md). These development requirements do not add internal-service windows to the end-user experience.",
+   "es": "Todos los comandos de desarrollo, los diagnósticos y las pruebas deben correr en **ventanas visibles en primer plano** verificadas. La automatización del browser debe usar explícitamente `headless: false` o `headless=False`. Mantén el output disponible después y sigue la [política de ejecución del repositorio](TestsVisiblesAndVisibleExecutionFromClaude2Codex.md). Estos requisitos de desarrollo no agregan ventanas de servicios internos a la experiencia del usuario final.",
+   "n": 1
+  },
+  {
+   "en": "<details>\n<summary><b>User control, agent responsibility and authorized use</b></summary>",
+   "es": "<details>\n<summary><b>Control del usuario, responsabilidad del agent y uso autorizado</b></summary>",
+   "n": 1
+  },
+  {
+   "en": "Every agent in `Tlamatini/agent/agents/` is intentionally provided as a **plain-Python program** so its operating code can be read, audited, edited, restricted, or disabled by the user. This transparency is a user-control mechanism, **not a warranty that an agent is secure or suitable for a particular environment**. The agents do not have independent authority or jurisdiction: the user alone decides whether, where, how, and with which permissions they run.",
+   "es": "Cada agent de `Tlamatini/agent/agents/` se ofrece a propósito como un **programa de Python plano** para que el usuario pueda leer, auditar, editar, restringir o desactivar su código de operación. Esta transparencia es un mecanismo de control del usuario, **no una garantía de que un agent sea seguro o adecuado para un entorno en particular**. Los agents no tienen autoridad ni jurisdicción independientes: sólo el usuario decide si se ejecutan, dónde, cómo y con qué permisos.",
+   "n": 1
+  },
+  {
+   "en": "When you enable, configure, modify, chain, or execute an agent, **that agent and its execution are under your control and your jurisdiction**. You are solely responsible for reviewing its code and configuration; protecting and limiting its secrets, credentials, and permissions; selecting and authorizing every file, folder, network target, browser, shell, API, external MCP server, machine, hardware device, and downstream system it can access; supervising its output; and complying with every law, policy, license, contract, and authorization that applies to your use.",
+   "es": "Cuando habilitas, configuras, modificas, encadenas o ejecutas un agent, **ese agent y su ejecución están bajo tu control y tu jurisdicción**. Eres el único responsable de revisar su código y su configuración; de proteger y limitar sus secretos, credenciales y permisos; de seleccionar y autorizar cada archivo, carpeta, target de red, browser, shell, API, servidor External MCP, máquina, dispositivo de hardware y sistema posterior al que pueda acceder; de supervisar su output; y de cumplir con cada ley, política, licencia, contrato y autorización que aplique a tu uso.",
+   "n": 1
+  },
+  {
+   "en": "The optional Blue-hat toolkit can change persistent Windows policy and, in explicitly armed modes, block IPs or terminate processes. Read [its complete guide](security/README.md), begin with report-only observation, and use security tooling only on systems you own or are explicitly authorized to assess.",
+   "es": "El toolkit opcional Blue-hat puede cambiar la política persistente de Windows y, en modos explícitamente armados, bloquear IPs o terminar procesos. Lee [su guía completa](security/README.md), empieza con la observación en modo sólo reporte y usa el tooling de seguridad únicamente en sistemas que te pertenecen o que tienes autorización explícita de evaluar.",
+   "n": 1
+  },
+  {
+   "en": "## Build with us",
+   "es": "## Construye con nosotros",
+   "n": 1
+  },
+  {
+   "en": "Built something with Tlamatini? **[Come show it on Discord.](https://discord.gg/WFQsrskgc)** Bring your board, scene, workflow, question or ambitious idea. Real projects and useful feedback help shape what comes next.",
+   "es": "¿Construiste algo con Tlamatini? **[Ven a mostrarlo en Discord.](https://discord.gg/WFQsrskgc)** Trae tu board, tu escena, tu workflow, tu pregunta o tu idea ambiciosa. Los proyectos reales y el feedback útil ayudan a dar forma a lo que viene.",
+   "n": 1
+  },
+  {
+   "en": "Found a problem? **[Open an issue](https://github.com/XAIHT/Tlamatini/issues)** with the version, steps to reproduce and relevant redacted output. Contributions are welcome; start with [the repository instructions](AGENTS.md) and preserve the visible verification workflow.",
+   "es": "¿Encontraste un problema? **[Abre un issue](https://github.com/XAIHT/Tlamatini/issues)** con la versión, los pasos para reproducirlo y el output relevante ya redactado. Las contribuciones son bienvenidas; empieza con [las instrucciones del repositorio](AGENTS.md) y conserva el workflow de verificación visible.",
+   "n": 1
+  },
+  {
+   "en": "<p align=\"center\">\n  <img src=\"Tlamatini.jpg\" alt=\"XAIHT emblem\" width=\"72\" height=\"72\" /><br />\n  <b>Tlamatini — “one who knows.”</b><br />\n  Created by <b>Angela López Mendoza · @angelahack1</b><br />\n  <a href=\"https://xaiht.org\">XAIHT</a> · <a href=\"LICENSE\">MIT License</a> · <a href=\"https://github.com/XAIHT/Tlamatini/releases/latest\">Start building</a>\n</p>",
+   "es": "<p align=\"center\">\n  <img src=\"Tlamatini.jpg\" alt=\"emblema de XAIHT\" width=\"72\" height=\"72\" /><br />\n  <b>Tlamatini — “la que sabe.”</b><br />\n  Creada por <b>Angela López Mendoza · @angelahack1</b><br />\n  <a href=\"https://xaiht.org\">XAIHT</a> · <a href=\"LICENSE\">Licencia MIT</a> · <a href=\"https://github.com/XAIHT/Tlamatini/releases/latest\">Empieza a crear</a>\n</p>",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "## Requirements",
+   "motivo": "encabezado que es destino del enlace markdown #requirements; se conserva para no romper el ancla"
+  },
+  {
+   "en": "**BY RUNNING AN AGENT, YOU ACCEPT RESPONSIBILITY FOR ITS ACTIONS AND CONSEQUENCES. TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, ANY SECURITY BREACH, DATA EXPOSURE OR LOSS, UNAUTHORIZED ACTION, CREDENTIAL LEAK, UNSAFE AUTOMATION, POLICY OR LEGAL VIOLATION, SYSTEM COMPROMISE, DEVICE DAMAGE, FINANCIAL LOSS, OR OTHER HARM ARISING FROM YOUR USE, CONFIGURATION, MODIFICATION, OR EXECUTION OF AN AGENT OR AGENT WORKFLOW IS THE RESPONSIBILITY OF THE USER WHO RUNS IT.** Tlamatini's orchestration, documentation, examples, and guardrails do not authorize access to third-party systems and cannot replace the user's own security review, permission controls, monitoring, or legal compliance.",
+   "motivo": "párrafo legal en MAYÚSCULAS; sus conjunciones inglesas AND/OR chocan con los agents intocables AND y OR, así que se conserva en inglés para no perder esos nombres"
+  }
+ ]
+}

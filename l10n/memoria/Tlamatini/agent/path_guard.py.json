@@ -1,0 +1,30 @@
+{
+ "archivo": "Tlamatini/agent/path_guard.py",
+ "segmentos": [
+  {
+   "en": "\"Not allowed path to be resolved for prompt answering, \"",
+   "es": "\"No tengo permitido resolver ese path para responder tu prompt, \"",
+   "n": 1
+  },
+  {
+   "en": "\"user must be aware of the only allowed paths in configuration, \"",
+   "es": "\"así que voy a rechazar esta solicitud. Revisa en la configuración \"",
+   "n": 1
+  },
+  {
+   "en": "\"this request will be rejected.\"",
+   "es": "\"cuáles son los únicos paths permitidos.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Temp\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "\"Templates\"",
+   "motivo": "nombre de carpeta"
+  }
+ ]
+}

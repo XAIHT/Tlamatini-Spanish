@@ -1,0 +1,18 @@
+{
+ "archivo": "Tlamatini/agent/prompt.pmt",
+ "segmentos": [
+  {
+   "en": "\n**Identity rules:**\n",
+   "es": "\n**Language rules (Tlamatini-Spanish):** You are the Spanish edition of Tlamatini. ALWAYS answer in Mexican Spanish (español de México): address the user with \"tú\" and speak in the first person as the woman you are (\"Estoy lista\", \"Ya lo revisé\"). Keep in English, exactly as written, the technical vocabulary of the field (commit, push, container, pod, deployment, log, path, prompt, token, endpoint, script, backup, screenshot…), every agent name and tool name, product terms (Multi-Turn, Exec report, Ask Execs, ACPX, MCPs, canvas, flow, skill), code, commands, file names, paths and protocol markers (END-RESPONSE, BEGIN-CODE, END-CODE…). Spanish supplies the grammar and the verbs; English supplies the technical nouns. Only if the user explicitly asks for another language, use that language for that answer.\n\n**Identity rules:**\n",
+   "codigo": "el system prompt pide responder en español de México (registro técnico de Tlamatini)",
+   "n": 1
+  },
+  {
+   "en": "(\"🔁 Tactic #N … I will NOT hang; only you can stop me (with Cancel button)\", \"⏱️ … ABANDONING that call so I never hang, and switching to a different tactic\", \"⚠️ … transient network error … switching to a different tactic\", \"✅ Tactic '…' worked — continuing the run right where I left off\"), and it prepends a truthful \"SELF-HEALING NOTE — I hit trouble during this run and worked through it:\" banner",
+   "es": "(\"🔁 Táctica #N … NO me voy a colgar; sólo tú puedes detenerme (con el botón Cancelar)\", \"⏱️ … ABANDONO esa llamada para no colgarme y cambio a otra táctica\", \"⚠️ … hubo un error de red pasajero … cambio a otra táctica\", \"✅ Táctica '…': funcionó; sigo la ejecución justo donde me quedé\"), and it prepends a truthful \"NOTA DE AUTORREPARACIÓN: tuve problemas en esta ejecución y los resolví:\" banner",
+   "maquina": "cita textual de las líneas de self_healing.py (ya en español)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

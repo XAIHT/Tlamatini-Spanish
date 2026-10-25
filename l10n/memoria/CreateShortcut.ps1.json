@@ -1,0 +1,212 @@
+{
+ "archivo": "CreateShortcut.ps1",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini Shortcut Creator\"",
+   "es": "\"Creador de accesos directos de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"Error: CreateShortcut.json not found at: $configPath\"",
+   "es": "\"Error: no existe CreateShortcut.json en: $configPath\"",
+   "n": 1
+  },
+  {
+   "en": "\"Please create it with content like:\"",
+   "es": "\"Hay que crearlo con un contenido como este:\"",
+   "n": 1
+  },
+  {
+   "en": "\"Error: Failed to parse CreateShortcut.json: $_\"",
+   "es": "\"Error: no se pudo leer CreateShortcut.json: $_\"",
+   "n": 1
+  },
+  {
+   "en": "'Error: \"InstallDir\" key not found in CreateShortcut.json'",
+   "es": "'Error: falta la llave \"InstallDir\" en CreateShortcut.json'",
+   "n": 1
+  },
+  {
+   "en": "\"Error: Installation directory not found: $installDir\"",
+   "es": "\"Error: no existe la carpeta destino: $installDir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Install directory: $installDir\"",
+   "es": "\"Carpeta destino: $installDir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Error: Tlamatini.exe not found at: $exePath\"",
+   "es": "\"Error: falta Tlamatini.exe en: $exePath\"",
+   "n": 1
+  },
+  {
+   "en": "\"[OK] Tlamatini.exe found: $exePath\"",
+   "es": "\"[OK] Tlamatini.exe encontrado: $exePath\"",
+   "n": 1
+  },
+  {
+   "en": "\"[OK] Icon found: $iconPath\"",
+   "es": "\"[OK] Icono encontrado: $iconPath\"",
+   "n": 1
+  },
+  {
+   "en": "\"[!] Warning: Tlamatini.ico not found at $iconPath\"",
+   "es": "\"[!] Aviso: falta Tlamatini.ico en $iconPath\"",
+   "n": 1
+  },
+  {
+   "en": "\"    Shortcut will fall back to the .exe's embedded icon.\"",
+   "es": "\"    El acceso directo va a usar el icono incluido en el .exe.\"",
+   "n": 1
+  },
+  {
+   "en": "\"[probe] conhost.exe not found; using direct exe target.\"",
+   "es": "\"[probe] falta conhost.exe; se apunta directo al exe.\"",
+   "n": 1
+  },
+  {
+   "en": "\"[probe] conhost.exe wrapper probe timed out; treating host as restricted.\"",
+   "es": "\"[probe] la prueba del wrapper conhost.exe dio timeout; el host se trata como restringido.\"",
+   "n": 1
+  },
+  {
+   "en": "\"[probe] conhost.exe wrapper probe exited with code $($proc.ExitCode); treating host as restricted.\"",
+   "es": "\"[probe] la prueba del wrapper conhost.exe dio el exit code $($proc.ExitCode); el host se trata como restringido.\"",
+   "n": 1
+  },
+  {
+   "en": "\"[probe] conhost.exe wrapper probe threw: $_\"",
+   "es": "\"[probe] error en la prueba del wrapper conhost.exe: $_\"",
+   "n": 1
+  },
+  {
+   "en": "\"[OK] conhost.exe wrapper is usable -- shortcut will force legacy console host (icon shows correctly under Windows Terminal default).\"",
+   "es": "\"[OK] el wrapper conhost.exe sirve -- el acceso directo va a forzar el console host de siempre (el icono se ve bien aunque Windows Terminal sea el predeterminado).\"",
+   "n": 1
+  },
+  {
+   "en": "\"[!] conhost.exe wrapper is NOT usable on this machine -- shortcut will target Tlamatini.exe directly.\"",
+   "es": "\"[!] el wrapper conhost.exe NO sirve en esta computadora -- el acceso directo va a apuntar directo a Tlamatini.exe.\"",
+   "n": 1
+  },
+  {
+   "en": "\"    Title bar will read 'Tlamatini' but the running-window icon may show the host's default glyph.\"",
+   "es": "\"    En la barra de la ventana se va a leer 'Tlamatini', pero el icono de la ventana puede ser el del host.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Creating shortcuts using VBScript helper...\"",
+   "es": "\"Creando los accesos directos con el helper de VBScript...\"",
+   "n": 1
+  },
+  {
+   "en": "\"[!] cscript.exe failed or is blocked by policy -- using PowerShell fallback.\"",
+   "es": "\"[!] cscript.exe dio error o lo bloquea una regla del sistema -- se usa el fallback de PowerShell.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Creating shortcuts via PowerShell COM fallback...\"",
+   "es": "\"Creando los accesos directos con el fallback COM de PowerShell...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini Development Server\"",
+   "es": "\"Servidor de desarrollo de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"via conhost\"",
+   "es": "\"con conhost\"",
+   "n": 1
+  },
+  {
+   "en": "\"direct exe\"",
+   "es": "\"exe directo\"",
+   "n": 1
+  },
+  {
+   "en": "\"[OK] Created ($tag): $lnkPath\"",
+   "es": "\"[OK] Creado ($tag): $lnkPath\"",
+   "n": 1
+  },
+  {
+   "en": "\"Shortcuts created successfully!\"",
+   "es": "\"Listo: accesos directos creados.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Error creating shortcuts via PowerShell: $_\"",
+   "es": "\"Error al crear los accesos directos con PowerShell: $_\"",
+   "n": 1
+  },
+  {
+   "en": "\"You can now:\"",
+   "es": "\"Ahora puedes:\"",
+   "n": 1
+  },
+  {
+   "en": "\"  1. Double-click the shortcut on your desktop\"",
+   "es": "\"  1. Hacer doble clic en el acceso directo del escritorio\"",
+   "n": 1
+  },
+  {
+   "en": "\"  2. Double-click 'Tlamatini.lnk' in $installDir\"",
+   "es": "\"  2. Hacer doble clic en 'Tlamatini.lnk' dentro de $installDir\"",
+   "n": 1
+  },
+  {
+   "en": "\"  3. Pin the shortcut to the taskbar or Start menu\"",
+   "es": "\"  3. Anclar el acceso directo a la barra de tareas o a Inicio\"",
+   "n": 1
+  },
+  {
+   "en": "WScript.Echo \"Error: install directory and useConhost flag arguments required.\"",
+   "es": "WScript.Echo \"Error: se requieren los argumentos de carpeta destino y useConhost.\"",
+   "n": 1
+  },
+  {
+   "en": "objShortcut.Description = \"Tlamatini Development Server\"",
+   "es": "objShortcut.Description = \"Servidor de desarrollo de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "WScript.Echo \"[OK] Created (via conhost): \" & shortcutPath",
+   "es": "WScript.Echo \"[OK] Creado (con conhost): \" & shortcutPath",
+   "n": 1
+  },
+  {
+   "en": "WScript.Echo \"[OK] Created (direct exe):  \" & shortcutPath",
+   "es": "WScript.Echo \"[OK] Creado (exe directo):  \" & shortcutPath",
+   "n": 1
+  },
+  {
+   "en": "WScript.Echo \"Shortcuts created successfully!\"",
+   "es": "WScript.Echo \"Listo: accesos directos creados.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Stop'",
+   "motivo": "valor de PowerShell"
+  },
+  {
+   "en": "'  { \"InstallDir\": \"D:\\\\Tlamatini\" }'",
+   "motivo": "ejemplo de JSON"
+  },
+  {
+   "en": "'exit 0'",
+   "motivo": "comando"
+  },
+  {
+   "en": "@\"\nSet objShell = CreateObject(\"WScript.Shell\")\nSet objFSO = CreateObject(\"Scripting.FileSystemObject\")\n\n' Args: 0 = install directory, 1 = useConhost flag (\"1\" or \"0\")\nIf WScript.Arguments.Count < 2 Then\n    WScript.Echo \"Error: install directory and useConhost flag arguments required.\"\n    WScript.Quit 1\nEnd If\n\nstrInstallDir = WScript.Arguments(0)\nbUseConhost = (WScript.Arguments(1) = \"1\")\nstrExePath = objFSO.BuildPath(strInstallDir, \"Tlamatini.exe\")\nstrIconPath = objFSO.BuildPath(strInstallDir, \"Tlamatini.ico\")\nstrConhostPath = objShell.ExpandEnvironmentStrings(\"%SystemRoot%\\System32\\conhost.exe\")\n\n' Two strategies, decided by the PowerShell-side probe:\n'   bUseConhost = True  -> wrap with conhost.exe so the running-window icon\n'                          is the .exe's embedded Tlamatini icon under any\n'                          terminal host (Windows Terminal ignores\n'                          WM_SETICON, so the wrapper is the only way).\n'   bUseConhost = False -> target Tlamatini.exe directly; required on\n'                          AppLocker / WDAC / restrictive-policy machines\n'                          where the wrapper produces dead shortcuts.\n\nSub CreateShortcut(shortcutPath)\n    Set objShortcut = objShell.CreateShortcut(shortcutPath)\n\n    If bUseConhost Then\n        objShortcut.TargetPath = strConhostPath\n        objShortcut.Arguments = \"\"\"\" & strExePath & \"\"\"\"\n    Else\n        objShortcut.TargetPath = strExePath\n        objShortcut.Arguments = \"\"\n    End If\n    objShortcut.WorkingDirectory = strInstallDir\n    objShortcut.Description = \"Tlamatini Development Server\"\n    objShortcut.WindowStyle = 1\n\n    ' Set icon: prefer the standalone .ico (sharper at all sizes for the\n    ' .lnk file in Explorer/Desktop); fall back to the .exe's embedded icon.\n    ' This is independent of TargetPath -- it controls the .lnk's icon in\n    ' Explorer/Desktop, not the running console-window icon.\n    If objFSO.FileExists(strIconPath) Then\n        objShortcut.IconLocation = strIconPath & \",0\"\n    Else\n        objShortcut.IconLocation = strExePath & \",0\"\n    End If\n\n    objShortcut.Save\n    If bUseConhost Then\n        WScript.Echo \"[OK] Created (via conhost): \" & shortcutPath\n    Else\n        WScript.Echo \"[OK] Created (direct exe):  \" & shortcutPath\n    End If\nEnd Sub\n\n' Create desktop shortcut\nstrDesktop = objShell.SpecialFolders(\"Desktop\")\nCall CreateShortcut(objFSO.BuildPath(strDesktop, \"Tlamatini.lnk\"))\n\n' Create local shortcut in install directory\nCall CreateShortcut(objFSO.BuildPath(strInstallDir, \"Tlamatini.lnk\"))\n\nWScript.Echo \"\"\nWScript.Echo \"Shortcuts created successfully!\"\n\"@",
+   "motivo": "programa VBScript; sus mensajes se traducen con decisiones aparte"
+  },
+  {
+   "en": "\"Desktop\"",
+   "motivo": "argumento de la API de Windows"
+  }
+ ]
+}

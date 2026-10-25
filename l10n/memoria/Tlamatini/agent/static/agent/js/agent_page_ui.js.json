@@ -1,0 +1,75 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_ui.js",
+ "segmentos": [
+  {
+   "en": "\"I'm working on your request\"",
+   "es": "\"Estoy trabajando en tu solicitud\"",
+   "maquina": "acoplada con constants.MSG_PROCESSING_REQUEST",
+   "n": 1
+  },
+  {
+   "en": "\"I'm loading the context you gave me\"",
+   "es": "\"estoy cargando el contexto que me diste\"",
+   "maquina": "acoplada con constants.MSG_AGENT_LOADING_CONTEXT",
+   "n": 1
+  },
+  {
+   "en": "\"welcome back\"",
+   "es": "\"qué gusto verte de nuevo\"",
+   "maquina": "acoplada con constants.MSG_SESSION_RESTORED",
+   "n": 1
+  },
+  {
+   "en": "\"i restored our session\"",
+   "es": "\"restauré nuestra sesión\"",
+   "maquina": "acoplada con constants.MSG_SESSION_RESTORED",
+   "n": 1
+  },
+  {
+   "en": "'Tactic #'",
+   "es": "'Táctica #'",
+   "maquina": "acoplada con self_healing.py",
+   "n": 1
+  },
+  {
+   "en": "\"Tactic '\"",
+   "es": "\"Táctica '\"",
+   "maquina": "acoplada con self_healing.py",
+   "n": 2
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 3
+  },
+  {
+   "en": "\"Use as context\"",
+   "es": "\"Usar como contexto\"",
+   "n": 3
+  },
+  {
+   "en": "\"Used as context\"",
+   "es": "\"Usado como contexto\"",
+   "n": 1
+  },
+  {
+   "en": "'Send'",
+   "es": "'Enviar'",
+   "n": 2
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'display: none !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'--- Opened directory in '",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "'disabled'",
+   "motivo": "valor de atributo"
+  }
+ ]
+}

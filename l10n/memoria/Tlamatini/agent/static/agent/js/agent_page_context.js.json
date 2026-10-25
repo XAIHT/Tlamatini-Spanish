@@ -1,0 +1,52 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_context.js",
+ "segmentos": [
+  {
+   "en": "\"Used as context\"",
+   "es": "\"Usado como contexto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Use as context\"",
+   "es": "\"Usar como contexto\"",
+   "n": 3
+  },
+  {
+   "en": "\"<<< pending context: \"",
+   "es": "\"<<< contexto pendiente: \"",
+   "n": 1
+  },
+  {
+   "en": "\"The number of tokens in the loaded file (if used as context) may not be completely processed by Tlamatini, it wont fit the context window.\"",
+   "es": "\"Es posible que Tlamatini no procese todos los tokens del archivo cargado (si lo usas como contexto): no caben en la ventana de contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "'The live connection is unavailable. Reconnect and try again.'",
+   "es": "'La conexión en vivo no está disponible. Usa Reconectar y vuelve a intentarlo.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"display: none !important;\"",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "\"col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-visible\"",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "\"col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-invisible\"",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "\"--- The number of tokens in file is: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- The content is: \"",
+   "motivo": "texto de log (console.log)"
+  }
+ ]
+}

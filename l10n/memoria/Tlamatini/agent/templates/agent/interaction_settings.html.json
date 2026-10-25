@@ -1,0 +1,141 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/interaction_settings.html",
+ "segmentos": [
+  {
+   "en": ">Live Editor &amp; Terminater</h2>",
+   "es": ">Editor en vivo y Terminater</h2>",
+   "n": 1
+  },
+  {
+   "en": "<p>Choose how I type, guide you, and speak.</p>",
+   "es": "<p>Elige cómo escribo, te guío y hablo.</p>",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Close settings\"",
+   "es": "aria-label=\"Cerrar la configuración\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Interaction settings\"",
+   "es": "aria-label=\"Configuración de interacción\"",
+   "n": 1
+  },
+  {
+   "en": ">Live Editor</button>",
+   "es": ">Editor en vivo</button>",
+   "n": 1
+  },
+  {
+   "en": ">Voice</button>",
+   "es": ">Voz</button>",
+   "n": 1
+  },
+  {
+   "en": "<label>Preset <select",
+   "es": "<label>Preajuste <select",
+   "n": 1
+  },
+  {
+   "en": ">Custom</option>",
+   "es": ">Personalizado</option>",
+   "n": 1
+  },
+  {
+   "en": ">Standard</option>",
+   "es": ">Estándar</option>",
+   "n": 1
+  },
+  {
+   "en": ">Guided learning</option>",
+   "es": ">Aprendizaje guiado</option>",
+   "n": 1
+  },
+  {
+   "en": "<span>Presets change this draft. Save to apply.</span>",
+   "es": "<span>Los preajustes cambian este borrador. Guarda para aplicar.</span>",
+   "n": 1
+  },
+  {
+   "en": "<p>Changes apply to the next teaching segment. Typing remains editable and unsaved.</p>",
+   "es": "<p>Los cambios se aplican al siguiente segmento de enseñanza. Lo que escribo sigue siendo editable y sin guardar.</p>",
+   "n": 1
+  },
+  {
+   "en": " Live editor access for this tab <small>",
+   "es": " Acceso al editor en vivo en esta pestaña <small>",
+   "n": 1
+  },
+  {
+   "en": "<small>Applies immediately, like the canvas checkbox.</small>",
+   "es": "<small>Se aplica de inmediato, como la casilla del canvas.</small>",
+   "n": 1
+  },
+  {
+   "en": "<p>Changes apply to the next action. Shell and advisor defaults apply to new terminals. Explicit flow values remain in use unless “Use my defaults” is selected.</p>",
+   "es": "<p>Los cambios se aplican a la siguiente acción. Los valores predeterminados de shell y asesor se aplican a las nuevas terminales. Los valores explícitos del flow se siguen usando a menos que elijas «Usar mis valores predeterminados».</p>",
+   "n": 1
+  },
+  {
+   "en": "The command wait window stops waiting; it does not kill the command. No output means “possibly stalled,” not proof of failure. Ask Execs and Step-by-Step retain their own controls.",
+   "es": "La ventana de espera del comando deja de esperar; no mata el comando. Que no haya output significa «posiblemente atascado», no es prueba de una falla. Ask Execs y Step-by-Step conservan sus propios controles.",
+   "n": 1
+  },
+  {
+   "en": "<p>Uses your existing female voice, volume, speed and pitch from Config → Voice. Global mute and microphone listening always take priority.</p>",
+   "es": "<p>Usa tu voz femenina, volumen, velocidad y tono actuales de Config → Voz. El silencio global y la escucha del micrófono siempre tienen prioridad.</p>",
+   "n": 1
+  },
+  {
+   "en": "id=\"interaction-toggle-mute\">Mute voice</button>",
+   "es": "id=\"interaction-toggle-mute\">Silenciar la voz</button>",
+   "n": 1
+  },
+  {
+   "en": ">Open Voice settings</button>",
+   "es": ">Abrir la configuración de Voz</button>",
+   "n": 1
+  },
+  {
+   "en": "Mute applies immediately across this browser. Ctrl+Shift+M also toggles it. Choose your voice in the main chat’s Config → Voice.",
+   "es": "El silencio se aplica de inmediato en todo este browser. Ctrl+Shift+M también lo alterna. Elige tu voz en Config → Voz del chat principal.",
+   "n": 1
+  },
+  {
+   "en": "<strong>Sample only — no command runs and no open file changes</strong>",
+   "es": "<strong>Solo una muestra: no se ejecuta ningún comando ni cambia ningún archivo abierto</strong>",
+   "n": 1
+  },
+  {
+   "en": ">Stop preview</button>",
+   "es": ">Detener la vista previa</button>",
+   "n": 1
+  },
+  {
+   "en": "<small>Behavior: your account · Appearance and voice selection: this browser</small>",
+   "es": "<small>Comportamiento: tu cuenta · Apariencia y selección de voz: este browser</small>",
+   "n": 1
+  },
+  {
+   "en": ">Preview</button>",
+   "es": ">Vista previa</button>",
+   "n": 1
+  },
+  {
+   "en": ">Reset this tab</button>",
+   "es": ">Restablecer esta pestaña</button>",
+   "n": 1
+  },
+  {
+   "en": ">Cancel</button>",
+   "es": ">Cancelar</button>",
+   "n": 1
+  },
+  {
+   "en": ">Save</button>",
+   "es": ">Guardar</button>",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

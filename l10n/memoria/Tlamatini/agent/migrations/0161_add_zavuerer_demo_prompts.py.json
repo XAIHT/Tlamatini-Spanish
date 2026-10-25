@@ -1,0 +1,38 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0161_add_zavuerer_demo_prompts.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Tlamatini, run the **ZAVUERER** demo, please: use ONLY the chat_agent_zavuerer tool to \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"run a SAFE health check of my Zavu unified-messaging setup. Set action='health' so \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"NOTHING is sent to anyone - just probe whether the Zavu API (https://www.zavu.dev) is \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"reachable and whether my API key is configured, then tell me the status and, if it is \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"not set up yet, the single step to fix it (get a Zavu API key at https://www.zavu.dev (free sign-up; pay-as-you-go to send) \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"and paste it into the Zavuerer config). Tick ONLY the Multi-Turn checkbox; use ONLY \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"chat_agent_zavuerer. End with END-RESPONSE.\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  }
+ ]
+}

@@ -1,0 +1,122 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/compact_costs.js",
+ "segmentos": [
+  {
+   "en": "'live metrics'",
+   "es": "'métricas en vivo'",
+   "n": 1
+  },
+  {
+   "en": "'file results'",
+   "es": "'resultados de archivos'",
+   "n": 1
+  },
+  {
+   "en": "'Your selection: ≈'",
+   "es": "'Tu selección: ≈'",
+   "n": 1
+  },
+  {
+   "en": "' usable tokens ('",
+   "es": "' tokens utilizables ('",
+   "n": 1
+  },
+  {
+   "en": "' · est.'",
+   "es": "' · aprox.'",
+   "n": 1
+  },
+  {
+   "en": "' - does NOT fit '",
+   "es": "' - NO cabe en '",
+   "n": 1
+  },
+  {
+   "en": "'this model'",
+   "es": "'este modelo'",
+   "n": 1
+  },
+  {
+   "en": "': not everything will work.'",
+   "es": "': no todo va a funcionar.'",
+   "n": 1
+  },
+  {
+   "en": "'Tools you have ticked: ≈'",
+   "es": "'Los tools que marcaste: ≈'",
+   "n": 1
+  },
+  {
+   "en": "' tokens est. - send a message to measure this model\\'s window.'",
+   "es": "' tokens aprox. - envía un mensaje para medir la ventana de este modelo.'",
+   "n": 1
+  },
+  {
+   "en": "'Projected from what is ticked right now. The CONTEXT-WINDOW gauge measures the real '",
+   "es": "'Proyección de lo que está marcado ahora. El medidor CONTEXT-WINDOW mide la solicitud '",
+   "n": 1
+  },
+  {
+   "en": "'request after you click Continue.'",
+   "es": "'real después de que haces clic en Continuar.'",
+   "n": 1
+  },
+  {
+   "en": "' Compact mode is ON.'",
+   "es": "' Compact mode está ACTIVADO.'",
+   "n": 1
+  },
+  {
+   "en": "' tokens added to every request (est.)'",
+   "es": "' tokens que se agregan a cada solicitud (aprox.)'",
+   "n": 1
+  },
+  {
+   "en": "'Adds live context to the questions that need it - its size varies.'",
+   "es": "'Agrega contexto en vivo a las preguntas que lo necesitan; su tamaño varía.'",
+   "n": 1
+  },
+  {
+   "en": "'Measuring what your selection costs...'",
+   "es": "'Midiendo cuánto cuesta tu selección...'",
+   "n": 1
+  },
+  {
+   "en": "'en-US'",
+   "es": "'es-MX'",
+   "maquina": "formato es-MX",
+   "n": 1
+  },
+  {
+   "en": "' of '",
+   "es": "' de '",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'status'",
+   "motivo": "valor de atributo (role)"
+  },
+  {
+   "en": "'polite'",
+   "motivo": "valor de atributo (aria-live)"
+  },
+  {
+   "en": "'%) · prompt ≈'",
+   "motivo": "igual en español (prompt se queda en inglés)"
+  },
+  {
+   "en": "' + tools ≈'",
+   "motivo": "igual en español (tools se queda en inglés)"
+  },
+  {
+   "en": "'[compact-costs] repaint skipped:'",
+   "motivo": "texto de log (console.warn)"
+  },
+  {
+   "en": "'unknown'",
+   "motivo": "valor de máquina (data-zone)"
+  }
+ ]
+}

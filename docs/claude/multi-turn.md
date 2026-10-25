@@ -1,0 +1,338 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# Tlamatini — Multi-Turn Mode, Create Flow, Parametrizer Sections
+
+> Current release: **[v1.90.0](../changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+## v1.90.0 — editable canvas and Interactor
+
+The current source has **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 direct/module + 67 wrapped + 12 ACPX/Skills + 10 supervisors), and 219 migrations**. Interactor adds a module/tool; do not register it as an Agent. The annotated tag resolves to `ebc5c3b4`; its GitHub release was published on 2026-10-22 and is marked Latest. `main` continues after the tag (`d274f89c`, `8c577d3a`, `939acf6b`, `5403fa49`) and still reports 1.90.0; migration 0219 (`939acf6b`) makes the catalog's account wizard request local Notifier pop-ups at its checkpoints (`docs/user-creation-wizard.md`). Dated source and frozen runs remain separate.
+
+- **Editor:** `agent_page_editing.js` owns the CodeMirror document, dirty baseline, encoding and save snapshot. `agent_page_canvas.js` owns load/refresh generation and cancellation. Markdown Preview and Source share the buffer; HTML/SVG remain inert source; PDF saving copies the original PDF. Never read a hidden compatibility element instead of the editor.
+- **Native files:** `canvas_file_views.py` and `native_dialogs.py` provide local Save As/read/save. Authentication, CSRF, loopback-only host access, account/session-bound capabilities and full revision checks prevent a browser name from becoming an arbitrary host path. Existing Windows replacement preserves metadata; DB backup/restore mechanics are unchanged.
+- **Interactor:** `agent/interactor/` connects the synchronous tool loop to the browser through session-authenticated `ws/interactor/`. Server-issued tab identity travels through ContextVar; bounded commands and receipts verify document/revision and full buffer. Browser messages acknowledge/access/stop; they cannot request arbitrary host-path commands.
+- **Tutor:** read fresh unsaved text, type a small segment, guide the next field and end mutations for the turn. Continue begins a fresh chat/read. Prepared choices match locally, with no per-key model call. User input and Stop win; hidden tabs pause with bounded recovery rather than repeating edits.
+- **Carriage:** migration 0218 seeds the Tool/catalog rows; `tool_gate_table()` supplies binding, Compact selection and cost labels. The offline editor bundle, Interactor browser files, frozen imports and source/static inventories must travel together.
+- **Intent:** password input is not ownership of every command; a wizard email field or DONE reply is not notification consent. Preserve genuine user-runs tutorials. The catalog wizard uses createsuperuser and therefore creates an administrative account.
+
+Contracts and evidence: [v1.90.0](../changes/2026-10-22-v1.90.0.md), [Canvas editing](../canvas-editing.md), [Interactor](../interactor.md), [Account wizard](../user-creation-wizard.md). Source/frozen rendering tests do not certify a rebuilt installed executable.
+
+
+> **Carried from v1.88.0 (tagged 2026-10-20):** [Terminater](../terminater.md) (workflow agent #86 and the Terminals area) and a private release that carries the builder's own data. Counts: 86 workflow agents, 67 wrapped chat agents, 109 built-in tools, 217 migrations. See the [v1.88.0 release record](../changes/2026-10-20-v1.88.0.md) and the change records [Terminater](../changes/2026-10-19-terminater.md) and [private-release data](../changes/2026-10-19-private-release-data.md).
+
+
+> **HEADLESS IS FORBIDDEN. ALL EXECUTION MUST BE VISIBLE.** Every automated test, command, diagnostic, script, build, agent, prompt and browser must run in a visible, forked foreground window on Angela's real desktop. Use visible CMD/PowerShell consoles and headed browsers (`headless=False`); keep output on screen and monitor live. No hidden/background execution, including CI or quick checks. If visibility cannot be confirmed, do not run. Mandatory policy: [visible execution](../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+> **Developer/product boundary (Angela, 2026-09-27):** these visibility requirements govern development and verification. They must not create extra windows, steal focus or expose internal diagnostics in the shipped UX. Direct chat dictation keeps status in chat and uses only Tlamatini's main console/log.
+
+## Voice input before model orchestration
+
+The microphone beside Send is an input path, available with the current chat
+modes. It starts Whisperer directly, closes capture on silence, transcribes and
+either submits once through the normal form or leaves an editable draft, as
+selected in Config → Mic. Review mode starts no task until manual Send.
+It does not select tools, invoke a planner,
+enable Multi-Turn/ACPX or bypass the request's normal permissions. Existing draft
+text and current toggles remain part of the request.
+
+The VOICE COMMANDS catalog cards still launch model-mediated workflows through
+`chat_agent_whisperer` and select the modes encoded in their cards. Their
+transcript read-back instructions are not a direct-button confirmation step.
+Dictation itself emits no wrapped-agent Exec Report row or Create Flow node.
+Those features observe the actual tools used after the text is submitted.
+
+The resident worker opens no extra product console. Development verification
+remains visible. See [direct dictation](../chat-microphone-design.md).
+
+## Multi-Turn Mode
+
+When **Multi-Turn is checked** in the toolbar:
+1. Prompt-shape validation is skipped
+2. Request-scoped global execution plan/DAG is built
+3. MCP contexts are prefetched selectively
+4. **The FULL enabled surface is bound** (see *Multi-Turn now binds the full surface* below) — every enabled tool/agent/skill, ACPX still filtered by its checkbox. *(Superseded 2026-06: the planner used to bind only a ≤20-tool subset via `max_selected_tools`; that starved the operator. The planner still runs for capability hints/ordering, but no longer DROPS a tool from the bind.)*
+5. Wrapped agents have background launch paths in the product implementation. For every execution performed while working on this codebase, the mandatory visible-execution policy applies: explicitly request foreground consoles and headed browsers, and do not execute a path that cannot be made visible.
+6. The MultiTurnToolAgentExecutor **deduplicates wrapped chat-agent calls** with identical arguments (prevents the LLM from launching the same sub-agent twice in a single request)
+7. After the final answer, the frontend renders a **"Create Flow"** button whenever **at least one agent executed successfully** during the request; it converts **only the successfully-executed** tool calls into a downloadable `.flw` workflow (the failed executions are dropped). *(There is no whole-answer SUCCESS/FAILURE classifier — the old `services/answer_analizer.py` was removed 2026-07-06.)*
+8. **Every model step is self-healed.** Each `llm.invoke()` in the executor is wrapped by a per-request `SelfHealingInvoker` (`agent/self_healing.py`) that retries distinct recovery tactics under a per-attempt watchdog, so a transient model failure never hangs, never discards work already done, and never yields a silent/untruthful answer (see *Self-healing model steps* below).
+
+When **unchecked**: legacy one-shot behavior is preserved exactly.
+
+The toggle is per-browser-session, sent as `multi_turn_enabled` with each request.
+
+### Short Follow-Up Message Scoring
+
+`global_execution_planner._select_planner_tool_names()` accepts a `chat_history_text` argument. When the current request is a short follow-up (≤4 meaningful tokens, e.g. "continue", "go ahead"), it boosts each capability's score with up to +15 points derived from the last 4 chat messages. This keeps tool context from evaporating on terse follow-ups and is wired in `rag/factory.py::_extract_chat_history_text()`.
+
+---
+
+## Self-healing model steps (2026-07-06)
+
+Every model call inside the Multi-Turn executor — `MultiTurnToolAgentExecutor` in `mcp_agent.py` — is routed through a per-request **`SelfHealingInvoker`** (`agent/self_healing.py`), not a bare `llm.invoke()`. The wrapped steps are: the no-tools direct answer, **each** tool-loop iteration, the repetition-breaker nudge/summarize retry, and the final wrap-up. Its contract is three promises — **never hang, never discard work, never lie**:
+
+- **Never hang.** Each attempt runs under a watchdog (`_run_with_watchdog`, on a worker thread) of `unified_agent_llm_step_timeout_seconds` (default **80 s**); a call that does not answer by the deadline is ABANDONED, never waited on. On a transient failure she keeps trying DISTINCT tactics — plain retry, back-off sleep, message-tail trim (`trim_messages`), plain-LLM fallback — up to `unified_agent_llm_step_max_tactics` (default **4096**). **Only the USER (Cancel)** or a fully-exhausted tactic ladder stops her; then `ModelStepUnrecoverable(reason, attempts, tactics_tried)` is raised.
+- **Never discard work (graceful degradation).** If `ModelStepUnrecoverable` fires after ≥1 agent already ran, the executor finishes GRACEFULLY from that real work (`_degraded_answer_from_results`) so the Create-Flow button and Exec report survive and the answer is truthful. Only a pure-Q&A with no work to preserve re-raises — and `rag/chains/unified.py::_invoke_unified_agent_with_retry` then short-circuits it straight to the fallback instead of re-running the whole expensive executor ladder.
+- **Never lie.** `recovery_preamble(healer.recovery_events)` is prepended to the FINAL, persisted answer on every exit path (they all funnel through `_build_result_dict`), so the user is always told what Tlamatini went through — never a silent stall or a lying "no tools ran".
+
+**Live status.** While she retries, `register_status_broadcaster` (wired in `consumers.py` for every Multi-Turn request, independent of Ask-Execs, keyed by the same user id, torn down in a `finally`) pushes `agent_message` frames to THIS user's chat so the retries are visible. `mcp_agent.py` now ALWAYS forwards `executor_payload["ask_execs_user_id"]` (previously only under Ask-Execs) so the healer has a user id to emit to.
+
+**Frontend: those status lines must NOT re-enable the controls (2026-07-07).** The status frames are shaped exactly like the final answer, so the browser must not treat one as "done". `agent_page_chat.js::appendChatMessage` routes them through `isSelfHealingStatusMessage()` (`agent_page_ui.js`) and RE-ASSERTS `disableControlsDuringOperation()`, so the Send button stays **Cancel** and the input stays disabled until the REAL final answer arrives. The matcher is ANCHORED (strip leading non-letters, then `startsWith('Tactic #') / "Tactic '"`) on purpose — a substring match would collide with the `recovery_preamble` "SELF-HEALING NOTE —" banner that quotes those same lines in the final answer and would jam the button on **Cancel forever**. The "🛑 You cancelled" line is deliberately NOT matched (after a cancel the controls SHOULD return). See `docs/claude/recent-fixes.md` (2026-07-07).
+
+**Config:** `unified_agent_llm_step_max_tactics` (4096) / `unified_agent_llm_step_timeout_seconds` (80). Coverage: `agent/test_self_healing.py` + `agent/tests.py`; live-validated by `Tlamatini/tests_e2e/`. Do NOT remove the preamble, silence a failure, or wait on a model step without the watchdog.
+
+---
+
+## The Model Brain in the tool loop (2026-10-08, `v1.76.0`)
+
+While the Model Brain is on (`model_brain: auto`, the default), `mcp_agent.py` builds the Multi-Turn executor's model as `model_brain_chat.BrainChatOllama`, with the sampling, `think` level and `num_ctx` that `agent/model_brain.py` planned for THAT model (see `architecture.md` → *The Model Brain*). Inside one answer, between tool calls, the model gets its own earlier reasoning back (`thinking`, kept on the `AIMessage` as `reasoning_content`), as reasoning models require; it is dropped across user turns. The context gauge counts that reasoning. The per-attempt watchdog of *Self-healing model steps* is unchanged; only the first-chunk / stall clocks (`llm_liveness.py`) were erased, because a long think is not a failure.
+
+---
+
+## Multi-Turn now binds the full surface (2026-06)
+
+When Multi-Turn is on, `CapabilityAwareToolAgentExecutor.invoke` (`mcp_agent.py`) binds **every enabled tool / agent / skill** — the complete request-scoped surface — **not** a narrow planner subset. ACPX is still filtered by its own checkbox (`agent.acpx.filter_acpx_tools`), so the only thing the bind drops is the ACPX/Skill surface when ACPX is unchecked.
+
+This is the **fix for the starved-operator bug**: with 88 agents present at the time, the old ≤20-tool planner subset routinely left the LLM reporting *"I don't have a file-writing or shell tool bound this turn,"* because the keyword-scored selection had crowded out the basics. The planner **still runs** — its capability hints and ordering are still computed and its summary is still forwarded into the prompt — but it **no longer removes a tool from the bind**.
+
+### Cost trims that keep this affordable
+
+Binding everything would balloon the prompt and re-pay the model's KV-cache cost every turn, so two trims offset it:
+
+1. **One short line per tool in the system-prompt tool list.** `bind_tools` already sends the full name / description / parameter schema to the model out-of-band, so the multi-line tool descriptions that used to be repeated inside the system prompt were ~5k redundant tokens/turn. The system-prompt list is now a single short line per tool.
+2. **`ChatOllama keep_alive`** — honours `OLLAMA_KEEP_ALIVE` (default `-1`), so the stable system-prompt prefix's KV cache is reused between turns instead of being recomputed each time.
+
+---
+
+## Step-by-Step Mode — one action at a time (Multi-Turn runtime modifier)
+
+A toolbar checkbox (`#step-by-step-enabled`, sent per-request as `step_by_step_enabled`) that, like **Ask Execs**, is a **Multi-Turn runtime modifier**: with it on, the LLM gives **ONE concrete action at a time** and **waits for the user** to come back with a READY / screenshot / log / output before issuing the next action. It is for hands-on, interactive debugging and setup where each step depends on what the previous one actually produced.
+
+### Plumbing path
+
+The flag rides the same rails as Multi-Turn and is injected into the system prompt:
+
+browser (`step_by_step_enabled`) → `consumers.py` → `rag/interface.py` → `rag/chains/unified.py` → `mcp_agent._build_system_prompt` (which injects the Step-by-Step guidance into the prompt).
+
+### Whitelist contract (critical)
+
+`step_by_step_enabled` **MUST stay in `UnifiedAgentChain.invoke`'s payload-rebuild whitelist** — the same drop-on-rebuild bug class that once broke `exec_report_enabled` and that the `ask_execs_enabled` contract above guards against. Drop it from the whitelist and the mode silently never engages.
+
+### Bypass-validation interaction
+
+`bypass_prompt_validation` is now computed as `multi_turn_enabled OR acpx_enabled OR step_by_step_enabled`, so a request with only Step-by-Step checked still skips prompt-shape validation (these are operator flows, not Q&A).
+
+---
+
+## Ask Execs — per-tool permission prompt (Multi-Turn-only modifier)
+
+The chat toolbar's fourth checkbox, **Ask Execs** (between **ACPX** and **Add internet context**), makes the Multi-Turn executor **BLOCK on a browser Proceed/Deny dialog before each RISKY Tool/MCP/Agent runs** — "risky" meaning the explicit allowlist in the table below (command/script runners + destructive + human-contacting + remote/network), **not** literally every state-changing tool. A **Deny halts the whole chain**. It is sent per-request as `ask_execs_enabled` and, like Exec report, is **only honoured while Multi-Turn is on** (the checkbox is disabled+greyed otherwise; every backend read re-gates it on `multi_turn_enabled`). Unchecked → byte-for-byte the legacy Multi-Turn flow.
+
+### The bridge (sync executor ↔ async consumer)
+
+The tool executor is synchronous and runs in a worker thread (`sync_to_async(ask_rag, thread_sensitive=False)`), so it cannot `await`. `agent/exec_permission.py::ExecPermissionBroker` bridges it:
+
+1. `consumers.queue_llm_retrieval` registers one broker per request (keyed by `conversation_user.id`) when `ask_execs_enabled`, and unregisters it in a `finally`. Its emit callback schedules an `exec_permission_request` group frame onto the consumer's event loop via `asyncio.run_coroutine_threadsafe`.
+2. In `MultiTurnToolAgentExecutor.invoke`'s per-tool loop — **after** the dedup + quota checks, **before** `tool.invoke` — if `_requires_exec_permission(tool_name)`, it calls `broker.request_permission(detail)` which emits the frame and **blocks on a `threading.Event`**.
+
+### ⚠️ WHICH tools prompt — an ALLOWLIST, not "everything" (corrected 2026-07-14)
+
+`_requires_exec_permission` consults an **ALLOWLIST**, `mcp_agent.py::_ASK_EXECS_REQUIRED_TOOLS` — it does **NOT** prompt for every state-changing tool. (This doc used to claim it did; the claim was **wrong**, and the gap was real: **Deleter could wipe a glob of files, and Whatsapper could message a real human, with no prompt at all.** Angela found it live on 2026-07-14.)
+
+**Angela's policy — tiers A + D are gated; tiers B and C deliberately are NOT.** *(Tier B was gated on 2026-07-14 and **REVERSED on 2026-07-26**: "Messages must be able to be sent without asking, it depends only on AI desisicion." Sending is the LLM's own judgement call — no prompt stands between Tlamatini and a message. What still protects a send: the LLM's judgement, the Exec Report row it always produces, and the user's Cancel. Do NOT re-gate messaging "for safety" — `agent/test_ask_execs_allowlist.py::test_messaging_agents_are_NOT_gated` fails if you do.)*
+
+| | Gated? | Tools |
+|---|---|---|
+| command / script runners | **ASK** | Executer, Pythonxer, **Terminater**, SSHer, Kalier, Dockerer, Kuberneter, SQLer, Mongoxer, Gitter, Jenkinser, PSer, J-Decompiler (+ the direct `execute_command` / `execute_file` / `decompile_java`) |
+| **A** — destroys/overwrites data | **ASK** | Deleter, Mover, File-Creator, Editor, De-Compresser, `unzip_file`, PDFer, LaTeXer |
+| **B** — messaging / reaches real people | **no-ask (ON PURPOSE, 2026-07-26)** | Emailer, Whatsapper, Telegrammer, Instant Messaging Doctor |
+| **D** — remote systems / network | **ASK** | SCPer, Apirer, Nmapper, Discoverer, Crawler, NetSpeed-Calculator (reaches remote hosts AND deliberately saturates the link with ~100-200 MB of metered traffic per full run) |
+| **C** — desktop UI + hardware | **no-ask (ON PURPOSE)** | Keyboarder, Mouser, Windower, Playwrighter, STM32er, ESP32er, Arduiner, ESPHomer, Blenderer, Unrealer |
+| read-only / observational / management-polling / crypto / `invoke_skill` / ACPX | no-ask | Globber, Grepper, the interpreters, the media agents, `chat_agent_run_*`, … |
+
+**Tier C is not an oversight.** Angela: *"I need the AI moves fast and they are operations of visible proceding: so don't make C set ask"* — you SEE the pointer move, the window shift, the board flash, so a prompt buys no safety and only costs speed. **Do not "helpfully" gate tier C.**
+
+**When you add a new agent**: if it deletes/overwrites data, contacts a human, or reaches a remote system, **add its tool name to `_ASK_EXECS_REQUIRED_TOOLS`** — it is NOT automatic. Pinned in both directions by `agent/test_ask_execs_allowlist.py`.
+3. The browser shows the modal (`showExecPermissionDialog`) and replies with an `exec-permission-response` frame → `consumers.receive` → `resolve_permission(user_id, request_id, decision)` sets the event.
+4. **Proceed** → the tool runs. **Deny** → `self._exec_denied` is recorded and the executor returns immediately (no further tools, this turn or later).
+
+The detail dict shown in the dialog: `tool_name`, `agent_display`, `kind` (Tool / Agent / MCP-ACPX / Skill via `_classify_tool_kind`), `program` (`_extract_exec_report_command`), `shell` (`_infer_execution_shell`), and pretty-printed `parameters`.
+
+### Fail-safe contract (do NOT weaken)
+
+- Emit failure / mid-flight Cancel / broker `close()` (browser disconnected) all resolve to **`deny`** — never run an unconfirmed state-changing tool. The wait loop polls `cancel_generation` on a short tick so a Cancel never deadlocks the thread.
+- The **only** fail-OPEN case is "no broker registered" (unit tests / detached browser) — the consumer always registers one when `ask_execs_enabled`, so production never hits it.
+
+### Runtime relax — unchecking Ask Execs mid-run (2026-05-29)
+
+The flag captured at submit decides whether a broker is **registered** for the run; it cannot be un-captured. But the user CAN relax (or re-arm) an already-registered broker mid-flight by toggling the **Ask Execs** checkbox while a Multi-Turn run is executing:
+
+1. The checkbox `change` handler (`agent_page_init.js`) sends a `set-ask-execs-runtime` frame (`{message, type, ask_execs_runtime_enabled}`) **only when `inLongOperation === true`**. The toolbar toggle checkboxes are deliberately NOT disabled by `disableControlsDuringOperation()`, so the box stays clickable during a run.
+2. `consumers.receive` routes it to `exec_permission.set_broker_auto_proceed(user_id, auto_proceed=not enabled)`. Unchecked → `auto_proceed=True`; re-checked → `auto_proceed=False`. Returns `applied=False` (harmless no-op) if no broker is registered (run started with Ask Execs off — nothing to relax).
+3. `ExecPermissionBroker.set_auto_proceed(True)` (a) makes every **future** `request_permission` return `"proceed"` immediately without emitting a prompt, and (b) resolves any **currently-blocking** prompt to `"proceed"` (mirrors `close()`, which resolves pending to `"deny"`). `set_auto_proceed(False)` re-arms prompting. It is a **no-op after `close()`** — a torn-down request never springs back to life.
+4. When relaxing mid-run, the frontend also calls `dismissExecPermissionDialogForRuntimeProceed()` (`agent_page_dialogs.js`) to silently close any open prompt — it sets `_execPermDecisionSent = true` first so the dialog's close handler does NOT fire a stale `deny`.
+
+Direction asymmetry by design: relaxing a run that **started** with Ask Execs **on** works (broker exists). Turning Ask Execs **on** mid-run for a run that started with it **off** does nothing that run (no broker was registered) — it takes effect on the next submit. Coverage: `ExecPermissionBrokerTests` (5 auto-proceed tests).
+
+### Denial propagation + banner
+
+`exec_report_denied` flows executor `_build_result_dict` → both chains' `result_dict` (independent of `exec_report_enabled`) → `interface.ask_rag` stores `last_exec_report_denied` in `global_state` → consumer reads+clears it → `services/response_parser.process_llm_response(..., exec_report_denied=...)` appends `_render_exec_denied_banner(...)` **after** the Exec report tables but **before** `save_message` (so a chat reload restores it). The banner (big red ⛔ "Execution interrupted") is NOT gated on the Exec report toggle.
+
+### Whitelist contract (critical)
+
+`ask_execs_enabled` **and** `conversation_user_id` (the executor finds its broker by user id) MUST stay in `UnifiedAgentChain.invoke`'s payload-rebuild whitelist — same drop-on-rebuild bug class that once broke `exec_report_enabled`. Both `UnifiedAgentChain` and `UnifiedAgentRAGChain` forward `ask_execs_enabled` + `ask_execs_user_id=conversation_user_id` into the executor sub-payload and return `exec_report_denied`. Adding a new payload flag here needs the same care. Both JS `exec-permission-response` frames include a `message` key because `consumers.receive` reads `text_data_json['message']` unconditionally. Full contract + coverage list in `docs/claude/recent-fixes.md` (2026-05-29).
+
+---
+
+## Create Flow from a Multi-Turn Answer
+
+Every Multi-Turn response in which **at least one agent executed successfully** can be converted into a visual `.flw` workflow by clicking the **"Create Flow"** button rendered in the chat message header. There is **no whole-answer SUCCESS/FAILURE classifier** (dropped 2026-07-06): the button's only precondition is "Multi-Turn ran and ≥1 agent succeeded", and the generated flow is built from **only the successfully-executed agents** — failed executions are dropped.
+
+Pipeline:
+
+1. **Tool-call log capture**: `MultiTurnToolAgentExecutor` in `mcp_agent.py` records each tool invocation into a per-request `_tool_calls_log`, each entry carrying a `success` boolean. Management tools (`chat_agent_stat_getter`, etc.) are excluded.
+2. **WebSocket broadcast**: `consumers.py` attaches `tool_calls_log` and `multi_turn_used` to the outgoing `agent_message` frame. *(The old LLM-based SUCCESS/FAILURE answer classifier — `answer_analizer.py::analyze_answer_success()` — was removed 2026-07-06; no `answer_success` flag is computed or broadcast anymore.)*
+3. **Button gate (frontend)**: `agent_page_chat.js` renders the "Create Flow" button whenever Multi-Turn was enabled, the tool-call log contains **at least one successful call** (`_hasSuccessfulToolCalls`), and the user is not anonymous — then validates every canonical agent name against the live Agents registry (`_missingAgents`, itself filtered to successful calls) before enabling it. There is no verdict on the prose answer.
+4. **Flow synthesis (frontend draft)**: `_generateAndDownloadFlow()` walks **only the successfully-executed tool calls** (`entry.success === true`), maps each tool name to its sidebar agent display name, lays out one node per successful call, wires the sequential `Starter → … → Ender` chain, and assembles a legacy-shaped `flowData` object. Failed executions are never turned into nodes.
+5. **Backend normalization (`/agent/flow_from_tool_calls/`)**: `_normalizeChatFlowBeforeDownload()` POSTs the draft (plus a **successful-only** `tool_calls_log`) to `flow_from_tool_calls_view`, which runs it through `flow_spec.normalize_flow_payload()` and returns `flow_spec_to_legacy_json(spec, redact=True)` — a registry-canonical `.flw` whose agent names match the contracts and whose `secret_paths` are stripped. **Failure mode**: if the request fails (offline frozen install, backend down) the browser falls back to the original legacy draft so the user still gets a usable file.
+6. **Download**: Whichever shape comes back is `Blob`-wrapped and downloaded under a timestamped filename.
+
+Files involved:
+
+- `agent/services/response_parser.py` — strips `END-RESPONSE` sentinel and related artifacts *(no longer runs any answer classifier)*
+- `agent/services/flow_spec.py` — `normalize_flow_payload` / `flow_spec_to_legacy_json` (called by `flow_from_tool_calls_view`)
+- `agent/services/flow_compiler.py` — shared `compile_flow_payload` so chat-generated flows produce the same registry-canonical artifacts as canvas-generated ones
+- `agent/mcp_agent.py` — `_tool_calls_log` accumulation and wrapped-agent dedup
+- `agent/consumers.py` — broadcasts `tool_calls_log` + `multi_turn_used`
+- `agent/views.py::flow_from_tool_calls_view` — backend normalizer endpoint
+- `agent/static/agent/js/agent_page_chat.js` — button render + `_generateAndDownloadFlow` (now `async`) + `_normalizeChatFlowBeforeDownload`
+- `agent/static/agent/css/agent_page.css` — `.create-flow` button styling
+
+---
+
+## Multi-Turn on a small model — Compact mode (2026-10-01, shipped in `v1.74.0`; the switch 2026-10-02, shipped in `v1.75.0`)
+
+Multi-Turn normally binds the FULL enabled surface. With the toolbar's **Compact mode** box ON — switched on by the user, or switched on and LOCKED because the model cannot hold everything activated — `CapabilityAwareToolAgentExecutor.fit_request` binds EXACTLY the tools the user ticked in Config ▸ Configure MCPs / Configure Agents (Current-Time to start with), under the compact prompt; the planner's hint is withheld and External MCPs stay paused. ACPX tools ride along only when their rows are ticked AND the toolbar's ACPX box is on. A first step Ollama cuts is re-fitted and resent; if her selection still does not fit, the 4th attempt is answered and the chat shows a CONTEXT-WINDOW warning. A model that holds everything gets exactly the Multi-Turn request described above while the box is OFF. See `architecture.md` → *Compact mode*.
+
+**Her self-knowledge in the Multi-Turn prompt — the Self-modify switch (2026-10-03, commit `70aeeb87`; shipped in `v1.76.0`).** `Tlamatini.md` (size measured from the current document) rides in the Multi-Turn system prompt only while the toolbar's **Self-modify** box is ON (the default) *and* the model can hold it. `fit_request` measures the request without it, adds it, and keeps the verdict; a model that cannot hold it shows the box unticked, greyed and `Self-modify 🔒` (locked OFF — the server refuses a forged tick), and the prompt then carries the one-line `SELF_MODIFY_OFF_NOTICE` instead of the identity bullets and the `<self_knowledge>` section. In Compact mode it is appended to the compact prompt only when it fits. It is measured SEPARATELY from Compact mode: the STRICT check that locks Compact mode ON is measured WITHOUT the self-knowledge, so Self-modify can never lock Compact mode ON by itself. The executor cache key carries `__self__`, so the ON and OFF prompts never share a cached executor. The box exists only where self-modify is possible (always in a source run; a frozen build only with `build.py --self-modify`). See `architecture.md` → *The Self-modify switch*.
+
+## Dropped messages and Multi-Turn (2026-09-30, shipped in `v1.73.0`)
+
+The **Drop** button on a chat card deletes that message's `AgentMessage` row. Every chain, including both unified (Multi-Turn) chains, loads its history with `DBChatHistoryLoader.load(limit=8)` on each request, so the next Multi-Turn plan and tool loop are built as if the dropped message had never existed. There is no reconnect, no cache to clear, and the messages before and after it stay untouched. Three consequences:
+
+- **Drop is refused while an answer is running** (`AgentConsumer._active_run`), so a request can never lose a message from under its own feet.
+- **Dropping an answer card also removes its Create Flow button** — the button lives on that card. Download the `.flw` first if you want it.
+- **Work already done stays done.** Files, messages sent, agent runs and Exec Report rows are real side effects; dropping the message that asked for them does not undo them. A fact written to the `memory` External MCP also stays (the dialog says so).
+
+Contract: `docs/claude/architecture.md` → *Chat history and the Drop button*; story: `recent-fixes.md` (2026-09-30).
+
+## Unified Section Format (Parametrizer)
+
+All declared section-generating agents (53 currently) use a single output format:
+
+```
+INI_SECTION_<AGENT_TYPE><<<
+key1: value1
+key2: value2
+
+multi-line body content (becomes 'response_body')
+>>>END_SECTION_<AGENT_TYPE>
+```
+
+Rules:
+- `<AGENT_TYPE>` = UPPERCASE base name (e.g., APIRER, CRAWLER, GOOGLER)
+- KV header before first blank line; body after first blank line
+- Each section MUST be emitted in a **single `logging.info()` call** (atomic)
+- One section per output unit (N results = N sections)
+
+Registration: declare output fields in `services/agent_contracts.py`, then regenerate `flow_catalog.json` with `python scripts/update_flow_catalog.py`. Parametrizer derives parser membership from that catalog; deployment refreshes it. Update wrapper promotion separately where needed.
+
+⚠️ **`views.PARAMETRIZER_SOURCE_OUTPUT_FIELDS` is DERIVED** — it is literally
+`= get_parametrizer_source_fields()`, so hand-editing it is a no-op at best and
+fresh drift at worst. The old "3 places" instruction also named a **Supported
+Source Agents** table in `README.md` that no longer exists; the live list is the
+one below.
+
+The generic parser (`_parse_section_content` + `_section_regex`) in `parametrizer.py` handles all agents with ~90 lines. No per-agent parser code needed.
+
+Registered source agents (generated catalog, 50): acpxer, analyzer, apirer, arduiner, audioplayer, blenderer, camcorder, crawler, de_compresser, discoverer, editor, esp32er, esphomer, file_extractor, file_interpreter, flowcreator, gitter, globber, googler, grepper, image_interpreter, instant_messaging_doctor, kalier, keyboarder, kuberneter, kyber_cipher, kyber_decipher, kyber_keygen, latexer, mcp_doctor, mouser, netspeed_calculator, nmapper, pdfer, playwrighter, pptxer, prompter, recorder, reviewer, shoter, stm32er, summarizer, talker, telegrammer, unrealer, video_analyzer, videoplayer, whatsapper, whisperer, windower.
+
+## Desktop control and flow contracts — 2026-09-15
+
+Mouser now resolves explicit physical, window and screenshot coordinates; Keyboarder binds Unicode/key delivery to a verified window; Shoter publishes capture geometry. `input_sent` is delivery evidence, not application success, and a failed or interrupted input segment must be observed before replay.
+
+Parametrizer derives its parser registry from current contracts and validates complete typed mappings. FlowCreator selects from all 86 installed agents and validates the generated graph before publishing; FlowHypervisor separates execution, kill and observation relationships and uses current desktop receipts/timing. GUI-Manager remains design only.
+
+See [configuration, examples and limitations](../desktop-input-and-flow-contracts.md), the [complete generated coverage inventory](../agent-coverage.md), and the [GUI-Manager design](../GUI-Manager-design.md).
+
+## PDFer style requests in Multi-Turn — 2026-09-15
+
+Use `chat_agent_pdfer` for a PDF composed from an answer, Markdown, HTML, plain text or images. Discover the collection with `mode: styles`: 24 explicit IDs across playful/nursery, cyberpunk, cosmic, electronics and Tlamatini families. The result is `status: inspected`, with the catalog in the response body and no PDF output.
+
+Keep document purpose in `nuance` and visual appearance in `style`. For example, `mode: markdown`, `nuance: science`, `style: cosmic_nebula`, a title and literal `input_text` create a science document with a cosmic identity. Empty/auto style keeps the existing 20-theme automatic design. Exact aliases are supported; unknown styles fall back with a diagnostic. A style never raises the semantic decoration ceiling.
+
+Carry `style` and any `predominant_color` through Create Flow. `style` and `style_family` are structured PDFer outputs available to Parametrizer alongside existing fields; no previous field is renamed. Preserve literal `input_text` and explicitly selected page/font/color controls. Custom CSS selects legacy rendering under `engine: auto`; styles apply to atelier composition, not to existing merged pages or image-only layouts.
+
+For a document result, inspect `status`, `output_path`, `layout_clean` and the audit/repair details. `created` establishes file creation, not a clean audit; blank audit fields provide no layout verdict. Catalog discovery has no attachment to deliver. The existing Ask-Execs gate is unchanged. [Catalog, examples and complete result fields](../../Tlamatini/agent/agents/pdfer/STYLES.md).
+
+## LaTeXer style requests in Multi-Turn — 2026-09-15
+
+Use the existing `chat_agent_latexer` tool. `action: list_styles` returns 30 identities without probing TeX; `action: scaffold_compile` combines a `template` structure, explicit `style`, title and LaTeX body into a PDF. For example, `template: report` with `style: cosmic_nebula` chooses a report with cosmic styling. Style names are not inferred from prose.
+
+Carry `style`, `subtitle`, `style_mode`, `style_decoration`, `style_cover` and `predominant_color` through Create Flow. Preserve `style_cover: false` as a boolean. Use `content_b64` for template bodies and `input_text_b64` for fragments when chat escaping would damage source. Complete source documents/projects keep their own preamble, so omit style for those calls.
+
+The four design result fields (`style`, `style_family`, `style_mode`, `style_count`) are available alongside normal operation fields. `listed` with `style_count: 30` means catalogue discovery, not a created PDF. Check `status`/`success` and `output_path` before claiming a build. The existing Ask-Execs tool gate is unchanged. [Full controls and examples](../../Tlamatini/agent/agents/latexer/STYLES.md).
+
+## PPTXer style requests in Multi-Turn — 2026-09-15
+
+Use `chat_agent_pptxer` with `action: create`, `input_text`, and an explicit `nuance`, such as `blueprint` or `botanical`. There are 36 named treatments, including 12 added visual presets, and 17 font pairings. Empty `nuance` keeps automatic content classification. Carry `nuance`, `predominant_color`, `background_mode`, `font_pairing`, `density`, and the other existing options into Create Flow using their configuration names.
+
+Complete long text may produce continuation slides. Inspect `status`, `output_path`, `layout_clean`, `ground_truth`, and audit confidence. `created_with_findings` means a deck exists and requires review; a successful save or approximate preview is insufficient evidence of native visibility. The existing actions and Ask-Execs gate remain unchanged. [All styles and verification scope](../../Tlamatini/agent/agents/pptxer/STYLES.md).
+
+## Video-Analyzer content analysis
+
+Video-Analyzer supports `analysis_type: robotics` (default), `transcription`, and `summary`. Robotics preserves the deterministic motion gate and dual-vision/merge verdict, with `PASS_OK` only on two explicit independent passes. Transcription reads selected video audio tracks (`audio_tracks: all` or `0,1`) using Whisperer's local faster-whisper backend, GPU auto/CPU fallback and timestamped segments; it never opens a microphone. Summary combines speech with two independent visual observers over frame batches spanning the whole clip, then synthesizes an overview, chronology, readable screen text, facts, steps, decisions, action items and limitations. Content modes accept static scenes, bypass the motion gate, and emit `TLM_ANALYSIS::` tokens rather than robotics verdicts. Missing audio/speech and partial failures are explicit. Each content run saves transcript, segments, report and full analysis artifacts. Parametrizer and wrapped chat results expose `analysis_type`, `analysis_token`, `transcript`, `summary`, `audio_status`, timestamped `segments_json` and artifact paths; the body remains `response_body`. Input remains a file, wildcard, newest video in a folder or Camcorder pool name, or a web link (YouTube and other sites): Video-Analyzer downloads it itself (one item; sound only for transcription), joins picture and sound with PyAV when ffmpeg is absent, keeps a self-updating private yt-dlp, names every download failure, and adds `source_url`/`source_title` to its result. Always starts downstream agents; sampled perception is not exhaustive.
+
+See [configuration, routing, Parametrizer mappings and limitations](../../Tlamatini/agent/agents/video_analyzer/README.md).
+
+## Terminater in Multi-Turn (2026-10-19, shipped in `v1.88.0`)
+
+`chat_agent_terminater` is the visible, user-supervised sibling of Executer ([contract](../terminater.md)).
+Guidance the tool description gives the model, and the loop must respect:
+
+* **Prefer it when the user should SEE the work** (a walk-through, Step-by-Step mode, an installer that asks
+  questions, CMD beside PowerShell, a value only the user can supply); use Executer when only the text matters.
+* **Typing is slow on purpose** (about 50 words per minute): do not shorten or split a command to save time.
+* **Hand-over syntax** is `<<USER:hint>>` inside `text`; pass it literally. `secret=true` keeps that part out of
+  every log and result. An unfinished hand-over ends as `operator_required`.
+* It is on the **Ask Execs** allowlist as a command runner. The permission dialog previews the exact text and
+  the shell ("TERMINATER COMMAND TO TYPE"); a Deny halts the chain like any other runner.
+* The result words feed the verdict engine: `command_failed` and `hung` are red even though the terminal worked,
+  so a Forker can branch on `{status}`; the Exec Report row uses the generic capture with the native
+  **Phosphor Console** caption.
+* The Catalog of Prompts has three SAFE cards (127 FIRST LOOK, 128 HAND-OVER, 129 GUIDED TOUR, the last a
+  Step-by-Step card) in *Run & Execute*.
+
+## Multi-Turn and ACPX inside the Prompt Flow Panel (2026-09-25)
+
+Each **Prompt** and **Programmed Prompt** operation in a Prompt Flow Panel diagram (`.fpmt`) carries its own `multi_turn` and `acpx` switches, and `PromptFlowPanelRuntime.prompt()` forwards them to `ask_rag` as `multi_turn_enabled` / `acpx_enabled` — the same per-request flags the chat toolbar sends. So one flow can mix plain Q&A steps with full operator steps that bind every enabled tool and agent.
+
+- **ACPX requires Multi-Turn.** Both validators (`prompt-flow-panel-model.js` and `services/prompt_flow_panel.py`) reject an operation with `acpx: true` and `multi_turn: false`, mirroring the chat, where ACPX tools are only bound inside Multi-Turn.
+- **Ask-Execs, Exec Report and Step-by-Step are not sent.** A flow runs unattended between its own User Input steps, so there is no Proceed/Deny prompt to answer and no Exec Report table is rendered — the run's output appears in the panel's **Run output** log instead.
+- **Run output is a viewport (2026-10-04).** Its 5–95% divider changes only the canvas/log allocation; each pane scrolls independently at unchanged zoom, geometry and text size. Per-user layout storage is separate from portable flow files, flow Undo/Redo, model context and execution state.
+- **The run key, not the chat user id, is the `conversation_user_id`.** It is `prompt_flow_panel_<user pk>_<uuid4>`, so self-healing status lines (`register_status_broadcaster`) and cancellation (`cancel_run_epoch`) are scoped to that one run and never cross into the user's chat tab.
+- **History is per run.** The last 16 messages of the run's own conversation go with each prompt. **Clean History** clears it and resets `{{last_output}}`; **User Input** appends the user's reply as a human turn.
+- **User Commentary is static (2026-10-03).** Its speech-bubble text, including `{{last_output}}`, remains literal. It has no ports/Start state, consumes no playback step and never invokes a model, tools, ACPX, a reply dialog or a history write. Version 2 saves distinguish `user_input` from `user_commentary`; version 1 executable commentary migrates to User Input with the same connections, settings and cancellation behavior.
+
+See `docs/claude/architecture.md` → *Prompt Flow Panel runtime* and [the user guide](../prompting-flow-designer.md).
+
+## Image/video error reporting and recovery (2026-09-26)
+
+Image/video model failures accumulate in one shared, themed, non-modal fatal-error dialog with an audible notification. Tlamatini keeps running: preserve its retry/tactic ladder, cancellation controls and configured flow recovery routes. Keep the configured model identities; never report a surviving observer or raw concatenation as successful analysis. Dismiss hides the dialog while retaining its history; new failures reopen it. See [the shared behavior and verification contract](../visual-analysis-errors.md).
+
+**Graphical commentary update (2026-10-04):** User Commentary has no configuration dialog. Its floating toolbar formats selected ranges or subsequent typing with mixed fonts/sizes/colors/bold/italic/underline; eight borders/corners resize the bubble directly. Both validators preserve allowlisted rich `runs` whose literal concatenation equals `text`, normalize older plain version 2 notes, and retain version 1 User Input migration. Full-text containment, static runtime isolation and portable/draft persistence remain required. See [the designer guide](../prompting-flow-designer.md).

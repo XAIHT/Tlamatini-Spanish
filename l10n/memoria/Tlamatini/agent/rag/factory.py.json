@@ -1,0 +1,362 @@
+{
+ "archivo": "Tlamatini/agent/rag/factory.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "f\"Warning: SystemRAGChain not available: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: FileSearchRAGChain not available: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [LLM-STOP] {config.get('chained-model')}: {len(stops)} stop sequences \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"(an Ollama request may carry at most {STOP_LIMIT}) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [MODEL-BRAIN] not applied to the chat chain ({exc}); legacy parameters kept ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error fetching system context: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error fetching files context: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [Phase3 Planner] Global execution plan built ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [Phase3 Planner] Failed to build global execution plan: {exc} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [SystemRAGChain] Integration enabled - system context will be fetched when needed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [SystemRAGChain] **WARNING({warning_suffix})** Integration disabled - SystemRAGChain not available\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [FileSearchRAGChain] Integration enabled - file search context will be fetched when needed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [FileSearchRAGChain] **WARNING({warning_suffix})** Integration disabled - FileSearchRAGChain not available\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [Phase2] No MCP-backed context capabilities selected for this request ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [Phase2] Selected context capabilities: {list(selected_contexts)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [Phase2] Fetching system context ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [Phase2] Skipping system context for this request ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [Phase2] Fetching files context ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [Phase2] Skipping files context for this request ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: failed to build loaded-documents fallback context ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"FILE MANIFEST (loaded files):\\n\"",
+   "motivo": "contexto para el LLM"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] {model}: tool-less chain prompt compacted {len(prompt_string):,} -> \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{len(text):,} chars ({info.get('prompt_profile')}) for a {window.tokens:,}-token \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"window ({window.source})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] tool-less prompt fit failed open ({fit_err})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error building prompt-only chain: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Bearer {token}'",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "\"Error: LLM model not found or Ollama is not running.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Found ollama.Client: {ollama_client_instance}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Found httpx.Client: {httpx_client_instance}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Loaded-documents fallback context prepared ({len(loaded_context)} chars) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Apply all of the Rules only to the **CURRENT** human input ({input}); ignore chat_history for all of the Rules.\"",
+   "motivo": "instrucción para el LLM (system prompt)"
+  },
+  {
+   "en": "\"[SystemRAGChain] Integration enabled - system context will be fetched when needed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"[SystemRAGChain] Integration disabled - SystemRAGChain not available\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"[FileSearchRAGChain] Integration enabled - file search context will be fetched when needed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"[FileSearchRAGChain] Integration disabled - FileSearchRAGChain not available\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- UnifiedAgentChain: Building tool-enabled chain ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Building retrieval chain...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: failed to split documents ({e}); falling back to no-docs contextual chain.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- UnifiedAgentChain: Building tool-enabled chain (no docs path) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Error: Embeddings model not found or Ollama is not running.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- UnifiedAgentRAGChain: Building tool-enabled RAG chain ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [BINARY-GUARD] DISABLED (binary_context_detection=false) - \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"binary files will be loaded as text\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [BINARY-GUARD] ENABLED - sampling {settings.get('sample_bytes')} bytes/file, \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"control-byte limit {settings.get('control_ratio')}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [BINARY-GUARD] Extra binary extensions: {sorted(extra)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [BINARY-GUARD] Forced-text extensions: {sorted(forced)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [BINARY-GUARD] {dropped} binary file(s) OMITTED from the \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"context / embedding chain ({scope}) - per-file listing disabled\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [BINARY-GUARD] No binary content detected ({scope}) - \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"nothing omitted\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"File {base_name} is excluded by filename.\"",
+   "motivo": "excepción interna (DirectoryLoader la descarta)"
+  },
+  {
+   "en": "f\"File {base_name} is excluded by extension {ext}.\"",
+   "motivo": "excepción interna (DirectoryLoader la descarta)"
+  },
+  {
+   "en": "f\"File {os.path.basename(file_path)} is excluded as binary content \"",
+   "motivo": "excepción interna (DirectoryLoader la descarta)"
+  },
+  {
+   "en": "f\"--- Agent: {descr} [agent_{descr.lower()}_status] - Status: {global_state.get_state('agent_'+descr.lower()+'_status')}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'System-Metrics'",
+   "motivo": "nombre de MCP (valor que se compara)"
+  },
+  {
+   "en": "'Files-Search'",
+   "motivo": "nombre de MCP (valor que se compara)"
+  },
+  {
+   "en": "f\"--- MCP: System-Metrics - Status: {global_state.get_state('mcp_system_status')}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- MCP: Files-Search - Status: {global_state.get_state('mcp_files_search_status')}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Tool: {descr} [tool_{descr.lower()}_status] - Status: {global_state.get_state('tool_'+descr.lower()+'_status')}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Loading all files with exclusions:\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Excluded filenames: {excluded_filenames}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Excluded extensions: {['*' + ext for ext in excluded_extensions]}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Detected directory path: {path_only}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Scanning for documents (excluding specified patterns)...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"directory {path_only}\"",
+   "motivo": "alcance para el log"
+  },
+  {
+   "en": "f\"--- Loading specific file: {os.path.join(path_only, filename)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Processing single document for context...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"file {filename}\"",
+   "motivo": "alcance para el log"
+  },
+  {
+   "en": "f\"--- Error: Target path '{os.path.join(path_only, (filename or ''))}' is not accessible.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Please verify the file path and permissions.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Error: Source path '{path_only}' does not exist.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Please check the path and try again.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Enriching documents with metadata...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Project summary: {project_summary['total_files']} files, \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{project_summary['total_lines']} lines across \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{len(project_summary['file_types'])} file types\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Document loading status: {'No documents loaded' if documents is None else f'{len(documents)} documents loaded successfully'}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Error: RAG chain not built successfully; falling back to prompt-only mode.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Prompt-only chain ready (loaded-documents fallback mode).\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"The directory '{application_context_path}' exists.\\nLoading documents (excluding specified patterns)...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"directory {application_context_path}\"",
+   "motivo": "alcance para el log"
+  },
+  {
+   "en": "f\"{project_summary['total_lines']} lines\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"The directory '{application_context_path}' does not contain loadable files.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- RAG chain built successfully.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"No files found in ./application; starting in no-documents mode.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Prompt-only chain ready (no documents loaded).\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

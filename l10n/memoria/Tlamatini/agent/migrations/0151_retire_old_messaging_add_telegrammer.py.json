@@ -1,0 +1,61 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0151_retire_old_messaging_add_telegrammer.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **TELEGRAMMER SETUP WIZARD** for me, step by step. \"\n    \"Tick Multi-Turn AND Step-by-Step. Goal: get my Telegram working with the \"\n    \"Telegrammer agent. First, point me to the guide \"\n    \"agent/agents/telegrammer/HOW_TO_GET_YOUR_TELEGRAM_ASSETS.md and ask me for \"\n    \"the ONE required asset it needs — my **Bot Token** from @BotFather (and who to \"\n    \"message as a readable @username). Give me ONE concrete action at a time and \"\n    \"WAIT for my reply before the next. When I give the token, store it for the \"\n    \"Telegrammer agent and send a test message, then confirm. End with END-RESPONSE.\"",
+   "es": "\"Tlamatini, ejecuta el **WIZARD DE CONFIGURACIÓN DE TELEGRAMMER** conmigo, \"\n    \"paso a paso. Marca Multi-Turn y Paso a paso. Objetivo: dejar mi Telegram funcionando \"\n    \"con el agent Telegrammer. Primero, indícame la \"\n    \"guía agent/agents/telegrammer/HOW_TO_GET_YOUR_TELEGRAM_ASSETS.md y \"\n    \"pídeme el ÚNICO asset que necesita — mi **Bot Token** de @BotFather (y a \"\n    \"quién mandarle mensaje, como un @username legible). Dame UNA acción concreta a la vez \"\n    \"y ESPERA mi respuesta antes de la siguiente. Cuando te dé el token, guárdalo para el \"\n    \"agent Telegrammer y envía un mensaje de prueba; luego confirma. Termina con END-RESPONSE.\"",
+   "libres": [
+    "AND"
+   ],
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **WHATSAPPER SETUP WIZARD** for me, step by step. \"\n    \"Tick Multi-Turn AND Step-by-Step. Goal: get my WhatsApp working with the \"\n    \"Whatsapper agent using ONLY Meta's official WhatsApp Cloud API (no third \"\n    \"party). First, point me to the guide \"\n    \"agent/agents/whatsapper/HOW_TO_GET_YOUR_WHATSAPP_ASSETS.md and ask me for \"\n    \"the TWO assets it needs — my **Phone number ID** and **Access token** from \"\n    \"Meta. Give me ONE concrete action at a time and WAIT for my reply before the \"\n    \"next. When I give them, store them for the Whatsapper agent and send a test \"\n    \"(a hello_world template if it's a cold message), then confirm. End with END-RESPONSE.\"",
+   "es": "\"Tlamatini, ejecuta el **WIZARD DE CONFIGURACIÓN DE WHATSAPPER** conmigo, \"\n    \"paso a paso. Marca Multi-Turn y Paso a paso. Objetivo: dejar mi WhatsApp funcionando \"\n    \"con el agent Whatsapper usando SÓLO la WhatsApp Cloud API oficial de Meta (sin \"\n    \"terceros de por medio). Primero, indícame la \"\n    \"guía agent/agents/whatsapper/HOW_TO_GET_YOUR_WHATSAPP_ASSETS.md y \"\n    \"pídeme los DOS assets que necesita — mi **Phone number ID** y mi **Access token** \"\n    \"de Meta. Dame UNA acción concreta a la vez y ESPERA mi respuesta antes de \"\n    \"la siguiente. Cuando me los des, guárdalos para el agent Whatsapper y envía una prueba \"\n    \"(una plantilla hello_world si es un mensaje en frío); luego confirma. Termina con END-RESPONSE.\"",
+   "libres": [
+    "AND"
+   ],
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Telegramer\"",
+   "motivo": "nombre de agent (valor de máquina)"
+  },
+  {
+   "en": "\"Chat-Agent-Telegramer\"",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "\"Telegrammer\"",
+   "motivo": "nombre de agent (valor de máquina)"
+  },
+  {
+   "en": "\"Chat-Agent-Telegrammer\"",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "\"Chat-Agent-Whatsapper\"",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "'Agent'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Tool'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Chat-Agent-Telegrammer'",
+   "motivo": "nombre de tool (valor de máquina)"
+  }
+ ]
+}

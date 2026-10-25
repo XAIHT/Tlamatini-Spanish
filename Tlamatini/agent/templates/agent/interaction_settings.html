@@ -1,0 +1,42 @@
+{# Tlamatini Author Banner — Angela López Mendoza #}
+<div id="interaction-settings-overlay" class="tlm-interaction-overlay" hidden>
+  <form id="interaction-settings-form" class="tlm-interaction-dialog" role="dialog" aria-modal="true" aria-labelledby="interaction-settings-title">
+    {% csrf_token %}
+    <div class="tlm-interaction-heading">
+      <div><span class="tlm-interaction-eyebrow">Config</span><h2 id="interaction-settings-title">Editor en vivo y Terminater</h2><p>Elige cómo escribo, te guío y hablo.</p></div>
+      <button id="interaction-settings-close" type="button" aria-label="Cerrar la configuración">×</button>
+    </div>
+    <div class="tlm-interaction-tabs" role="tablist" aria-label="Configuración de interacción">
+      <button type="button" role="tab" id="interaction-tab-editor" aria-controls="interaction-panel-editor" data-interaction-tab="editor">Editor en vivo</button>
+      <button type="button" role="tab" id="interaction-tab-terminal" aria-controls="interaction-panel-terminal" data-interaction-tab="terminal">Terminater</button>
+      <button type="button" role="tab" id="interaction-tab-voice" aria-controls="interaction-panel-voice" data-interaction-tab="voice">Voz</button>
+    </div>
+    <div class="tlm-interaction-body">
+      <div class="tlm-interaction-presets"><label>Preajuste <select id="interaction-preset"><option value="custom">Personalizado</option><option value="standard">Estándar</option><option value="guided">Aprendizaje guiado</option></select></label><span>Los preajustes cambian este borrador. Guarda para aplicar.</span></div>
+      <section id="interaction-panel-editor" role="tabpanel" aria-labelledby="interaction-tab-editor">
+        <p>Los cambios se aplican al siguiente segmento de enseñanza. Lo que escribo sigue siendo editable y sin guardar.</p>
+        <label id="interaction-access-row"><input id="interaction-access" type="checkbox"> Acceso al editor en vivo en esta pestaña <small>Se aplica de inmediato, como la casilla del canvas.</small></label>
+        <div data-interaction-fields="editor" class="tlm-interaction-fields"></div>
+      </section>
+      <section id="interaction-panel-terminal" role="tabpanel" aria-labelledby="interaction-tab-terminal" hidden>
+        <p>Los cambios se aplican a la siguiente acción. Los valores predeterminados de shell y asesor se aplican a las nuevas terminales. Los valores explícitos del flow se siguen usando a menos que elijas «Usar mis valores predeterminados».</p>
+        <div data-interaction-fields="terminal" class="tlm-interaction-fields"></div>
+        <p class="tlm-interaction-help">La ventana de espera del comando deja de esperar; no mata el comando. Que no haya output significa «posiblemente atascado», no es prueba de una falla. Ask Execs y Step-by-Step conservan sus propios controles.</p>
+      </section>
+      <section id="interaction-panel-voice" role="tabpanel" aria-labelledby="interaction-tab-voice" hidden>
+        <p>Usa tu voz femenina, volumen, velocidad y tono actuales de Config → Voz. El silencio global y la escucha del micrófono siempre tienen prioridad.</p>
+        <div data-interaction-fields="voice" class="tlm-interaction-fields"></div>
+        <p id="interaction-voice-description" class="tlm-interaction-help"></p>
+        <button type="button" id="interaction-toggle-mute">Silenciar la voz</button>
+        <button type="button" id="interaction-open-voice">Abrir la configuración de Voz</button>
+        <p class="tlm-interaction-help">El silencio se aplica de inmediato en todo este browser. Ctrl+Shift+M también lo alterna. Elige tu voz en Config → Voz del chat principal.</p>
+      </section>
+      <div id="interaction-preview" hidden><strong>Solo una muestra: no se ejecuta ningún comando ni cambia ningún archivo abierto</strong><pre id="interaction-preview-text"></pre><button type="button" id="interaction-preview-stop">Detener la vista previa</button></div>
+      <p id="interaction-settings-feedback" role="status" aria-live="polite"></p>
+    </div>
+    <div class="tlm-interaction-footer">
+      <small>Comportamiento: tu cuenta · Apariencia y selección de voz: este browser</small>
+      <div><button type="button" id="interaction-preview-button">Vista previa</button><button type="button" id="interaction-settings-reset">Restablecer esta pestaña</button><button type="button" id="interaction-settings-cancel">Cancelar</button><button type="submit" id="interaction-settings-save" class="tlm-interaction-primary">Guardar</button></div>
+    </div>
+  </form>
+</div>

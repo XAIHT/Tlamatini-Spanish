@@ -1,0 +1,5637 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# Tlamatini — Recent Fixes / Gotchas (archived fix log)
+
+> Current release: **[v1.90.0](../changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+> **Carried from v1.88.0 (tagged 2026-10-20):** [Terminater](../terminater.md) (workflow agent #86 and the Terminals area) and a private release that carries the builder's own data. Counts: 86 workflow agents, 67 wrapped chat agents, 109 built-in tools, 217 migrations. See the [v1.88.0 release record](../changes/2026-10-20-v1.88.0.md) and the change records [Terminater](../changes/2026-10-19-terminater.md) and [private-release data](../changes/2026-10-19-private-release-data.md).
+
+
+> **This file is NOT auto-imported into the AI-assistant context** (unlike the rest of `docs/claude/*.md`). It is the chronological log of surgical fixes and "keep this in mind / do NOT revert" contracts that used to live at the bottom of `gotchas.md`. It was split out so the always-loaded onboarding stays lean — see the "Archive the fix-log" decision recorded in `docs/claude/INDEX.md`.
+>
+> **When to read it**: before modifying or reverting code in any subsystem named below (ACPX, the Flow Compiler, the planner, the Exec Report pipeline, the ACP canvas, wrapped chat-agent parsing, the desktop-UI agents, `prompt.pmt`, `regen_secrets.py`, the logging filters, etc.). Many entries are explicit "DO NOT revert this — here is the failure it prevents" contracts; treat them as binding even though they are not in your auto-context.
+>
+> **When to add to it**: when you land a non-obvious fix whose intent a future assistant could accidentally undo. Prepend new entries at the top of the list, dated, in the same style as the existing bullets.
+
+---
+
+## 2026-10-22 — User-creation wizard diverted by two intent guards (DEV)
+
+The installed `C:\Tlamatini\tlamatini.log` showed the catalog's first setup
+wizard choosing Executer correctly, then being refused by `terminal_guard`:
+"I will type it" referred to the user's password, but enabled command-tutorial
+mode. The model switched to Terminater with `submit=false`. A second unrelated
+guard inferred completion-notification consent from completion wording and an
+optional email field elsewhere in the request, forcing Notifier and abandoning
+the wizard.
+
+`terminal_guard.py` now requires command objects for typing/entering ownership;
+password/form/editor input and ambiguous typing pronouns are neutral. Explicit
+assistant execution of a named program lifts a prior user-runs lesson.
+`mcp_agent.py` requires a positive outbound notification instruction in the same
+sentence as its completion condition, excluding quoted examples and negations.
+Ordinary chat replies and email fields are not notification consent. `prompt.pmt`
+states both boundaries. Do not restore whole-message keyword coincidence or
+classify all user typing as command ownership.
+
+Visible DEV verification: 179 tests passed (wizard intent/catalog regressions,
+the complete Terminater reliability suite and notification-debt suite).
+`test_wizard_intent_guards.py` uses the actual migrated catalog row and real
+executor loop, including prior tutorial history, SOURCE/FROZEN command choices
+and waiting for user input. Model responses and tool effects are controlled:
+no real account was created and no real message was sent. Evidence is under
+`Temp/user-creation-investigation/` (before: reproduced failures; after: exit 0).
+Replaying the exact request extracted from the installed log also confirms
+Executer is allowed and no notification debt is created, even after a prior
+user-runs lesson. Ruff and `git diff --check` passed.
+This is not a real-model or rebuilt-frozen acceptance result. The installed
+executable was inspected but not replaced; Angela requested existing-package
+inspection only, so no build was run.
+
+## 2026-10-21 — Automatic chat sizing leaves room for the editor (DEV)
+
+The source/frozen Interactor visual recheck exposed a second defect: keeping the
+chat toolbar on one row could give chat 92% of the window, pushing the editor
+below a clipped column of controls. `agent_page_layout.js` now reserves 320 CSS
+pixels for the canvas during automatic sizing and lets the chat toolbar wrap.
+`canvas_editor.css` lets the editable container fill the remaining height;
+without terminals open it previously grew only to its text's height.
+The existing user-controlled divider behavior is preserved. The cache suffix
+adds `-canvas-fit-1`. The visible runtime harness checks actual canvas/editor
+geometry and control containment; `is_visible()` alone did not detect this.
+The existing frozen package also exhibits this defect and was not rebuilt.
+
+## 2026-10-21 — Interactor recovers from temporary browser invisibility (DEV)
+
+The installed log showed `Service-Port.yaml` typing refused before its first
+character: `showSource()` threw whenever `document.hidden` was true. That signal
+also covers minimized or occluded windows; after model latency, a temporary
+absence became a permanent tool refusal. The DEV bridge now waits on visibility
+with the same cancellable command and resumes automatically. It rechecks the
+document/revision after waiting; the CodeMirror loop pauses between characters
+and keeps one Undo group. Visual commands have a bounded 120-second grace period;
+reads retain their normal deadline. Cancellation, user takeover, document changes,
+disconnect and explicit Source hiding still stop editing. Never replay a prefix.
+The source static suffix is `-interactor-2`; rebuild the vendored editor when its
+extension changes. See [Interactor](../interactor.md) for verification evidence.
+
+## 2026-10-21 — Editable chat canvas and native Save destinations (source implementation)
+
+`agent_page_editing.js` and the locally bundled CodeMirror 6 editor make the
+canvas source editable. The filename toolbar owns Save, Save as, Undo, Redo,
+Find/replace and Wrap. Markdown keeps sanitized Preview and editable Source;
+PDF stays a viewer whose Save exports original bytes. UTF-8/BOM and BOM-marked
+UTF-16 LE/BE retain their encoding and existing line endings. Malformed/binary
+input is rejected before replacing the current document. Guide and research:
+[canvas editing](../canvas-editing.md).
+
+Save uses a browser-granted writable handle or an authenticated, CSRF-protected,
+loopback-only native Windows picker, independent of the protected database
+pickers. Native destinations are session-bound expiring capabilities; the
+browser never supplies an arbitrary server path. Complete byte revisions stop
+an external edit from being overwritten. Save writes a snapshot: newer typing
+stays dirty. Beginning Save or editing invalidates pending reads; failed loads
+retain the previous document and access. Refresh adopts a new encoding and
+revision only when it commits, even if the visible text did not change.
+
+Unsaved-change guards cover Open, Refresh, Clear and page departure. Switching
+Markdown views retains undo history. Edited source remains the authority for
+Copy and Use as context; Save preserves pending context replacement state.
+Native Save is raised at `CDN_INITDONE`, after Windows finishes placing the
+dialog, rather than the earlier `WM_INITDIALOG` notification.
+
+## 2026-10-21 — Terminater: the chat's door to the terminal stopped guessing (typed arguments, read-back, live-tutorial mode, claim audit)
+
+Angela ran a Rust tutorial on the installed build (`C:\Tlamatini`, `glm-5.3-flash:cloud`) and said Terminater "worked 50% wrongly": Tlamatini assumed she had typed or executed something and she had not, and the link from Tlamatini to Terminater was "too flaky, no error correction, no verification". Eleven turns of transcripts showed four independent holes, closed in this order. Full contract: `docs/terminater.md` -> *The chat's door*.
+
+1. **One sentence, torn by a regex.** `chat_agent_terminater(request: str)` went through the generic key=value parser: `terminal='t2' (title Rust Lesson) using action='run` became the terminal reference (a NEW terminal was raised), and `submit=false -- type the line but do NOT press Enter` was read as TRUE by the lenient `_truthy`. -> `agent/terminater_tool.py`: a typed `StructuredTool` (pydantic, one field per setting, `extra='forbid'`, `null` = not given, int terminal -> `t<N>`, 0 seconds = not set). `tools._launch_wrapped_chat_agent(..., config_overrides=cfg)` skips the sentence parser, the prose fallbacks and the verbatim re-extraction; `_apply_typed_overrides_to_config` refuses a key the agent does not have. A bad value is a JSON refusal (`status: refused`, `code`, `error_kind: request`) and NOTHING was typed. `_build_wrapped_chat_agent_tool` falls back to the sentence tool only if building the typed one fails.
+2. **Strict arguments in the engine** (canvas flows and the Prompt Flow Panel too): `terminater_text.parse_flag` (clean yes/no tokens only; anything else goes to the side that does LESS - `submit` false, `secret` true - with a note), `terminal_ref_problem` (quotes, `=`, control characters, >60 chars or >8 words = `bad_terminal_ref`), `_a_run` refuses an id that does not exist (`no_terminal`) and a missing name unless `create_if_missing` (engine default true for flows; the chat tool sends false).
+3. **Read-back instead of trust.** `TerminalSession.input_line()/verify_line()/echo_of()/settle()/clear_input_line()`: typed text is compared with what the SCREEN shows. New result fields `verified`, `screen_line`, `enter_pressed`, `notes`, `already_present`; new refusal `prompt_not_empty` (no gluing onto a waiting line) and the new degraded status `typing_unverified` (red). `clear_line` replaces a waiting line, `check_line=false` switches the read-back off, a secret is never read back. WARNING: the echo check applies only to a line that STARTED a command (`starts_command`) - answering a program that asked a question is not echoed by the shell (caught by the old `test_answering_a_program_leaves_the_terminal_at_its_prompt`). `VTScreen._line_feed` now clears a stale continuation flag, which glued a command's output onto its echo after a long wrapped line was cleared.
+4. **Live-tutorial mode and the claim audit** (`agent/terminal_guard.py`, wired in `mcp_agent.py`; config switch `terminal_guard`, default on). When the user says THEY run the commands ("you show me the commands and I will execute them, not you", "yo los ejecuto"; sticky 12 h per user; lifted by "you run them" / "go ahead and run it") every general command runner (`COMMAND_RUNNER_TOOLS`) is refused with an explanation BEFORE the dedup memory and the quota, recorded red in the Exec Report; Terminater is forced to `submit=false`, one line per call, no Enter key. A ledger of what the tools REALLY reported audits the final answer: "I typed it / it is sitting on your prompt / I ran it" without proof gets ONE correction round, then a visible warning banner. The audit only runs when the request is about a terminal. `chat_agent_terminater` is exempt from the identical-call dedup.
+5. `prompt.pmt` rule **18f** and the rewritten tool description teach the protocol.
+
+Contracts (do NOT weaken): the typed tool never accepts a sentence; unclear flags go to the side that does less; in chat a missing terminal is refused, never created; `typing_unverified` stays red; the claim audit stays gated on terminal context and fail-open; the runner block comes before the dedup and the quota; Create Flow leaves session ids (`t2`) out of a saved flow. Carriage: `build.py::_FROZEN_TERMINATER_MODULES` names `agent.terminal_guard` and `agent.terminater_tool` (the latter is imported fail-open) and the `check_terminater` release gate now proves the chat binds the typed tool (`check_typed_door`). Coverage: `agent/test_terminater_reliability.py` (166 tests: argument helpers, typed door, real `cmd.exe` and PowerShell read-back, mode, ledger, audit, executor wiring, contracts).
+
+## 2026-10-21 — The release build no longer dies on the builder's own clutter
+
+A public build died after 20 minutes in PyInstaller's COLLECT step on
+`%APPDATA%\jupyter\runtime\jpserver-11572-open.html`, a file a running Jupyter
+server holds locked. The chain: `thinc.tests.test_examples` imports `nbconvert`,
+which imports `notebook`, and the contributed `hook-notebook.py` bundles every
+folder `jupyter_core.paths.jupyter_path()` names, including the builder's live
+Jupyter profile (server files, tokens, `jupyter_cookie_secret`, `notebook_secret`).
+Nothing in Tlamatini uses Jupyter. Three layers now, public and private alike:
+
+1. `build.py` excludes `_FROZEN_JUPYTER_MODULES` (notebook, nbconvert,
+   jupyter_server, jupyterlab, ...) from the frozen graph, so the hook never runs.
+2. `pyinstaller_guard.py` (repo root, stdlib-only) runs every release PyInstaller
+   build (`build.py`, `build_uninstaller.py`, `build_installer.py`) through
+   `pyinstaller_command()`. Before PyInstaller is imported it points the Jupyter /
+   IPython profile variables at an empty `build/pyinstaller-hermetic-profile`.
+3. The same runner wraps `shutil.copyfile`: a locked file is retried about 12 s;
+   if still locked and it lies outside the repo, every Python prefix, every
+   site-packages and the Windows folder, it is SKIPPED and named on screen (its
+   empty stand-in is removed after the build). A locked file that IS part of the
+   build still fails, with its path and what to close. Never widen the skip to
+   trusted roots, and never call `-m PyInstaller` directly in a release script.
+
+Pinned by `agent/test_pyinstaller_guard.py`; the self-modify snapshot carries the
+guard (`REQUIRED_SNAPSHOT_FILES`).
+
+**The root fix - the SEALED build Python (`build_env.py`).** Angela: *"everytime I
+uninstall/install a ... lib like tensorflow, or jupyter lab Tlamatini must not get
+[broken]"*. Releases used to be frozen by the machine's EVERYDAY Python (tensorflow
+sat in `C:\Program Files\Python312\Lib\site-packages`), and the build wrote back into
+it (`pip install --user`, a numpy purge). Now `build.py`, `build_uninstaller.py` and
+`build_installer.py` call `run_in_sealed_env(__file__)` FIRST in `__main__` and re-run
+themselves inside a venv at `%LOCALAPPDATA%\Tlamatini\build-env\py312-<fingerprint>`
+(`TLAMATINI_BUILD_ENV_DIR` overrides): no system and no user site-packages, only
+`requirements.txt` (PyInstaller 6.18.0 + hooks-contrib 2026.7 are pinned there).
+The folder name is a hash of requirements.txt + the base Python, so a requirements
+change makes a fresh env and an unchanged one is reused in seconds; it is published
+only after it installed and imported cleanly. Inside it `pip_scope` drops `--user`
+and the numpy purge / unpinned Torch step are skipped; `ensure_local_build_python`
+seeds `<repo>/python` from `sys._base_executable`. If it cannot be made, the build
+uses the previous healthy env, else the machine's Python with a capital-letter
+warning - it never stops for this. `TLAMATINI_BUILD_ENV=off` restores the old way.
+Verified 2026-10-21: made in about 5 minutes; tensorflow / notebook / jupyterlab are
+invisible inside it. Pinned by `agent/test_build_env.py`.
+
+## 2026-10-20 — Terminater source audit: ownership, cancellation and capture
+
+Local audit work after v1.88.0; [evidence and open limits](../changes/2026-10-20-terminater-audit.md).
+Pin a wrapped chat terminal action to the authenticated user after model assignments;
+resolve an automatic hub user once per action/job. Terminal IDs are user-scoped, and
+ambiguous titles must be refused. Reserve capacity during shell creation; never evict
+a pending job to admit another. Named-key AI writes share the typing lock.
+
+Prompt Flow Stop remembers its own terminal ID instead of using the current active
+tab, and cancellation during creation must prevent subsequent typing. Create user
+command records before Enter reaches ConPTY. Shell exit must use command-bounded
+output, preserve truncation and report nonzero failure; an exited shell must not be
+changed back to `prompt` after typing aborts. The browser applies both true and false
+hub visibility values (static suffix `-terminater-2`). The audit explicitly leaves
+bounded capture, disconnected input and privacy/handover gaps open; do not describe
+these checks as proof of universal, lossless control.
+
+## 2026-10-20 — v1.88.0: the version bump, and the places it has to reach
+
+Records: [the v1.88.0 release record](../changes/2026-10-20-v1.88.0.md). The runtime needs no edit (the base tag
+`v1.88.0` is what `agent/version.py::get_version()` reports); the hand-edited surfaces are what drift.
+**Do NOT forget on the next bump:**
+
+1. **The tag can sit one commit before the work it names** (`v1.88.0` is `83e0cbe6`, the work is `6e129563`; same shape as
+   `v1.76.0`, `v1.78.0`, `v1.87.0`). Say so in the docs instead of "tagged at the work". A pushed tag is never moved, and
+   `git ls-remote --tags origin` tells whether the tag is pushed at all (v1.88.0 was not, when this entry was written).
+2. **The `Current release` banner is on every Markdown file** (221 files) and is replaced by a byte-safe regex, never by an
+   editor that rewrites line endings. Check `git diff --numstat`: every banner file must show `1+ 1-`.
+3. **Surfaces past passes missed:** `package.json` `"version"`, the `views.py` docstring of `/agent/version/`, the README
+   badge (`VERSION-v…`) plus its two anchors (`#newest-changes--v1880`, `#current-version--v1880`, and the Terminals
+   anchor when its heading changes), `BookOfTlamatini.md` (install paragraph, `git tag`/`git push` example, changelog),
+   `VERSIONING.md` Step 3/4, the self-knowledge `TLAMATINI_VERSION:` line (and its fallback and "current released
+   version" sentences), `TLAMATINI_MCP.md` counts, `dossier_content.py` (the current-release section) and
+   `scripts/architecture_atlas/gen_architecture.py` (the record link it quotes).
+4. **"On `main`, unreleased" wording is state, and it expires.** Every phrase that said so for Terminater now says
+   "shipped in `v1.88.0`"; the older v1.87.0 blocks are marked "(carried)".
+5. **Regenerate after the edits:** the atlas, then the dossier PDF and deck with `TLAMATINI_RELEASE_TAG=v1.88.0`, then put the
+   new line counts into `Tlamatini.md`, and confirm "Dossier verification PASSED".
+
+## 2026-10-19 — Terminater: visible terminals, and the contracts that keep them honest (shipped in `v1.88.0`)
+
+Records: [docs/terminater.md](../terminater.md) and [the change record](../changes/2026-10-19-terminater.md).
+**Do NOT revert / keep these surfaces aligned:**
+
+1. **No paste path, ever.** `TerminalSession.type_text` feeds one key at a time through `terminater_text.plan_typing`
+   (default 50 wpm, 20-160, floor 30 ms between keys). `TEST_TIME_SCALE` is a module global for the suites only; the
+   API, `config.yaml` and the model cannot reach it.
+2. **The dock reports the line it read from xterm's screen, and re-reads it after the echo.** Before the fix
+   `watch_user` and the advisor could see a line from before the shell echoed the keys (`terminater_dock.js`,
+   `scheduleLine`, `case 'out'`). Hiding the dock is now reported to the hub (`layout` with `show`).
+3. **A hand-over inside a running flow must reach the keyboard.** The Agentic Control Panel's Start dialog is a modal
+   that traps keys; the dock emits `tlm:terminals-handover` and `acp-control-buttons.js` closes the dialog
+   (`dismissStarterDialogForHandover`), also when `terminalAwaitsTheUser()` is already true.
+4. **`agents_descriptions.md` feeds the canvas tooltip.** Terminater had no row, so its tile had no purpose text; the
+   row now exists and `_load_agent_purpose_map()` returns 86 entries. A new agent needs its row in the same pass.
+5. **Hub discipline.** `live_pids()` is fail-open and never creates the hub; the reapers consult it; the token is
+   exported by `ensure_ready()` before any pool agent starts and scrubbed from the shells' environment; the loopback
+   API accepts only loopback plus `X-Terminater-Token`.
+6. **The build gate is permanent.** `check_terminater` runs inside the frozen app after the Prompt Flow Panel gate and
+   refuses to package on failure. In a hand-built WebSocket scope the `host` and `origin` headers are required
+   (`same_origin` closes 4403 without them). `check_prompt_flow_panel` holds the kickoff example to the seven prompting
+   operations and validates a Terminater step separately.
+7. **Verdict words:** `command_failed` and `hung` (degraded), `operator_required` (degraded), `aborted` (not done) are red;
+   `opened`, `typed`, `killed`, `focused`, `warned` are green completions.
+
+Evidence is dated 2026-10-19 in the change record: 774 unit tests OK (627 Terminater + 147 registration guards), a frozen
+probe of 30 checks with 0 failures, Prompt Flow Panel suite 514/514, Agentic Control Panel hand-over flow 33/33. The
+chat-page and canvas suites were **not** re-run as one clean pass after their last fixes.
+
+## 2026-10-19 — The private release carries the builder's data (shipped in `v1.88.0`)
+
+Record: [private-release data](../changes/2026-10-19-private-release-data.md). `build_complete_private_release.py`
+now rebuilds `external_mcps.private.json` (dev catalog + the servers of the running install, the dev spec winning,
+only empty or placeholder env/headers filled, active selection capped at 5) and ships `data.keys` as
+`<install>/data.keys`. **Do NOT:** move `TLAMATINI_BUNDLE_DATA_KEYS` into the public builder (it pops it), remove the
+`build.py` abort that refuses the vault with the PUBLIC catalog, or print a secret value (names and counts only). The
+private catalog is gitignored and excluded from the self-modify snapshot.
+
+## 2026-10-19 — Mixed line endings and the editor that flattened them (process)
+
+Seven files (`build.py`, `copy_source_assets.py`, `build_complete_private_release.py`, `build_complete_public_release.py`,
+`.gitignore`, `agents_descriptions.md`, `test_private_data_guard.py`) had their LF-only lines rewritten as CRLF by an editor,
+inflating their diffs (for example `build.py` 394/347 lines for a 47-line change). Their committed endings were restored by
+aligning with `git show HEAD:<file>`. See gotcha 41 in `gotchas.md`.
+
+## 2026-10-18 — Grepper and Globber understand brace sets, lists and folder globs (and stop re-walking the tree)
+
+**Angela: "FIX GLOBBER AND GREPPER — it is your main responsibility."** Found during the post-v1.87.0 sweep, through Tlamatini's own tools: both agents handed the pattern straight to `fnmatch` / `glob`, which only know `*`, `?` and `[..]`. Every one of these searched **0 files** and answered a confident `no_matches`:
+
+| asked | before | after |
+|---|---|---|
+| Grepper `glob='*.{js,py,html}'` | 0 files (`{` read literally) | the `.js`, `.py` and `.html` files |
+| Grepper `glob='*.py,*.js'` / `'*.py;*.js'` / `'*.py\|*.js'` | 0 files | both kinds |
+| Grepper `glob='**/*.py'` or `'src/*.py'` | 0 files (compared with the bare file NAME, which never has a slash) | matched against the path below `path` |
+| Globber `pattern='**/*.{py,js}'` | 0 files | both kinds, each file once |
+
+**One shared block, two agents.** `# >>> SHARED GLOB HELPERS` … `# <<< SHARED GLOB HELPERS <<<` is byte-identical in `agents/grepper/grepper.py` and `agents/globber/globber.py` (pool agents cannot import `agent.*`, and the tests copy only the `.py`). `agent/test_glob_patterns.py` fails if the two copies drift.
+
+**Contracts (do NOT weaken):**
+
+1. **Additive.** The pattern as written is always tried FIRST, so nothing that matched before stops matching (a literal `a,b.txt` is still found). The one exception is a `|` list: `|` cannot be part of a Windows file name, so only its pieces are tried.
+2. `,` / `;` split a list only when at least one piece is a wildcard (`test*.py,tests.py` splits; `a,b.txt` stays one name). `{x}`, an unbalanced brace and braces inside `[..]` stay literal, as in a shell; expansion is capped at 256 patterns.
+3. **A pattern without a folder** keeps Grepper's old meaning (fnmatch on the file NAME, case-insensitive on Windows); **with a folder** it is matched against the relative and the absolute path, with a whole `**` segment spanning folders — glob.glob's own rules.
+4. **No extra walks.** Globber with several patterns does ONE `os.walk` (`_glob_walk`) instead of one glob per pattern: a six-pattern search over this repository went from **3 minutes to 9.8 s**. Both agents skip folders that cannot match when every pattern starts with a fixed folder (`_glob_dir_prefixes`): a Grepper folder glob went from **34 s to 0.13 s** with the same 57 matches in 170 files. A single plain Globber pattern still uses `glob.glob` exactly as before.
+5. Both agents log what they understood (`🧩 glob understood as N pattern(s)` / `🧩 pattern understood as N glob(s)`) — silent rewriting reads as a bug.
+
+**Proof:** `agent/test_glob_patterns.py` — shared-block identity, brace/list/path units, pruning, a parity test that the single walk returns exactly what glob.glob returns pattern by pattern (hidden folders, noise folders and case included), REAL agent runs, the chat's own request parser, and the real wrapped launcher (`chat_agent_grepper` / `chat_agent_globber`, verdict `R4`). 535 tests across the glob suites and every suite that pins the registry, catalog, Compact mode, Exec Report and Ask-Execs: OK. Live through the `mcp__tlamatini__grepper` / `globber` tools on this repository.
+
+## 2026-10-18 — The post-v1.87.0 consistency sweep (agents, wrapped tools, skills, documents)
+
+**Angela: "sweep the complete source code … FIX EVERYTHING WRONG … AND MAKE VISUAL TESTS."** Every count was re-derived from source (85 agents, 66 wrapped, 108 built-in tools, 50 Parametrizer sources, 102 root stdio MCP tools, 42 `SKILL.md`, 214 migrations, 59 JS, 26 CSS). Real defects found and fixed, besides the Grepper/Globber entry above:
+
+1. **Six wrapped tools ignored their agent's Configure-Agents checkbox.** The gate `agent_<name>_status` and Compact mode's row linking keyed on the TOOL label, and six labels name the action, not the agent: Send Email (Emailer), Move File (Mover), Summarize Text (Summarizer) and the three Kyber tools (Kyber-KeyGen / Kyber-Cipher / Kyber-DeCipher). Unticking Emailer never hid `chat_agent_send_email`, and in Compact mode (a missing row reads OFF) those tools could never be enabled. `chat_agent_registry.agent_row_name(spec)` resolves the row from the template folder through `display_name_from_agent_type`; `tools.tool_gate_table()` and `compact_mode._wrapped_maps` use it. Guard: `test_agent_display_names.py::test_every_wrapped_tool_is_gated_by_a_real_agent_row`.
+2. **A loaded `.flw` lost FlowCreator's label** (`acp-file-io.js` now sets `agentText = 'FlowCreator'`).
+3. **113 mis-cased display names** in documents and `agents_descriptions.md` (which feeds the sidebar tooltips and `flow_catalog.json`); the catalog and `docs/agent-coverage.md` were regenerated (`scripts/update_flow_catalog.py --check`: 85 verified).
+4. FlowCreator's `agentic_skill.md` headings renumbered 1..85 after the pruning; `test_kalier_agent.py` no longer pins a heading number.
+5. `test_preserved_user_state.py` now checks EVERY extraction block of the installer, not the first one it happened to find.
+6. **The daily-chat-test harness ran the OLD copy.** 33 harness files (both mirrors), including `shoter_shot.py` — the launcher of every test photo — still pointed at `C:\Development\Tlamatini` (an old `designer`-branch copy Angela does not use) instead of this repository. The question banks also lacked 13 agents (Grepper, Globber, Editor, PDFer, Talker, Whisperer, Video-Analyzer, …): the wrapped bank now has 67 questions for all 66 wrapped agents and the knowledge bank names all 85 (with `Monitor Netstat`, not `Monitor-Netstat`). The Gemini mirror had also lost PPTXer and the 2026-10-09 first-person chat markers in `config.py`; both mirrors are identical again (line endings aside).
+7. Dated records that said "89 agents" now say it was the count of that day; docs that called the v1.87.0 removal / Usage work "unreleased" now say v1.87.0.
+8. **`npm run lint:python` could never run in Windows Terminal** (Windows 11's default console). `scripts/check_python_quality.py` demanded that `GetConsoleWindow()` be the foreground window, but there it returns a hidden-owner `PseudoConsoleWindow`; the foreground window is the terminal that OWNS it (measured: `CASCADIA_HOSTING_WINDOW_CLASS` as `GA_ROOTOWNER`). The gate now accepts the console or its root owner, still visible, not minimized and in the foreground — and it passed (exit 0) from a visible terminal.
+9. **Configure Agents / Configure MCPs opened with most boxes UNTICKED.** Both dialogs tested `agent.enabled` / `tool.enabled`, a field the cached rows never carry (they hold `content`, `'true'`/`'false'`), so every box started empty and was then ticked one HTTP request at a time (`loadAgents()`, 85 requests in a row). A Continue pressed during that reload saved most agents as OFF. Found by the visible `scripts/agent_catalog_visible.py`: its photo showed 17 of 85 ticked while the database held all 85 (this morning's run, before any change here, showed the same at 12 of 85). The dialogs now start from `content`, and Continue updates the cached rows so a reopened dialog starts from the user's last save; the per-row reload still re-confirms every box. Guard: `agent/test_configure_dialog_initial_ticks.py` (also checks the collected `staticfiles/` copy). Visible proof (Shoter, headed Chrome, isolated DB on port 8001): all 85 ticked at open, 14/14 catalog checks passed, exit 0.
+
+**Visible checks of this sweep (2026-10-18, Shoter full-desktop photos):** the real chat answered Globber and Grepper brace-set questions (3/3); `agent_catalog_visible.py` 14/14 twice (before and after fix 9); `dossier_visual_walkthrough_visible.py` walked all 142 PDF pages and 176 slides, 6 photos, 0 refused, exit 0.
+
+## 2026-10-18 — v1.87.0: leaner catalog, safer removal, smaller release (and v1.86.0)
+
+Gatewayer, Gateway-Relayer, Node-Manager and Zavuerer were removed (migration **0214**, no renumbering); the Uninstaller moves the installation into a recovery folder on the same drive (schema 2 journal, **Retry cleanup**, `.tlamatini-removal.json`); the frozen release stops carrying the media/browser libraries twice; **About ▸ Usage** waits for real data (bodyless `POST /api/me`); `npm run lint:python` checks every tracked Python file. v1.86.0 (2026-10-17): Mover creates a missing destination as a folder (`_names_a_file()`), and the Architecture atlas is rebuilt by LaTeXer. ⚠️ The `v1.87.0` tag points to `2203b436`; `9a55f836` and `826c7c1a` landed right after it (the v1.76.0 / v1.78.0 shape). Full matrix and evidence: [the v1.87.0 record](../changes/2026-10-18-v1.87.0.md).
+
+## 2026-10-16 — v1.85.0 released; complete documentation refresh
+
+**v1.85.0 was the latest released version on 2026-10-16** (superseded by v1.87.0 on 2026-10-18). It brought **Refresh** for the open canvas document, **Views → Canvas** for full-width chat, **Views → Reset layout**, required packaging coverage for those controls, and a docked avatar centered over the complete Mic-to-Send row. Its runtime version was **1.85.0**. The release included the file-drop router and all earlier capabilities. See the [v1.85.0 release record](../changes/2026-10-16-v1.85.0.md).
+
+All 227 tracked Markdown files receive the current-release reference. User and maintainer guides explain Refresh, Views/Reset, docking and packaging together. Both complete dossiers use the same release content and source-derived inventory. Earlier verification remains dated; the release record tracks the audit evidence.
+
+## 2026-10-16 — Center the docked portrait over Mic through Send (v1.85.0)
+
+Reducing the composer height shrank the avatar while `right: 0` kept its frame
+against the Send button's right edge. The existing layout pass now measures the
+Mic/Send row's center and positions the entire dock around it, using the dock-only
+CSS variable `--tlm-avatar-docked-right`. It follows both pane dividers and the
+action row's minimum width. The 120 px floor, square sizing, floating geometry
+and composer minimum remain independent. Cache suffix at that change: `-avatar-center-1`.
+
+Verified on the real source page in foreground, explicitly headed Chrome: all
+19 existing docked-avatar checkpoints passed, including both dividers, the 120 px
+floor, floating/redocking, transient rows and native 125% zoom. Recorded horizontal
+center differences stayed below 0.02 CSS px. Frontend lint exited 0 (zero errors,
+650 existing warnings); all 59 JavaScript modules parsed. Evidence is under
+`Temp/avatar-center-20261016/`. This verifies the avatar alignment shipped in v1.85.0.
+
+## 2026-10-15 — Refresh rereads the canvas's original file (v1.85.0)
+
+**Refresh** replaces the picker-based Reopen action. Open retains a browser-granted
+file handle; real drops retain their handle/entry during the synchronous drop
+event. Refresh reads that source again, compares complete text, and stages PDF
+replacement without discarding the old viewer on failure. Markdown preserves
+its view and resources; PDF preserves page/zoom/rotation/scroll mode. No file
+chooser opens from Refresh. Snapshot-only sources explain why it is unavailable.
+
+The single state renderer covers empty/unavailable/ready/busy/unchanged/updated/
+permission/error/operation-lock states, native disabled and aria-busy, live status
+and cancellation. An unchanged text file is still checkable and never rebuilds
+context. Changed active context is replaced only after its new content is ready;
+a failed/cancelled preparation keeps the old backend context. Generation and
+request ownership prevent stale reads after Clear, replacement or cancellation.
+PDFs keep their range-based loading contract and always reload on Refresh rather
+than infer equality from metadata. Cache suffix `-canvas-refresh-1`. Guide and
+headed test procedure: [canvas-refresh.md](../canvas-refresh.md).
+
+**Keep the staged PDF iframe attached.** Removing/reinserting it via
+`replaceChildren` reloads its browsing context and discards the document and
+restored view. Commit removes only the previous frame. A failed context send
+also finishes the PDF progress dialog instead of leaving it on Loading.
+Verified in visible Chrome (20/20 checkpoints, native file handles and real
+disk edits), 39 focused Django tests, 138 router cases, and full frontend lint
+(zero errors; all 59 modules parse). Refresh is included in the released v1.85.0.
+
+## 2026-10-14 — v1.83.0 released; every document, the PDF and the PPTX swept
+
+1. **The release.** `v1.83.0` is an annotated tag at `a2914019` (2026-10-14, pushed) —
+   *"Release v1.83.0 A smart file-drop router for every page: each dropped file is recognised by its
+   bytes and sent to its own mechanism, so an MCP .json imports everywhere and never errors, opens as
+   text or navigates away."* It follows `v1.82.0` (`880a335e`); **no `v1.81.0` tag exists**, and
+   `v1.80.0` / `v1.79.0` have no release of their own. The GitHub release is "Tlamatini Release
+   v1.83.0 Win11x64", marked Latest, so **About ▸ Check for updates** delivers it. The runtime
+   version resolves to the bare `1.83.0` from the tag.
+2. **What it carries beyond v1.82.0.** `91ff8453` (a wrongly worded image/video request is not a
+   fatal analysis error), `63a62cc1` (the composer divider shrinks the docked avatar) and
+   `a2914019` (the page-wide file-drop router, the entry below). No migration (still 0213), 59 JS
+   modules (25 chat + 15 ACP + 1 entry + 15 shared + 1 welcome + 2 Prompt Flow Panel), 26
+   stylesheets, cache suffix `-file-drop-router-1`.
+3. **Documents.** Every markdown file now calls v1.83.0 the current release and no longer carries
+   "source version", "after the tag", "NOT in the published zip" or "a build of `main` reports the
+   bare 1.82.0" caveats: `CLAUDE.md`, `README.md` (badge, a new *Drop a file on any page* section,
+   *Newest changes*), `AGENTS.md`, `GEMINI.md`, `KIMI.md`, `BookOfTlamatini.md`, `VERSIONING.md`,
+   `ACPX.md`, `TLAMATINI_MCP.md`, `Tlamatini.md` (`TLAMATINI_VERSION: 1.83.0`), `docs/claude/*`,
+   `docs/*.md`, both self-update inclusion skills and the two Codex dossier skills. Version
+   surfaces: `package.json`, the `/agent/version/` sample in `views.py`, and the generated
+   `_version.py` (gitignored; a source run reads it BEFORE git, so a stale copy kept reporting
+   `1.82.0`).
+4. **The PDF and the PPTX.** `refresh_project_docs.py` ran with `TLAMATINI_RELEASE_TAG=v1.83.0`
+   while HEAD still equalled the tag, so the dossier states v1.83.0 as the current release and
+   carries no "commits since the tag" narration. New sections: *File Drop*, three *NEW IN v1.83.0*
+   cards (file drop, docked avatar, the not-fatal request) and the docked portrait in *The message
+   box*; v1.82.0 became *CARRIED FROM*. Verification passed: tree parity with `git ls-files`, no
+   glyph off the page, no overlap, every native PowerPoint text box inside its shape.
+5. **Two traps hit and fixed.** (a) Most files here mix CRLF and LF lines: an edit helper that
+   normalised them rewrote ~300 untouched lines of `CLAUDE.md` before `git diff --stat` caught it.
+   Edit with a helper that keeps each line's own ending and check the diff size every time. (b)
+   `Start-Process powershell -ArgumentList '-Command', '$env:X="v"; ...'` strips the inner double
+   quotes, so the variable is never set and the generator silently fell back to GitHub's answer
+   (it printed "newest published is v1.82.0"). Launch from a `.ps1` file instead.
+
+## 2026-10-14 — ONE smart file-drop router for every page (an MCP `.json` no longer errors, opens as text, or navigates away)
+
+Angela: dropping an MCP `.json` on the chat reported an error, on the canvas **opened it as text** (which killed the
+import), and on every other page the browser **navigated away** to the file. Four blind per-page handlers fought each
+other: `chat_image_paste.js` (image-only; errored on a `.json` and never stopped the event), `agent_page_canvas.js`
+(opened ANY file and swallowed the event, so the import never saw it), `external_mcps_dialog.js` (the only real
+importer, loaded ONLY on the chat page) and `prompt-flow-panel.js` (treated every drop as a `.fpmt`). The Agentic Control
+Panel, welcome, login and admin pages had no handler at all.
+
+**`static/agent/js/file_drop_router.js` is now the ONE listener**, in the `<head>` of the chat, the Agentic Control Panel,
+the Prompt Flow Panel, welcome, login (`data-auth="none"`), the Django admin and the PDF viewer iframe (a separate
+document, so it relays the drop to its parent). It claims every `Files` drag in the **capture phase on `window`**,
+classifies each file by its bytes (extension → MIME → magic numbers → BOM-aware text/binary → a real JSON parse that
+recognises an MCP config in every shape seen in the wild: Claude Desktop/Code incl. per-project `.claude.json`, VS Code
+`servers` / `mcp.servers`, Zed `context_servers`, opencode, a bare server, a bare map, an array; UTF-16 files written by
+Windows PowerShell included) and sends each kind to a DIFFERENT mechanism:
+
+| kind | mechanism |
+|---|---|
+| MCP `.json` | confirm (names + "can launch programs"), then the External MCP catalog; offers to open External ▸ MCPs |
+| `.flw` | loads into the ACP canvas, or opens the ACP in a new tab |
+| `.fpmt` | loads in the Prompt Flow Panel (asks first if there is unsaved work), or opens it in a new tab |
+| image | chat: saved to `<app>/Temp`, path spliced into the message |
+| PDF / Markdown / code / plain JSON | the chat canvas |
+| folder / archive / binary | a plain-words toast saying what the page accepts and where the file CAN go |
+
+Pages register what they can do with `TlamatiniFileDrop.register(kinds, fn, {label})`; the label also drives the
+drag-time overlay, which says what will happen on THIS page. Removed: the chat-column drag listeners, `canvasDropTarget`,
+the dialog's drop IIFE + `_emxImportServers`, `#chat-drop-overlay` (markup + CSS) and `.emx-drop-overlay`.
+
+**Contracts (do NOT revert):** capture phase and `Files` only (text drags and the Prompt Flow palette are never touched; a
+drop on a native `<input type="file">` is left to the browser); an MCP import is NEVER silent; the flow tab is reserved
+**synchronously** inside the drop task (popup blockers refuse `window.open` after an `await`); one drop at a time; the
+BOM test precedes the NUL test; a bare name→server map counts only when EVERY value is a server, so generic JSON is never
+hijacked; the login page never imports and never navigates.
+
+**Gotchas learned:** (1) the file-writing layer decodes `\uXXXX` escapes in tool-written source — build special
+characters with `chr()` / `String.fromCharCode`; a literal U+FEFF inside a regex trips ESLint `no-irregular-whitespace`.
+(2) The Prompt Flow Panel restores a local draft, so a `.fpmt` drop legitimately asks "Replace the current diagram?" —
+a test must clear `tlamatini.prompting-flow.*` from localStorage first or answer it. (3) In synchronous Playwright,
+`time.sleep` does not pump dialog events — use `page.wait_for_timeout`. (4) Vm-sandboxed arrays fail a strict
+deep-equal against host arrays; the Node cases compare their JSON form.
+
+**Proof:** `scripts/file_drop_router_cases.mjs` — 138 checks against the REAL router in a stub browser (classification,
+every MCP shape, ordering, grouping, cancel, sign-in, popup timing, relay, the busy lock); `agent/test_file_drop_router.py`
+(22 tests: behaviour, source contract, every page wired and loaded before its registrants, old handlers gone, collected
+static); the old `test_external_mcp_universal` pin moved from the dialog to the router. VISIBLE: headed Chrome on the
+source server :8001, real `File` objects dropped through real drag events on every area of every page, Shoter
+photographs in `Temp/file_drop/visible_run_<stamp>/` — **58/58 checks, 24 photos, exit 0** (2026-10-14 08:17; the first run's
+two failures were test-harness bugs 2 and 3 above). Every test MCP server was removed again. Runner:
+`.claude/skills/tlamatini-daily-chat-test/harness/file_drop_visible.py`. Cache suffix: `-file-drop-router-1`. Contract:
+`docs/claude/frontend.md` → `file_drop_router.js`.
+
+## 2026-10-13 — The composer divider shrinks the docked avatar (`63a62cc1`, shipped in `v1.83.0`)
+
+`agent_page_layout.js` reserves the 120 px portrait floor, not the current dock width.
+The square dock fits the smaller of its quarter-width column and the height above
+Send/Mic. The initial size is unchanged until the composer bar is moved; floating
+presets, keyboard resizing, draft contents and transient-row accounting are preserved.
+Keep the minimum independent from the measured portrait or vertical shrinking locks
+again. CSS consumes `--tlm-avatar-docked-size` only while docked. Cache suffix at that
+change: `-avatar-divider-1`. See [behavior and visible verification](../changes/2026-10-13-docked-avatar-divider.md).
+
+## 2026-10-12 — v1.82.0 published; a wrongly worded request is not fatal; docs and dossier swept
+
+1. **The release.** `v1.82.0` is an annotated tag at `880a335e` (2026-10-12 07:16, pushed) —
+   *"Release v1.82.0 Installation/Uninstallation mechanisms: way too improved!."* It follows
+   `v1.80.0` (`82099963`) and `v1.79.0` (`5f549868`), both tagged and pushed on 2026-10-11 with
+   no published release; **no `v1.81.0` tag exists**. The GitHub release "Tlamatini Release
+   v1.82.0 Win11x64" was published 2026-10-12 (22:59 UTC) and marked Latest. Its asset
+   `Tlamatini_Release_v1.82.0_Win11x64.zip` (1,925,216,664 bytes, SHA-256 `9772fe4b…`) is
+   byte-identical to `dist/`. It is a `--self-modify` build (1,745 `TlamatiniSourceCode/`
+   entries in `pkg.zip`), and its `pkg.zip` carries `agent_page_markdown.js`, `purify.min.js`,
+   `ui_splitters.js`, `ui_tokens.css`, `markdown_canvas.css` and
+   `agents/video_analyzer/video_fetch.py`.
+2. **`91ff8453` is NOT in that zip.** The zip was finished at 16:03 local, eight minutes before
+   the commit, and reading the frozen PYZ (`CArchiveReader` → `PYZ.pyz` → `agent.tools`,
+   `agent.chat_agent_registry`) finds neither `_is_visual_start_failure` nor the new
+   Video-Analyzer sentence. It shipped in `v1.83.0` (2026-10-14).
+3. **What `91ff8453` does** (Tlamatini's-AutoBot). The launcher's two refusals that happen before
+   an agent starts — an unknown setting (`assignment_error`) and missing mandatory parameters —
+   now carry `"error_kind": "request"`, and `tools._is_visual_start_failure(payload)` (status
+   `error` AND `error_kind != "request"`) decides whether Image-Interpreter / Video-Analyzer raise
+   the red **Fatal analysis errors** dialog. On 2026-10-12 a `transcription.engine` borrowed from
+   Whisperer raised the dialog and its sound while the very next call transcribed the whole
+   video. Video-Analyzer's `purpose` now says there is NO `transcription.engine` setting.
+   `test_visual_fatal_errors.py::RequestRefusalIsNotFatalTests` (5 tests) pins all of it,
+   including that the sentence stays true against `config.yaml`. ⚠️ Do NOT drop `error_kind`
+   from those two refusals, and do NOT widen it to failures after the agent started.
+4. **Docs and dossier.** Every markdown file, `Tlamatini.md` (`TLAMATINI_VERSION: 1.82.0`) and
+   the PDF/PPTX dossier now call v1.82.0 the current release; the 2026-10-11/12 records no
+   longer say "local" or "uncommitted"; the JS count is 58 (25 chat + 15 ACP + 1 entry + 14
+   shared + 1 welcome + 2 Prompt Flow Panel) and the stylesheet count 26.
+
+## 2026-10-12 — The setup windows recover instead of half-finishing (`880a335e`, tagged `v1.82.0`)
+
+`install.py` / `uninstall.py` now drive one shared window, `setup_wizard.py`, with
+`setup_recovery.py` (recovery copy + durable journal in `Temp/.setup-recovery`),
+`setup_windows.py` (registry/shortcut snapshot of Tlamatini's own scope) and `setup_logging.py`
+(private transcripts under `%LOCALAPPDATA%\Tlamatini\SetupLogs`). Do NOT revert any of these:
+
+1. The recovery copy is prepared AND verified before the destination changes; an interrupted
+   active transaction is restored before a new one starts.
+2. A failed restoration keeps the journal and the copies and reports their location; it never
+   claims that rollback succeeded. A final cleanup failure is reported separately from success.
+3. A permission/sharing failure retries for at most five seconds, then names the file and, when
+   Windows can tell, the programs holding it. Restart Manager is queried for owners ONLY; it is
+   never asked to terminate anything.
+4. Windows state is restored only inside Tlamatini's own scope: never UserChoice, never another
+   program's Open With entries. Installed Apps removal is verified; an ownerless entry is
+   reported as needing repair.
+5. PowerShell helpers are non-interactive and contained in a Windows job BEFORE their script
+   starts, bounded to 120 s; a timeout closes the job and its descendants. A session mutex
+   refuses concurrent setup. A missing removal helper fails visibly.
+6. The action row is its own window row (it disappears during work) and the result details
+   reserve their scrollbar column; the desktop observer never synthesizes Alt to refocus a Tk
+   window (Windows enters its menu loop and pauses callbacks).
+
+Evidence (2026-10-11/12, visible): 52/52 source UI checkpoints (+12 overflow checks),
+28/28 recovery/helper checks, 21/21 uninstaller lifecycle checks, 61/61 mechanics tests; five
+real desktop installations and four real removals passed independent audits; removal 5 stopped
+safely before deleting anything because a headed-test Chrome renderer held a file in the
+installation's `Temp` (campaign state `needs-attention`). A registry read from a development
+console disagreed with the same script launched from Explorer, so only desktop-context checks
+certify Windows integration. Carriage: the modules reach `Installer.exe` / `Uninstaller.exe`
+through the import graph; both builds add the Tlamatini icon; an in-app update keeps the OLD
+`Uninstaller.exe`. Guide: `docs/setup-wizards.md`.
+
+## 2026-10-11 — Markdown files open as a page in the chat canvas (`880a335e`, shipped in `v1.82.0`)
+
+`agent_page_markdown.js` + `markdown_canvas.css` render `.md` / `.markdown` in a sanitized
+Preview with a Source view. Do NOT revert:
+
+1. Copy, **Use as context** and Save take the Markdown SOURCE; Save keeps the original bytes
+   (UTF-8 BOM and CRLF included); generated Markdown saves as UTF-8.
+2. The sanitizer allowlists HTML and attributes, scopes ids, removes document classes and active
+   markup, and restricts resource protocols; a relative URL never navigates to an application
+   endpoint; remote images load with no referrer; object URLs are released on load/clear.
+3. Marked 18.1.0 and DOMPurify 3.4.16 are vendored locally (`scripts/vendor_frontend.py` pins
+   archive integrity, licenses and per-file receipts). `dompurify/dist` is un-ignored in
+   `.gitignore` and a `KEEP_DIR_PATHS` entry in `copy_source_assets.py`; both libraries, their
+   LICENSE files, `agent_page_markdown.js` and `markdown_canvas.css` are in `REQUIRED_STATIC`
+   and `REQUIRED_SNAPSHOT_FILES`.
+
+Plain text, source code, PDF and flow routing keep their dedicated behavior. Cache suffix
+`-markdown-canvas-1`. Proof: 30/30 visible checkpoints (`run-7`), lint 0 errors, 438 source
+static assets byte-equal to the collected copies. Contract: `docs/markdown-canvas.md`.
+
+## 2026-10-11 — Whole-site theme and resize sweep (committed `15e7da98` + `82099963`, tagged `v1.80.0`, shipped in `v1.82.0`)
+
+All seven existing first-party HTML files plus the generated admin family share
+the slate/teal appearance. `ui_tokens.css`, `ui_shell.css`, `ui_splitters.css` and
+`ui_splitters.js` own common page/resize behavior; keep the dialog theme last.
+The five pane bars share grip/focus/drag states and interrupted-drag cleanup.
+JQuery UI's missing resize hit areas and plain footer buttons now receive the
+same treatment; its fixed overlay must stay above the expanded navigation.
+The latter was verified at native 400% zoom, not inferred from dimensions.
+
+Seventeen composer checkpoints, 38 zoom/responsive checkpoints, all eight
+commentary edges with undo/cancel/file recovery, all eight dialog resize
+directions, PDF controls and admin pages were checked visibly. Source tests:
+175 passed, two platform skips; lint zero errors. No release was built or
+installed at that point; it was committed that evening (`15e7da98`, `82099963`), tagged `v1.80.0`, and reaches users in the published `v1.82.0`. See [full inventory, behavior and evidence](../changes/2026-10-11-ui-sweep.md).
+
+## 2026-10-11 — Video-Analyzer transcribes a web link by itself (YouTube and other sites)
+
+Angela's installed build (`C:\Tlamatini`) was asked to transcribe a YouTube video. Video-Analyzer
+failed three times, and the chat then spent seven tool calls installing yt-dlp by hand before
+Whisperer could run. Four defects, all fixed, plus the missing downloader and a slow transcriber:
+
+1. **A link's `?v=` was read as a setting.** The chat request parser saw `v=jNQXAC9IVRw` inside
+   `watch?v=…` as a config assignment ("Parameter 'v' was not found").
+   `tools._find_first_assignment_index` now skips anything inside a URL (`_URL_SPAN_RE`).
+2. **Prose requests fell into robotics mode.** When the model wrote the link and the wish in words,
+   nothing set `analysis_type`, so the run used `robotics` on an empty path. New
+   `ChatWrappedAgentSpec` fields `prose_media_field` / `prose_mode_field` / `prose_mode_keywords`
+   and `tools._apply_prose_fallbacks` fill the link and the mode from the request's own words
+   (transcri…/subtitle/speech to text → `transcription`; summar…/resum… → `summary`). An explicit
+   value always wins; every fill is logged.
+3. **Trailing commentary stayed glued to a value** (`analysis_type='transcription'. Tell me…`).
+   The salvage in `_coerce_assignment_value` now also accepts `.`, `!`, `?` + a space after the
+   closing quote. ⚠️ A comma is deliberately NOT accepted — it would split real values.
+4. **Video-Analyzer only read local files** ("No video resolved from 'https://youtu.be/…'"), and
+   yt-dlp was not installed in the carried Python. New flat sibling **`video_fetch.py`**
+   (stdlib-only; PyAV/psutil imported lazily) downloads ONE item per run: `python -m yt_dlp`
+   in a child, `--no-playlist --playlist-items 1`, and `--` before the URL. Transcription
+   downloads the sound only; summary and robotics download the picture (≤ `download.max_height`,
+   720). Files land in `<app>/Temp/video-analysis/downloads` and a second run reuses them.
+   YouTube no longer offers one file with sound and picture, so without ffmpeg (no Tlamatini
+   install has it) the two are downloaded separately and joined by PyAV without re-encoding
+   (`combine_streams`). YouTube's page challenges need a JavaScript runtime: deno, Tlamatini's
+   private node (`runtime_provisioner`) or the system node.
+5. **Invulnerable to a site change.** Downloader order: a private, self-updating copy in
+   `<runtimes>/yt-dlp-py<XY>` → the bundled `yt_dlp` (`requirements.txt` `yt-dlp==2026.8.19`,
+   carried Python via `build.py` `_AGENT_RUNTIME_IMPORTS`) → install the private copy (atomic
+   `pip install --target` into `.partial-<pid>`, under a lock file). A `download_failed` or
+   `unsupported_url` failure updates the private copy ONCE (at most every 6 h) and retries;
+   direct media links fall back to plain HTTP. Every failure is NAMED (`video_unavailable`,
+   `login_required`, `network`, `unsupported_url`, `timeout`, `download_failed`, `empty_file`,
+   `ytdlp_unavailable`, `disabled`), and the tool description and `prompt.pmt` tell the model
+   to hand links straight to Video-Analyzer and NEVER install yt-dlp itself.
+6. **Speed.** ctranslate2 4.x ships cuDNN but not cuBLAS, so `device: auto` chose CUDA and failed;
+   `video_content.cuda_unavailable_reason()` now probes `cublas64_12.dll` first (adding the nvidia
+   wheel folders) and logs `AUDIO: device auto -> …`. CPU threads default to physical cores − 1,
+   at most 16 (`transcription.cpu_threads: 0`; an explicit value is obeyed exactly) —
+   faster-whisper alone used 4.
+7. **Output and carriage.** `INI_SECTION_VIDEO_ANALYZER` APPENDS `source_url` and `source_title`
+   (`agent_contracts` updated; `flow_catalog.json` and `docs/agent-coverage.md` regenerated).
+   `services/flow_knowledge.py` lists `video_fetch.py` as a helper, so pools made before this
+   change get it too. Both inclusion sweeps exit CLEAN; `check_requirements_coverage.py` reports
+   nothing missing.
+
+Proof: unit `agent/test_video_analyzer_fetch.py` (+ `test_video_analyzer_content.py`,
+`test_flow_knowledge.py`), 141 OK; a clean-machine run with the carried Python, empty runtimes
+and `PYTHONNOUSERSITE=1` installed the private yt-dlp in 7 s and transcribed "Me at the zoo" in
+17 s (8 s when cached); a picture download passes with and without ffmpeg; the visible chat test
+`.claude/skills/tlamatini-daily-chat-test/harness/video_link_visible.py` — 12/12 (2026-10-11):
+the model called only `chat_agent_video_analyzer`, the answer quotes the video, the Exec Report
+row is SUCCESS. ⚠️ Do NOT drop the `--` before the URL, let a URL's `?v=` be read as a setting,
+widen the salvage to commas, or let the model install a downloader. ⚠️ The installed
+`C:\Tlamatini` gets this only through a new build or update; it was tagged `v1.79.0` and reaches users in the published `v1.82.0`.
+
+## 2026-10-10 — v1.78.0 published; the message box shrinks when the avatar is undocked; Image-Interpreter takes a list
+
+1. **The release.** `v1.78.0` is an annotated tag at `0e6fc72d` (2026-10-10, pushed) —
+   *"Release v1.78.0 Implementing the About -> Usage dialog."* As with `v1.76.0`, the
+   tag sits BEFORE the feature it names: the Usage commit `7460a147` is the next commit
+   and `113eddc4` (message-box resize + Usage outage recovery) the one after. The GitHub
+   release (published 2026-10-10 21:51 local, marked Latest) was built from `main`:
+   `dist/Tlamatini_Release_v1.78.0_Win11x64.zip` is byte-identical (SHA-256
+   `d4540a59…`) to the published asset, and its served static files, agent copy and
+   `TlamatiniSourceCode/` snapshot match `113eddc4`. ⚠️ The release TITLE on GitHub
+   still reads "Tlamatini Release v1.77.0 Win11x64" — trust the tag and the asset name.
+2. **Message-box resize (`113eddc4`).** With the avatar undocked, `agent_page_layout.js`
+   lets the input form shrink to its measured action controls plus a 6 px guard (the old
+   30% floor is gone); docking restores the portrait's room. Arrows ±1 %, Shift ±5 %,
+   Home/double-click = smallest box, End = tallest, Escape ends a drag; the divider's
+   `aria-valuetext` reports the box height. `dialog_policy.js::fitDialog` keeps jQuery UI
+   dialogs inside the window. Verified with 18 composer + 38 viewport checks in a visible
+   Chrome window (not a physical phone; 20% zoom was unavailable). Record:
+   `docs/changes/2026-10-10-composer-resize.md`. Cache suffix at that change: `-usage-recovery-1`.
+   ⚠️ Do NOT bring the 30% floor back.
+3. **Image-Interpreter lists (`0e6fc72d`).** `resolve_image_paths` splits a comma-separated
+   value only when the whole value is not one existing file, resolves each entry the same
+   way, merges and de-duplicates in order, and warns on an entry that resolves to nothing.
+   Credited to Tlamatini's-AutoBot (a self-modify repair). No dedicated test yet.
+4. **Docs.** The markdown documentation, `Tlamatini.md` (`TLAMATINI_VERSION: 1.78.0`) and
+   the PDF/PPTX dossier now call v1.78.0 the current release; the Usage entries no longer
+   say "source change awaiting rebuild".
+
+## 2026-10-10 — About Usage reports real balances and its coverage
+
+Shipped in the published `v1.78.0` release (2026-10-10). **About → Usage**
+stays available during a request, uses the shared theme, ordinary fonts, the
+**ABOUT USAGE** title and a 59.2% desktop footprint. Every fractional display
+is capped at two decimals; the refill caption follows the returned UTC period.
+
+Do not regress the data distinction: `/api/balance` provides current credits,
+`/api/usage` provides rolling account history, and `UsageDaily` contains only
+measured main-chat calls for the Tlamatini user. No allowance inferred from a
+plan name, no rolling spend substituted for monthly spend, no local model graph
+called a website-wide breakdown. Legacy/missing responses adapt or explain gaps.
+The old estimated allowance editor was removed before release.
+
+The 2026-10-10 source campaign passed 18 Usage tests, 202 existing regressions
+and 24 visible browser checks, including live Pro website comparisons and Usage
+during a real answer. Other-plan scenarios were synthetic. Static byte parity,
+Ruff/JS checks and both source inclusion sweeps passed; no frozen release,
+installer or real update/rebuild was certified.
+
+[Full implementation and evidence](../usage-dashboard.md).
+
+## 2026-10-09 — Executer told the truth about its window only half the time
+
+**What was wrong.** `execute_forked_window` in Executer works: measured 2026-10-09 through the
+session MCP host, the agents run on the interactive desktop (`WinSta0\Default`) and the console
+reaches the screen. On Windows 11 it is a Windows Terminal window (class
+`CASCADIA_HOSTING_WINDOW_CLASS`, owned by `WindowsTerminal.exe`) or a new tab in one that is
+already open. The console host also keeps a zero-size helper window (class
+`PseudoConsoleWindow`) that is never meant to be seen. Executer's window check counted that
+helper as "the console", so whenever it stayed hidden the log said *"A console appeared but could
+NOT be shown — it is on another window station/desktop"* while the real window was on screen.
+The same false claim sat in five code comments. It sent several investigations, including one
+that day, after a problem that did not exist; the run that "died" had in fact had its window
+closed.
+
+**The fix (`agents/executer/executer.py`).** The helper class is counted on its own
+(`handed_off`); only `ConsoleWindowClass` and `CASCADIA_HOSTING_WINDOW_CLASS` count as windows
+on screen, and the final count iterates the real windows only. After a handoff the check waits up
+to 2.5 s (`_HANDOFF_GRACE_SECONDS`) for Windows Terminal to draw a new window, then says the
+console most likely opened as a tab in an open Windows Terminal window. The pure
+`_describe_window_check()` turns the result into the log line, and `_report_forked_window()` logs
+it for BOTH launch paths; the waiting (blocking) mode used to log nothing at all. The calls that
+show the window are unchanged, and the user's script still runs first.
+
+**Contracts (do NOT weaken).**
+1. **Never count `PseudoConsoleWindow` as a window on screen**, and never blame another window
+   station without measuring it.
+2. **The window check must never affect whether the script runs**, and must never relaunch it.
+3. If a forked run "dies", first ask whether the window was closed by hand; the user works on the
+   same desktop.
+
+Proof: a 30-second heartbeat probe launched through the MCP host stayed on screen and finished
+normally; the patched agent, run from a copy of the repo under the MCP host, logged *"The window
+is on screen"* in both modes, confirmed by Windower and a Shoter photo. Coverage:
+`agent/test_executer_window_report.py` (11 tests). The `mcp__tlamatini__executer` tool runs the
+separate tree `C:\Development\Tlamatini`, which keeps the old message until it is updated.
+
+## 2026-10-09 — Full sweep: FlowCreator's catalog had missed File-Creator `append`, stale doc labels, v1.77.0 in the dossier
+
+**What was wrong.** A full source and documentation sweep (every gate run in a visible console)
+found one real defect and a set of statements that had expired.
+
+1. **FlowCreator did not know about File-Creator's `append`.** The option was added on 2026-10-08,
+   but `Tlamatini/agent/agents/flowcreator/flow_catalog.json` and `docs/agent-coverage.md` are
+   GENERATED from each agent's `config.yaml` and contract, and nobody re-ran the generator. So
+   `agent.test_flow_knowledge` failed twice (the catalog no longer matched the source), and a flow
+   drawn by FlowCreator could never set `append`. Fixed by running
+   `python scripts/update_flow_catalog.py`; `--check` then reported all 89 agent types in sync.
+2. **Labels that had expired.** The October 4 work (graphical commentary, resizable Run output, the
+   Windows flow-file lifecycle) was still called "source changes" in CLAUDE.md, GEMINI.md, KIMI.md,
+   AGENTS.md, `Tlamatini.md`, four `docs/claude/*.md` files and the four inclusion-skill mirrors. It
+   shipped in `v1.76.0`; the labels now say so. CLAUDE.md said the Codex release-validation skill
+   was an uncommitted addition (it was committed in `a0b0a35b`) and that the Prompt Flow Panel files
+   were still untracked (committed in `ca66745`). ACPX.md now says its two "not committed" notes
+   describe the day they were written. KIMI.md's route and line counts were re-counted from source.
+3. **The dossier.** `dossier_content.py` gained a "NEW IN v1.77.0" page (first-person chat lines and
+   the uninstaller that keeps `Templates/`), and the Model Brain page now says the published v1.76.0
+   release was built from `main` and carries it. Regenerated: PDF 117 pages, PPTX 149 slides, tree
+   parity 1669/1669, 2,432 text boxes checked in real PowerPoint, verification PASSED.
+
+**Contracts (do NOT weaken).**
+1. **Any change to an agent's `config.yaml` keys or its contract must re-run
+   `python scripts/update_flow_catalog.py` in the same commit.** The catalog is what FlowCreator
+   reads; `test_flow_knowledge` is the guard that goes red when it drifts.
+2. **"Source only", "uncommitted" and "not yet published" expire.** Re-check them against `git log`
+   and `gh release list` at the start of every documentation sweep.
+3. **The native PowerPoint check needs the window to stay open and in front.** If PowerPoint is
+   closed during the check, the run stops with `Presentation.Slides : Object does not exist`; the
+   PDF and PPTX are already written, so simply run the dossier again.
+
+## 2026-10-09 — Tlamatini speaks her fixed chat lines in the first person, to the user by name
+
+**What changed.** Every fixed message Tlamatini sends to the chat (and the avatar reads aloud) was
+third person and nameless (*"Your agent is ready. You can now start chatting with Tlamatini."*).
+Angela's direction: write them the way she talks — first person, warm, to the user by NAME. They all
+live in `agent/constants.py` now (`MSG_*` / `ERROR_*`, plus new constants for lines that used to be
+inline in `consumers.py`), with two helpers: `display_name(user)` (first word of the first name, else
+the username with a capital letter, else `''`; never raises) and `say(template, name)` (fills
+`{name}`; with no name the placeholder and its comma vanish). `consumers.py` sends every line through
+`self._say(...)`. The same voice reaches `compact_mode` (refusals and the CONTEXT-WINDOW cut warning),
+`orphan_reaper.format_survivors_message(user_name=...)`, `embedding_memory_guard.format_warning_message`,
+`services/filesystem.save_files_from_db(user_name=...)`, the Ask-Execs denial banner
+(`services/response_parser.py`) and `avatar.js` (completion, cancel, voice toggle and the
+voice-send acknowledgement).
+
+**Contracts (do NOT weaken).**
+1. **These lines are recognised BY THEIR WORDS.** Change a phrase in `constants.py` and update, in the
+   same pass: `agent_page_ui.js` (`isBusyMessageRequest`, `isBusyMessageContext`,
+   `isSessionRestoredInfoMessage`), `agent_page_chat.js` (the context-directory error branch),
+   `avatar.js` (`classify()`), `agents/teletlamatini/teletlamatini.py` (`_NOISE_SUBSTRINGS_LOWER`,
+   `_FAILURE_SUBSTRINGS_LOWER`) and the harness markers (`config.py`, `stop_sequence_visible.py`,
+   `compact_switch_visible.py`, `scripts/chat_microphone_visible.py`).
+2. **Keep the OLD third-person phrases in every matcher** — a saved chat history or an older server
+   must still read correctly.
+3. A user-supplied value is filled AFTER `say()` (`{omissions}`, `{touched}`), so the user's own text
+   is never expanded.
+4. `avatar.js` classifies *"I can't process your requests"* as an ERROR, never as the answer, and
+   matches its own voice-send acknowledgement by MEANING (`isBusyMessageRequest`): the server names the
+   user by first name while the page may know only the username.
+
+Coverage: `agent/test_compact_mode_switch.py::MessageAndPageTests` (the not-ready line with and
+without a name; the toggles summary). Older entries below quote the old wording (for example
+`Agents activation saved: ...`); that was the text at the time.
+
+---
+
+## 2026-10-09 — The uninstaller no longer erases Templates/ (the user's own code)
+
+**What happened.** Angela uninstalled `C:\Tlamatini` and the code she kept in
+`Templates/` was gone. `Templates/` is the default home of every project that
+STM32er, ESP32er, Arduiner, ESPHomer, Unrealer and LaTeXer scaffold — real
+deliverables, not build output.
+
+**Root cause.** `uninstall.py::PRESERVED_WHEN_NOT_EMPTY` listed only
+`application`, `applications`, `content_generated`, `context_files` and `Temp`.
+`Templates` and `doc_generated` were missing, so `_remove_files` sent them to
+`shutil.rmtree` like any installation file. The installer
+(`preserved_user_state.json`) and the self-update swap (`apply_update.ps1
+$Preserve`) had always kept both — only the uninstaller's list had drifted.
+
+**Fix (Angela's rule, verbatim).** *"'application', 'applications',
+'content_generated', 'context_files', 'doc_generated', and 'Templates' must be
+kept if they have something in them!!"* and *"and 'Temp' should be erased!"* —
+so the set is now exactly those six, and `Temp/` is always removed (even with
+files in it). The on-screen warning and the confirmation dialog name the same
+six. `agents/` is still always kept by its own branch.
+
+**Contracts (do NOT weaken).**
+1. Do not remove `Templates` or `doc_generated` from `PRESERVED_WHEN_NOT_EMPTY`.
+2. Do not add `Temp` back — Angela wants scratch gone on uninstall.
+3. Every name the uninstaller keeps must also be in `preserved_user_state.json`
+   (pinned by `test_the_updater_and_installer_keep_it_too`).
+4. `directory_has_content` stays fail-SAFE: unreadable ⇒ "has content" ⇒ kept.
+
+Coverage: `agent/test_uninstaller_mechanics.py` (`PreserveSetTests`,
+`RemoveFilesTests`, `TemplatesRegressionTests` — a scaffolded project survives
+byte for byte; an empty `Templates/` still goes) and the visible harness
+`uninstaller_visible.py`. ⚠ Only a REBUILT `Uninstaller.exe` carries this fix;
+an `Uninstaller.exe` already sitting in an install still has the old list, and an
+in-app update KEEPS that old copy (`Uninstaller.exe` is never in `pkg.zip` and is in
+the `$Preserve` set). A fresh install or a reinstall with the new Installer replaces
+it (`install.py::_copy_uninstaller`). See `docs/self-management-carriage.md`.
+
+---
+
+## 2026-10-08 — Two chat pages on two models no longer ping-pong forever; a refused PDF says why
+
+**The loop (Compact-mode code since v1.75.0, found in Angela's install).**
+`compact_mode.note_capacity` keeps ONE process-wide note of "the current model" and announces
+any change to every tab (`notify("capacity")`). The group handler
+`consumers.compact_mode_changed` answered EVERY announcement by re-sending all Configure rows
+and re-measuring (`"Configure rows changed"`), and every re-measure runs `fit_request` →
+`note_capacity(<that tab's model>)`. Two pages on two models (angela on glm-5.3:cloud;
+dodoati reconnected after Config ▸ Models moved to glm-5.2:cloud) therefore flipped the note
+and re-announced it forever: ~900 log lines a round, 61,779 in one evening, and the console
+shield dropping 1,000-2,500 lines at a time. Only the probe cache ("byte-identical ... no new
+call") kept it from also spending cloud tokens. Reproduced on dev with
+`harness/compact_pingpong_visible.py` (gauge probes OFF, two browser contexts, nobody
+touching anything): **1,081 row re-sends, 1,255 notes, 209,006 log lines in 60 s**. After the
+fix: **0, 0, 0**.
+
+**Fix.** `compact_mode.VERDICT_KINDS = ("capacity", "self_modify_fit")`: a model's VERDICT
+still reaches every tab (`compact-mode-state`, so the 🔒 box updates) and then STOPS - no row
+re-send, no re-measure. `note_self_modify` now announces `"self_modify_fit"`; the user's own
+Self-modify box keeps `"self_modify"` and still re-measures. Real changes ("on", "off",
+"rows", "state", "self_modify") behave exactly as before. ⚠️ Never make a verdict kind
+re-measure again, and never `notify()` from a path that `fit_request` runs without adding the
+kind to `VERDICT_KINDS`. Coverage: `agent/test_compact_mode_pingpong.py` (a two-tab simulation
+that settles in under 10 deliveries; before the fix it was still bouncing at 200).
+
+**A refused PDF now says why (not a regression: a second account in the same browser).**
+Angela's install refused `tutorial_6.pdf` with "This PDF context is unavailable" and left the
+header stuck on "pending context". Her log showed the cause: the chat page's WebSocket was
+`angela` (user 2) but the upload went out as `dodoati` (user 4). A second sign-in in the same
+browser replaces the session cookie of every open tab, while an open WebSocket keeps its first
+user, so `resolve_pdf_context` rightly refused another account's package (`pdf_canvas/4/...`).
+Now `PdfContextAccountMismatch` names the cause and the fix ("... a different Tlamatini
+account ... Reload this page (F5) ..."); the consumer logs `[PDF-CONTEXT] refused for user N:
+...` (the refusal used to leave no trace); `restorePendingContextSelection()` puts the header
+back; and the progress dialog marks the step that was running **Failed** instead of leaving
+"Working..." and a moving bar. Coverage: `agent/test_pdf_context.py`; visible
+`harness/pdf_context_visible.py`, 20/20 on dev (one account loads; a second account in the
+same browser is refused with the reason; the header comes back; reloading as the message says
+loads the same PDF).
+
+**Also:** `_TeeStream._plain` hands back anything that is not text unchanged. It runs outside
+the file write's `try`, so a bytes write must never raise out of the tee
+(`test_a_non_text_write_never_raises_out_of_the_tee`).
+
+## 2026-10-08 — The MODEL BRAIN replaces the stall timers; the console is coloured by level and knows its host
+
+**Timers ERASED (Angela's order, do NOT bring them back).** The silence watchdog
+(`llm_liveness.py`, first-chunk/stall clocks) and the "write long files in pieces"
+prompt rule were removed: a timer cannot tell a dead call from a slow one, so it threw
+work away and retried from scratch. Measured with Ollama's own numbers the same day:
+prompt reading is NOT the bottleneck on Ollama cloud (169K-token prompt: first byte
+5.5 s glm-5.2 / 11.2 s glm-5.3 cold, ~1 s cached); the time is the GENERATED reasoning.
+Writing in pieces was slower (298 s vs 260 s). File-Creator keeps `append` as a plain
+capability. Memory: `feedback-no-discarding-timers`.
+
+**The Model Brain (`agent/model_brain.py`, `model_brain_chat.py`, `model_brain_views.py`,
+`model_profiles.json`).** Per-model settings from FORMAL sources only, never hardwired to
+one model: a sourced knowledge base (GLM-5, DeepSeek-V4, MiniMax-M3, Gemma 4, Qwen 3.5,
+Qwen 2.5, gpt-oss, Kimi, Mistral Large 3, Nemotron 3 — vendor model cards / HF
+`generation_config.json`), then a profile LEARNED from Hugging Face for an unknown model
+(`%LOCALAPPDATA%\Tlamatini\model_brain`), then the Modelfile parameters Ollama publishes.
+Overrides > KB > learned > Ollama > model defaults. `num_ctx` is clamped to the model's
+real `context_length`. `BrainChatOllama` (langchain-ollama 0.2.1 has no `think`/`thinking`)
+sends `think` only when the installed client accepts the value and RETURNS the model's
+reasoning inside the tool loop (Z.ai interleaved thinking, OpenAI harmony, DeepSeek,
+Moonshot, Gemma 4 all require it; it is dropped across user turns). Live proof: glm-5.3
+step 2 generated 170 tokens after 3,277 at step 1. `model_brain: off` restores the old
+fixed 0.0/1.2/20 sampling exactly. The context gauge now counts the returned reasoning:
+estimate within +1.3 % .. +5.9 % of Ollama's `prompt_eval_count` across 9 steps.
+Config ▸ Models ▸ Save opens the **Auto-tuning** dialog (`model_brain_tuning.js/.css`,
+`/agent/model_brain/models/` + `/agent/model_brain/tune/`) that shows each model being
+tuned with its sources. Carried by `build.py` (`--add-data` for the KB, hidden imports,
+`_FROZEN_REQUIRED_AGENT_MODULES`). Coverage: `agent/test_model_brain.py`; visible:
+`harness/model_brain_visible.py` (25/25 in dev on 2026-10-08).
+
+**Console colours by level (`manage.py::_ConsoleColorizer`, `console_colors`, ships true).**
+Errors/tracebacks red, CRITICAL/FATAL white on red, warnings yellow, debug grey, successes
+green; plain INFO keeps the console colour with `--- [TAG]` cyan and the user tag `[a3]`
+magenta. The level is read from the START of a line only. Contracts: painting runs ONLY on
+the console drain thread; every painted piece is reset in the same write; the text is never
+changed; a pipe/file never gets a code; `NO_COLOR` is honoured. **`tlamatini.log` is now
+truly plain**: `_TeeStream._plain` strips codes other libraries print (Django colours its
+access log — it used to land in the file as `←[32m`). The sink order is unchanged (file
+first, `self._log_file.write(plain)`).
+
+**The console TYPE is measured (Angela: "make sure the type of console is assured").**
+`_console_host()` reads the console handle's window class: `ConsoleWindowClass` = classic
+conhost; `PseudoConsoleWindow` = a terminal app, named by the PROCESS that owns the window
+(`_owner_process_name`: WindowsTerminal.exe, Code.exe, Antigravity.exe), with env vars only
+as a fallback — an IDE-launched program inherits `TERM_PROGRAM=vscode` even when Windows
+hands its window to Windows Terminal, so the env lied. ⚠️ **Windows Terminal is the DEFAULT
+console on Angela's Windows 11**: it ignores the QuickEdit flag (the queue shield covers
+it) and its window pid is WindowsTerminal.exe, never the server. Startup prints
+`--- [CONSOLE] host: Windows Terminal | code page ...` then `--- [CONSOLE-COLORS] ON in ...`.
+`_console_vt_on` only ADDS virtual-terminal processing and reads it back (both modes);
+`_console_utf8` sets code page 65001 in FROZEN builds only (the code page belongs to the
+console and would outlive a source run). Coverage: `agent/test_console_colors.py`.
+
+**Test-harness lessons (keep them):**
+- **Claude Code sets `NO_COLOR=1`** for every program it starts; Angela's user/machine
+  environment has none. A visible test of colours must remove it from the launcher.
+- **Never write `config.json` with a plain `open(..., "w")`**: a harness window that closed
+  at that instant left a 0-byte `config.json` (restored from the backup the same minute).
+  Write a sibling file and `os.replace` it; refuse to back up a config that does not parse.
+- **Clear the chat history per test**: without it glm-5.3 read the previous runs' answers
+  and took 9 steps instead of 3.
+- A PowerShell 5.1 script saved as UTF-8 WITHOUT a BOM is read as ANSI: keep launcher
+  scripts ASCII-only. Set `chcp 65001` + `[Console]::OutputEncoding = UTF8` in a launcher,
+  or UTF-8 output shows as `┬╖` / `Γëê` (that was the test window, never Tlamatini's).
+
+## 2026-10-08 — LaTeXer: a mostly-deleted PDF no longer wears the requested name; the model rung repairs a REGION
+
+Angela's Podman cheat-sheet run took 46.6 min (49 model calls). Its FIRST LaTeXer
+compile cost 4 min 11 s: two engine swaps, then rung 7 asked glm-5.3:cloud to echo
+back the whole 22,589-char document (3.5 min, ONE character changed, still failed),
+then rung 8 (bisect) "quarantined 1 of 7 blocks". Block 7 was the entire two-column
+body, so a 1-page / 235,004-byte PDF (the environment table plus a box of raw LaTeX)
+was delivered to the Desktop as `Podman-CheatSheet.pdf`. Reproduced end-to-end with
+real MiKTeX + glm-5.3:cloud: identical page count and byte size.
+
+**Fix 1 (proven live): `MAJOR_REMOVAL_FRACTION = 0.25`, `DEGRADED_NAME_SUFFIX = ".DEGRADED"`.**
+`_removed_body_fraction()` measures what bisect cut in typeset characters (comments and
+whitespace excluded) and `_bisect_failing_blocks` returns `removed_fraction`, carried
+through `_compile_with_ladder` into the result. `_finish_compile` delivers a degraded build
+that lost >= 25% of its body as `<stem>.DEGRADED.pdf` (`_deliver_pdf(..., name_suffix)`),
+leaves the requested name untouched and inserts a `MAJOR REMOVAL` note. A clean build, or
+a minor removal, keeps its name. No new INI field (the 21-field contract is unchanged).
+
+**Fix 2 (bounded downside, benefit NOT proven as a speed-up): region repair.** For a document
+> 8,000 chars whose error names a `.tex` line, rung 7 sends the +/-30 lines around it, not the
+whole document: `think: false` (re-sent without it on HTTP 400), `num_predict: 6000`, the
+reported line QUOTED. The reply is read from its LAST fenced block. An unusable-but-answered
+reply falls back to the original whole-document request, so this path cannot do worse than
+before. An empty reply, one cut by the cap (`done_reason: length`), or a timeout is "no
+response" and `_model_rung_never_answered()` then forbids bisect: the author's content is
+never cut because the model rambled.
+
+**Measured, do not re-derive.** glm-5.3:cloud generates ~200 tokens/s. The OLD whole-document
+request fixed an easy error in ~33 s; the incident's 3.5 min was a HARD problem. `think: false`
+does NOT stop this model reasoning: it narrates in the reply ("Let me analyze... Wait,
+but...") and fences the answer last. With thinking ON and a 6000 cap the reply came back EMPTY
+(the cap was spent thinking); told "line 31 of the region" it counted lines aloud until the cap.
+Whole-run samples on the same broken file: old code 59 s, final code 41 s (region reply was a
+32-char snippet, discarded as truncated; the fallback fixed it). Single samples of a
+heavy-tailed process: NOT a benchmark.
+
+**Contracts.** Keep the words "no response" in the empty/capped paths (that is the marker
+`_model_rung_never_answered` reads). Keep `if "bisect" in rungs and _model_rung_never_answered(trace):`
+verbatim (`test_latexer_verbatim_channel` pins it). The rename lives ONLY in `_finish_compile`.
+Not fixed, noted: the wrapped parser keeps trailing prose after `overwrite=true -- ...` as part of
+the value, so the flag is not a boolean and LaTeXer writes `_2` duplicates.
+
+Coverage: `agent/test_latexer_major_removal_and_window_repair.py` (37 tests). All 549 LaTeXer
+tests, 99 neighbouring tests and `ruff` pass.
+
+## 2026-10-07 — Mover preserves destinations; LaTeXer reports layout overflow
+
+A scalar `source_files` path was iterated character by character. On Windows,
+its backslash matched the drive root; the empty basename made the destination
+equal to the user's Desktop. Mover recursively deleted destination contents
+before its copy failed, then exited zero without a structured result. Never
+restore that deletion-before-copy branch. Normalize scalar paths to one entry,
+reject roots and overlapping directories, treat same-file operations as verified
+no-ops, merge directories without erasing unrelated entries, and stage regular
+file replacement before publication. Failures emit `INI_SECTION_MOVER` with
+`success: False`, `status: failed`, and a nonzero immediate-run exit code.
+
+LaTeXer's compiler success is insufficient for a clean-layout claim. Parse
+overfull box dimensions; any box exceeding 5 pt keeps the delivered PDF but
+returns `created_with_findings` and `success: False`, with explicit layout repair
+instructions. Underfull spacing and tiny protrusions do not trigger that gate.
+This is an overflow check, not full visual validation. Preserve the earlier
+delivery and speculative-repair protections.
+
+Validated with 126 focused regressions, five installed Mover subprocess cases,
+and real installed LaTeXer compilations that first reported overflow and then
+completed after the source layout was repaired. See
+[incident evidence and recovery limits](../changes/2026-10-07-pdf-mover-incident.md).
+
+## 2026-10-07 — Windows access scripts include actual agent interpreters
+
+Controlled Folder Access event 1123 confirmed a Documents-write block for the
+Python bundled in the source checkout. Include `root/python/python.exe` for
+source as well as frozen routes; granting access only to Tlamatini.exe or PATH
+Python is insufficient. `security/windows_access_helpers.ps1` verifies retained
+Defender entries and effective owned firewall rules, records change intent,
+and preserves broad/managed blocks for review. CFA mode stays unchanged;
+global ASR changes require explicit `-AuditCompatibility` and use AuditMode **2**,
+not Warn **6**. Failures produce attention items and nonzero status.
+
+The defender and its BAT default to report-only. `-Armed` is required for any
+process/IP response, and `-Aggressive` requires `-Armed`. Never restore the
+ordinary launcher's automatic termination of agent tools. Regenerate the
+standalone enable BAT with `security/sync_enable_launcher.py` after changing
+the whitelist/helpers; its payload parity is tested. Run commands only in a
+confirmed visible persistent foreground console. No elevated settings were
+applied during validation; the real checkout Documents block remains pending
+operator enablement. See [evidence and limits](../changes/2026-10-07-windows-access-verification.md).
+
+## 2026-10-07 — LaTeXer verifies the delivered PDF before reporting success
+
+A compiler log can still say `Output written ...` after a repair deleted its
+PDF. `_finish_compile` previously trusted `ok` and used that stale byte count
+when the final file was gone, so it could announce `DONE - a CLEAN PDF` with
+no deliverable. It now requires a nonempty file at the actual returned path
+before reporting `compiled`, `compiled_with_errors` or `degraded`. Missing or
+empty artifacts produce `error`, empty output fields and zero bytes. Auxiliary
+cleanup and opening the PDF also require verified delivery. `_deliver_pdf` and
+the repair snapshot helper reject empty files as well as missing ones.
+
+Keep the earlier artifact-preservation fix: speculative model repairs have
+their own `.latexer-model.tex` stem, the ladder snapshots a surviving PDF, and
+destination failures use a verified fallback path. Never replace a real file
+check with compiler-log claims or blame Desktop permissions for a missing
+source artifact.
+
+The real installed chat then exposed a second false success: its configured
+model generated malformed source and its repair wrapped the whole body in
+`lstlisting`. The PDF compiled with zero errors but printed raw TeX. The model
+repair gate now rejects replacing the entire document body with a verbatim,
+Verbatim, lstlisting or minted block. Its prompt explicitly forbids that
+shortcut; intentional existing code-listing documents remain supported. This
+is a guard for the observed failure, not a general semantic/layout validator.
+
+Four delivery regressions and the model-listing regression (four environment
+variants) failed before their fixes and passed afterward. The final visible
+Django run passed **517 tests**, covering delivery, repair, styles, verbatim
+payload transport, wrapped-agent integration and model settings. The installed
+loose LaTeXer template was backed up and updated; the frozen executable was not
+rebuilt. Configured model identities and timeouts were preserved.
+
+The final installed-chat test generated `Hello-from-Tlamatini.pdf`: one page,
+50,262 bytes, zero errors/warnings, with the requested text and rendered
+equation verified. See [the verification record](../changes/2026-10-07-latexer-verification.md)
+for the failed first attempt, successful short-fragment retry and limits.
+
+## 2026-10-05 — The uninstaller no longer fails on its own Uninstaller.exe
+
+Angela: *"now it always throws the error that Uninstaller can't be erased"*.
+The relocation to Temp (2026-10-04) was right, and the original EXE is
+released about 5 s after launch (measured). The error came later: something
+else **maps** `Uninstaller.exe` as an image. Antivirus scanning a program
+that just ran does it, and so do Explorer and Settings when they read its
+icon. On a mapped image Windows refuses `DeleteFile` (`[WinError 5] Access is
+denied`) but still allows a **rename**. The 2026-10-04 change had made that
+delete fatal, so the run ended in "Uninstallation Error", with the install
+folder and the Temp copy left behind. Reproduced exactly with the shipped
+binary by mapping the file with `LoadLibraryEx(AS_IMAGE_RESOURCE |
+AS_DATAFILE)`, which is how Explorer reads an icon.
+
+`uninstall.py` now follows the ladder professional uninstallers use:
+
+1. **Retry** the delete for `SUPPORT_DELETE_RETRY_SECONDS` (8 s).
+2. Still held: **move** it into a uniquely named
+   `<install>\.tlamatini-uninstall-pending-*` folder. The original name is
+   free at once, and the dialog says **Uninstallation Complete** with one
+   honest line: the file is deleted a few seconds after the window closes.
+3. On exit (`finally` around `mainloop`), `cleanup_after_exit()` starts one
+   **hidden** `cmd.exe` (`CREATE_NO_WINDOW`, own process group, breakaway
+   from a job when allowed, cwd `%SystemRoot%`). It retries every ~2 s for
+   ~3 min, then deletes the pending folder, the uninstaller's own Temp copy
+   and the install folder once it is empty (non-recursive `rd`).
+
+Contracts (do NOT weaken):
+- **Never move the running image.** PyInstaller re-opens its own EXE by path
+  for every later import (`pyimod01_archive.extract`), so moving it breaks the
+  next import. When relocation fails, the in-place copy is left to the cleanup.
+- **The cleanup deletes recursively only folders whose names carry
+  `STAGING_PREFIX` or `PENDING_PREFIX`.** A quick reinstall into the same
+  folder can never lose its fresh `Uninstaller.exe`. `build_cleanup_command`
+  refuses relative paths and `"`/`%` characters.
+- Only a file Windows refuses to delete **and** to move still stops the run,
+  with the marker kept for an honest retry.
+- Relocation failing is fail-open: the uninstaller runs in place, never crashes.
+- `sweep_stale_staging()` removes `Tlamatini-Uninstaller-*` Temp copies older
+  than 10 min left by earlier runs. It never follows links and never touches
+  its own folder.
+
+Proof: `agent/test_uninstaller_lifecycle.py` (70 uninstaller tests incl. a
+real image-mapped lock and a real hidden cleanup run, all OK). Visible frozen
+before/after on a throw-away install with the file held: the old binary showed
+the exact WinError 5 dialog and left the folder and Temp copy behind; the
+rebuilt one finished with "Uninstallation Complete", and 2 s after the lock
+was released the install folder and Temp copy were gone, with no window shown.
+
+## 2026-10-05 — The context sidecars' own Ollama calls have a time limit
+
+Angela's installed build sat for about five minutes on `[INFO] Fetching file
+search context ...` (00:06:47 → 00:11:38), and it looked as if Tlamatini never
+called Ollama. Before the main answer, `FileSearchRAGChain` asks Ollama two
+small questions (routing YES/NO, then a JSON search plan) and
+`SystemRAGChain` asks one (routing). Those calls had no time limit, and they
+were the only Ollama calls with no `[OLLAMA-TIMING]` lines, so the log showed
+nothing while the planning call waited on `nemotron-3-ultra:cloud`.
+
+`agent/context_sidecar_timeout.py` now bounds every one of them by
+`context_sidecar_llm_timeout_seconds` (`config.json`, default 60 s; an explicit
+value is obeyed exactly), plus a slightly longer HTTP backstop. The user's
+Cancel ends the wait at once (`factory.py` passes `conversation_user_id` and
+`cancel_run_epoch` to both sidecars). At the limit the sidecar skips its
+context, writes `--- ⌛ [CONTEXT-SIDECAR] <step>: Ollama (model=…) did not
+answer within Ns - skipping this step …`, and the main answer goes ahead
+without it. Both sidecar LLMs carry `llm_timing_callbacks()`, so their waits
+appear in the log like every other call. The chains reach the app through a
+fail-open import, so the module is named in `build.py`'s hidden imports and
+`_FROZEN_REQUIRED_AGENT_MODULES`. Coverage: `agent/test_context_sidecar_timeout.py`.
+Do not remove the limit from these calls: a sidecar answer is optional, a
+frozen chat is not.
+
+## 2026-10-04 — Auxiliary chat chains share the effective MCP configuration
+
+The frozen live chat still attempted System-Metrics on 8765 while the configured
+server used 8767: `SystemRAGChain` independently read the bundled development
+configuration. It and `FileSearchRAGChain` now honor explicit paths, CONFIG_PATH,
+the frozen executable directory and UTF-8 BOM. The file chain shares the MCP
+client's endpoint normalizer, preferring the current URI while retaining legacy
+`mcp_files_search_grpc_target`; both search and directory-list RPCs have deadlines.
+The system chain reuses a socket within the request and disconnects in `finally`,
+including routing failures. Test the actual auxiliary chains as well as direct
+clients in source and frozen modes; a direct-client pass missed this caller.
+
+Default-only frozen fixtures clear CONFIG_PATH explicitly. The no-placeholder
+sidecar fixture uses the real chain class with mocked I/O and asserts disconnect
+after both metrics/no-metrics requests. These and the endpoint regressions passed
+18 focused tests. Keep the model restriction and initial/final chat-log checks in
+the release-validation skill; see the dated ledger for subsequent broad results.
+
+## 2026-10-04 — BOM configuration in path security and chat startup
+
+The actual frozen application exposed two additional independent config readers:
+`path_guard._load_config` and `rag.config.load_config_and_prompt`. Both now use
+`utf-8-sig`, accepting ordinary UTF-8 and Windows BOM UTF-8 without changing
+values or path boundaries. Six focused tests cover the effective endpoints,
+plain/BOM chat startup and allowed/sibling/traversal paths. The actual compiled
+MCP probe also passed on nondefault ports. Keep the initial application-log
+assertion: a later configuration Save can remove the BOM and hide an earlier
+RAG initialization failure. The dated campaign ledger records frozen retesting.
+
+## 2026-10-04 — Full-suite configuration and fixture regressions
+
+The first broad release run found 13 failures and one error among 5,966 tests.
+After repair, all 5,967 tests completed successfully with 18 explicit skips;
+the affected areas also passed a separate 159-test run. This does not certify
+unavailable live providers or hardware. See the dated release-validation record.
+
+`tools._seed_global_agent_defaults` now reads model settings only for agents
+with registered model fields. The former unconditional reads made Pythonxer
+and Kalier depend on unrelated configuration and defeated Kalier's best-effort
+fallback when its configuration reader raised.
+
+Flow catalog generation assigns `str|int` to Telegram API IDs and WhatsApp
+phone-number IDs. Public placeholders and keyed numeric values therefore have
+the same contract, and the standalone validator accepts either representation
+while rejecting booleans, fractions and containers. Do not regenerate a different
+schema merely because a private installation has filled its credentials.
+
+Password-quoting tests again contain the intentional `fake app pass 0000`
+fixtures rather than mismatching redaction markers. The messaging-doctor
+template assertion follows `@config`. Kalier log assertions set and restore
+INFO capture locally; they must pass alone as well as in the complete suite.
+
+## 2026-10-04 — Feed embeddings refuses prompt-only fallback
+
+The live release campaign received an embedding-provider HTTP 401, but Feed
+embeddings completed and advanced anyway. The runtime rejected only
+`BasicPromptOnlyChain`; the enabled tool path returned `UnifiedAgentChain` with
+literal document context instead. Feed now requires an actual `vector_store`
+before adopting a new chain/context. A rejected fallback is closed, the previous
+chain/context remains intact, and the flow reports failure without running its
+next operation. Ordinary chat's useful prompt-only fallback is unchanged.
+Keep both the adapter regression and the live failure/next-node check. A UI
+"completed" label alone was insufficient evidence of successful embeddings.
+
+## 2026-10-04 — Configured MCP endpoints and the ACP example
+
+Files-Search previously ignored its configured host, port and worker count, and
+its client always connected to localhost:50051. Both ends now honor their saved
+settings. The client accepts the existing `ws://` URI spelling while translating
+it to a gRPC endpoint, validates endpoints and uses bounded RPC deadlines.
+System-Metrics now resolves the same installed/source configuration as its
+client. All four loaders honor `CONFIG_PATH` and UTF-8 BOM files. Source startup
+calls the synchronous Files-Search server directly. Do not wrap it in
+`asyncio.run`: it returns a gRPC server, not a coroutine. The live regression
+starts both services on alternative ports and performs real client requests.
+
+The ACP example button already owns an editor operation while loading its file.
+The stricter file-opening guard mistakenly rejected that legitimate nested load.
+Only the example's internal load now opts into `withinEditorOperation`; ordinary
+file openings still obey the busy/running/undo locks. The complete 17-case source
+editor sequence passed, including the example, connections, duplication, zoom,
+Undo/Redo and Save/Open. The cache suffix at that change was `-flow-file-opening-2`.
+
+Saving an actual Parametrizer mapping exposed another reload issue: its special
+dialog stores `_parametrizer_mappings`, which is not a complete runtime config.
+The loader now restores missing Parametrizer source/target lists from diagram
+edges instead of skipping them merely because mapping metadata exists. Explicit
+saved source/target lists remain authoritative. Keep the live mapping Save/Open
+test; opening and cancelling the mapping dialog alone misses this regression.
+
+## 2026-10-04 — Windows installation, owned-worker removal and real chat acceptance
+
+The real compiled installer exposed a PowerShell entry-point defect: parameter
+defaults read `$PSScriptRoot` before it was populated, producing an empty
+installation path and a `GetFullPath` failure. All registration wrappers now
+resolve an omitted directory inside their script bodies. Keep fresh
+`powershell.exe -File` tests from an unrelated working directory; tests that pass
+`-InstallDir` explicitly cannot catch this failure. The corrected real installer
+completed all eight stages and reached its success dialog.
+
+The uninstaller now identifies workers by installation paths and the inherited
+`TLAMATINI_AGENTS_ROOT`, including children whose original agent parent has
+exited. It revalidates process identities and stops descendants without a global
+name-based kill. The installed frozen executable relocates to a temporary worker
+before confirmation, allowing removal of its original executable. Unsafe roots,
+source checkouts and redirected installation folders are rejected. Locked files
+and denied registry removal produce errors; retry support and installation
+markers remain until the preceding removal steps succeed. Preserve the existing
+agents/nonempty-user-content contract. Explorer is refreshed by shell notification,
+never restarted. See [Windows flow lifecycle](../windows-flow-files.md).
+
+Real chat testing found the first-word prompt heuristic rejected ordinary requests
+that begin with context and put the instruction in a later sentence. The validator
+now considers each sentence/paragraph and accepts explicit reply/respond/answer
+instructions, including a leading “please.” Bare filename fragments remain
+rejected; filesystem authorization remains a separate check.
+
+A later scheduled-prompt retest exposed a classifier echo: a request for the
+literal token `SCHEDULED_OK` was treated as ambiguous filesystem access because
+the classifier repeated the token instead of YES/NO. A strict, whole-request
+single-token reply pattern now bypasses that intent classifier. Paths, multiple
+instructions and arbitrary free-form content do not qualify; ordinary ambiguous
+local access still uses the existing fail-closed checks.
+
+The local main executable and standalone uninstaller were rebuilt in isolated
+output directories without invoking build.py's database/dist cleanup. Source
+tests and frozen-bundle membership are separate evidence from compiled UI tests.
+The current desktop-control policy blocks launching the compiled uninstaller;
+its GUI lifecycle is therefore unverified, even when backend cleanup tests pass.
+The visible release campaign records source and frozen results separately and
+uses only `nemotron-3-ultra:cloud` for Ollama inference. No Git commit was made.
+
+## 2026-10-04 — Complete Prompt Flow documentation and dossier refresh
+
+Updated current user guides, assistant contracts, architecture/frontend/runtime notes, memory and mirrored regression/carriage instructions for inline mixed-style commentary, file fidelity and 5–95% Run output resizing. The shared dossier model now gives graphical editing, portable files and output layout their own sections. Re-derived inventory/version facts and retained historical verification dates. PDF and PowerPoint verification is recorded separately from implementation tests in [the refresh record](../changes/2026-10-04-prompt-flow-documentation.md). No commit, release build or protected database-mechanics change.
+
+## 2026-10-04 — Run output resizes from 5% to 95%
+
+Prompt Flow now has a horizontal divider between canvas and Run output. It changes the pane viewports only: canvas zoom, figure/comment geometry and output text sizes stay unchanged while each pane scrolls independently. The shared divider helper retains the Operations bar behavior and adds vertical pointer/keyboard control. Up/Down adjusts one percentage point, Shift adds five, and Home/End select the limits. Collapse/reopen retains the chosen ratio; per-user browser layout storage is separate from `.fpmt` and flow Undo/Redo. The output log has an explicit viewport height because native `details` wraps its content in an anonymous box. Do not restore percentage-only log sizing: it can clip output instead of scrolling. Source cache suffix: `-prompt-run-output-resize-1`. [Verification and rollback](../changes/2026-10-04-run-output-resize.md). No commit or executable rebuild.
+
+## 2026-10-04 — Graphical rich-text User Commentary
+
+User Commentary now has **no configuration dialog**: all writing and formatting happens in its speech bubble and floating mini toolbar. Selected passages retain distinct fonts, sizes, colors, bold, italic and underline; a collapsed caret styles subsequent typing. Rich copy/cut/paste between comments preserves runs; external text stays literal. Any of eight borders/corners resizes directly, including while editing, with keyboard support. Done/Ctrl+Enter commits the complete edit, Escape/Cancel restores it, and editor plus diagram Undo/Redo preserve styles and geometry. The text grows without internal scrollbars, using the actual mixed-font layout.
+
+Version 2 gains allowlisted `runs` whose text must concatenate exactly to `config.text`; older plain v2 notes normalize to one run. The v1 User Input migration and runtime protocol remain unchanged. Static comments never execute. Source cache suffix is `-prompt-commentary-canvas-2`. See [implementation and verification](../changes/2026-10-04-commentary-graphical-redesign.md). The historical 2026-10-03 Configure workflow below is superseded. No executable/installer rebuild or Git commit was made for this change.
+
+## 2026-10-03 — Full source/Markdown sweep, the dossier refreshed, and two traps in the visible Prompt Flow harness
+
+Angela asked for a complete sweep of the source and every Markdown document, a visual check of the changes, and a refreshed PDF and PPTX dossier. Findings and fixes:
+
+- **Counts that had drifted.** The root stdio MCP server exposes one tool per complete agent template plus 7 management/skill and 10 ACPX tools: **106**, not 105 (89 + 17). The old figure came from the separate MCP-server install at `C:/Development/Tlamatini`, which lacks PPTXer. Fixed in `CLAUDE.md`, `GEMINI.md`, `KIMI.md` and `TLAMATINI_MCP.md`. `KIMI.md` was also still on its 2026-08-23 / v1.50.0 inventory (88 agents, 66 wrapped, 108 tools, 197 migrations, 17 models, 15 CSS); it now carries the counts measured from source today (89 / 67 / 109 / 212 migrations / 18 models / 18 CSS / 54 JS / 178 URL routes). ⚠️ Derive such counts from source; the MCP server you happen to be connected to may be an older tree.
+- **Ruff was not clean on `main`.** 22 errors, almost all in already-committed helper scripts (`_peek.py`, `context_gauge_100.py`, `monitor.py`, `Tests/test_pdf_canvas_browser.py`, `test_visual_fatal_errors.py`, `build_complete_private_release.py`, `visual_fatal_dialog_visible.py`) plus two semicolon lines in the new commentary test and harness. All fixed; `python -m ruff check` is clean.
+- **"1 comments".** The Prompt Flow status bar now pluralises each count (`1 comment`, `2 comments`). No cache-suffix change: in source mode the `STATIC_VERSION` head is the process start time, so a restart already refetches the file (see the `tlamatini-static-version-bumper` skill).
+- **The dossier** (`tlamatini_app_summary.pdf`, `Tlamatini_eXtended_Artificial_Intelligence_Humanly_Tempered.pptx`) now draws User Input with the panel's notched figure and User Commentary as a separate static note, states `.fpmt` version 2, and opens its Release chapter with what landed on `main` after `v1.75.0` (the four-stop-sequence limit and this split).
+
+**Trap 1 — Windows Terminal fails the harness's console gate.** `scripts/prompt_flow_commentary_visible.py` refuses to start unless `GetConsoleWindow()` is the foreground window. Inside Windows Terminal that handle is a hidden `PseudoConsoleWindow` while the visible window is `CASCADIA_HOSTING_WINDOW_CLASS`, so the gate refuses even when the console is plainly in front. Launch the harness under `conhost.exe` (a classic console window); the gate then passes honestly.
+
+**Trap 2 — Chrome itself can crash at the checkpoint-5 download.** In four runs that evening the test Chrome crashed three times at the instant the `.fpmt` file is downloaded (`TargetClosedError: Download.save_as`). The proof is Chrome's own: Crashpad dumps in `Temp/prompt-commentary-visible/chrome-profile-containment/Crashpad/reports` at 21:04:18, 21:08:05 and 21:25:10, one per failure, and the profile's `exit_type: Crashed`. Codex saw the same closure earlier that day. The page uses a plain blob download (`a.download` + `a.click()`), and the run that did not crash passed **9 of 9** checkpoints (21:16, photographs reviewed), so this is a crash in Chrome under automation, not a Prompt Flow defect. Treat a crash there as inconclusive and re-run; never count it as a pass. (A first guess blamed the `PYTHONPATH` and `TEMP` the MCP Executer passes down; a clean-environment run crashed the same way, so that guess was wrong.)
+
+**Trap 3 — the dossier's native check needs PowerPoint in FRONT.** `dossier_verify.py` measures every text box inside the real PowerPoint and refuses (*"Native dossier verification requires visible foreground PowerPoint."*) when PowerPoint is not the foreground window. It used to ask Windows once and give up, and Windows often turns down a single foreground request from a background process, so the first run failed after writing both files. It now asks again for up to 300 s (`FOREGROUND_WAIT_SECONDS`) and prints `PAUSED: bring the PowerPoint dossier window to the front to continue.` every 10 s, so the person watching can click it. It taps ALT (which lets Windows grant the request) only on the first three tries, so someone working in another window is not sent ALT every half second. The next two runs came forward by themselves and passed: 0 problems, tree parity 1602/1602 in both files, 2,223 PowerPoint text boxes checked.
+
+**v1.75.0 is published.** During this sweep `v1.75.0` was published on GitHub (2026-10-03 16:50 UTC, "Tlamatini Release v1.75.0 Win11x64", marked Latest). The regenerated dossier said so, because it reads `gh release list` live, but `CLAUDE.md`, `GEMINI.md`, `KIMI.md`, `README.md`, `BookOfTlamatini.md`, `ACPX.md`, this file and both copies of the self-update-inclusion skill still said it was unpublished and that self-update delivered v1.74.0. All corrected. Angela's own v1.75.0 install, built from `main` that morning before the release went up, already carries the Self-modify switch, migration 0212 and the four-stop-sequence fix; the annotated tag still points to `f7eb53ff`. The release zip's inner `pkg.zip` is compressed, so what the published package contains cannot be listed from GitHub without downloading all 1.9 GB; the docs therefore state only what was checked.
+
+Verification for this sweep, all in visible consoles: 430 targeted unit tests, `check_prompt_flow_panel`, ESLint (0 errors) plus the 54-file parse gate, `skill_inventory.py --check`, both inclusion sweeps (CLEAN), `git diff --check`, and the visible commentary harness (9/9 at 21:16; a later run showed the pluralised `1 comment` in its photographs before Chrome crashed at checkpoint 5).
+
+## 2026-10-03 — Prompt Flow Markdown audit and test-process cleanup
+
+Angela requested every applicable Markdown document be updated and all task-owned background processes stopped. The audit covered 204 repository Markdown files, including assistant contracts, mirrored maintenance instructions and project memory. Current guides now consistently distinguish runtime User Input from static User Commentary, document full-text containment without internal scrollbars, version 2 saves/version 1 migration, compatible drafts and source-only delivery. Historical releases/test records keep the names and versions they used at the time; the entry below supersedes their commentary execution contract.
+
+The task-owned Chrome/test server closed gracefully through the browser harness marker. Remaining owned verification consoles/workers were stopped; unrelated user processes were preserved. Scope and documentation verification are in [the follow-up record](../changes/2026-10-03-prompt-flow-documentation.md). No executable/installer was rebuilt and no Git write was performed.
+
+## 2026-10-03 — Static User Commentary and separate User Input
+
+Source changes; no executable or installer rebuilt. Angela separated review annotations from the existing runtime reply mechanism. **User Input** retains that mechanism and its reply/cancel protocol, using the supplied notched figure. **User Commentary** retains the speech bubble as an independent static annotation: double-click to edit in place; Configure selects palette color, font, size, emphasis and alignment; resize, move, duplicate, Undo/Redo and portable/draft persistence work. Static notes have no ports, cannot be Start and never affect playback or step counts.
+
+**No internal scrollbars.** Angela rejected the black scrollbar inside long notes. Bubbles and their inline editors grow to contain the complete wrapped text at the selected width/font. The stored height is a user-chosen minimum; automatic content height is recomputed when loading, formatting and resizing. Canvas bounds and Fit include that actual height. Do not reintroduce clipping or scrollable commentary controls.
+
+The diagram contract is now version **2**. Version 1 files/drafts migrate executable `user_commentary` nodes to `user_input` while preserving IDs, edges and configuration. Only version 2 `user_commentary` means a static note; keep this migration to prevent old flows from silently losing reply steps. Static text is literal, including HTML-like text and `{{last_output}}`. Backend and frontend independently validate its style and dimensions.
+
+Verification: 25 diagram/runner tests and 33 runtime/WebSocket/readiness tests passed; the offline page/real WebSocket check passed with all eight asset types. Nine checks in `scripts/prompt_flow_commentary_visible.py` passed in foreground Chrome, including 5,000-character editing/containment without scrolling, formatting, zoom-aware resize/Undo/Redo, save/reopen/draft recovery, real User Input replies/cancellation and legacy migration. Evidence: `Temp/prompt-commentary-visible/summary.json` and numbered Shoter desktop photographs. The check uses an isolated source installation and no model call or mocked transport. The final source-carriage/lint results are recorded in the [change record](../changes/2026-10-03-prompt-commentary-input.md).
+
+## 2026-10-03 — "too many stop sequences; maximum is 4": never more than FOUR, and a failed history summary never fails the answer
+
+> **On `main` after the `v1.75.0` tag** — not yet inside any tag; a source run reports `1.75.0`.
+
+Angela's installed build (`glm-5.3:cloud`) answered a CPU question, then died on the very next Multi-Turn prompt (Lumen Book Reader + Memory + torrent-search) in 0.2 s: *"Your agent cannot process your requests … Error detail: too many stop sequences; maximum is 4 (status code: 400)"*. Nothing had run yet.
+
+**Root cause — measured, not guessed.** The chat LLM in `rag/factory.py` carried **NINE** stop sequences (old code, not part of v1.74/v1.75). Ollama's cloud models refuse five or more: straight to `/api/generate`, `glm-5.3:cloud` and `glm-5.2:cloud` both answer **HTTP 400** to 5 or 9 and **HTTP 200** to 4. The first call made with that LLM in a request is the **chat-history summary** (`_summarize_history_if_needed`), which runs as soon as the history passes `history_summary_trigger_tokens` (Angela's config: **150**, so after almost any real answer) — and its exception killed the whole request. Self-modify ON/OFF had nothing to do with it; her failing turn simply had it OFF.
+
+**The fix — two layers.**
+- `agent/ollama_stop.py` (new, stdlib-only, never raises): `fit_stop_sequences()` drops duplicates/empties and keeps at most **`STOP_LIMIT = 4`**, for **EVERY** model — not decided by the name, because a local alias of a cloud model, a remote Ollama proxying the cloud or a new naming scheme would slip past a name check. A local model loses nothing: it stops at its own end-of-generation token natively. `rag/factory.py` now sends `_CHAT_STOP_TOKENS = ("\nEND-RESPONSE\n", "\nHuman:", "\nUser:", "\nAI:")` through `_chat_stop_tokens(config)` in BOTH chat builders, and logs `[LLM-STOP] <model>: 4 stop sequences`. The image interpreter (`imaging/image_interpreter.py`, 5 stops incl. a bare `"assistant"` that cut any description using that word) is fitted too — the `"assistant"` entry is the one dropped.
+- `rag/chains/base.summarize_or_none()` — ALL FIVE chains' history summaries (basic, history-aware ×2, unified ×2) go through it: FAIL-OPEN (a failed summary logs `[HISTORY-SUMMARY] the chat-history summary failed (…); sending the history unsummarized` and the answer goes on), a user's **Cancel still propagates**, and a success logs `[HISTORY-SUMMARY] chat history summarized (N chars)`.
+
+**Contracts (do NOT weaken).** No request ever carries more than 4 stop sequences — `agent/test_ollama_stop_limit.py::NoLongStopListAnywhereTests` AST-scans the whole source tree (Tlamatini/, scripts/, root) and fails on any `stop=` / `"stop":` that is not fitted and is longer than four. The summary is an optimisation, never a reason to lose an answer. Order matters: list the sequences that matter most FIRST.
+
+**Also fixed.** `agent.tests.AgentDescriptionsCoverageTests` counted `agent/agents/__pycache__` (present since 2026-09-20, created whenever `agents/model_settings.py` is imported from source) as an agent folder — it was red on this checkout for unrelated reasons; `__pycache__` is now excluded.
+
+**Proof.** Unit: `agent.test_ollama_stop_limit` (guard + 5 chains × fail-open/success/cancel) plus every suite that touches the chains, the factory and the image interpreter — 751 tests, all green after the `__pycache__` fix. Visible (headed Chrome, Shoter photos, `stop_sequence_visible.py`, ONLY `glm-5.2:cloud` and `qwen2.5:latest` per Angela): phase 0 — the list Tlamatini sends is accepted by both models and `glm-5.2:cloud` still refuses the old nine; phase A — `glm-5.2:cloud`, Self-modify ticked: her CPU question, her Lumen/Memory book prompt (3,046 chars, 12,689-book catalog searched) and a torrent-search prompt, the summary ran twice, 3 of 3 requests reached the agent; phase B — `qwen2.5:latest` locked in Compact mode: the same sequence, the summary ran twice; Angela's Memory graph unchanged and config.json restored byte for byte — **ALL 48 CHECKS PASSED**. Phase C (`--phases C`) — `glm-5.2:cloud` with Self-modify UNTICKED by a click for her CPU question and her book prompt (the exact state of her failing turn: OFF, after a long answer, the summary ran), then ticked again for a follow-up: every answer arrived, the summary ran twice and never failed, 3 of 3 requests reached the agent, both switches are in the log, no Traceback — **ALL 31 CHECKS PASSED**.
+
+## 2026-10-03 — The SELF-MODIFY switch: her self-knowledge, only where it exists and only when it fits
+
+> **On `main` right after the `v1.75.0` tag** (commit `70aeeb87`, 2026-10-03) — not yet inside any tag; a source run reports `1.75.0`.
+
+Angela asked for a control to enable/disable self-modify *"if and only if the model can fit it (similar to Compact mode)"*, visible ONLY in a `--self-modify` build and *"COMPLETELY HIDDEN"* otherwise — and *"THE DEV MODE MUST ALWAYS BE LIKE --self-modify MODE"*.
+
+**What was true before.** Self-knowledge was decided once, at load: a build with `TlamatiniSourceCode/` sent Tlamatini.md (measured **115,711 chars, ~28.9K tokens**) with EVERY request, whatever the model; one without sent a single line. Dev mode only had it because a placeholder `TlamatiniSourceCode/README.md` happened to sit in the checkout. And a small model received it anyway (Compact mode stripped it only because Compact strips everything non-essential).
+
+**What changed.**
+- `rag/config.self_modify_available()` — a source run of this checkout is ALWAYS self-able; a frozen build needs the folder. The loader and `_load_self_knowledge_block` use it.
+- `rag/config.apply_self_modify_switch()` turns a self-able prompt into the OFF prompt by replacing the EXACT injected text (recomputed from the files by `self_knowledge_segments()`), so the gate tests' "no marker ever leaks" contract holds.
+- `compact_mode`: `CompactState.self_modify` (migration **0212**, ON by default), `set_self_modify` (refuses `unavailable` / `too_small`), `note_self_modify`, `self_modify_active`; `state()` carries `self_modify_available / _locked / _active`.
+- `fit_request`: FULL measures the request without it + the self-knowledge + 2400 against the usable window; COMPACT measures its own prompt + the very text it would append. The verdict reaches the page as `capacity.self_modify` and the log as `[SELF-MODIFY] … does NOT fit - Self-modify is locked OFF` / `… it fits`. The executor cache key carries `__self__`; STRICT is measured without it.
+- Page: `{% if self_modify_available %}` renders the box and `self_modify_switch.js` together; consumer `set-self-modify` (refused while an answer runs); a `self_modify` notify re-sends no Configure rows.
+- `prompt.pmt`'s self-modify bullet now says a source run's checkout IS her source, with or without that folder.
+
+**Found while testing (and fixed).** The first compact path measured the self-knowledge on the executor's prompt but appended it from the files — a raw prompt (tests) measured ~3.5K and appended ~115K, so a 16K-window request jumped to ~44K tokens. Compact now measures the text it appends. The visible run's first "bytes come back" check failed for an honest reason unrelated to the switch: External MCP servers (lumen-book-reader, torrent-search) finished connecting between frames and added ~10K bytes of tools — the check now compares OFF with ON-again (same 119 tools): **117,517 bytes** in the final run.
+
+**Do NOT run `build.py` to test frozen mode:** it erases `Tlamatini/db.sqlite3` and wipes `dist/` (the v1.74.0 release zip sat there). The frozen branch is covered by `FrozenPageTests`, which render the real chat page under a patched `sys.frozen`: no `--self-modify` → no box, no script, no "Self-modify" text anywhere; with it → the box.
+
+**Proof.** Unit: 473 tests across the self-modify, gate, Compact, capacity, gauge and frontend suites — OK. Visible (headed Chrome, Shoter photos, `self_modify_visible.py`): qwen2.5 local → box present, unticked, greyed, 🔒, the click explains, a forged tick is refused; nemotron-3-ultra:cloud (free allowance, probes off, no question) → ticked by default, OFF saves 107,458 bytes at rest, ON brings back 117,517 with the same tools; database, choice and config.json restored — **ALL 28 CHECKS PASSED**.
+
+## 2026-10-02 — The COMPACT MODE switch: the real rows, a locked box, a truthful gauge
+
+> **Shipped in `v1.75.0`** (annotated tag at `f7eb53ff`, 2026-10-03; no GitHub release was published yet when this entry was written — v1.75.0 was published later on 2026-10-03 and marked Latest).
+
+**Angela's design, approved in her words:** in STRICT compact mode (a small model really active) the user must NOT be able to untick "Compact mode"; only a model that can fit **everything activated** lets it be ticked and unticked freely. Compact mode starts with System-Metrics, Files-Search and Current-Time enabled, *"BUT THE USER MUST BE ABLE TO FOR EXAMPLE DEACTIVATE System Metrics, DEACTIVATE Files Search, BUT ACTIVATE FOR EXAMPLE ESPHomer"*; the selections in Configure MCPs / Configure Agents must get *"REALLY chained/unchained"* - ALL of them, not only PDFer or Unrealer; unticking re-enables ALL; *"the gauge must be the most real value"*; the gauge says **CONTEXT-WINDOW**; the not-ready legend tells the user to make the request fit the CONTEXT WINDOW. Then: *"keep compact, and yes show the warning"*.
+
+**What was wrong before.** Compact mode (2026-10-01) was an invisible verdict: it bound Current-Time only, behind the user's back, while the Configure dialogs kept showing every agent ticked; nothing could be added; the ACPX box was force-locked; a saved dialog said *"You need to restart the agent/connection"*; `apps.py` reset every agent to ON at each start; a cut request was drawn as a polite 100%.
+
+**What changed.**
+- `agent/compact_mode.py` (NEW) + model `CompactState` (migration **0211**): `enter_compact` / `leave_compact` rewrite the Mcp / Tool / Agent / Skill rows atomically and save/restore the External-MCP active list; `note_capacity` records STRICT and switches ON automatically; `after_toggles_saved` chains agent ↔ tool rows (+ run companions in Compact), applies every row to `global_state` and moves `toggles_version`; `costs()` prices every row; `cut_warning_html()`.
+- `tools.tool_gate_table()` (NEW): ONE list of every built-in tool and its gates; `get_mcp_tools(ignore_gates=False)` reads it; in Compact a gate with no row reads OFF. ⚠️ The Monitor-Netstat row now really gates `execute_netstat` (its old key matched no row).
+- `mcp_agent`: `_refresh_toggle_tool_surface` (no rebuild), `_everything_static_chars` (strict), `fit_request` binds EXACTLY the ticked tools in Compact (External MCPs stay paused), the 4th cut attempt is answered (`accept_context_cut`) and a thrown-away first step clears its cut.
+- `context_governor`: a cut frame's ratio is sent ÷ read (`tokens_sent_estimate`, `window_real`); `_note_frame_cut` / `turn_cut` / `clear_turn_cut`.
+- `consumers`: `set-compact-mode` (refused while an answer runs; untick refused while strict), `compact-mode-sync`, the `tlamatini_compact_mode` group, saved dialogs apply at once ("no restart needed"), the CUT warning prepended to the answer, ONE `constants.ERROR_AGENT_NOT_READY`.
+- `apps.py`: each agent's flag survives the startup rebuild; a NEW agent starts unticked while Compact is ON.
+- Page: `#compact-mode-enabled` in the toolbar; `model_capacity.js` rewritten (box, lock 🔒, dialog, resync; the badge and the ACPX lock are gone); `compact_costs.js` (NEW) prices every row + the live budget line; `context_gauge.js` says CONTEXT-WINDOW, shows the true % past 100 (`OVER`) and `CUT · read X of ≈Y tokens`.
+- `rag/interface._compact_mode_access_message` no longer says "no tools" when the user ticked some.
+
+**Found by the visible run (2026-10-03) and fixed:**
+- **A two-line `{# #}` comment was PRINTED on the chat page** (Angela saw it). Django hides `{# #}` only on ONE line; use `{% comment %}` for more. Guard: `test_no_template_comment_spans_two_lines` + the visible check A1b.
+- **Ticks made while a Configure dialog was still loading were lost** (old race): `loadAgents()` / `loadTools()` ask the server one row at a time (~2 s for every agent) and overwrote the boxes. `agent_page_dialogs.js::setLoadedCheckbox` now leaves a box the user already clicked alone.
+- **The budget line under-counted a freshly ticked agent**: saving CHAINS rows, so `compact_costs.js` projects the same chain (agent ⇄ its tools, + the run companions in Compact); it paints at once from the cached prices and says "Measuring…" instead of showing the previous opening's number.
+- **The seeded ACPX rows reached no tool**: they are named `acpx-spawn` but described "ACP spawn", and the gate reads the name. `rag/factory.py` and `compact_mode.apply_rows_to_global_state` now also set the key by `toolName`; the cost labels map it back to the row text.
+- **A saved dialog echoed its whole raw payload** (`agent-1=ACPXer=false,…` ×89) into the chat; it is now one line: `Agents activation saved: 1 of 89 on (ESPHomer).` (`AgentConsumer._toggles_summary`).
+- `mcp_agent._refresh_toggle_tool_surface` adopts the version (and keeps the tools) of an executor built without `__init__`, so a caller's own tool list is never replaced.
+- The harness resets the dev database to "every row ON, Compact OFF" at the start and end — a crashed run had left Compact ON and the dev External MCPs paused.
+
+**Contracts (do NOT weaken):**
+1. The switch rewrites the REAL rows; the request binds exactly them. Never bind a tool the user did not tick in Compact, never drop one she did.
+2. STRICT = locked: the server refuses the untick (`leave_compact(force=False)`), not only the page.
+3. A big model unlocks the box and KEEPS Compact ON until the user unticks it.
+4. Saved dialogs apply at once — never bring back "restart the agent/connection" for MCPs / Tools / Agents.
+5. A cut answer is never shown without the CONTEXT-WINDOW warning; a re-fitted first step never leaves one behind.
+6. Fail-open: no database ⇒ the switch reads OFF and a strict request falls back to Current-Time only.
+7. New built-in tools go into `tool_gate_table()` — never a second gate list.
+
+**Proof.** Unit: `agent/test_compact_mode_switch.py` (+ updated `test_model_capacity.py`, `test_context_governor.py`). Visible: `.claude/skills/tlamatini-daily-chat-test/harness/compact_switch_visible.py` - headed Chrome, Shoter photos; phase A on the installed app's local `qwen2.5:latest` (auto-lock, dialog, Configure rows, ESPHomer chained, gauge past the window, the warned answer), phase B on the free `nemotron-3-ultra:cloud` with NO question asked and probes OFF (unlocked, choices survived the restart, untick ⇒ every row back, tick ⇒ Current-Time only). **Result 2026-10-03 00:14: ALL 57 CHECKS PASSED** (unit: 221 passed in the Compact/gauge/drop/Multi-Turn/ACPX/Exec-Report set).
+
+## 2026-10-01 — COMPACT MODE: every request fits the model it is sent to
+
+> **Shipped in `v1.74.0`** (annotated tag at `c1fadb90`, 2026-10-01; no GitHub release was published yet when this entry was written — v1.74.0 was published later on 2026-10-01 and marked Latest).
+
+**Angela's report:** the installed build, running the local `qwen2.5:latest`, answered *"What is the actual CPU usage, memory usage and disk space?"* with the time — *"did you erase system context?"*
+
+**ROOT CAUSE — nothing was erased; Ollama silently threw most of the request away.** Tlamatini sent 210,845 bytes (the whole `prompt.pmt` plus 119 tool schemas, ~52K tokens). Her Ollama serves qwen2.5 with 32,768 tokens split by `OLLAMA_NUM_PARALLEL=2`, so one request slot holds ~16K: Ollama answered with `prompt_eval_count=16386` and kept only the tail — the System Context was among what it dropped. `/api/show` still reported 32,768, so the gauge said "50% REAL", which was also untrue.
+
+**FIX — three layers.**
+1. **The truth.** `context_governor.note_real_count`: a request was CUT when the characters sent cannot fit the tokens Ollama says it read (chars/token > 6.0, or > 1.6× the measured ratio). The count it read IS the window — learned per (server, model), `localhost`/`127.0.0.1`/`0.0.0.0` treated as one server — and `resolve_ceiling_tokens` answers with it (an explicit `context_ceiling_tokens` still wins). The gauge frame turns red/floor and says so.
+2. **The fit.** `agent/context_fitter.py` + `CapabilityAwareToolAgentExecutor.fit_request`. If the complete request (prompt + tool schemas + the smallest dynamic part) fits the usable window (window − a 20% answer reserve, clamped 768..8192 tokens) it is sent **byte for byte as before (FULL)**. Otherwise **COMPACT**: tools = `{get_current_time}` ∩ enabled; the System-Metrics and Files-Search sidecars stay (their context rides inside the question); ACPX off; External MCPs are not refreshed for that request (paused — the user's selection is untouched); `prompt.pmt` is rebuilt by rule priority (self-knowledge and sentinel blocks out, a micro prompt as last resort); a seven-rule **COMPACT MODE** note closes the prompt; history newest-first, at most 6; an attached context shrinks before the question ever does; tool output capped at 25% of the usable window. A request Ollama cut on its first step (no tool ran) raises `ContextWindowExceeded` and is re-fitted and resent (3 attempts). The tool-less chains (`unified.py` fallbacks, `factory.py` prompt-only/history-aware) use the same fitter and the same note.
+3. **Telling the user.** The verdict rides on every `context-gauge` frame (`detail.capacity`). `model_capacity.js` opens a once-per-model dialog (what stays active, what is paused, the window, an *Open Config ▸ Models* button; Escape/✕ close it, "don't show again" per model), shows a `Compact mode · <model> · 32K` badge that reopens it, locks the ACPX checkbox, and toasts when Full mode returns.
+
+**Found by the visible run on qwen2.5 and fixed in the same pass:**
+- The one-shot file-access guard (`rag/interface.py`) answered a Compact user *"provide explicit and absolute routes/paths"* — a dead end, since no file tool is bound. `_compact_mode_access_message` now says the real reason and the way out. Full mode keeps the guard's own message.
+- A 7B model fences a table it was asked to SHOW (```` ```html ````) or puts it in `BEGIN-CODE<<<x.html>>>`, so the user saw tags or a canvas link. `context_fitter.unwrap_display_tables` (Compact only) lifts a block whose WHOLE body is one table — never when the question asked for code/a file/a page, never markup beyond a table (scripts, styles, forms, images, `on*=` handlers stay fenced); HTML comments are dropped, `END-RESPONSE` kept.
+- A table painted white with no cell text colour inherited the chat's white text — rendered, and unreadable. `chat_table_contrast.js` (every model) re-colours only a cell whose WCAG contrast is below 3:1; gradient/image backgrounds and Exec Report tables are left alone.
+
+**Config:** `context_compact_mode` = `auto` (default) | `always` | `never` — an explicit value is obeyed exactly.
+
+**Proof (2026-10-01, visible):** `compact_mode_visible.py` on the installed app's `qwen2.5:latest` — **37/37** (dialog, badge, ACPX lock, metrics, time, identity, code, a READABLE table, history, an honest "I can't do that right now", Multi-Turn), ~8.1K tokens REAL per request, 0 cuts. `full_mode_visible.py` on `nemotron-3-ultra:cloud` — every request FULL and read complete (102,539–104,259 tokens REAL); 20/21, the one failure being the harness's own contrast check, which measured a gradient header against the white table behind it (fixed). Unit: `agent/test_model_capacity.py`.
+
+**Do NOT:** send the complete request to a model that cannot hold it; treat a local model's `/api/show` `context_length` as the per-request window (`OLLAMA_NUM_PARALLEL` splits it); remove the first-step cut guard; widen `unwrap_display_tables` beyond Compact mode; move the Compact note away from the END of the system prompt. Known limit: a 7B model still sometimes re-answers an earlier question before the new one.
+
+## 2026-09-30 — Config ▸ Models asks the CONFIGURED Ollama, never the browser's idea of it
+
+> **Shipped in `v1.73.1`** (annotated tag at `757b0edc`, 2026-10-01; a tag with no published release).
+
+**Angela's report:** she pointed Tlamatini at a rented GPU server (vast.ai) in Config ▸ URLs, with its token, and pulled `deepseek-coder-v2:236b` there. Config ▸ Models marked it red and refused to save it: *"it keeps asking the local ollama its models, not the remote super-server."*
+
+**ROOT CAUSE.** `agent_page_init.js::listOllamaModels()` fetched `<ollama_base_url>/api/tags` **from the browser**, with the URL read from `{{ ollama_base_url|json_script:"ollama_config" }}` — baked into the HTML when the page loaded. Saving Config ▸ URLs and pressing Reconnect moved the chat to the new server (log: `base_url=http://145.241.107.153:32236`), but the page kept the OLD value until a full reload, so the dialog listed the local Ollama's 16 cloud models and rejected a model that WAS installed remotely. The browser fetch also never sent `ollama_token` and depended on the remote server's CORS rules.
+
+**FIX.** New `GET /agent/ollama_models/` (`views.ollama_models_view`, login required): reads `config.json` fresh on every call, asks every distinct configured Ollama URL (`ollama_base_url`, `unified_agent_base_url`, `image_interpreter_base_url`) in parallel with the same `Authorization: Bearer <ollama_token>` the chat sends (a `<... goes here>` placeholder is not sent), merges the model names, and returns one status row per server (`{url, ok, count, error}`); 502 only when no server answered. `listOllamaModels()` now calls it, and the dialog's status line and alerts name the server(s) and the reason (e.g. `HTTP 401 - check ollama_token`). The baked `ollama_config` script tag is gone from both pages. The MCP entry points (System-Metrics / Files-Search) are untouched and stay local.
+
+**Second bug found by the visible run (2026-10-01): the startup GPU step skipped the token too.** `gpu_perf.pin_ollama_model` (`POST /api/embed`) and `gpu_perf.detect_ollama_serving_issues` (`/api/version`, `/api/tags`) built their requests without `Authorization`, so a token-protected remote answered `401 Unauthorized` on every start (`--- [GPU-PERF] Could not reach Ollama … HTTP Error 401`). Both now take a `token` argument, `apply_gpu_max_performance` passes `ollama_token`, and `_ollama_auth_headers()` drops a `<… goes here>` placeholder. Covered by `GpuPerfSendsTheTokenTests`. Proven end to end by `.claude/skills/tlamatini-daily-chat-test/harness/deepseek_remote_chat_visible.py`: a simulated token-protected remote serving `deepseek-coder-v2:236b`, the real chat page in headed Chrome, a one-shot and a Multi-Turn coding answer, every request carrying the token, no error in `tlamatini.log`, and the dev `config.json` restored byte for byte (16/16). **If you see 401 from a remote Ollama, look for an Ollama call that builds its own request without the token.**
+
+**Do NOT** move the catalog fetch back into the browser or bake an Ollama URL into a template again — a value fixed at page load is stale the moment Config ▸ URLs changes it. URLs come from `config.json` only, never from the request. Coverage: `agent/test_ollama_catalog_from_server.py` (fake token-protected Ollama servers on loopback; includes the "URL changed after page load" regression).
+
+## 2026-09-30 — The chat card's **Drop** button: erase ONE message from the chat AND from what the LLM reads
+
+> **Shipped in `v1.73.0`** (annotated tag at `606470bb`, published 2026-09-30 and marked Latest).
+
+Angela: *"the LLM must process the history of messages as if the deleted
+messages have never been existed and previous messages and posterior messages
+to the deleted one must stay there untouched, AND FOR BOTH TYPE OF MESSAGES"*,
+with no reconnection.
+
+**Where the model's memory of a conversation lives — the whole design rests on
+this.** `consumers.queue_llm_retrieval` rebuilds the history on EVERY request
+from the `AgentMessage` table (`DBChatHistoryLoader.load`, newest 8 rows of the
+user, `Referenced Rephrase:` rows skipped). There is no cached summary, no
+LangGraph checkpoint and no history inside the chain object. So Drop deletes
+ONE row and nothing else: no chain rebuild, no reconnect, and the 8-row window
+slides back exactly as if the row had never existed.
+
+| Piece | Where |
+|---|---|
+| Every saved message carries its row id to the page | `consumers.save_message` / `response_parser.save_message` return the pk → `message_id` on the broadcast; `views.agent_page` adds `id` to `initial_messages` |
+| The button + themed confirm | `agent_page_chat.js` (`requestDropMessage`, `_dropDialogText`), `.message-drop-btn` in `agent_page.css` |
+| The socket command | `drop-message` → `AgentConsumer._handle_drop_message` → `delete_message_for_user` |
+| Every tab removes the card | group event `message_dropped` → frame `message-dropped` with `message_ids` |
+| Destructive confirm | `tlmConfirm(…, options)` gained `confirmLabel` / `danger` / `focusCancel`; `.tlmpop-btn-danger` in `dialog_theme.css` |
+
+**Contracts — do NOT weaken:**
+1. **Scoped to the user** — the delete filters on `conversation_user` too, so a forged id can never touch another user's history.
+2. **Refused while this connection is answering** (`_active_run`), client and server side — the run in flight already read its history.
+3. **A user prompt takes its `Referenced Rephrase:` rows with it** (only the rows directly after it). The model never reads them, but a page reload replays them, so leaving one would bring the dropped words back on screen. Tlamatini's answer is NOT taken along.
+4. **A live status line has no id** ("Processing…", errors, retry notices were never saved): Drop only clears the screen and sends nothing.
+5. **Cancel is focused** and Escape/✕ resolve `false` — Enter can never drop anything.
+6. **The context gauge is recalculated** (`"message dropped"`), because the at-rest prediction was built from the old history.
+
+⚠️ **Measured, and now stated in the dialog: the External MCP `memory` graph is NOT chat history.** With that server active, Tlamatini copied the test facts into `%LOCALAPPDATA%\Tlamatini\memory\memory.json` on her own — a store shared by EVERY install on the machine. Drop cannot reach such a copy, so the dialog says *"A note she saved with her memory tool … stays; ask her to forget it too."* The visible harness forbids tool use in its prompts and its `memory_guard` proves the graph was not written (and removes only lines it added if it was). Never let a test write into that file.
+
+Coverage: `agent/test_drop_message.py` (both kinds of message, neighbours kept, window slide, cross-user refusal, busy refusal, rephrase rows, frame shapes, source contracts) + the VISIBLE runner `.claude/skills/tlamatini-daily-chat-test/harness/drop_message_visible.py` (headed Chrome, Shoter photos, ground truth = the history lines the server logged for the next request).
+
+---
+
+## 2026-09-29 — HTML text extraction can no longer lose a page in silence (Crawler AND Googler)
+
+> **Shipped in `v1.72.4`** (annotated tag at `323c1051`, published 2026-09-29 and marked Latest).
+
+Another user sent Tlamatini's own diagnosis of a Crawler run: text mode said
+*"Extracted 0 chars"* for example.com, httpbin.org and 65 python.org pages. It was
+the pre-`524a67ff` code (meta/link in the skip list, a `_skip_depth` counter that
+void elements never decrement) — their install simply predates the fix below.
+Angela then asked to check Googler for the same problem. **It had it:** its own
+`_HTMLToText` counted skip depth too, so any page that leaves out the optional
+`</head>` (HTML5 allows it; minified pages do it) came back with ZERO text.
+
+**The bug CLASS, not one instance.** An `HTMLParser` that opens a "skip" region on
+a start tag and waits for its end tag loses the whole rest of the page whenever
+that end tag never comes: a void element, an optional `</head>`, a stray `<svg/>`,
+a truncated body. Fixing one tag leaves the next one waiting.
+
+**Two layers, in BOTH agents (`crawler.py::strip_html`, `googler_engines.py::html_to_text`):**
+1. **A stack, not a counter.** Open skip tags are pushed; `<head>` ends at the first
+   element that cannot live there; a self-closing tag (`handle_startendtag`) never
+   opens a region; an end tag pops back to its match.
+2. **A safety net that measures the result.** `plain_text_fallback()` strips markup
+   with a plain scan that drops only CLOSED script/style/noscript/template/svg
+   blocks (an unclosed one keeps the rest of the page; `<svg/>` opens nothing). If
+   the parser kept less than `FALLBACK_MIN_SHARE` (25 %) of the fallback's text and
+   the fallback has at least `FALLBACK_MIN_CHARS` (200), the fallback is used — and
+   it is SAID: Crawler logs a WARNING, Googler returns `extraction_note` in the page
+   result. A parser exception takes the same route.
+
+**Measured live (2026-09-29, visible, Shoter photos in `Temp/text-safety-live/photos`),
+the SAME fetched page through old and new code (characters of text):**
+
+| page | old Crawler | NEW Crawler | NEW Googler |
+|---|---|---|---|
+| example.com | **0** | 182 | 167 |
+| httpbin.org/html | 3,594 | 3,594 | 3,595 |
+| python.org | **0** | 7,156 | 7,240 |
+| docs.python.org/3/ | **0** | 3,233 | 3,353 |
+| Wikipedia article | **0** | 10,858 | 11,138 |
+
+On all five healthy pages the safety net stayed OFF (the parser alone was enough),
+and the real Crawler agent then analyzed example.com, httpbin.org and python.org
+with the model (`status: ok`, `http_status: 200`, `Content-Type` read correctly).
+
+**Contracts (do NOT weaken):**
+1. Never make a skip region depend on an end tag arriving. Stack + pop-to-match.
+2. Keep the net, and keep it LOUD. A fallback nobody hears about hides the next
+   parser bug; a WARNING / `extraction_note` makes it visible.
+3. The net must never degrade a healthy page: it only replaces a result that lost
+   three quarters of the text. `test_a_healthy_page_never_uses_the_fallback` pins
+   that in both agents.
+
+Coverage: `test_crawler_resilience.py` (40) and `test_googler_resilience.py` (65)
+gained the example.com page, a minified page with no head/body tags, a page without
+`</head>`, a self-closing `<svg/>`, a region that never closes, and the plain
+fallback itself. With the agent, dork and status-vocabulary suites: **288 tests,
+all passing**. An installed build receives this only through a rebuild or update.
+
+## 2026-09-29 — Crawler reads the page it is given, never hangs, and never analyzes a refusal
+
+> **Shipped in `v1.72.2`** (annotated tag at `524a67ff`, 2026-09-29; no GitHub release of its own — the published `v1.72.4` carries it).
+
+Angela, right after the Googler fix: *"Check if the same happens to Tlamatini's
+Crawler agent and improve it too (if possible)"*. It did — worse.
+
+**What was wrong.**
+- **Text mode returned ZERO characters for every modern page** (seen live on
+  2026-09-28 with Wikipedia): `meta` and `link` were in the text extractor's skip
+  list, but they are VOID elements with no end tag, so the skip region they opened
+  never closed. The page was then dropped as "no text content".
+- Headers were read case-sensitively: Wikipedia sends `content-type` in lower case,
+  so the content type read "unknown" and the binary guard went blind.
+- The default `crawl_type` was `small-range`, which analyzed the page's LINKS and
+  never the page itself — "read this page" analyzed other pages.
+- Nothing bounded a page: the socket timeout restarts on every byte, so a server
+  that dribbles, or never finishes, held the agent forever. `max_pages` defaulted to
+  0 (unlimited) and there was no crawl deadline.
+- A bot wall, CAPTCHA or 403 page was handed to the LLM as if it were content.
+- An LLM timeout escaped as a bare socket error and aborted the WHOLE crawl.
+- A crawl that analyzed nothing ended in silence, with no section for a flow or the
+  chat to read.
+
+**Measured after the fix (2026-09-29, live and visible, Windower + Shoter photos in
+`Temp/crawler-live/photos`, each checked to show the Crawler console):**
+
+| case | result |
+|---|---|
+| Wikipedia *Humanity's Last Exam*, text mode | 146,432 chars fetched in 0.35 s, **10,858 chars of text** extracted, `status: ok`, `http_status: 200`, correct summary, 10.4 s end to end |
+| `httpbin.org/status/403` | `status: blocked` in 3.0 s, NO LLM call, body "NOTHING WAS ANALYZED" |
+| `httpbin.org/delay/10` with `page_timeout_seconds: 4` | stopped at **exactly 4 s**, `status: timeout`, NO LLM call |
+
+The first run of the third case stopped at 5 s, not 4: `CrawlBudget.page_timeout()`
+applied its 5 s grace (meant for a page begun just before the crawl deadline) on
+top of the user's own value. It now returns `min(configured, max(5, time_left))`.
+
+**The fix (all in `agents/crawler/crawler.py`, still stdlib-only).**
+`HTMLTextExtractor` skips only text-bearing elements, ends `head` at the first
+element that cannot live there, and puts the `<title>` first; `_header_value()`
+reads headers case-insensitively. `fetch_page_raw` runs on a daemon thread abandoned
+at `page_timeout_seconds` and reads at most `max_page_bytes`; `_fetch_with_retry`
+retries ONCE, only for a 429/503 that names a `Retry-After` of at most 20 s.
+`detect_block()` turns 401/403/429 and SHORT bot-wall pages into `blocked` before the
+LLM sees them. `CrawlBudget` records every page's outcome and bounds the run;
+`query_ollama` raises every failure as `RuntimeError`, the call bounded by
+`_llm_timeout()` (300 s, never much past the crawl deadline); an empty LLM answer is
+an `error`, not a result. `_report_outcome()` ends a crawl that analyzed nothing
+with ONE section. Defaults: `crawl_type: page`, `include_seed: true`,
+`max_pages: 25`, `deadline_seconds: 900`, `page_timeout_seconds: 45`,
+`max_page_bytes: 8000000`. The contract gained `status` and `http_status`
+(`agent_contracts`), and `chat_agent_crawler`'s description now says it reads the
+given page by default and does not run JavaScript.
+
+**Contracts (do NOT weaken):**
+1. **Nothing waits without a deadline** — every page, every LLM call and the whole
+   run are bounded, and stopping at a bound is SAID in the log.
+2. **A refusal is never content.** 401/403/429 are always `blocked`; other pages
+   count as walls only when SHORT (≤ 1,500 visible characters) and carrying a
+   marker, so an article that merely mentions "captcha" is never thrown away.
+3. **Never silence.** A crawl that analyzed nothing emits exactly ONE
+   `INI_SECTION_CRAWLER` whose `status` names the most telling failure (`blocked` >
+   `timeout` > `unreachable` > `not_found` > `error` > `skipped`) and whose body
+   begins "NOTHING WAS ANALYZED. Do not present any page content".
+4. **The default reads the page given.** Range types analyze the seed first unless
+   `include_seed: false` (the old links-only walk).
+5. **An explicit `page_timeout_seconds` is obeyed exactly.**
+6. **`status:` is a word, the HTTP code is `http_status`.** The status-vocabulary
+   guard used a SUFFIX test and read `http_status: {status_code}` as a numeric
+   `status:`; it now compares the KEY (`_STATUS_KEY_TAIL_RE`, pinned both ways by
+   `test_a_key_that_merely_ends_in_status_is_not_the_status`). Do not turn it back
+   into a suffix test.
+7. Never hammer: one retry at most, and only when the server asked for it.
+
+Coverage: NEW `agent/test_crawler_resilience.py` (35 tests: text extraction,
+scope, bounded fetches against never-answering and dribbling local servers,
+refusals, page processing, nothing-delivered sections, contract/vocabulary) and the
+updated `agent/test_crawler_agent.py` (42). With the Googler, verdict, flow and
+naming suites: **403 tests, all passing on 2026-09-29**; both inclusion sweeps
+CLEAN. Like Googler's chat tool, the installed build needs a rebuild or self-update
+to receive this.
+
+## 2026-09-28 — Googler is block- and hang-proof, and never reports a refusal as "no results"
+
+> **Shipped in `v1.72.2`** (annotated tag at `524a67ff`, 2026-09-29; no GitHub release of its own — the published `v1.72.4` carries it).
+
+Angela: *"Googler agent that is taking too much to give the proper results, is
+Googler being blocked? ... make Googler invulnerable to block/hangs"*.
+
+**What was really happening (measured on her machine, 2026-09-28).** The chat's
+direct `googler` tool was a separate, obsolete headless-Chromium path inside
+`tools.py`, NOT the pool agent. In her installed build it returned *"No search
+results found"* **20 times out of 20**, about **39 s** each, and every call was
+recorded as a SUCCESS. Its `with ThreadPoolExecutor()` + `future.result(timeout=120)`
+bounded nothing: leaving the `with` block waits for the hung worker anyway. And the
+web really was refusing her IP: DuckDuckGo html/lite answered 202 *"anomaly"*,
+Google *"Your browser isn't supported"* / a JS wall / the `/sorry/` CAPTCHA, Yahoo a
+bot-verification page, Mojeek 403, Brave 429 over plain HTTP, Startpage an error
+page, Ecosia a firewall page. Bing answered but was **POISONED**: game pages for a
+physics query, Wikipedia for a `site:gutenberg.org` dork. In a visible real Chrome,
+Brave and Yahoo answered normally.
+
+**The fix.**
+- **`agents/googler/googler_engines.py` (NEW, stdlib-only, imports nothing from
+  `agent.*`)**: `Deadline`; `bounded_fetch` (daemon thread, `read1`, byte cap);
+  `run_hedged`; the relevance guard (`parse_query_terms` / `hit_is_relevant` /
+  `assess_hits` — an on-site `site:` or matching `filetype:` extension is proof, an
+  off-topic answer is poisoned); the refusal classifier (`classify_response`);
+  `EngineHealth`, the shared ledger at `<app>/Temp/googler_engine_health.json`;
+  Tier 0 `http_tier_search`; Tier 2 `open_sources_search`; `fetch_page_text`;
+  `overall_status`.
+- **`googler.py`** orchestrates under ONE deadline (`deadline_seconds`, 120):
+  Tier 0 hedges six HTTP routes → Tier 1 real Chrome with a persistent profile
+  (`%LOCALAPPDATA%\Tlamatini\googler\chrome-profile`, `window_mode`
+  visible/offscreen/headless) across eight routes in ledger order, never re-asking a
+  route that refused → Tier 2 Wikipedia, arXiv, OpenAlex, Hacker News, GitHub,
+  Internet Archive, Project Gutenberg. `search_status`, `engine` and `tier` are
+  APPENDED to `INI_SECTION_GOOGLER` and to `agent_contracts`; it still exits 0 and
+  still starts its targets.
+- **`tools.py::googler`** now runs THE SAME pool agent as a child
+  (`create_isolated_runtime_copy` under `<app>/Temp/googler_runs`), polls every
+  0.25 s for the user's Cancel (`mcp_agent.py` now puts `cancel_user_id` /
+  `cancel_run_epoch` into `scoped_request_state`), hard-kills the process tree at
+  its deadline + 20 s, and answers with a first line that cannot be misread:
+  `Web search for '…': N result(s) via <engine>` / `No results: …` /
+  `Error: WEB SEARCH BLOCKED | TIMED OUT | UNREACHABLE …`. The `Error:` prefix makes
+  `_result_is_failure` record the call as FAILED, and the text tells the model not to
+  retry with rephrased queries (also in `prompt.pmt` rule 18d).
+
+**Contracts (do NOT weaken):**
+1. **Nothing waits without a deadline.** Never use `with ThreadPoolExecutor(...)`
+   plus `result(timeout=)` as a timeout again — the `with` exit waits forever for a
+   hung worker. Use `bounded_fetch` / `run_hedged` (daemon threads, stragglers
+   abandoned at the deadline).
+2. **A refusal is never "no results".** `blocked`, `timeout` and `unreachable` are
+   distinct from `no_matches`, and an engine that answers off-topic is POISONED, not
+   a success.
+3. **Never hammer a refusing engine.** The ledger rests it (180 s → 600 s → 1800 s
+   for a refusal) and a refusing route is never retried in the same run.
+4. **Googler never solves or bypasses a CAPTCHA.** `captcha_wait_seconds` only gives
+   a PERSON time to solve one in a visible window, bounded by the deadline.
+5. The words `ok`, `no_matches`, `blocked`, `unreachable`, `timeout` all belong to
+   `agent_verdict.KNOWN_STATUSES`; they travel as `search_status`, while each
+   result's `status` stays its HTTP code.
+6. `googler_engines.py` is a flat sibling of `googler.py` and must travel with it
+   into every pool copy.
+7. **Every result must reach the model (2026-09-29).** The Multi-Turn executor keeps
+   only `unified_agent_tool_output_char_cap` (24,000) characters of one tool reply.
+   In the live chat test ONE long page (result 1, about 37,000 characters of text)
+   filled that cap alone, results 2..N never reached the model, and it spent 736 s
+   hunting for them in the logs. `_format_googler_result` now lists EVERY result
+   (title + URL) first, and the page texts share whatever room the reply has left
+   (`_googler_reply_budget()` = 80 % of that cap), each shortened page saying how
+   much was kept and pointing at `chat_agent_crawler` for the rest. Pinned by
+   `test_every_result_survives_the_executors_tool_reply_cap`.
+
+**Config.** Pool: `deadline_seconds` (120), `window_mode` (""), `browser_profile_dir`
+(""), `captcha_wait_seconds` (0), `open_sources` (true), `render_thin_pages` (true),
+`max_chars_per_result` (200000), `result_json` (""). Chat (`config.json`, optional):
+`googler_chat_deadline_seconds` (60, clamped 20-300), `googler_chat_window_mode`
+(`offscreen`), `googler_chat_captcha_wait_seconds` (0).
+
+Coverage: NEW `agent/test_googler_resilience.py` (deadline, never-answering and
+dribbling local servers, hedging, the poison guard, the refusal classifier, the
+ledger, the orchestrator, the chat tool with a fake hung / cancelled child) plus the
+updated `test_googler_agent.py` and `test_googler_dorks.py`; with
+`test_status_vocabulary` that is 198 tests, all passing on 2026-09-28. The installed
+build needs a rebuild or self-update before the chat tool changes reach it:
+`tools.py` is compiled into the executable.
+
+## 2026-09-28 — The context gauge is REAL: Ollama's own numbers, exact in both modes
+
+> **Shipped in `v1.72.1`** (annotated tag at `df709d78`, published 2026-09-28 and marked Latest).
+
+Angela: *"make that gauge counter to be real, NOT FAKE ... this is going to be
+metered by NVIDIA/INTEL/CISCO systems in real executions, SO BETTER YOU DONT
+LIE!"* and *"it must work very exact, in both not multi-turn and multi-turn"*.
+
+**What the ring shows now.** The chars/4 figure is only a placeholder until
+Ollama answers; then the ring shows Ollama's own `prompt_eval_count` for THAT
+request (`N tokens REAL`), paired by a per-request `seq`. The ceiling comes from
+Ollama's `/api/show` (`<arch>.context_length`, 1,048,576 for glm-5.3:cloud). There
+is no `/api/tokenize` (404), so a real count only exists after a real call.
+
+**At rest it is recalculated at EVERY change point** — page open / reconnect,
+Clear history, Clear context, context loaded, answer finished, Multi-Turn / ACPX /
+Step-by-Step toggled, skills changed, agent rebuilt after a cancel.
+`agent/context_baseline.py` rebuilds the NEXT request with the main chain's OWN
+code (`build_request_messages`, `history_summary_tail`, `wrap_loaded_context`)
+and asks Ollama once (`num_predict=1`, `stream=False`); a
+byte-identical request reuses the cached count (sha256 of the wire body). The probe
+costs real tokens and is logged (`[CONTEXT-PROBE]`); `context_gauge_probe_enable` /
+`context_gauge_probe_after_answer` switch it off.
+
+**Scope: the MAIN chain only, per connected user.** Out-of-band model calls
+(Prompter & co., the question rewriter, the history summarizer, ACPX children) are
+not metered - ACPX frames are `KIND_SIDE`: logged, never on the ring. Every frame,
+count and answer total is keyed by the user id.
+
+**The live lab found two real defects (both fixed):**
+1. **The question was sent to the model TWICE** whenever a chain wrapped it
+   (system metrics, file search, loaded / retrieved / web context): the executor's
+   "don't resend the current question" dedupe only matched the bare text.
+   `build_request_messages` now also recognises the question at the END of the
+   wrapped input (after a line break or `User Question: `) - human messages only,
+   and `"say ok"` never swallows an earlier `"ok"`.
+2. **One-shot with System-Metrics ON prepended `System Context: No system context
+   required for this question.`** to EVERY question (63 characters, ~11 tokens) -
+   the sidecar's placeholder when no metrics are needed. **Removed on Angela's
+   decision ("stop sending that placeholder line")**: `intelligent_context_fetch`
+   now returns `""`, exactly what the chains already get when System-Metrics is
+   off, so they skip the `System Context:` block entirely. Live metrics are still
+   sent when a question really needs them.
+
+**Exact accounting (visible lab, 60/60, `context_gauge_real_lab.py`):** the live
+request equals the at-rest prediction PLUS the question's own bytes (history) PLUS,
+in Multi-Turn only, the planner's per-question plan (`bytes_plan`, measured) -
+nothing else. One-shot: 402,997 B -> 403,042 B (+45 = the question). Multi-Turn:
+402,664 B -> 408,662 B (+47 question +5,951 plan). Every REAL number on the ring
+equalled the `prompt_eval_count` in `tlamatini.log`, digit for digit.
+
+**Do NOT:** bring the "no system context" placeholder back, or re-inline the
+system preamble (the at-rest prediction would drift silently); narrow the dedupe back to bare equality; meter an
+out-of-band call on the ring; show an estimate as REAL; or read a live frame's ring
+after the answer (the lab snapshots the ring inside `dispatchEvent` - a 0.5 s poll
+lost that race). Honest limits the frame states in its `note`: the next question's
+own text, the Multi-Turn plan, per-question retrieved context, and live system
+metrics (only when that question needs them) cannot exist before it is asked.
+Coverage: `agent/test_context_real_tokens.py`.
+
+## 2026-09-27 — Required build files use one inventory
+
+The release verifier correctly rejected missing `chat_voice_settings.py`:
+`ROOT_SOURCES` required it, but the separate `build.py` copy dictionary omitted it.
+`copy_root_sources()` now copies that inventory directly, and the mandatory
+receipt floor includes every destination. Never fix such failures by weakening
+hash or membership verification. Tests execute the real build carrier, import
+the worker from a staged install, and reject omitted/corrupted update payloads.
+The mirrored update/rebuild sweeps understand the shared inventory; update
+`--no-git` skips only explicitly reported history/tracked-file checks. No DB
+backup/restore mechanics changed. [Evidence](../build-root-assets-verification.md).
+
+## 2026-09-27 — Mic preferences, editable transcripts and shared control styles
+
+The composer label is Mic; Config ends with Mic after Voice. The dialog saves
+browser-local send/draft and capture preferences, with Reset/Save and a shared
+system modal. Draft mode appends text and restores editing without dispatch or
+processing speech. Snapshot settings per recording; a preference saved during
+capture applies only to the next run. Validate the same allowlist in consumer
+and worker; revalidate device name/API before opening a saved numeric ID.
+Ready/options metadata exposes defaults/devices only and never opens a stream.
+
+Reset/Cancel initially inherited a native pale background under white text.
+They and Refresh now use the shared secondary/hover tokens. Input borders must
+consume the complete border token, never `1px solid var(--tlm-dlg-border)`.
+Keep outside-click dismissal disabled and Escape/✕/Cancel behavior consistent.
+Ship the shared validator both compiled and as a carried root module, and require
+`mic_settings.js` in the static payload. Verification and all control ranges:
+[Mic contract](../chat-microphone-design.md#config--mic).
+
+## 2026-09-27 — Microphone documentation synchronized across product and maintainer surfaces
+
+README, the Book, self-knowledge, agent catalog, model settings, frontend,
+architecture, orchestration/Exec Report, release carriage and mirrored developer
+runbooks distinguish the direct button from model-mediated catalog/workflow
+Whisperer. The canonical [microphone guide](../chat-microphone-design.md) includes
+user steps, protocol limits, config overrides, cancellation, diagnostics and
+verification limits. The shared PDF/PPTX content includes the same feature and
+dated evidence; native PowerPoint verification runs visibly and leaves the deck
+open. Do not turn that developer verification behavior into product windows.
+
+## 2026-09-27 — Internal dictation must not open another console
+
+Angela clarified that developer visibility requirements are not end-user UX
+requirements. The resident chat Whisperer launches directly without a shell,
+console window, foreground activation or visibility prerequisite. Its output
+flows through `agent.chat_voice_runtime` into the main application console/log;
+recording state stays in chat. Reap the child on failed startup and shutdown.
+Do not reintroduce PowerShell `-NoExit`, conhost, CREATE_NEW_CONSOLE or worker
+window checks. Development tests still run visibly. This distinction applies
+to product design generally: Angela is the developer, not a proxy for every
+end user's preferences.
+
+## 2026-09-27 — Direct chat microphone
+
+The microphone beside Send opens Whisperer directly through authenticated,
+same-origin `/ws/chat-voice/`; never add planner/tool selection or optional
+Ollama cleanup before capture/submission. The resident internal worker retains
+the configured recognition model between prompts, honors the existing silence
+window and reports Recording only after real samples. Django must not import
+the speech ML stack. Source/carried Python runs the worker; keep the worker,
+JS/CSS and runtime modules in the release inventories.
+
+Capture progress stays outside the audio callback; interactive capture refuses
+the ungated fallback. Preserve cancellation ownership, stale-result rejection,
+the existing chat form/options, avatar acknowledgment deduplication and Silent
+mode. Include the status row in both the composer height calculation and its
+ResizeObserver. Releasing dictation must restore its read-only lock even when
+the chat socket has disconnected.
+
+See [design, measurements and verification scope](../chat-microphone-design.md).
+
+## 2026-09-26 — Strict visual results, accumulated dialogs, uninterrupted recovery
+
+Image/video attempts reject failed observers, failed merges, incomplete streams
+and invented verdict/confidence. One shared themed non-modal dialog accumulates
+errors, sounds the existing notification and keeps history after Dismiss. PDF
+image preparation releases its native modal before showing the error and never
+loads partial visual context. The titlebar close button is 32 pixels with an
+icon only; its accessible name and the readable footer Dismiss remain intact.
+
+Tlamatini's retry/tactic ladder, cancellation, watchdog and configured downstream
+recovery routes are preserved. CUDA-to-CPU recovery uses the same Whisper model;
+bounded nearby-frame recovery retains truthful timestamps. Fatal means this
+attempt failed, never shutdown of Tlamatini. See
+[the contract and verification scope](../visual-analysis-errors.md). Verified in
+visible foreground runs on 2026-09-27: 444 automated tests and 60 browser checks
+passed. Provider responses were controlled; live inference accuracy and a frozen
+rebuild were not part of this verification.
+
+## 2026-09-26 — PDF context: Image-Interpreter received the model name "@config"
+
+**Symptom.** Context ▸ PDF canvas with *Process images* on: the dialog finished in ~25 s, but all 12 page images failed and the loaded context carried no visual analysis. Every `*.analysis.txt` read `[@config] ... HTTP Error 400: Bad Request` for BOTH interpreters.
+
+**Root cause.** `agent/pdf_image_analysis.py` read `agents/image_interpreter/config.yaml` with a raw `yaml.safe_load`. Since the central model registry, that template ships `interpreter_model_1/2` and `merging_model` as `"@config"`, and nothing resolved them — so the literal string `@config` was sent to Ollama as the model name.
+
+**Fix.** Resolve the template through `agents.model_settings.resolve_agent_models('image_interpreter', config, model_config)` with values from `config_loader.get_config_value` — the same source the wrapped chat launcher uses (`tools.py`), and a compiled import that works frozen. `force=False`, so a concrete per-agent model in the YAML still wins. Regression test: `test_pdf_context.py::test_template_config_models_follow_config_models_instead_of_sending_at_config` (a template with `@config` must reach the fake Ollama as real names, never `@config`). Historical verification on a real page: `partial_interpreter_2_only`, 159 s. **Superseded on 2026-09-26:** this partial result is now a failed attempt with an accumulated fatal dialog; it cannot be loaded as successful visual context.
+
+**Do NOT** read an agent template's YAML from web code without passing it through `resolve_agent_models` — any registered model field can be `@config`.
+
+**Retired model replaced (same day).** `jcyhsiao/qwen3.5cloud:latest` (`qwen3.5:397b`) answers **HTTP 410, retired 2026-09-25**, and was the shipped default for Image-Interpreter interpreter 1 and Video-Analyzer interpreter 2, so every image ran on one interpreter. Angela chose **`mistral-large-3:675b-cloud`** (Ollama reports `vision`; it read page 12's title correctly). It is now the default in `model_settings.py`, both agents' `DEFAULT_*` constants, `agent/config.json`, every LLM-facing description (`chat_agent_registry.py`, `mcp_agent.py`, `agentic_skill.md`, `agents_descriptions.md`, `flow_catalog.json`, `Tlamatini.md`) and the docs; the interpreter-1 prompt no longer claims to run on Qwen3.5. Migration **0209** rewrites the tag in the Catalog-of-Prompts rows; 0165/0168/0206/0208 keep the old text on purpose, because 0208 matches it exactly. Live proof on the real page 12: mistral OK 36.6 s, gemma4 OK 7.1 s, glm-5.3 merge → **`status=merged`**, 134.7 s.
+
+## 2026-09-26 — Native node double-click and transactional Ctrl-drag
+
+Both panels now share `FlowCanvasInteractions.nodeDrag`. A node press remains a native click until movement reaches four **screen** pixels; only then does the viewport capture the pointer. Capturing it on pointerdown redirected native clicks/double-clicks to the viewport. Moving originals below the copy threshold also shifted originals during a slow Ctrl-drag. Both defects were reproduced in foreground Chrome.
+
+- Double-click a node body or label to open that node's existing configuration dialog. Ports retain their connection behavior. ACP uses its existing configuration entry point, including Parametrizer's custom dialog. Parametrizer deliberately requires exactly one supported structured-output source and one target; preserve its connection validation and dynamic mapping UI, as documented in Book chapter 25. Its unconnected validation overlay is expected behavior, not a missing generic configuration dialog.
+- Ctrl/Meta at pointerdown selects copy intent for the entire gesture. Copy parameters come from the saved ACP configuration or a deep Prompt Flow copy. Original positions remain fixed; copies get new IDs and numbered labels. Prompt Flow uses the same naming allocator for toolbar, context-menu, keyboard and drag duplication.
+- Group copies retain internal wires and remap agent-reference fields, leaving ordinary text/settings unchanged. Backend deployment may finish after pointerup; the final pointer location and one history entry are retained. Escape, pointer cancellation, lost capture and window blur roll back the in-progress move/copy.
+- Parametrizer's `_parametrizer_mappings` is an artifact maintained by the mapping dialog and flow loader, separately from the saved YAML. Merge that artifact into fresh configuration copies and restore `interconnection-scheme.csv` through the existing mapping endpoint for duplication and undo/redo. Preserve source/target remapping without altering mapping field names, runtime execution, or target backup/restore.
+- A single controller per canvas replaces document listeners per ACP node, so restored/deleted nodes do not accumulate drag listeners. Native double-click timing remains the browser/OS decision.
+- `scripts/flow_canvas_mechanics_visible.py` now covers native activation, pin isolation, slow copy-drag, independent settings, cancellation, group wires, identities and completed undo/redo. The `--catalog` flag of `prompt_flow_connections_visible.py` additionally runs the full ACP catalog activation audit. Run these through the verified foreground Chrome harness; never synthesize a `dblclick` event as a substitute for pointer input.
+
+Design references: [Epic's node and pin actions](https://dev.epicgames.com/documentation/en-us/unreal-engine/blueprint-editor-cheat-sheet-in-unreal-engine), [React Flow's drag threshold and double-click API](https://reactflow.dev/api-reference/react-flow), and [W3C pointer-capture targeting](https://www.w3.org/TR/pointerevents/). The four-pixel threshold is our implementation choice; Tlamatini retains its requested Ctrl-drag duplication command.
+
+Cache suffix: `prompt-flow-panel-12-node-gestures`.
+
+Validation: the foreground Chrome run in `Temp/flow-gestures-visible/verified-ui6/summary.json` exited 0 with 49 checkpoints, all 89 Agentic node types, all seven Prompt Flow node types and no page JavaScript errors, using the real backend and no transport mocks. It covers connection configuration, matching triangle/glow styles, copied settings and identities, cancellation, group wiring, undo/redo, save/reopen and playback locks. Parametrizer was tested both unconnected (its expected validation) and as the documented `Apirer → Parametrizer → Kyber-Cipher` chain: `response_body → buffer` was saved, reopened, copied with new source/target identities, undone and redone with the CSV mapping intact. The chain was not executed. A source audit also checked the unrelated avatar-size preset, avatar voice toggle and image-preview double-click handlers; those handlers were preserved.
+
+## 2026-09-26 — Shared canvas mechanics in both flow panels
+
+Both panels use `flow-canvas-interactions.js` for connection capture/cancellation, Bezier geometry, Fit/zoom limits, context-menu placement and divider gestures. `flow_canvas.css` owns shared triangle states, gold glow, wire feedback, selection rectangles and toolbar styling. Keep free movement, Ctrl-drag copies, modifier/marquee selection and keyboard shortcuts aligned. ACP previews start at the chosen output, including the second output. Copy-drag preserves configurations and supports one-step Undo/Redo. Prompt Flow Undo keeps surviving selection. Playback colors must not override wire hover/selection feedback. The Operations bar has seven operations and no Connection tool.
+
+Both shared assets are mandatory release and self-modify inputs. Run the shared `flow_canvas_mechanics_visible.py` scenarios through `prompt_flow_connections_visible.py` in verified foreground Chrome (`headless=False`), recording screenshots with Shoter. Cache version: `prompt-flow-panel-11-shared-mechanics`.
+
+## 2026-09-26 — Prompt Flow connections use Agentic's triangles and drag interaction
+
+Angela requested the same connector appearance and connection gesture in both panels. Prompt Flow now reuses ACP's `input-triangle`, `output-triangle`, `output-label`, `connection-group`, `connection-path` and `connection-hit-area` styles. Its operation palette contains only the seven operations; the **Connection** tool and pointer click-to-connect mode are removed. Drag a right output triangle to a left input triangle and release. The preview uses ACP's horizontal Bézier formula, and the source/target triangles retain Prompt Flow's gold highlighting.
+
+- **Shared styling is intentional.** Do not reintroduce circular ports, SVG arrowheads, vertical wire curves, or duplicate white/hover/selected connection rules in `prompt_flow_panel.css`. Both panels must follow the same ACP styles. Prompt Flow's stylesheet loads afterward so traversed wires keep their green playback stroke and selected glow.
+- **Anchors follow each figure's contour.** `prompt-flow-panel-model.js` supplies side boundary points; `anchor()` offsets to the centers of ACP's 10×16 triangles. Decision Y/N outputs sit on the right contour at 33%/66% of the node height, matching ACP's output ordering. Keep the Y/N labels beside those outputs.
+- **Pointer capture needs hit testing.** The viewport captures the pointer during a connection drag. Use `document.elementFromPoint()` to resolve the input under it; `event.target` is the capturing viewport. Release outside an enabled input, Escape, pointer cancellation, lost capture, blur, and graph/zoom changes clear the preview and highlights without inserting an edge.
+- **Graph behavior remains compatible.** Each output has one destination; reconnecting replaces that destination in a single undoable action. Decision branches remain `yes`/`no`, ordinary outputs remain `next`, and the `.fpmt` schema/version and backend execution are unchanged. Keyboard users can activate an output, Tab to an input, and activate it.
+- **Verification:** `scripts/prompt_flow_connections_visible.py` compares computed port/wire styles against a live ACP canvas, exercises real pointer drags and cancellation, both decision branches, zoom/movement/undo, keyboard connection, file save/reopen, and model-free commentary playback. It runs in verified foreground Chrome on port 8001 with Shoter desktop captures and refuses headless flags. Its foreground guard tracks the verified window handle because ACP deliberately scrolls its title. The runner is included in `copy_source_assets.py`'s required source snapshot.
+- Static cache suffix: `-prompt-flow-panel-10-connectors`; preserve the existing timestamp/environment expression. Source assets were collected; no frozen release was built or installed for this change.
+- **Recorded validation (2026-09-26):** 20 interpreter/validator tests and 2 packaging tests passed. Frontend lint reported 0 errors (619 existing warnings), and all 47 JavaScript files parsed. The 11:23–11:24 foreground Chrome run passed connector checkpoints 1–8, with Shoter captures showing the two panels, gold drag highlighting, decision outputs and zoomed wire anchors. Chrome closed during the Download `.fpmt` click for checkpoint 9 (`TargetClosedError`), so that run ended with exit code 1; save/reopen and playback were not completed in that foreground run. The separate test server was stopped and its ports released.
+
+## 2026-09-25 — Chat menus reorganized, ACP flow-editor toolbar + zoom, Prompt Flow Panel on `.fpmt`
+
+Four changes landed together (uncommitted on 2026-09-25). Each has a "do NOT revert" edge.
+
+**1. The chat navbar was reorganized.** The standalone **MCPs** menu (`#mcps-menu-button`), **Agents** menu (`#agents-menu-button`) and staff **Admin** menu (`#admin-menu-button`) are GONE. **Configure MCPs** (`#enable-mcps`) and **Configure Agents** (`#enable-agents`) moved into **Config**; a new **Panels** menu (`#panels-menu-button`) holds **Agentic Control Panel**, **Prompt Flow Panel** and, for staff, **Admin Panel** (`#open-admin`). Handlers, dialog ids and the `set-mcps` / `set-agents` protocol are unchanged.
+- ⚠️ **Panels is deliberately NOT in `LONG_OPERATION_DISABLED_MENU_BUTTONS`** (now `open-button`, `save-as-button`, `context-menu-button`, `skills-menu-button`, `external-menu-button`, `config-menu-button`, `db-menu-button`, `re-connect-button`): opening another panel in a new tab never touches the running chat request.
+- ⚠️ **One re-arm path.** The restore half of the lock was extracted into `agent_page_ui.js::restoreMenuControlsAfterOperation()`, and Reconnect, Clean History, the Cancel reset and `applyDisconnectedSocketUi()` now call it too. Before, each of those paths re-enabled its own hand-picked buttons, so a reset could leave Config or External locked for the rest of the session. The disconnect path also sets `reConnectEnabled = true`, so a socket lost mid-context-load leaves **Reconnect** usable.
+- ⚠️ **Close before you lock.** `disableControlsDuringOperation()` hides an already-open dropdown before removing its `data-bs-toggle`; otherwise the open menu's entries stayed clickable under a "locked" parent.
+- ⚠️ **Late responses must recheck.** `OpenConfigModelsDialog` / `OpenConfigUrlsDialog` return early if `inLongOperation` became true while their config fetch was in flight.
+- ⚠️ **Only the lifecycle handler clears the busy title.** `chatSocket.onmessage` used to call `setTitleBusy(false)` for every `Tlamatini` frame that was not a busy message; informational frames during context loading therefore dropped the hourglass while the page was still busy. Now only `appendChatMessage`'s lifecycle handling may clear it.
+- ⚠️ **Harnesses:** wait on `#config-menu-button`. `bulk_toggle_visible.py`, `dialog_policy_visible.py` and `dialog_theme_visible.py` (both `.claude` and `.gemini` copies) were moved off `#mcps-menu-button`; `scripts/menu_browser_checks.py` asserts the old ids match nothing.
+- The cross-file const-poison test (`agent/test_frontend_mutable_state.py`) now uses the **scope-aware** reference graph from `scripts/menu_reference_graph.mjs` (ESLint's own `espree` + `eslint-scope`). Plain text matching flagged a local `canvas` variable as a write to a global. It skips (does not fail) when Node is unavailable.
+- Coverage: `scripts/run_menu_state_checks.py` drives `menu_browser_checks.py` (25 checks) and `menu_live_checks.py` in a verified visible console, with no headless fallback.
+
+**2. The Agentic Control Panel gained an editor toolbar, zoom and search** (`acp-editor-tools.js`, new).
+- ⚠️ **Zoom is CSS `zoom` on `#canvas-content`, and every pointer→content conversion divides by `ACP.zoom`.** `createCanvasItem`, drag deltas, the selection box, `getCenter()` and the temporary connection line were all converted. Saved coordinates stay unzoomed. A new pointer handler that forgets the division is correct at 100 % and wrong at every other zoom.
+- ⚠️ **`ACP.canEdit()` gates every edit** (flow STOPPED, not busy, no editor action, no `.flw` load, undo manager idle). `loadDiagram()` raises `ACP.fileLoading` for its whole duration and clears undo history first.
+- ⚠️ **Undo restores settings, not just boxes.** `captureItemState()` stores `configData`; `recreateCanvasItem()` saves it back through `/agent/save_agent_config/<id>/`. Drag records one `MOVE_ITEMS` action only when something moved (and only then marks the flow dirty).
+- **Duplicate** reads every selected agent's real configuration BEFORE creating anything, re-maps agent ids inside those configurations, recreates only the connections internal to the selection, refuses FlowCreator/FlowHypervisor, and deletes every partial copy if any read, deploy or save fails.
+- Double-click and the toolbar's Configure share `ACP.configureItem(item)`; the Delete key and toolbar Delete share `ACP.deleteSelection()`.
+- The sidebar has an **agent search box** (`#acp-agent-search`) that filters by display name, even while descriptions are still loading. The browser title gets a leading `• ` while the flow has unsaved changes.
+- Coverage: `scripts/acp_editor_visible.py` (visible Chrome, port 8001, Shoter photos).
+
+**3. The "Prompting Flow Designer" became the Prompt Flow Panel, and its files became `.fpmt`.** Page `/agent/prompt_flow_panel/`, template `prompt_flow_panel.html`, WebSocket `ws/prompt-flow-panel/`, modules `prompt_flow_panel_consumer.py` / `prompt_flow_panel_runtime.py` / `services/prompt_flow_panel.py`, build gate `check_prompt_flow_panel`. The entry below still carries the first draft's names (`prompting_flow_designer`, `/ws/prompting-flow/`, `.pmt`); its contracts still hold under the new names.
+- ⚠️ **`.pmt` stays with the plain-text system prompts** (`prompt.pmt`, `monitoring-prompt.pmt`). Flow diagrams are `.fpmt`; the panel refuses to open any `.pmt`, and `flowFilename()` converts legacy `.pmt` save names and browser drafts to `.fpmt`.
+- ⚠️ **The JSON `format` stayed `tlamatini-prompting-flow`, version 1.** Renaming an existing flow file is the whole migration. Never couple the extension rename to a content change.
+- `.fpmt` is registered as TEXT in `rag/binary_guard.py`, as canvas-viewable in `agent_page_canvas.js`, as scrubbable in `build_complete_public_release.py`, and in `doc_generation/complete_project_docs.py`.
+- Carriage: `build.py` hidden-imports + frozen-requires the three backend modules and the check command (`_FROZEN_PROMPT_FLOW_PANEL_MODULES`), runs `check_prompt_flow_panel` inside the frozen app, and copies `docs/prompting-flow-designer.md` + `docs/examples/prompting-kickoff.fpmt`; `build_runtime_assets.py` requires the CSS, both JS files, the template and those two docs; `copy_source_assets.py` lists all of them in `REQUIRED_SNAPSHOT_FILES`. Both inclusion sweeps passed CLEAN on 2026-09-25.
+- ⚠️ On 2026-09-25 all 23 new files of this work (counting `scripts/prompt_flow_selection_visible.py` from change 4) were still UNTRACKED. `build_runtime_assets.py` requires the two docs files, so a clean clone cannot build until they are committed with the rest.
+- Coverage: `scripts/prompt_flow_extension_visible.py` (15 checkpoints, all PASS with exit code 0 in its 2026-09-25 16:07 visible run) plus the four `test_prompt_flow_panel*.py` modules.
+
+**4. Prompt Flow Panel selection now looks like the Agentic Control Panel's** (`prompt_flow_panel.css`; `STATIC_VERSION` suffix `-prompt-flow-panel-9-selection`). A selected figure gets ACP's gold `#ffcc00` outline (stroke 3) and a soft yellow glow; a selected connection gets ACP's exact wire rule (gold, stroke 3, `drop-shadow(0 0 4px rgba(255, 204, 0, .8))`). `prompt-flow-panel.js` puts `.selected` on `.pmt-node` / `.pmt-edge` in `render()`, `paintSelection()` and the live marquee drag.
+- ⚠️ **The figure glow is a `drop-shadow` FILTER on the node's `<svg>`, never a `box-shadow` on `.pmt-node`.** The node box is a 200×128 rectangle, so a box shadow would draw a rectangle around the diamond, both triangles, the trapezoid and the speech bubble. `drop-shadow(0 0 5px rgba(255, 204, 0, .7))` follows each outline, with the same gold and opacity as ACP's `box-shadow: 0 0 10px rgba(255, 204, 0, 0.7)`. It REPLACES the figure's normal dark shadow only while selected, so deselection restores it.
+- ⚠️ **Rule order is the contract.** `.running` / `.completed` / `.failed` and `.pmt-edge.traversed` have the same specificity as the `.selected` rules and come AFTER them, so during playback a selected figure or wire shows its status color and still keeps the gold glow (the filter is on a different property). Moving the `.selected` rules below the status rules hides the playback state of anything selected.
+- Stacking: `.pmt-node` z-index 2, `.pmt-node.selected` 3, `#pmt-marquee` 5 — all inside `#pmt-world` — so a selected figure rises above its neighbours but never covers the marquee.
+- Selecting and zooming never mark the diagram dirty (`render()` / `paintSelection()` do not touch `dirty`); Escape clears the selection.
+- Deliberately NOT copied from ACP: its hover gold on connections and its blue marquee (the panel keeps its cyan marquee). Both are hover/drag aids, not selection.
+- Coverage: `scripts/prompt_flow_selection_visible.py` (listed in `copy_source_assets.py::REQUIRED_SNAPSHOT_FILES`). Its 2026-09-25 20:26 visible run on port 8001 — real login, no mocked transports, checks the CSS the server actually serves — passed **all 14 checks with exit code 0**: each of the seven shapes selected, Ctrl-click, select-all, selected after zoom, selection cleared, a selected connection, and a real User Commentary playback with and without selection. Shoter photos are in `Temp/prompt-selection-docs-visible/`. The same run's `npm run lint` and both inclusion sweeps exited 0, and the collected `staticfiles/agent/css/prompt_flow_panel.css` carries the same four rules. ⚠️ There is NO unit test for these styles — the visible run is the only guard.
+
+## 2026-09-23 — Prompting Flow Designer playback contracts
+
+> **Renamed 2026-09-25** — this feature is now the **Prompt Flow Panel** (`/agent/prompt_flow_panel/`, `ws/prompt-flow-panel/`, `services/prompt_flow_panel.py`, `check_prompt_flow_panel`) and its files are **`.fpmt`**, not `.pmt`. See the 2026-09-25 entry above. The contracts below are unchanged.
+
+The new designer uses versioned JSON `.pmt` diagrams, separate from legacy plain-text system `prompt.pmt` and ACP `.flw` files. Validate independently in the browser and server; never execute source code from a Decision. Playback holds an immutable validated graph, a per-run cancellation identity, history and embedding context. Stop/disconnect requests cancellation but drains an active model worker before cleanup; cancelling only an `asyncio.to_thread` awaiter would leave the worker alive. Completion comes from interpreter state, never keywords in model prose. Context setup must fail if the RAG factory falls back to a prompt-only chain. Initial/flush builds pass `include_application_context=False` to `setup_llm`; the default stays true for chat. Without that opt-out, Flush silently reloads the global `application/` corpus. Dialog X/Escape/Cancel during user input stops the run. See [the designer contract](../prompting-flow-designer.md).
+
+## 2026-09-23 — THE SKILL BOUNDARY MUST TELL THE TRUTH (Codex audit R01–R22)
+
+**Where this came from.** Codex audited all **41 tracked `SKILL.md` files across four
+locations** (29 application packages + 5 Claude + 5 Gemini + 2 Codex) at HEAD `158971b`,
+reachable tag `v1.65.5`, and filed 22 numbered recommendations. Its central finding: the
+skill documents, their executable runtime and their maintenance checklists no longer
+described the same behavior. This entry records what changed and what must not be undone.
+The report itself is `Codex2ClaudeRecommendations.md` at the repo root.
+
+### 1. `invoke_skill` was reporting completed work it had not done (R01)
+
+`_run_in_process` returned `ok: true` beside **schema-shaped placeholder values** in
+`output` — literally `"<plan-only stub for greeting; …>"` — after passing them through
+output-contract validation. A caller could not distinguish a stub from a measurement, and
+a stub `doctor_ok: false` read exactly like a doctor that HAD run and failed. Same
+silent-plausible-WRONG class as the PDFer missing images, the LaTeXer linter verdict and
+the ACPX blocked child.
+
+**The design was always a planning handoff** (it is why that path opens no shell and
+writes no file). It is now SAID so, explicitly, in the envelope:
+
+| key | meaning |
+|---|---|
+| `status` | `planned` \| `completed` \| `failed` |
+| `completed` | `false` on a handoff — the work is still ahead |
+| `output` | **`{}`** on a handoff. Only ever real, measured values. |
+| `pending_outputs` | the declared contract the CALLER must satisfy |
+| `plan` | the procedure + what it may use |
+| `enforcement` | what is enforced vs advisory, per field |
+
+⚠️ **NEVER reintroduce placeholder values under `output`.** If a scoped executor is ever
+built it sets `status: "completed"` and fills `output` with what it MEASURED.
+
+### 2. Fifteen of 29 procedures were being cut in half (R02)
+
+The envelope carried `self.skill.body[:2000]`. **15 of the 29 bodies exceed 2,000
+characters**, so the caller was told the playbook was "loaded" while receiving part of
+it — create-new-agent's *Central model settings* section starts at offset **6,603**, and
+roblox-studio's *VERIFY & REPORT* at **6,506**. Late validation and failure handling were
+simply unavailable through this path.
+
+Now: the **whole** body, plus `body_chars` / `body_chars_delivered` / **`body_truncated`**
+(explicit, never implied; `MAX_BODY_CHARS = 64,000` is a channel guard, not a policy), the
+`body_sha256`, the absolute `skill_md_path`, and `plan.references` — every file shipped
+beside SKILL.md by ABSOLUTE path with a named retrieval instruction, because the source
+layout differs between source mode, the frozen bundle and the install copy. Verified: the
+full 8,451-char create-new-agent body reaches the caller with the offset-6,603 sentinel
+intact.
+
+### 3. The tool description promised a sandbox that does not exist (R03)
+
+It said the harness "enforces the skill's permissions, budget, and input/output contract".
+It enforces the contract; it does not sandbox permissions, it does not scope
+`requires_tools`, and **`Budget.add_tokens` is never called by either runtime** — the
+harness spends no model tokens of its own. Every envelope now carries an `enforcement`
+block stating this per field, and `create_new_skill.md` no longer calls the budget
+"hard-enforced". ⚠️ **If you implement real scoping, update that block in the same
+commit** — a guarantee that is only documented is the bug this exists to fix.
+
+### 4. A credential input travelled into the audit file and the chat (R04)
+
+`setup-new-acpx-key` declares `api_key`. The harness recorded every coerced argument into
+the audit NDJSON **and** into the returned envelope. Nothing had leaked externally, but
+the path was unredacted. NEW **`agent/skills/redaction.py`** — the one definition — with
+five contracts that must not be weakened:
+
+1. **A redaction carries NO prefix, length or hash of the secret.** `sk-ant-…` identifies
+   the provider and account family; a length narrows a brute force.
+2. **Explicit `sensitive: true` beats the heuristic**, and a credential-shaped NAME
+   (`api_key`, `token`, `password`, `secret`, …) is redacted even without the flag — the
+   heuristic can only ever redact MORE.
+3. **The whole tree**, not the top level: nested dicts, lists, failure details, exception
+   strings.
+4. **Scrub by VALUE too** — once the literal is known it is removed from free-form text,
+   because that is where a credential reappears after the structured field was cleaned.
+5. ⚠️ **FAIL-SAFE, not fail-open.** Everywhere else in Tlamatini an error means "carry
+   on"; here it means "redact". A dropped log line is recoverable; a published credential
+   is not.
+
+Verified with a synthetic marker: absent from the envelope AND from the audit file on
+disk, including its first 12 characters.
+
+### 5. Three validators disagreed, and the catalog failed its own linter (R05)
+
+`_meta/lint.py` applied an 8 KiB cap it measured with `len(str)` — **characters** — while
+printing the word "bytes", so `setup-new-acpx-key` (8,158 chars / **8,466 bytes**) passed
+a check it exceeded, while `create-new-agent` (8,451 chars) failed. `quick_validate.py`
+never parsed YAML despite its docstring, substring-matched `name:` / `description:`, and
+used a different 12,288-character whole-file ceiling. The registry enforced neither. A
+package could pass one, fail another, and run fine.
+
+NEW **`agent/skills/validation.py`** is the ONE routine, used by the linter,
+`quick_validate.py` and Skills Diagnostics. Sizes in **UTF-8 BYTES**; an explicit
+severity policy — **8 KiB WARNS** (move detail to `references/`, which R02 keeps
+retrievable) and **16 KiB is an ERROR**; budget ranges, permission shapes, dependency
+lists, duplicate and enum declarations all validated. **All 29 packages now pass, 0
+failed, 2 warnings**, and both entry points report identical numbers. ⚠️ **Add a rule
+THERE, never in an entry point.**
+
+### 6. Root precedence was documented backwards from the code (R17)
+
+`_default_roots` orders the install copy first and the comment promised it would win —
+but `_reload_locked` did `new_skills[name] = skill`, so the **LAST** root won. In a frozen
+install that meant the BUNDLED copy ran while the user edited the install one and saw
+nothing change. Loading is now **FIRST-WINS**, roots are de-duplicated by resolved path,
+and each package records `source_root` + `shadowed_paths`. A shadow **across** roots is an
+intentional override (logged at info); a collision **within** one root is an accident
+(logged as a WARNING). `skills_diagnostics_view` now reports `roots`, `sources`,
+`shadowed`, `invalid_packages` and `validator_warnings`, so "which copy am I running?" is
+answerable. The skill-creator no longer claims the registry "rejects duplicates" — it
+does not; only the lint step catches them.
+
+### 7. The ACPX skill adapter bypassed the delivery verdict (R22)
+
+`_run_acpx` reverse-scanned events for "any text". The runtime can emit an assistant
+message, THEN stderr log text, THEN the `done` verdict — so the scan could return
+**stderr as the answer** — and a child that refused, could not authenticate, had no credit
+or printed nothing exits 0, so a blocked child was a SUCCESS. It now uses
+`extract_last_assistant_text` and honours the `done` event's `delivered` flag through the
+SAME shared vocabulary as the `acp_*` tools (`acpx/child_health.py`); a non-delivery
+becomes `ok: false` / `reason: "not_delivered"` with the named code, **keeping the full
+payload** so the caller can still read the transcript and kill the session. The skill's
+own `max_seconds` now bounds the child drain. All shipped skills are `in-process`, so this
+was a latent path — fixed before a custom ACPX-runtime skill can hit it.
+
+### 8. Instructions that would have caused wrong changes (R06–R16, R18–R21)
+
+- **Flow doctor (R06)** validated `version` / `agents` / `from` / `to` — a shape the
+  sibling skill already calls obsolete. Rebuilt on the real `flow_spec.py` schema
+  (`schemaVersion` 2, `nodes`, `connections` with `sourceId`/`targetId` **or**
+  index references, `artifacts`), with execution / **kill** / observation relationships
+  kept distinct (Ender's `target_agents` is a KILL LIST) and a `mode: "dry_run"`
+  validation path that writes nothing.
+- **Exec Report (R07)** — five separate places still said membership depends on
+  state-changing vs observational, and one told you to TEST for absence. Capture is
+  automatic via `_resolve_exec_report_spec`; `_EXEC_REPORT_TOOLS` is optional styling.
+- **Naming (R08)** — "fix it in the migration FIRST" is useless (the boot repopulate
+  overwrites it). The resolver override map is first. `tlamatini-new-acp-agent` no longer
+  says the display name is "derived as title-case" and now takes an explicit
+  `display_name`.
+- **Parametrizer (R09)** — `SECTION_AGENT_TYPES` is **derived** from the generated
+  catalog; the instruction to append to it was a no-op at best. One list to edit
+  (`_PARAMETRIZER_OUTPUT_FIELDS`), then regenerate the catalog.
+- **Ask-Execs (R10)** — was described as automatic for any state-changing agent. It is an
+  explicit allowlist (`_ASK_EXECS_REQUIRED_TOOLS`), and the deliberately ungated tiers
+  (messaging B, desktop/hardware C) are recorded so nobody "helpfully" widens it.
+- **External MCP (R11)** — the add-a-server recipe called
+  `external_mcp_set_active(["my-server"])`, and `set_active` REPLACES the whole active set
+  and closes every client not in it. Following it literally disconnected every other
+  active server. Now: read → merge → write, with the 5-server cap reported as a conflict
+  instead of silently dropping somebody else's server.
+- **Model/catalog gates (R12)** — neither master copy mentioned `model_settings`,
+  `check_agent_runtimes`, `update_flow_catalog`, `flow_catalog` or `@config`. NEW
+  **PHASE 8b** covers all of it, plus four checklist boxes.
+- **Prompt ids (R13)** — step 352 still said to shift existing `idPrompt`/`promptName`
+  suffixes to insert earlier. That is what `sort_rank` exists to prevent. Removed.
+- **STATIC_VERSION (R14)** — the skill called it an integer to increment. It is
+  `(os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-ctxspinner-1'`;
+  writing a literal would PIN it and stop cache-busting entirely.
+- **Mirror policy (R15)** — `.claude/skills/` is the SOURCE, `.gemini/skills/` the
+  MIRROR; propagate in the same commit, fix shared mistakes BEFORE propagating, and treat
+  line-ending-only diffs as noise (`--ignore-space-at-eol`).
+- **Daily test (R16)** — the file forbade `run_in_background` at the top and then told you
+  to run the long test "in the **background**". Resolved toward Angela's hard rule: a
+  visible foreground console, tee'd to a log you poll in short intervals.
+- **Planner trace (R18)** — attributed missing tools to the planner's top-20 cap, which
+  since 2026-06 no longer removes anything from the bind. Now reports five stages
+  separately and says `unavailable` rather than inferring one.
+- **CSRF audit (R19)** — "safe-because-internal-tool" and "safe-because-websocket"
+  established nothing (CSRF is precisely the third-party-page attack), and it told you to
+  inspect the view ABOVE the decorator. Replaced with six required facts and four
+  evidence-bearing verdicts including `insufficient_evidence`.
+- **Declared scope (R20)** — roblox-studio declared no tools while requiring the External
+  MCP supervisors; flow-from-objective delegated via `invoke_skill` without declaring it
+  and had an empty shell list beside a scripted fallback. Four kinds of requirement are
+  now distinguished: direct, delegated, dynamically discovered, downstream.
+- **Inventory (R21)** — CLAUDE.md described TWO skill sets and omitted the Gemini mirrors
+  and the Codex dossier skills. NEW **`scripts/skill_inventory.py`** generates the counts,
+  locations, consumers and version facts from Git and disk (`--check` fails on an
+  untracked or unaccounted SKILL.md). ⚠️ **Never hand-type a skill count or a "current
+  release" again** — three documents had drifted to v1.63.0 / v1.64.0 / v1.65.5.
+
+### 9. HEADLESS WAS STILL POSSIBLE — four shipped harnesses could run blind
+
+**Angela, same day, after the audit pass:** *"all the test must under any
+circumstance be in foreground windows, browsers, etc, **TESTS IN HEADLESS MODE
+ARE STRICTLY FORBIDDEN**"*. Auditing my own changes surfaced six verification
+steps I had written without demanding a visible window — but the sweep also
+found **live violations that predate this pass**:
+
+| file | it really did | now |
+|---|---|---|
+| `mcp_playwright_suite.py` | `headless=ns.headless` straight to `launch()` | forced `headless=False` |
+| `cyber_watchdog_test.py` | `headless=self.args.headless` | forced `False` + loud refusal |
+| `talk_test.py` | `headless=self.args.headless` | forced `False` + loud refusal |
+| `googler_dork_hunt.py` | `{"headless": bool(args.headless)}`, excused as *"diagnostic only, NOT a pass"* | forced `False` |
+| `googler_dork_hunt.py` | JSON evidence stored the **requested** flag | stores what **actually ran** |
+| `harness/README.md` | documented `--headless  # CI-style, no window` as supported | marked **DISABLED / FORBIDDEN** |
+
+⚠️ **CONTRACTS — do NOT weaken:**
+
+1. **"Diagnostic only" is NOT an exemption.** A diagnostic is still a run, and
+   an invisible run cannot be verified. That excuse is exactly how the flag
+   survived in `googler_dork_hunt.py`.
+2. **Keep accepting `--headless`, keep IGNORING it, and SAY SO LOUDLY.**
+   Removing the argument breaks old invocations; silently honouring it breaks
+   the rule. The pattern is `run_test.py`'s: warn, then
+   `dict(headless=False, ...)`.
+3. **Report what RAN, never what was REQUESTED.** An evidence file that records
+   the flag instead of the outcome is the same lie class as the skill harness's
+   placeholder outputs (§1) and ACPX's exit-0 refusals.
+4. **A verification instruction must name where the window opens.** Six of my
+   own steps said "load the page" / "run the gate" without it; they now carry
+   an explicit ⛔ banner.
+5. Applied to **both** mirrors; `scripts/sync_assistant_skills.py --check`
+   keeps them in step.
+
+Already compliant and left alone: `run_test.py`, `acp_backend_banner_test.py`,
+`context_restore_spinner_visible.py`, `dialog_policy_visible.py`,
+`grepper_lines_visible.py`. Written up for the other assistants in
+`TestsVisiblesAndVisibleExecutionFromClaude2Codex.md` (repo root).
+
+### Coverage
+
+`agent/tests.py` — `SkillHarnessDjangoTests` (planning contract, whole-body delivery,
+explicit truncation, absolute reference paths, enforcement honesty, credential
+redaction), `SkillValidationSharedRoutineTests` (byte-vs-character unit with a multibyte
+fixture, warn-vs-error policy, malformed YAML, budget ranges, all 29 packages,
+lint/quick_validate agreement), `SkillRegistryPrecedenceTests` (first-wins, dedupe, root
+order), `SkillAcpxDeliveryVerdictTests` (blocked child is not a success, delivered answer
+survives, shared extractor, deadline). Plus `_meta/lint.py` (29 pass / 0 fail / 2 warn),
+`scripts/skill_inventory.py --check`, and `ruff check` clean.
+
+---
+
+## 2026-09-22 — A RESTORED CONTEXT MUST LOOK AS BUSY AS IT IS (the missing spinner)
+
+**Angela's report.** Load a context (directory / file / *Use as context*), close the
+browser, restart Tlamatini, log in again and open the chat page: the context starts
+loading again, the Send button correctly reads **Cancel** — and **the spinner never
+appears**, so the GUI looks completely idle while it is in fact frozen. Loading the
+very same context from the **Context** menu shows the spinner normally.
+
+**ROOT CAUSE — a RENDER was deleting a live UI widget.** `#wait-spinner` is a **child
+of `#chat-log`**, and `agent_page_chat.js::renderInitialMessages()` wipes `#chat-log`
+with `innerHTML = ''`. On the restore path that wipe lands **after** the spinner was
+created, because the two happen at very different moments in the page's life:
+
+| when | file | what happens |
+|---|---|---|
+| socket opens | `agent_page_state.js` | frames arriving before chat.js binds `.onmessage` are buffered |
+| **script-parse time** | `agent_page_chat.js` | drains that buffer → `session-restored {loading:true}` → `disableControlsDuringOperation()` → **SPINNER APPENDED** |
+| **`window.onload`** (after every image/font/stylesheet — much later) | `agent_page_init.js` | `renderInitialMessages()` → `innerHTML = ''` → **SPINNER DESTROYED** |
+
+`disableControlsDuringOperation()` is idempotent — its spinner is guarded by
+`if (!document.getElementById(spinnerId))` — so **nothing ever put it back**. The
+button stayed 'Cancel' and every menu stayed greyed (those live outside `#chat-log`),
+which is why the page was genuinely frozen while looking perfectly idle: the worst
+combination available, and indistinguishable from a hung app.
+
+**THE FIX — two layers, both deliberate, do NOT drop either.**
+
+1. **`renderInitialMessages()` captures the live spinner before the wipe and
+   re-appends it after.** A history render is a RENDER: it repaints old rows and must
+   not delete a live widget. This is the honest repair of the defect.
+2. **`window.onload` RE-ASSERTS the busy UI as its LAST statement**, guarded on
+   `inLongOperation === true || lapseLoadingContext === true`. That handler is the
+   layer that knows the busy latch, and *everything* it does runs against a page that
+   may already be busy. Both calls are idempotent and both flags start `false` on
+   every page load, so it is a strict no-op on an idle page and can never freeze one.
+   ⚠️ It must stay **last** — anything running after it could undo it, which is the
+   exact failure class being fixed.
+
+**MEASURED, in the real GUI, in BOTH runtime modes** (headed Chrome, real login,
+server restarted between phases so `global_state` really is empty and the consumer
+really takes the `loading=True` path). The pre-fix JS was served by route
+interception from `git HEAD`, so nothing on disk was touched:
+
+| mode | pre-fix | post-fix |
+|---|---|---|
+| SOURCE (`DEBUG=1`, dev static handler → source tree) | 12/12 samples `busy=True spinner=False` | 12/12 `busy=True spinner=True` |
+| RELEASE (`DEBUG=0`, WhiteNoise → collected `staticfiles/`) = the frozen web path | same failure | same pass |
+
+⚠️ **THE TWO MODES SERVE DIFFERENT FILES — check both.** Source mode serves the
+source tree; a frozen install serves the **collected** `staticfiles/` tree bundled
+next to the exe. A fix that exists only in the source tree is invisible to a frozen
+build until `collectstatic` runs. `build.py` runs `collectstatic --noinput --clear`
+on every build and **aborts if it fails**, so the fix does reach a real build — and
+`agent/test_context_restore_spinner.py::test_collected_static_carries_the_same_fix`
+pins the collected copy so a stale one cannot ship the bug while the source looks
+fixed.
+
+Coverage: `agent/test_context_restore_spinner.py` (5 contract tests, verified to go
+RED against `git HEAD`) + the VISIBLE runner
+`.claude/skills/tlamatini-daily-chat-test/harness/context_restore_spinner_visible.py`
+(`--release` runs the frozen web path). Contract: `docs/claude/frontend.md` →
+*The busy UI on a restored context*.
+
+⚠️ **A NOTE ON THE EVIDENCE, because it nearly lied twice.** The first runner
+photographed the desktop *after* its polling loop, by which time the context had
+finished loading — a true measurement with a picture of the wrong moment. The second
+verified focus and then shot, but Shoter has to spawn a process first and a console
+busy printing took the z-order back in that gap. The runner now shoots inside the
+busy window, raises the browser with **Windower**, confirms from the page itself
+(`document.hasFocus()`), **pins the window topmost through the capture**, re-checks
+afterwards, and renames anything it could not confirm to `*_UNVERIFIED`. ⚠️ Never
+match the chat window by its title: `rotateTitle()` rewrites `document.title` on a
+timer, so it is a moving target (Windower was once handed `'X amatini Tl'`).
+
+---
+
+## 2026-09-20 — Complete model selection and source/frozen runtime execution
+
+Config → Models now exposes 38 model/engine/voice settings in six searchable
+categories, backed by the portable registry for all 21 model-backed agents.
+Talker and Whisperer are included; Video-Analyzer defaults to gemma4:cloud plus
+jcyhsiao/qwen3.5cloud:latest with glm-5.3:cloud synthesis, and has an independent
+local audio model. Missing fields and quoted `"@config"` inherit; explicit canvas
+values remain overrides. Wrapped chat seeds globals before explicit tool arguments.
+See [the complete current contract](../model_configuration.md); older entries below
+record earlier defaults and UI shapes and must not be used as current configuration.
+
+The frozen File-Creator failure came from opening a nonexistent loose registry via
+a compiled service path. Frozen services now import the compiled registry; portable
+copies resolve through `get_agents_root()`, and non-model agents do not require it.
+The new `check_agent_runtimes` build gate caught default-codepage YAML readers in
+Monitor-Log, Monitor-Netstat and RecMailer; they now read UTF-8 with BOM support.
+The command executes before packaging and is required in self-modify snapshots.
+Source/frozen/installed evidence and scope are in
+[the verification record](../model-configuration-verification.md).
+
+Video summaries retain model/status/body for HTTP failures. The historical
+observer-disable/partial-output policy in this entry was superseded on 2026-09-26:
+any configured observer failure rejects the attempt and accumulates a fatal dialog;
+Tlamatini retries and configured recovery routes continue with the same models.
+
+## 2026-09-19 — Video-Analyzer audio tracks and comprehensive summaries
+
+Video-Analyzer supports `analysis_type: robotics` (default), `transcription`, and `summary`. Robotics preserves the deterministic motion gate and dual-vision/merge verdict, with `PASS_OK` only on two explicit independent passes. Transcription reads selected video audio tracks (`audio_tracks: all` or `0,1`) using Whisperer's local faster-whisper backend, GPU auto/CPU fallback and timestamped segments; it never opens a microphone. Summary combines speech with two independent visual observers over frame batches spanning the whole clip, then synthesizes an overview, chronology, readable screen text, facts, steps, decisions, action items and limitations. Content modes accept static scenes, bypass the motion gate, and emit `TLM_ANALYSIS::` tokens rather than robotics verdicts. Missing audio/speech and partial failures are explicit. Each content run saves transcript, segments, report and full analysis artifacts. Parametrizer and wrapped chat results expose `analysis_type`, `analysis_token`, `transcript`, `summary`, `audio_status`, timestamped `segments_json` and artifact paths; the body remains `response_body`. Input remains a file, wildcard, newest video in a folder or Camcorder pool name. Always starts downstream agents; sampled perception is not exhaustive.
+
+New portable helper `video_content.py` handles bounded PyAV track decoding and summary evidence reduction. Old pool refresh carries the helper; PyAV is pinned and included in build verification. Wrapped result promotion reads a completed header when long transcripts exceed log tails, reports shortened promoted fields, and retains artifact paths. Parametrizer uses the shared contract/catalog, not a second producer list. Source/model text cannot forge section or routing markers. The robotics guard now rejects missing interpreter verdicts. Catalog prompts 125/126 demonstrate both content modes. See [the guide](../../Tlamatini/agent/agents/video_analyzer/README.md).
+
+## 2026-09-19 — The Qwen3.5 vision tag is now `jcyhsiao/qwen3.5cloud:latest` everywhere
+
+Angela: *"change everywhere needed where the model was qwen3.5:cloud to
+jcyhsiao/qwen3.5cloud:latest, deeply and surgically"*.
+
+**It is the SAME model, not a different one.** `ollama list` reports both tags with the
+identical digest `a7bf6f7891c3` and a blank SIZE column — it is the same Qwen3.5 cloud model
+republished under a community namespace. Nothing about the pipeline's behaviour, prompts or
+budgets changes; only the string you pull and the string the two agents send.
+
+**Where it lives — two agents, three layers.** `interpreter_model_1` for **Image-Interpreter**
+(the forensic OCR / measurement eye) and `interpreter_model_2` for **Video-Analyzer**. Each has
+BOTH a `config.yaml` shipped value AND a module-level code fallback
+(`DEFAULT_INTERPRETER_MODEL_1` / `DEFAULT_INTERPRETER_MODEL_2`), and the global
+`image_interpreter_model` in `config.json` is seeded over the Image-Interpreter one by
+`tools._seed_global_agent_defaults`. **All three layers were updated** — changing only the
+config leaves a stale fallback that surfaces the moment the key is missing or blank.
+
+**⚠️ THE SUFFIX IS NO LONGER THE TEST FOR "IS THIS A CLOUD MODEL".** `BookOfTlamatini.md` §5
+asserted that the default tags *"carry a cloud suffix"* and told the reader to run
+`ollama pull <tag>:cloud`. Both sentences became FALSE the instant this tag landed, because
+`jcyhsiao/qwen3.5cloud:latest` is cloud-backed with no `:cloud` suffix at all. The chapter now
+says **cloud-backed**, names the exception, and gives the reliable test: `ollama list` shows a
+**blank SIZE** for a cloud tag, because nothing was downloaded. A blind find-and-replace would
+have left a confidently wrong instruction in the user-facing book — **when you retag a model,
+re-read the prose that reasons ABOUT the tag's shape, not just the prose that quotes it.**
+
+**Prompt rows needed a FORWARD migration.** Migrations 0165 / 0168 seeded Catalog-of-Prompts
+rows that name the model. Their source text was updated too, which fixes a database created
+from scratch — but `Prompt` rows are user state that survives a self-update, so an existing
+install would show the old tag forever. **`0206_qwen35_cloud_model_tag_rename`** rewrites ONLY
+`promptContent` (never `idPrompt` / `promptName` / `category` / `sort_rank` / `hidden`, so the
+catalog's ordering and contiguity contracts hold — the 0182-0185 shape), and is idempotent in
+both directions because the new tag does not contain the old one as a substring.
+
+**`flow_catalog.json` is GENERATED — do not hand-edit it.** The Image-Interpreter and
+Video-Analyzer `purpose` strings come from `agents_descriptions.md` via
+`services/flow_knowledge.build_catalog()`. Edit the description, then run
+`python scripts/update_flow_catalog.py` and confirm `--check` passes.
+
+**Deliberately NOT changed:** the prose *"running on Qwen3.5"* in the Image-Interpreter prompts
+and *"A (qwen3.5) said"* in its merge template name the model FAMILY, which is still accurate;
+and `qwen3.5:397b-cloud` in `skills_pkg/flow_making/scripts/make_flow.py` is a different tag
+Angela did not name (same underlying model — retag it only if she asks).
+
+Coverage: `agent/test_image_interpreter_agent.py`, `agent/test_video_analyzer_agent.py`,
+`agent/test_prompt_catalog_contiguous.py`, `agent/test_voice_commands_catalog.py` — 80 tests,
+all green.
+
+---
+
+## 2026-09-18 — The Whisperer silence window is 3.5 s, and it is 3.5 s in every place that SAYS so
+
+Angela: *"set the default silence everywhere it corresponds to 3.5 seconds"*. Ten seconds
+of dead air before the microphone closes is a long time to sit still; 3.5 s is closer to
+the pause a person actually leaves at the end of a sentence.
+
+**The value lives in TWO places and they must agree**: `GATE_SILENCE_TIMEOUT_SECONDS` in
+`agents/whisperer/whisperer.py` (the code fallback, used when the key is missing or <= 0)
+and `silence_timeout_seconds` in `agents/whisperer/config.yaml` (the shipped value). Both
+are now **3.5**. `max_record_seconds` (300) and every other gate constant are untouched.
+
+**⚠️ A FRACTIONAL DEFAULT BREAKS `:.0f`.** Two console readouts printed the window with
+`{…:.0f}` — fine while it was 10, but 3.5 renders as **"4s"**, so the live REC bar and the
+window title would have told the user a number the gate does not use. Both are now `:g`
+(3.5 → `3.5`, 10 → `10`, so the existing `'6.4s/10s'` assertions still hold). **If you add
+another readout of a gate duration, use `:g` — a default that is not a whole number is the
+normal case now.**
+
+**The text moved with the code, in the same pass** — the rule from the 2026-09-11 entry
+below, applied again. Changing only the number would have left the LLM's own tool
+description promising 10 s, which is exactly how a change ships *invisible while looking
+like it worked*: `chat_agent_registry` (purpose + `example_request`), `prompt.pmt`,
+`Tlamatini.md` (self-knowledge, 2 spots), FlowCreator's `agentic_skill.md` (2 spots),
+FlowHypervisor's `monitoring-prompt.pmt` (2 spots), `agents_descriptions.md`, `README.md`,
+`BookOfTlamatini.md`, `docs/claude/agents.md`, `CLAUDE.md`,
+`doc_generation/complete_project_docs.py` and the regenerated `flow_catalog.json`.
+
+**The three catalog cards that PRINT the default get a migration, not an edited history.**
+Prompts 74 / 121 / 122 carry a `[[ silence_timeout_seconds — OPTIONAL, default: 10 ]]`
+fill-in line, and a card promising 10 s while the agent stops at 3.5 s is a lie the user
+only discovers mid-sentence. `0205_silence_window_default_3_5_seconds.py` rewrites **only
+that one line inside `promptContent`** (the 0182-0185 / 0200 pattern): `idPrompt`,
+`promptName`, `category`, `sort_rank` and `hidden` are untouched, so catalog ordering,
+contiguity and the VOICE COMMANDS opener are unaffected. Each swap is a literal replace
+that NO-OPs when the row does not carry the old text, so a hand-edited database is never
+clobbered and re-running is harmless. Migration `0201` stays as written — history is not
+rewritten.
+
+Coverage: `agent/test_whisperer_agent.py` pins the shipped `config.yaml` value, the code
+constant, and that a 3.5 s window paints as `3.5s` rather than rounding to `4s`.
+
+---
+
+## 2026-09-15 — Post-change sweep: two guards that had gone quiet, and one unpinned dependency
+
+A full-repo sweep after the desktop-input / flow-knowledge / PPTXer-LaTeXer-PDFer style work
+found **two RED guards and one silent dependency hole**. All three came from the same day's
+commits, and all three are the "looks fine, reports nothing" class.
+
+**1. Two agent statuses no verdict rule knew (`input_sent`, `observed`).**
+`agent/test_status_vocabulary.py` went red: Mouser and Keyboarder now emit `status: input_sent`,
+and Mouser's new `movement_type: inspect` emits `status: observed`. Neither was in any of
+`agent_verdict.py`'s five sets, so both fell through to R8b's fail-open default and **coloured
+their Exec Report row GREEN by accident** — indistinguishable from a status every rule had
+approved, which is exactly the hole the closed vocabulary exists to close. Now explicit:
+
+- `input_sent` → **`WORK_COMPLETED_STATUSES`** (transport/delivery). Delivering the input IS the
+  agent's deliverable, so it is green — but it is **delivery evidence only**, never proof the
+  application accepted, saved or acted on it. Confirming the app's reaction is a separate
+  observation (Shoter + Image-Interpreter), not a claim this status ever makes.
+- `observed` → **`DIAGNOSTIC_COMPLETED_STATUSES`** (inspectors). `inspect` reports cursor and
+  monitor geometry and deliberately sends NO input: a read-only look that ran to completion,
+  where the reading is the deliverable.
+
+**2. `test_build_scripts` flagged 27 flat siblings as unpinned PyPI packages.**
+`_NOT_THIRD_PARTY` is a HAND-MAINTAINED set. The day's three new siblings (`flow_knowledge`,
+`mouser_coordinates`, `keyboarder_input`) were added to it, but every `pdfer_*`, `pptxer_*` and
+`latexer_*` helper never was — so the guard had been red since those agent families landed.
+**Fixed by DERIVING instead of listing**: an import is local when a file of that name sits in
+the SAME directory as the importing file, which is precisely the flat-sibling contract (helpers
+ship beside the agent and travel with the pool copy, because a pool subprocess cannot import
+`agent.*`). ⚠️ **Do NOT go back to extending the hand-maintained set** — it silently went stale
+for three whole agent families at once; the derived check stays correct the moment a new
+sibling lands.
+
+**3. `fontTools` was imported but never pinned.**
+`agents/pptxer/pptxer_fonts.py::_font_coverage` reads a TTF's character map to detect a glyph
+the chosen face does NOT have, so the measurer can fall back to Office's real substitute. It
+arrived **transitively via matplotlib** and was absent from `requirements.txt`, so a dependency
+bump could drop it — and because the import is fail-open (`except Exception: return None`),
+nothing would have reported the loss: the coverage check would simply stop running and a deck
+could ship tofu boxes. Now pinned `fonttools==4.63.0`.
+
+**Verified**: 186 tests OK (`test_flow_knowledge`, `test_desktop_input_agents`,
+`test_agent_display_names`, `test_build_scripts`, `test_status_vocabulary`, `test_agent_verdict`);
+both inclusion sweeps CLEAN; `update_flow_catalog.py --check` verified coverage for 89 agent
+types; `design_prompt` builds with all 89 selected (89/89 `###` sections in `agentic_skill.md`);
+all 29 `SKILL.md` packages validate clean.
+
+**Documentation counts corrected in the same pass.** The standing rule is that dated records
+keep their figures while ACTIVE guidance is re-derived from source. `Tlamatini.md` claimed **88**
+agents in three places while saying 89 in two others — and it is her INJECTED self-knowledge, so
+she would have told users the wrong number; PPTXer was also missing entirely from her
+visual-agent list. README said 88/108 in three spots, `skills_pkg/create_new_agent/SKILL.md`
+still said **83**, and both agent-naming skills said "23 of 88". All now derived: **89 agents,
+67 wrapped, 109 built-in tools, 29 skills, 204 migrations**, with 33 display-name overrides
+differing from `str.title()`.
+
+---
+
+## 2026-09-15 — PDFer: 24 signature styles and measured reading areas
+
+PDFer adds **24 explicit visual identities in five families** alongside its **20 semantic treatments**: six playful/nursery, four cyberpunk, five cosmic, four electronics and five Tlamatini styles. `style` chooses appearance, while `nuance` retains document purpose and decoration limits. Blank/auto style preserves automatic design. `mode: styles` lists the catalog with `status: inspected` and no PDF. `style` and `style_family` are appended to the output contract without renaming previous fields.
+
+**Failures addressed and contracts to preserve:**
+
+- Cover text now uses an opaque reading area, with title/subtitle/author measured before placement and vector artwork clipped to a text-free region. Long title/subtitle content continues onto later pages rather than being truncated.
+- Footer notes reserve the measured folio width and ellipsize only the repeated note. Small pages retain a usable content frame.
+- Muted text, H3/H4, quotes, captions, footers and alternating table rows use the normal-text contrast floor. Cover contrast is checked against the actual opaque reading background.
+- Sparse Franklin Gothic and Segoe UI face tuples no longer choose an italic file for bold display text.
+- Table soft/hard/natural width measurements add 0.75 points after padding to avoid ordinary-word splits from rounding differences. Unbroken source tokens still wrap without injected characters.
+- New `pdfer_styles.py` and `pdfer_artwork.py` are flat siblings in the pool template. Vector art requires no new dependency, external image service or downloaded fonts. Original Aztec-inspired geometry is not a transcription of historical glyphs.
+- Legacy raster artwork uses stable SHA-256 seeds and cache keys covering every palette role plus raster scale.
+- Explicit styles never increase the semantic decoration ceiling. Legal, clinical and financial treatments remain undecorated. Existing semantic aliases keep priority over the compatibility fallback for visual names in `nuance`.
+- Signature styles apply to atelier. Custom CSS under `engine: auto` retains legacy behavior; image-only layouts and existing merged PDFs keep their designs. A created PDF is not automatically an audit pass: inspect `layout_clean`, repairs and the response body.
+
+**Evidence recorded during implementation (2026-09-15):** `agent.test_pdfer_agent`, `agent.test_pdfer_nuance_layout` and `agent.test_pdfer_styles` passed **130 tests**. All **24 two-page samples (48 pages)** had clean layout audits: no overlaps, bleeds, blank pages or contrast findings. Regression cases include A4 portrait/A5 landscape, 256-character titles, long unbroken table tokens, long footers, palette overrides, alias fallback, complete long title/subtitle continuation and deterministic artwork. Contact sheets and representative full pages were visually inspected. This is fixture/environment evidence, not a guarantee for all documents or proof of the installed app's version.
+
+The gallery, PNGs, sample PDFs, atlas and task logs were removed after inspection. `scripts/verify_pdfer_styles.py` reproduces ignored `artifacts/pdfer-styles/` and `output/pdf/pdfer-style-atlas.pdf`; keep source, tests, generator and the [style guide](../../Tlamatini/agent/agents/pdfer/STYLES.md). Poppler is required by that preview verifier, not by the new runtime style renderer.
+
+---
+
+## 2026-09-15 — PPTXer: complete text, 12 visual styles, and native layout checks
+
+PPTXer now offers 36 named treatments (24 automatic content treatments + 12 explicit styles via `nuance`) and 17 font pairings. Empty `nuance` retains automatic classification; explicit color, background, font, and density overrides keep priority. The twelve styles and reproduction commands live in [the canonical guide](../../Tlamatini/agent/agents/pptxer/STYLES.md).
+
+**Keep these contracts:** measure the actual font face, bold/italic, tracking, line spacing, and insets; trial-compose before placing dense content; paginate complete cards, columns, tables, timelines, and bullets. Preserve long identifiers, indentation, Unicode, complete diagram/chart labels, footer/attribution space, and portrait statistic values. Deterministic font discovery separates Arial Narrow and Bodoni MT Poster Compressed from regular-width families. The 1152-dpi width measurement prevents accumulated Courier New rounding errors. Apply configured corner radii and chart series colors, and sample contrast against the actual rendered background.
+
+Re-open the saved deck to audit geometry, table/group text, and native bounds. Measurement errors must not pass as clean, and confidence must distinguish native PowerPoint, independent rendering, and approximate preview. Keep atomic saves and the bounded Office worker; cleanup may terminate only proven-owned Office processes. `created_with_findings` is a written deck requiring review.
+
+**Recorded validation:** 126 regressions passed; long-card coverage spans 12 styles × 3 formats (36 cases). The final native new-style run covers 12 decorative 16:9 decks, 151 slides, 700 text frames, and 252 complete 256-character payload checks with zero findings. The earlier corporate/cyberpunk three-format run covered 424 slides and 870 long-text checks at that revision. The 256-character length is a test input, not a maximum or a universal layout guarantee. The guide records tolerances and rendering scope. Generated decks/renders/galleries were removed; both PPTXer artifact directories are ignored. Retain source, tests, and the three reproduction/gallery scripts. This documentation update does not assign a release tag.
+
+## 2026-09-15 — LaTeXer: 30 signature styles and portable source generation
+
+LaTeXer now separates document structure (`template`, eight options) from visual identity (`style`, 30 explicit options across editorial, playful, cyberpunk, cosmic, electronics and Tlamatini families). `list_styles` returns the catalogue without probing a compiler. Six settings control identity, subtitle, screen/print mode, decoration, cover and a six-digit color seed. Empty styles preserve legacy output; existing complete sources/projects reject explicit styles instead of rewriting their preamble.
+
+**Keep these contracts:** the three flat sibling modules (`latexer_styles.py`, `latexer_artwork.py`, `latexer_design.py`) travel with pool copies. TikZ artwork stays clipped inside a normal-flow cover region; body pages use coordinated readable inks. Palette text contrast is corrected after color overrides and print conversion. Beamer has its own recipe and does not load document-only heading/header packages. Styled sources retain standard title/author declarations for `structure`. Spanish babel punctuation is disabled for TikZ compatibility. Every table header cell needs `\TLcellhead`; shaded paragraph-column cells use `\textcolor{TLSurfaceInk}{...}` to preserve their first baseline.
+
+Chat descriptions, canvas mapping, Parametrizer and result promotion carry the settings and four metadata fields: `style`, `style_family`, `style_mode`, `style_count`. `listed` means successful discovery; design metadata does not prove compilation or layout. The existing repair ladder, base64 source channels and verdict vocabulary remain in force.
+
+**Evidence captured on 2026-09-15:** 483 automated tests passed. The developer matrix produced **132 fresh real builds**, with repair disabled: 90 screen builds (30 styles × pdfLaTeX/XeLaTeX/LuaLaTeX), 30 print builds, eight template cases and four stress cases. All passed PDF text-bounds and overfull-box checks. All 60 atlas pages were rendered independently with Poppler and visually reviewed, alongside special layouts. This is a measured test set, not a guarantee for arbitrary user LaTeX; the verifier is not run automatically on every normal agent call. Copied-pool tests covered engine-free discovery and styled base64 input through the default repair pipeline.
+
+Reproduce with the [style guide](../../Tlamatini/agent/agents/latexer/STYLES.md) and `scripts/verify_latexer_styles.py --matrix`. Local outputs are ignored by Git: `artifacts/latexer-styles/index.html`, `report.json`, and `output/pdf/latexer-style-atlas.pdf`. No release tag is assigned by this note. Related Markdown was updated with fresh reads and narrow edits while another session owned desktop/flow documentation; its work was preserved.
+
+## 2026-09-15 - ESP32er's scaffold did not compile, and ESPHomer's template was never read
+
+**Files: NEW `agent/agents/esp32er/ESP32TemplateProject/` (6 files), `agent/agents/esp32er/esp32er.py`
+(`_create_project` rewritten, NEW `_template_source_dir` / `_ensure_ini_key` / `_stamp_platformio_ini`
+/ `_MINIMAL_MAIN_CPP`), `agent/agents/esphomer/esphomer.py` (NEW `scaffold_template` action,
+`_scaffold_template`, `_write_secrets_file`, `use_secrets`), `agent/agents/esphomer/ESPHomeTemplateProject/`
+(expanded 2 -> 6 files), both `config.yaml`s, `agent/test_esp32er_agent.py` + `agent/test_esphomer_agent.py`
+(+17 tests; the shared log-capture helper FIXED). Standalone publishable repos at
+`C:\Development\ESP32TemplateProject` and `C:\Development\ESPHomeTemplateProject`.**
+
+**DEFECT 1 - ESP32er scaffolded a project that could not be built.** `_create_project` ran a
+bare `pio project init -d <dir> -b <board>`. That produces a `platformio.ini` plus **EMPTY**
+`src/` `include/` `lib/` `test/` directories - there is no `main.cpp` anywhere. Under the
+Arduino framework the very next `build` therefore fails to link (`undefined reference to
+'setup'` / `'loop'`), so `create_project` -> `build` was broken out of the box and the
+one-call `scaffold_build_upload` composite died at its build stage unless the caller happened
+to pass `content`. **A scaffold whose output does not build is not a scaffold.** Fixed the way
+Arduiner already worked: a bundled `ESP32TemplateProject/` sits beside `esp32er.py`,
+`create_project` copies it, then `_stamp_platformio_ini` re-points `board` / `framework` at
+whatever the caller asked for, so ONE template serves every ESP32 variant. ⚠️ The
+`_MINIMAL_MAIN_CPP` fallback is not decoration: if the template is ever missing, the
+`pio project init` path still writes a compilable source. **This function must NEVER hand back
+a project that cannot compile.** Verified for real, not assumed: `pio run` on the shipped
+template with PlatformIO Core 6.1.19 / espressif32 7.0.1 -> `[SUCCESS] Took 15.08 seconds`,
+`firmware.bin` 269,728 B + `firmware.elf` 6,071,200 B, RAM 6.6%, Flash 20.6%.
+
+**DEFECT 2 - ESPHomer's template project was unreachable code.** `ESPHomeTemplateProject/`
+shipped in the agent's directory and was tracked in git, but **no code path ever read it** -
+`new_config` generates from the inline `_DEVICE_YAML_TEMPLATE` instead. A template nothing can
+reach is documentation at best and silent drift at worst: the shipped sample and the generated
+output were free to diverge with nothing to catch it. NEW `action: scaffold_template` copies
+it, so what ships is what a user gets. The template also grew from 2 files to 6 - a second
+device showing `packages:` + `!secret`, a shared `common/base.yaml`, `secrets.yaml.example`
+and a `.gitignore`.
+
+**⚠️ `use_secrets` DEFAULTS TO FALSE AND MUST STAY THAT WAY.** It makes `new_config` emit
+`!secret wifi_ssid` and write the real credentials to a sibling `secrets.yaml` - ESPHome's own
+convention, and strictly better than baking a WiFi password into a file somebody may publish.
+But `!secret` is a **custom YAML tag**, so a config using it can no longer be read by a plain
+`yaml.safe_load` - every downstream parser, including this repo's own tests, would break. Opt
+in, never default in. The same reason `tlamatini-light.yaml` stays self-contained (no
+`!include`, no `!secret`) while `tlamatini-sensor.yaml` demonstrates the grown-up shape.
+`_write_secrets_file` **NEVER overwrites an existing secrets.yaml** - a second device scaffolded
+into the same folder must not clobber the first one's real password.
+
+**⚠️ THE TEST SUITE WAS ALREADY RED AND NOBODY KNEW.** `test_esp32er_agent` had **4 hard
+failures at HEAD** before any of this work (`AssertionError: 0 != 1` on `len(sections)`),
+verified by restoring the pristine file and re-running. Cause: the `_LogCapture` helper adds a
+handler to the root logger but never forces its **level**, and a record below the root level is
+dropped before any handler sees it. The agent's module-level `logging.basicConfig(level=INFO)`
+only takes effect if it runs BEFORE Django configures logging, so the capture was purely
+**test-order dependent**. Fixed in the helper (force + restore level, and lift any global
+`logging.disable`), never in the assertions - the remedy `create_new_agent.md` pitfall #15
+already prescribes. ⚠️ **Four more test files carry the identical fragile helper**
+(`test_arduiner_agent.py:112`, `test_audioplayer_agent.py:229`, `test_camcorder_agent.py:165`,
+`test_recorder_agent.py:165`, `test_videoplayer_agent.py:95`) and will drift red the same way.
+
+**Standalone repos.** Both templates also exist at `C:\Development\<Name>TemplateProject` as
+publishable GitHub repositories - the same files plus MIT `LICENSE`, `CHANGELOG.md`, a CI
+workflow that compiles/validates on every push (so the word "known-good" stays true rather than
+aspirational), and `scripts/create_github_repo.ps1` / `.sh` one-shot publish helpers. This
+restores what `BookOfTlamatini.md` §58 has promised since 2026-05-31: that chapter documented
+an `ESP32TemplateProject` at that exact path as "verified to build clean", but **the folder was
+not on disk and had never been in git**. It is now in both places - bundled in the repo so it
+ships to users, and standalone so it can be published.
+
+Coverage: `agent/test_esp32er_agent.py` 35 -> 41, `agent/test_esphomer_agent.py` 31 -> 42
+(83 total, all green; ruff clean).
+
+---
+
+## 2026-09-14 - Grepper learned to READ: output_mode 'lines', and why the log is not a byte-exact channel
+
+**Files: `agent/agents/grepper/grepper.py` (NEW `_read_lines_mode`), its `config.yaml`
+(NEW `start_line` / `end_line` / `line_numbers`), `services/agent_contracts.py`
+(5 fields APPENDED), `chat_agent_registry.py` (the LLM-facing description),
+`agent/Tlamatini.md`, NEW `agent/test_grepper_lines_mode.py` (22 tests).**
+
+**THE HOLE.** Nothing in the agent pool returned the exact text of a file region.
+File-Interpreter interprets through an LLM, File-Extractor unpacks binary containers, and
+all three Grepper search modes require a regex - so the one step "show me the exact bytes
+so I can author an Editor `old_string`" had to leave Tlamatini for a shell `type`/`sed`.
+`CLAUDE.md` even documented the gap ("there is no raw-`cat` Tlamatini agent"). Grepper
+already owned the right primitive - the encoding-aware `_read_text_lines()` - it simply
+never exposed it.
+
+**THE FIX.** `output_mode: "lines"` reads ONE file verbatim with NO pattern. `start_line` /
+`end_line` are 1-based INCLUSIVE (`0` = first / last); a directory is REFUSED ("use Globber
+first") and a binary file is refused rather than mangled; `status: listed` on success.
+
+**THE TRAP, AND WHY `content_b64` EXISTS.** The first version claimed `line_numbers: false`
+returned a BYTE-EXACT slice. **It did not, and the claim was caught before it shipped.**
+`logging`'s FileHandler opens its file in TEXT mode, so on Windows every `\n` it writes
+becomes `\r\n` - which turns a CRLF source line into **CR-CR-LF**. Measured: a source of
+`b"alpha\r\nbeta  \r\ngamma\r\n"` came back as `b"alpha\r\r\nbeta  \r\r\ngamma\r\r\n"`, and read
+back in text mode it surfaces as spurious BLANK LINES between every line. An Editor
+`old_string` built from that carries a stray `\r` per line and **silently fails to match** -
+the same silent/plausible/WRONG class as the PDFer missing-images and LaTeXer linter bugs.
+
+So the exact bytes ride a **base64 side-channel**: `line_numbers: false` also emits
+**`content_b64`**, the same `*_b64` verbatim idiom Editor and LaTeXer already use. Base64 is
+pure ASCII, so nothing in the logging path can alter it. Round-trip verified byte-identical
+on CRLF, LF, accented UTF-8, a file with no trailing newline, and UTF-16 (5/5).
+
+**CONTRACTS (do NOT weaken):**
+1. **The plain body is for HUMANS; `content_b64` is for MACHINES.** Never rebuild an Editor
+   `old_string` from the body - decode `content_b64`. If a future change makes the log a
+   byte-exact channel, prove it with a CRLF round-trip before dropping the side-channel.
+2. **`_read_lines_mode` reuses `_read_text_lines()` and must NOT grow a second decoder.**
+   The BOM-before-NUL ordering is a standing contract (UTF-16 text is legitimately full of
+   `0x00`); a private `open()` in the read path would silently lose UTF-16 files again.
+   Pinned by `test_read_lines_mode_reuses_the_encoding_aware_reader`.
+3. **The five new KV fields were APPENDED, never renamed** (`start_line`, `end_line`,
+   `lines_returned`, `total_lines`, `content_b64`), and
+   `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS['grepper']` was updated in the SAME pass.
+4. **The LLM-facing description in `chat_agent_registry.py` is load-bearing.** It is the only
+   text the model reads; left stale, the feature ships INVISIBLE while appearing to work
+   (the Whisperer sound-gate lesson). It now tells the model to use `lines` INSTEAD of a
+   shell `type`/`cat`/`sed`, and to DECODE `content_b64` for an Editor `old_string`.
+   Pinned by `test_the_model_is_told_to_decode_content_b64`.
+5. **`status` stays inside the closed vocabulary** (`listed` / `refused` / `not_found`), so
+   the Exec Report colours the row correctly.
+
+**PROOF IT BROKE NOTHING.** Old-vs-new on identical inputs across all three search modes
+plus glob / case-insensitive / no-match / empty-pattern / invalid-regex / truncation /
+single-file: **0 regressions** - nothing lost, only the 5 new header fields added (all `0`
+or empty in search modes). Test suite **502 OK**. And VISIBLY, in the live app: headed
+Chrome drove the real chat with Multi-Turn + Exec report on, and Tlamatini ran Grepper twice
+- an old-mode search that found the planted marker, and a `lines` read that returned exactly
+the two requested lines with `total_lines: 4`. Verdict was taken from the DOM (a Grepper row
+in the Exec Report + the marker text back), never from prose. Runner:
+`.claude/skills/tlamatini-daily-chat-test/harness/grepper_lines_visible.py`.
+
+⚠️ **Two harness traps that cost two false failures, recorded so nobody pays them again:**
+batch `set VAR=value && ...` stores the **trailing space** (Chrome typed `"changeme "` and
+the login failed), and the chat page posts a **greeting** bot message on connect, so counting
+messages before it lands makes the greeting look like the answer. Wait for the submit button
+to go back from **Cancel** to **Send**.
+
+---
+
+## 2026-09-13 - The sampler was emptying her answers: repeat_penalty 1.9, an unwired repeat_last_n, and a num_ctx that describes nothing
+
+**Files: `agent/config.json` (`ollama_repeat_penalty` 1.9 → **1.2**, NEW
+`ollama_repeat_last_n` = **256**, `ollama_num_ctx` 63536 → **1048576**),
+`agent/rag/factory.py` (both chains: same three values, `repeat_last_n` newly
+passed), `agent/mcp_agent.py` (`repeat_last_n` added to the parameter
+passthrough AND to the `[LLM-PARAMS]` banner).**
+
+**THE SYMPTOM.** Angela's chat answered *"The tool-calling model returned an
+empty final response."* Twice in one session, each after ~362 s of silence.
+
+**WHAT IT ACTUALLY WAS.** `glm-5.3` and `kimi-k3` are REASONING models: they
+emit `thinking` separately from `content`. When the sampler cannot converge they
+spend the entire turn thinking and return **empty content**. Measured live at
+full load: **196,003 characters of thinking over 287 s**, and in a later trial
+**3,101,216 characters over 51 minutes**, both with `content` empty and zero
+tool calls. ⚠️ **`langchain-ollama` 0.2.1 (our pin) drops the `thinking` field
+entirely**, so none of that is visible — the operator sees only the canned
+"empty final response" line. That blindness is NOT fixed here; 1.1.0 is current
+and the upgrade is separate work.
+
+**FOUR HYPOTHESES DIED FIRST — record them so nobody re-tests them.** The
+43.7k-token tool payload answered in **3.0 s**. The huge open-ended task itself
+answered in **31 s with 47 tool calls**. A 92,415-token prompt against
+`num_ctx=63536` answered in **2.7 s**. `repeat_penalty 1.9` non-streaming
+answered in **14.5 s**. Each looked decisive at n=1 and each was wrong.
+
+**⚠️ THE REAL LESSON IS METHODOLOGICAL: THIS FAILURE IS HEAVY-TAILED, SO SMALL
+SAMPLES LIE.** A 6-trial run scored `1.9/64` at **0/6** — clean. Eight trials of
+the same cell scored **7/8**. `temperature` is 0.0 and it still varies, because
+these are cloud MoE models whose routing and batching change between calls.
+**Never conclude anything here from one run, and treat any single fast result as
+noise.**
+
+**MEASURED (8 trials/cell, 78k-token system prompt + 117 bound tools, streaming,
+failure = empty answer / stall / thinking runaway / 180 s abort):**
+
+| model | 1.9 / last_n 64 | 1.2 / last_n 256 |
+|---|---|---|
+| glm-5.3 | **7/8 failed**, worst 3055 s, worst think 3,101,216 | **1/8**, worst 213 s, worst think 79,048 |
+| kimi-k3 | **4/8 failed**, worst 3600 s, worst think 1,179,576 | **2/8**, worst 399 s, worst think 90,827 |
+
+Isolating the lookback with `repeat_penalty` pinned at 1.2:
+
+| model | last_n 64 | last_n 256 |
+|---|---|---|
+| glm-5.3 | 5/8 failed, median 154.0 s | **2/8, median 26.3 s** |
+| kimi-k3 | **0/8, median 50.5 s** | 1/8, median 97.5 s |
+
+**⚠️ `repeat_last_n` IS GENUINELY PER-MODEL — `repeat_penalty` IS NOT.** 1.2 won
+on every model tested; 256 helps glm-5.3 (6× faster median) and HURTS kimi-k3.
+256 ships because glm-5.3 is what users will overwhelmingly run (kimi-k3 is the
+expensive one), and because 128-512 is the lookback band the llama.cpp/Ollama
+guide recommends for code and structured output. **If the shipped model ever
+changes, re-measure this one — do not assume it carries over.**
+
+**WHERE 1.9 CAME FROM: nowhere.** `glm-5.3:cloud` declares **zero** parameters
+(`/api/show` returns an empty parameter set), Z.ai publishes no
+`repetition_penalty` guidance, vLLM's reference default is 1.0 and Ollama's is
+1.1, and the llama.cpp/Ollama tuning guide caps the repetition remedy at *"start
+with 1.05, max 1.15-1.2"*. 1.9 was roughly double any documented ceiling.
+`mcp_agent.py` had even named it in a comment — *"repeat_penalty=1.9 (garbles
+small models)"* — for months.
+
+**⚠️ `repeat_last_n` COULD NOT REACH OLLAMA BEFORE THIS.** Neither `factory.py`
+nor `mcp_agent.py`'s passthrough list forwarded it, so setting it in
+`config.json` was a **silent no-op**. It is now in both, and in the
+`[LLM-PARAMS]` banner — that banner exists precisely so an unsent parameter
+cannot hide, which is how `repeat_penalty=1.9` survived unnoticed. Verified on
+the wire: `ChatOllama`'s options dict shows `repeat_last_n=256`.
+⚠️ **`frequency_penalty` and `presence_penalty` are NOT exposed by
+`langchain-ollama` 0.2.1** — do not add them, they would be dropped silently.
+
+**⚠️ `num_ctx` IS A NO-OP FOR A `:cloud` MODEL. PROVED.** A **263,159-token**
+prompt sent with `num_ctx=8192` recalled a needle planted near its start. The
+server enforces its own limit instead, cleanly — needle recall was 100% at
+167,587 / 334,847 / 660,717 tokens, and 1,297,992 tokens returned
+**HTTP 400 `"prompt is too long: 1297992, model maximum context length:
+1048576"`**. So the 1M window is a real capability, not a spec number, and
+oversize fails loudly rather than truncating in silence. The old `63536`
+described nothing: real requests were already running at **78,288** prompt
+tokens, 23% above it, with no consequence.
+⚠️ **But `num_ctx` IS meaningful for a LOCAL model**, where it sizes the KV
+cache at load. Tlamatini is cloud-first so 1,048,576 is right here, but a
+local-model user on a small GPU will feel it — loudly, at load, not as a wrong
+answer.
+
+**Also fixed: default drift.** The two chains disagreed on `num_ctx` (**128000**
+vs **8192**), so a missing config key silently gave the retrieval chain an 8k
+window; `repeat_penalty` likewise split **1.9** vs **1.1**. Both chains now
+agree on all three knobs. Same class as the `repeat_penalty` split itself — when
+you add a sampler key, set it in **both** chains or it drifts.
+
+---
+
+## 2026-09-12 - VOICE COMMANDS: the catalog's new FIRST section, and the transcript becomes the prompt
+
+**Files: `agent/views.py` (`PROMPT_CATEGORY_ORDER` gains `voice_commands` at index 0),
+NEW `agent/migrations/0201_add_voice_commands_section.py` (prompts **121** + **122**),
+`agent/prompt.pmt` (NEW rule **18e**), `agent/Tlamatini.md`,
+`agent/agents/flowhypervisor/monitoring-prompt.pmt` (WHISPERER SPECIAL NOTES),
+`agent/agents/flowcreator/agentic_skill.md` (#75), `agents_descriptions.md`,
+`agent/test_prompt_catalog_contiguous.py` (`expected_first`),
+NEW `agent/test_voice_commands_catalog.py` (**23 tests**), NEW visible runner
+`.claude/skills/tlamatini-daily-chat-test/harness/voice_commands_visible.py`.**
+
+Angela's ask, verbatim: a prompt sample *"Tlamatini, using Whisperer record my voice till I
+finish to tell you a prompt, then use the text extracted as a prompt and invoke it, go!."*
+with the natures **Multi-turn / Exec-report / ACPX**, in a NEW section named
+**VOICE COMMANDS** at the **very beginning of the catalog**.
+
+**WHY IT IS A SECTION AND NOT A CARD IN *MEDIA & VOICE*.** Those two things are not the same
+capability. *Media & Voice* is about PRODUCING or CONSUMING media — record a WAV, play a file,
+speak a sentence, transcribe a clip. A **voice command** is about DRIVING Tlamatini BY
+speaking: the microphone replaces the keyboard and the transcript becomes the prompt she then
+executes. Nothing else in the request path changes, which is exactly why it deserves its own
+name rather than being filed under the agent that happens to implement its first step.
+
+**WHY IT COULD NOT SHIP BEFORE v1.51.7.** A spoken prompt has no length anybody can know in
+advance. Under the old fixed `record_seconds: 30` a long instruction was cut in half and a
+short one left the user talking to an empty room — so the transcript was not what they said,
+and executing it would have meant executing a half-sentence. **The sound gate is the
+enabling change**, and that dependency is the one rule both cards hammer: **never pass
+`record_seconds` here**, because any number disarms the gate and truncates the speaker *while
+still looking like it worked*.
+
+**TWO CARDS, AND THE SECOND ONE IS NOT OPTIONAL PADDING.** Angela asked for one prompt; the
+section ships two, because her own standing rule is that **every section opens with a
+Step-by-Step wizard** and `test_prompt_catalog_contiguous.py` enforces it from two directions
+(`test_known_section_openers` fails for any live section absent from its map, and
+`test_every_section_opens_with_a_genuine_step_by_step_wizard` reads the opener's CONTENT for
+the Step-by-Step checkbox and a promise to WAIT). A new section with only card #122 would have
+gone RED on both. So **#121 YOUR FIRST VOICE COMMAND** (`sort_rank` 10, the reserved opener
+slot) rehearses the flow read-only, and **#122 SPEAK YOUR PROMPT** (`sort_rank` 20) carries
+Angela's sentence verbatim.
+
+**⚠️ THE MODE BADGES ARE DERIVED FROM THE TEXT — THERE IS NO FLAG TO SET.**
+`tools_dialog.js::classifyPromptModes` reads the prompt and decides; `applyPromptModesToToggles`
+then ticks exactly those boxes. So getting Angela's three natures right meant WRITING them:
+
+  * #122 names `invoke_skill` / `acp_spawn` / `acp_send_and_wait` in a **non-forbidding**
+    sentence ⇒ `['multiturn', 'acpx', 'execreport']`. ⚠️ The classifier **scrubs
+    `do not use …` clauses BEFORE scanning**, so an ACPX token parked inside such a sentence
+    would be deleted and the badge would silently vanish —
+    `test_the_acpx_tokens_survive_the_forbidden_tool_scrub` pins that it does not.
+  * #122 contains **no hyphenated `step-by-step` token anywhere**, so it is never mis-badged
+    as a wizard (the regex needs the hyphenated form; "Step 1 / Step 2" is safe).
+  * #121 says "Step-by-Step mode" and names the checkbox after "Tick", and carries **no**
+    `acp_*` token ⇒ `['multiturn', 'stepbystep', 'execreport']`, the shape every other opener
+    has.
+
+**THE ACPX TICK IS LOAD-BEARING, NOT DECORATION.** Neither the user nor the model knows in
+advance what the spoken instruction will turn out to need. With ACPX unchecked,
+`agent.acpx.filter_acpx_tools` strips the whole ACPX/Skills surface *before the planner runs*,
+so a spoken *"ask Codex about this"* would arrive with nothing bound to serve it. The card
+ticks ACPX because the card genuinely needs it.
+
+**TWO HONESTY CONTRACTS baked into #122 (do NOT soften them).** It must **read the transcript
+back verbatim before acting**, and on `status: empty` / `engine_unavailable` it must **say so
+and stop** — *inventing a plausible prompt because she could not hear the user* is the one
+failure this feature must never produce, and it is the same silent-plausible-WRONG class as the
+PDFer missing-images bug and the ACPX blocked-child-reported-green bug. A third line draws the
+authority boundary: **a spoken instruction is enough to START work; typed confirmation is what
+authorises the irreversible kind.**
+
+**Contract compliance:** ids APPENDED after 120 (never renumbered); ranks 10/20 unique inside
+the section; v1.44.0 parameter grammar (`[[ … — OPTIONAL, default: X ]]` at the top + the
+unfilled guard, `< >` for report slots only); no hardcoded scratch path (Rules 15/16).
+`views.PROMPT_CATEGORY_ORDER` is the only code change — the catalog modal is fully
+data-driven, so **no JS, CSS or template edit was needed and `STATIC_VERSION` is untouched**.
+Migration `0179`'s frozen `_CATEGORY_ORDER` mirror is deliberately NOT updated (same precedent
+as `0190` adding `documents`): it is history, and nothing cross-checks it.
+
+**Coverage.** `agent/test_voice_commands_catalog.py` (23 tests) pins the placement, the
+verbatim sentence, the no-`record_seconds` rule, the honesty gate, and the badges — the last of
+those via a **faithful Python port of `classifyPromptModes`**, plus a `ClassifierPortFidelity`
+class that re-reads the real JS so the port cannot silently drift from it. The end-to-end proof
+is the VISIBLE headed-Chrome runner `voice_commands_visible.py` (Playwrighter drives, **Shoter**
+photographs the full desktop): 23/23 green against the source server — VOICE COMMANDS renders
+first and in capitals, both cards sit in rank order, clicking #122 really ticks
+Multi-Turn + Exec report + ACPX and leaves Step-by-Step off, and clicking #121 flips it back the
+other way (which is what proves the toggles follow the CARD, not the previous click).
+⚠️ **It deliberately does NOT speak into a microphone and says so on screen and in its
+SUMMARY.html** — a voice command needs a human voice, and faking it would fake the very thing
+under test.
+
+---
+
+## 2026-09-11 - Whisperer LISTENS: the silence gate becomes the default
+
+**Files: `agent/agents/whisperer/whisperer.py` (NEW `SilenceGate`, the gate wiring in
+`record_from_microphone`, the silence bar in `MicRecIndicator`), its `config.yaml`,
+`chat_agent_registry.py` (the Whisperer `purpose` + `example_request`),
+`services/agent_contracts.py` (4 appended parametrizer fields),
+`agent/test_whisperer_agent.py` (41 -> **69 tests**).**
+
+Angela's ask: *"By default operate while recording based on a sound detection gate ... when a
+silence of more than 10 seconds (configurable) is detected then stop recording"*, with the
+countdown visible in the console bar that already appears. Whisperer used to record a flat
+`record_seconds: 30`, which cuts a sentence in half or leaves you listening to an empty room.
+
+**THE ONE REAL OBSTACLE was telling "no duration given" from "you asked for 30 seconds"** —
+`record_seconds` always held a number. Solved with the idiom already sitting one line above it
+in the same config: `sample_rate: 0` = the native rate, so **`record_seconds: 0` = listen until
+the speaker stops**. `silence_gate` (auto/on/off) overrides the inference; `max_record_seconds`
+(300) is the ceiling; `silence_threshold_db` (0 = auto) retunes a noisy room.
+
+**THE GATE.** `SilenceGate.feed()` takes one RMS per ~20 ms block from **inside the PortAudio
+callback** — plain float arithmetic, no lock, no logging, no allocation, because a callback that
+blocks drops samples and dropped samples are a wrong transcript. The room is an asymmetric noise
+floor: it falls INSTANTLY to any quieter block and may only climb while we already believe we are
+hearing the room, never while the speaker is talking (otherwise a long sentence raises the floor
+over its own voice). Hysteresis: 2 consecutive blocks above threshold to attack (a chair creak is
+not a word), 3 dB below to release (which is what stops the bar flickering on the quiet tail of a
+word).
+
+**CONTRACTS (do NOT weaken):**
+
+1. **The floor STARTS pessimistically low**, so the first threshold is the absolute −50 dBFS
+   floor and somebody who begins talking on sample one is heard immediately. A gate that
+   "listens to the room first" mistakes that speaker's own voice for the room and then gates
+   them out — **the worst failure available here**, because it cuts a person off mid-sentence
+   and reads as a crash.
+2. **Unbroken "voice" for 15 s re-baselines the room** to the quietest block of that stretch.
+   A steady −45 dBFS fan sits ABOVE the −50 starting threshold, so without this the gate would
+   never fire at all. People breathe; a fan does not. Safe in the other direction too: the
+   minimum of a stretch of real speech is a gap or a soft syllable, so the threshold still lands
+   below the speaker.
+3. **The `sd.rec` fallback CANNOT gate** (no callback) — it records a fixed length and **SAYS
+   SO**, in the log and as `stop_reason: fixed_fallback`. Silently recording 30 s and still
+   calling it gated is precisely the plausible-but-wrong deliverable this agent must never
+   produce.
+4. **`duration_seconds` is now the length ACTUALLY captured**, not the length requested. It used
+   to echo `record_seconds`; with a gate those are different numbers by design and only one of
+   them is a fact.
+5. **The 4 new `INI_SECTION_WHISPERER` fields were APPENDED, never renamed** (`capture_mode`,
+   `stop_reason`, `silence_timeout_seconds`, `speech_seconds`), kept in step with
+   `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS['whisperer']`.
+6. **In fixed mode the painted console line is byte-for-byte what it always was.** Only a gated
+   run grows the second bar.
+
+**THE HIGHEST RISK IS NOT THE CODE — IT IS THE MODEL'S HABIT.** The tool description used to say
+*"records record_seconds (default 30)"* and its worked example opened with *"Transcribe 5
+seconds…"*. If Tlamatini keeps volunteering a duration the gate never fires and the whole feature
+is invisible **while looking like it worked**. The description now says **DO NOT PASS
+record_seconds UNLESS THE USER NAMED A DURATION**, and
+`test_tool_description_tells_the_model_not_to_volunteer_a_duration` pins that sentence so it
+cannot drift back.
+
+**A test-harness fragility fixed on the way:** `_LogCapture` now forces the root level to INFO
+and restores it. Whether an `INI_SECTION` block was seen previously depended on whether
+whisperer.py's module-level `basicConfig(level=INFO)` happened to run before Django configured
+logging — i.e. **on test order**. Adding a test to `WhispererRegistryTests` (a `SimpleTestCase`,
+which Django runs first) moved the first module load and broke three unrelated tests that had
+passed for months.
+
+---
+
+## 2026-09-11 - Gitter mangled EVERY Windows path in `custom_command`
+
+**Files: `agent/agents/gitter/gitter.py` (`build_git_command` + the new `_strip_wrapping_quotes` helper), NEW `agent/test_gitter_custom_command.py` (23 tests).**
+
+`build_git_command` tokenized `custom_command` with `shlex.split(..., posix=True)`. In POSIX mode a backslash is an ESCAPE character, so
+
+```
+commit -F C:\Development\XAIHT\Tlamatini\Temp\commit_msg.txt
+```
+
+reached git as `C:DevelopmentXAIHTTlamatiniTempcommit_msg.txt`, and git answered `fatal: could not read log file ... No such file or directory`. Measured live on 2026-09-11 while committing the glm-5.3 switch. **EVERY Windows path handed to Gitter was silently mangled** - and because the mangled string still looks like a path, the failure surfaces far from its cause.
+
+**Why the fix is not simply `posix=False`.** `posix=False` leaves backslashes literal but KEEPS the surrounding quote characters inside the token - which would break the exact thing `posix=True` was chosen for: a quoted multi-word argument (`-m "Release notes with spaces"`) collapsing into ONE token instead of git reporting `fatal: too many arguments`. So Windows now tokenizes with `posix=False` **and** strips one matching outer quote pair via `_strip_wrapping_quotes`. POSIX hosts stay on `posix=True`, where a backslash really IS an escape character.
+
+**Contracts (do NOT weaken):**
+
+- The platform split is DELIBERATE. Do not `make it consistent` by putting both platforms on one mode - either choice breaks one of the two requirements.
+- The quote-stripping must stay PAIRED with `posix=False`. Drop it and every quoted argument keeps literal `"` characters in the token.
+- Malformed (unbalanced-quote) input still falls back to a plain `.split()`, so tokenization never hard-fails.
+
+**Proven, not assumed.** `agent/test_gitter_custom_command.py` AST-lifts the two functions out of the pool agent rather than importing it (which would set env vars, configure logging and write a PID file) - the same trick `test_django_port_config.py` uses on `manage.py`. It asserts BOTH directions: the Windows path survives, AND quoted multi-word arguments still collapse to one token. An A/B run against the pre-fix tokenizer gave **2 cases FIXED, 4 UNCHANGED, 0 regressions**, and `test_windows_path_keeps_every_backslash` **FAILS against the old code** - i.e. the test genuinely catches the bug instead of merely agreeing with the new behaviour. End-to-end, the real agent then ran `git log -1 --oneline -- C:\Development\XAIHT\Tlamatini\README.md` with the path intact.
+
+---
+
+## 2026-09-11 - Default cloud model switched: glm-5.2:cloud -> glm-5.3:cloud
+
+**Files: `Tlamatini/agent/config.json` (all 7 model keys), 18 pool-agent `config.yaml` files, the runtime `.py` defaults (`image_interpreter.py`, `video_analyzer.py`, `pdfer.py`, `instant_messaging_doctor.py`, `views.py`, `check_private_data.py`), the tool descriptions in `chat_agent_registry.py` / `mcp_agent.py` / `local_toolcall_parser.py`, the tests and demo-prompt migrations that assert them, `flowhypervisor/monitoring-prompt.pmt`, and every `.md` that states the default - `README.md` + `BookOfTlamatini.md` (the `ollama pull` install lines), `CLAUDE.md`, `GEMINI.md`, `agents_descriptions.md`, `docs/claude/agents.md`, `agent/Tlamatini.md`, `flowcreator/agentic_skill.md`, `TlamatiniJudgementDay.md`, `.claude/memory/MEMORY.md`.** Angela's call: `glm-5.3:cloud` is now the shipped default everywhere `glm-5.2:cloud` was - the chat chain, the unified agent, the files-search / internet-classifier / web-summarizer slots, the Image-Interpreter and Video-Analyzer `merging_model`, LaTeXer's `repair_model` (ladder rung 7), PDFer's `ollama_model`, and the private-data reviewer's primary model.
+
+**Two deliberate exceptions - do NOT undo them:**
+
+- **This log keeps its own history.** The dated `2026-07-02` entry below still reads `kimi-k2.7-code:cloud -> glm-5.2:cloud`, because that is what actually happened on that date. Rewriting a dated entry to name a model that did not exist yet would make the fix log lie, and this log is only worth reading while it is true. The move to 5.3 is recorded HERE, dated today, instead.
+- **`complete_project_docs.py` must keep matching BOTH tags.** Its two commit-subject detectors (around lines 960 and 1322) now test `(glm-5.2:cloud in subject or glm-5.3:cloud in subject)`. They match the SUBJECTS OF PAST COMMITS; narrowing them to 5.3 alone would silently stop the generated handbook from recognising the 2026-07 model-baseline commits.
+
+`check_private_data.py` keeps its fallback at **`glm-5.1:cloud`** - the 2026-07-02 contract below still holds: `build_models` dedupes an identical primary/fallback pair (`test_build_models_dedupe`), so the fallback must never equal the primary. Primary is now 5.3, fallback stays 5.1, so the safety net survives.
+
+---
+
+## 2026-09-10 — ENTER is the default action on the welcome page
+
+**What changed.** After login, `welcome.html` offers exactly two things: **Go to Chat** and
+**Logout**. Everyone who lands there is going to the chat, yet the keyboard had no way to say
+so — you had to reach for the mouse, or Tab into the link first. Now **pressing Enter takes
+you straight to the chat**, with nothing clicked, tabbed or focused first.
+
+**Files:** NEW `agent/static/agent/js/welcome_enter_default.js` (self-contained IIFE, **no
+cross-file globals**) + two lines in `agent/templates/agent/welcome.html` — an `id="go-to-chat"`
+on the existing link and the `<script>` tag with the usual `?v={{ STATIC_VERSION }}` cache-bust.
+No backend, no view, no URL, no config key, no dependency.
+
+**TWO LAYERS, DELIBERATELY.** (1) The link is **focused** as soon as the page is ready, so the
+**browser itself** activates it on Enter — and its focus ring shows the user exactly where the
+key will go (`welcome.css` sets no `outline: none`, so Bootstrap's own ring stays visible).
+(2) A **document-level `keydown` fallback** catches Enter when focus was never granted — a stray
+click on the card body, or a browser that refuses the programmatic focus. Layer 1 normally wins
+and layer 2 stands down.
+
+**⚠️ THE DEFERRAL IS THE WHOLE POINT — do NOT simplify it away.** The fallback inspects
+`document.activeElement` and **does nothing whenever something activatable already holds focus**
+(`a, button, input, textarea, select, [contenteditable="true"]`). Fire Enter blindly and a user
+who Tabs to **Logout** and presses Enter would be sent to the **chat** instead — the exact
+opposite of what they asked for. **Enter belongs to the browser whenever the browser already has
+a target for it.** For the same reason the handler ignores a keypress carrying Alt/Ctrl/Meta/Shift,
+one mid-IME-composition (`event.isComposing` — Enter commits the candidate, it does not mean "go"),
+and one another handler already claimed (`event.defaultPrevented`).
+
+**FAIL-OPEN throughout.** A missing link returns early; `focus({preventScroll: true})` falls back
+to a bare `focus()` on older browsers and then to nothing at all. Every path leaves both buttons
+working by mouse — **a broken shortcut must never cost the user the page itself.** `preventScroll`
+is there so a short page cannot jump under the user at load.
+
+Contract: `docs/claude/frontend.md` → *Welcome page*.
+
+---
+
+## 2026-09-10 — Clicking the console froze the whole app: the CONSOLE SHIELD
+
+**Angela's report:** *"sometimes users when click the screen to copy a segment of the log
+file or just click it to make sure the window be the active window the core of Tlamatini
+stop working! getting blocked and the user … thinks that Tlamatini simply hanged."*
+
+**ROOT CAUSE — Windows QuickEdit Mode.** Consoles ship with it ON, so a click or drag inside
+the window puts the console into SELECTION mode and **`WriteConsoleW` stops returning**. It
+does not fail; it BLOCKS for as long as the selection is held. ⚠️ **A block is not an
+exception**, so the `try/except` around the console write could never have caught it —
+which is exactly why the symptom read as a hang rather than an error. `SetConsoleMode`
+appeared NOWHERE in the tree before this change.
+
+**THE DEFECT WAS WIDER THAN REPORTED.** `_TeeStream.write` wrote the **console FIRST** and
+`tlamatini.log` SECOND, so one click froze **three** things: (1) the calling thread, parked
+in `WriteConsoleW`; (2) **`tlamatini.log` itself** — the durable record held hostage by the
+cosmetic one, which is why the log also stopped growing and made the freeze look total; and
+(3) every other thread, one by one, as each reached the same line. Django, Channels, the
+Multi-Turn executor and every pool agent log, so the whole app stopped.
+
+**THE FIX — the console became a sink that cannot apply backpressure.** New
+`manage.py::_ConsoleWriter` (L143-310): a bounded queue drained by ONE daemon thread.
+`_TeeStream.write` now writes the **log file first** on the caller's thread (L409-429) and
+then `submit()`s to the queue (L431-446), which returns instantly. `flush()` (L463-476)
+delegates the console flush too — flushing a selected console blocks exactly like writing to
+one, so `print(..., flush=True)` was the same hole. Holding a selection now pauses the
+console DISPLAY and nothing else: the core runs at full speed and the log keeps growing.
+
+**⚠️ CORRECTION, SAME DAY — QuickEdit now SHIPS OFF. It shipped ON for one day and that was
+wrong.** The original call was that copying a log line is a legitimate thing to want, so the
+shield should make selecting HARMLESS rather than FORBIDDEN. **What that missed is that a user
+cannot SEE the core.** Angela clicked the console, the lines stopped, and Tlamatini *looked*
+hung — she pressed Enter and the whole backlog flooded in at once. The shield was working
+perfectly underneath and it did not matter, because the only evidence she had was a dead
+window. Her ruling, verbatim: *"LOG MUST BE STILL INCREMENTING, I DONT CARE IF THE STUPID USER
+CANT COPY CONTENT FROM THE CONSOLE WINDOW"*. `config.json` → **`console_quick_edit` now ships
+`false`**, so `ENABLE_QUICK_EDIT_INPUT` is cleared and a click can never start a selection —
+display, log file and processing all keep going. Copy with right-click ▸ Mark. A **missing or
+malformed** key still falls back to `true` (fail-open must never stop startup), and the queue
+shield remains the second line of defence for hosts that ignore the flag (Windows Terminal).
+Lesson worth keeping: *invisible correctness is indistinguishable from a hang.*
+
+**⚠️⚠️ CTRL+C IS `ENABLE_PROCESSED_INPUT` (0x0001) — GUARDED, DO NOT WEAKEN.** It is a
+different bit from QuickEdit but lives in the **same DWORD**, which is exactly how a program
+silently loses Ctrl+C — and in Tlamatini that would also lose the SIGINT that runs `apps.py`'s
+Tier-3 orphan reaper and the pool cleanup. So `_apply_console_quick_edit_policy` (a) **forces**
+the bit ON rather than merely preserving it, and (b) **reads the mode back** and, if Ctrl+C did
+not survive, **restores the original mode verbatim** and gives up on QuickEdit. **Fail toward
+Ctrl+C, always**: a paused window is an annoyance, a console you cannot interrupt takes the
+machine away from the user. Only QuickEdit may ever be cleared — pinned by three tests
+(`test_CTRL_C_bit_is_FORCED_ON_never_merely_preserved`, `test_CTRL_C_bit_is_NEVER_cleared`,
+`test_the_change_is_ROLLED_BACK_if_CTRL_C_did_not_survive`), the second of which regex-scans the
+function and fails if any bit other than QuickEdit is cleared.
+
+**⚠️ THE TWO HALVES ARE DELIBERATELY MODE-OPPOSITE — do NOT "make them consistent."**
+Disabling QuickEdit is **FROZEN-ONLY** (gate at L982-988); the **queue shield is NOT gated**
+and runs in both modes. Reason: console mode belongs to the CONSOLE, not the process. A
+frozen build OWNS its window and takes it down on exit, so the change is contained; from
+SOURCE Tlamatini is a GUEST in the developer's terminal, which **OUTLIVES it** — clearing
+QuickEdit there would leave that shell unable to select text after the server quits, with
+nothing on screen explaining why. Save-and-restore was considered and REJECTED: a hard kill
+(`taskkill`, the updater's process-tree kill) skips `atexit`, so it would still leak, just
+less often. The gate sits AFTER the config read (a default config stays silent) and BEFORE
+any `ctypes` call, and it ANNOUNCES itself rather than ignoring the user quietly. The shield
+stays ungated because the freeze is a **conhost** property, not a PyInstaller one — it is
+identical in dev, where log text gets selected most, so gating it would leave the developer
+holding the bug. Pinned by `test_disabling_quick_edit_is_FROZEN_ONLY`,
+`test_the_frozen_gate_stays_quiet_on_a_default_config`, and
+`test_the_QUEUE_SHIELD_itself_is_NOT_frozen_gated`.
+
+**CONTRACTS (do NOT weaken):** the log file is written BEFORE the console is queued (reverse
+it and the bug returns in full) · `submit` never blocks and never raises · the queue is
+BOUNDED and drops the OLDEST · **a drop is NEVER silent** (counted to the console AND into
+`tlamatini.log`) · console chunks may drop, **log lines never do** · `close()` is bounded at
+2 s so a held selection cannot hang exit · ⚠️ **lock ordering is one-way** — never take
+`_LOG_LOCK` while holding `_cond` or vice versa, or you trade a freeze for a deadlock · ⚠️
+**user tags stay on the CALLER's thread** (`_USER_TAG_HOOK` reads a **ContextVar**; tagging
+on the drain thread would stamp every line with the drain thread's identity) · ⚠️
+`ENABLE_EXTENDED_FLAGS` MUST be OR-ed in or Windows ignores the QuickEdit change silently ·
+fail-open throughout.
+
+**UNTOUCHED:** `_brand_console_window` (L48-127) — not one line. The **Tlamatini icon** lives
+on the console **HWND** via `WM_SETICON`; the shield only touches `sys.stdout`/`sys.stderr`
+and, optionally, the **STDIN** handle's mode. Also unchanged: the window title, the 8 KB/1 s
+buffered flush, the urgent-marker immediate flush, the `[a3]` per-user attribution,
+`fileno()`/`isatty()`/`__getattr__` passthrough, and `write()`'s `len(data)` return.
+
+**Honest limit:** a subprocess handed the console directly still writes to it itself and can
+block; the spawn sites' `CREATE_NO_WINDOW` + `DEVNULL` nearly close this, but not fully. And
+`console_quick_edit: false` is a **conhost** setting Windows Terminal may ignore — which is
+precisely why the queue, not the knob, is the fix.
+
+Coverage: **`agent/test_console_shield.py` (28 tests)** — including the blocked-console
+regression, drop accounting, bounded shutdown, caller-thread tagging, the frozen-only gate,
+and source guards on the sink order, the lock ordering and the branding block. Full audit record with every line
+number: **`TlamatiniConsoleShieldByClaude.md`** (repo root).
+
+---
+
+## 2026-09-07 — ACPX reported four DEAD peers as healthy, and a refusal as a SUCCESS (v1.51.2)
+
+**Angela's report, verbatim:** *"in the very last chain invocation of multi-turn, she had a
+way to lot of huge problems, in the end she could give me an answer, but was terrific for
+her."* A five-peer ACPX research relay collapsed; Tlamatini self-healed to an answer, but
+four of five legs had failed and **nothing in the system said so out loud**.
+
+Ground truth came from the installed build's own transcripts —
+`C:\Tlamatini\.tlamatini\acpx-state\*.transcript.ndjson` — not from the log, which never
+records ACPX tool results. Six sessions, five broken:
+
+| session | agent | what actually happened |
+|---|---|---|
+| `46a800c8` | claude | *"both `WebSearch` and `WebFetch` are awaiting your permission"* — **exit 0** |
+| `de8be8e9` | gemini | `Error authenticating: IneligibleTierError` |
+| `e762f911` | codex | `Error loading config.toml: unknown variant 'default', expected 'fast' or 'flex'` |
+| `d005f3bb` | kimi | box-drawing chrome, no words |
+| `585ccbb3` | copilot | no output at all |
+| `7c3cf41e` | claude | worked — only after being told to use NO tools |
+
+### Three root causes, all verified live
+
+**1. ACPX never passes an auto-approve flag to any child.** `runtime.py` builds
+`[exe, *args, *prompt_subcommand_args, prompt_arg_flag, task]` and there is **no** flag
+anywhere in `agent/acpx/` that grants a child its tools. So `claude -p "<task needing
+WebSearch>"` sits at its own permission prompt with stdin closed. Reproduced exactly, then
+fixed and re-proved: `claude --allowedTools "WebSearch,WebFetch" -p "…"` returned the real
+answer with sources. ⚠️ The flag is **variadic** — `--allowedTools A B -p "task"` swallows
+the prompt; use a comma list BEFORE `-p`.
+
+**2. `acp_doctor` tested presence, not readiness.** It runs `<cmd> --version` and nothing
+else. Measured: **all eight** installed CLIs answered `--version` with exit 0 while four were
+dead. The doctor handed the orchestrating LLM a green light on every one of them.
+
+**3. An exit code is one bit, and it lied.** The claude permission refusal exited **0**, so
+`_ok()` returned `ok: true`, the Exec Report row went GREEN, and the LLM built six further
+tool calls on research that did not exist. Same silent-plausible-WRONG class as the PDFer
+missing-images bug and the LaTeXer linter verdict.
+
+### The fixes
+
+- **NEW `agent/acpx/child_health.py`** (stdlib-only, imports nothing from `agent.*`) — the
+  ONE definition of "did this child deliver?", used by both the runtime and the doctor.
+  Closed vocabulary: `PERMISSION_BLOCKED`, `WORKSPACE_NOT_TRUSTED`, `NO_CREDIT`,
+  `USAGE_LIMIT`, `AUTH_FAILED`, `CONFIG_INVALID`, `UPSTREAM_ERROR`, `NO_OUTPUT`,
+  `CHILD_ERROR`, `DELIVERED`.
+- **`runtime.AcpxRuntime.readiness_probe()` + `doctor(deep=True)`** — sends a real one-line
+  prompt down the agent's real transport and NAMES the failure. OFF by default (it costs the
+  user real quota), cached 10 minutes, and `ready: null` for transports that cannot be probed
+  without opening a session — an honest "unknown", never an invented verdict.
+- **`tools._ok_unless_blocked()`** — `acp_spawn` / `acp_send` / `acp_send_and_wait` now
+  return `ok: false` with a named `code` when the child demonstrably did no work. The full
+  payload (session_id, transcript_path, events) is preserved on the failure envelope, because
+  the LLM still has to read the transcript and kill the session.
+- **`build_agent_registry(spec_overrides=…)` + `config._coerce_agents_spec()`** — `config.json`
+  can now retune `args`, `transport`, `prompt_arg_flag`, `prompt_subcommand_args`, the three
+  drain budgets and `spawn_returns_immediately`, not just `command` and `env`. This is the
+  leverage fix: **repairing a peer no longer requires a rebuild.** Five installed peers
+  (copilot, kimi, opencode, kilocode, qwen) each sat one flag away from working while the
+  only way to pass that flag was to edit `agent_registry.py` and rebuild.
+
+### CONTRACTS — do NOT weaken
+
+1. **A long, real answer is NEVER reclassified as a failure.** Only short, empty or
+   letter-less output is even scanned for refusal markers, and markers are read from the HEAD
+   of the output only. A 3 KB briefing that merely *mentions* "rate limit" stays a success.
+2. **SHORT IS NOT EMPTY.** The first draft of `child_health` tested the letter count alone
+   and flagged a perfectly good 7-character `PEER_OK` as `NO_OUTPUT` — the exact
+   false-failure class this module exists to prevent. "Chrome" now requires BOTH
+   `len >= DECORATIVE_MIN_CHARS` AND `alnum < MIN_ALNUM_CHARS`.
+3. **FAIL-OPEN everywhere.** Unrecognised output is DELIVERED; a malformed `config.json`
+   override is dropped and the built-in default survives; an unknown `transport` is discarded
+   (honouring one would silently hang every spawn). Neither module may raise into a caller.
+4. **`deep` stays OFF by default.** A readiness probe spends the user's money.
+5. `child_health` is stdlib-only and imports nothing from `agent.*` — same discipline as
+   `agent_verdict.py`, so it can never create an import cycle and behaves identically frozen
+   and from source.
+
+### Also found (environment, not code — these are Angela's to fix)
+
+- **`acpx.agents.claude.env.ANTHROPIC_API_KEY` was actively harmful**: it forced claude off
+  her claude.ai subscription onto an API account whose *"Credit balance is too low"*. Disabled
+  in the installed `config.json` (renamed, not deleted) so claude uses her login. ⚠️ The Pro
+  **session limit is a hard stop for the CLI** — measured: it refused at 100 % and the
+  claude.ai *usage credits* pool did **not** absorb it.
+- **codex**: the installed npm shim was `0.128.0` while the Codex desktop app had written a
+  `config.toml` for **0.153.4**. Repointed `acpx.agents.codex.command` at the newer binary.
+- **`codex exec` requires a git repo**; `trust_level = "trusted"` alone does NOT satisfy it,
+  and ACPX cannot pass `--skip-git-repo-check`. Resolved by pointing `acpx.cwd` at a
+  dedicated empty git workspace, `C:\Tlamatini\Temp\acpx-workspace`, which also carries the
+  child's `.claude/settings.json` permission grant.
+- **gemini is unrecoverable from code**: OAuth tier retired (`IneligibleTierError`) AND the
+  API key's project returns `403 "Lightning dunning decision is deny"` — a Google billing
+  matter.
+- **ACPX looks for `qwen-code`; the installed binary is `qwen`.**
+- ⚠️ **THERE ARE TWO ACPX IMPLEMENTATIONS — both were repaired, and they now SHARE one
+  definition.** `Tlamatini/agent/acpx/` powers the Django chat; **`tlamatini_acpx.py`** (repo
+  ROOT) is a deliberately separate Django-free implementation backing
+  `tlamatini_mcp_server.py` for external MCP clients (Claude Code, Kimi). Its `doctor()`
+  reported **resolvability only** — not even a `--version` probe — and it **injected no `env`
+  at all**, so an API key configured in `acpx.agents.<id>.env` had never reached a child on
+  that surface. All three fixes are ported, and `tlamatini_acpx.py` loads
+  `agent/acpx/child_health.py` **by file path** instead of keeping a second copy: a duplicated
+  verdict vocabulary drifts, and a drifted copy mis-classifies silently. That load is
+  fail-open, and `doctor()` prints the degradation in its own message rather than hiding it.
+  Both surfaces read the same `acpx.agents` block, so one config edit repairs a peer on both.
+
+### The `.cmd` shim gap — and the MUCH worse bug found while closing it
+
+`tlamatini_acpx.resolve_command` split the command string itself with **no `.cmd` / `.bat`
+handling**, so spawning codex through the npm `codex.cmd` shim produced **no output at all**
+and hung for its full 180 s timeout. The obvious fix was the Django side's answer —
+`windows_spawn.resolve_command` sets `use_shell=True` for a shim — so that was implemented
+first, and then **measured**. It is wrong:
+
+> **cmd.exe TRUNCATES the command line at the first newline.** A 2,205-character multi-line
+> research prompt arrived at the child as **40 characters**, cut exactly at the first line
+> break — silently, with the child then answering the fragment as if it were the whole task.
+> Re-measured on a real npm-shaped shim: 40 of 2,647 bytes.
+
+ACPX prompts are long and multi-line by nature, so **the shell is not an acceptable channel
+for them at all**. Both `shell=True` and an explicit `cmd.exe /d /s /c` fail the same way; the
+limit is cmd.exe itself, not Python's quoting.
+
+**The fix is to bypass the shim, not to invoke it.** `_deshim()` parses the npm/pnpm wrapper —
+they all end in `"%_prog%" "%dp0%\node_modules\<pkg>\bin\<tool>.js" %*` — and rewrites the
+command to `node.exe <script.js>`, spawned with `shell=False`. Verified against the real
+`codex.cmd`: `node.exe codex.js --version` → `codex-cli 0.128.0`, exit 0. Verified for
+byte-exactness on an npm-shaped shim: **2,647 of 2,647 characters, exact**, where the shell
+control still delivered 40. This is the same trick `runtime_provisioner.resolve_spawn()`
+already uses for `npx` (CLAUDE.md → *spawn without a shell*); the ACPX surfaces simply never
+adopted it. Resolution also now prefers a real `.exe` over a shim (`_WIN_EXTS` puts `.exe`
+first — the old `_which` tried `.cmd` before `.exe`, so `claude` was driven through the shell
+even though `claude.exe` sits right next to it).
+
+When a shim cannot be rewritten, the shell is still used as a last resort — but a multi-line
+prompt on that path now emits a **loud `acpx` log event** saying the child may have received
+only the first line. A silently truncated prompt yields a confident answer to the wrong
+question, which is the whole failure class this work exists to end.
+
+**Both surfaces carry the fix.** `_deshim` is in `agent/acpx/windows_spawn.py` as well —
+the Django side had the identical latent bug (`resolve_command` returned `use_shell=True`
+for a `.cmd` and `runtime._oneshot_send_turn` passed it straight to `Popen`), dormant only
+because Angela's live `config.json` had been repointed off `codex.cmd` onto the real
+`codex.exe` earlier the same day. There it lands in **`ResolvedSpawn.extra_args`**, which is
+exactly the right slot: every caller already builds
+`[executable, *extra_args, *spec.args, …]`, so bypassing the shim needed **no change at any
+call site**. Two `--version` probes (`probe_availability`, `_capture_cli_version`) were
+updated to keep `extra_args` — dropping it would have probed a bare `node --version` and
+learned nothing about the agent.
+
+Both npm (`"%dp0%\…"`) and pnpm (`"%~dp0\…"`) wrappers are recognised. Measured on Angela's
+nine installed peers: **7 now spawn with no shell at all** — claude and kimi as real `.exe`s,
+and codex / gemini / qwen / copilot / cursor rewritten to `node.exe <tool>.js` (verified live:
+`node.exe gemini.js --version` → `0.55.1`, exit 0). **kilocode and opencode still need the
+shell** — their shims are a shape `_deshim` does not recognise — so they take the fail-open
+path and emit the loud multi-line warning. That residual is visible by design, not silent.
+
+Coverage: `agent/acpx/tests.py::WindowsShimDeShimTests` (6 tests — de-shim, the `extra_args`
+call-site contract, fail-open on an unparseable shim, refusing a shim whose script is
+missing, a real `.exe` never going through the shell, and a source guard that the `--version`
+probes keep `extra_args`). Suite: 92 → **98**.
+
+### The SAME bug, third subsystem: External MCPs died with `[WinError 2]`
+
+Hours later Angela hit it again, from a completely different direction:
+
+```
+[agent.external_mcp_manager] WARNING [ExternalMCP] 'deepwebresearch' failed to
+connect: [WinError 2] The system cannot find the file specified
+```
+
+`external_mcp_manager._resolve_argv` **already had the correct repair** — resolve through
+PATHEXT, route a `.cmd` through COMSPEC — sitting right there at lines 692-695. It was
+**unreachable dead code**, because it runs only after:
+
+```python
+argv, note = runtime_provisioner.resolve_spawn(self.command, self.args)
+if argv:
+    return argv                     # <- always taken
+```
+
+and `resolve_spawn` did this for every command outside its six `MANAGED_TOOLS`:
+
+```python
+if tool not in MANAGED_TOOLS:
+    return [raw, *args], ""         # <- a NON-EMPTY bare pass-through
+```
+
+So **any** npm/pnpm-installed MCP server with a bare command name (`mcp-deepwebresearch`,
+and every server like it) was spawned as a name `CreateProcess` cannot execute. Tlamatini
+diagnosed this herself from the live install and worked around it by re-pointing the catalog
+entry at `node` + the real `index.js` — which is exactly what `_deshim` does automatically.
+
+**ROOT FIX — one definition for the whole tree.** `agent/win_shim.py` (new, stdlib-only,
+imports nothing from `agent.*`) is now the single place that answers *"how do we spawn this
+on Windows?"*: prefer a real `.exe`, rewrite an npm (`"%dp0%\…"`) or pnpm (`"%~dp0\…"`) shim
+to `node.exe <script.js>`, and ask for the shell only when neither is possible. All three
+subsystems delegate to it — `runtime_provisioner.resolve_spawn`,
+`agent/acpx/windows_spawn.py`, and the Django-free `tlamatini_acpx.py` (which loads it by
+path, like `child_health.py`). The duplicated copies were deleted, not left to drift.
+
+In `resolve_spawn`, "outside `MANAGED_TOOLS`" now means **"we do not PROVISION this"**, never
+**"we cannot RESOLVE this"**. The managed batch-shim branch also de-shims before falling back
+to COMSPEC.
+
+**Measured end to end** with a fake npm-installed MCP server: spawning the bare name still
+raises `[WinError 2]`; `resolve_spawn` returns `['node.EXE', 'index.js', '--stdio']` with the
+note *"de-shimmed to node.EXE"*, and the server runs and answers.
+
+⚠️ **`agent.win_shim` is imported behind `try/except ImportError` in two places, so it is in
+`build._FROZEN_REQUIRED_AGENT_MODULES` and has a `--hidden-import`.** A fail-open import
+cannot report its own absence: without those, a frozen build could silently drop it and every
+`.cmd`-backed MCP server would break again with no error naming the cause. This is the same
+contract that already protects `runtime_provisioner` and `agent_verdict`.
+
+**Two tests were CORRECTED, not deleted** (`agent/test_runtime_provisioner.py`):
+`test_unmanaged_command_passes_through_untouched` asserted the very pass-through that caused
+the bug — it now asserts the fixed contract (argv[0] RESOLVED, **arguments untouched**, an
+unresolvable command still returned verbatim) and is renamed
+`test_unmanaged_command_is_RESOLVED_not_passed_through_blind`. The second failure was stale
+and unrelated: it looked for the literal `verify_frozen_agent_modules(Path("dist") /
+"manage")` while `build.py` calls it with the `dist_manage` variable.
+
+Coverage: **`agent/test_win_shim.py` (27 tests)** — resolution order (`.exe` beats a
+same-named shim), both shim dialects, `.mjs`/`.cjs` payloads, node-beside-the-shim, every
+refusal path (missing payload, unknown shape, missing file, absent command), explicit paths,
+the exact `deepwebresearch` regression through `resolve_spawn`, argument order preservation,
+never-raises, and four source-level contracts including *"only `win_shim` may parse a shim
+path"* so a copy can never reappear.
+
+**Coverage:** `agent/acpx/tests.py` grew 65 → **92 tests** — `ChildHealthClassifierTests`
+(every string copied verbatim from the failed run, plus the three false-positive guards),
+`AgentRegistrySpecOverrideTests` (including a drift check that the coercer and the registry
+agree on the field list), and `BlockedChildIsNotASuccessTests`.
+
+---
+
+## 2026-09-06 — Two code blocks in one answer destroyed each other's file (`MultipleObjectsReturned`)
+
+**Angela's report** — the tail of `tlamatini.log` on the installed build in `C:\Tlamatini`:
+
+```
+agent.models.LLMProgram.MultipleObjectsReturned: get() returned more than one LLMProgram -- it returned 2!
+  ... agent\views.py, line 222, in load_canvas_view
+[django.channels.server] ERROR HTTP GET /agent/load_canvas/20260907030945_Without_Name/ 500
+--- Received save-files-from-db message from client.
+Saving file: 20260907030945_Without_Name...
+!!! ERROR while saving file: get() returned more than one LLMProgram -- it returned 2!
+Saving file: 20260907030945_Without_Name...
+!!! ERROR while saving file: get() returned more than one LLMProgram -- it returned 2!
+```
+
+**ROOT CAUSE — a file name that carries only a one-SECOND timestamp.**
+`services/filesystem.get_time_stamp()` is `strftime("%Y%m%d%H%M%S")`, and
+`response_parser` built every name as `get_time_stamp() + "_" + <name>` (unnamed
+blocks: `+ "_Without_Name"`). **Two code blocks in the SAME answer are parsed in
+the same second, so both rows were `LLMProgram.objects.create(...)`d under the
+IDENTICAL name.** Verified in her live database: `idProgram` 3 and 4, both
+`20260907030945_Without_Name`, 489 and 506 bytes of DIFFERENT content. The
+`_seen_unnamed_blocks` dedupe does not help — it only suppresses blocks with
+identical CONTENT, and these were two genuinely different files.
+
+**WHY IT WAS TOTAL, NOT PARTIAL.** Every reader looked the file up by NAME with
+`.get()`, and `MultipleObjectsReturned` is **NOT caught by
+`except LLMProgram.DoesNotExist`** — so it escaped as an unhandled 500 and BOTH
+twins became permanently unreachable: "Load in canvas" 500'd and *"save files
+from DB"* refused both. The user's code was never lost — only unopenable under
+its own name — which is exactly the *silent, plausible, WRONG* failure class:
+the chat still showed two cheerful `---Load in canvas: …---` links, and both
+were dead, and both pointed at the same name.
+
+**THE FIX HAS TWO HALVES — do NOT drop either one.**
+
+1. **WRITE side** (`services/response_parser.py`): `_uniquify_name(model, field,
+   name)` returns the first free `name_2` / `name_3` … variant, and
+   `save_program` / `save_snippet` now **RETURN the name they actually stored**.
+   ⚠️ The five call sites MUST use that return value
+   (`finalProgramName = _resolved_name(finalProgramName, await save_program(...))`) —
+   otherwise the second block's canvas link still points at the FIRST block's
+   row, which looks fixed and is not. `_uniquify_name` is **FAIL-OPEN**: any DB
+   error resolves to the original name, because failing to uniquify must never
+   stop the user's code being saved. `_resolved_name` ignores a non-string
+   return so the existing `mock.AsyncMock` patches of `save_program` keep working.
+2. **READ side** — every name lookup became `filter(...).first()` (newest row
+   wins), in **all four** places: `views.load_canvas_view` (programs AND
+   snippets), `services/filesystem.save_files_from_db::get_program`,
+   `consumers.get_program_by_name`, `rag/interface.get_program_by_name`. This is
+   what lets a database written by an OLDER build open its files instead of
+   erroring. A genuinely absent name still raises `DoesNotExist` / returns
+   `None` / 404s, exactly as before.
+
+**REPAIR for databases that already hold duplicates** — migration
+`0199_dedupe_llm_program_snippet_names.py`. **NON-DESTRUCTIVE**: nothing is ever
+deleted; the lowest-id row keeps the original name and each later twin is
+RENAMED to `<name>_2` / `<name>_3`, so both files become loadable and savable
+again under distinct names. Idempotent, and **FAIL-OPEN** — it swallows any
+error rather than aborting the post-update `migrate`, because a migrate that
+stops leaves the user without her new agents/tools/prompts, which is far worse
+than one unrepaired duplicate.
+
+**Corollary for future work:** `LLMProgram.programName` / `LLMSnippet.snippetName`
+are **not unique in the schema** (plain `CharField`), so `.get()` on them is
+always a latent 500. Coverage: `agent/test_program_name_collisions.py`
+(13 tests — the uniquifier, the fail-open path, the returned-name contract, the
+two-unnamed-blocks end-to-end regression, an old duplicate-carrying database
+loading through the view, and a **source contract** that fails on any
+re-introduced `objects.get(programName=…)` / `.get(snippetName=…)`).
+
+---
+
+## 2026-09-06 — PDFer: the overlap bug, the one brown scheme, the one font (v1.51.0)
+
+**Angela's report, verbatim:** *"actually is way too flaky, way too mediocre … this
+version always overlaps the cell's contents into another cells, it only uses an ugly
+brown scheme of color, the same stupid font."* All three were real; all three are fixed;
+and the first one was **worse than reported**.
+
+### 1. THE OVERLAP — and why `err=0` must never again be treated as evidence
+
+Measured against the shipping `DEFAULT_CSS` on three ordinary tables:
+
+| case | `pisa_status.err` | what the PDF actually contained |
+|---|---|---|
+| long paths / URLs | **0** | a Windows path printed **54pt off the right edge of the A4 sheet** |
+| 8-column agent matrix | **0** | `netspeed_calculator` printed **on top of** `streamable-http` (15.1pt) |
+| 5-column config table | **0** | `unified_agent_llm_step_…` over `agent.self_healing.…` (15.1pt) |
+
+**xhtml2pdf reported SUCCESS on all three.** That is the same "silent, plausible, WRONG
+deliverable" class as the 2026-08 missing-images bug, and it is why `_resolve_asset_uri`
+and `_count_pdf_images` exist. Two independent causes:
+
+1. **The width estimate was wrong.** A half-em-per-character guess is **+116 % wrong** on
+   `lllllllllll` and **−43 % wrong** on `WWWWWWWWWWW` (measured with
+   `pdfmetrics.stringWidth`). A 43 % under-estimate reserves 58pt for a word needing
+   102pt, and the extra 44pt is drawn into the next column.
+2. **A token with no spaces cannot break at all** — `C:\Users\…`, `https://…`.
+
+**THE FIX IS STRUCTURAL, NOT A TOLERANCE.** `pdfer_tables.TableSolver` measures every
+column's true `min` (widest unbreakable atom) and `nat` (single-line want) with the real
+registered face at the real size, then water-fills the frame width subject to those
+floors. Platypus `Paragraph` cells are then handed **exactly** those widths — and a
+Paragraph given a width *cannot draw outside it*. There is no "usually" here; the
+geometry forbids it. **Measured after: 0 overlaps, 0 off-sheet, across 22 documents /
+92 pages, including a 24-column table.**
+
+⚠️ **Do NOT weaken these:** `solve_widths` must always clamp so the widths sum ≤ the
+frame (`TableLayout.validate` re-checks); the repair ladder's only destructive rung
+(`split_columns`) stays **LAST**, exactly like LaTeXer's `bisect`; and long tokens get
+`wordWrap='CJK'` — **never** injected spaces or hyphens, because a path with a space in
+it is *wrong data* and a document that corrupts the path it documents is worse than one
+that wraps it awkwardly.
+
+### 2. NUANCE — the look is computed from the CONTENT, before rendering
+
+`pdfer_nuance.classify()` reads the document and picks one of **20 treatments** from three
+weighted evidence families — **structure** (~3×: an abstract, IMRaD headings, citations, a
+DOI, numbered clauses, an ingredients list), **lexicon** (log-damped so breadth beats
+repetition), and **register** (sentence length, person, exclamations) as tie-breaker.
+`pdfer_theme` turns that into a complete design system: 38 colour roles, three type
+families, a modular scale, spacing and an ornament programme. Angela's two named cases are
+implemented literally — `scientific_dark` is `#07090F` ground / `#F2F6FF` text / cyan→violet
+gradients; `academic_paper` is `#FFFFFF` / `#101010` / Palatino / **justified** / one
+hairline rule.
+
+⚠️ **A CORROBORATION RULE, added after a measured miss.** A tokamak article scored
+`engineering_spec` 9.4 vs `scientific_dark` 7.2 — on SI units alone, with **zero**
+engineering vocabulary — and would have been dressed as a parts list. Ambiguous structural
+signals are now damped when the domain has no lexical support: **structure establishes the
+SHAPE, vocabulary establishes the FIELD.** The root cause was also fixed: the
+`scientific_dark` lexicon had been quantum-mechanics-only, so plasma physics, materials,
+optics, astronomy and aerospace matched nothing. Accuracy 15/15 after.
+
+### 3. COLOUR AND TYPE — and the contrast floor that is not negotiable
+
+`pdfer_color` is real colour science: sRGB ⇄ linear ⇄ **OKLab/OKLCh**, so every gradient
+and tint is perceptually even (blue→yellow midpoints stay at `#6CABC7` instead of collapsing
+to dead grey `#808080`). `predominant_color` derives a whole 38-role palette from ONE seed,
+with the nuance still choosing the register. **`Palette.validated()` runs last, always** —
+324/324 hue×lightness×ground combinations reach WCAG AA. `pdfer_typography` registers **31
+TrueType families** off the host and resolves 11 named *pairings*, degrading to the base-14
+rather than failing.
+
+⚠️ `CONTRAST_SAFETY = 1.04` is **not a fudge factor**. `ensure_contrast` used to stop the
+instant it TOUCHED the floor, so a role landed at exactly 4.50:1 — and the rendered-page
+auditor, rasterising the glyph, measured 4.48:1 and reported a failure for a colour the
+palette had certified. Sitting exactly on a threshold is a bug on either side of it.
+
+⚠️ **Captions and footers take the FULL body floor (4.5), not the large-text one.** They
+are the SMALLEST type in the document. Real folios were measuring 2.78:1 before this.
+
+### 4. IMAGES — generated, on-palette, and only when it is SAFE
+
+`pdfer_ornament` draws 14 motifs with Pillow, in the document's own palette, seeded from the
+content hash so a re-render is byte-identical. **No image files, no downloads, nothing in
+the installer.** The judgement matters more than the drawing: `DesignSystem.may_decorate()`
+gates every surface behind the nuance verdict's **decoration budget**, which config can only
+ever LOWER. `legal_instrument`, `medical_clinical` and `financial_ledger` get **nothing** —
+a decorated contract looks forged and a decorated dosage chart is dangerous — and low
+classifier confidence holds ornament back too.
+
+### 5. THE AUDITOR — and three bugs of its own that it exposed
+
+`pdfer_audit` re-opens the finished PDF and measures the real glyph boxes. It found three
+genuine defects in the new renderer during development, which is the whole argument for it:
+
+* **cover text at 2.53:1** — the cover title used the `text_inverse` role, which on a DARK
+  theme is near-black, on DARK cover art. Cover ink is now *solved* against the gradient
+  midpoint (`Atelier._cover_ink`), giving 16:1.
+* **body text on cover art** — ReportLab does **not** advance through the template list on
+  its own, so every page kept the COVER template. Fixed with `NextPageTemplate("body")`.
+* **its own false alarms** — the first version compared every span to the *page* background,
+  flagging white table-header text on its dark header band. It now rasterises the span and
+  reads the ground it really sits on, and takes the ink from the PDF's own content stream
+  (deriving both from pixels fails on gradients, comparing two background tones).
+
+⚠️ `bleeds` (off the SHEET) and `frame_intrusions` (outside the text frame, on the sheet)
+are **separate severities**, and only the former fails `clean`. Conflating them reported
+every correctly-placed page folio as a defect — and a check that fires on correct documents
+is a check that gets switched off.
+
+### Files, and the contracts that hold it together
+
+`agent/agents/pdfer/` gains eight sibling modules — `pdfer_color`, `pdfer_typography`,
+`pdfer_nuance`, `pdfer_theme`, `pdfer_ornament`, `pdfer_docmodel`, `pdfer_tables`,
+`pdfer_atelier`, `pdfer_audit`, `pdfer_consult`. **Flat siblings, not a package**, for the
+same reason FlowCreator vendors `result_to_flw.py`: the agent is copied to a runtime dir and
+run as `python pdfer.py`, so `sys.path[0]` is that directory. The group import is
+**fail-open** — a partial copy drops to the legacy xhtml2pdf engine rather than failing.
+
+* `engine: auto` picks the atelier **unless the user supplied `css`**, which is written in
+  the xhtml2pdf dialect; silently ignoring somebody's stylesheet would be the same class of
+  bug this whole entry is about.
+* The `INI_SECTION_PDFER` KV header **appended** its design fields and renamed none, so
+  every existing flow keeps resolving. Kept in step with
+  `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS['pdfer']` by an AST test that reads BOTH
+  sides — never a typed count.
+* `verbatim_fields=("input_text", …)` was added: PDFer takes literal source text and had the
+  **same `\\`→`\` exposure that flattened every table in Angela's OpenMP report** in 2026-08.
+* `tools._seed_global_agent_defaults` seeds `ollama_url`/`ollama_model` from
+  `ollama_base_url`/`unified_agent_model`, so the optional design consultation uses
+  Tlamatini's own configured model.
+* `ollama_design` is **OFF by default and must stay off**: the deterministic path is already
+  complete, validated and audited, so the model is an upgrade, not a dependency — and a
+  document that looks different every render is one nobody trusts.
+
+Coverage: **`agent/test_pdfer_nuance_layout.py` (37 tests)** — the three real broken tables
+solved AND rendered AND audited, both named nuances, every theme's contrast, seeded palettes,
+the decoration safety gate in both directions, ornament determinism, and the contract
+coherence checks.
+
+---
+
+## 2026-08-30 — the PUBLIC release needed `.private_targets.json`, a file no clone can have
+
+**Angela: "improve the build of the public release to not be necessary the file
+`.private_targets.json` … and analyze that it should be no runtime problem if in the first run
+Tlamatini can't run 'cause the file may be missing."**
+
+`build_complete_public_release.py` **REFUSED to run at all** without a leak-targets list. The file
+is **gitignored**, so a fresh clone, a new machine or CI could *never* build a public release —
+only the one machine that already had it. But the refusal was not simply wrong: with no list, the
+same absence means two **opposite** things, and only one of them is safe to build.
+
+| no targets list, because… | right answer |
+|---|---|
+| a PRISTINE clone — there is nothing private in the tree | **build**; the refusal was pure friction |
+| Angela's OWN tree, file deleted/renamed/typo'd | **refuse**; proceeding publishes her phone number |
+
+**The fix is a target-INDEPENDENT `privacy_preflight()`** that asks the *tree* which case it is —
+`data.keys`, a keyed `config.json` / agent `config.yaml`, a contacts book, a keyed External-MCP
+catalog, root `*.key` files. Evidence → refuse, **naming the evidence** and the four ways to fix it
+(plus an explicit, loudly-logged `--assume-clean-tree`). No evidence → **CLEAN-TREE mode**, which
+still runs every target-independent defence (`regen --mode push-able`, the `SECRET_KEY_RE` scrub,
+an empty contacts book, the code-seeded MCP catalog, build.py's live-MCP-secret abort).
+
+**DO NOT REVERT / DO NOT WEAKEN:**
+
+1. **The pre-flight FAILS TOWARD REFUSAL.** Any unreadable/malformed probe counts *as* evidence —
+   the deliberate inverse of the usual fail-open rule, for the same reason LaTeXer's bisect rung
+   fails safe: publishing Angela's data is worse than a build that stops.
+2. **The template is INERT.** `private_targets.example.json` is tracked documentation and is
+   **NEVER** in `DEFAULT_TARGETS_FILES`. If it were auto-loaded — or if its `<placeholder>` values
+   counted as targets — an unfilled copy would make the list non-empty, **silence the refusal**,
+   and print `VERIFIED CLEAN` having scrubbed nothing real. Strictly worse than the refusal.
+   `_is_placeholder()` strips those values and `_`-prefixed JSON keys are documentation, because
+   `cpd.load_targets` otherwise turns a `_README` string into a "private value".
+3. **CLEAN-TREE mode never claims a check it did not run.** `check_private_data.py` exits 2 with no
+   targets, so `STRUCTURAL_ONLY_SENTINEL` keeps every structural layer running and the banner,
+   audit line and summary all say *structural-only, no personal-data matching was performed*.
+4. **`_looks_like_pii` / `_is_live_secret` must stay shape-tight.** The first version passed every
+   hand-written case and **still refused a fresh clone** on SEVEN committed defaults:
+   `host: 127.0.0.1`, `webhook_host: 0.0.0.0`, `max_body_bytes: 1048576`, `max_bytes_per_stream:
+   100000000`, `verify_token: "tlamatini"`, `password: "YourStrongPassword"`. Dotted-numeric and
+   plain integers are inert; a phone needs a `+`/separator and 7-15 digits; placeholder prefixes
+   match **glued** (`YourStrongPassword`, `YOUR_EMAIL_HERE` — a `\b` misses both), and `my` is
+   deliberately absent from that list so real names like "Myriam" are never dropped from the scrub.
+   *Testing the maintainer's keyed tree proves nothing about a clone* — the test reconstructs the
+   **committed** blobs of all 89 tracked configs and runs the real pre-flight over them.
+
+**Two real bugs found and fixed on the way:**
+
+- **`REGEN_TOUCHED` backed up 5 of the 7** agent `config.yaml` files `regen_secrets.py` rewrites —
+  **`discoverer` was missing**. On a machine without `data.keys` the `finally`
+  re-key is skipped, so those two were scrubbed to placeholders **with no backup to restore from**:
+  silent loss of the operator's own keys. Now **derived** from `regen_secrets` itself (9 paths), so
+  the next managed config is covered the day it is added.
+- **`private_targets.json` (dotless) was auto-discovered but NOT gitignored** — a leading-dot typo
+  would have committed a file full of real PII. Both spellings are now ignored; the `.example.`
+  template stays tracked.
+
+`regen_secrets.py --mode push-able` was already automatic inside this builder (STEP 1) and remains
+so — it is now stated in the banner, and it still runs strictly **before** `build.py` reads the tree.
+
+**RUNTIME: there is none, and that is now enforced.** `.private_targets.json` is **build-time
+only** — no module under `Tlamatini/agent/` opens it, and neither `build.py` nor `install.py`
+ships or references it, so a missing file can never affect a first run or any later one. That was
+already true; it is now *pinned*, so nobody can quietly wire it into runtime and break first launch
+for every user (its absence is the normal state on every machine but Angela's).
+
+Coverage: **`Tlamatini/agent/test_public_release_targets.py` (26 tests)** — runtime independence,
+the fresh-clone contract over the committed blobs, the seven false positives by value, template
+inertness, the surviving refusal, fail-toward-refusal, and the derived regen backup list.
+
+---
+
+## 2026-08-29 — Ctrl+C hung Tlamatini FOREVER: the signal handler did the work, and re-entered itself
+
+**Angela's report, on the live frozen `C:\Tlamatini`: pressing Ctrl+C never quit.** She pressed it
+**eleven times**; `tlamatini.log` recorded every one:
+
+```
+--- Received signal 2, cleaning up...
+--- [SHUTDOWN] Initiating aggressive cleanup protocols...
+--- Scanning for survivors in C:\Tlamatini\agents\pools...
+   (×11 — and then nothing, ever)
+```
+
+**Diagnosed on the wedged process itself, not by reading code.** PID 27308 was still alive with
+**80 threads, ALL in `Wait`, zero progress**. A `py-spy dump` of it showed the MainThread carrying an
+**eleven-deep tower** of `signal_handler → cleanup_pool_on_shutdown` frames — exactly one per press —
+whose top was parked forever in:
+
+```
+submit (thread.py:180) → _adjust_thread_count (thread.py:203)
+  → start (agent\log_identity.py:333) → start (threading.py:999)
+    → wait (threading.py:655) → wait (threading.py:355)    *** FOREVER ***
+```
+
+**Root cause — two independent defects, both in `agent/apps.py`:**
+
+1. **`signal_handler` called `cleanup_pool_on_shutdown()` DIRECTLY, with no re-entrancy guard.** A
+   Python signal handler runs **on the MAIN thread**, interrupting whatever it was doing — and the
+   first thing that cleanup does is `psutil.process_iter(['cmdline'])`, which opens and reads the PEB
+   of **every process on the machine**. So Ctrl+C genuinely *looked* dead for seconds; Angela pressed
+   again; and each new signal **re-entered the handler on top of the previous one**, part-way through
+   **non-reentrant** `threading`/`psutil` internals. The interrupted `Thread.start()` still held
+   threading's global **`_active_limbo_lock`** (a plain, NON-reentrant `Lock`), so the nested
+   `Thread.start()` could never finish and the main thread could never release it. **Self-deadlock on
+   the one thread that had to survive.** `os._exit(0)` sat at the END of the handler, unreachable.
+   ⚠️ Pressing Ctrl+C *more* is what made it *permanent* — the opposite of what a user expects.
+2. **`with ThreadPoolExecutor(max_workers=1) as executor:` wrapped a `future.result(timeout=5)`.**
+   The context manager's `__exit__` calls **`shutdown(wait=True)` — an UNBOUNDED join** that silently
+   defeats the very timeout written beside it. Its workers are also NON-daemon, so
+   `concurrent.futures`' own atexit hook would join them a second time on a normal exit.
+
+**The fix — CONTRACT, do NOT weaken:**
+
+1. **Ctrl+C ALWAYS terminates the process. Cleanup is best-effort; QUITTING IS NOT.**
+2. **A SECOND Ctrl+C exits immediately and unconditionally** — answered with a raw `os.write(2, …)` +
+   `os._exit(1)` that touch **no lock** the rest of the process could be holding. (A `print()` there
+   would go through the buffered log tee and its cross-thread lock.)
+3. **The handler does the MINIMUM safe from a signal context: it sets an `Event`. Nothing else.** The
+   real cleanup runs on a `TlamatiniShutdown` daemon thread **created at boot, in normal context** —
+   ⚠️ **a signal handler must NEVER start a thread**; that creation *is* the deadlock.
+4. **`_shutdown_event.set()` comes BEFORE the announcement print**, so a blocked log write can never
+   delay the shutdown itself.
+5. **A `TlamatiniShutdownWatchdog` daemon hard-exits (`os._exit(3)`) after `_SHUTDOWN_GRACE_SECONDS`
+   (12 s)**, so no cleanup step can ever hold the process hostage.
+6. The tracked-process killer is a plain **daemon `threading.Thread` with `join(5)`** — never
+   `ThreadPoolExecutor`. **`with ThreadPoolExecutor(...)` is now a forbidden pattern in `apps.py`.**
+7. The `atexit.register(cleanup_pool_on_shutdown)` normal-shutdown path is unchanged.
+
+**Proven, not assumed.** `tests_e2e/test_ctrl_c_quits_visible.py` boots the real Django/Daphne stack
+on port 8043, raises a **genuine console `CTRL_C_EVENT`**, and times the exit:
+**PASS — quit 5.5 s after Ctrl+C, exit code 0.** ⚠️ The sender runs in a **throwaway helper process**
+on purpose: `AttachConsole()` requires `FreeConsole()` first, which **detaches the caller from its own
+console** — doing it inline killed the test's stdout and the verdict Angela was watching for never
+appeared. A visible test whose verdict is invisible is not a visible test.
+
+Coverage: `agent/test_ctrl_c_shutdown.py` (11 tests — the handler calls no cleanup, starts no thread,
+guards re-entry, sets before printing; no context-managed executor; the watchdog and the boot-time
+threads exist) + the visible E2E above.
+
+---
+
+## 2026-08-29 — The frozen console's torch warning storm: ROOT-FIXED by keeping `transformers` out of the web process (and NOT by muting)
+
+**Angela's report, from a frozen launch of `C:\Tlamatini` (v1.50.3).** The startup console opened with a wall of third-party import-time warnings that say nothing about Tlamatini's health, so **every boot read as "something is wrong"** and the lines that DO matter were buried:
+
+- **TWELVE** identical `torch\_jit_internal.py:999: UserWarning: Unable to retrieve source for @torch.jit._overload function: <function upsample at 0x…>.` — one per overload of `upsample` / `interpolate` / `upsample_nearest` / `upsample_bilinear`.
+- `inspect.py:775: LangChainDeprecationWarning: Importing tools from langchain is deprecated…`
+- `django\db\backends\utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged.`
+
+**⚠️ THE FIRST ATTEMPT AT THIS WAS WRONG AND WAS REVERTED.** It installed `warnings.filterwarnings` filters in `manage.py` / `tlamatini/settings.py` and called it done. Angela rejected it outright: *"Muting?? why not root-fixing!!"* She was right — muting hid the symptom and left **911 useless modules loading on every single boot**. The filters are gone; `agent/test_web_process_stays_lean.py::NoWarningMutingTests` now FAILS the build if `filterwarnings` / `simplefilter` reappears in either startup file.
+
+**THE ACTUAL ROOT CAUSE — found by booting the real app with an import tracer, not by reasoning.** The torch stack is not "just there"; something drags it in:
+
+```
+agent/mcp_agent.py:578          import langchain_ollama
+  langchain_ollama/chat_models.py:26
+    langchain_core/language_models/base.py:44   from transformers import GPT2TokenizerFast
+      transformers/models/gpt2/tokenization_gpt2.py:19
+        transformers/modeling_gguf_pytorch_utils.py:34   import torch
+```
+
+`langchain_core` imports `transformers` **only** to provide a GPT-2 token-counter FALLBACK — and it wraps that import in `try/except ImportError`, setting `_HAS_TRANSFORMERS = False` when it is absent. Every Tlamatini model is an Ollama / Anthropic model that counts its own tokens, and **nothing in `agent/**` imports `transformers`, `sentence_transformers` or a HuggingFace embedding** (the RAG embeds through Ollama). So the entire ML stack was being loaded for a code path Tlamatini never executes. The 12 warnings were just the visible tip: PyInstaller keeps torch's `.py` sources (**40.7 MB**, measured — *not* the "~1 GB" the first attempt asserted without measuring) inside the PYZ, so `inspect.getsource()` fails and torch warns once per `@torch.jit._overload`.
+
+**THE FIX — one line in `build.py`: `'--exclude-module=transformers'`** (placed beside the existing `--exclude-module=magic`, which is the same proven "upstream guards the import, so excluding is safe" pattern). Measured on the real app, both arms:
+
+| | before | after |
+|---|---|---|
+| `langchain_core._HAS_TRANSFORMERS` | True | False (graceful) |
+| transformers submodules loaded | 248 | **0** |
+| torch submodules loaded | **663** | **0** |
+| chain import time | 9.47 s | **3.62 s** (2.6× faster) |
+
+The 12 warnings disappear because torch is never imported — **cause removed, nothing suppressed** — and the web process boots markedly faster and lighter.
+
+**⚠️ INTERPRETER BOUNDARY (Angela, 2026-08-29: *"the carried Python, the carried everything… may not exist for certain users"*).** Tlamatini ships TWO interpreters and they are NOT interchangeable. `--exclude-module=transformers` applies **only to the FROZEN `_internal`** (the Django/RAG process, which needs no user Python at all). The **CARRIED** Python (`<install>/python`) runs the pool agents, and **Talker imports `torch` + `snac` there** — so torch MUST stay in the carried tree and is deliberately NOT excluded. Confirming evidence: `build.py`'s size-lock has pruned `transformers` from the carried Python since it was written **and Talker still works**, which is live proof the dependency is dead weight. A user with no Python of their own is unaffected either way.
+
+**The second warning was OUR OWN CODE.** `inspect.py:775: LangChainDeprecationWarning: Importing tools from langchain is deprecated` came from **13 imports of the deprecated `langchain.tools` shim** — `agent/tools.py:15`, `agent/acpx/tools.py:27`, `agent/imaging/image_interpreter.py:14` and 10 in `agent/tests.py`. All switched to the canonical **`langchain_core.tools`** (which exports `Tool`, `tool`, `StructuredTool`). Root-fixed, not muted.
+
+**The third warning is NOT a defect and was deliberately left visible.** `django/db/backends/utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged` is Django accurately reporting `AgentConfig.ready()`'s **deliberate** agent-table rebuild (`apps.py:226/232/266/312` — the documented "Agent table is wiped and re-seeded from the `agents/` folder on every boot" design). Silencing it would be muting again; eliminating it means restructuring boot ordering, which is a separate architectural decision — **do not do it casually, the agent registry depends on those rows existing before the first request.**
+
+**Contract — do NOT weaken:**
+
+1. **Never re-add startup warning muting.** Fix the cause. Pinned by `NoWarningMutingTests`.
+2. **`--exclude-module=transformers` stays**, and **`torch` is never excluded** (Talker needs it under the carried Python).
+3. **Never add `transformers` to `requirements.txt`** — it re-imports torch into the web process.
+4. **The exclusion is safe ONLY because langchain_core guards that import.** `UpstreamContractTests::test_langchain_core_still_guards_its_transformers_import` AST-checks the installed `langchain_core` for the `try/except ImportError`; if a future upgrade makes it a hard import, that test FAILS LOUDLY here rather than crashing a user's frozen app in the field.
+5. **Measure before asserting a size or a cost.** The first attempt justified itself with a "~1 GB" figure that was off by 25×.
+
+Coverage: `agent/test_web_process_stays_lean.py`. **Note:** the exclusion's effect on the shipped `_internal` (currently **4.9 GB** on disk) is verified by a real `build.py` run — not yet performed at the time of writing.
+
+---
+
+## 2026-08-28 — Googler phase 1: EVERY Bing result was silently thrown away (`agents/googler/googler.py`)
+
+Googler's Tier-0 plain-HTTP path has a per-engine **own-domain skip**: a result that still points at the search engine's own host is not a result, so it is dropped. Bing, however, does not hand out the destination URL — it wraps **every organic result** in its own click-tracker, `https://www.bing.com/ck/a?...&u=a1<base64url>`. `_unwrap_redirect` only knew the plain `uddg` / `q` / `u` / `url` query-parameter forms, so a Bing link **stayed on `bing.com`** and was then eaten by that very skip. The visible symptom was not an error: Bing returned a full page, Googler reported no usable links, and the tier **fell through to whatever the next engine happened to return** — so a search looked like it had "worked" while silently answering from a weaker source. **Do NOT revert.**
+
+**Two things had to be fixed together, and the ordering is the whole trick.** Bing serves that URL with its ampersands HTML-escaped (`&amp;u=a1…`), so `urlsplit` + `parse_qs` never saw a `u` parameter at all — the unwrapper would have failed even once it knew to look. `_unwrap_redirect` therefore now `html.unescape()`s the raw value **first**, before parsing; only then does the `bing.com/ck/a` branch read `u`, strip the leading `a1` / `a2` marker Bing prefixes to the payload, restore the base64 padding (`token + '=' * (-len(token) % 4)`), `urlsafe_b64decode` it, and accept the result **only when it decodes to something starting with `http`**.
+
+**It is fail-open by construction**, and deliberately so: every step sits inside `try/except`, and any failure — an unparseable URL, a marker Bing changes, a payload that is not valid base64, a decode that yields junk — simply falls through to the pre-existing `uddg` / `q` / `u` / `url` loop and then to the raw URL. A tracker format that drifts costs one engine's results, never an exception in the search path.
+
+Also in the same pass: the `mojeek-http` engine's skip list widened from `('mojeek.com',)` to also cover `mastodon.social/@mojeek` and `buttondown.email/mojeek` — the engine's own social and newsletter properties were surviving the own-domain skip and being served back as if they were findings.
+
+**The lesson is the NetSpeed-Calculator lesson again** (2026-08-23, *"a ZERO must always name its cause"*): the failure here was not that Bing broke, it is that **a silent drop is indistinguishable from an empty internet**. When a result-producing path discards candidates, the discard needs a reason a human can read — otherwise the layer degrades quietly and the fallback hides it.
+
+## 2026-08-27 — Deleter directory-wipe fix, silent test audio, JS parse gate (Tlamatini-Spanish cross-tree glitch report, round 2)
+
+Three fixes ported from findings in the Spanish tree (each verified against THIS English tree first). **Do NOT revert any of them.**
+
+**The Deleter no longer deletes the directory it was told to work IN.** `agent/agents/deleter/deleter.py`: `target_path` is now the WORKING DIRECTORY, removed from the delete-alias tuple — relative `files_to_delete` JOIN onto it, so `target_path=<folder>` + `files_to_delete=[a,b,c]` deletes the three files and NEVER the folder (a lone `target_path` still acts on itself for back-compat, but a directory is refused unless opted in). New `refusal_reason(path, base_dir)` runs before EVERY delete and refuses — with a logged reason and a `total_refused` count — protected app dirs by name (`agent`, `agents`, `tlamatini`, `migrations`, `security`, `windows`, `system32`, `users`, `python`, …), the working dir or an ancestor, the Deleter's own tree, git-repo roots, and drive roots; fail-toward-safety. New config `allow_directory_delete` (default **false**) is required to delete a whole tree. The identical bug erased a 764-file `agent/` tree in the Spanish tree. Pinned by `agent/test_deleter_safety.py` (9 tests). Ask-Execs is NOT the mitigation (canvas / `.flw` / Croner / TeleTlamatini run unattended) — the guard lives IN the agent.
+
+**A test run never makes a sound.** `manage.py::_silence_the_tests()` sets `TLAMATINI_NO_AUDIO=1` when `sys.argv[1] == 'test'`, called BEFORE `_enforce_app_temp_dir()` so every spawned pool agent inherits it via `get_agent_env()`'s `os.environ.copy()`. The audio agents check it at the SINGLE point where sound leaves the machine: Talker's `play_pcm` (returns the real `(device_index, device_name, clipped)` shape), AudioPlayer's `sd.OutputStream` block, and VideoPlayer's `open_backend` (guarded BEFORE it, because the ffpyplayer `MediaPlayer` starts audio on construction). Pinned by `agent/test_no_audio_in_tests.py` (which asserts the flag is live during its own run). **Judge the ENV flag, not a config field** — and do NOT port the Spanish English-voice-kill guard.
+
+**Two JS process gates.** `no-undef` is enforced as an ERROR in `eslint.config.mjs` (a module that exports an identifier it never declared throws `ReferenceError` at load and silently loses `window.Tlamatini*`). NEW `scripts/check_js_parse.mjs` runs `node --check` on every `agent/static/agent/js/*.js` (a pasted-broken file is a dead page with no visible error) and is wired into `npm run lint` (`eslint … && node scripts/check_js_parse.mjs`), plus a standalone `check-js-parse` script. Pinned by `agent/test_js_gates.py`. Check the lint EXIT CODE, never grep its output for "error" (the compact formatter was removed from ESLint core).
+
+## 2026-08-26 — Blue-hat security toolkit: self-update evidence carryover + guards (G1-G7, Tlamatini-Spanish cross-tree report, round 1)
+
+The `security/` toolkit (defender + whitelist v2.1) shipped in v1.50.0; these harden it. **Do NOT revert.**
+
+**G1 (data loss) — a self-update no longer destroys the operator's evidence.** `security/` is application code and MUST be replaced (a fixed defender has to reach a user who installed a broken one), so `'security'` stays OUT of `apply_update.ps1`'s `$Preserve`. But `security/security_logs/` (alerts.log, monitor.log, the visible asset-test proof) is the operator's evidence living INSIDE that replaced dir — the same situation as `db.sqlite3`. So step 3c STASHES it to `Temp/_security_logs_carryover` before the delete, and step 5b RESTORES it into the new `security/` after the move-in; both fail-open (a failed restore LEAVES the stash rather than deleting it). `self_update.py`'s docstring mirrors it. Proven with a scratch delete-and-replace simulation.
+
+**G2** — `"security_logs"` added to `SKIP_DIRS` in BOTH `build_complete_public_release.py` and `check_private_data.py` (kept mirrored): the release scrubber must not rewrite forensic artifacts, and the private-data scanner must not drown in the operator's own usernames / IPs / command lines (it never ships, so it cannot leak).
+
+**G3-G7 guards** — `agent/test_security_assets_carriage.py` pins the whole carriage + carryover contract; `agent/test_version_guard.py` pins `semver_to_win32_tuple` + `is_newer` (the English tree is plain SemVer — do NOT port the Spanish `strip_edition_suffix`); `agent/test_self_knowledge_is_current.py` DERIVES the agent/wrapped/skill/tool counts from source so `agent/Tlamatini.md` cannot drift (it fixed a stale "(87 of them)" → 88 and checks the Multi-Turn tool total adds up). `Tlamatini.md` §1 gained a Blue-hat bullet: she knows the toolkit exists AND that she CANNOT invoke it (operator-launched only). The docs (BookOfTlamatini / README / security-README) were rewritten from the misleading "runtime logs are not shipped" to the real carryover.
+
+## 2026-08-23 — Googler structured dork builder: syntax is a compiled contract
+
+The visual/pool Googler now compiles structured fields rather than trusting every flow author
+to remember Google's spacing and binding rules. `agent/agents/googler/googler.py` owns aliases,
+presets, field normalization, and `build_dork_query`; `config.yaml` is the user-facing schema;
+`agent/test_googler_dorks.py` pins the contract.
+
+**Do not weaken these invariants:** no space after an operator colon; exact phrases in double
+quotes; uppercase `OR`; alternatives in parentheses; exclusions as `-term`; several sites or
+file types as one grouped clause; explicit fields overriding preset defaults; and a site-`OR`
+group enabling same-domain URL de-duplication. Keep `book_public` and `paper` pointed at
+lawful/open or institutional sources rather than access-control workarounds.
+
+For PDF/EPUB and other binary-file hunts, `content_mode: links_only` is a successful URL-list
+deliverable. The downstream path is Parametrizer -> Apirer -> File-Extractor/File-Interpreter,
+not an attempt to scrape binary bytes as page text. The direct Multi-Turn `googler` tool remains
+a manual-query surface: put operators in `query`; do not advertise pool-only structured fields
+as direct-tool parameters. Public indexing never grants download/use permission, and Googler
+must never be described as bypassing access controls.
+
+The same live proof exposed a second failure: bundled headless Chromium returned zero results
+for a plain control query and every dork, while the old single DuckDuckGo fallback returned an
+error page; the same query in headed installed Chrome returned real EPUB URLs. The pool agent
+now has two tiers. Tier 0 uses plain `urllib` against four server-rendered routes (DuckDuckGo
+HTML, Bing, DuckDuckGo Lite, Mojeek), avoiding browser fingerprints, consent/JS failures, and
+CSS-selector dependence. Only when all four are empty does Tier 1 default to visible installed
+Chrome, fall back to bundled Chromium, and walk seven direct-result browser routes. Each route
+receives bounded jittered retries, and the log names the route that answered. An explicit
+`engines` list skips Tier 0. **Do not collapse this back to a browser-only, two-engine, or
+headless-only path.** `site:` and `filetype:` carry broadly, but advanced date/proximity/range
+operators are Google-specific; fallback results may be broader, so pin `engines: [google]`
+where exact semantics are required. Keep the tolerant boolean parser: wrapped string `"false"`
+must remain false for both headless and same-domain settings. The 73-test deterministic suite
+and optional headed `harness/googler_dork_hunt.py` proof protect this behavior.
+
+---
+
+## 2026-08-23 — Googler: the FULL dork vocabulary, and a search layer that stopped returning zero
+
+**Angela:** *"add to Googler the capability to use dorks: all of them! … the internet
+is not gonna be navigated by humans but AI crawlers."*
+
+### Part 1 — the complete operator surface
+
+`build_dork_query` went from 9 operators to the documented Google set, and the
+builder now ENFORCES the syntax mechanically rather than trusting the caller,
+because each of these silently degrades a filter into an ordinary keyword search
+and returns plausible rubbish instead of an error:
+
+| rule | broken form | what actually happens |
+|---|---|---|
+| no space after the colon | `filetype: pdf` | searches for the WORDS "filetype" and "pdf"; filters nothing |
+| `OR` uppercase | `epub or pdf` | `or` is a stop word |
+| parenthesise alternatives | `filetype:epub OR filetype:pdf` | the OR binds to one adjacent term |
+| no space after `-` | `- review` | the exclusion is ignored |
+
+New surface: **`filetypes`** (plural → `(filetype:epub OR filetype:pdf)`, with class
+aliases `ebook`/`book`/`docs`/`slides`/`sheets`/`text`/`code`/`data`), **`sites`**,
+**`exclude_sites`** (`-site:`), `author`, `allintitle`, `allinurl`, `allintext`,
+`inanchor`, `allinanchor`, `related`, `cache`, `define`, `source`, `or_terms`,
+`around_terms` + `around_distance` (`AROUND(n)`), `numeric_range` (`2020..2026`),
+and **`preset`** — `book` / `book_public` / `paper` / `manual` / `docs` / `slides` /
+`sheets` / `directory`. A preset fills ONLY what the caller left empty, so an
+explicit field always wins. Singular `site`/`filetype` still work.
+
+The `googler` **@tool docstring is now the operator manual** — Angela's explicit
+requirement was that the LLM learn the vocabulary from the tool description, so
+the rules, the file/book patterns, every operator and the workflow live there.
+
+### Part 2 — ⛔ a located FILE is a RESULT, not an error
+
+`_googler_fetch_page_text` returned `"Binary file detected … skipped"` for any
+PDF/EPUB hit. For a `filetype:` hunt EVERY hit is binary by construction, so a
+perfectly successful file hunt read as N consecutive failures and the download
+URLs — the actual deliverable — were framed as errors. A binary hit is now a
+first-class `kind: "file"` record rendered as **FILE FOUND** with its extension,
+content-type and byte size. **Do not turn this back into an error.**
+
+### Part 3 — the search layer returned ZERO for EVERYTHING
+
+Measured while proving the dorks live: the pool agent returned **0 results for
+every query**, including a plain-keyword control with no operators at all.
+Google timed out waiting for its result container; the single DuckDuckGo
+fallback answered **"Unexpected error. Please try again."** (confirmed by reading
+the agent's own debug screenshot with Image-Interpreter). The SAME dork through a
+**headed real-Chrome** window returned 10 real EPUB URLs immediately.
+
+Two root causes: a headless JS app being refused, and having exactly ONE fallback
+which happened to be down. The redesign:
+
+1. **TIER 0 IS PLAIN HTTP, NO BROWSER** — `urllib` requests four server-rendered
+   routes: DuckDuckGo HTML, Bing, DuckDuckGo Lite, and Mojeek. This removes browser
+   fingerprint, consent, JavaScript-app, and stale-selector failure classes.
+
+   ⚠️ **A first draft of this entry justified Tier 0 by calling the JS-free
+   endpoints "the most reliable thing in the file" — which was wrong as written,
+   and the measurement is the useful part.** Those same endpoints returned
+   NOTHING through Playwright, because their class names had gone stale
+   (DuckDuckGo renders `web-result` / `result__title` now, not `a.result__a`).
+   Bare `urllib` with ordinary browser headers, same urls, same minute:
+
+   | endpoint | plain HTTP | via Playwright |
+   |---|---|---|
+   | `html.duckduckgo.com` | **200**, 3 gutenberg.org URLs | 0 (stale selectors) |
+   | `www.bing.com` | **200**, 23 gutenberg.org URLs | 0 (stale selectors) |
+   | `mojeek.com` | 403 Forbidden | 0 |
+   | `search.brave.com` | connection reset | **answered** |
+
+   So the claim that survives evidence is narrower: **for a server-rendered
+   results page the browser is the LIABILITY, not the asset** — and the failure
+   it removes is not mainly fingerprinting but **selector rot**, since
+   `_http_search` harvests `href`s with a regex and a result's class names may
+   change while its outbound link cannot. Brave is the counter-example that
+   earns the browser tier its place: it refuses raw HTTP and answers only
+   through a real browser, which is why Tier 1 was kept rather than deleted.
+2. **TIER 1 HAS SEVEN BROWSER ROUTES** (ddg-html, ddg-lite, mojeek, bing, google,
+   brave, startpage) — only after Tier 0 is empty. An explicit `engines` list pins
+   Tier 1 and deliberately skips Tier 0.
+3. **Direct result URLs**, never typing into a search box and pressing Enter.
+4. **Jittered retry/backoff** per route before falling through.
+5. **Real Chrome (`channel="chrome"`), HEADED BY DEFAULT FOR TIER 1** —
+   `headless: false` is the default and headless is the documented degraded path.
+6. `_unwrap_redirect` resolves `duckduckgo.com/l/?uddg=` and `/url?q=` wrappers —
+   left wrapped they are useless as file URLs and all collapse to one domain,
+   which the de-duplicator would then discard as repeats of a single host.
+
+**The engine that actually answered is ALWAYS logged**, so a report can never
+imply Google answered when Mojeek did. Only Google honours the full vocabulary —
+`before:`/`after:`/`AROUND()`/numeric ranges are Google-only, while `site:` and
+`filetype:` work everywhere — so pin `engines: [google]` when a dork needs them.
+
+**Honest limit:** this is robustness, not an evasion arms race. There is no
+CAPTCHA solving and no proxy/IP rotation, and "invulnerable" is not a property
+any scraper can claim. The durable answer is FETCHING server-rendered pages over
+plain HTTP and parsing them by `href` rather than by class name — plus, where a
+key exists, an official search API. Note this is the opposite of the usual
+instinct: the fix was to use LESS browser, not a better-disguised one.
+
+### Two traps found while proving it
+
+* **The placeholder default poisoned every structured search.** `config.yaml`
+  shipped `query: "example search topic"`, and because the wrapped-agent launcher
+  OMITS empty values to protect template defaults, that placeholder could not be
+  cleared — it was appended to every dork built from `exact`/`filetypes`/`sites`,
+  turning a precise hunt into a search for a phrase that appears nowhere. Now
+  `query: ""`.
+* **Extensionless file URLs.** arXiv serves every paper as `arxiv.org/pdf/1706.03762`
+  with no `.pdf`, so extension-only detection reported "10 hits, 0 files" for a
+  search whose every hit WAS a PDF. The direct @tool is safe (it reads
+  Content-Type), but any URL-only classifier needs the path-marker fallback.
+
+**Named, re-runnable proof:** `.claude/skills/tlamatini-daily-chat-test/harness/googler_dork_hunt.py`
+— builds each dork with the SHIPPED `build_dork_query`, drives a VISIBLE Chrome,
+and reports FILE FOUND URLs. `--list`, `--hunt <name>`, `--title "..."`.
+Coverage: `agent/test_googler_dorks.py` (**73 tests** — the syntax rules, every
+operator, aliases, presets, tolerant booleans, four-route HTTP-before-browser order,
+seven-route browser order, pinned-engine Tier-0 bypass, retry/first-answer behavior,
+redirect unwrapping, and Angela's own example queries reproduced verbatim).
+
+---
+
+## 2026-08-23 — NetSpeed-Calculator (agent #88): four dead endpoints, and the rule that a ZERO must always name its cause
+
+**Angela's instruction:** *"Continue!!!"* — the previous session had written the
+agent, proven the framework live, found that **download returned 0 bytes**,
+characterized the endpoints, announced *"Now fixing the four real bugs"*, and hit
+its usage limit on that exact line. This entry is what those bugs were, what the
+fix contract is, and the three traps found while wiring the agent across ~30
+surfaces.
+
+### The measurement engine
+
+`agent/agents/netspeed_calculator/netspeed_calculator.py` measures the machine's
+Internet connection and publishes the answer **with its error bar**: RFC 6349 TCP
+throughput + RFC 3550 §6.4.1 jitter, N parallel streams per provider per
+direction, the slow-start ramp DISCARDED, throughput sampled as **d(bytes)/dt**
+rather than total÷elapsed, Tukey-IQR outlier rejection, a trimmed mean and a
+Student-t interval — then a **DerSimonian-Laird random-effects meta-analysis**
+across providers publishing a 95% CI and the I² heterogeneity figure. Bufferbloat
+is the RTT increase UNDER load, graded A+..F. Stdlib-only (+ `yaml`), never
+imports `agent.*`.
+
+### ⛔ THE LOAD-BEARING CONTRACT: a transfer that moved ZERO bytes MUST name its cause
+
+`_download_worker` / `_upload_worker` used to swallow **every** exception, so a
+dead endpoint produced a confident `0.00 Mbps` **with no reason printed**. That is
+the single most expensive defect this agent can ship: a silent zero is
+indistinguishable from a slow link, so it sends the user hunting a fault in their
+own house. It is also why bugs 1 and 4 below each cost a full debugging session
+to find.
+
+- `_record_error(errors, exc)` — keeps the first **5 DISTINCT** failures (bounded
+  because six streams retrying for eight seconds would otherwise bury the log;
+  bounded is NOT the same as hidden).
+- `_report_dead_transfer(key, direction, raw, red)` — when `total_bytes == 0` it
+  prints every reason AND stores them in `red["why"]`, so the saved artifact
+  carries the explanation too. A transfer with bytes is a no-op.
+- `_run_transfer` threads a shared `errors` list into every worker and returns it.
+
+**DO NOT reintroduce a silent zero.** If you add a direction, a provider or a
+transport, it must funnel its failures through `_record_error`.
+
+### The four bugs — every one MEASURED, none guessed
+
+| # | Bug | Evidence (measured 2026-08-22) | Fix |
+|---|---|---|---|
+| 1 | Cloudflare rejects an oversized object | `bytes=100000000` → **HTTP 403**; `bytes=25000000` → 200 | `_CF_MAX_DOWN_BYTES = 25_000_000` clamp in `_discover_cloudflare` |
+| 2 | LibreSpeed's hardcoded backend is gone | `librespeed.org/backend/garbage.php` AND `empty.php` → **404** | discover from the project's **public server list** (`/backend-servers/servers.php`), pick by measured RTT |
+| 3 | Hetzner's host no longer resolves | `speed.hetzner.de` → **getaddrinfo failed (NXDOMAIN)** | the `.com` datacentre mirror mesh (`hil/ash/nbg1/fsn1/hel1/sin-speed.hetzner.com`, all 200) + `_pick_by_rtt` |
+| 4 | **The cache-buster was killing the provider** | `https://ash-speed.hetzner.com/100MB.bin` → **200**; the SAME url with `?nocache=…` → **RemoteDisconnected** | per-provider `"cache_bust": False` in `_discover_hetzner` **plus** a runtime self-heal in `_download_worker` |
+
+**Bug 4 is the subtle one and the reason for the self-heal.** `_bust()` exists to
+stop a CDN edge serving the same cached object to every stream — i.e. to PROTECT
+the measurement. On a static mirror that rejects unknown query strings it
+DESTROYED it instead: all six streams reset instantly, forever, silently. The
+worker now drops the buster after a failure with `local == 0` and lets the next
+iteration prove the plain URL. **The trade is deliberate and one-sided: a cached
+object can only make a result look TOO GOOD, while a connection reset makes a
+working link look like no Internet at all.**
+
+`_pick_by_rtt` had been written for exactly this and was **wired to nothing** —
+mirror lists are published by geography, and geography is only a proxy for network
+distance (measured from Mexico City: Hetzner US ~265 ms, German ~391 ms,
+Singapore ~453 ms). Its docstring previously quoted numbers that no longer held;
+it now quotes the measured ones.
+
+**Proven live, before and after:** cloudflare 0 → **91.96 Mbps**; librespeed
+404 → **93.56 down / 47.65 up** (the RTT picker chose Denver at 57 ms over
+Amsterdam at 144 ms, and the near server drains an upload the far one timed out
+on); hetzner 0 → **92.31**; cachefly **93.38**. Aggregate **92.82 Mbps ±0.74**,
+4/4 providers, 0 failed.
+
+### ⚠️ TRAP 1 — the SPACED impostor Agent row (found by re-checking, not by testing)
+
+The DB held **two** rows: `Netspeed Calculator` (spaced) and
+`NetSpeed-Calculator`. The spaced one was seeded by a server boot that happened
+while the agent DIRECTORY existed but the `display_name_from_agent_type` override
+did **not** — so `apps.py` derived it with `.title()`. A spaced name matches
+nothing in `acp-canvas-core.js` (it lowercases WITHOUT collapsing whitespace), so
+every canvas connection would have been silently dropped.
+
+`apps.ready()` self-heals it (it deletes all rows and rebuilds via
+`_canonical_agent_display_name`), **verified live**: `Repopulating 88 agents` →
+exactly one row, `id=55 NetSpeed-Calculator`.
+
+**Rule: after creating an agent directory, RESTART the server once and re-check
+the row before believing any naming work is done.** This is also why the display
+name is HYPHENATED on purpose — with a hyphen the canvas literal and the CSS
+classMap key are the SAME string, so the space-vs-hyphen trap cannot occur for
+this agent at all.
+
+### ⚠️ TRAP 2 — `collectstatic` is part of "wiring the frontend"
+
+All six JS/CSS wiring edits existed in `agent/static/` but **not** in the
+`staticfiles/` copies WhiteNoise actually serves, so in a browser the node would
+have had no connector at all. **After ANY js/css/template change: run
+`collectstatic`, hash-verify source vs collected, then restart** (see also
+`feedback_never_hotswap_static_into_running_app`). `test_checkbox_bulk_toggle.py`
+and `test_dialog_dismissal_policy.py` assert collected-static sync — they are the
+guards that catch this.
+
+### ⚠️ TRAP 3 — a count bump is NOT a catalog entry
+
+Updating every "87 → 88" left **eleven** per-agent TABLES stale, because they sit
+beside the counts rather than in them: the Ask-Execs tier-D table
+(`multi-turn.md`), the `_EXEC_REPORT_TOOLS` map (`exec-report.md`), FlowCreator's
+**Quick-Reference table** AND **Agent Selection Priority Rules**, `Tlamatini.md`'s
+self-knowledge bullet, KIMI's §13 catalog row, and the Book's **Bestiary AND
+Glossary** tables. **When adding an agent, grep for a SIBLING agent's name — not
+for the old number.**
+
+### Three surfaces the runbook gets wrong (corrected in the skill + workflow guide)
+
+1. `views.PARAMETRIZER_SOURCE_OUTPUT_FIELDS` is **derived** (`= get_parametrizer_source_fields()`), not hand-maintained — only `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS` needs the entry.
+2. `urls.py` wraps connection views in **`secure_post(...)`**.
+3. `tools.py` has a `_PRE_LAUNCH_PREVIEW_BY_TEMPLATE` / `_PRE_LAUNCH_PREVIEW_OBSERVATIONAL_TEMPLATES` pair, and a contract test requires every wrapped agent to be in **exactly one** of them.
+
+### Policy decisions (do not "helpfully" reverse)
+
+- **Ask-Execs tier D (GATED)** — it reaches remote hosts like Crawler AND
+  deliberately saturates the link with ~100-200 MB of real, possibly METERED
+  traffic per full run. Pinned by `test_ask_execs_allowlist.py::TIER_D`.
+- The daily-chat harness question uses **`action='latency'`**, never `full` — that
+  bank may run 1000×/day and a full run costs real bandwidth every time.
+- A **read-only diagnostic that reports an adverse finding has SUCCEEDED**: the
+  preflight REFUSES (`status: refused`) rather than publish a number it cannot
+  trust, and a partial measurement clearly labelled partial is the CORRECT
+  outcome, not a failure.
+
+**Coverage:** `agent/test_netspeed_calculator_agent.py` (**262 tests** — statistics,
+outlier rejection, the meta-analysis, bufferbloat bands, the cache-buster
+self-heal, error surfacing, all four endpoint regressions, registry integration,
+and static JS/CSS/doc contracts), plus a re-runnable 12-pass / 91-check wiring
+audit. Migrations **0195/0196/0197**; catalog prompt **119**
+(`run_execute`, `sort_rank=70`).
+
+---
+
+## 2026-08-16 — ESCAPE CLOSES EVERY DIALOG (the dismissal policy, inverted)
+
+> **Release lineage for this day (three annotated tags):** `v1.48.15` = `9531b43f`
+> (encoding-safe Grepper + the closed verdict vocabulary + updater preservation),
+> `v1.48.16` = `6ee630ca` (themed `tlmAlert`/`tlmConfirm` pop-ups + the
+> frozen-bundle carriage proof in `build.py`), **`v1.48.17` = `f948be7b` — the
+> newest release on that day**, carrying everything below. The current release
+> is now `v1.75.0` (tagged and published 2026-10-03); entries that say a change "landed in v1.48.15" or
+> `v1.48.17` are historical statements and remain as written.
+
+**Angela, verbatim:** *"Standarize in every ... every dialog and all of the
+dialog without exception that if 'Esc' is pressed then the dialog must be
+closed with the similar action to 'cancel'/'dismiss' (doing nothing) for every
+agent in agentic_control_panel.html for every asset on agent_page.html."*
+
+This REVERSES the 2026-08-13 half of the rule that read *"Escape never closes"*.
+The other half is UNTOUCHED: **an outside click still never dismisses.** The
+rule is now one line:
+
+> A dialog closes by its titlebar X, its Cancel/dismiss button, its Continue/OK
+> button, **or ESCAPE** — and **Escape === X === Cancel**.
+
+**What changed** — `agent/static/agent/js/dialog_policy.js`:
+
+| § | before | after |
+|---|---|---|
+| 1 jQuery UI | `closeOnEscape = false` | `closeOnEscape = true` |
+| 2 native `<dialog>` | a document `cancel` interceptor calling `preventDefault()` | **removed** — `cancel` IS the platform's word for "dismissed" |
+| 3 Bootstrap | `keyboard = false` | `keyboard = true` (`backdrop: 'static'` UNCHANGED) |
+| 4 hand-rolled overlays | a CAPTURE-phase keydown that SWALLOWED Escape | **the Escape dispatcher** (below) |
+
+**⚠️ THE DISPATCHER NEVER HIDES A NODE.** It finds the topmost open dialog and
+**invokes that dialog's own dismiss control** — the click the user would make.
+That is why nothing had to be rewired per dialog: the exec-permission prompt
+still answers **DENY** through its `close:` handler, `acpConfirm` / `tlmConfirm`
+still resolve **false**, every `body.style.overflow` is still restored by the
+dialog's own close, and the **sealed updater still refuses**, because its X runs
+`CloseUpdateDialog` -> `mayClose('update')`. A blind hide would have silently
+skipped all four. (Same reasoning as `checkbox_bulk_toggle.js` clicking a real
+checkbox instead of assigning `.checked`.)
+
+**Contracts that must NOT be reverted:**
+
+1. **BUBBLE phase, not capture.** The Catalog's search box clears the query on
+   Escape and stops the event there, so the FIRST Escape empties the search and
+   only the SECOND closes the catalog. The old capture-phase listener stole both.
+2. **`stopImmediatePropagation()` when it dismisses.** Several dialogs bind their
+   own Escape handler on `document`. Without it, Escape on a `tlmConfirm` raised
+   over the External-MCPs dialog dismisses the confirm AND closes the dialog
+   underneath — two layers for one keystroke. This is also why
+   `dialog_policy.js` must stay the FIRST document keydown handler on both pages
+   (it loads right after jQuery UI, before every dialog module).
+3. **It bails when no dialog is open.** Escape still belongs to the page: the ACP
+   canvas hides its agent tooltip with it, the avatar stops speaking.
+4. **Escape can never press an affirmative button.** The label scan matches only
+   cancel / close / dismiss / cancelar / cerrar / no and the × glyphs. A dialog
+   with exactly ONE button is an acknowledgement (the parametrizer error box's
+   "OK", the starter result's "Continue!") and that button is its way out.
+5. **Backdrops are excluded.** `.ui-widget-overlay` also wears
+   `.starter-execution-overlay`, so the `-overlay` shape matches it; dismissing a
+   backdrop would leave its panel floating over an undimmed page.
+6. **A dialog with no X and no Cancel must expose `el.tlmDismiss`.** The Catalog
+   of prompts is the one such dialog (`tools_dialog.js`); a blind hide there
+   leaves `body.style.overflow: hidden`, i.e. the whole chat page unscrollable
+   with nothing on screen to explain why.
+7. **The sealed updater is NOT an exception to the rule — it IS the rule.**
+   "Escape behaves exactly like X" means that where the X refuses, Escape
+   refuses. Interrupting a half-applied update leaves a mixed install directory.
+
+**Two latent defects found on the way** (both invisible while Escape was
+swallowed):
+
+* `CUSTOM_OVERLAYS` listed `'#prompts-catalog'`, which is the **BUTTON** that
+  opens the Catalog, not an overlay. It is always visible, so
+  `aCustomOverlayIsVisible()` returned `true` unconditionally and Escape was in
+  fact being swallowed across the WHOLE chat page. The same hand-kept list had
+  drifted past six real overlays (`#log-viewer-overlay`,
+  `#agent-description-overlay`, `#parametrizer-dialog-overlay`,
+  `#parametrizer-error-overlay`, `#flowcreator-progress-overlay`,
+  `#chat-img-preview-overlay`). Its replacement is **shape-based**
+  (`[id$="-overlay"]`, `[class*="-overlay"]`, `[role="dialog"]`, `.ui-dialog`,
+  `.modal.show`, ...) so an overlay written tomorrow is covered with no edit.
+* Seven dialogs passed an explicit `closeOnEscape: false` of their own, which
+  beats any prototype default — `acp-control-buttons.js` x4, `acp-validate.js`
+  x2, `agent_page_dialogs.js` x1. All flipped, and `closeOnEscape [:=] false` is
+  now a FORBIDDEN pattern tree-wide.
+
+**Coverage:** `agent/test_dialog_dismissal_policy.py` (23 tests). The forbidden
+pattern flipped from `closeOnEscape: true` to `closeOnEscape: false`, and new
+tests pin bubble phase, `stopImmediatePropagation`, the no-affirmative-button
+rule, backdrop exclusion, the `tlmDismiss` hook, script load ORDER on both
+pages, and the themed popup resolving `dismissValue` on Escape. Behaviour is
+proven live by
+`.claude/skills/tlamatini-daily-chat-test/harness/dialog_policy_visible.py`
+(headed Chrome driven by **Playwrighter**, photos by **Shoter**) — which did not
+exist before this change, even though the old test docstring already cited it.
+
+### The ONE exception: the updater is INVULNERABLE while it downloads
+
+Angela, same day: *"make the only dialog invulnerable to 'Esc' (MUST IGNORE
+EVERY ESCAPE AND CLOSE OF ANY TYPE) ... the Check for updates dialog, while
+there is a download in progress"* - and then *"blind it from Ctrl+F4 too"*.
+
+Not a special case bolted onto the dispatcher: a dialog declares
+**`el.tlmSealKey`**, and while that key is sealed `dismissDialog()` refuses
+before ANY path runs. The updater is simply the first dialog to use it.
+`OpenCheckUpdatesDialog` binds `#update-overlay` to `'update'` the moment it
+opens (before it is even visible), and `seal(key, message, element)` takes an
+optional element so the two can never drift apart.
+
+**Four gaps this closed** - the seal machinery already existed, but:
+
+1. **The seal was checked too late.** `dismissDialog`'s last resort HIDES the
+   node. Checked anywhere but first, a sealed dialog whose X was hidden would
+   have been hidden by the very fallback meant to help. The test asserts the
+   seal check's index is lower than the jQuery close, the click and the hide.
+2. **Escape nagged instead of being ignored.** It clicked the X, `mayClose()`
+   raised a notice, and that notice became the new topmost dialog - so the next
+   Escape dismissed the notice. Now the key is **swallowed** (`preventDefault` +
+   `stopImmediatePropagation` BEFORE anything else) and the dialog gets a 600 ms
+   CSS shake (`.tlm-dlg-sealed-nudge`). The explanatory notice is kept only for
+   a DELIBERATE click on the X.
+3. **A failed start sealed the dialog FOREVER.** `StartTlamatiniUpdate` seals
+   before POSTing `/agent/start_update/`; the `!data.ok` branch and the `catch`
+   both returned WITHOUT unsealing. Nothing was downloading and the user owned a
+   dialog that ignored Escape, ignored its X and never went away - strictly
+   worse than the interruption the seal exists to prevent. Both paths now unseal.
+4. **Only Escape was guarded.** F5 / Ctrl+R destroy the page and the dialog with
+   it, and that is the accident a user is far likelier to have.
+
+**⚠️ THE HONEST SPLIT on keys - do not let anyone claim more than this:**
+
+| we really do win | we can NEVER win in a web page |
+|---|---|
+| F5 · Ctrl+R · Ctrl+Shift+R · Alt+Left/Right · Ctrl+F4 and Ctrl+W *in browsers that deliver them* | Alt+F4 · the window's own X · and in **Chrome** Ctrl+W / Ctrl+Shift+W / Ctrl+F4, which Chrome RESERVES and never delivers to the document |
+
+For the right-hand column the only defence the platform offers is
+`beforeunload` (already wired to `anySealed()`), which raises the browser's own
+"Leave site?" prompt - and the user may still confirm it. **What makes that
+acceptable: the swap runs in an EXTERNAL PowerShell process, so a closed tab
+does not abort an update in flight; it only costs the user the progress bar.**
+The guard is about preventing an ACCIDENT, not imprisoning anyone.
+
+⚠️ The sealed key guard is **CAPTURE**-phase (nothing may act on a keystroke
+aimed at a live update), which is the exact opposite of the Escape dispatcher's
+**bubble** phase - and both are pinned, so neither can be "made consistent"
+with the other by mistake.
+
+**Proven live:** `chat_14_sealed_update_ignores_escape` opens the real dialog,
+seals it, and takes Esc x3 + Ctrl+F4 + Ctrl+W + F5. The dialog is still there
+afterwards, and a `window.__tlmSealCanary` proves the page never reloaded -
+without it, "the dialog is gone" and "F5 worked" look identical. **The harness
+never starts a real update**: `seal('update')` puts the policy in the exact
+state `StartTlamatiniUpdate` puts it in, and a test may not download a release
+onto Angela's machine. Coverage: 12 more tests in
+`agent/test_dialog_dismissal_policy.py` (35 total).
+
+---
+
+## 2026-08-16 — v1.48.15 target: encoding-safe Grepper, closed verdict vocabulary, and updater preservation
+
+This release target closes four quiet drift paths that could otherwise report a
+healthy operation incorrectly or ship an incomplete update:
+
+1. **Grepper is text-encoding aware.** `agent/agents/grepper/grepper.py` detects
+   BOM-marked UTF-8, UTF-16, and UTF-32 before trying cp1252/Latin-1 fallbacks.
+   Genuine binary files are still skipped. Keep the BOM order: UTF-32 markers
+   share prefixes with UTF-16, so testing the shorter marker first corrupts the
+   decode. Coverage lives in `agent/test_grepper_encodings.py`.
+2. **The Exec Report vocabulary is CLOSED.** `agent_verdict.py` owns five
+   pairwise-disjoint sets: `DIAGNOSTIC_COMPLETED_STATUSES`,
+   `WORK_COMPLETED_STATUSES`, `WORK_DEGRADED_STATUSES`,
+   `WORK_NOT_DONE_STATUSES`, and `AGENT_ERROR_STATUSES`; `KNOWN_STATUSES` is
+   their union. Diagnostics and intact work are green. Degraded deliverables,
+   work that did not happen, and agent errors are red. R8b remains fail-open
+   for unknown tokens at runtime, but `agent/test_status_vocabulary.py`
+   statically rejects unknown literals before release. Add a new status to
+   exactly ONE shared set; never create a local vocabulary copy.
+3. **Numeric process results are not statuses.** Kuberneter now emits
+   `returncode: <int>`, `success: <bool>`, and `status: ok|failed`, and its
+   Parametrizer contract exposes all three. Never interpolate a numeric return
+   code into `status:`: an unrecognized `status: 1` reaches the compatibility
+   default instead of expressing failure.
+4. **The updater preserves the uninstaller.** The staged-swap policy retains
+   `Uninstaller.exe` alongside user state, and parser-sensitive PowerShell
+   comments stay on standalone lines. Public release tests now prove the
+   catalog is scrubbed/default-only while only the explicit private builder may
+   opt into the maintainer catalog. Keep these assertions source-derived so a
+   supervisor-name or prompt-rule change cannot make the tests themselves
+   stale.
+
+5. **`runtime_provisioner.py` is NAMED in `build.py`, and its carriage is
+   PROVEN.** It previously had **no mention in `build.py` at all**, while its
+   sibling `external_mcp_defaults.py` was explicitly loaded there. It *did*
+   ship — PyInstaller's graph followed `external_mcp_manager.py`'s
+   `from . import runtime_provisioner` — but that import lives inside a
+   `try/except ImportError` that sets the module to `None`, so carriage rested
+   entirely on graph analysis **and the failure mode was SILENT**: drop the
+   module and Tlamatini boots perfectly, then simply never provisions
+   node/npm/npx/pnpm/uv/uvx again, leaving every `npx -y <pkg>` server dead
+   with `[WinError 2]` on exactly the fresh machine the provisioner exists to
+   rescue. Two changes: `--hidden-import` now names
+   `agent.runtime_provisioner`, `agent.external_mcp_defaults`,
+   `agent.external_mcp_manager` and `agent.agent_verdict`; and
+   **`verify_frozen_agent_modules()`** runs on the successful-build path,
+   opening the archive the build just produced and ABORTING if any of the seven
+   `_FROZEN_REQUIRED_AGENT_MODULES` is absent. ⚠️ **The PYZ is NOT a loose
+   `_internal/PYZ-00.pyz`** under PyInstaller 6 onedir — it is an entry named
+   `PYZ.pyz` inside the executable's CArchive, so the reader uses
+   `CArchiveReader` on the `.exe`; a glob for `PYZ-*.pyz` finds nothing and
+   would have reported "cannot verify" forever, i.e. a check that never fails
+   and never proves anything. Measured against the shipped install: CArchive =
+   21 entries, PYZ = 15,075 modules, all 7 required modules PRESENT (confirmed
+   independently by a raw byte scan of `Tlamatini.exe`). Guarded by
+   `agent/test_runtime_provisioner.py::WiringContractTests`.
+6. **The last nine native browser pop-ups are gone.** `contacts_dialog.js` (2)
+   and `external_mcps_dialog.js` (7) still called `alert()` / `confirm()` long
+   after every other dialog wore the theme — the two NEWEST dialogs were the
+   last two raising a grey Windows/Chrome strip with the page URL in it, in the
+   middle of a dark themed app. `dialog_policy.js` now exports **`tlmAlert`** /
+   **`tlmConfirm`**, the chat-page counterparts of the canvas's
+   `acpAlert`/`acpConfirm` (2026-08-12), styled from the existing
+   `dialog_theme.css` tokens (`.tlmpop-*`). ⚠️ **They are NOT jQuery-UI
+   dialogs, and the z-index is load-bearing**: these popups are raised BY
+   native modals at `z-index: 20000` (`.emx-dialog` / `.ctb-dialog`), while
+   `.ui-front` sits at ~100 — a confirm rendered *underneath* the dialog that
+   asked for it is an invisible modal, i.e. a hang. The overlay is at
+   **100001**, above every layer the app defines. Both are Promise-based, so
+   each call site moved its action into the callback; `removeContact` also
+   re-resolves the contact by identity because the list may re-render while the
+   popup is open. Policy-compliant by construction (host listed in
+   `CUSTOM_OVERLAYS`, outside click swallowed, X === Cancel === `false`) and
+   **fail-open** to the native popup — a lost warning is worse than an ugly
+   one. Guarded by
+   `agent/test_dialog_dismissal_policy.py::NoNativePopupSurvivesInThemedDialogsTests`;
+   add a newly-migrated module to `_THEMED_DIALOG_MODULES` there.
+
+7. **Five RED tests that were not bugs in the code they guarded.** A full
+   `manage.py test agent` run was `4350 tests, FAILED (failures=5)`, and every
+   one was the TEST being wrong about its own subject. Recorded because each is
+   a distinct, recurring failure MODE:
+   * **A hand-typed count rots.** `test_external_mcp_e2e` listed the eight
+     supervisor tool names literally; the Runtime Provisioner added
+     `external_mcp_runtime_status` / `_runtime_install` and the healthy code
+     went red. Now DERIVED from `em._SUPERVISOR_TOOL_NAMES` — it still catches
+     a declared-but-unbuilt supervisor and can never go stale on a count. Same
+     rot that pinned "eight supervisor tools" into the prose.
+   * **A pinned SENTENCE rots when the message improves.** `test_pdfer_agent`
+     required the words `'not writable'`; the OneDrive fix had rewritten the
+     blocker to *"output_dir cannot accept a new file (…)"* — strictly better,
+     because "the directory exists" and `os.access` both LIE and only a real
+     create proves anything. It now asserts the blocker NAMES `output_dir` (the
+     contract: the user must know which knob to turn), not the prose.
+   * **A fixed sleep is a race, not a wait.** `test_watchdog_foreground_exemption`
+     slept 1.5 s then asserted the watchdog spares a VISIBLE console. Under the
+     full suite (with Ollama and a headed Chrome running) the window sometimes
+     was not up yet, so EnumWindows saw nothing, the process was CORRECTLY
+     judged headless, and it was reaped — a red about scheduling, not about the
+     watchdog (proved by 28/28 OK twice in isolation). Now `_await_visible()`
+     polls until the precondition actually holds and fails with a message
+     saying so if it never does.
+   * **One REAL defect.** LaTeXer's `_mapToolArgsToAgentConfig` branch never
+     mapped `input_text_b64` / `content_b64` / `find_text_b64` /
+     `replace_text_b64`, so a generated `.flw` silently dropped the only copy of
+     the source that had survived transport intact — exactly the `\\`
+     row-break loss the verbatim channel exists to prevent. Now mapped.
+
+   **The lesson to carry:** when a test goes red, ask FIRST whether it is still
+   testing what it claims to. Derive counts, assert contracts instead of
+   sentences, test the artifact the risk actually lives in, and WAIT for a
+   precondition rather than sleeping and hoping.
+
+These behaviors build on, rather than replace, the v1.48.14 private External-MCP
+runtime/default-seeding and public/private catalog boundary below.
+
+## 2026-08-15 — Runtime Provisioner: Tlamatini ALWAYS has npx/uvx, and two MCPs ship by default
+
+**Angela's directive:** ship `@modelcontextprotocol/server-memory` and
+`@modelcontextprotocol/server-sequential-thinking` in **every** installation,
+both **INACTIVE** — and give Tlamatini a *perfect, always-available*
+npm/pnpm/uv/uvx/npx **without carrying them in the installer** the way Python
+and the JRE are carried.
+
+**The hole this closes.** The External MCP ecosystem is overwhelmingly
+`npx -y <pkg>` or `uvx <pkg>`. A fresh Windows box has NONE of those, so a
+brand-new install that ticked `memory` got a silent
+`[WinError 2] The system cannot find the file specified`: the catalog entry was
+perfect, the runtime simply did not exist. Tlamatini's own design note for these
+two servers even listed "node v24, npm, npx, pnpm, uv, uvx — all detected" as a
+system fact; that was true of the DEV machine and of nobody else.
+
+### New: `agent/runtime_provisioner.py` — a PRIVATE, self-provisioning toolchain
+
+Same pattern Angela already proved three times (Discoverer's private Go,
+ESP32er's PlatformIO, Arduiner's arduino-cli): download once, on demand, from
+the OFFICIAL upstream into **`%LOCALAPPDATA%\Tlamatini\runtimes`** — never the
+install dir (a self-update replaces it wholesale, and Program Files may be
+read-only), never a system location, **no admin, no system PATH change**.
+
+**FIVE CONTRACTS — do NOT weaken any of them:**
+
+1. **FAIL-OPEN, ALWAYS.** Every public function is total. `resolve()` returns
+   `""` and life goes on. A provisioner that can break the chat path is
+   infinitely worse than a missing `npx`.
+2. **NEVER BLOCK STARTUP.** `provision_async()` is a pure no-op (one resolve,
+   zero network, **no thread started**) once the runtimes are present —
+   measured at 0.000 s. Downloads only ever happen on a background thread.
+3. **ATOMIC OR ABSENT.** Download → Temp, verify, unpack to `<dest>.partial-<pid>`,
+   then `os.replace`. A half-extracted tree that merely *looks* installed would
+   poison every later run, so it is structurally impossible.
+4. **VERIFY WHAT UPSTREAM SIGNS.** Node's `SHASUMS256.txt` is fetched and
+   ENFORCED; uv's `.sha256` sidecar likewise. `runtime_require_checksum: true`
+   refuses anything unverifiable.
+5. **SPAWN WITHOUT A SHELL.** ⚠️ On Windows `npx` is a `.cmd` batch shim that
+   `CreateProcess` cannot execute — the single most common cause of broken
+   npx-launched MCP servers. `resolve_spawn()` rewrites `npx` to
+   **`node.exe <npx-cli.js>`**, the real program behind the shim. It also sees
+   through a `cmd /c npx …` wrapper. **Do NOT "simplify" this back to
+   `shutil.which('npx')`.**
+
+**A system install WINS.** Resolution is: explicit `<tool>_executable` config →
+Tlamatini's private runtime → system PATH → well-known per-user locations. We
+only ever FILL A HOLE; we never shadow the user's own toolchain (our runtime
+only exists if we installed it, and we only install what was missing).
+
+### New: `agent/external_mcp_defaults.py` — the two shipped servers
+
+⚠️ **Defaults live in CODE, not only in the shipped JSON — this is load-bearing.**
+`external_mcps.json` is USER STATE that `apply_update.ps1` **preserves**, so a
+default written only into the file `build.py` ships would reach fresh installs
+and **nobody else**. `load_catalog()` seeds from code on the READ path
+(`_seed_defaults_once`, one write per process), which reaches every install on
+every launch, through every entry point.
+
+**TOMBSTONE CONTRACT:** if the user DELETES a default it must STAY deleted —
+`remove_servers` records it in `_removed_defaults` and the seeder skips it. A
+Remove button that silently undoes itself is a bug. An explicit re-import clears
+the tombstone. A default the user EDITED is never overwritten.
+
+Both seed **INACTIVE**: activating spawns a child and burns one of the five
+slots — the user's decision, never ours. `build.py` now writes the shipped
+catalog from `shipped_catalog_document()` (same module → the file and the seeder
+can never drift), and still ships **no** maintainer secrets.
+
+### Wiring
+
+- `_StdioMcpClient.__init__` starts from `runtime_provisioner.augment_env()`
+  (private bins on PATH + quiet npm flags, so a first run can't hang on an
+  update notice or a corepack prompt).
+- `_StdioMcpClient._resolve_argv` delegates to `resolve_spawn`.
+- `_connect` calls `_ensure_runtime_for_spec` for stdio servers — **the moment
+  that makes it "just work"**: tick `memory` on a Node-less box and Node is
+  downloaded right there, on the background connect thread.
+- `_which_executable` + the **MCP Doctor pool agent** are runtime-aware. A
+  missing-but-**provisionable** manager is deliberately **NOT a blocker** and the
+  `next_step` says Tlamatini installs it herself — telling the user to go install
+  Node would be wrong advice. A genuinely missing binary still blocks (no false
+  calm). The doctor mirrors the layout inline because a pool agent cannot import
+  `agent.*`; **keep the mirror in sync with `runtimes_root()`**.
+- Two new LLM tools: `external_mcp_runtime_status` / `external_mcp_runtime_install`
+  (registered in `_SUPERVISOR_TOOL_NAMES` **and** built in `_build_supervisor_tools`).
+- `GET /agent/external_mcps/` carries a `runtime` block; `POST
+  /agent/external_mcps/runtime_install/` backs the dialog's "Install now" button
+  (`.emx-runtime*` strip in `external_mcps_dialog.js`/`.css`).
+- `apps.ready()` pre-warms in the background and seeds the catalog.
+
+Config: `runtime_autoprovision` (default **true**), `runtime_install_dir`,
+`runtime_provision_tools`, `runtime_download_timeout_seconds`,
+`runtime_require_checksum`, `node_version`, and `<tool>_executable` overrides.
+Env: `TLAMATINI_RUNTIMES`, `TLAMATINI_RUNTIME_AUTOPROVISION`.
+
+**Proven end-to-end on a simulated fresh machine** (not mocked): with an empty
+runtime root and the system PATH stripped to bare Windows, Node 24.19.0 and uv
+0.12.5 were downloaded + **sha256-verified** in 7 s, and the real
+`@modelcontextprotocol/server-memory 0.6.3` completed an MCP
+`initialize` + `tools/list` handshake exposing exactly its **9 tools**.
+
+### The catalog is now TRACKED in git — and CANNOT leak
+
+Angela's follow-up call the same day: **`Tlamatini/agent/external_mcps.json` is no
+longer gitignored**, so the repo SHOWS every External MCP server Tlamatini knows
+about. That file held a live GitHub PAT and a live Snyk key, so tracking it
+required the same machinery `config.json` already uses:
+
+- **`regen_secrets.py` now patches the catalog too** (`patch_external_mcps_json`,
+  wired into `main()`). `--mode push-able` replaces every secret `env` value with
+  `<NAME goes here>`; `--mode keyed` restores the real values from `data.keys`.
+  **Run push-able BEFORE ANY PUSH**, exactly as for `config.json`. Both existing
+  keys were vaulted as `OCTOCODE_GITHUB_TOKEN` / `SNYK_API_KEY`.
+- ⚠️ **LOSSLESS CONTRACT — do NOT weaken.** `push-able` **AUTO-VAULTS** anything it
+  is about to redact into `data.keys` *first*, under a derived
+  `EXTMCP_<SERVER>_<FIELD>` name. That is what makes the round trip safe for a
+  server the rule table has never heard of: scrub → push → `keyed` brings it back.
+  A scrub that silently destroyed an unrecognised token would be far worse than
+  the leak it prevents.
+- ⚠️ **A LOCATION IS NOT A CREDENTIAL.** `_NEVER_SECRET_FIELD_PARTS` (path, file,
+  dir, url, host, port, …) **wins over** `_SECRETISH_FIELD_PARTS`, and `"pat"` was
+  REMOVED from the latter. Caught live: `MEMORY_FILE_PATH` contains "PAT", so the
+  memory server's storage path was scrubbed to a placeholder and vaulted — and
+  `keyed` would then have stamped the build machine's own path onto someone
+  else's install. Pinned by `test_a_location_is_never_treated_as_a_secret`.
+
+**Two build flavours** (`build.py`, "Ship external_mcps.json"):
+
+| build | catalog shipped |
+|---|---|
+| **PUBLIC** (bare `build.py`, `build_complete_public_release.py`) | ONLY `memory` + `sequential-thinking`, generated from `external_mcp_defaults.shipped_catalog_document()`. No maintainer server, no secret, ever. |
+| **PRIVATE / KEYED** (`build_complete_private_release.py`) | EVERY dev server **plus** the two defaults merged in, via `TLAMATINI_BUNDLE_EXTERNAL_MCPS` (mirrors `TLAMATINI_BUNDLE_CONTACTS`). Runs after `--mode keyed`, so real tokens are in place. |
+
+The public builder **CLEARS** that env var, and `build.py` carries a hard
+**SystemExit seatbelt**: a PUBLIC build that would ship a live-looking secret
+ABORTS rather than repeating the pre-2026-08-12 leak. Tombstones are dropped in
+the private path so a keyed build ships both defaults even if the dev deleted one.
+
+Verified by a real round trip on the live keys (scrub → nothing survives in the
+file → restore byte-for-byte) plus both build flavours.
+Coverage: `agent/test_runtime_provisioner.py` (**44 tests**).
+
+---
+
+## 2026-08-15 — v1.48.13 release baseline: guarded placement, uniform dialogs, coherent long operations
+
+- **Mover/Deleter placement:** empty, relative, and legacy `C:/Temp/...` scratch destinations resolve under `TLAMATINI_TEMP` / `<app>/Temp`; an explicit absolute user destination remains authoritative; Deleter normalization never broadens pattern, parent, or recursion.
+- **Uniform frontend:** `dialog_theme.css` defines the visual language across jQuery UI, Bootstrap, and custom overlays. `dialog_policy.js` owns fail-open dismissal semantics; outside click and Escape do not close guarded dialogs, titlebar X means Cancel, and sealed updater work may block dismissal.
+- **Long operations:** `agent_page_ui.js::LONG_OPERATION_DISABLED_MENU_BUTTONS` is the one menu-lock list. Disable/enable paths are mirrored and preserve/restore `data-bs-toggle`; only Check for Updates and Configure Agents receive the additional targeted lock.
+- **Updater and auditability:** `release_notes_renderer.js` safely renders release text; `agent/log_identity.py` and its middleware/consumer integrations attribute application output by user, request, stream, and source line.
+- **Do not regress:** JavaScript/CSS/template changes require `STATIC_VERSION`; verify movement guard tests, frontend lint/tests, source/collected-static parity, and release dossier coverage together.
+
+---
+
+## 2026-08-13 — `tlamatini.log` could not say WHICH user a line belonged to when two people were connected (`agent/log_identity.py`, `manage.py`, `consumers.py`, `tlamatini/middleware.py`)
+
+**Symptom (Angela).** Tlamatini happily serves two logged-in sessions at once on
+the same machine — `angela` in one browser, `alice` in another. But
+`tlamatini.log` interleaved both users' work into one undifferentiated stream:
+a Multi-Turn burst from alice and a RAG rebuild for angela looked identical, and
+nothing on the line said whose request produced it.
+
+**Why it was not just "add the username to the formatter".** Three reasons.
+(1) Most of Tlamatini's log output is `print()`, not `logging` — a
+`logging.Formatter` would miss the majority of lines, and third-party stdout
+entirely. The only universal choke point is `manage.py`'s `_TeeStream.write`.
+(2) The obvious identity carrier, `threading.local`, is **wrong here**: ONE
+event-loop thread serves EVERY connected user, so a thread-local smears angela's
+identity over alice's coroutine. (3) Angela's two explicit constraints — minimal
+characters in the file, minimal CPU per line — rule out formatting anything
+per line.
+
+**The fix.** `agent/log_identity.py` keeps a `contextvars.ContextVar` holding a
+**pre-rendered, ready-to-write** prefix (`'[a3] '` = user `a`, turn 3). The tee
+does one `ContextVar.get()` and one concatenation; nothing is formatted per
+line, and lines that belong to no user get **no prefix at all**. `bind()` /
+`begin_turn()` are called from `consumers.py` (connect / receive /
+queue_llm_retrieval) and from the new `UserLogTagMiddleware` for HTTP. A
+one-time `--- [WHO] a = angela (user id 1)` legend makes the 5-character tag
+self-describing. `config.json` knobs: `log_user_tags`, `log_user_tag_style`
+(`short` | `name` | `off`), `log_user_tag_thread_inherit`.
+
+**Contracts — do NOT revert these:**
+
+* **The tee must never `import agent.*`.** It runs BEFORE Django exists, and
+  `agent/__init__` pulls protobuf/gRPC. Coupling is inverted on purpose:
+  `manage.py` exposes an empty `_USER_TAG_HOOK = None` slot and
+  `log_identity.install()` fills it in at app boot. A launch without the module
+  writes untagged lines instead of failing.
+* **`data` is never reassigned inside `write()`** — the tagged text goes to
+  `payload`, so the return value stays the number of characters the CALLER
+  passed. A `write()` that claims it wrote more than it was given lies to any
+  caller that loops on partial writes.
+* **`_at_line_start` must survive across calls.** `print()` writes the text and
+  its newline as TWO separate `write()` calls; without that state the second
+  call would emit a second tag on the same line.
+* **The BOM-style ordering trap has an analogue here:** a chunk that is only a
+  newline is left BARE. Tagging blank lines spends characters on nothing.
+* **`ContextVar`, not `threading.local`** (see above), and `install()` wraps
+  `Thread.start` with `contextvars.copy_context()` so raw threads (self-healing
+  watchdog, Tier-2 reaper, agent launchers) inherit the tag — that is what makes
+  the attribution total rather than merely usual.
+* **FAIL-OPEN everywhere**, ASCII-only prefix (the tee also writes to a cp1252
+  console), stdlib-only module.
+
+Coverage: `agent/test_log_identity.py` (27 tests, incl. two users in two
+contexts never seeing each other's tag, and a hook that raises never breaking a
+write).
+
+---
+
+## 2026-08-09 — pip's "A new release of pip is available" nag on EVERY `build_complete_*` run: suppress the CHECK, do NOT chase the upgrade
+
+**Symptom (Angela).** Every single run of `build_complete_public_release.py` /
+`build_complete_private_release.py` printed, mid-build:
+
+```
+[notice] A new release of pip is available: 25.0.1 -> 26.2
+[notice] To update, run: python.exe -m pip install --upgrade pip
+```
+
+and it **came back after she manually upgraded pip** — which is what made it feel unfixable.
+
+**Root cause — there are TWO pips, and the upgrade went to the wrong one.**
+Measured live on this machine:
+
+| interpreter | pip | prefix |
+|---|---|---|
+| `C:/Program Files/Python312/python.exe` ← **what the build uses** | **25.0.1** | READ-ONLY (Program Files) — `--upgrade pip` needs admin |
+| `<repo>/python` (the carried Python) | **26.2.1** ✅ | writable — this is the one that got upgraded |
+
+So the manual upgrade was real, it just landed on a different interpreter. And even a
+*successful* upgrade of the build pip would only buy silence **until pip's next release** —
+"keep pip current" is a treadmill, not a fix. Note the notice is emitted after an
+already-satisfied `pip install -r requirements.txt` too, which is why it appeared on every
+build regardless of whether anything was installed.
+
+**Fix — disable the CHECK, in two layers (do NOT strip either).**
+
+1. **Environment pin** `PIP_DISABLE_PIP_VERSION_CHECK=1` in all five build scripts, so
+   **every child *and grandchild* pip inherits it** — including pips we do not spawn
+   directly. In `build.py` / `build_installer.py` / `build_uninstaller.py` it is a
+   module-level `os.environ[...]`; in the two `build_complete_*` wrappers it is set inside
+   **`_utf8_env()`**, which is the single env every child process of the wrapper gets.
+2. **Explicit `--disable-pip-version-check`** on all 8 direct pip commands
+   (`build.py` ×6, `build_installer.py` ×1, `build_uninstaller.py` ×1), placed **before the
+   subcommand** (`-m pip --disable-pip-version-check install ...` — verified live that pip
+   accepts it there). Belt-and-braces: the silence survives a refactor that rebuilds `env`
+   from scratch.
+
+**⚠️ E402 trap:** the `os.environ[...]` pin **must sit AFTER the `from versioning import ...`
+block**. Ruff's default rule set includes E4, so a bare statement placed *between* imports
+trips `E402 module level import not at top of file` on the import that follows it.
+(Same class of trap as the pool agents' `TLAMATINI_TEMP` guard, which is written as an
+`if`-block for exactly this reason.)
+
+**Explicitly NOT done:** the build does not run `pip install --upgrade pip`. That needs admin
+on a Program Files prefix, adds a network round-trip to an already ~18-minute build, and
+solves nothing durably. `test_no_pip_upgrade_treadmill_in_the_build` fails if someone adds it.
+
+**Coverage:** `Tlamatini/agent/test_build_pip_quiet.py` (4 tests, AST-based so it cannot be
+fooled by reformatting) pins both layers in both directions and fails if a build script is
+renamed out of the guard's reach. It **skips** when the repo-root build scripts are absent
+(frozen/packaged tree) — fail-open.
+
+**Live proof (2026-08-09, visible window, log `Temp/pip_nag_fix_verify.log`):** control run
+with no fix reproduced the notice verbatim; the same command with **only the CLI flag**, and
+again with **only the env var**, printed **no notice**, exit 0 in all three. Ruff clean,
+`py_compile` clean, guard test 4/4 OK.
+
+**Scope note:** this covers the BUILD pipeline only. The pool agents that pip-install at
+runtime (ESPHomer `pip install esphome`, STM32er `mcp`/`pyserial`, ESP32er's PlatformIO
+bootstrap) can still surface the notice in their own agent logs — deliberately left alone
+rather than touching mission-critical agents for a cosmetic line.
+
+---
+
+## 2026-08-08 (same day, follow-up) — the self-modify gate was never WIRED: `apply_self_knowledge_blocks` existed, was tested, and was called by nobody (`rag/config.py`)
+
+**Found by running the suite, in BOTH trees.** `agent/test_self_modify_gate.py`
+shipped 28 tests; **6 of them failed identically in Tlamatini and in
+Tlamatini-Spanish** — `test_no_marker_ever_leaks_into_the_prompt`,
+`test_default_mode_drops_the_entire_self_knowledge_section`,
+`test_self_modify_mode_keeps_her_exactly_as_before`,
+`test_default_mode_prompt_is_smaller`, `test_exactly_one_alternative_survives`,
+`test_real_checkout_is_self_consistent`. The code contradicted its own test
+suite, so this was unfinished wiring, not a design choice.
+
+**What was wrong.** `apply_self_knowledge_blocks(prompt, self_able)` was written,
+documented and covered — but `load_config_and_prompt` never called it. Only the
+*second* layer worked (`_load_self_knowledge_block` returning the short notice),
+which is why the big saving still showed up and hid the hole. Consequences:
+the literal `<!--SELF_KNOWLEDGE_BEGIN-->` sentinels **leaked into the system
+prompt the model actually reads**, and **BOTH alternatives survived** — she was
+told she carries her full self-knowledge *and*, two lines later, that she
+carries none.
+
+**The fix.** Two lines at the single prompt-load site:
+
+```python
+prompt_template = apply_self_knowledge_blocks(
+    prompt_template, is_self_able_modify(application_path))
+```
+
+**⚠️ ORDER MATTERS — do NOT move it below the placeholder replacement.** The
+block resolution must run FIRST: in a not-self-able-modify build it deletes the
+whole `<self_knowledge>` section *including* the `{self_knowledge}` placeholder,
+so the injection below correctly finds nothing. Reversed, the file would be
+injected into a block that is about to be deleted, and the markers would leak
+exactly as before. Both trees now pass: 28/28 English, 61/61 Spanish
+(28 + the Spanish sync guards).
+
+---
+
+## 2026-08-08 — `--self-modify` only worked HALF way: a not-self-able-modify build still carried her ENTIRE self-description in every prompt (`rag/config.py`, `prompt.pmt`, `build.py`, `build_complete_private_release.py`)
+
+**The demand (Angela).** Verify that without `--self-modify` (a) the source code is not copied into the zip, and (b) the context about herself is not injected into `prompt.pmt` at runtime — *"no matter Tlamatini does not understand too much about her"*. Then: **the goal is to reduce the context size and the token intake in the default mode**, and *"if `--self-modify` is selected then let Tlamatini like it was with all about herself in order to modify herself"*. Plus: **`build_complete_*` must default as if `--no-self-modify` were set.**
+
+**What was verified as CORRECT.** The source tree really was gated: `build.py` generates `TlamatiniSourceCode/` only inside `if self_modify:`, no `--add-data` carries it, `build_installer.py` never mentions it, PyInstaller runs with `--noconfirm` (so `dist/manage` is wiped each build and a stale tree from an earlier self-modify build cannot survive into `pkg.zip`), and the repo holds no static copy.
+
+**What was BROKEN — the other half.** `Tlamatini.md` shipped **unconditionally**: an `--add-data` bundle entry AND an install-root `optional_file_copies` copy. And `rag/config.py` injected it whenever the `{self_knowledge}` placeholder existed — it checked **nothing** about self-modify. So a "not-self-able-modify" build paid for her full self-description on **every single request**, and `prompt.pmt` even told her to "work from your injected self-knowledge" when the source tree was absent — a sentence that was only true by accident.
+
+**The fix — one XOR, resolved at the single prompt-load site.**
+
+- **Runtime**: the ENTIRE `<self_knowledge>` section — its two long identity bullets AND the injected file — is sentinel-wrapped (`<!--SELF_KNOWLEDGE_BEGIN/END-->`), and a short honest alternative is wrapped in `<!--NOT_SELF_MODIFY_BEGIN/END-->`. `load_config_and_prompt` resolves the XOR through the **pre-existing** `_resolve_rule_block` machinery (the same one that gates the ACPX Rule 12 and Templates Rule 16 blocks) before touching the placeholder. `is_self_able_modify(application_path)` — `TlamatiniSourceCode/` beside `prompt.pmt` — is the single runtime marker, and it **fails CLOSED** (no source ⇒ no claim of self-modification).
+- **Packaging**: `Tlamatini.md` is now bundled and copied ONLY under `--self-modify`, in lockstep with the source tree. `--no-self-modify` became a REAL flag that **wins** over `--self-modify`.
+- **Wrappers**: `build_complete_private_release.py` flipped from opt-OUT to opt-IN (`--self-modify`, default off; `--no-self-modify` kept as an accepted no-op). `build_complete_public_release.py` was already opt-in.
+
+**Measured result** (real loader, real files, printed by the test): the system prompt goes from **138,225 → 75,371 chars — 62,854 chars saved, ≈15,700 tokens off EVERY request**, a ~45 % smaller system prompt in the default mode.
+
+**Contracts that must NOT be weakened:**
+
+- **Source and self-knowledge ship TOGETHER, or not at all.** Re-adding an unconditional `Tlamatini.md` copy silently restores the whole cost.
+- **With `--self-modify` nothing changed.** The kept block is byte-identical to what she always had, so she can still read, modify and rebuild herself. Do not "simplify" the kept branch.
+- **The placeholder must NEVER survive** either branch: a leftover `{self_knowledge}` becomes an unexpected `ChatPromptTemplate` input variable and breaks every chain. A legacy `prompt.pmt` with the placeholder but no sentinels still degrades safely (second layer: `_load_self_knowledge_block` returns `NOT_SELF_ABLE_MODIFY_NOTICE`).
+- **The fallback line stays SHORT.** It exists to be cheap; a test fails if it grows past 800 chars.
+- `is_self_able_modify` fails **closed**, the block resolution fails **open** (a prompt without markers is left untouched).
+
+Coverage: `agent/test_self_modify_gate.py` (25 tests — block XOR, marker leakage, the measured saving, packaging AST gates, wrapper defaults, prompt.pmt structure). Suite run: 129 tests OK, ruff clean.
+
+---
+
+## 2026-08-06 — The Exec Report judged every agent by its EXIT CODE, so a tool that worked could be stamped FAILURE (`agent_verdict.py`, `tools.py`, `mcp_agent.py`)
+
+**The demand (Angela).** If the execution really succeeded, the table must say **SUCCESS**. If the execution really errored and did not do the designated task at all, the table must say **FAILED**. Both directions, every agent, no exceptions.
+
+**What was wrong — two different questions were collapsed into one string.**
+
+| | question | answer lives in |
+|---|---|---|
+| PROCESS | "did the child exit 0?" | the exit code — **one bit** |
+| AGENT | "did the agent do the job, and what did it FIND?" | its `INI_SECTION` self-report — **a typed record** |
+
+`tools._launch_wrapped_chat_agent` set `payload["status"]` from the exit code, and `_maybe_promote_section_fields_to_payload` then tried to lift the agent's own `status:` in with **`payload.setdefault(key, value)`** — which, on the one key that mattered most, was a **silent NO-OP**. The agent's truthful self-report was **discarded** and the crude exit-code verdict survived all the way into `_result_is_failure` → `call_success` → the Exec-Report row. Worse, `mcp_agent._DIAGNOSTIC_COMPLETED_STATUSES` had been written to prevent exactly this — but it tested a value that had *already* been overwritten with `"failed"` upstream, so it was **unreachable dead code**.
+
+**The fix — a deterministic verdict engine, `agent/agent_verdict.py`.** A lexer/parser turns the agent's self-report into a typed AST (`SectionNode` → `KVNode` → coerced values), and an ordered production-rule table decides:
+
+| rule | fires on | verdict |
+|---|---|---|
+| R1 | no self-report at all | the exit code |
+| R2 | the agent declares `error` / `failed` | **FAILED** |
+| R3 | `refused` / `not_found` / `not_unique` / `engine_unavailable` … — the work did NOT happen | **FAILED** |
+| R4 | a read-only diagnostic ran to completion (`invalid`, `findings`, `no_matches`, `listed` …) | **SUCCESS** |
+| R5 | an explicit `success:` / `ok:` boolean | that boolean |
+| R6 | a non-zero `errors:` count (`"0"` is **not** a failure) | **FAILED** |
+| R7 | nothing decisive + non-zero exit | **FAILED** |
+| R8 | no failure signal found | **SUCCESS** |
+
+**ORDER IS THE ALGORITHM, and R4 MUST outrank R5 and R6.** A linter that worked perfectly reports `status: invalid` **and** `success: False` **and** `errors: 2` in the same breath — the last two describe the **document**, not the agent. Testing them before R4 is precisely the bug this engine was written to kill.
+
+**Contract (do NOT weaken).**
+
+* The agent's own self-report **OUTRANKS** the process exit code. An exit code is one bit; the self-report is a typed record.
+* A self-report is **NEVER** dropped or overwritten. On a key collision the process view stays under `<key>` and the agent view lands on `agent_<key>` — **both** survive. Never collapse them back into one key.
+* A **read-only diagnostic that reports an adverse finding has SUCCEEDED** — the finding is the DELIVERABLE. A red row must mean *"the tool malfunctioned"*, never *"the tool found something"*.
+* **FAIL-OPEN**: every parse/coercion error resolves to "no opinion" and falls through to the next rule. Nothing in here may raise into a caller — a verdict engine that can break the chat path is worse than the mislabelled row it fixes.
+* **100% DETERMINISTIC** — no model call, no heuristics. A probabilistic verdict engine could not be trusted to say whether something failed, and would cost a round-trip on every tool call. The agents already emit a precise machine-readable self-report; the only thing missing was somebody actually READING it.
+* `mcp_agent._result_is_failure` honours the engine **only when `verdict.source == "agent"`**; every other case falls through to the legacy classifier, so ACPX / External-MCP / plain-text envelopes are untouched (`{"ok": false}` still goes red).
+* Stdlib only, and it imports nothing from `agent.*` — so it can never create an import cycle between `tools.py` and `mcp_agent.py` (both import it), and behaves identically frozen and from source.
+* **Historical v1.48.2 form:** the status vocabulary had one diagnostic-completion set. The v1.48.15 contract at the top of this log supersedes that shape with five disjoint sets and `KNOWN_STATUSES`; the invariant that `mcp_agent` aliases rather than copies the shared definitions remains unchanged.
+
+Pinned by `agent/test_agent_verdict.py` (25 tests: the parser, every rule, rule ORDER, auditable provenance, totality-never-raises, both call sites, the single-vocabulary contract, and the live STEP-4 payload end-to-end). `agent.test_agent_verdict` + `agent.test_latexer_agent` = **125 passing**, ruff clean.
+
+---
+
+## 2026-08-06 — LaTeXer's `validate_tex` reported a red **FAILURE** for a lint that worked perfectly (`agents/latexer/latexer.py`)
+
+**Live symptom (Angela, frozen install at `C:\Tlamatini`, LaTeXer step-by-step wizard, STEP 4).** The wizard deliberately lints a fragment with an unclosed `itemize`. LaTeXer found the bug exactly as designed — correct error, correct line number, correct explanation — and then the **Exec Report printed a red `FAILURE`** over that row. In `tlamatini.log`: `status = failed`, `exit_code: 1`, next to `"errors": "1"`.
+
+**Root cause — the AGENT verdict was tied to the DOCUMENT verdict.** The `validate_tex` branch did:
+
+```python
+ok = report["ok"]                                   # ← the DOCUMENT's cleanliness
+outcome["status"] = "validated" if ok else "invalid"
+outcome["success"] = ok
+```
+
+`ok` then feeds the deliberate `sys.exit(0 if ok else 1)` at the tail of `main()`, the wrapped chat-agent runtime derives `completed` / `failed` from that exit code, and the Exec Report renders that verdict. So **a linter that successfully caught a bug was reported to the user as a failed run.** `validate_tex` was the only outlier: its own read-only siblings `structure` / `read_file` / `list_files` all set `ok = True` unconditionally.
+
+**Fix.** `ok = True` for `validate_tex`; the document verdict stays fully truthful in `status` (`validated` / `invalid`) and in `errors` / `warnings` — which is what a downstream Forker actually branches on. Verified live: the same broken input now returns `return_code: 0` **and** `errors: 1`, `status: invalid`.
+
+**The contract (do NOT re-tie them).** `ok` means *"the AGENT did the job it was asked to do"*, **NOT** *"the user's document is clean"*. A read-only linter finding problems is a **SUCCESS**, exactly like Grepper finding matches or Analyzer reporting `findings`. Only actions that **failed to do the requested work** may exit non-zero — `refused`, `not_found`, `not_unique`, `engine_unavailable`, and a build that produced no PDF or a mis-typeset one (`compiled_with_errors`). Those stay non-zero on purpose; that half of the 2026-08-05 truthful-exit-code fix is unchanged.
+
+Pinned by `agent/test_latexer_agent.py::test_validate_tex_finding_errors_is_a_SUCCESSFUL_run_REGRESSION_2026_08_06` (asserts the source no longer contains `ok = report["ok"]`, that the `validated` / `invalid` distinction survives, and behaviourally that the linter still finds the unclosed environment). The older `test_exit_code_is_truthful_REGRESSION_2026_08_05` still passes — its `sys.exit(0 if ok else 1)` assertion is untouched; only its docstring was narrowed to drop the now-wrong "an `invalid` lint" example.
+
+---
+
+## 2026-08-05 — Executer's forked window was INVISIBLE; a ShowWindow rescue fixed it (`agents/executer/executer.py`)
+
+**What was wrong.** `execute_forked_window: true` produced **no window Angela could see** when the agent ran under the session MCP host — while the log cheerfully printed `window=visible`. The script really ran (its log was written), so the failure was silent. Proved with Tlamatini's own tools: **Windower scanned the desktop twice and found no such window.**
+
+**What did NOT work (measured — do not retry).** Creation flags cannot fix it: neither `Start-Process -WindowStyle Normal` (the shipped path) nor a direct `Popen` with `CREATE_NEW_CONSOLE | CREATE_NEW_PROCESS_GROUP | CREATE_BREAKAWAY_FROM_JOB` made the window appear. That experimental edit was reverted rather than left in with a false "this fixes it" comment.
+
+**What DID work.** Flags only control window *creation* — the console **already existed and had simply never been SHOWN**. So the fix forces it out afterwards:
+
+- `_console_window_snapshot()` records every console-class window **before** the launch. (Console windows belong to `conhost.exe`, **not** to the `cmd.exe` we spawn, so `GetWindowThreadProcessId` reports a PID we never saw — diffing snapshots is the only reliable identification.)
+- `_force_show_new_consoles()` diffs afterwards and forces each NEW window visible with `ShowWindow(SW_SHOWNORMAL/SW_SHOW)` + `BringWindowToTop` + `SetForegroundWindow`.
+- Wired into **both** the non-blocking path and `_execute_in_forked_window` (daemon thread there, since that path blocks). Stdlib `ctypes` only — it is a pool agent.
+
+**Measured delta, same tool both times:** before, Windower found **no window**; after, it **finds, focuses and maximizes** it (`hwnd=0x00280292`). **Angela then confirmed she SAW it on screen** — real pixels, not just a handle.
+
+**DO NOT weaken these:**
+- **It runs AFTER the script is already launched**, so it can never affect whether the user's work executes. A rescue that breaks execution is worse than an invisible window.
+- **It NEVER relaunches to obtain a window** — that would run the user's work twice (double writes, double test runs).
+- **It reports only what SURVIVES verification.** The first version announced "window is visible" the instant it saw any new console — including short-lived ones from our own launcher — which reproduced the very lie being removed. It now settles, re-checks `IsWindow`+`IsWindowVisible`, and counts only survivors.
+- **The log under-claims on purpose**: `window=visible REQUESTED + rescue attempted (NOT guaranteed — confirm with the Windower agent)`. Proven for this host, not promised for every host.
+
+**Lesson for verification.** A cloud vision model read the proof screenshot and said the console was NOT there — it was **wrong** (that same model had already misread the screen once, reporting Claude's chat text as test output). For "is it really on screen?", trust **Windower** or **Angela**, never a vision model's screenshot read.
+
+---
+
+## 2026-08-05 — LaTeXer `structure` reported an EMPTY title/author for EVERY document (`latexer.py`)
+
+**What was wrong.** `_document_structure()` — the `get_latex_structure` capability — returned `title: ""` and `author: ""` for **every real LaTeX document**. Its helper searched with a `$`-anchored pattern (`\\title\s*\{(.+?)\}\s*$`) but **without `re.MULTILINE`**, so `$` matched only the end of the WHOLE file. `\title{...}` lives in the *preamble* of literally every document ever written, so it never matched. Silent, because a blank string looks like a perfectly valid answer.
+
+**The fix.** `re.MULTILINE` on that one `re.search`. **The `$` anchor itself must STAY** — it is what lets a braced title (`\title{A \textbf{Bold} One}`) capture in full, because only the LAST `}` on the line sits at end-of-line. The other two patterns routed through the same helper (`documentclass`, `class_options`) carry no `$`, so they are unaffected.
+
+**How it was found.** By the new **`agent/test_latexer_suite.py`** on its very first run — a 300+ test asset Angela commissioned the same day (*"a vast powerful set of tests… no less than 100 different tests"*). Pinned by `StructureTests.test_title_REGRESSION_multiline_anchor` / `test_author_REGRESSION_multiline_anchor` / `test_a_braced_title_captures_in_full`.
+
+**Also landed with it — `agent/test_latexer_suite.py` (316 tests, 31 classes).** A permanent, LaTeX-distribution-FREE unit sweep of every pure function (coercion, path safety, comment stripping, structure, validation, log parsing, templates, argv, project discovery, clean, preflight, section emission, contract constants). It is deliberately distinct from `test_latexer_agent.py`, which pins the wiring and the real MiKTeX end-to-end compiles. Run it standalone for a per-class breakdown: `python Tlamatini/agent/test_latexer_suite.py`.
+
+**One test was wrong, not the code — kept as a lesson.** `test_the_missing_engine_refusal_names_MiKTeX` first paired `latex=""` with `distribution="miktex"`, a state that can never exist because the distribution is identified BY RUNNING the engine (`_identify_distribution("")` returns `"none"`). The suite went red, the product was right, the fixture was the lie. Now pinned by `MiktexHintTests`.
+
+---
+
+## 2026-08-04 — SPACE-bar bulk check/uncheck of a text-selected block of checkboxes (`checkbox_bulk_toggle.js`)
+
+**What was wrong.** The Configure Mcps / Tools / Agents / Skills dialogs, the External-MCPs catalog and the ACP canvas agent-config dialogs list **dozens** of checkboxes. Clearing 20 of them cost 20 clicks — and there was no way to say "these ones, all at once". Every prior idea for fixing it (a select-all button, per-dialog range-select, shift-click) would have needed **per-dialog wiring**, so each new dialog would silently ship without it.
+
+**The fix (Angela López Mendoza, 2026-08-04).** One self-contained IIFE — `agent/static/agent/js/checkbox_bulk_toggle.js` — with **ZERO per-dialog wiring**. The user drags an **ordinary text selection** across several checkbox labels and presses **SPACE once**: every checkbox the selection overlaps flips.
+
+- **The rule is deliberately asymmetric, so it is predictable**: if **ANY** selected checkbox is checked → **uncheck them ALL**; if **all** are already unchecked → **check them ALL**. So the first SPACE over a checked (or mixed) block always CLEARS it — which is what a human means by "unselect these" — and a second SPACE turns the same block back on.
+- **It is generic by construction**: targets are found by asking which checkboxes the *live selection* overlaps, never by a dialog id or a class list. So **every** checkbox dialog gets the behaviour for free — present **and future**. Do not "improve" this by adding a per-dialog registry; that is precisely the design being avoided.
+- A muted one-line hint is injected into any jQuery-UI dialog showing ≥2 checkboxes (`dialogopen`), purely cosmetic and fail-safe.
+
+**DO NOT weaken these — each prevents a specific, silent failure:**
+
+1. **The listener MUST stay on `document` in the CAPTURE phase** (`document.addEventListener('keydown', onKeyDown, true)`). Bubble phase is a silent **data-corrupting** bug, not a style preference: `external_mcps_dialog.js` already binds Space on `.emx-row` and only calls `preventDefault()`, so it would toggle the focused row **first** and our pass would toggle it **again** — netting that one row back to its original state while all its neighbours flipped. `stopPropagation()` is called **only for a SPACE we actually consumed**, so Escape / Tab / Enter / Ctrl+Z and every other key reach their handlers exactly as before.
+2. **It bails on `input` / `textarea` / `select` / `contenteditable`, testing BOTH `event.target` AND `document.activeElement`.** The `activeElement` half is not redundant: after a mouse-drag the target is usually `<body>`, so a target-only guard would steal SPACE from every search box in the app.
+3. **It toggles with `checkbox.click()` — a REAL click.** Every existing click/change handler still runs (state persistence, the External-MCPs 5-active cap, the ACP canvas dialogs). Setting `.checked` directly would skip them and silently lose the user's change.
+4. **The range-overlap test is STRICT** — a zero-length touch at a boundary does not count — so selecting label A never drags in the first character of label B.
+5. **A row must own EXACTLY ONE checkbox** (`node.querySelectorAll('input[type="checkbox"]').length !== 1` breaks the walk up). Without it a whole list container could be mistaken for a single row, and *any* selection would toggle the entire dialog.
+6. **Self-re-rendering lists are handled by re-resolving each checkbox right before it is clicked** (`makeResolver`, by `id` then `[data-key]` then `isConnected`). The External-MCPs catalog rebuilds every row from its model on each toggle, so a snapshotted element is already detached by the time the loop reaches it; a row that vanished is skipped, never clicked while detached.
+7. **Nothing acts without a non-collapsed selection that overlaps a checkbox** — with no targets it returns **before** `preventDefault()`, so native SPACE (page scroll, focused-checkbox toggle) is untouched. Every step is wrapped in `try/catch`: a failure degrades to "SPACE did nothing", never to a broken page.
+
+**The chat toolbar toggles (`#multi-turn-enabled`, `#acpx-enabled`, `#ask-execs-enabled`, …) are UNREACHABLE by design**, and that is not an accident to be "fixed": `.toolbar-toggle` carries `user-select: none` in `agent_page.css`, so no text selection can ever be made over them and no bulk pass can ever flip a run-shaping flag behind the user's back.
+
+It is an IIFE that declares **NO cross-file globals** (same shape as `chat_image_paste.js`), so it cannot trip the const-poison contract and needs no `eslint.config.mjs` globals entry.
+
+**Wired in**: `agent_page.html` **and** `agentic_control_panel.html` (a `?v={{ STATIC_VERSION }}_bulktoggle` cache-buster on both). A module nobody loads does nothing — both pages must keep the tag, and `staticfiles/` must be re-collected (`python Tlamatini/manage.py collectstatic --noinput`) or the browser downloads a stale copy.
+
+Coverage: `agent/test_checkbox_bulk_toggle.py` (15 tests in three layers — source contract, template wiring, collected-static sync). Module listing: `docs/claude/frontend.md` → *Shared / chat-runtime auxiliary*.
+
+---
+
+## 2026-07-31 — Self-modify snapshot was shipping LIVE credentials (`copy_source_assets.py`)
+
+**What was wrong.** `copy_source_assets.py` walks the **WORKING TREE**, not git. So a file that `.gitignore` keeps out of history is still physically on disk — and was being copied straight into `TlamatiniSourceCode/`, from there into `pkg.zip`, and out to **every user** of a `--self-modify` build. Git history stayed spotless while the **build** leaked. Found live by the self-modify inclusion sweep on 2026-07-31, carrying two real secrets:
+
+- **`open_router.key`** (repo root) — a live OpenRouter `sk-or-v1-…` API key.
+- **`.claude/skills/tlamatini-daily-chat-test/harness/.creds.env`** — the chat-test `TLAMATINI_USER` / `TLAMATINI_PASS` login.
+
+Neither was ever committed. The exposure was **build-only**, and nothing had shipped yet (no `pkg.zip`/`dist` existed at the time).
+
+**Why neither guard caught it.** The generator only redacted `config.json`, `external_mcps.json`, `contacts.json` and agent `config.yaml`, and excluded `data.keys` by exact name — there was **no rule for credential files by extension**. And the sweep's secret check only scanned **config-type suffixes** (`.json/.yaml/.env/.ini/.cfg/.toml`) for **machine-token value shapes** — so a `.key` file was never even opened, and a plain human password in `.env` matches no token regex. Both filters were content-shaped; neither asked the simpler question *"should this FILE exist here at all?"*.
+
+**The fix.**
+
+- **`copy_source_assets.py`** — new `SECRET_FILE_EXTENSIONS` (`.key .keys .pem .p12 .pfx .jks .keystore .env .asc .gpg .ppk`) + `SECRET_FILE_GLOBS` (`.env`, `.env.*`, `id_rsa*`, `id_ed25519*`), enforced by `_is_secret_file()` in `_skip_file`'s **first tier — the same NEVER-resurrected tier as `EXCLUDED_FILE_NAMES`, i.e. BEFORE `KEEP_PATH_GLOBS`**, so a KEEP carve-out can never resurrect a secret. A bare `.env` needs the *name* glob because `Path(".env").suffix` is `""` (a leading dot makes the whole name a STEM) — the extension test alone silently misses it.
+- **New `DROP_PATH_GLOBS`** (+ `_is_dropped_by_path()`) — path-anchored always-drop for run artifacts. Currently one entry: the dated chat-test `harness/reports/**` (29 gitignored files, ~1.2 MB). **Path-anchored on purpose** — a bare `reports` in `EXCLUDED_DIR_NAMES` would be far too broad and could drop real source elsewhere.
+- **`sweep_self_modify.py`** — `check_redaction` gained a **STRUCTURAL guard**: a credential-bearing **file present in the snapshot is a FINDING regardless of its bytes**. Value-shape scanning is necessary but provably not sufficient; presence alone is now the test.
+
+**⚠️ DO NOT add `*_secrets.*` to `SECRET_FILE_GLOBS`.** It looks like an obvious catch-all and it silently drops **`regen_secrets.py`** — a `REQUIRED_SNAPSHOT_FILES` build script. That pattern was considered and rejected during this fix; the narrow list above is deliberate.
+
+**Result.** Snapshot went 900 files / 16.31 MB → **869 files / 15.09 MB** (exactly the 2 secrets + 29 report artifacts). Both inclusion sweeps CLEAN; ruff clean. A 17-case control matrix pins both directions — the six must-drop cases drop, and `regen_secrets.py` / `build.py` / `copy_source_assets.py` / `uncommit-keys.bat` / `Tlamatini.ico` / `notification.wav` / agent `config.yaml` / `prompt.pmt` / SKILL.md / the chat-test harness **code** all still survive.
+
+---
+
+## 2026-07-26 — Binary-content guard on the RAG context loader (`binary_guard.py`)
+
+**What was wrong.** The ONLY filter on the context/embedding chain was the name-based **Context ▸ Set file type omissions** list plus a 4-entry default denylist (`package-lock.json`, `yarn.lock`, …). Anything else — a `.png`, a `.pyc`, a vendored `.so`, a `.faiss` index, a 200 MB `.safetensors`, a `.mp4` — was opened by `CustomTextLoader` with `autodetect_encoding=True`, decoded into mojibake, chunked and **embedded**. That poisoned FAISS/BM25 with noise, burned embedding VRAM and wall-clock, and diluted real retrieval hits. A name-based list structurally cannot fix this: you cannot enumerate every binary extension a user's project will contain.
+
+**The fix.** A new stdlib-only engine `agent/rag/binary_guard.py` classifies files by **content** and drops the binary ones through the *same* mechanism the user omissions already use, so nothing downstream changes shape.
+
+- **Short-circuiting cascade, cheapest first, at most ONE `read()`**: extension denylist (zero I/O, 192 extensions) → one 8 KiB sample → empty → **BOM** → 45 magic signatures → NUL byte → control-byte ratio (`bytes.translate`, one C-speed pass) → UTF-8 decodability. Sampling a 4 GB video costs what a README costs. `test_only_the_sample_is_read_not_the_whole_file` and `test_at_most_one_read_per_file` pin this.
+- **Hook**: `CustomTextLoader.__init__` records the verdict and `raise`s `ValueError`; `DirectoryLoader(silent_errors=True)` swallows it — byte-identical to how a name-based omission is dropped.
+- **All THREE `DirectoryLoader` call sites** in `factory.py` are wired (context directory, single context file, `application/`). `test_all_three_directory_loaders_receive_the_settings` asserts exactly 3 — miss one and that path silently loads binaries again.
+- **Logging**: `--- [BINARY-GUARD]` lines name every dropped file with the stage and reason that condemned it. `manage.py` tees stdout into `tlamatini.log` before Django boots, so this works in **frozen and source** mode identically. Drops are collected in a lock-protected `BinaryOmissionRecorder` because `DirectoryLoader` runs 12 threads, then printed as one block after `load()` — never interleaved.
+- **Config**: `binary_context_detection` (default `true`) + `binary_detection_sample_bytes` / `_control_ratio` / `_log_each_file` / `_extra_binary_extensions` / `_force_text_extensions`.
+
+**DO NOT weaken these — each prevents a specific, silent data-loss failure:**
+
+1. **FAIL-OPEN, always.** Unreadable file, permission error, deleted-mid-scan, a directory path, `None`, garbage config → verdict is **TEXT**. `classify_file()` never raises. A guard that wrongly drops a file silently deletes the user's real context; that is strictly worse than embedding some noise.
+2. **The BOM stage MUST stay ahead of the NUL stage.** UTF-16/UTF-32 text is legitimately full of `0x00`. Reorder them and every UTF-16 document on disk silently vanishes from the context. Pinned by `test_utf16_bom_beats_the_nul_test`. Likewise the BOM table is ordered longest-prefix-first (`\xff\xfe\x00\x00` before `\xff\xfe`), pinned by `test_bom_table_is_ordered_longest_prefix_first`.
+3. **High bytes (0x80-0xFF) count as TEXT.** Counting them as binary evidence would strip every accented UTF-8 and legacy cp1252/latin-1 source file. Pinned by `test_accented_utf8_without_bom_is_text` and `test_latin1_legacy_text_is_kept`.
+4. **`force_text_extensions` beats the built-in denylist**, so a user can always rescue a file the tables get wrong.
+5. **Keep the two extension tables disjoint.** `test_tables_do_not_overlap` exists because the first draft listed `.ts` as BOTH TypeScript (text) and MPEG transport stream (binary) — which would have dropped every TypeScript file in a project. It now lives in TEXT only; a genuine MPEG-TS is still caught by the NUL stage. The same review moved `.hex` (Intel HEX is ASCII — and mission-critical for STM32er/Arduiner/ESP32er) and `.eps` (PostScript is text) out of the denylist.
+
+**Relationship to the existing omissions list**: complementary, not a replacement. Name-based omissions = "what the user chooses to ignore"; the guard = "what is binary regardless of its name". Both still run, the user list first.
+
+Coverage: `agent/test_binary_guard.py` (45 tests). Full design: `docs/claude/architecture.md` → *Binary-content guard for context loading*.
+
+---
+
+## 2026-07-26 — Full-suite repair: 26 of 28 failures fixed, and what they taught
+
+The suite ran **3462 tests → 26 failures + 2 errors**. Almost none were product bugs; they cluster into four causes worth knowing.
+
+### A. The secret scrubber silently broke its own tests
+
+`regen_secrets.py` (and the public-release scrubber) rewrite `"password": "<REDACTED>"`-shaped literals. They had rewritten **the test fixtures** to `<REDACTED>` while leaving the assertions expecting the old values — 8 failures in `test_password_quoting.py` plus `test_secret_008_env_secret_real_value`. Two second-order bites:
+
+- `<REDACTED>` has **no spaces**, and the entire point of `test_password_quoting` is proving a *space-bearing* password stays double-quoted in YAML. The scrub did not just break the test, it made it meaningless. Fixtures now use the obviously-fake, space-bearing `fake app pass 0000`.
+- `<REDACTED>` contains `<` and `>`, which **are** markers in `_looks_like_placeholder`. The "a REAL value must NOT be flagged" case therefore asserted the exact opposite of its intent. (My first replacement failed too — it contained the word "placeholder". The value must be opaque gibberish.)
+
+A real Gmail-shaped app password was also removed from the repo in the process.
+
+### B. Order-dependent logging tests (a whole class)
+
+`test_parametrizer_mcp_doctor` (3 tests) attaches a handler to the ROOT logger to capture an agent's `logging.info(...)` — but never set the level. The root logger defaults to WARNING, so the record is dropped **before** reaching the handler. They passed only when an earlier test in the same process had lowered the level, and failed the moment the module ran alone. **If a test captures `logging.info`, it must set `root.setLevel(logging.INFO)` and restore it.**
+
+### C. Tests pinning prose or an old shape instead of the contract
+
+- `test_step_by_step_prompt_includes_mcp_doctor` pinned the sentence `"wait for the user's READY"`; the prompt was reworded to the same promise. Now asserts the contract.
+- `test_wizard_is_catalog_slot_one` still expected `----<set name here>----` / `<USERNAME>`; the catalog moved to the `[[ user types ]]` / `{{ runtime }}` grammar.
+- `test_material_value_list_survives` asserted `out['material']`, but the code deliberately remaps `material` → `material_path` (the plugin's wire key).
+- `test_agent_libs_*`: `build.py` now writes `_agent_libs = list(_AGENT_RUNTIME_IMPORTS)`, and the literal-only AST reader returned `[]` — so the "list is substantial / includes mcp, serial, fitz" guards were asserting about an EMPTY list. The reader now follows one alias hop.
+- `test_explicit_migration_display_names_all_resolve` demanded descriptions for **retired** agents (Telegramer / Telegramrx / WhatsTlamatini). Migrations are immutable history, so their names live on in old `*_add_*.py` files; the check is now scoped to agents that still exist on disk.
+- `test_every_registry_example_resolves_against_its_template`: whatsapper's `example_request` said `use to='+52…'` in prose, and the arg-parser read the words before `=` as a parameter named `use to`. **Prose inside an `example_request` must never contain `word=value`** unless `word` is a real config key.
+
+### D. A documentation finding the tests were right about
+
+- **`docs/external_mcp_bulletproof_architecture.md` did not exist** although CLAUDE.md and 5 other files reference it. Written from the verified code.
+
+### Left failing on purpose
+
+The **5 `TalkerFemaleVoiceAudibleTests`** are true integration tests: they need Ollama + Orpheus + SNAC actually producing audio (`samples.size == 6` where ≥12000 is required). No code change fixes that — they pass only with the TTS stack live.
+
+### Also: `contacts.json` is Angela's LIVE contacts book
+
+`ShippedContactsFileTests` hardcoded a real person's Telegram handle. It now round-trips the resolver against whatever the file contains and checks an unknown name fails closed — **no real handle in the suite**, and it cannot break when she adds a contact.
+
+### Skill bodies have an 8 KiB cap
+
+`roblox_studio` (+1435 B) and `setup_new_acpx_key` (+419 B) exceeded it, so `skills_pkg/_meta/lint.py` exited 1. Both were trimmed for redundancy with every technical fact kept.
+
+---
+
+## 2026-07-26 — GHOST dist-info metadata: pip was reporting conflicts that did not exist
+
+**Trigger.** `pip: pyhackrf 0.2.0 requires numpy<2.0.0, but you have numpy 2.2.6`. Auditing it properly turned up something much bigger.
+
+### The ghost class (this is the reusable lesson)
+
+`site-packages` held **duplicate `*.dist-info` directories for ~30 packages** — a stale one plus a real one, because an install overwrote a package's files but pip never removed the old metadata directory (common with `+cpu` local versions, `--user` vs system site, and interrupted installs). Consequences:
+
+- **`torch`** had `2.10.0` AND `2.12.1+cpu` dist-infos; the real code (`torch/version.py`) is **2.10.0+cpu**. The GHOST 2.12.1 is what declared `setuptools<82` — so the "torch requires setuptools<82" conflict was **entirely phantom**. Real torch 2.10.0 declares plain `setuptools`, no upper bound, and imports fine without `pkg_resources` (which setuptools 82 removed).
+- **`starlette`** had `0.41.3` AND `1.3.1`; the real code is **1.3.1**. `pip check` read the ghost and claimed fastapi 0.140.0 was unsatisfied. It is satisfied.
+- **`packaging`** was worse — a **split brain**: metadata said 25.0 while the imported module was 26.2, because the first `pip install` wrote the dist-info to a different site than the code that wins on `sys.path`. Fixed with `pip install --user --force-reinstall`; **always verify a version by IMPORTING it, not by reading metadata.**
+
+### What was actually fixed
+
+| Item | Before | After |
+|---|---|---|
+| `numpy` pin | `numpy<2.3.0` — **no floor** | `numpy>=2.0,<2.3.0` (opencv-python 4.13 needs `>=2`; without a floor a resolver could install 1.x and silently break Camcorder/VideoPlayer/Video-Analyzer/Recorder/Whisperer) |
+| `fastapi` | `==0.115.6` (wants starlette<0.42) | `==0.140.0` (wants `starlette>=0.46`) — matches the REAL starlette 1.3.1 |
+| `packaging` | unpinned → 26.2 installed | `packaging<26.0.0` pinned, 25.0 installed (langchain-core needs `<26`; all 16 active consumers accept 25) |
+| `hf-xet` | 1.5.0 | 1.5.1 (huggingface-hub 1.20.1 needs `>=1.5.1` — only visible once the hub ghost was gone) |
+| 9 drifted pins | pinned older than installed | pinned to the installed, working versions (certifi, httpx, mcp, pillow, pydantic, python-dotenv, pywin32, typing-extensions, uvicorn) |
+
+**Result: `pip check` went from 4 conflicts + 9 drifts to ONE line** — `pyhackrf`, which is provably benign (see the numpy comment block in `requirements.txt`).
+
+### ⚠️ Ghost cleanup is DANGEROUS — the lesson from getting it wrong
+
+The sweep that renames a stale dist-info aside compares it to the version in the package's `__init__.py`. For packages that expose **no** `__version__` (or a placeholder like `"unknown"`), that comparison matches NOTHING and the naive loop renames **every** dist-info, leaving the package with **zero metadata** — it happened here to `certifi`, `svglib` and `eval-type-backport` and had to be repaired by restoring the highest version. **Any such sweep MUST assert that at least one dist-info survives per package before it moves anything.** Backups are kept in place as `<name>-<ver>.dist-info.GHOST-BACKUP-2026-07-26` — rename one back to restore it.
+
+### Tooling
+
+`audit_dependencies.py` (repo root, read-only) prints who constrains a package, which requirements are **active** on this interpreter, whole-environment breakage, and requirements.txt drift. It **evaluates PEP 508 markers** — without that it reports 3 numpy conflicts on Python 3.12 when only 1 is real (`opencv-python: numpy<2.0 ; python_version < "3.9"` and `pandas: numpy>=2.3.3 ; python_version >= "3.14"` are both inactive). Run it on any interpreter: `python audit_dependencies.py requirements.txt`.
+
+---
+
+## 2026-07-26 — The Agent table is WIPED and re-seeded on EVERY boot (the "Pdfer" bug) + 11 dead canvas connections
+
+**Symptom Angela hit.** Her freshly-built `C:\Tlamatini` showed **"Pdfer"** on the ACP canvas — but the Catalog of Prompts showed only **"108 prompts"** with **no Documents & PDF section**. Two different bugs wearing one costume.
+
+### Cause 1 — the frozen DB was stuck at migration 0187 (why the prompts were missing)
+
+The live `_internal/db.sqlite3` had `django_migrations` topping out at **0187**: PDFer's **0188 / 0189 / 0190 never ran**, so there were 108 prompts (max id 108), no `documents` category, and no `Chat-Agent-PDFer` Tool row. `DB/Older/2026-07-26_152818/` proved the post-update DB swap HAD happened — the user's older DB was restored and the **post-update `migrate` did not follow**. The migration FILES shipped correctly (verified present in `_internal/agent/migrations/`); only the apply step was missing. **When diagnosing "my new build doesn't have X", read `django_migrations` first** — a shipped-but-unapplied migration looks exactly like a broken feature.
+
+### Cause 2 — `AgentConfig.ready()` DELETES every Agent row on every startup
+
+`agent/apps.py::ready()` runs `Agent.objects.all().delete()` and rebuilds the table from the `agents/` folder listing on **every single server start**. So **the boot code — not the migration — is the effective source of truth for every display name**; migration 0188's carefully cased `PDFer` was overwritten with `str.title()` → `Pdfer` on the next launch. (This also explains a fresh `migrate` writing mis-cased rows: the historical `NNNN_repopulate_all_agents` migrations use the same old `.title()` logic. Never edit those — history is immutable — the first boot corrects them.)
+
+The old logic was `.title()` + five ad-hoc overrides, and it shipped **22 of 86 names wrong**: Pdfer, Sqler, Ssher, Pser, Scper, Acpxer, Esp32Er, Esphomer, Audioplayer, Videoplayer, Flowcreator, Flowhypervisor, Flowbacker, Teletlamatini, Mcp Doctor, …
+
+### Cause 3 (found while fixing 2) — a spaced display name can NEVER match a hyphen-only canvas handler
+
+`acp-canvas-core.js` compares `targetAgentName.toLowerCase()` **without collapsing whitespace**, and for eleven agents it only ever tests the **HYPHENATED** literal. A DB row saying `"Video Analyzer"` matches nothing, so **the connection was silently never persisted** — no error, no log line, just wiring that vanishes. Affected: Kyber-KeyGen, Kyber-Cipher, Kyber-DeCipher, J-Decompiler, Video-Analyzer, De-Compresser, File-Creator, File-Extractor, File-Interpreter, Image-Interpreter, Monitor-Log.
+
+### The fix
+
+- **`agent/apps.py::_canonical_agent_display_name(folder, fallback)`** — the boot repopulate now resolves names through **`services/agent_paths.py::display_name_from_agent_type`**, the same map the Flow Compiler and Agent Contracts already use. **FAIL-OPEN**: any import/lookup problem returns the caller's legacy value, so a naming refinement can never stop the app booting. The legacy `.title()` chain is left in place purely as that fallback.
+- **`agent/services/agent_paths.py`** — added `audioplayer`/`videoplayer`/`flowcreator`/`flowhypervisor`/`flowbacker`/`mcp_doctor` (case) and `video_analyzer`/`de_compresser`/`file_creator`/`file_extractor`/`file_interpreter`/`image_interpreter`/`monitor_log` (hyphen). Also **pinned `apirer` to `Apirer`** (was `APIrer`) so the sidebar label Angela already knows does not churn — `agents.md` and `chat_agent_registry` both say `Apirer`.
+- **`agent/chat_agent_registry.py`** — `File Creator`→`File-Creator`, `File Extractor`→`File-Extractor`, `File Interpreter`→`File-Interpreter`, `Image Interpreter`→`Image-Interpreter`, `Monitor Log`→`Monitor-Log`.
+- **`agent/mcp_agent.py`** — `_TOOL_TO_AGENT_DISPLAY_NAME` (`Image-Interpreter` ×3) and the `_EXEC_REPORT_TOOLS` caption for `chat_agent_file_creator` (`agent_key` stays `filecreator`, so the CSS gradient rule still matches).
+
+### Two MORE surfaces keyed on the display name (found by the post-rename sweep)
+
+Renaming an agent is not done when `agent_paths` + the registry agree. A repo-wide sweep caught two more places that carry the display name **verbatim**:
+
+- **`agentic_control_panel.css`** — `.agent-tool-item[data-content="<Display>"] .agent-tool-icon`. CSS attribute values are **case-sensitive**, so `[data-content="Sqler"]` stopped matching the moment the agent became `SQLer`. Fixed 6: `Flowcreator`→`FlowCreator`, `Monitor Log`→`Monitor-Log`, `Pser`→`PSer`, `Scper`→`SCPer`, `Sqler`→`SQLer`, `Ssher`→`SSHer`, and deleted the dead `Recmailer` twin (the file already carried BOTH `Recmailer` and `RecMailer` — someone had hit this before and papered over it).
+  **Impact was cosmetic-only, and smaller than it looks:** the sidebar icon's real colour comes from `getAgentToolIconStyle()`, which probes a `.canvas-item.<x>-agent` class built by `getAgentTypeClass()` (lowercase+hyphen, casing-proof) and then writes an **inline** style — which beats these stylesheet rules anyway. 36 live agents have no `data-content` rule at all and colour correctly. They were still fixed so the file stops naming agents that do not exist.
+- **`agent_page_chat.js::_agentPurpose`** — a `{'<Display>': 'purpose'}` map read when building a `.flw` node. 11 stale keys (`File Creator`, `File Interpreter`, `File Extractor`, `Image Interpreter`, `Monitor Log`, `Ssher`, `Scper`, `Pser`, `Sqler`, `Recmailer`, `Flowbacker`) would have produced nodes with an empty `agentPurpose`.
+
+Both are now pinned: `test_css_data_content_selectors_match_live_display_names` and `test_agent_purpose_map_keys_match_live_display_names` fail if any key/selector names an agent that no longer exists. **After editing either file, run `collectstatic`** — the collected copies under `staticfiles/` are what get served, and they were stale until it ran (2 files copied).
+
+### ⚠️ DO NOT change ONE side of a display name
+
+The DB row and `chat_agent_registry.display_name` drive **two different things** — the canvas connection handler (DB row) and the per-agent enable gate **`agent_<display>_status`** (registry). Hyphenating only `agent_paths` would leave the gate looking up a key that no longer exists; it **fails open**, so unchecking that agent in *Configure Agents* would silently stop hiding it from the LLM. That is exactly why the five file/monitor agents were done as a **single coordinated pass across both files**, and why `video_analyzer` / `de_compresser` were safe from the start (their registry names were already hyphenated).
+
+### Coverage
+
+`agent/test_agent_display_names.py` (7 tests) — locks the exact name for 31 agents, forbids `.title()` digit-mangling (`Stm32Er`), **parses the JS connection literals and fails if any display name cannot match its handler**, pins the `apps.py` source contract, proves fail-open, and asserts registry ↔ canvas agreement. Plus `tests_e2e/test_prompts_catalog_visual.py` — a HEADED-Chrome walk of the whole catalog (11/11 checks, 21 full-desktop screenshots, all 14 sections, `Documents & PDF` = 5 prompts, click-to-insert proven).
+
+**Live-verified in dev after the fix:** 86 agent rows, `PDFer` (single row, correct casing), **0 mis-cased**, 113 prompts, catalog counter reads `113 prompts`.
+
+---
+
+## 2026-07-26 — Ask Execs: MESSAGING IS UNGATED (tier B reversed) — do NOT re-add it
+
+**Angela's decision, verbatim:** *"Messages must be able to be sent without asking, it depends only on AI desisicion."*
+
+Tier B was added to the Ask-Execs allowlist on **2026-07-14** on the "you cannot unsend it" argument. On **2026-07-26 she reversed it**. Sending a message is now **the LLM's own judgement call** — no Proceed/Deny prompt stands between Tlamatini and a real human. Removed from `mcp_agent.py::_ASK_EXECS_REQUIRED_TOOLS`:
+
+`chat_agent_send_email` · `chat_agent_whatsapper` · `chat_agent_telegrammer` (and `chat_agent_instant_messaging_doctor` was never added, including when `retry_send=true` makes it re-send).
+
+**The gate is now RUNNERS + tier A + tier D only.** Tiers B and C are both deliberately ungated — B because messaging is the AI's call, C because desktop/hardware operations are visible while they happen.
+
+**What still protects a send** (state it honestly — it is not nothing, and it is not a prompt): the LLM's own judgement, the **Exec Report row** every send still produces, and the user's **Cancel**.
+
+**DO NOT re-gate messaging "for safety."** `agent/test_ask_execs_allowlist.py::test_messaging_agents_are_NOT_gated` is an **inverse guard**: `MESSAGING_UNGATED` is an ANTI-list and the test asserts those names are ABSENT from the allowlist, so a well-meaning re-add fails loudly instead of silently restoring a prompt she removed on purpose.
+
+**Two stale assertions fixed at the same time.** `agent/tests.py::AskExecsHelperTests.test_requires_exec_permission_gate` still encoded the **pre-2026-07-14** "tier 1/2 only" policy and had been failing ever since — it asserted that De-Compresser, unzip_file, File-Creator, Deleter, SCPer, Apirer and Crawler were all UNGATED, directly contradicting the authoritative pin in `test_ask_execs_allowlist.py`. It is now realigned to the real policy (A + D gated; B + C + ACPX/Skills not). Lesson: when a policy changes, grep for EVERY test that encodes it — the authoritative pin passing does not mean an older duplicate is not lying.
+
+---
+
+## 2026-07-26 — PDFer (the document composer) + a new "Documents & PDF" catalog section
+
+**What landed.** Agent #86, **PDFer** — the WRITE side of the document family (File-Extractor / File-Interpreter READ documents; PDFer AUTHORS them). `agent/agents/pdfer/` renders Tlamatini's own answer, Markdown, HTML, plain text, images and/or existing PDFs into ONE styled PDF. Wrapped as `chat_agent_pdfer`; migrations `0188` (Agent row) / `0189` (Tool row) / `0190` (the new catalog section).
+
+**Three contracts that must NOT be reverted:**
+
+1. **ZERO new dependencies — and the pipeline is ported INLINE, not imported.** `markdown` + `xhtml2pdf` + `pymupdf` + `reportlab` + `pillow` + `pypdf` were already pinned in `requirements.txt` and already used by `agent/doc_generation`. `pdfer.py` carries its own copy of `markdown_text_to_pdf` + `DEFAULT_CSS` from `agent/doc_generation/mardown_to_pdf.py` because **a pool subprocess can never `import agent.*`** (the acpxer.py precedent). Every backend is imported LAZILY inside the function that needs it, so a machine missing one reports `status: engine_unavailable` instead of crashing at import. **`build.py::_AGENT_RUNTIME_IMPORTS` gained `markdown` / `xhtml2pdf` / `reportlab` / `PIL`** so a carried Python that loses one FAILS THE BUILD LOUDLY (the numpy/cv2 lesson) rather than shipping a pool agent that dies at runtime.
+
+2. **PDFer is on the Ask-Execs tier-A allowlist — and that is deliberate.** It only ever *writes* a new file, which superficially looks like the media agents (Shoter/Camcorder/Recorder) that are NOT gated. The difference is decisive: the media agents write a collision-proof name into ONE fixed known-folder, whereas PDFer takes a free-form `output_dir` + `filename` and can therefore clobber a file the user cares about, exactly like File-Creator. **Do not "simplify" it out of `_ASK_EXECS_REQUIRED_TOOLS`** — `agent/test_ask_execs_allowlist.py` pins it in both directions. Same reasoning put it in `tools.py::_PRE_LAUNCH_PREVIEW_BY_TEMPLATE` (so the user sees WHERE it is about to write) rather than the observational set.
+
+3. **`agent_paths.display_name_from_agent_type` needs the `"pdfer": "PDFer"` override.** Without it `.title()` renders **"Pdfer"**, which violates the naming convention (the display name is exactly the DB `agentDescription`). This was a REAL bug caught by the new test suite, not a hypothetical — the same class as STM32er/ACPXer/SSHer. Any new agent whose display name is not plain Title-Case needs the same override.
+
+**Also fixed while building it:** the `fit` image layout originally opened each raster with `fitz.open()` and read `[0].rect`, which silently produced A4-shaped pages for every picture; it now sizes the page from the image's real pixel dimensions via `_image_size` (Pillow, with an A4 fallback). And `_as_int` now rejects non-scalars — an arbitrary object fell through to `str(raw)`, whose repr hex address yielded a digit run, so junk became `0` (e.g. a 0 mm margin) instead of the default.
+
+**New catalog section.** `views.PROMPT_CATEGORY_ORDER` gained `('documents', 'Documents & PDF')` between `code_gen` and `images` — the first new section since categories were introduced. Migration `0190` appends ids **109-113** (never renumbering) with `sort_rank` 10/20/30/40/50; **rank 10 is the reserved Step-by-Step opener slot** Angela requires in every section. `agent/test_prompt_catalog_contiguous.py::expected_first` gained `'documents': 109` — a new section without an opener now FAILS that test rather than slipping through.
+
+**Pre-launch preview backlog cleared at the same time (Angela asked for it explicitly).** `test_every_wrapped_chat_agent_is_in_preview_or_observational_set` had been failing on **9 older agents** that were never categorized after they shipped. Each was audited IN THE DEV TREE line-by-line — not inferred from its `config.yaml` keys — by asking one question: *does it mutate anything beyond its own log + PID file (the shared boilerplate)?*
+
+| Agent | Evidence | Set |
+|---|---|---|
+| `editor` | `editor.py:378` opens `file_path` with mode `'w'` — rewrites the target | **preview** |
+| `nmapper` | `-oX`/`-oN` scan artifacts + fires packets at `target` | **preview** |
+| `discoverer` | writes `json_path` results + runs an active recon tool at `target` | **preview** |
+| `instant_messaging_doctor` | non-mutating by default, but `retry_send=true` really POSTs WhatsApp `/messages` + Telegram `sendMessage` | **preview** |
+| `globber`, `grepper` | enumerate paths / read contents; only log + PID written | observational |
+| `mcp_doctor` | STATIC catalog triage — its only `Popen` is the boilerplate `start_agent`; it never connects (unlike the live `external_mcp_doctor` tool) | observational |
+| `video_analyzer` | reads a recorded video + asks Ollama for a verdict | observational |
+
+The five preview entries list only keys that **actually exist** in each template `config.yaml` — verified by rendering every preview against its real template and asserting no line contains the `<MISSING>` sentinel. Coverage is now **64 wrapped agents, 0 uncategorized, 0 in both sets**, and the full suite went 28 → 27 failures (the remaining 27 + 2 errors are unrelated pre-existing ones, proven by a `git stash` baseline).
+
+**Note for Angela (policy, not code):** `instant_messaging_doctor` can reach a real human when `retry_send=true`, yet it is **NOT** on the Ask-Execs tier-B allowlist. That is arguably a gap of the same class as the 2026-07-14 Deleter/Whatsapper one — but adding it is a policy decision, so it was left alone.
+
+**Coverage:** `agent/test_pdfer_agent.py` (74 tests). They drive the **REAL** renderers, not fakes — faking them would hide the one failure that actually matters (a backend missing from the carried Python), so every render test writes a genuine PDF to a temp dir and re-reads it with pypdf. Only the network is stubbed (`_ollama_polish` against an unreachable port, to prove the "never lose the document" fallback).
+
+---
+
+## 2026-07-22 — FlowCreator is now chat-callable as `chat_agent_flowcreator` (prompt in → real `.flw` file out), and it no longer reports failures as successes
+
+**What changed.** FlowCreator used to be **canvas-only** — the node's Save button POSTed to `execute_flowcreator/` and the browser JS rendered `flow_result.json` onto the canvas. There was no way to say *"create me a flow that does X"* in chat and get a file back. It is now also a **wrapped chat-agent**: `chat_agent_flowcreator(prompt='<objective>', flow_filename='<name>.flw'[, output_dir=…])` writes a real, canvas-loadable **`.flw` file** to disk (default `<app>/Temp`).
+
+**Four code changes (all in `agent/agents/flowcreator/` + the registry):**
+1. `flowcreator.py` now **writes the `.flw` itself** — it already produced `flow_result.json`; a new `_write_flw_file()` runs it through the converter and writes the file, and emits ONE authoritative `INI_SECTION_FLOWCREATOR` whose header carries `status` / `flw_path` / `flow_filename` / `agent_count` / `connection_count` (the raw LLM response is logged as a plain `--- RAW LLM RESPONSE ---` block, NOT a second section, so Parametrizer/the LLM never see two competing sections).
+2. **Vendored `agent/agents/flowcreator/result_to_flw.py`** (a copy of the `flow_making` skill's converter) — a pool subprocess can never `import agent.*`, so the `flow_result.json → .flw` converter must ship **inside** the template dir. Keep it in sync with `agent/skills_pkg/flow_making/scripts/result_to_flw.py`.
+3. **Exit code now reflects reality.** `flowcreator.py` used to `sys.exit(0)` on **every** path — no prompt, Ollama unreachable, unparseable response, any crash. The wrapped runtime maps exit 0 → `"completed"`, so a run that created **nothing** would have been reported to the user as a **SUCCESS** (green Exec-Report row, Create-Flow armed). A module-level `_FAILED` flag is now latched by `_write_error_result()` / a failed `_write_flw_file()`, and `main()` ends with `sys.exit(1 if _FAILED else 0)`. **The canvas path is UNAFFECTED** — `check_flowcreator_result_view` keys off the PID file + `flow_result.json`, never the exit code. **Do NOT revert the exit-code change**: it is the one thing that stops the tool lying about a flow it never built.
+4. `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS['flowcreator']` expanded from `("model", "response_body")` to also expose `status`, `flw_path`, `flow_filename`, `agent_count`, `connection_count`, so a downstream Parametrizer can address the new header fields.
+
+**Wiring:** `ChatWrappedAgentSpec(key="flowcreator", …)` in `chat_agent_registry.py`; migration `0186` seeds the `Chat-Agent-FlowCreator` Tool row (the Agent row already existed from `0031`) + the mandatory Catalog-of-Prompts demo (appended at the next free `idPrompt`, `sort_rank=85` in *Agents & Flows*). Exec-Report capture is automatic via the generic `_resolve_exec_report_spec` fallback — no `_EXEC_REPORT_TOOLS` entry needed. `config.yaml` gained an `output_dir` key.
+
+**Verified LIVE** with Angela's own example (`glassfish_error_alert.flw`, 7 agents / 6 connections): `Starter → Monitor-Log → Raiser → Summarizer → Parametrizer → Telegrammer → Ender`. Ruff clean; `0186` applied; `test_ask_execs_allowlist` (FlowCreator is not in the gated allowlist — it neither destroys data, contacts a human, nor reaches a remote system; it only writes a local file) still 8/8.
+
+---
+
+## 2026-07-21 — Catalog of Prompts standardized onto ONE parameter grammar (`[[ ]]` / `{{ }}` / `< >`) + `sort_rank` ordering (v1.44.0)
+
+**What changed.** Every prompt in the `#prompts-catalog` modal now uses a single parameter grammar so the user and the runtime can never confuse whose blank is whose:
+- **`[[ ... ]]`** — a value the **USER** fills in. Always collected in a fill-in block at the **TOP** of the prompt, with an unfilled-guard sentence beneath ("for any OPTIONAL field I leave as a marker or blank, use the stated default") so a one-click demo still runs on defaults.
+- **`{{ ... }}`** — a value **Tlamatini fills at RUNTIME**.
+- **`< ... >`** — a **REPORT slot only** (where the answer prints), never an input.
+
+**Migrations (touch ONLY `promptContent`).** `0181` adds the `sort_rank` column and changes in-section ordering to `(category rank, sort_rank, idPrompt)`; `0182` seeds a **Step-by-Step section opener** at the reserved rank-10 slot of every category; `0183`/`0184`/`0185` rewrite the existing prompts across all 13 categories onto the grammar in batches. `idPrompt` / `promptName` / `category` / `sort_rank` / `hidden` are NEVER touched, so catalog ordering + contiguity hold byte-for-byte. `0183` also fixed a `C:/Temp` hardcode (Temp-policy break) in the Nmapper prompt #75.
+
+**Do NOT** renumber existing `idPrompt`s, or hardcode a scratch path in a prompt. Append at `max(id)+1` and set `sort_rank` to place the card; obey the Temp/Templates policy. Pinned by `agent/test_prompt_catalog_contiguous.py`. Full contract: `CLAUDE.md` → the "Catalog-of-Prompts Example" section + `create_new_agent.md` Step 7.8.
+
+---
+
+## 2026-07-19 — Recon agents run FREE up to `OOB_shift_reaper`; NAMU voids it on shutdown
+
+**Symptom.** A long real scan (a full-port nmap, a subfinder/nuclei run, a remote Kali job) was reaped mid-flight by the idle-child watchdog — the child was *working*, not hung, but the silence read as "stuck", so the scan died before it finished.
+
+**Fix — a deliberate free-run window.** The three recon agents — **Kalier** (remote Kali), **Nmapper** (local nmap), **Discoverer** (ProjectDiscovery) — may now run uninterrupted up to **`OOB_shift_reaper` seconds (default 3600)** before the watchdog is even allowed to treat them as idle. `agent/agents/{kalier,nmapper,discoverer}/*.py` read the knob; `agent/apps.py` honours the window in the reaper path.
+
+**Guard — NAMU, "God of Gods".** When Tlamatini herself is shutting down, the free-run window is **VOID**: NAMU runs FIRST (before the generic sweeps) and tree-kills every recon child immediately, regardless of how much of its window remained, so nothing survives her exit. **Do NOT** weaken the free-run for these three agents (long scans are normal work), and **do NOT** teach NAMU to respect the window (a shutdown must kill everything NOW). Developer-tuned; authorized targets only.
+
+---
+
+## 2026-07-19 — EMPTY code block SHREDDED the whole answer (`str.replace('', x)`) + saved the same file 101 times
+
+**Symptom (Angela, dev instance):** a Kali-wizard reply came back as one `---Load in canvas: 20260719180442_install_prereqs.sh---` link **per character** — the sentence "Ping succeeded…" rendered as `P---Load in canvas: …---i---Load in canvas: …---n---…` — and the chat was flooded with **101 identical** `File: … saved!` notifications for ONE file.
+
+**Root cause** — `agent/services/response_parser.py`, the named-code-block loop:
+
+```python
+llm_response = llm_response.replace(programContent, "<a …>---Load in canvas: NAME---</a><br>")
+```
+
+When the model emitted an **empty** block (`BEGIN-CODE<<<install_prereqs.sh>>>END-CODE`), `REGEX_NAMED_CODE_BLOCK` group 3 is `''`, so this became `llm_response.replace('', link)` — and **Python's `str.replace` with an empty needle inserts the replacement between EVERY character** (and at both ends). The same block being matched repeatedly also called `save_program()` once per match, producing the 101 writes + 101 WebSocket notifications.
+
+**Fix (do NOT remove either guard):**
+1. **Skip empty / whitespace-only blocks** at the top of the loop (`if not (programContent or '').strip(): continue`) — there is nothing to save and nothing to link, and this is what keeps an empty needle from ever reaching `.replace()`. It logs `--- Skipped an EMPTY code block named '<name>'`.
+2. **De-duplicate identical blocks** (`_seen_code_blocks` keyed on `(programName, programContent)`) so a block repeated N times is written **once**, not N times.
+3. The `.replace(programContent, …)` call is additionally wrapped in `if programContent:` as a belt-and-braces second line of defence.
+4. The same two guards were applied to the **unnamed**-block loop (`_seen_unnamed_blocks`).
+
+**Coverage:** `agent/tests.py::EmptyCodeBlockShredderTests` — `test_empty_code_block_never_shreds_the_answer` (prose stays contiguous, no anchor injected, and the `\w---Load in canvas:` shredder signature must never appear) and `test_same_code_block_repeated_is_saved_only_once` (patches `save_program`, asserts `await_count == 1`). `DiagramRenderingTests` (12) still green.
+
+**Rule of thumb this encodes:** never call `str.replace(needle, …)` on model output without proving `needle` is non-empty — an empty needle does not "do nothing", it detonates the whole string.
+
+---
+
+## 2026-07-15 — Catalog of Prompts: two STM32 step-by-step blink demos + a one-time RE-GROUP/RE-SORT/NO-GAPS renumber (do NOT revert)
+
+**What Angela asked:** two new Blue Pill / STM32F407G-DISC1 "classic LED blink" catalog prompts (Multi-Turn + Exec-report + Step-by-Step, from driver install through per-step verification to confirming the blink with the default camera), AND *"RE-GROUP THE PROMPTS, RE-SORT, WITH NO-GAPS THE Catalog of Prompts in the DB."*
+
+**Migrations added:**
+- **0178** — two firmware_iot prompts: a Blue Pill (STM32F103, external ST-LINK V2) and an STM32F407G-DISC1 (embedded ST-Link) step-by-step blink, each driving `chat_agent_stm32er` (PlatformIO backend) + `chat_agent_camcorder`. Badge inference (`tools_dialog.js::classifyPromptModes`): driving a `chat_agent_*` → Multi-turn (+ Exec-report auto); the UNFORMATTED phrase **"Step-by-Step mode"** (hyphenated + keyword) → the Step-by-Step badge. (There is also 0177, a simpler one-call Blue-Pill blink.)
+- **0179** — **RE-NUMBERED the whole catalog to a contiguous 1..N**, ordered by (`views.PROMPT_CATEGORY_ORDER` rank, current idPrompt), rewriting `promptName='prompt-<n>'`. This **deliberately overrides the standing "NEVER renumber idPrompt" contract** — Angela authorised it directly, and it is safe because NOTHING binds a prompt by a fixed number at runtime (`list_prompts_view` groups by `category`; the `tools_dialog.js` fallback is gap-tolerant; `idPrompt` is not an FK). `idPrompt` is the PRIMARY KEY, so the renumber is **two-phase** (park every row at a +1,000,000 offset in target order, then bring them down to 1..N) to avoid PK collisions. Reverse is a documented no-op (originals not stored).
+
+**Forward rule UNCHANGED:** the 0179 renumber was a ONE-TIME reorganization. New prompts still **append at max(idPrompt)+1** (which keeps the catalog contiguous). Do NOT write another renumber for a routine addition.
+
+**Test updates required (do NOT revert):** the renumber invalidated id-specific assertions. `test_frontend_mutable_state.py::test_seeded_catalog_is_deduped_and_fully_tagged` was rewritten to assert **contiguity + no-dup-content + fully-tagged** instead of "ids 40-52 gone / 106 kept". `test_kalier_agent.py::test_prompt_catalog_is_contiguous` and the `test_blenderer_agent` promptName↔id lock-step now PASS (contiguity restored). New `agent/test_prompt_catalog_contiguous.py` pins the invariants (contiguous 1..N, promptName matches id, category-grouped blocks, the new firmware prompts present). All green; `createsuperuser` wizard stays at idPrompt 1 (getting_started, lowest id → renumbers to 1).
+
+**Docs:** the CONTIGUITY contract in `CLAUDE.md` (and mirrored guidance) updated to "contiguous again after the one-time renumber; append-only going forward".
+
+**NOT live:** source migrations only — a rebuild + post-update migrate is needed for the frozen `:8000` app.
+
+**Do NOT:** re-introduce the old id-specific catalog assertions; write a renumber for a routine new prompt (append at max+1 instead); or drop the two-phase offset from 0179 (a naive in-place PK renumber collides).
+
+---
+
+## 2026-07-15 — STM32er widened to the WHOLE ST 32-bit line (Blue Pill → mainstream families): Phase 0 family gate + Phase 1 PlatformIO backend (do NOT revert)
+
+**What:** STM32er was welded to ONE device (STM32F407VG) — its `_device_family` only recognised `STM32F0..F7` and its preflight REFUSED cross-family, so it wouldn't even flash a Blue Pill. It is now **dual-backend**, spanning F0..F7 / G0 / G4 / L0..L5 / H7 / U5 / WB. This is Phase 0 + 1 of the plan in `docs/stm32er_all_families_proposal.md` (Phase 2/3 = the ST-native STM32CubeCLT backend for STM32C0/H5/U0/WBA/**N6** — the N6 also needs external-flash boot + a signed FSBL — is NOT yet implemented).
+
+**How (all in `agent/agents/stm32er/stm32er.py`, self-contained, stdlib-only):**
+- **Phase 0 — de-welded the gate:** `_STM32_FAMILY_PREFIXES` (full family map, WBA before WB), `_device_family` broadened to every ST family. The cross-family REFUSE was NOT weakened — instead `_resolve_stm32_backend(config, action)` **ROUTES** by target: under `stm32_backend='auto'`, a `board`, a non-STM32F4 `device`, or a PlatformIO-only action goes to the pio backend; blank/F407 stays on the **template MCP unchanged (zero regression)**. Explicit `stm32_backend='platformio'|'template_mcp'` overrides.
+- **Phase 1 — PlatformIO backend (`_pio_*` helpers + `_run_platformio_backend`):** clones ESP32er's proven `pio` machinery — drives PlatformIO Core's `ststm32` platform directly (no MCP server), zero-config bootstrap into the **SHARED** core dir `%LOCALAPPDATA%/Tlamatini/platformio` (the SAME one ESP32er uses — one PlatformIO install serves both), board catalog (`bluepill_f103c8`, …), `framework` default `arduino`, actions incl. `list_boards` / `scaffold_build_flash` and STM32-native `flash`/`build_and_flash` aliases.
+- **Shared tail `_emit_and_trigger`:** BOTH backends emit ONE `INI_SECTION_STM32ER` and trigger downstream. KV header GAINED `backend` / `board` / `port` — registered in `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS['stm32er']` (keep aligned).
+
+**Fail-safe contract (do NOT weaken):** STM32 boards flash over ST-LINK/SWD, NOT a USB-serial bootloader — so `_pio_probe_stlink` probes the ST-LINK (`STM32_Programmer_CLI --list` via the existing `_probe_stlink`, then a `pio device list` VID-`0483` VCP fallback) and hard-refuses an upload ONLY on a **confident** absence; an inconclusive miss (a bare ST-LINK v2 dongle has no VCP to enumerate) only WARNS, so a legit Blue-Pill+dongle rig is never false-refused. The pio backend refuses `STM32C0/H5/U0/WBA/N6` cleanly (→ future CubeCLT).
+
+**Wiring touched:** `config.yaml` (new `stm32_backend`/`board`/`framework`/`environment`/`pio_executable`/`pio_core_dir`/`pio_install_method`/`command_timeout`/`boards_query`/`pkg_spec`/`programmer_cli`); `services/agent_contracts.py` (KV fields); `tools.py` (`_seed_global_agent_defaults` SHARES `pio_executable`/`pio_core_dir` with ESP32er; param-hints map); `chat_agent_registry.py` (STM32er spec purpose/example/aliases teach the `board`+backend surface); docs (`agents.md`, `agents_descriptions.md` — the live tooltip, `agentic_skill.md` #67, `CLAUDE.md`, `README.md`, `architecture.md`); demo prompt migration (Blue-Pill blink).
+
+**Verified LIVE (source agent, via `mcp__tlamatini__stm32er`):** (1) `validate` + `stm32_backend='platformio'` + `board='bluepill_f103c8'` → `backend: platformio`, `pio_resolvable`, family STM32F1, `READY`, ST-LINK `confident_absent=True` (correct — no board attached). (2) `validate` + `device='STM32H743ZI'` (auto) → routed to platformio, board auto-mapped `nucleo_h743zi`, family STM32H7, `READY`. (3) `get_config` (blank/auto) → `backend: template_mcp`, MCP handshake OK, full F407 config — zero regression. `ruff` + `py_compile` clean.
+
+**Do NOT:** re-narrow `_device_family` to STM32F-only; drop `backend`/`board`/`port` from the KV or the agent_contracts registration; hard-refuse a pio upload on an inconclusive ST-LINK miss; give the pio backend its own core dir (it MUST stay shared with ESP32er); or route blank/F407 to anything but the template MCP.
+
+---
+
+## Recent Fixes / Gotchas (keep these in mind)
+
+### 2026-07-14 — Cancel did not cancel: the never-ending post-cancel run (`agent/cancellation.py`, the PER-RUN EPOCH LATCH)
+
+**The symptom (Angela).** Cancel a Multi-Turn run → a few seconds later Tlamatini starts working again **by herself**, the Send button flips back to **"Cancel"**, and it repeats **forever**. Cancelling again just feeds the loop.
+
+**The root cause — cancellation was a boolean with a ~20 ms lifetime.**
+
+1. `consumers.py::cancel-current` **Step 1** raised `cancel_generation`, and **Step 8** *cleared it again* a few milliseconds later — it HAD to, because `setup_rag_chain()` bails out on that boolean (`consumers.py` 316/327/334 and 441/484/491, the last one nulls `self.rag_chain`) and **Step 9** rebuilds the chain. `rag/interface.py::ask_rag` cleared it a **second** time at the top of every request, so the user merely typing again un-cancelled a still-running zombie.
+2. The **only** cancellation observer in Multi-Turn was `self_healing._cancelled()`, polling that same boolean every 0.25 s. After Step 8 it read `False` for the rest of the cancelled run → `ModelStepUnrecoverable("user_cancelled")` became **unreachable** → the 4096-tactic ladder ran on.
+3. `mcp_agent.py` had **ZERO** cancellation reads (`grep cancel_generation mcp_agent.py` → nothing), so tools kept firing between/inside turns regardless.
+4. The engine of the visible "🔁 Tactic #N" storm is the **classification-free `status == "timeout"` branch** in `self_healing.invoke` — it announced a tactic and `continue`d **without ever consulting `is_transient_error()` or cancellation**. (An earlier hypothesis — "abort_connection kills the executor's client → connection error → classified transient → retried" — is **WRONG**: `abort_connection()` closes the **OllamaLLM's** httpx client (`factory.py` 348-351 → `unified.py::abort_connection`), but the executor runs on a **separate `ChatOllama`** built by `_ensure_chat_tool_model` (`mcp_agent.py`:577) with its own client. **Do NOT "fix" this by touching `_TRANSIENT_MARKERS`.**)
+5. Every tactic line went through the status broadcaster that `cancel-current` **never unregistered**, and the browser's `isSelfHealingStatusMessage()` branch called `disableControlsDuringOperation()` → button back to **"Cancel"**. That is literally "it starts again by itself".
+6. Two more resurrection paths: `unified.py::_invoke_unified_agent_with_retry` **re-ran the ENTIRE executor** (re-executing tools, fresh healer, fresh 4096-tactic budget) up to 3× on its own transient list — which does **not** overlap `self_healing`'s, so errors the healer deliberately re-raises landed there — and the post-failure fallback fired **one more uncancellable LLM call** printing the (now lying) *"tool-calling backend is currently unavailable (transient network error)"* notice.
+
+**The fix — `agent/cancellation.py`: a PER-USER RUN-EPOCH LATCH.** `begin_llm_run(uid)` mints a monotonically increasing epoch per user; `request_cancel_generation(uid)` raises the legacy boolean **and permanently latches that user's current epoch**; `is_run_cancelled(uid, epoch)` = `latched >= epoch`. A cancelled run stays cancelled **forever**; the user's NEXT run gets a higher epoch and runs normally. `clear_cancel_generation()` clears **only the boolean** — so Step 8 keeps working and the rebuild is never blocked.
+
+**Contract — do NOT weaken any of these:**
+
+- **PER USER, never one process-global high-water mark.** `global_state` is one process-wide singleton and Tlamatini admits concurrent runs (TeleTlamatini + a browser; two tabs) — the codebase already keys `last_request_meta::<uid>` per user for exactly this reason. A global latch would let a browser Cancel permanently kill a Telegram user's healthy run.
+- **A MISSING epoch means NOT cancelled (fail-open).** `is_run_cancelled(uid, None)` is always `False`. If it meant "cancelled", a single dropped whitelist key would make **every** request after the first-ever cancel self-cancel on arrival.
+- **THREE plumbing hops, all mandatory:** `ask_rag` payload → `UnifiedAgentChain.invoke`'s **payload-rebuild whitelist** (`unified.py`) → **both** executor sub-payloads (`UnifiedAgentChain` + `UnifiedAgentRAGChain`) → `CapabilityAwareToolAgentExecutor.invoke`'s `executor_payload` (`mcp_agent.py`). Miss any one and `run_epoch` is `None`, every guard silently no-ops, and the loop is back (the `exec_report_enabled` drop-on-rebuild bug class). Pinned by `agent/test_cancellation.py::CancelEpochPlumbingContractTests`.
+- **Step 8's `clear_cancel_generation()` STAYS** — it must keep clearing only the boolean, or the chain rebuild aborts and leaves `self.rag_chain = None`.
+- **The executor RETURNS on cancel, never `raise`s** (`_cancelled_result` → `_build_result_dict`), so the Exec report + Create-Flow log for the agents that DID run survive — and a raise would reach `unified.py`'s fallback and fabricate the lying "transient network error" answer.
+- **`cancel-current` revokes the status emitter immediately** (identity-guarded with the SPECIFIC `_emit_status` handle stored on the consumer — `emit=None` would mute a second tab of the same user).
+- **Frontend `userCancelledRun`** (`agent_page_state.js`, **`let` — never `const`**): while true, a late "Tactic #…" frame is a strict **no-op** (do NOT re-disable, do NOT re-enable — a newer run may own the UI). Set after the cancel frame is sent, cleared on the next submit / Reconnect. Do **not** loosen `isSelfHealingStatusMessage()` — its anchored matcher is itself the 2026-07-07 fix.
+
+**Also fixed:** the Ask-Execs broker (`exec_permission.py`) now polls the run latch, so a Cancel raised while a Proceed/Deny modal is blocking resolves to **deny** instead of parking the worker forever (the button-stuck-on-Cancel mirror bug); `cancel-all` lowers the boolean too (a leftover `True` used to poison any later `setup_rag_chain()`); and a cancelled run's late answer is dropped **only** when a NEWER run is already in flight (otherwise it is still delivered, preserving the Exec report).
+
+**Coverage:** `agent/test_cancellation.py` (24 tests — incl. `test_step8_race__clearing_the_boolean_does_NOT_uncancel_the_run` and the cross-user no-collateral-damage pair) + 3 new `test_self_healing.py` tests that reproduce the Step-1→Step-8 sequence verbatim and assert **no** further "Tactic" frame is ever emitted after a cancel.
+
+### 2026-07-14 — Screenshot paste / drag-and-drop into the chat box (`chat_image_paste.js`)
+
+**PrtScn → Alt+Tab → Ctrl+V now attaches a screenshot to the chat: the image is saved to `<app>/Temp` as `image_<timestamp>.jpg` and its ABSOLUTE PATH is spliced into the chat box at the caret, with a thumbnail chip above the input.** Dropping image files onto the chat column does the same. The point is to hand Tlamatini an image path she can pass to Image-Interpreter / `launch_view_image` in the very next prompt.
+
+Surfaces: `agent/views.py::paste_image_view` (+ `_unique_chat_image_path`, Pillow → JPEG, alpha flattened onto white, 25 MB cap) · route `paste_image/` via `secure_post` in `urls.py` · `agent/static/agent/js/chat_image_paste.js` (self-contained IIFE, **no new cross-file globals** — respects the const-poison contract) · `#chat-image-chips` + `#chat-drop-overlay` in `agent_page.html` · `.chat-img-*` / `#chat-drop-overlay` CSS in `agent_page.css`.
+
+Two contracts, both learned the hard way in the live visible test:
+
+1. **`agent_page_layout.js` PINS `#tools-chat-form-container` to an explicit pixel height** (`toolsContainer.style.height = formPx + 'px'`, from `computeFormMinHeight()`). Anything you add INSIDE that container must be counted there, or it silently pushes the textarea + Send button off the bottom of the viewport. The chips row is measured (`chat-image-chips` offsetHeight) and the `ResizeObserver` now watches BOTH `tools-div` and `chat-image-chips`. **Do NOT add another row inside that container without extending `computeFormMinHeight()`.**
+2. **The paste listener is on `document`, not on the textarea** — after Alt+Tab the focus is on `<body>`, so a textarea-scoped listener misses the flow entirely. The caret is remembered separately (`lastCaret`, updated on click/keyup/select/input/blur) so the path lands where the user left the cursor. **Drag-and-drop is scoped to `#main-chat-container`** on purpose: the External-MCP dialog installs its own document-level `.json` drop handler, and a document-level image handler would fight it.
+
+Live-proven 16/16 (headed Chrome, real OS keystrokes, full-screen photos): real clipboard bitmap → `image_20260714_005340_168.jpg` (2560×1600, 199 KB) written to Temp, path inserted **mid-sentence at the caret**, thumbnail rendered, drop pipeline verified, chip `×` removes both the chip and its path, textarea + Send stay on screen.
+
+Machine note (not a bug in Tlamatini): on Angela's Windows 11, **PrtScn opens the Snipping Tool overlay** instead of copying the screen to the clipboard. The snip still reaches the clipboard once taken, so the feature works; the overlay just sits on top and swallows keystrokes, which makes automated tests flaky — kill `SnippingTool.exe` / `ScreenClippingHost.exe` before driving the keyboard, and NEVER trust a clipboard check without emptying the clipboard first (a stale bitmap from a previous run will happily fake a pass).
+
+### 2026-07-13 — Configurable web port `django_port` (v1.40.1) — do NOT re-hardcode 8000
+
+**The web port is now `config.json` → `django_port` (default 8000), resolved in `Tlamatini/manage.py` and applied to EVERY launch path. Contract: `docs/claude/architecture.md` → *Configurable web port*. Coverage: `agent/test_django_port_config.py` (24 tests).**
+
+- **The failure it fixes.** On a machine where Windows/Hyper-V has **RESERVED** port 8000 (a dynamic-port exclusion range — check with `netsh interface ipv4 show excludedportrange protocol=tcp`), Daphne cannot bind it and Tlamatini dies at startup with **`WinError 10013`** ("an attempt was made to access a socket in a way forbidden by its access permissions"). A **frozen install had no escape** — the port was baked into `manage.py`, so only a rebuild could move it. It is now one line of `config.json`.
+- **Three helpers in `manage.py`, deliberately stdlib-only** (they run BEFORE Django is imported — do NOT make them import `agent.*` / `config_loader`): `_resolve_config_path()` (CONFIG_PATH env > next to the frozen exe > `agent/config.json`), `_resolve_django_port(default_port=8000)` (read + range-validate), and `_apply_configured_port(argv)` (inject into `sys.argv`).
+- **Completion pass (this entry).** The original commit `4dc1d546` only wired the port into the **frozen** block, so `python manage.py runserver` (the documented source dev command) and `manage.py startserver` **still silently bound 8000 and ignored the key**. `main()` now calls `sys.argv = _apply_configured_port(sys.argv)` once, outside the frozen branch, so all five paths agree: frozen double-click, `.flw` association, frozen browser auto-open, source `runserver`, `startserver`.
+- **Do NOT weaken these two invariants** (they are what the 24 tests pin):
+  1. **Fail-open.** Missing key / missing file / unparseable JSON / non-numeric / out-of-range → fall back to **8000** and print `--- [PORT] …`. A config typo must NEVER stop the server from starting. Read with `utf-8-sig` (BOM-tolerant).
+  2. **An explicit CLI port always wins.** `runserver 9100` / `runserver 127.0.0.1:9100` is never overridden, and the injector never double-appends onto the frozen `0.0.0.0:<port>` rewrite. The "did the user pass one?" test is *any non-flag token after the command* — do not simplify it to `len(argv) > 2` (that would treat `--noreload` as an address).
+- **Bare port on purpose.** `_apply_configured_port` appends `"<port>"`, NOT `"0.0.0.0:<port>"`, so source mode keeps Django's **loopback** default host. Only the frozen paths deliberately bind `0.0.0.0`. Do not "normalize" them to the same string.
+- **Out of scope, by design:** a direct `daphne`/`uvicorn` launch bypasses `manage.py` (pass the port on that CLI). The MCP helper listeners `:8765` / `:50051` are a separate axis with their own keys. The **TeleTlamatini** bridge has its own `tlamatini.base_url` — repoint it if you move the port.
+- **Testing note:** `manage.py` CANNOT be imported in a test process (module-level console branding + the stdout/stderr tee + the Temp-dir pin). `test_django_port_config.py` therefore AST-lifts the three helpers and execs them in a clean namespace — the same "cannot safely be imported" trick `test_temp_dir_policy.py` uses. Keep it that way.
+
+### 2026-07-12 — Tlamatini-FlowPills companion-app discovery (v1.40.0) — keep these surfaces, do NOT revert
+
+**So the sister app `Tlamatini-FlowPills` can find Tlamatini's agent-template catalog at startup WITHOUT importing Python, running Tlamatini, or scanning drives, Tlamatini publishes three read-only, HKCU-only, fail-open surfaces. Engine: `agent/agent_manifest.py` + `agent/windows_app_registration.py`; wired into `apps.py`, `install.py`, `uninstall.py`, `build.py`. Contract: `docs/companion-app-discovery.md`. Codex reports: `Tlamatini-Moded-For-Flowpills.md` + `Tlamatini-Moded-For-FlowPills-2nd-Sprint.md`. Requirement source: `Tlamatini-FlowPills-Lookup.md` §15 + `Tlamatini-FlowPills-Lookup-2nd-Sprint.md`.**
+
+- **The three surfaces.** (1) Registry key `HKCU\Software\XAIHT\Tlamatini` with six `REG_SZ` values (`InstallLocation`, `AgentsRoot`, `SourceAgentsRoot`, `AgentManifestPath`, `Version`, `AgentCatalogVersion` = `<count>-<sha8>`). (2) `_tlamatini_agents_manifest.json` next to the agents (complete templates only — `<type>.py` + `config.yaml`; `pools`/`__pycache__` excluded — each with a per-file `sha256`). (3) `.tlamatini-preserved-agents.json` left by the uninstaller when it preserves `agents/` (carries `manifest_path` + `manifest_sha256`).
+- **Do NOT revert (second-sprint hardening):**
+  - **`apps.py`**: discovery is scheduled **FIRST** in `AgentConfig.ready()` via the module-level `_schedule_companion_discovery()` — BEFORE `global_state` / the two MCP servers / `models` / ACPX are imported — with a **dedicated** idempotency gate (`_DISCOVERY_GATE_LOCK` + `_discovery_thread_started`), separate from `mcp_server_running`. Do NOT move it below the heavy imports and do NOT gate it on the MCP flag (an import/startup failure there must never suppress publication).
+  - **`windows_app_registration.register_discovery_entry`** writes ALL SIX `REG_SZ` values on every call (empty when unknown) — never re-add the `if version:` / `if agent_catalog_version:` conditionals (they leave stale metadata behind). The agents-preserving uninstall KEEPS the key; only a full removal calls `unregister_discovery_entry()`.
+  - **`agent_manifest.read_manifest`** uses `utf-8-sig` (BOM-tolerant); `ensure_manifest` re-hashes every complete agent file on each check and rewrites only when content differs (the volatile `generated_at` alone never rewrites).
+  - **`install.py`**: companion registration is its OWN method `_register_companion_discovery`, called INDEPENDENTLY of `_register_programs_entry` (a missing `Uninstaller.exe` / an ARP failure must not skip it); the installer does its own `winreg` writes (it cannot import `agent.*`).
+  - **`uninstall.py`**: `_write_preserved_agents_marker` writes `manifest_sha256` (computed AFTER re-stamping the manifest kind to `preserved`).
+- **Filesystem is authoritative** — the manifest is diagnostic evidence only; keep it accurate but never let a stale/missing manifest gate a root pass/fail (FlowPills REQ-VAL-008).
+- **Tests**: `agent/test_agent_manifest.py` (17 tests) is a plain `unittest.TestCase` (Django-FREE) so it runs SECRET-SAFELY via `python -m unittest agent.test_agent_manifest` (verified 0 tracked config files changed; `manage.py test` also passes, content-hash-guarded over 86 config files). Keep it Django-free and keep the HKCU backup/restore in the live registry tests.
+
+### 2026-07-12 — Unreal Engine 5.8 project scaffolder + Unrealer material fixes (VS 2026) — keep these UE-5.8 / VS-2026 build fixes, do NOT revert
+
+**Repos: the scaffolder + UE template live in the SEPARATE `XaihtUnrealEngineMCP` repo (`scaffold_unreal_project.py` + `MCPGameProject/`, git `XAIHT/XaihtUnrealEngineMCP`). The Tlamatini side is the Unrealer agent (`agent/agents/unrealer/{unrealer.py,config.yaml}`) + the Catalog-of-Prompts entry (`agent/migrations/0173_add_unreal_scaffold_demo_prompt.py` + `0174_unreal_scaffold_build_project_tip.py`, seeded `prompt-106`).**
+
+- **New capability — one-prompt Unreal 5.8 scaffold.** `prompt-106` scaffolds a BRAND-NEW UE 5.8 C++ project (UnrealMCP editor plugin already wired, ready to open+build in **Visual Studio 2026**) from just TWO `[[ ]]` markers — the project NAME and the DIRECTORY (the "add-a-contact"-style placeholder pattern). It drives the deterministic `scaffold_unreal_project.py` (copy+rename the `MCPGameProject` template, set EngineAssociation 5.8, auto-discover UE 5.8 on disk even when unregistered, generate the VS `.sln`). **Proven live end-to-end:** scaffold → build green on 5.8 → editor auto-starts the UnrealMCP TCP listener on `127.0.0.1:55557` (a `UEditorSubsystem`) → the Unrealer agent drove `get_actors_in_level`.
+- **UE-5.8 / VS-2026 build fixes (all in `XaihtUnrealEngineMCP`, all "do NOT revert"):**
+  - **`Source/*.Target.cs`: `BuildSettingsVersion.V7` + `IncludeOrderVersion.Unreal5_8`** — `V6` is a hard UBT reject ("modifies shared properties") against 5.8's installed engine.
+  - **`MCPGameProject/Directory.Build.targets` resets `<IncludePath>` / `<ExternalIncludePath>` to `$(VC_IncludePath);$(WindowsSDK_IncludePath)`** — VS 2026's v180 target `AddExternalIncludDirectoriesToPaths` pushes UE's ~35k-char include list into the `INCLUDE` env var → exceeds the **32,767-char Windows env-var limit** → `MSB4018: The SetEnv task failed unexpectedly / value is too long`. UBT passes includes to the compiler directly (ignores that env var) and IntelliSense uses `<NMakeIncludeSearchPath>`, so the reset is safe; it lives at the project root so it survives a project-file regen.
+  - **`.uproject` EngineAssociation → 5.8; `UnrealMCP.uplugin` `WhitelistPlatforms` → `PlatformAllowList`; `UnrealMCPEditorCommands.cpp` `FImageUtils::CompressImageArray` → `PNGCompressImageArray` (into a `TArray64<uint8>`)** — real 5.8 API breaks caught by the live build.
+  - **VisualStudioTools plugin (VS 2026 auto-injects Microsoft's MIT plugin on open):** its `VisualStudioToolsBlueprintBreakpointExtension.cpp` did `#include <BlueprintGraphClasses.h>` — an aggregate header Epic **REMOVED in 5.8** (IWYU) → C1083 + MSB3073 (Build.bat exit 6). Fix (Angela's, via Copilot/Fable 5, `AngysLastChance/fix.md`) = `#include <K2Node_CallFunction.h>` (only symbol used is `UK2Node_CallFunction`). **VS does NOT overwrite an already-present plugin**, so the durable fix = **bundle the pre-fixed plugin in the template** (`MCPGameProject/Plugins/VisualStudioTools/`, `EnabledByDefault:true`) + a defensive idempotent `patch_vs_tools_ue58()` in the scaffolder. In VS, **build the game PROJECT only, never "Build Solution"** (a full-solution build also compiles unrelated engine targets — LiveLinkHub, test harnesses — that fail for unrelated reasons and clutter the Error List); `prompt-106` step 4(b) now says exactly this (migration `0174`).
+- **Unrealer agent correctness fixes (`agent/agents/unrealer/unrealer.py`, verified against the plugin C++):**
+  - **`assign_material` slot was silently dropped** — the plugin reads `slot_index` (`HandleAssignMaterial`), the agent only exposed `slot`; added `'slot': 'slot_index'` to `_PARAM_ALIASES['assign_material']` so a non-zero slot no longer lands on slot 0.
+  - **`material_path` was not `/Content`→`/Game` normalized** — the alias remap renames `material`→`material_path` BEFORE normalization runs, so `'material_path'` was added to `_CONTENT_PATH_PARAM_KEYS`.
+  - **`config.yaml` plugin-source pointer corrected** — the "extended fork" comment now names `XaihtUnrealEngineMCP` (was the stale `C:\Development\unreal-mcp` base, which implements only ~34 of the catalogued commands).
+
+### 2026-07-11 — Catalog of Prompts: the panel is CSS-pinned to the viewport — do NOT re-introduce JS positioning in `tools_dialog.js`
+
+**Files: `agent/static/agent/css/tools_dialog.css` (`.modal-content`, `.modal-header`, `.modal-body`, `.modal-footer`, `.prompt-search-bar`) and `agent/static/agent/js/tools_dialog.js` (`positionModalNearCatalogButton()` — REMOVED).**
+
+- **Bug (Angela, live):** with a large catalog (105 prompts), the `#prompts-catalog` modal grew straight off the **top** of the window and the **search box became unreachable**, and where it landed depended on how tall the user had dragged the chat textarea.
+- **Two causes, both in the removed `positionModalNearCatalogButton()`:**
+  1. It anchored the panel's **BOTTOM** to the "Catalog of prompts" button — `bottom = window.innerHeight - buttonRect.top`. That button floats above the chat textarea, so the panel's geometry literally tracked the **chat input's height** (the thing Angela explicitly wanted independence from).
+  2. Its height clamp measured `modalContent.getBoundingClientRect()` while `.modal-content` was still at `transform: scale(0)` (a **0×0** rect, since `getBoundingClientRect` returns the *transformed* box). So `contentHeight` was garbage, `maxBottom` never engaged, and the panel overflowed the viewport upward.
+- **Fix — geometry is now 100% CSS, zero JS measurement.** `.modal-content` is `position: fixed; top: 12px; left: 12px; bottom: auto; max-height: calc(100dvh - 24px)`, `transform-origin: top left`. It is anchored to the **VIEWPORT**, grows DOWNWARD, and can never exceed the window, so the header + search bar are always on screen at a **constant** y. `.modal-header` / `.prompt-search-bar` / `.modal-footer` are `flex: 0 0 auto` (never squeezed out) and `.modal-body` is `flex: 1 1 auto; min-height: 0; overflow-y: auto` — **`min-height: 0` is load-bearing**: without it a flex item's default `min-height: auto` refuses to shrink below its content, so the *panel* would stretch instead of the *list* scrolling. `.modal-footer:empty { display: none }` drops the stray divider the empty footer used to draw.
+- **DO NOT** re-add JS `left`/`bottom` inline styles to `.modal-content` (they would override the stylesheet and resurrect both bugs), and do not measure a `scale(0)` element for layout.
+- **Verified live (headed Chrome, real chat GUI, 105 cards):** panel top = 12 px, bottom = 938 of a 950 px viewport, list scrolls internally, search box on screen + clickable. Growing the chat textarea moved the Catalog **button** 835 → 1152 px while the **search box stayed at exactly 127 px** — i.e. provably independent of the chat input's vertical size.
+- **Note (bit us during this fix):** the app Angela runs on `:8000` is the **frozen install `C:\Tlamatini\Tlamatini.exe`**, not the source tree — see the frozen-static note below/`memory: project_live_app_is_frozen_install`. A repo-only edit changes nothing she can see.
+
+### 2026-07-11 — Plain `runserver` (reloader ON) no longer double-starts the MCP helper ports — do NOT remove the `RUN_MAIN` gate in `agent/apps.py`
+
+**File: `agent/apps.py` (`AgentConfig.ready()`), plus the run-instruction docs (`README.md`, `CLAUDE.md`, `BookOfTlamatini.md`, `ACPX.md`, `KIMI.md`, `agent/doc_generation/complete_project_docs.py`).**
+
+- **Bug (long-standing, never noticed):** `python manage.py runserver` **without** `--noreload` runs TWO processes — Django's autoreload **watcher** AND the **worker** — and BOTH execute `AppConfig.ready()`. `ready()` starts the two MCP helper servers (System-Metrics `ws://…:8765`, Files-Search `grpc :50051`), so they were started **twice**; the second bind failed with `OSError [WinError 10048]` ("only one usage of each socket address…") / gRPC "Failed to bind to address `[::]:50051`", printing two red tracebacks on **every** plain-`runserver` boot. The in-process `global_state('mcp_server_running')` guard cannot catch it — it is per-process, and the two reloader processes each hold their own copy. It stayed hidden for years because EVERY doc says to run `runserver --noreload`, and the shipped `.exe` uses the single-process `startserver`; only a developer who dropped `--noreload` from source ever hit it.
+- **Fix:** immediately after the existing `should_start` gate in `ready()`, a reloader-awareness gate. Django sets `RUN_MAIN=true` ONLY in the worker child (the watcher parent leaves it unset), so:
+  ```python
+  _runserver_reloader = ('runserver' in argv) and ('--noreload' not in argv)
+  if _runserver_reloader and _os.environ.get('RUN_MAIN') != 'true':
+      return
+  ```
+  The watcher parent bows out; only the worker binds the ports (exactly once). `--noreload` / `daphne` / `asgi` / `startserver` are single-process (no reloader, `RUN_MAIN` unset) and fall through unchanged, binding once.
+- **Do NOT revert / do NOT "simplify":** removing this gate reintroduces the double-bind crash on plain `runserver`. Do NOT reduce it to `if _os.environ.get('RUN_MAIN') != 'true': return` alone — that would wrongly SKIP startup under `--noreload` (which has NO `RUN_MAIN`), breaking the documented run mode and the frozen build. The docs' `--noreload` requirement is now softened to "optional" (both modes boot clean).
+- **Same class, second site — `startserver` (2026-07-11 follow-up, found by the deep audit):** the custom `python manage.py startserver` dev command ALSO double-started the two MCP servers — `ready()` starts them (its `should_start` matches `startserver`) AND `startserver.handle()` spawned its OWN `run_mcp1` / `run_mcp2` threads, double-binding `:8765` (WinError 10048 → stderr) and `:50051` (silent gRPC bind-to-nothing on a parked `daemon=False` thread). Fixed by making `ready()` the SOLE owner: `handle()` now just `call_command('runserver', use_reloader=False)` and starts NO MCP threads (unused `sys`/`asyncio`/`mcp1_main`/`mcp2_serve` imports removed). **Do NOT re-add MCP thread starts to `startserver.py`.** (The frozen `.exe` launches via `runserver --noreload`, not `startserver`, so this was a dev-command-only defect.)
+
+### 2026-07-08 — Const-poison incident + v1.38.1 hotfix: cross-file mutable JS globals MUST stay `let`; Catalog of Prompts now loads via `GET /agent/list_prompts/` — do NOT re-`const` the globals, do NOT drop the fallback probe loop
+
+**Files: `agent/static/agent/js/agent_page_state.js` + `agent/static/agent/js/acp-globals.js` (mutable globals restored to `let`), `agent/static/agent/js/tools_dialog.js` + `agent/views.py::list_prompts_view` + `agent/urls.py` (new `/agent/list_prompts/` route, `secure_get`-wrapped), `agent/static/agent/js/agent_page_dialogs.js` (dialog hardening), `agent/templates/agent/agent_page.html` + `agentic_control_panel.html` (cache-busters `_statefix`/`_dialogfix`/`_promptfix`), NEW `agent/test_frontend_mutable_state.py` (146-line regression suite). Commits: incident `85ee4e6c` → fix `af356c31` → tag **v1.38.1** (package.json aligned by `08efa1d2`).**
+
+- **Incident (2026-07-08, the "const-poison"):** an automated style pass rewrote runtime-reassigned CROSS-FILE globals from `let` to `const` in `agent_page_state.js` / `acp-globals.js` (the tools/agents/skills arrays, chat history, canvas running/validation state, busy flags). Per-file ESLint structurally CANNOT see cross-file reassignment, so lint stayed green while the browser died on load with `TypeError: Assignment to constant variable` — the chat page AND the ACP Workflow Designer were dead. (The same incident also left a 0-byte `db.sqlite3`; recovered by reverse-applying the commit + `migrate`.)
+- **Contract (do NOT re-`const`):** every module-level global that ANY other JS file reassigns MUST be declared `let`. `agent/test_frontend_mutable_state.py` now guards BOTH the source tree AND the collected `staticfiles` copies against re-poisoning — the check ESLint cannot perform. The template cache-busters force every browser off the poisoned cached scripts; keep them until a future STATIC_VERSION rotation supersedes them.
+- **Catalog of Prompts endpoint:** the primary load path is now **`GET /agent/list_prompts/`** (`views.list_prompts_view`) returning ALL `Prompt` rows ordered by `idPrompt` in ONE request — no more expected-404 console spam, and an `idPrompt` gap no longer hides the prompts after it. The legacy `prompt-1..N` probe loop is KEPT as the offline fallback and that fallback still breaks at the first gap — so demo-prompt migrations stay contiguous/append-only (`MAX_PROMPTS=256`) per `create_new_agent.md` Step 7.8.
+- **Dialog hardening in the same fix:** the Configure-Mcps probe loop exits cleanly, the About-video `play()` promise is guarded, and Esc closes the About/Update overlays.
+
+### 2026-07-07 — Self-healing LIVE status lines no longer flip the Send button back early (frontend); the run stays "Cancel" until the REAL answer — do NOT switch the matcher to a substring `includes`
+
+**Files: `agent/static/agent/js/agent_page_ui.js` (new `isSelfHealingStatusMessage()`), `agent/static/agent/js/agent_page_chat.js` (new `else if` branch in `appendChatMessage`). Frontend/JS-only, so it was ALSO hot-patched into the frozen install's served copies `C:\Tlamatini\_internal\staticfiles\agent\js\{agent_page_ui,agent_page_chat}.js` (restart + Ctrl+F5 to serve — WhiteNoise `DEBUG=False` caches the file index at startup). Verified live on `c:\Tlamatini` with fault injection.**
+
+- **Symptom (Angela):** during a self-healing run the Send button flipped back to **Send** and the controls re-enabled *while Tlamatini was still working* ("it apparently stops but keeps working"). The 2026-07-06 `register_status_broadcaster` streams first-person recovery lines ("🔁 Tactic #2 …", "⚠️ … switching to a different tactic", "✅ … continuing the run …") as ordinary `{type:agent_message, message, username:Tlamatini}` frames — **identical in shape to the final answer** — so in `appendChatMessage` they fell through to the catch-all `else` → `enableControlsAfterOperation()`.
+- **Fix:** a new branch — `else if (isSelfHealingStatusMessage(message))` — renders the line but RE-ASSERTS `disableControlsDuringOperation()` (idempotent; its spinner is guarded) so the button stays **Cancel**; only the true final answer takes the `else` and re-enables. `isSelfHealingStatusMessage` strips leading non-letters then `startsWith('Tactic #') || startsWith("Tactic '")`.
+- **Do NOT change the matcher to a substring `includes`.** `self_healing.py::recovery_preamble` prepends a "SELF-HEALING NOTE —" banner to the FINAL answer that QUOTES those same tactic lines (as `- <line>` list items); a substring match would then classify the final answer as a status line and stick the button on **Cancel forever** — a strictly worse bug. The anchored (start-of-message) match catches only a standalone status frame. The "🛑 You cancelled" line is deliberately NOT matched — after a cancel the controls SHOULD return.
+- **Reproduce:** launch with `TLAMATINI_SELF_HEAL_FAULT_RATE=1` + `TLAMATINI_SELF_HEAL_FAULT_MODE=error` (`self_healing.py::_fault_config`); every model step's first attempt fails → a "🔁 Tactic #2" retry → recovers on attempt 2. Relaunch WITHOUT those vars for normal (un-slowed) use.
+
+### 2026-07-06 — Self-healing model-step invoker (`agent/self_healing.py`) — she NEVER hangs, NEVER discards real work, NEVER lies about it; do NOT make a model failure silent
+
+**Files: NEW `agent/self_healing.py` + `agent/test_self_healing.py`; `agent/mcp_agent.py` (`MultiTurnToolAgentExecutor` builds a per-request `self._healer = SelfHealingInvoker(...)` and routes EVERY model step through `self._healer.invoke(...)` — the no-tools answer, each tool-loop iteration, the repetition-breaker nudge/summarize, and the final wrap-up); `agent/rag/chains/unified.py` (`_invoke_unified_agent_with_retry` bubbles `ModelStepUnrecoverable` straight to the fallback instead of re-running the whole executor ladder); `agent/consumers.py` (registers a LIVE status broadcaster per Multi-Turn request). Live-validated by `Tlamatini/tests_e2e/` (injected-fault runs; reports under `Temp/self_healing_visual_report_*`).**
+
+- **What it does:** every `llm.invoke()` / `bound_llm.invoke()` in the Multi-Turn executor is wrapped by a per-request `SelfHealingInvoker`. On a transient model failure it keeps trying DISTINCT recovery tactics (plain retry, back-off sleep, message-tail trim via `trim_messages`, plain-LLM fallback) up to `unified_agent_llm_step_max_tactics` (default **4096**, min 1). A per-attempt watchdog of `unified_agent_llm_step_timeout_seconds` (default **80 s**, min 15) ABANDONS a call that does not answer in time (`_run_with_watchdog` runs the step on a worker thread and never waits past the deadline) so she can NEVER hang. Only the **USER (Cancel)** or a fully-exhausted tactic ladder stops her — then it raises `ModelStepUnrecoverable(reason, attempts, tactics_tried)`.
+- **Never discards real work (graceful degradation):** if `ModelStepUnrecoverable` fires AFTER ≥1 agent already ran (`self._tool_calls_log or self._exec_report_entries`), the executor FINISHES GRACEFULLY from that real work (`_degraded_answer_from_results(...)`) so the Create-Flow button + Exec report survive and the answer is TRUTHFUL. Only a pure-Q&A with nothing to preserve re-raises to the chain fallback — which is exactly why `unified.py::_invoke_unified_agent_with_retry` short-circuits `ModelStepUnrecoverable` to the fallback instead of re-running the whole expensive executor ladder.
+- **Never silent, never lies:** `recovery_preamble(healer.recovery_events)` is prepended to the FINAL, persisted answer on EVERY exit path (they all funnel through `_build_result_dict`), so the user is ALWAYS told what Tlamatini went through — never a lying "no tools ran" / silent stall.
+- **Live status while she retries:** `register_status_broadcaster(user_id, emit)` / `unregister_status_broadcaster` / `notify_user` push `agent_message` frames to THIS user's chat so she SEES the tactics being tried. `consumers.py` registers the broadcaster for EVERY Multi-Turn request (independent of Ask-Execs — keyed by the same `broker_key`, unregistered in the `finally`), and `mcp_agent.py` now ALWAYS forwards `executor_payload["ask_execs_user_id"]` (previously it was set only under Ask-Execs) so the healer always has a user id to emit to.
+- **Config:** `unified_agent_llm_step_max_tactics` (4096) and `unified_agent_llm_step_timeout_seconds` (80) — read via `get_int_config_value`, both fail-safe-clamped to their minimums.
+- **Do NOT** remove the recovery preamble, silence/swallow a model failure, or wait on a model call without the watchdog. That combination — never-hang + never-discard + never-lie — is the whole point.
+
+### 2026-07-06 — Dropped the SUCCESS/FAILURE answer classifier; Create Flow now uses ONLY successful agents; Exec-report checkbox gated on Multi-Turn — do NOT re-add the classifier
+
+**Files: DELETED `agent/services/answer_analizer.py`; `agent/services/response_parser.py` (removed the import, the classification block, and the `answer_success` broadcast); `agent/consumers.py` (dropped `answer_success` from the `agent_message` → WebSocket forward); `agent/static/agent/js/agent_page_chat.js` (removed the `answerSuccess` param + gate — the button now shows on `multiTurnUsed && _hasSuccessfulToolCalls`; `_normalizeChatFlowBeforeDownload` now posts a successful-only `tool_calls_log`); `agent/agents/teletlamatini/teletlamatini.py` (final-frame detection keys only on `multi_turn_used`); `agent/templates/agent/agent_page.html` + `agent_page_state.js` (`syncExecReportAvailability`) + `agent_page_init.js` + `eslint.config.mjs` (Exec-report checkbox disabled/greyed when Multi-Turn is off).**
+
+- **Why (Angela, 2026-07-06):** the extra LLM round-trip that classified the whole answer SUCCESS/FAILURE added latency for no benefit. The Create-Flow button only ever needed "did any agent run successfully?", and the generated flow already filtered to `entry.success`. So the classifier was removed **entirely** — module, import, broadcast, frontend gate.
+- **Create Flow contract now:** the button appears whenever Multi-Turn ran AND ≥1 tool call succeeded AND the user isn't anonymous (then the live-registry `_missingAgents` check). The `.flw` is built from **only** the `entry.success === true` calls — failed executions are never nodes. Do NOT reintroduce `answer_analizer.py` / `analyze_answer_success` / an `answer_success` frame field.
+- **Exec-report checkbox:** now a hard Multi-Turn modifier in the UI too — `syncExecReportAvailability()` disables + greys it (mirrors `syncAskExecsAvailability`) whenever Multi-Turn is unchecked; wired on load, on every Multi-Turn `change`, and on the Step-by-Step force-enable. `isExecReportEnabled()` already returned `false` when Multi-Turn was off, so this is purely the UI making the dependency obvious. Keep the `syncExecReportAvailability` global in `eslint.config.mjs`.
+- **Note — the per-tool SUCCESS/FAILURE verdict in the Exec report is a DIFFERENT thing and STAYS.** That verdict is computed per tool call from the tool result (`_invoke_tool`'s `call_success`); only the whole-*answer* classifier was removed.
+- **Tests:** `agent.tests.AnswerClassifierRemovalTests` (module-gone + broadcast-omits-`answer_success`) plus reworked `ExecReportPersistenceTests` / `DiagramRenderingTests` / `agent.test_chat_bridge_bots` (no classifier mock). All green; `ruff` + `eslint` clean (0 errors).
+
+### 2026-07-04 — Config ▸ Models dialog adapted to the TRIPLE-MODEL Image-Interpreter (3 fields + global seeding) — do NOT collapse back to one field
+
+**Files: `agent/templates/agent/agent_page.html` (Configure Models… form), `agent/views.py` (`CONFIG_MODEL_KEYS` + new `CONFIG_MODEL_KEY_DEFAULTS` + `load_config_section_view` fallback), `agent/config.json` (`image_interpreter_model_2`, `image_merging_model`), `agent/tools.py::_seed_global_agent_defaults` (image_interpreter block).** The 2026-07-04 Image-Interpreter upgrade made the agent a triple-model pipeline, but the Config ▸ Models dialog still exposed ONE "Image interpreter" field. It now has THREE — **Image interpreter 1** (`image_interpreter_model`; key deliberately unchanged: it also still feeds the legacy in-process vision path in `agent/imaging/image_interpreter.py`), **Image interpreter 2** (`image_interpreter_model_2`, default `gemma4:cloud`), **Image merger** (`image_merging_model`, default `glm-5.2:cloud`).
+
+- Wiring into the agent follows the Kalier "embedded client" pattern: `tools.py::_seed_global_agent_defaults` seeds the three globals as `interpreter_model_1` / `interpreter_model_2` / `merging_model` on every wrapped `chat_agent_image_interpreter` launch — BEFORE per-call assignments, so an explicit LLM/user value still wins. Canvas/.flw nodes keep using their own node `config.yaml`, exactly like Kalier's `server_url`.
+- `CONFIG_MODEL_KEY_DEFAULTS` in `views.py` backfills the dialog when the two new keys are missing/empty (a `config.json` preserved across self-update from an older build) so Save — which requires ALL fields non-empty — never strands the user on an empty required field. Do NOT remove that fallback.
+- A new model field needs BOTH surfaces in lock-step: the `data-config-key` input in the dialog form AND the key in `CONFIG_MODEL_KEYS` (load returns / save whitelists exactly that tuple; the JS is fully generic over the form).
+
+### 2026-07-02 — Default cloud model switched: kimi-k2.7-code:cloud → glm-5.2:cloud (1M-token context) — the "transient network error" was really a context overflow
+
+**Files: `Tlamatini/agent/config.json` (all six model keys), `check_private_data.py` + `test_check_private_data.py` (fallback → `glm-5.1:cloud`), `README.md` / `BookOfTlamatini.md` model pull lines, `TlamatiniJudgementDay.md` `answer_models`.** Root cause, proven in the frozen install's `tlamatini.log`: analyzing `C:\Tlamatini\applications\esphome` produced prompts of 309,270 tokens (project context load) and 262,307 tokens (Multi-Turn, ~iteration 52) against kimi-k2.7-code:cloud's 262,144-token ceiling — Ollama returned `400 "The prompt is too long"`, and the unified chains' fallback path (`rag/chains/unified.py` ≈353 / ≈832) prepends a SYSTEM NOTICE that labels ANY agent-invoke failure a "transient network error", so the answer told the user to retry something retrying can never fix. `glm-5.2:cloud` (verified on this host via `ollama show`: 1,000,000-token context, tools + thinking) absorbs both prompts with room to spare.
+
+- The live install `C:\Tlamatini\config.json` was switched to glm-5.2:cloud the same day (Config ▸ Models); dev `config.json` now matches it.
+- `check_private_data.py`'s fallback became **glm-5.1:cloud, NOT glm-5.2** — the primary is already glm-5.2 and `build_models` dedupes an identical primary/fallback pair (`test_build_models_dedupe`), so a same-model fallback would silently remove the safety net. Tests updated in lock-step (6 references).
+- **Open work (do NOT forget):** the `unified.py` fallback notice still hardcodes "transient network error" for every failure cause; it should classify the exception (context overflow → "the loaded project / accumulated tool results are too large — reduce scope"; real socket error → retry advice). Until that lands, treat that phrase in an answer as UNRELIABLE — read `tlamatini.log` for the true error.
+
+### 2026-07-02 — RELEASE runtime mode + useful-error contract + buffered log tee + gated hot-path tracing (FirstFinalPlanToSpeedUp.md speed batch) — do NOT revert
+
+**Files: `Tlamatini/tlamatini/settings.py`, `Tlamatini/tlamatini/middleware.py`, `Tlamatini/manage.py`, `Tlamatini/agent/consumers.py`, `Tlamatini/agent/services/response_parser.py`.** Measured: `_TeeStream` 50k-line burst **0.396 s → 0.167 s (2.38×**; second sample 2.81×); release statics now serve `Cache-Control: max-age=60, public` + ETags (they used to ship with **NO cache headers at all** via Django's dev static handler); root page median 8.16 → 6.89 ms; source-mode after-run byte-identical to before (DEBUG=True, same null headers). Proofs: `manage.py check` + ruff clean in BOTH modes; `agent.tests_perf_3x` 116/116; `Temp/verify_release_errors.py` 15/15; `Temp/verify_tee_flush.py` 7/7.
+
+- **RELEASE mode (`settings.py`)** — `DEBUG` is no longer unconditionally True: frozen installs default to `DEBUG=False`; source runs stay `DEBUG=True`; `TLAMATINI_RELEASE=1` makes a source run behave like a release build; `TLAMATINI_DJANGO_DEBUG` (=1/=0) is the emergency override in either direction. `ALLOWED_HOSTS=['*']` deliberately untouched (tightening it in release mode would 400 every request — that is a separate, careful pass; see the `tlamatini_allowed_hosts_tighten` skill).
+- **WhiteNoise release branch rewritten honestly** — the old per-branch `STATICFILES_STORAGE` lines were DEAD on Django 5.1+ (the setting was removed in favor of `STORAGES`), and the manifest storage they *claimed* would have 500'd every `{% static %}` on the never-shipped `staticfiles.json` had it engaged. Release now = `WHITENOISE_AUTOREFRESH=False` (scan once at startup, no per-request stats), `WHITENOISE_MAX_AGE=60` (names are NOT hashed; `?v=STATIC_VERSION` busts on every server start), plus `WHITENOISE_USE_FINDERS=True` for NON-frozen release runs so `TLAMATINI_RELEASE=1` needs no collectstatic. Do NOT re-introduce a manifest storage without also shipping a manifest from `build.py`.
+- **`NoCacheHTMLMiddleware` is now UNCONDITIONAL** — it used to be `if DEBUG:`, but DEBUG was always True, so unconditional is exactly the behavior every install has today. Do NOT re-gate it on DEBUG: release HTML would go heuristically stale after self-updates.
+- **Useful-log guarantee (`LOGGING`)** — explicit `"django"` logger (INFO, console, NO `require_debug_true` filter), `"root"` console handler at `TLAMATINI_LOG_LEVEL` (default WARNING — catches asyncio/background-thread/third-party errors), and `"tlamatini.request"` (the middleware's logger). Without the explicit `django` entry, `DEBUG=False` makes Django's default debug-filtered console handler silently drop 500 tracebacks from the console → `tlamatini.log`. Do NOT remove these three entries when touching LOGGING.
+- **`FriendlyErrorMiddleware` (`middleware.py`, inserted FIRST in `MIDDLEWARE` = outermost `process_exception`)** — in RELEASE, unhandled view exceptions return a small branded page (or JSON for Accept/XHR/JSON-body callers) with an 8-hex error id, and log `ERROR-ID <id>` + method/path/thread + FULL traceback via `tlamatini.request`. It passes `Http404/PermissionDenied/SuspiciousOperation/BadRequest` through (404/403/400 conversions intact), returns None in DEBUG (technical page unchanged), and is fail-open (internal failure → Django's default 500, which `django.request` logs). The friendly HTML reflects NO request-derived text (anti-XSS by construction).
+- **Buffered `_TeeStream` (`manage.py`)** — the per-write `log_file.flush()` is deferred: flush on ~8 KB (`_FLUSH_THRESHOLD_BYTES`), ≥1 s (`_FLUSH_INTERVAL_SECONDS`), urgent markers (`ERROR/Error/Traceback/Exception/CRITICAL/Critical/FATAL/Fatal/!!!/❌/⛔` — error lines hit the file INSTANTLY, byte-proven), explicit `flush()`, atexit, and a 1 s idle-flusher daemon (`tlamatini-log-flusher`) so `tlamatini.log` never lags more than ~1 s even when the app goes quiet mid-burst. Class-level `_LOG_LOCK` serializes the stdout/stderr tees (they share one file handle). **The class must stay self-contained on `os/sys/time/threading` + builtins** — `Temp/bench_first_final_speedup.py` AST-extracts it with exactly that namespace (side-effectful setup like atexit/threads belongs in `_setup_log_tee`, never in the class).
+- **Gated WS receive tracing (`consumers.py`)** — the two per-frame `>>> [RECEIVE]` prints (+ forced `sys.stdout.flush()`) run only under `TLAMATINI_WS_TRACE=1` (module-level `_WS_TRACE`). Errors, Tier-2 reaper notices and permission logs are NOT gated.
+- **Gated full-answer dumps (`response_parser.py`)** — the three whole-answer prints (original / after-cleaning / final — the answer used to be dumped up to 3× per turn) run only under `TLAMATINI_LOG_FULL_ANSWERS=1` or `TLAMATINI_LOG_LEVEL=DEBUG` (module-level `_LOG_FULL_ANSWERS`); short length-summary lines replace them by default. Error and per-step summary prints untouched.
+- **Rollback levers (no code revert needed)**: `TLAMATINI_DJANGO_DEBUG=1`, `TLAMATINI_WS_TRACE=1`, `TLAMATINI_LOG_FULL_ANSWERS=1`, `TLAMATINI_LOG_LEVEL=DEBUG|INFO`. Benchmark/verify artifacts live in `Temp/` (`bench_first_final_speedup.py` — run it with `--port 8801`, NOT the default 8765, which collides with the System-Metrics MCP server every spawned instance binds; `verify_release_errors.py`; `verify_tee_flush.py`; `first_final_speed_*.json`; `compare_*.json`).
+- **Pre-existing, NOT from this batch**: the benchmark server log shows `no such table` tracebacks — the source-tree `db.sqlite3` is the known-empty dev DB (see the 2026-06-19 createsuperuser-wizard entry); the app already treats them as non-fatal, and they appeared identically before this batch.
+
+### 2026-06-29 — Catalog of Prompts off-by-one: the dropdown silently hid `prompt-100` — do NOT revert
+
+`static/agent/js/tools_dialog.js::loadPrompts()` enumerated the catalog with `for (let i = 1; i < MAX_PROMPTS; i++)` (`MAX_PROMPTS = 100`), so it loaded **prompt-1..prompt-99** and the **100th slot never rendered**. Latent for as long as there were ≤99 prompts; reaching the 100th catalog entry exposed it. Fix: the loop bound is now **`i <= MAX_PROMPTS`** (inclusive), matching the documented `MAX_PROMPTS` cap (100 at the time of this fix), so all contiguous slots show (the existing break-at-first-gap still stops early when a slot is genuinely missing). **Keep it `<=`** — reverting to `<` re-hides whatever sits in the last slot. Ran `collectstatic` so the running server serves the fixed loop. **Headroom — `MAX_PROMPTS` bumped 100 → 256 on 2026-06-29** (the catalog had hit 100/100 when the catalog reached slot 100; 256 gives 156 free slots). The FOUR references that MUST stay byte-coherent on any future cap change: `tools_dialog.js` (the `const MAX_PROMPTS`), `CLAUDE.md`, `Tlamatini/.agents/workflows/create_new_agent.md`, and the `tlamatini-agent-creation` skill. The backend `load_prompt_view` has **NO** cap (it serves any `prompt-<N>` by `promptName`), so the frontend `MAX_PROMPTS` loop bound is the ONLY catalog ceiling.
+
+### 2026-06-28 — 3X-speed plan L1 + L2 landed (Ollama serving-layer detector, warm embeddings handle, explicit keep_alive on basic/retrieval chains; reaper O(N) carried) — do NOT revert
+
+**Context:** First execution slice of `surgical_improving_speed_of_Tlamatini_by_a_factor_of_3X.md` (repo root). Surgical, behavior-neutral speed work.
+
+**L1 — Ollama serving layer (`agent/rag/factory.py`, `agent/gpu_perf.py`):**
+- `factory._resolve_keep_alive()` mirrors `mcp_agent.py`'s `OLLAMA_KEEP_ALIVE` parsing (int → int, non-int duration string → verbatim, unset/empty → `-1`). Added `keep_alive=_resolve_keep_alive()` to BOTH `OllamaLLM(...)` constructors (`build_prompt_only_chain`, `build_retrieval_chain`). The Multi-Turn executor (`mcp_agent.py:544`) and `gpu_perf` already pinned the model; this extends the same resident-model contract to the basic/retrieval chains so KV cache survives between turns.
+- **`OllamaEmbeddings` does NOT accept `keep_alive`** (verified against the installed `langchain_ollama`: `'keep_alive' in OllamaLLM.model_fields` is True, but False for `OllamaEmbeddings`). **Do NOT add `keep_alive=` to the `OllamaEmbeddings(...)` constructor** — it raises at runtime. The embedding model is kept resident via the `OLLAMA_KEEP_ALIVE` env var + `gpu_perf.pin_ollama_model`. `tests_perf_3x.py::test_no_keep_alive_kwarg_used` guards this.
+- `factory._get_cached_embeddings(config, client_kwargs)` + `factory._EMBEDDINGS_CACHE` — a warm, reused embeddings handle keyed by `(model, base_url, token)`. Replaces the per-chain-build `OllamaEmbeddings(...)`. A Config→Models embedding-model switch changes the key and misses, so the switch still takes effect.
+- `gpu_perf.detect_ollama_serving_issues(base_url)` + `_OLLAMA_SERVING_BANNER`, called from `apply_gpu_max_performance` before pinning. **Diagnostic ONLY** — it probes `/api/version` + `/api/tags` and, on a strong signal (version answers but tags fails / body mentions `llama runner`/`llama-server`), prints a loud banner that a broken/contended serving layer (usually a SOURCE-build Ollama racing the official install on 11434) is the cause of multi-minute stalls. **It NEVER kills a process** (do not "improve" it into an auto-kill). This targets memory `project_ollama_source_build_breaks_embeddings`.
+
+**L2 — orphan reaper:** the O(N) `_build_proc_index` rewrite (`orphan_reaper.py:516`, 290× faster, memory `project_orphan_reaper_on2_freeze`) was already in the source tree; it is now committed + carried into the build. Do NOT revert to per-process `psutil.children()` rescans (the O(N²) freeze).
+
+**Tests:** `Tlamatini/agent/tests_perf_3x.py` (116 hermetic non-visual tests — keep_alive matrix, embeddings singleton, the detector against a local stub HTTP server, reaper O(N) scale guard) + `Tests/test_perf_3x_visual.py` (24 Playwright scenarios proving no chat stall; needs the live server). Run: `python Tlamatini/manage.py test agent.tests_perf_3x`.
+
+### 2026-06-20 — Create Flow: Windows-path config params corrupted (backslashes dropped) — JS `_parseKeyValuePairs` must mirror Python `_unquote_preserving_backslashes` — do NOT revert
+
+**Symptom:** A flow saved with the chat **Create Flow** button stored a Globber node's `path` as `C:TlamatiniTemplatesTlamatiniProjectForSTM32F407G` (every `\` gone) for the real `C:\Tlamatini\Templates\TlamatiniProjectForSTM32F407G`. It hit EVERY path-bearing config field (path / repo_path / file / output_dir / config_path / …), not just Globber — they all flow through one parser.
+
+**Root cause:** `agent/static/agent/js/agent_page_chat.js::_parseKeyValuePairs` (used ONLY by the Create-Flow-from-tool-calls path) treated `\` inside a quoted value as an escape introducer — it expanded `\n`/`\t` and, on an unrecognized escape (`\T`, `\P`, `\D`, …), did `buf += next`, which DROPPED the backslash. The live tool run was fine because the Python runtime parser `agent/tools.py::_unquote_preserving_backslashes` keeps every non-`\\`/non-quote backslash VERBATIM — so flow-gen and runtime disagreed, and the gap only showed in the saved `.flw`.
+
+**Fix:** Made the JS escape handling mirror the Python decoder exactly — inside a quoted value ONLY `\\`->`\` and `\<outer-quote>`->`<quote>` decode, a doubled outer-quote -> one quote, and EVERY other backslash is kept verbatim (no `\n`/`\t` expansion, never drop a backslash). One change fixes all path params. The backend (`normalize_flow_payload` / `flow_compiler`, YAML+JSON) and the `.flw` load/dialog/re-save path were independently audited — already lossless.
+
+**Keep aligned (parity pair):** `_parseKeyValuePairs` (JS) and `_unquote_preserving_backslashes` (Python) MUST decode identically — change one, change both, or Create Flow drifts from what the runtime executed. Shared limitation (consistent on both sides, NOT a regression): a path ending in a lone backslash inside single quotes (`path='C:\dir\'`) is ambiguous because `\'` reads as an escaped quote.
+
+**Verified:** real JS (Node) vs real Python over 9 vectors (the bug path, UNC, the `\n`/`\t` trap, regex, quotes) all byte-match; ESLint clean; 4-agent adversarial round-trip audit green. Source + collected `staticfiles/agent/js/agent_page_chat.js` both updated. Not committed.
+
+### 2026-06-16 → 06-17 — External MCPs era: universal MCP client (4 transports) + 8 supervisor tools + `external_mcp_wait` + MCP Doctor + full-surface Multi-Turn + Step-by-Step (v1.26.0, committed `51d3ebd`, pushed to `main`) — do NOT revert
+
+A large Claude + Codex collaboration. Full design contract: `docs/external_mcp_bulletproof_architecture.md`; user/how-to docs: `docs/claude/mcp-tools.md`. The "do NOT revert / keep aligned" contracts:
+
+- **External MCPs = a config-driven universal MCP CLIENT** (`agent/external_mcp_manager.py`, catalog `agent/external_mcps.json`). It is a THIRD, separate MCP mechanism — NOT the two `Mcp`-model context providers (`factory.py`), NOT the per-agent inline MCP clients (STM32er/Kalier), NOT ACPX. Do not wire an external server through `factory.py`. The catalog is **user state**: resolved next to `config.json` (`CONFIG_PATH` > frozen > source), read with `utf-8-sig` (BOM-tolerant), preserved across self-update + redacted in the self-modify snapshot. ≤5 active (`MAX_ACTIVE`).
+
+- **Connects run OFF the chat-build path (do NOT make them synchronous).** `_warm_connect_async` kicks background-thread connects; `get_external_mcp_tools()` binds only ALREADY-live servers + re-lists per turn. A synchronous connect on the chat path is exactly the 12 s stall that once dropped the redis MCP. A bad / unreachable / unsupported server must degrade to a catalogued-with-reason entry — never crash, never hang.
+
+- **Four transports, one shared surface.** `stdio` (`_StdioMcpClient`, original) + the network family `_StreamableHttpMcpClient` / `_SseMcpClient` / `_WebSocketMcpClient` (all subclass `_NetworkMcpClientBase`, which owns the MCP handshake, and all DUCK-TYPE `_StdioMcpClient`: `.alive/.tools/.call_tool/.refresh_tools/.close/.stderr_tail/.zero_tools_since/.proc=None`). `_make_client`/`_connect` dispatch by transport. `httpx` (http/sse) + `websockets` (ws) are imported lazily and are in `requirements.txt`. `tcp`/`named-pipe` are detected + diagnosed but NOT connectable yet (clear blocker, future adapter). Network clients have `proc=None` so the command watchdog's `external_mcp_root_pids()` skips them. To add a transport: subclass `_NetworkMcpClientBase` + wire `_make_client`; tests in `test_external_mcp_transports.py` (REAL loopback http/sse/ws servers).
+
+- **The original 8 LLM supervisor tools became 10 on 2026-08-15 — keep every name-list coherent.** Original set: `external_mcp_status / reconnect / doctor / list_tools / call / import / set_active / wait`; current additions: `external_mcp_runtime_status / runtime_install`. Adding/removing one means updating ALL of: `external_mcp_manager._SUPERVISOR_TOOL_NAMES`, `global_execution_planner._external_mcp_force_names` (the `supervisor` set — force-binds them on MCP-setup intents), and the fallback set in `mcp_agent._is_external_mcp_tool_name`; plus `capability_registry._EXTRA_HINTS_BY_TOOL_NAME`. The executor reconciles the `ext__*` slice of `self.tools` per request via `mcp_agent._refresh_external_mcp_tool_surface` (the executor caches `self.tools` once, so tools that connect AFTER first build must be re-attached each turn).
+
+- **`external_mcp_import` / `external_mcp_set_active` accept dict-or-string / list-or-string — do NOT narrow to `str` only.** The LLM naturally passes the JSON config as an OBJECT (and keys as a list); a `str`-only pydantic schema rejected the object and the model fumbled into "I need to pass it as a string, let me retry" (leaked into the answer). Schemas are `Union[Dict[str,Any], str]` / `Union[List[str], str]`; the funcs branch on the runtime type.
+
+- **`external_mcp_wait` exists because a first-run Docker image pull is slow.** A NEW `docker run mcp/<x>` PULLS the image (tens of seconds); the model used to poll `external_mcp_status` ~3× and hit the repetition breaker → gave up → the server connected seconds later but the turn was already lost. `external_mcp_wait(server_key, timeout)` BLOCKS server-side (driving warm-connect + relist) until the server is ready, then returns. The step-by-step guidance + `set_active`'s `next_step` tell the model to wait, not poll-and-give-up. Do not remove it.
+
+- **MULTI-TURN BINDS THE FULL ENABLED SURFACE — do NOT re-introduce planner narrowing.** `mcp_agent.CapabilityAwareToolAgentExecutor.invoke` (multi-turn branch) sets `selected_tools = list(request_tools)` (every enabled tool/agent/skill; ACPX still filtered by `filter_acpx_tools` per its checkbox). This fixed "I don't have a file-writing or shell tool bound this turn" occurring with 88 agents present (the planner's top-20 subset starved the operator loop). The planner still runs upstream (its `planner_summary` is still forwarded for ordering hints) but no longer DROPS a tool from the bind. The `MultiTurnBackgroundLaunchTests` were rewritten to assert this (a context_only plan no longer binds zero tools). **Cost trims that keep this affordable (do NOT revert):** (a) the system-prompt tool list is ONE short line per tool — `bind_tools()` already sends every tool's full name/description/params, so the full multi-line descriptions in the prompt were ~5k redundant tokens/turn; (b) `ChatOllama` is built with `keep_alive` (honors `OLLAMA_KEEP_ALIVE`, default -1) so the byte-stable system-prompt prefix's KV cache is reused between turns.
+
+- **Step-by-Step (`step_by_step_enabled`) must stay in the `unified.py` payload-rebuild WHITELIST** (same drop-on-rebuild bug class as `exec_report_enabled` / `ask_execs_enabled`). Plumbing: browser `#step-by-step-enabled` → `consumers.py` → `rag/interface.py` → `rag/chains/unified.py` (whitelist) → `mcp_agent._build_system_prompt` (injects the guidance). `bypass_prompt_validation = multi_turn_enabled OR acpx_enabled OR step_by_step_enabled`.
+
+- **MCP Doctor agent (#78)** — `agents/mcp_doctor/`, wrapped `chat_agent_mcp_doctor`, migrations 0141/0142/0143 (Agent row / `Chat-Agent-MCP-Doctor` Tool row / demo prompt id 81). Self-contained (no `agent.*` import). Static catalog triage that mirrors the manager's `_SUPPORTED_TRANSPORTS` + `diagnose_server` logic; emits `INI_SECTION_MCP_DOCTOR` and is registered in `parametrizer.SECTION_AGENT_TYPES` (+ the contract's `parametrizer_fields`). It is the canvas counterpart of the live `external_mcp_doctor` tool. Captured automatically in the Exec Report via `_resolve_exec_report_spec` (no `_EXEC_REPORT_TOOLS` entry needed).
+
+- **UTF-8 redirect crash (any file-redirected Python run) — keep the reconfigure.** When stdout/stderr are REDIRECTED to a file on Windows, Python uses **cp1252** (strict) → a `→`/emoji/box glyph raises `UnicodeEncodeError` and the process DIES mid-run (this crashed the Playwright suite at test 4 and closed the browser — the em-dash survived because it IS in cp1252; the arrow is not). Fix = `sys.stdout/stderr.reconfigure(encoding="utf-8", errors="replace")` at the top of any such script + `PYTHONUTF8=1` at launch. (`run_test.py`'s `_log` has the same latent risk — keep redirected runs UTF-8.)
+
+- **build.py:** `--collect-all httpx` + `--collect-all websockets` + `--hidden-import websockets.sync.client` (they run in the FROZEN Django process, not the carried Python — websockets has no other importer in the frozen graph). `external_mcps.json` ships via `optional_file_copies`, is in `apply_update.ps1 $Preserve` + the `self_update.py` docstring, and is redacted + in `REQUIRED_SNAPSHOT_FILES` in `copy_source_assets.py`. Both inclusion sweeps must stay CLEAN.
+
+- **Verification:** unit/integration suites `agent.test_external_mcp_universal` + `…_transports` + `…_e2e` + `…_add_flow` + `agent.test_parametrizer_mcp_doctor` + `agent.test_step_by_step_mode`, PLUS the VISIBLE Playwright suite `.claude/skills/tlamatini-daily-chat-test/harness/mcp_playwright_suite.py` (reuses the daily-chat-test harness; drives the live UI through 10 no-key MCPs — memory/sqlite/redis/fetch/time/everything/sequentialthinking/filesystem/git/puppeteer — 10/10 PASS; login via `TLAMATINI_USER`/`TLAMATINI_PASS` env; launch it DETACHED via `Start-Process` + `dangerouslyDisableSandbox` so the Chrome renders on the real desktop and outlives the 10-min foreground cap).
+
+### 2026-06-15 — Self-update PRESERVES + migrates the user DB; numpy/opencv embedded in BOTH Pythons (v1.23.0) — do NOT revert
+
+Three coordinated changes (committed `00b85a2`):
+
+- **numpy + cv2 must be embedded in BOTH Pythons.** The media agents (Recorder / Camcorder / AudioPlayer / VideoPlayer / Whisperer) run under the **carried** Python (`<install>/python`), NOT the frozen exe — so a missing `numpy` made them crash at runtime even though it was pinned in `requirements.txt`. `build.py` now (a) asserts `numpy` + `cv2` in `_CARRIED_PYTHON_REQUIRED_IMPORTS` (the carried-Python probe → the build ABORTS if absent), (b) lists them in the frozen-asset `_agent_libs` import verify, and (c) adds `--collect-all cv2` so OpenCV ships in the frozen `_internal` too (numpy is already handled by `pyinstaller_hooks/hook-numpy.py`). Do NOT remove these guards — they catch the exact "pinned-but-not-installed-in-the-carried-Python" gap that shipped broken media agents.
+
+- **Self-update now preserves user data + migrates it.** Previously a self-update REPLACED `db.sqlite3` (it lives inside `_internal/`, so the top-level `$Preserve` set could not protect it) → the user's chat history + custom Tool/Mcp/Agent toggles reset on every update. Now `apply_update.ps1` step 3b copies the user's live `_internal/db.sqlite3` into the preserved `DB/ToLoad/` and drops `DB/post_update_migrate.flag`; on the next launch `manage.py::_apply_pending_db_swap` restores it and `_run_post_update_migrate_if_flagged()` runs `migrate` in a **CHILD process** (`agent/apps.py::AgentConfig.ready()` only starts the MCP servers for `runserver`/`startserver`/`daphne`/`asgi`, so the child `migrate` neither starts a second server nor recurses). Result: the new version's migrations (new agent / `chat_agent_*` tool / demo-prompt rows) apply to the user's data while history + toggles are KEPT. Keep the two preserve lists coherent (`apply_update.ps1 $Preserve` ↔ the `self_update.py` docstring) and do NOT "simplify" this back to replacing the DB — the `tlamatini-self-update-inclusion` sweep now recognizes this capture-and-migrate path as the third valid DB-delivery mode.
+
+- **Docs/skill carriage:** `Tlamatini/.agents/workflows/create_new_agent.md` gained **Step 9** (self-update/self-modify carriage: a new agent auto-ships; a new dependency is the one manual case → `requirements.txt` + the two `build.py` guards + a `--collect-all`); `CLAUDE.md` gained a Claude-built-in → Tlamatini-tool correspondence table. Verify carriage with `sweep_self_modify.py` + `sweep_self_update.py` (both must exit CLEAN). Frozen installs need `python build.py` to pick up the `build.py`/`manage.py` changes.
+
+### 2026-06-12 — FileCreator writes content BYTE-FOR-BYTE (verbatim + base64 channel) — do NOT re-route content through the generic value coercion
+
+**Incident (Angela, screenshot):** `chat_agent_file_creator` wrote `FormValidatorGeneratingClass.java` and Eclipse/Maven lit up with dozens of `illegal escape character`, `unclosed string literal`, `unclosed character literal` errors. Root cause: every wrapped agent shares `agent/tools.py::_coerce_assignment_value` → `_unquote_preserving_backslashes`, which collapses `\\` → `\`, `\<quote>` → `<quote>` and a doubled outer quote → one quote (correct for shell/SQL/Python-literal payloads). For a **verbatim source file** that is exactly wrong: a Java regex `Pattern.compile("\\.")` — whose on-disk bytes are `"\\."` — got rewritten to `"\."`, an illegal Java escape. Backslash-dense files (Java/JSON/regex/JS) came out broken even though the Exec Report (raw pre-parse request) looked correct.
+
+**Fix (keep all of it):**
+- **tools.py `_extract_verbatim_assignment(request_text, key)`** — re-extracts one value from the RAW request reusing the SAME segment-boundary detection (`_split_assignment_segments` / `_split_assignment_segment`, so the multi-line upgrade + `and KEY=` splitting still apply) but strips ONLY the outer quote pair and decodes **nothing**. Returns `None` for unquoted/missing/truncated values (caller keeps the coerced value).
+- **`_launch_wrapped_chat_agent`** — for `spec.template_dir == "file_creator"` only: if `content_b64` is empty, overwrite `runtime_config["content"]` with the verbatim re-extraction. **`file_path` deliberately keeps the normal coercion** (a Windows path genuinely wants `C:\\Temp` → `C:\Temp`); only `content` is forced verbatim. Wrapped in try/except — the verbatim path must never break a launch.
+- **`agents/file_creator/file_creator.py` + `config.yaml`** — new `content_b64` field: a fully parser-immune base64 channel (alphabet `A-Za-z0-9+/=` has no quotes/backslashes), decoded to raw bytes and written in **binary** mode; takes precedence over `content`. The text path now writes with `newline=''` so `\n` is NOT translated to `\r\n` (byte-exact).
+- **registry + prompt.pmt** — file_creator `purpose`/`example_request` now say content is written VERBATIM (do NOT escape backslashes/quotes; real newlines, not `\n`), and document `content_b64` for backslash-heavy/binary files. The old `content='server:\\n …'` example (which taught misleading double-escaping) is now real newlines.
+
+**Scope guard:** this is FileCreator-only. Do NOT make `_coerce_assignment_value` verbatim globally — pythonxer/keyboarder/sqler rely on the shell/SQL decode. Regression: `AssignmentParserRobustnessTests.test_verbatim_keeps_java_regex_backslashes` (+ content-first / unquoted cases). Proven end-to-end byte-exact (generic coercion = corrupt, verbatim + both channels = exact). Frozen builds need `python build.py` (tools.py is in the PYZ); a source instance just needs a server restart (`runserver --noreload`).
+
+### 2026-06-12 — Wrapped chat-agent parser: dynamic multi-line upgrade on interior newline — do NOT revert (truncated-file bug)
+
+**Incident:** `chat_agent_file_creator` wrote `SecurityHeadersFilter.java` (SuperDemoPage) truncated at `"default-src 'self` — exactly at the first `';` sequence — while the Exec Report showed the complete file (the report renders the RAW pre-parse request via `_extract_exec_report_command`, so it can never reveal a parse truncation).
+
+**Root cause (core, NOT FileCreator):** in `agent/tools.py`, `_is_multiline_quote_open()` marks a quoted value multi-line only when a newline IMMEDIATELY follows the opening quote. LLMs routinely start the payload on the same line (`content='package com…`), leaving the value in single-line mode — where `_closes_outer_quote()` treats any interior quote followed by `,`/`;` as the closer. Java/CSS/JS payloads containing `'self';` (CSP literals) hit this every time.
+
+**Fix (keep):** both `_split_assignment_segments` and `_split_assignment_segment` now have an `elif char == '\n': quote_multiline = True` branch inside their `if quote_char:` state — the moment a newline is consumed INSIDE a quoted value it upgrades to the strict multi-line closer rule (EOF or `and|with KEY=` only). Values without interior newlines behave byte-identically to before. Regression test: `AssignmentParserRobustnessTests.test_same_line_multiline_content_with_quote_semicolon_not_truncated` (byte-faithful incident repro). Also fixed the pre-existing `, OR window_width=` → `, OR with window_width=` drift in VideoPlayer's `example_request` (`chat_agent_registry.py`) that broke `test_every_registry_example_resolves_against_its_template`. Frozen builds need `python build.py` to pick this up (tools.py is in the PYZ).
+
+### 2026-06-12 — `build.py --self-modify` now GENERATES the TlamatiniSourceCode snapshot via `copy_source_assets.py` — do NOT revert to the static copytree
+
+**Directive (Angela):** the self-modify source tree must carry **ALL the source assets** needed to take → modify → integrate → regenerate `Tlamatini.exe` (build scripts, every `.ps1`, every `.py`/`.css`/`.js`, ...), omitting `.pdf`/`.pptx`/images/videos and files already duplicated in the installed tree, so Tlamatini can rebuild herself end-to-end.
+
+- **`copy_source_assets.py` (repo root)** is the single generator. `build.py`'s `if self_modify:` branch imports it and generates `dist/manage/TlamatiniSourceCode` FRESH from the live repo on every `--self-modify` build; the old static copy of `Tlamatini/agent/TlamatiniSourceCode/` (a README-only placeholder) survives only as the exception fallback inside that branch. Do **not** restore the placeholder copytree as the primary path, and do **not** start populating `Tlamatini/agent/TlamatiniSourceCode/` by hand — it would drift from the repo instantly.
+- **Denylist, not allowlist.** Unknown future TEXT file types must flow into the snapshot by default. New heavy/secret/generated artifact types are excluded by ADDING to `EXCLUDED_EXTENSIONS` / `EXCLUDED_DIR_NAMES` / `EXCLUDED_FILE_NAMES` in `copy_source_assets.py` — never by switching to an include-list.
+- **Build-required binaries are KEPT on purpose:** `.ico` (build.py `--icon` + console icon), `.wav` (shipped UI sounds), `.svg`. Removing them breaks or degrades a rebuild.
+- **Omitted-but-required binaries live in `RESTORE_FROM_INSTALL`** (currently `jd-cli/jd-cli.jar` and `agent/static/agent/video/XAIHT-Tlamatini.mp4`) and are written into the snapshot's `_REBUILD_INSTRUCTIONS.md` + `_SOURCE_SNAPSHOT_MANIFEST.json`. If build.py grows a new required binary input, add it to that map — otherwise a self-rebuild dies at the `FileNotFoundError` guards.
+- **Secret redaction is a safety net, keep it:** `agent/config.json` (JSON deep-walk) and `agents/*/config.yaml` (line regex) are scrubbed to regen_secrets-style `<KEY goes here>` placeholders. The key matcher is SUFFIX-based on the last underscore segment precisely so `max_tokens` / `sample_rate` / `request_timeout` are never touched — don't loosen it to a substring match.
+- **Recursion guard:** `TlamatiniSourceCode` is in `EXCLUDED_DIR_NAMES` so a snapshot never snapshots itself (and a rebuild FROM a snapshot regenerates a clean next-generation snapshot). Keep it there.
+- Verified live 2026-06-12: 685 files / 9.84 MB / 0 errors / 0 leaked keys. Full before/after + rollback in `PIVOT_CHANGES.md` (2026-06-12).
+
+### 2026-06-07 — A wrapped chat-agent is now gated by BOTH its Agent row AND its wrapper Tool row — do NOT drop the agent-row gate
+
+**Directive (Angela):** disabling an agent in **Configure Agents** (its `Agent` row) OR disabling its wrapper in **Configure Mcps/Tools** (the `Chat-Agent-<Name>` `Tool` row) must make that agent **invisible to the LLM** — asked to use it, the LLM should report it as unknown/nonexistent. Example: unchecking **Talker** in Configure Agents, or **Chat-Agent-Talker** in Configure Mcps, must hide `chat_agent_talker`.
+
+**Before:** `get_mcp_tools()` gated each wrapped chat-agent ONLY on its Tool-row flag (`tool_chat-agent-<name>_status`). The Agent-row flag (`agent_<name>_status`, set in `factory.setup_llm` from `agentContent`) was computed but **never consulted** — so unchecking the agent in Configure Agents did nothing; the tool stayed bound.
+
+**Fix (`agent/tools.py::get_mcp_tools`):** the wrapped-agent loop now binds a `chat_agent_*` tool ONLY when BOTH flags are enabled — `tool_<desc>_status` (wrapper Tool row) AND `agent_<display>_status` (Agent row, via new `_agent_status_key`, mirroring `factory`'s `agent_<descr.lower()>_status`). Both gates **fail OPEN** (a spec whose `display_name` maps to no Agent row, or that has no Tool row, defaults to enabled) so only an EXPLICIT disable hides a tool. This is authoritative: the planner and executor only ever see `get_mcp_tools()` output, so a disabled agent is never planned, bound, or described to the model. Relies on the naming convention (`display_name` == `agentDescription`) — see `feedback_agent_naming_conventions`.
+
+**Direct @tool agents too:** the same Agent-row gate was added to the direct @tools that map 1:1 to a canvas agent — `execute_command`→Executer, `execute_file`→Pythonxer, `googler`→Googler — so disabling the canvas agent hides BOTH its wrapped `chat_agent_*` AND its direct tool. (`decompile_java`/`unzip_file` have no exact-name Agent row, so they stay tool-gated via fail-open.)
+
+**Tests:** `tests.py::WrappedAgentVisibilityGatingTests` (6) — Talker visible only when both enabled; hidden when the Agent row is off, when the wrapper Tool row is off, or both; a generic Shoter spot-check; and the direct-tool `execute_command`→Executer gate. **Note** `create_new_mcp.md` assumption #12 was corrected: wrapped chat-agents **do** have `Tool` rows and ARE gated (the old "always-on, not in the Tool table" claim was outdated).
+
+**Deployment:** source-only; restart the Django chat server to pick up `tools.py`. Frozen needs `python build.py`.
+
+### 2026-06-07 — Exec Report now captures EVERY Multi-Turn agent (observational + newly-created included) — do NOT re-add the "state-changing only" gate
+
+**Bug (user-reported, with screenshot):** a Multi-Turn run of the Talker demo prompt with **Exec report ON** produced **no Exec-report tables at all** — only the LLM's own prose tables. Root cause: the Exec report only captured tools listed in `_EXEC_REPORT_TOOLS` (a curated whitelist of *state-changing* agents). Talker — and the whole observational/output family (Shoter, Camcorder, Recorder, AudioPlayer, VideoPlayer) and the read-only LLM agents (Crawler, Prompter, Summarizer, File/Image interpreters, Monitor-*, Recmailer, Asker, Sleeper) — were **intentionally excluded**, so they generated zero rows.
+
+**Directive (Angela, emphatic):** the Exec report must show **every agent that actually runs during a Multi-Turn request** — observational/output and read-only agents INCLUDED — **and every newly-created agent**, automatically.
+
+**Fix — generic auto-capture in `agent/mcp_agent.py::_resolve_exec_report_spec(tool_name)`:** resolves (1) the curated `_EXEC_REPORT_TOOLS` map first (still wins — shared agent_keys that merge a direct @tool with its wrapped launch, nicer display casing, CSS-matched caption gradient), then (2) a generic fallback that captures ANY wrapped `chat_agent_*` not in `_MANAGEMENT_TOOLS`, deriving `agent_key = spec.key` (separators stripped) and `agent_display = spec.display_name` from `WRAPPED_CHAT_AGENT_BY_TOOL_NAME`. Both `_invoke_tool` capture points (success + exception paths) and the Ask-Execs permission-detail display now call this resolver instead of `_EXEC_REPORT_TOOLS.get(...)`. **`_EXEC_REPORT_TOOLS` is no longer the gate for *whether* an agent is captured — only an optional styling/merge refinement.** Excluded (never captured): `_MANAGEMENT_TOOLS` polling helpers (`chat_agent_run_*`, `window_present`, `agent_stat_getter`, `get_current_time`) and direct read-only @tools (`googler`, `launch_view_image`).
+
+**Rendering:** `agent_page.css` `.exec-report-caption` got a **readable DEFAULT background** (light slate gradient, dark text) so a newly-captured agent with no per-agent gradient rule still renders a clean caption. Per-agent caption gradients remain optional polish.
+
+**Tests:** `tests.py::ExecReportCaptureTests` — rewrote `test_read_only_tool_calls_are_not_captured` → `test_observational_agent_captured_but_management_and_direct_readonly_not` (crawler now captured; run_status + googler not), and added `test_every_multiturn_agent_is_capturable_including_observational` (AUDIT: fails if ANY wrapped chat-agent resolves to no row). The 5 `test_not_in_exec_report` tests in `test_{talker,audioplayer,camcorder,recorder,videoplayer}_agent.py` were inverted to `test_captured_in_exec_report`. 163 tests green; ruff clean.
+
+**Docs/skills updated (do NOT revert the "every Multi-Turn agent must appear" mandate):** `docs/claude/exec-report.md` (Scope completeness contract + "Adding an agent" mandatory-verify), `create_new_agent.md` Step 7.6, `.claude/skills/tlamatini-agent-creation/SKILL.md` Phase 15, `.mcps/create_new_mcp.md` Step 4 + file-scope + checklist + assumption #14.
+
+**Deployment:** source-only. The running **Django chat server must be restarted** to pick up the `mcp_agent.py` change (source mode reads it fresh on start; it's not the MCP-bridge process). Frozen build needs `python build.py`.
+
+### 2026-06-07 — Talker is FEMALE-ONLY by design: a male voice HARD-CRASHES the agent — do NOT relax, re-add male voices, or pass-through unknown voices
+
+**Directive (user, emphatic):** Tlamatini is female and her Talker TTS must **NEVER** speak with a male voice — **not even when the user explicitly asks**. A male/non-female request must NOT degrade gracefully and must NOT substitute a female voice: the agent **closes its execution entirely** and reports that a male voice is forbidden by design ("⛔ MALE VOICE IS FORBIDDEN BY DESIGN … ⛔ NOW CLOSING.. BYE"). Better to crash than to ever sound male. The user also forbade any *enumeration of male synonyms* ("man/boy/guy") in the code — Tlamatini's vocabulary contains only female.
+
+**Design (POSITIVE allow-list, fail-closed) in `agent/agents/talker/talker.py`:**
+- `_FEMALE_VOICES = (tara, leah, jess, mia, zoe)` are the ONLY permitted voices; `_FEMALE_GENDER_TOKENS` the only accepted genders; `_VOICE_GENDER = {v: 'female'}` (no male keys); `_DEFAULT_VOICE_BY_GENDER = {'female': 'tara'}` (no male mapping). There is deliberately **no list of male voices/genders** — anything not verifiably female is simply "not permitted".
+- New exception `MaleVoiceForbiddenError`. `resolve_voice()` raises it for (a) a non-empty non-female `gender`, (b) an explicit non-female `voice`, OR (c) **any unknown/unverifiable voice** (no more "pass unknown through with a warning" — Tlamatini never gambles on a voice she can't confirm is female). `resolve_voice` is called **FIRST** inside `synthesize()`, before any text/Ollama/audio work, so a forbidden voice can never fetch a token or play a sound.
+- `main()` catches `MaleVoiceForbiddenError` **before** the generic `except` and calls `_die_male_voice_forbidden()` → logs the CRITICAL banner, emits a single `INI_SECTION_TALKER` error block (`voice: FORBIDDEN`, `status: error`), then `os._exit(70)` — closing the whole process, **NOT** triggering `target_agents`. (Exception-then-`os._exit`, not an inline `os._exit` in `resolve_voice`, so the unit tests can assert the refusal without killing the test process.) `emit_parametrizer_error_section` uses the non-raising `_safe_report_voice()` so it can describe a refused request without re-raising.
+
+**Mirrored across the WHOLE source so the rule is unmissable (keep these aligned):** `config.yaml` (female-only header + only female voices documented), `chat_agent_registry.py` (Talker `purpose`/`example_request` — removed the `voice='leo'` example, state the refusal), `prompt.pmt` **Rule 17 "Talker voice rule — FEMALE ONLY"** (Conflict-resolution rule renumbered 17→**18**; `test_temp_dir_policy.py` updated to assert 17 Talker / 18 Conflict), `agents/flowcreator/agentic_skill.md` #74, `agents/flowhypervisor/monitoring-prompt.pmt` (do NOT flag the by-design shutdown as a crash), `agents_descriptions.md`, `README.md`, `docs/claude/agents.md`, `CLAUDE.md`, `agent/Tlamatini.md` (§1 self-knowledge), and `agent_page_chat.js` (the `.flw` Flow-Generator drops a non-female voice/gender as defence in depth).
+
+**Tests (`agent/test_talker_agent.py`):** the old male-voice expectations were rewritten to female; added the refusal contract (every male voice, every non-female gender, unverifiable voice, build-prompt refusal, synthesize-before-network refusal, and the `main()` hard-exit-`os._exit(70)`-no-downstream test) plus registry/config doc asserts; and a **`TalkerFemaleVoiceAudibleTests`** class — 5 REAL, AUDIBLE synthesis tests, one per permitted female voice (tara/leah/jess/mia/zoe; no mocks: real Ollama → real SNAC → real speakers), guarded by `skipUnless` so they skip where Ollama / the Orpheus model / snac+torch are absent. The audible tests use ONLY her female voices; a non-female voice is exercised solely by the refusal/abort paths.
+
+**Verified LIVE** via the tlamatini MCP `talker` tool: `voice=leo` → return code **70**, banner + `status: error`, `played: false`, **no audio**; `voice=tara` → return code 0, `status: spoken`. **Deployment:** source-only edits; the MCP server runs from `C:\Development\Tlamatini` source so it is already live, but a **frozen build needs `python build.py`**. Memory: `project_talker_female_voice_only`.
+
+### 2026-06-06 — Autonomous Command Watchdog: an idle/hung shell child can no longer freeze the whole chat — do NOT revert to "the per-call timeout is enough"
+
+**Problem (user-reported, "Tlamatini is hanged, the same as last time"):** a Multi-Turn run wedged the entire chat. Root cause in the field: the LLM issued `execute_command` with a malformed `cmd /c "powershell -Command "...""` whose **mangled nested quotes** dropped PowerShell to its `>>` continuation prompt, where it **sat idle waiting on stdin that never came**. The synchronous tool call blocked the Daphne worker thread behind it. Confirmed live: `cmd.exe`→`powershell.exe` children of the main PID alive for minutes, main process blocked, `tlamatini.log` frozen mid-iteration.
+
+**Why the existing nets didn't save it:** `tools._run_command_bounded` (stdin→DEVNULL + 600 s hard timeout + tree-kill) is the right *primary* fix and is in source — BUT (a) the frozen `C:\Tlamatini` build predated it (never rebuilt), and (b) even with it, 600 s is a very long freeze, and any path that bypasses it is unguarded. The `orphan_reaper` Tier 1/2 hooks **run on the same worker thread** that is blocked, so they can never fire during the hang.
+
+**Fix — a new, independent daemon thread (`agent/command_watchdog.py`):** started once from `apps.AgentConfig.ready()` (right after the gpu_perf boot, same `should_start` gate, fail-open). It cannot itself be blocked by the hang because it lives off the worker thread. Every `tick_seconds` it enumerates `psutil` descendants of `os.getpid()`, and for any **console interpreter** (`cmd.exe`/`powershell.exe`/`pwsh.exe`) that is **alive past `hang_grace_seconds` AND making no PROGRESS** it kills the **whole tree** (descendants first), unblocking the worker. Defaults: tick 15 s, grace 180 s, 4 idle ticks, progress floor 0.10 cpu-s / 64 KB per tick — tunable via optional `config.json` keys `command_watchdog_{enabled,tick_seconds,hang_grace_seconds,required_idle_ticks,progress_cpu_seconds,progress_io_bytes}`.
+
+**Progress (NOT elapsed time, NOT just the shell's CPU) is the kill criterion — this is what keeps long-but-working jobs safe.** Each tick the watchdog sums two monotonic counters across the **entire subtree** (the shell PLUS every descendant): CPU-seconds (`cpu_times().user+.system`) and I/O bytes (`io_counters()` read+write+other). A tick is "idle" only if BOTH advanced by less than the per-tick floors. A process is killed only when it has been idle for `required_idle_ticks` *consecutive* ticks AND is older than the grace window. Why each "working" case is spared: a CPU-bound build → CPU climbs; an I/O-bound download/clone at ~0 % CPU → bytes move; a launcher shell (`cmd.exe`→`python.exe`) whose CHILD does the work → the subtree is busy even though the shell is idle; a process we can't sample at all (AccessDenied) → treated as working. Only a tree that burns no CPU and moves no bytes for the full window — a shell stuck at a prompt waiting on input that never comes — is reaped.
+
+**Safety contract (do NOT weaken):**
+- **Progress-based, subtree-aware kill.** NEVER kill on duration. A child that consumes CPU OR moves I/O — anywhere in its subtree — is spared no matter how long it runs. Busy-but-runaway commands stay bounded by the separate 600 s ceiling in `_run_command_bounded`. The two layers compose; the watchdog is the FAST net for the no-progress stdin-wait hang, the bound is the backstop for a genuinely runaway busy command.
+- **Hard-protected PIDs:** reuses `orphan_reaper._ancestor_pids` + `_console_owner_pid` so it can never kill our own window host, an ancestor, or the main process (would strand/close the server).
+- **Scope:** only console interpreters (+ their descendants). Never the Python agent runtimes, the Daphne worker, or MCP/gRPC threads. `conhost.exe` is reaped via the interpreter's tree-kill, not directly.
+- **Fail-open / never raises:** psutil missing → silent no-op; a tree it cannot sample is treated as *working* (spared), not killed; the loop swallows every error.
+
+**Residual edge (be honest):** a command that genuinely blocks with ZERO local CPU and ZERO I/O for the full grace window (e.g. waiting on a very slow remote server / a held lock) would be treated as hung. Mitigation: the grace + idle-streak defaults are generous (≈ several minutes of total no-progress) and all thresholds are config-tunable; raise them for an environment with legitimately long silent waits.
+
+**Takes effect only after `python build.py` + reinstall** — the running frozen `C:\Tlamatini` build also still lacks the source-side `_run_command_bounded` fix, which is the other half of why it hangs. Coverage: `agent/test_command_watchdog.py` — 15 tests incl. real-process tests proving the real watchdog (real psutil + real tree-kill) KILLS a stuck idle PowerShell but SPARES a CPU-bound one AND an I/O-bound one, plus a fake-process unit proving an idle shell with a busy CHILD is spared (subtree rule). Files: `agent/command_watchdog.py` (new), `agent/apps.py` (boot wiring), `agent/test_command_watchdog.py` (new).
+
+### 2026-06-05 — Pool agents now ALWAYS run on a Python CARRIED inside the install (no system Python required) — do NOT revert to PYTHON_HOME/PATH resolution
+
+**Problem (user-reported):** the frozen installer assumed the end user already had Python 3.12.10 **with all of `requirements.txt` installed** and discoverable via `PYTHON_HOME`/PATH. The PyInstaller `Tlamatini.exe` is self-contained, but **every pool agent (all ~74) is launched as a SEPARATE subprocess** via `get_python_command()` (in each agent) / `_resolve_python_executable()` (`views.py`, `tools.py` ×2, `chat_agent_runtime.py`), which resolved `PYTHON_HOME` → `<exe_dir>\python.exe` → bare `python`. The installer never installed Python, set `PYTHON_HOME`, or pip-installed deps — so on a clean machine **no agent could run** (and even a bare python from python.org lacks `langgraph`/`langchain`/`pyyaml`).
+
+**Fix (two halves):**
+1. **Ship a self-contained Python next to the exe.** `build.py::bundle_carried_python()` copies a **verified Python 3.12.10** (full install, NOT a venv, with deps importable) into `dist/manage/python/`. Hard preflight (`_probe_carried_python`) **ABORTS the build** unless the source interpreter is *exactly* `CARRIED_PYTHON_VERSION = (3,12,10)`, non-venv, and can `import yaml,langgraph,langchain,requests`. It flows to the install dir automatically via the existing `os.walk(dist_manage)` → `pkg.zip` → `install.py` `extractall` pipeline — **no `install.py`/`build_installer.py` change needed**, the result is `<install_dir>\python\python.exe`.
+2. **Make every resolver prefer the carried interpreter UNCONDITIONALLY.** The shared helper **`get_user_python_home()` (62 agents + `views.py`)** now, in frozen mode, returns `<install_dir>\python` when `<install_dir>\python\python.exe` exists — BEFORE any registry/env `PYTHON_HOME`. Since `get_python_command()` and `get_agent_env()` (child PATH) both call it, this fixes interpreter selection AND PATH everywhere with one function. `cleaner.py` (has `get_python_command` but no helper) + the 3 app-side resolvers (`tools.py::launch_in_new_terminal`, `tools.py::_resolve_python_executable`, `chat_agent_runtime.py::_resolve_python_executable`) were patched directly to the same `<exe_dir>\python\python.exe`-first rule. **Proven by test: the carried python wins even against a hijacked `PYTHON_HOME`.**
+
+**Also carried (full self-containment, "size doesn't matter"):** (a) **Playwright browsers** → `build.py::bundle_playwright_browsers()` copies `%LOCALAPPDATA%\ms-playwright` to `dist/manage/ms-playwright`; `manage.py::_pin_playwright_browsers()` exports `PLAYWRIGHT_BROWSERS_PATH` (Playwrighter + in-process Googler). (b) **Java** → `bundle_java_runtime()` copies `$JAVA_HOME` to `dist/manage/jre`; J-Decompiler. (c) **Git** → `bundle_git()` copies the Git-for-Windows root to `dist/manage/git`; Gitter + STM32er MCP clone. `manage.py::_pin_bundled_tools()` sets `JAVA_HOME` + prepends `jre/bin` & `git/cmd|mingw64\bin|usr\bin` to PATH (inherited by every agent via `os.environ.copy()`). `jd-cli/jd-cli.bat` no longer hardcodes a dev `JAVA_HOME` (resolves ambient or `%~dp0..\jre`). **Stays external by necessity:** Ollama (+models), STM32CubeIDE, runtime-downloaded firmware toolchains, remote infra targets (Docker/k8s/SSH/SCP/SQL/Mongo), ACPX external CLIs.
+
+**Contract (do NOT weaken):** the carried interpreter is **EXCLUSIVELY 3.12.10** and is the **mandatory, first-choice** runtime for pool agents in frozen mode. Do not re-introduce a `PYTHON_HOME`/PATH preference ABOVE the carried path, and do not relax the build preflight (it is the only thing guaranteeing the shipped python actually has the deps). Source mode is unchanged (uses `sys.executable`). **This change only takes effect after a fresh `python build.py` + reinstall** — the carried `python/` cannot be hot-copied into an existing frozen install (it must come from `pkg.zip`). Coverage: `agent/test_build_scripts.py::CarriedPythonContractTests` (7 tests).
+
+### 2026-06-05 — Exec Report can no longer bleed into the answer body (boundary sentinel + split-render)
+
+**Symptom (user-reported):** the per-agent Execution Report tables appended at the tail of a Multi-Turn answer were getting *embedded into the answer's own HTML tables* — a visual mess where "what ran" merged into the response.
+
+**Root cause:** the answer prose and the appended exec-report HTML were concatenated into ONE string and rendered in a SINGLE `innerHTML` parse (`agent_page_chat.js::buildAutomatedMessageElement`). When the LLM answer contained an HTML table (prompt.pmt rule 6) that wasn't perfectly closed, the browser's HTML parser **foster-parented** the trailing exec `<table>`s into/around it. A wrapper `<div class="exec-report-frame">` alone (added the prior session) **cannot** prevent this — it is the same parse — and that prior CSS had also never reached the served `staticfiles/` (DEBUG serves live from `agent/static/`, so the real gap was the un-restarted server + the structural parse issue, not the CSS).
+
+**Fix (the contract — do NOT revert):**
+- `agent/services/response_parser.py` defines `EXEC_REPORT_BOUNDARY = "<!--TLAMATINI_EXEC_REPORT_BOUNDARY-->"`. `process_llm_response` now builds the system-appended section (exec-report tables + Ask-Execs denial banner) separately and joins it onto the answer with this sentinel — **only when non-empty** (a plain answer is never followed by a stray marker). It is persisted into the saved `AgentMessage` verbatim, so reload re-isolates identically.
+- `agent/static/agent/js/agent_page_chat.js` declares the byte-identical `const EXEC_REPORT_BOUNDARY` and, in `buildAutomatedMessageElement`, splits the message on it and parses **each half in its OWN `innerHTML`** (prose → `.automated-message-body`, system section → `.automated-message-execreport`). Two independent DOM subtrees = a malformed/unclosed answer table can NEVER absorb the exec tables. This is the structural guarantee; the `.exec-report-frame` markup/CSS is now belt-and-suspenders, not the load-bearing part.
+- **Keep the two `EXEC_REPORT_BOUNDARY` constants byte-for-byte in sync.** It is an HTML comment so an old/cached frontend degrades gracefully (marker renders invisibly, falls back to the legacy single concatenated parse).
+- Untouched: `_render_exec_report_html` output (still emits `.exec-report-frame`/`.exec-report-block`/per-agent captions), the executor capture path, and the `exec_report_enabled` gating — so `ExecReportCaptureTests` / `ExecReportPersistenceTests` / `AskExecsDenialBannerTests` stay green (they assert on captions/`exec-report-block`/`row.message == final`, none of which the boundary changes). **Requires a Django server restart** to emit the new markup (and a browser hard-refresh; `STATIC_VERSION` cache-busts JS/CSS on each restart).
+
+### 2026-06-04 — AudioPlayer (#73) + VideoPlayer (#74): the media-PLAYBACK pair that completes the media-I/O family
+
+The media-I/O family is now **screen / camera-in / mic-in / speakers-out / screen-out**: Shoter (screen), Camcorder (camera capture), Recorder (mic capture), **AudioPlayer** (audio file → speakers), **VideoPlayer** (video file → a display, with audio). Both new agents ship on the canvas AND as wrapped Multi-Turn tools (`chat_agent_audioplayer` / `chat_agent_videoplayer`). Contracts to keep:
+
+- **Historical capture note, superseded 2026-06-07:** both are observational/output and mutate no persistent state, but their wrapped Multi-Turn calls ARE now captured automatically like every `chat_agent_*`. They still need no curated `_EXEC_REPORT_TOOLS` entry because that map is only an optional styling/merge refinement. AudioPlayer does not change the OS default endpoint and VideoPlayer does not change the OS default monitor.
+- **`time_played` truncate/loop is a STREAMING contract, not a prebuilt buffer.** AudioPlayer uses a `sounddevice` `OutputStream` wrap-around callback; VideoPlayer uses a wall-clock `drive_playback` loop that re-seeks the backend on EOF. `0` = whole file once; `N>0` = exactly N s, truncating a longer file or looping a shorter one (whole repeats + a final partial). Do NOT "simplify" either into `np.tile(...)` then play — a large `time_played` over a tiny file would allocate gigabytes.
+- **Sampling rate / backend nuances:** AudioPlayer plays at the FILE's native rate by default (`sample_rate: 0`, read from the file — correct pitch); a non-zero value forces the output rate and pitch-shifts (not resampled). VideoPlayer's audio+video is **`ffpyplayer`** (pip wheel bundles ffmpeg+SDL → no external ffmpeg, no runtime download) with **OpenCV** (`cv2`) for the window; if ffpyplayer is unavailable it degrades to **silent cv2 video** — keep that fallback (it is the reason the core honors "bundles with no problems" even worst-case). `build.py` carries `--collect-all ffpyplayer` AND `ffpyplayer` in `_agent_libs`; do NOT drop either (PyInstaller's module graph alone misses ffpyplayer's bundled DLLs).
+- **Top-level promotion + parametrizer fields.** `tools._PROMOTE_SECTION_FIELDS_BY_TEMPLATE_DIR` promotes `input_path` (and friends) for both so the LLM sees the played path without grepping the log; `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS` + `parametrizer.SECTION_AGENT_TYPES` list `audioplayer` / `videoplayer`. Migrations `0116`/`0117` (AudioPlayer) and `0118`/`0119` (VideoPlayer); deps `soundfile` and `ffpyplayer` in `requirements.txt`. Full per-agent notes live in `docs/claude/agents.md`; coverage = `test_audioplayer_agent.py` (43) + `test_videoplayer_agent.py` (38).
+
+### 2026-06-04 — TeleTlamatini + WhatsTlamatini adapted to the post-"Ask Execs" world (ungated by design + WhatsTlamatini ACPX parity)
+
+Historical note: WhatsTlamatini was retired later; current WhatsApp send/receive belongs to Whatsapper on the official Meta Cloud API.
+
+Both long-running chat-bridge bots were swept against every change since "Ask Execs" (2026-05-29). The user's explicit decision: the bots stay **fully authorized / ungated** — a Telegram/WhatsApp operator cannot answer a browser Proceed/Deny modal, and prompting over chat "would be a headache." Keep these contracts; do NOT revert them:
+
+- **`ask_execs_enabled` is HARD-PINNED `False` in the outbound chat payload** of BOTH bots (`teletlamatini.py` / `whatstlamatini.py` → `_send_and_collect.send_payload`). It is sent explicitly (not omitted) so a future change to the consumer's server-side default can never silently re-gate the bot. If Ask Execs were ever on for a bot, the executor thread would BLOCK on a browser modal nobody can answer until `total_timeout`, then return empty. **Do NOT remove the pin or "wire up" Telegram/WhatsApp approval** — it was considered and explicitly declined.
+- **Classifier explicitly skips the Ask-Execs UI-control frames.** `'exec-permission-request'` / `'exec-permission-response'` were added to `_SPECIAL_TYPES_TO_SKIP` in both bots. The consumer broadcasts `exec-permission-request` to the whole per-user room group (`chat_user_<id>`), so if a human browser is logged into the SAME Tlamatini account and ticks Ask Execs, that frame lands on the bot's socket — the explicit skip guarantees it is never mistaken for a partial/final answer.
+- **Run each bot on a DEDICATED Tlamatini account** (documented in both `config.yaml`s). The WS room group, request global-state (`last_exec_report_*`, now also `last_exec_report_denied`), AND the per-user Ask-Execs broker are all keyed by Tlamatini user id (`consumers.connect`, `exec_permission.py`), so sharing the account with a browser human cross-talks. This is documentation/deploy guidance, not a code gate.
+- **WhatsTlamatini gained full ACPX parity** (it previously carried NO `acpx_enabled` at all — TeleTlamatini had it since 2026-05-08): `acpx_enabled` now flows through `TlamatiniBridge.__init__` → `send_payload` → `_resolve_tlamatini_cfg` → bridge construction → ready log + the dynamic `_format_auth_ok(...)` auth message; `config.yaml` sets `acpx_enabled: true`. Both resolvers also warn (non-fatal) when `acpx_enabled and not multi_turn_enabled` (ACPX needs the Multi-Turn planner to bind the `acp_*` tools).
+- Coverage: `agent/test_chat_bridge_bots.py` (9 `SimpleTestCase` tests, loads both pool modules via `importlib` with cwd save/restore like `test_kalier_agent.py`) — pins the skip-set, the FINAL-frame detection, ACPX resolution, the end-to-end payload (`ask_execs_enabled: False` + `acpx_enabled`), and the shipped configs. ruff clean. **Frozen needs `python build.py`** to ship the edited agents; no migration (no DB/display-name change). Pure agent + config + docs change; no server-side edits.
+
+### 2026-06-03 — Recorder agent (#72): microphone → WAV, the observational AUDIO sibling of Camcorder/Shoter
+
+New workflow agent **Recorder** (`agent/agents/recorder/`) — microphone / audio-input capture via `sounddevice`, saved as a WAV (stdlib `wave`), on BOTH the canvas and Multi-Turn (`chat_agent_recorder`). It is the SOUND peer of the capture trio (Shoter = screen, Camcorder = camera, Recorder = audio) and, like both, is **observational → deliberately NOT in `_EXEC_REPORT_TOOLS`** (it records, it doesn't mutate state). Things to keep aligned / not revert:
+
+- **Defaults that matter:** `device_index` defaults to `-1` = the system DEFAULT input device (the agent logs the numbered PortAudio input-device list at startup so a caller can read the right index; `device_name` is a case-insensitive name-substring fallback, only consulted when `device_index` is `-1`). `sample_rate` defaults to `0` = the device's NATIVE default rate on purpose — forcing a rate the driver does not support raises a PortAudio error, so the safe default lets the device choose and the rate actually used is read back + logged + put in the INI block. `channels` defaults to mono (`1`) and is clamped down to the device's reported max so an over-request can never crash the capture. Do not "default" `sample_rate`/`device_index` to fixed values.
+- **`input_gain_percent` is POST-capture digital scaling, not the hardware mic level** (`100` = unity/byte-identical, `200` = +6 dB, `50` = −6 dB, `0` = silence). It amplifies the noise floor and a hot signal CLIPS, so the count of samples hitting the int16 rail is logged and surfaced as `clipped_samples` in `INI_SECTION_RECORDER` for a downstream Forker.
+- **Output location:** the Music known-folder (`~/Music`, localized e.g. "Música") under `TlamatiniRecords`, collision-proof timestamped filename. (Recordings are user deliverables, not scratch — so NOT under `<app>/Temp`; consistent with the 2026-06-02 policy, which governs *transient* files.)
+- **Robust numeric coercion:** the agent uses `_coerce_int`/`_coerce_float` helpers so a YAML/string config value (`"5"`, `"48000"`) never crashes the capture, and it promotes the saved `output_path` into the INI header.
+- **Wiring (mirrors Camcorder/Shoter):** `update_recorder_connection_view` (views.py, target-only producer) + urls.py route; migrations **0114** (Agent row) / **0115** (Tool row); `ChatWrappedAgentSpec` in `chat_agent_registry.py`; `_PARAMETRIZER_OUTPUT_FIELDS['recorder']` in `services/agent_contracts.py`; `'recorder'` in `parametrizer.py` `SECTION_AGENT_TYPES`; `sounddevice` in `requirements.txt`. Frontend: unique CSS gradient, the FULL connection set in `acp-canvas-core.js` (classMap + mouseup + `removeConnection` + `removeConnectionsFor`), undo/redo in `acp-canvas-undo.js`, `.flw` load in `acp-file-io.js`, `updateRecorderConnection` connector, `_mapToolArgsToAgentConfig` branch in `agent_page_chat.js`, eslint global + 3 `/* global */` headers.
+- Emits an atomic `INI_SECTION_RECORDER` block (`output_path`/`output_dir`/`filename`/`device_index`/`device_name`/`sample_rate`/`channels`/`duration_seconds`/`gain_percent`/`clipped_samples`/`format`/`response_body`) and ALWAYS triggers `target_agents`. 30 tests; E2E-verified against a real microphone + the wrapped tool. **Frozen needs `python build.py`** (bundles `sounddevice` + the agent dir) and a `migrate`. Memory: `project_recorder_agent`.
+
+### 2026-06-03 — Camcorder agent (#71): webcam photo/video, the observational sibling of Shoter
+
+New workflow agent **Camcorder** (`agent/agents/camcorder/`) — physical-camera capture via OpenCV (`cv2`), on BOTH the canvas and Multi-Turn (`chat_agent_camcorder`). It is the hardware-camera peer of Shoter (Shoter = screen, Camcorder = camera) and, like Shoter, is **observational → deliberately NOT in `_EXEC_REPORT_TOOLS`** (it records, it doesn't mutate state). Things to keep aligned / not revert:
+
+- **Defaults that matter:** `capture_mode` defaults to `photo` (ONE shot, `.jpg`); `video` records `video_duration_seconds` (no audio, `.mp4`/`mp4v`). `resolution_width`/`resolution_height` default to `0×0` = the camera's NATIVE mode on purpose — webcams only support discrete modes, so forcing an unsupported one snaps to the nearest; when a `W×H` is requested the **read-back applied** value is logged. Do not "default" these to a fixed resolution.
+- **Output location:** the Pictures known-folder (`SHGetKnownFolderPath` FOLDERID_Pictures via `ctypes`, fallback `~/Pictures`) under `TlamatiniCamcorder`, collision-proof timestamped filename. (Captured media are user deliverables, not scratch — so this is NOT under `<app>/Temp`; that's intentional and consistent with the 2026-06-02 policy, which governs *transient* files.)
+- **Wiring (mirrors Shoter, plus the bits Shoter lacks):** `update_camcorder_connection_view` (views.py, target-only producer) + urls.py route; migrations **0112** (Agent row) / **0113** (Tool row); `ChatWrappedAgentSpec` in `chat_agent_registry.py`; `_PARAMETRIZER_OUTPUT_FIELDS['camcorder']` in `services/agent_contracts.py`; `'camcorder'` in `parametrizer.py` `SECTION_AGENT_TYPES`; `opencv-python==4.13.0.92` in `requirements.txt`. Frontend: unique CSS gradient (charcoal→REC-red→amber→gold), and the FULL connection set in `acp-canvas-core.js` (classMap + mouseup + `removeConnection` + `removeConnectionsFor` — more complete than Shoter, which is missing the remove paths), undo/redo in `acp-canvas-undo.js`, `.flw` load in `acp-file-io.js`, `updateCamcorderConnection` connector, `_mapToolArgsToAgentConfig` branch in `agent_page_chat.js`, eslint global + 3 `/* global */` headers.
+- Emits an atomic `INI_SECTION_CAMCORDER` block (`output_path`/`output_dir`/`filename`/`media_type`/`camera_index`/`duration_seconds`/`resolution`/`fps`/`response_body`) and ALWAYS triggers `target_agents`. 22 tests; E2E-verified against a real camera. **Frozen needs `python build.py`** (bundles OpenCV + the agent dir) and a `migrate`. Memory: `project_camcorder_agent`.
+
+### 2026-06-02 — Temp + Templates directory policy (all transient files stay INSIDE Tlamatini)
+
+Two application-root directories now own every non-source file Tlamatini writes. **Do NOT revert** the resolution/enforcement or the LLM indications:
+
+- **`<app>/Temp`** — the SOLE temp dir (frozen: next to `Tlamatini.exe`; source: the repo root). Resolver `agent/path_guard.py`: `get_app_temp_root()` / `enforce_app_temp_dir()` (pins `TMP`/`TEMP`/`TMPDIR` + `tempfile.tempdir`, exports `TLAMATINI_TEMP`) / `is_within_app_temp` / `resolve_temp_path`. `manage.py::_enforce_app_temp_dir()` runs it **before Django**; `tlamatini/settings.py::_pin_temp_directory()` repeats it (covers a direct `daphne`/`asgi` launch). Pool agents inherit it via `get_agent_env`'s `os.environ.copy()`, so a bare `tempfile.*` in ANY agent already lands under `<app>/Temp`. The temp-creating agents (executer, de_compresser, esp32er, stm32er, arduiner, plus historical TelegramRX templates in older installs) ALSO carry an explicit module-top **`if (os.environ.get('TLAMATINI_TEMP') or '').strip(): … tempfile.tempdir = …`** guard — it MUST stay an `if`-block, NOT a top-level `def` (a def before the imports trips ruff **E402**; mirror the conhost-guard shape).
+- **`<app>/Templates`** — the DEFAULT parent for the project trees the firmware/engine agents (STM32er / ESP32er / Arduiner / Unrealer) scaffold, UNLESS the user names another path. `path_guard::get_app_templates_root` / `enforce_app_templates_dir` (exports `TLAMATINI_TEMPLATES`; does **not** touch TMP/tempfile — Templates holds deliverables, not scratch). STM32er `_build_arguments('create_project')` defaults a blank `dest_parent` → `TLAMATINI_TEMPLATES` (gated on the env var, so unit tests without it keep old behavior). ESP32er/Arduiner/Unrealer are instruction-driven (the LLM roots `project_dir`/`sketch_path` under Templates).
+- **LLM indications**: `prompt.pmt` **Rule 15** (Temp) + **Rule 16** (Templates); adding Rule 16 pushed "Conflict resolution" to **Rule 17** and updated the one Prime-Directive cross-ref. Absolute paths are injected as `{temp_directory}` / `{templates_directory}` by `rag/config.py::_resolve_temp_directory_for_prompt` / `_resolve_templates_directory_for_prompt` at the single prompt-load site (same `.replace`-before-template-parse pattern as `{self_knowledge}`; brace-escaped, fail-open). The old `C:\Temp\hello.py` example in Rule 11 was REMOVED — it was teaching the bad habit. `Tlamatini.md` §7 documents both. The 4 firmware/engine agents' `chat_agent_registry` `purpose`+`example_request` were updated to default scaffold dirs to Templates.
+- **build.py** ships `Temp` + `Templates` empty next to the `.exe` (added to `empty_dirs`); `.gitignore` ignores both. **Frozen needs `python build.py`** (manage.py/settings.py/prompt.pmt/config.py/the agents live in the PYZ).
+- **Authoring contract** (propagated into the runbooks): a new agent/tool/skill that writes scratch MUST route it through `<app>/Temp` (resolve via `path_guard`, or read `TLAMATINI_TEMP`); a new firmware/engine agent that scaffolds projects defaults to `<app>/Templates`. Updated: the `create-new-agent` / `create-new-mcp` / `skill-creator` / `flow-making` / `tlamatini-new-acp-agent` SKILL.md packages + the two `@`-imported guides (`.agents/workflows/create_new_agent.md`, `.mcps/create_new_mcp.md`).
+- Tests: `agent/test_temp_dir_policy.py` (33 — real resolution/enforcement, executes each agent's actual block, real `prompt.pmt` injection, static wiring). The run also surfaced + FIXED 3 PRE-EXISTING reds: `AssignmentParserRobustness` (rewrote the 3 firmware `example_request`s single-step — the parser choked on the `"; then action="` narrative), `PreLaunchScriptPreview` (registered esp32er/arduiner in `_PRE_LAUNCH_PREVIEW_BY_TEMPLATE`), `AgentDescriptionsCoverage` (the agent-folder scan now skips dot-dirs like `.ruff_cache`). Memory: `project_temp_templates_policy`.
+
+### 2026-06-01 — `flow-making` skill (objective → `.flw`) + two contracts that make catalog skill-prompts work
+
+New in-process skill `agent/skills_pkg/flow_making/` wraps the FlowCreator engine to produce a canvas-loadable `.flw` from a prompt. Two non-obvious contracts — **do NOT "simplify" them away**:
+
+1. **`execute_command` runs with NO `cwd`** (`agent/tools.py` — `subprocess.run(command, shell=True)`), so it inherits the chat process's working directory = the **Django project root** (where `manage.py` lives), NOT the repo root. Therefore the skill runbook invokes its scripts as `python agent/skills_pkg/flow_making/scripts/make_flow.py …` — **without** the `Tlamatini/` prefix. The `Tlamatini/agent/…` form is only correct for human-run repo-root commands (e.g. the lint command). If you "fix" the SKILL.md to add `Tlamatini/`, the runtime call breaks with "can't open file".
+2. **Catalog skill-prompts MUST literally name `invoke_skill` / `list_skills`.** `list_skills` / `invoke_skill` are ACPX-surface tools (`agent.acpx.ACPX_TOOL_NAMES`) — `filter_acpx_tools()` strips them whenever the **ACPX** toggle is off, and the planner never sees them. The Catalog auto-sets the toolbar toggles from prompt text via `tools_dialog.js::classifyPromptModes`, which tags a prompt **ACPX** (⇒ also Multi-Turn) ONLY when it contains a literal `invoke_skill`/`list_skills`/`acp_*` token (after the "do NOT use …" scrub). So **`idPrompt=69` ALARM FLOW FORGE** (migration `0108`) is phrased around `invoke_skill('flow-making', …)` on purpose — a bare natural "create a flow file …" would classify One-Shot, leave ACPX off, and the skill would be invisible. Same reasoning applies to any future catalog prompt that drives a skill.
+
+The `.flw` the converter (`scripts/result_to_flw.py`) emits must stay the `schemaVersion: 2` `{nodes:[{id,text,left,top,agentPurpose,configData}], connections:[{sourceIndex,targetIndex,inputSlot,outputSlot,…}], artifacts}` shape that `acp-file-io.js::loadDiagram` consumes — node `text` lowercases back to the canvas classMap + the connection-restoration `switch`, and connections are keyed by **integer index**. It round-trips through `agent/services/flow_spec.py::normalize_flow_payload`. The legacy `tlamatini-flow-from-objective` skill's old `{version, agents, connections:[{from,to,kind}]}` shape was OBSOLETE (would not load) — it was rewritten to delegate to `flow-making`.
+
+
+- **Taskbar attention notice — flash the `Tlamatini.exe` console window + UPPERCASE log banner on Ask-Execs prompts and Notifier notifications — 2026-05-31** — Successor to the removed Notifier-toast experiment (see 2026-05-30 below). The user asked for a "blinking taskbar icon when an app needs attention". **Hard constraint stated up front and honored**: page JavaScript is sandboxed and **cannot** flash its own *browser* taskbar button (same wall that killed the toast), and the backend can't reliably identify which browser window is Tlamatini's. So the *guaranteed* mechanism is to flash the **`Tlamatini.exe` window the Django process itself owns**. "Do NOT revert / keep aligned" contracts:
+  1. **Backend = `agent/window_flash.py` (NEW).** `flash_console_window(count=5)` calls `FlashWindowEx(GetConsoleWindow(), FLASHW_ALL, count)` — the classic Win10/11 "needs attention" orange taskbar highlight (flashes N times, then stays highlighted until the window is activated). `build_attention_banner(page, reason)` returns a **fully UPPERCASE** multi-line banner (`assertEqual(banner, banner.upper())` is a test contract — the user explicitly wanted *mayúsculas*). `notify_attention(page, reason)` flashes **and** `print()`s the banner (tee'd to `tlamatini.log` process-wide by `manage.py`, so the notice survives even with no visible console). **Fail-safe: nothing here ever raises into the request path**; a windowless/headless launch degrades to the banner only and `flash_console_window` returns `False` (NOT an error).
+  2. **Endpoint = `POST /agent/flash_window/`** (`views.flash_window_view`, wired via `secure_post` = `login_required`+`csrf_protect`+`require_POST` in `urls.py`). Body `{page, reason}`; tolerates a malformed body (falls back to a generic banner, still 200). It imports `notify_attention` locally so a missing helper can't break module import.
+  3. **Frontend triggers (browser → endpoint).** `shared-runtime-dialogs.js` gained `flashTlamatiniWindow(reason, page)` (self-contained CSRF read from `document.cookie`; auto-detects the page from `window.location.pathname` → `agent_page.html` vs `agentic_control_panel.html`) exported on `window.SharedRuntimeDialogs`. It is called (a) **inside `renderNotifierToast()`** — the single shared renderer used by BOTH the chat poller (`chat_page_runtime_poller.js`) and the ACP (`acp-running-state.js`), so one hook covers both pages; this fires **once per notification** because the backend deletes `notification.json` after one read (`views.py` ~L3079); and (b) in `agent_page_chat.js`'s `exec-permission-request` handler (Ask-Execs), pinned to `page='agent_page.html'`. Best-effort: a fetch failure never breaks the dialog.
+  4. **Why not the browser's own taskbar button**: impossible from page JS (sandbox). The browser side was deliberately scoped OUT (user chose ".exe window only + log banner"); the title/favicon-blink alternative was not built. Frozen `C:\Tlamatini` ships `window_flash.py`/`views.py`/`urls.py` **inside the PYZ** → needs `python build.py` to take effect (the JS can be hot-deployed to `_internal/staticfiles` if desired). Tests: `FlashWindowAttentionTests` (8, drives the real view + helper; Win32 flash degrades to `False` in the headless test process). Memory: `project_taskbar_flash_attention`.
+
+- **`execute_file` foreground window was a FALSE-OK in the Daphne worker → now `CREATE_NEW_CONSOLE` + real on-screen verification — 2026-05-30** — Follow-on to the 2026-05-29 `execute_file` fix below (which made the foreground path *reachable* via `force_foreground`; this makes it *actually open a visible window* and *report the truth*). Diagnosed from the live `tlamatini.log` at `C:\Tlamatini`, not theory: the user asked to "run cat_art.py in a foreground/forked window", `execute_file` was called with `foreground=true`, and it **returned** `"Launched … in a foreground terminal window — the script opened and ran visibly on your desktop"` while **nothing appeared** (the Windower step then had no `cat_art` window to close). Production change is **`agent/tools.py` ONLY**. "Do NOT revert / keep aligned" contracts:
+  1. **Root cause = the launch mechanism, not the gating.** `launch_in_new_terminal`'s foreground branch did `subprocess.Popen('start "Tlamatini Console" cmd /k python …', shell=True)`. The outer `cmd /c` that runs the `start` builtin exits 0 instantly, so Popen "succeeds" — but whether a console window actually appears depends on the spawning process having a usable console / window-station. The Multi-Turn executor runs in a **Daphne thread-pool worker with no console**, so the window silently never showed. `start` via `shell=True` also fires cmd **AutoRun** (e.g. `doskey` macros), which overwrote the window **title** — breaking title-based close by Windower/Keyboarder (live-probe-confirmed: title came out `'Tlamatini Console - doskey  npm=pnpm $*'`, no script name).
+  2. **Fix = `CREATE_NEW_CONSOLE` + forced `SW_SHOWNORMAL`.** Windows foreground path now spawns `cmd.exe /k title Tlamatini Console - <script> & <python> <args>` with `creationflags=CREATE_NEW_CONSOLE` and a `STARTUPINFO` whose `dwFlags|=STARTF_USESHOWWINDOW`, `wShowWindow=1`. This is the documented mechanism that *forces* a brand-new on-screen console for the child **regardless of the parent's console state** — the same flag the visible wrapped-agent path (`_start_template_agent_process`) already uses. No `shell=True`, so **no AutoRun title pollution**. `title …` stamps the **script basename into the window title** so Windower/Keyboarder can find and close the exact window. Non-Windows keeps the legacy `start … shell=True` string (unreachable in practice; foreground-console is Windows-centric).
+  3. **No more FALSE-OK — `execute_file` now VERIFIES.** New `_verify_foreground_window(script_path, timeout=2.5)` polls `EnumWindows` for a visible top-level window whose title contains the script basename; returns `True` (confirmed on screen) / `False` (Windows, none within timeout → caller must NOT claim success) / `None` (non-Windows or enumeration error → stay neutral). Fail-open, never raises. `execute_file`'s foreground branch reports accordingly: `True`→"CONFIRMED a visible window … is now open"; `False`→"a visible window … did NOT appear … DO NOT report this as success … investigate"; `None`→"could not be auto-verified on this host". The old code blindly returned success on `window_opened = foreground or not _suppress…` with **zero** on-screen check — that assumption WAS the false-OK.
+  4. **Proven LIVE against the real code** (not just unit tests, per the standing "tests give false confidence" rule): drove the real `agent.tools.execute_file.func(SCRIPT, foreground=True)` through a real `django.setup()` with `suppress_visible_consoles=True` (the exact Multi-Turn condition) → a window titled `Tlamatini Console - cat_art.py - …"C:\Tlamatini\applications\cat_art.py"` appeared (independent `EnumWindows` confirmation) and the result string said CONFIRMED. Tests: `MultiTurnBackgroundLaunchTests` — `test_launch_in_new_terminal_opens_visible_new_console_when_not_suppressed` (now asserts `CREATE_NEW_CONSOLE`+`wShowWindow=1`+title carries script name, NOT `start … shell=True`) and three `test_execute_file_foreground_*` (confirms/failure/neutral wording). Frozen `C:\Tlamatini` runs `tools.py` **compiled into the PYZ inside `Tlamatini.exe`** (no loose `.pyc` to hot-patch — `_internal/agent/` is data only), so this needs a `python build.py` to ship. Memory: `project_execute_file_foreground_fix`.
+
+- **Notifier "toast"/desktop-popup experiment REMOVED; Windows "Installed apps" registration KEPT — 2026-05-30** — The Notifier's experimental **second surface (a native Windows toast, later a self-drawn desktop popup) never worked reliably and has been removed entirely** at the user's request. For an *unpackaged* app the Windows notification platform silently drops the WinRT/OS banner under Focus Assist / Do-Not-Disturb / throttling even when `ToastNotifier.Show()` succeeds, and the self-drawn-window fallback was abandoned too. **Do NOT re-introduce a desktop/toast notification surface for the Notifier** — it burned a lot of effort for no working result. The Notifier is back to its single, reliable surface: it drops `notification.json` and the chat UI renders an in-page popup (+ optional `.wav`).
+  - **DELETED**: `agent/native_toast.py`, `agent/test_native_toast.py`, `agent/agents/notifier/toast_popup.py`, `agent/agents/notifier/test_toast_popup.py`, `static/agent/img/Tlamatini.png`, the `apps.py` icon-export / `native_toast.register_all()` blocks, the `build.py` `Tlamatini.png` copy, and every toast config key (`native_toast` / `toast_title` / `toast_image` / `toast_seconds` / `toast_click`). `agent/agents/notifier/notifier.py` and `config.yaml` were restored to their pre-toast state. (`manage.py`'s `SetCurrentProcessExplicitAppUserModelID` AUMID stays — that is **taskbar** identity, never part of the toast.)
+  - **KEPT — separate, independent feature: Windows "Installed apps" entry** (user asked Tlamatini show up in Settings ▸ Apps ▸ Installed apps / Control Panel): `agent/windows_app_registration.py` writes the per-user (HKCU) ARP key `…\CurrentVersion\Uninstall\Tlamatini` (Uninstall→`Uninstaller.exe`). `install.py::_register_programs_entry` writes it, `uninstall.py::_unregister_programs_entry` deletes it, `apps.py` self-heals it on every **frozen** launch (HKCU / non-admin). This was NEVER part of the toast — keep it. Tests: `agent/test_windows_app_registration.py`.
+
+- **Pythonxer: STRICT correctness gate + ALWAYS-trigger-downstream + Multi-Turn fix→re-ruff→retry loop — 2026-05-29** — Two behaviour changes to `agent/agents/pythonxer/pythonxer.py` + `config.yaml` (and a one-line generic change in `agent/tools.py`). "Do NOT revert / keep aligned" contracts:
+  1. **Strict gate before any execution.** `execute_python_script` now (a) `compile(script, path, "exec")` — a script that does not even parse is REFUSED (logged with line/col/snippet, never run, returns non-zero); then (b) `ruff_ok = validate_with_ruff(...)`, and when `_RUFF_BLOCKING` (read from config `ruff_blocking`, **default true**) and Ruff found real lint/static errors → logs `⛔ RUFF FAILED - refusing to execute` + the `[Ruff]` findings and returns non-zero, **without executing**. Ruff being absent or timing out **fails open** (advisory) — the `compile()` syntax floor still runs. Before this, `validate_with_ruff` was called with its return value discarded ("non-blocking") so a wrong script ran anyway. Set `ruff_blocking: false` in the node config to restore advisory behaviour (findings logged, script still runs).
+  2. **ALWAYS triggers `target_agents` — no matter what.** The old `if script_result:` guard around the downstream-trigger loop in `main()` is **removed**. Pythonxer now starts its downstream/output agents on success, on a gate refusal, AND on a runtime failure — it never dead-ends a flow. The exit code (0 success / 1 any failure) is unchanged and still drives the LED and the Multi-Turn retry loop, but **NO LONGER gates whether downstream starts**. This intentionally **drops the documented "exit-code gates downstream" Pythonxer primitive** per the user's emphatic request — downstream agents do any result-checking the user wires (a Forker/Raiser on a marker the script printed). Errors are ALWAYS logged. The `agentic_skill.md`, `agents_descriptions.md`, `agents.md`, `KIMI.md`, and `BookOfTlamatini.md` Pythonxer entries were updated to match so FlowCreator does not design flows assuming downstream is skipped on failure.
+  3. **End-to-end LLM retry loop (`agent/tools.py::_launch_wrapped_chat_agent`, generic to all wrapped agents).** A failed wrapped run now returns `retryable=True` and a message instructing the LLM to read `log_excerpt` (SyntaxError / "RUFF FAILED" + `[Ruff]` findings / traceback), REWRITE the script in full, call the SAME tool again, and repeat fix→re-run→re-check until it passes — never re-sending an identical script. The loop closes because `chat_agent_runtime.reconcile_chat_agent_run` maps Pythonxer's non-zero exit → `status="failed"` + forwards the log tail (now carrying the gate banner), and the Multi-Turn repetition breaker blocks identical re-sends so only a CORRECTED script proceeds. Was `retryable=False` ("inspect the log" → give up).
+  4. **Ruff guaranteed present in BOTH frozen and source modes (`build.py` + `requirements.txt`).** `ruff==0.14.5` is pinned (with a do-not-remove comment) and `build.py` now runs the EXACT runtime invocation — `[target_python, "-m", "ruff", "--version"]` — for BOTH the build Python AND the PYTHON_HOME (frozen-agent) Python after the agent-libs verify, and `sys.exit(1)` (aborts the build) if it fails. A green build therefore guarantees the strict gate has Ruff at runtime. Frozen `C:\Tlamatini` needs a `python build.py` to pick up the pythonxer/tools changes. Verified hermetically (real `pythonxer.py` as a subprocess, all four outcomes); decisive proof is a live Multi-Turn run. Memory: `project_pythonxer_strict_ruff_gate`.
+
+- **`execute_file` foreground/background is USER-DRIVEN + a `.py` parse-gate (no more headless-but-reported-OK) — 2026-05-29** — Real, evidence-backed fix (diagnosed from `tlamatini.log`, not theory) for "asked for a foreground window, none opened, Tlamatini reported success". Production change is **`agent/tools.py` ONLY**, two functions. "Do NOT revert / keep aligned" contracts:
+  1. **Root cause:** Multi-Turn wraps every request in `scoped_request_state(..., suppress_visible_consoles=multi_turn_enabled)` (`mcp_agent.py`), so `_suppress_visible_console_launches()` returned True and `launch_in_new_terminal` always took the `_launch_python_in_background` branch (`CREATE_NO_WINDOW | DETACHED_PROCESS`, stdio→DEVNULL) — the `start … cmd /k` foreground path was never reached. The user's "foreground window" ran headless and `execute_file` returned `"executed successfully in a new terminal window"` unconditionally (no exit-code check; fire-and-forget into DEVNULL).
+  2. **Fix:** `launch_in_new_terminal(script, args, force_foreground=False)` — suppression is now bypassed when `force_foreground=True` (`if _suppress_visible_console_launches() and not force_foreground:`). `execute_file(command, foreground=False)` passes `force_foreground=foreground`. **The foreground/background choice is the USER'S** (per the user's explicit rule): the docstring instructs the LLM to set `foreground=True` ONLY when the user explicitly asks for a visible/foreground/forked window — **if the user says nothing, leave it False and the script runs in the BACKGROUND with no window.** A window opens iff `foreground=True` OR suppression is off (legacy non-Multi-Turn). Do NOT make foreground the default.
+  3. **Parse-gate + honest result:** before launching, if the resolved file ends `.py`/`.pyw`, `compile()`-check it; on `SyntaxError` return an actionable `Error:` (line+col+snippet, "rewrite IN FULL with file_creator") and do NOT launch. Fails open on NUL/unreadable. The result string now says "Launched … (confirms the launch, not that the script ran to completion)" — never "executed successfully". `execute_command`'s analogous `start …` false-OK was intentionally NOT touched (out of scope). Frozen `C:\Tlamatini` needs `python build.py`. Memory: `project_execute_file_foreground_fix`.
+
+
+- **"Ask Execs" — runtime relax: uncheck mid-run to stop the prompts for the rest of that run — 2026-05-29** — Follow-up to the Ask-Execs feature below. The submit-time flag decides whether a broker is **registered** for a run; it can't be un-captured. But the user can now relax (or re-arm) an already-registered broker **mid-flight** by toggling the **Ask Execs** checkbox while a Multi-Turn run executes. "Do NOT revert / keep aligned" contracts:
+  1. **Broker capability = `ExecPermissionBroker.set_auto_proceed(enabled)` + the `set_broker_auto_proceed(key, auto_proceed)` registry helper** (`agent/exec_permission.py`). `set_auto_proceed(True)` (a) short-circuits every **future** `request_permission` to `"proceed"` (under the lock, before the pending dict is touched — no frame emitted) and (b) resolves any **currently-blocking** prompt to `"proceed"` (mirrors `close()`, which resolves pending to `"deny"`). It is a **no-op after `close()`** — a torn-down request must never spring back to life. Do NOT make the future-call short-circuit emit a frame (the whole point is to stop prompting), and do NOT move the `_auto_proceed` check below the `self._pending[request_id] = pending` line (it must return before registering a pending slot).
+  2. **Frame = `set-ask-execs-runtime`** (`{message, type, ask_execs_runtime_enabled}`). `consumers.receive` routes it to `set_broker_auto_proceed(user.id, auto_proceed=not enabled)` (unchecked→relax, re-checked→re-arm). Returns `applied=False` (harmless) when no broker is registered. **The frame MUST carry `message`** — `consumers.receive` reads `text_data_json['message']` unconditionally (same KeyError trap as the `exec-permission-response` frames).
+  3. **Frontend sends it only while `inLongOperation === true`** (`agent_page_init.js` checkbox `change` handler). The toolbar toggle checkboxes are deliberately NOT disabled by `disableControlsDuringOperation()` (it only greys the chat input + context/canvas/menu buttons), so the box stays clickable during a run — do NOT add the toggles to that disable list or the feature dies. When relaxing, the handler also calls `dismissExecPermissionDialogForRuntimeProceed()` (`agent_page_dialogs.js`) to silently close any open prompt — it sets `_execPermDecisionSent = true` first so the dialog's close handler does NOT fire a stale `deny` (which would otherwise race the server-side `proceed` and halt the chain). New global registered in `eslint.config.mjs`.
+  4. **Direction asymmetry is by design, not a bug.** Relaxing a run that **started** with Ask Execs **on** works (a broker exists). Turning Ask Execs **on** mid-run for a run that started with it **off** does nothing that run (no broker was ever registered) — it takes effect on the next submit. Coverage: 5 new `ExecPermissionBrokerTests` (`test_auto_proceed_*` + `test_set_broker_auto_proceed_helper_*`); ruff + ESLint clean (0 errors); all runtime-read, no `build.py` change.
+
+- **"Ask Execs" — per-tool Proceed/Deny permission prompt before every Multi-Turn execution — 2026-05-29** — New toolbar checkbox **"Ask Execs"** (between **ACPX** and **Add internet context**) that, when on, makes the Multi-Turn executor BLOCK on a browser dialog before each state-changing Tool/MCP/Agent runs; **Deny halts the whole chain** and the answer gets a big red "Execution interrupted" banner (always) plus the Exec-report tables (when Exec report is also on). It is a **Multi-Turn-only modifier**: the checkbox is disabled+greyed unless Multi-Turn is checked, and every backend read gates it on `multi_turn_enabled` (mirrors the Exec-report gating). When unchecked, behaviour is byte-for-byte the legacy Multi-Turn flow. Architecture + "do NOT revert" contracts:
+  1. **Backend↔browser bridge = `agent/exec_permission.py` (`ExecPermissionBroker` + a user-id-keyed registry).** The tool executor runs in a worker thread (`sync_to_async(ask_rag, thread_sensitive=False)`); it cannot `await`. So `request_permission(detail)` emits an `exec_permission_request` frame (scheduled onto the consumer's loop via `asyncio.run_coroutine_threadsafe`) and BLOCKS on a `threading.Event`. The browser's `exec-permission-response` frame routes through `consumers.receive` → `resolve_permission(user_id, request_id, decision)` → sets the event. **Fail-safe contract**: emit failure / broker `close()` / a mid-flight Cancel all resolve to **`deny`** (never run an unconfirmed tool); the **only** fail-OPEN case is "no broker registered" (unit tests / detached browser), which the consumer never hits because `queue_llm_retrieval` registers a broker whenever `ask_execs_enabled` and unregisters it in a `finally`. Do NOT make the missing-broker case deny (denying every call when no broker is present would break otherwise-valid requests), and do NOT make emit-failure proceed (that would run an unconfirmed tool).
+  2. **The flag is threaded through the SAME whitelist that once dropped `exec_report_enabled`.** `UnifiedAgentChain.invoke`'s payload-rebuild dict MUST keep `ask_execs_enabled` **and** `conversation_user_id` (the executor finds its broker by user id). The executor sub-payload of BOTH `UnifiedAgentChain` and `UnifiedAgentRAGChain` forwards `ask_execs_enabled` + `ask_execs_user_id=conversation_user_id`. Removing any of these silently disables the prompt (same bug class as the Exec-report regression). `CapabilityAwareToolAgentExecutor.invoke` re-gates `ask_execs_enabled and multi_turn_enabled` and only adds the keys to `executor_payload` on the multi-turn path.
+  3. **Gate placement = AFTER dedup + quota, right before `tool.invoke`.** In `MultiTurnToolAgentExecutor.invoke`'s per-tool loop the gate runs only for calls that will actually execute (skipped dedup/quota calls never prompt). `_requires_exec_permission` exempts `_MANAGEMENT_TOOLS` ∪ `_TOOL_QUOTA_EXEMPT` (status/log/time/window_present are inspection, not "executions"). On Deny it records `self._exec_denied` and returns immediately (no further tools, this or later turns). The denied tool itself is NOT added to `exec_report_entries` (it never ran) — only the **already-executed** tools are.
+  4. **Denial propagation + banner ordering.** `exec_report_denied` flows executor `_build_result_dict` → both chains' `result_dict` (independent of `exec_report_enabled`) → `interface.ask_rag` stores `last_exec_report_denied` in `global_state` → consumer reads+clears it → `services/response_parser.process_llm_response(..., exec_report_denied=...)` appends `_render_exec_denied_banner(...)` **after** the Exec-report tables but **before** `save_message` (so a chat reload restores the banner; respects the existing strict ordering contract). The banner is NOT gated on the Exec-report toggle.
+  Surfaces kept aligned (change together): `agent_page.html` (checkbox `#ask-execs-enabled` + `#exec-permission-dialog-message`); `agent_page_state.js` (`isAskExecsEnabled`/`persist`/`applyStored`/`syncAskExecsAvailability` — availability tied to Multi-Turn); `agent_page_init.js` (sends `ask_execs_enabled`, wires checkbox, re-syncs on Multi-Turn change); `agent_page_dialogs.js` (`showExecPermissionDialog` — modal Proceed[green]/Deny[red], titlebar-X hidden + Esc off, close==Deny, decision idempotent); `agent_page_chat.js` (`exec-permission-request` handler); `agent_page.css` (`.exec-denied-*` banner + `.exec-perm-*` dialog + `.toolbar-toggle-disabled`); `eslint.config.mjs` globals. **Both `exec-permission-response` JS frames MUST include a `message` key** — `consumers.receive` reads `text_data_json['message']` unconditionally before branching, so omitting it raises a KeyError that surfaces as the generic "cannot process your requests" error. Coverage: `ExecPermissionBrokerTests` (13 — incl. the 2026-05-29 runtime-relax auto-proceed tests) + `AskExecsExecutorGateTests` (5) + `AskExecsHelperTests` (4) + `AskExecsDenialBannerTests` (2) + `AskExecsChainPropagationTests` (1) in `agent/tests.py`; ruff + ESLint clean (0 errors). Source + frozen need no `build.py` change (all runtime-read). Pre-existing/unrelated full-suite failures (6): the two `MultiTurnBackgroundLaunchTests` capability-executor tests (stub `object()` lacks `bind_tools` on the pre-existing `if not acpx_enabled` branch), `ParametrizerSequentialExecutionTests`, `AcpxConfigSourceModeTests`, `AssignmentParserRobustnessTests`, and the documented `PromptValidationDecisionTests.test_seeded_prompts_use_deterministic_validation_only`.
+
+- **STM32er agent — zero-config auto-bootstrap + fail-safe hardware preflight + the `Stm32Er`→`STM32er` casing fix — v1.9.0, 2026-05-26** — STM32er (agent #68; catalog now **68** / wrapped chat-agents now **43**; migrations `0101_add_stm32er` + `0102_add_chat_agent_stm32er_tool`, demo prompts `0103`) bridges the **STM32 Template Project MCP** (`https://github.com/XAIHT/STM32TemplateProjectMCP`, a FastMCP **stdio** server) on BOTH surfaces (canvas node + wrapped `chat_agent_stm32er`), driving it over a **self-contained inline MCP stdio JSON-RPC client** in `agent/agents/stm32er/stm32er.py` — stdlib-only, no `mcp` dep in the pool subprocess (Pitfall #10; same self-contained pattern as Kalier's `urllib` client), so it behaves identically in source and frozen builds. `action` selects the capability; the surface is **27 actions = the 23 MCP tools + 2 composites (`serial_session`, `live_monitor`) + 2 meta (`bootstrap`, `validate`)**. Three "do NOT revert" contracts:
+  1. **ZERO-CONFIG AUTO-BOOTSTRAP (`_bootstrap_mcp`) — the default `stm32_mcp_server_script` is now `""` on purpose.** Empty + `auto_bootstrap: true` means STM32er **self-provisions** the MCP on first use: a shallow `git clone` of `mcp_repo_url`@`mcp_ref`, with a **GitHub-zip download fallback when git is absent on the host**, into `mcp_install_dir` (default `%LOCALAPPDATA%/Tlamatini/STM32TemplateProjectMCP`), then pip-installs `mcp` + `pyserial` if missing (`pip_install: true`) and validates the result. The whole point is that a user installs **only STM32CubeIDE + Tlamatini** — do NOT re-add a mandatory on-disk `server_script` default or remove the zip fallback. New `config.yaml` keys (must exist as placeholders or the wrapped-tool config writer silently drops the override): `auto_bootstrap`, `mcp_repo_url`, `mcp_ref`, `mcp_install_dir`, `auto_update`, `pip_install`. New global `config.json` defaults seeded by `tools._seed_global_agent_defaults`: `stm32_mcp_server_script` (now `""`), `stm32_mcp_repo_url`, `stm32_mcp_install_dir`.
+  2. **SAFETY PREFLIGHT (`_preflight`, fail-safe) — REFUSE rather than mis-build/mis-flash.** Before any compile/flash, STM32er validates compiler / CubeIDE / make / programmer / ST-LINK driver + probe (`_probe_stlink`) / device family (`_device_family`) and **refuses with a clear reason** instead of producing a wrong artifact or flashing the wrong target. Gating: compile-only actions need NO connected board; hardware actions (`flash` / `erase` / `reset` / `serial_*` / SWD / `live_*`) require a connected ST-LINK; a cross-STM32F-family target is **refused** (the MCP template is **STM32F407VG-specific** — multi-family support is future work via an MCP fork, NOT a bug to "fix" by loosening the family check). New action `validate` runs the preflight standalone. New config: `preflight: true`, `device`. Do NOT weaken the family/board gates to "try anyway".
+  3. **DISPLAY-NAME CASING is exactly `STM32er` (S,T,M,3,2,e,r).** A dev-DB row had been seeded as `Stm32Er`; it was corrected to `STM32er`. NEVER write `STM32Er` / `STM32ER` / `Stm32Er` / `Stm32er` as the **display** name (DB `agentDescription`, sidebar/canvas label, tooltips, `chat_agent_registry.display_name`, docs prose, the `"STM32er AGENT STARTED"` log). Lowercase `stm32er` is correct ONLY for the dir / pool name / `<name>.py` / CSS class `.canvas-item.stm32er-agent` / JS classMap key / `name.toLowerCase()` connection checks. The section tokens `INI_SECTION_STM32ER` / `END_SECTION_STM32ER` and the FlowHypervisor `STM32ER SPECIAL NOTES:` header stay **ALL-CAPS** (separate convention — do NOT "fix" them to match the display name). The wrapped tool is `chat_agent_stm32er`. See the **`tlamatini-agent-naming`** project skill and CLAUDE.md's "⚠️ Agent Naming Convention" section.
+  Other surfaces kept aligned (change together): `requirements.txt` pins `pyserial==3.5`; `agent/test_stm32er_agent.py` (122 tests; E2E-verified against a real STM32 Template Project MCP server — found an ST-LINK on COM3); `agents_descriptions.md` + `agentic_skill.md` + README/Book carry the same surface. **Frozen mode needs no `build.py` change** — `build.py` copies `agent/agents/` wholesale and ships `agents_descriptions.md`; post-build `migrate` seeds the Agent + Tool rows.
+
+- **Loaded `<context>` now beats `<self_knowledge>` — "summarize the project's source code in the provided context" no longer summarizes Tlamatini herself — 2026-05-25** — After the self-modify work landed (`a927f5c`/`2aab751`), `prompt.pmt` always injects a large, authoritative `<self_knowledge>` block (the live `Tlamatini.md`) whose intro told the LLM to "lean on it whenever the user's prompt concerns ... your architecture". The user-loaded directory/file (attached via the chat **Context menu**) lands in a *separate* `<context>` block. There was **no rule disambiguating the two**, so a generic prompt like *"Summarize in very detail the project's source code in the provided context"* made Tlamatini summarize **herself** (from `Tlamatini.md`) instead of the loaded project. **Fix (two layers, both required):** (1) **Prompt contract (`Tlamatini/agent/prompt.pmt`)** — the `<self_knowledge>` block intro now carries a **CRITICAL SCOPE** clause ("this block describes ONLY you ... it is NEVER the user's loaded project"; defer to `<context>` for "the project / the source code / the provided context / this codebase / the loaded files" unless the user *explicitly* names Tlamatini/you/this-system/yourself), and **Rule 5 (Context usage)** gained a top-of-rule **"Loaded-context priority"** clause: when `<context>` is non-empty it is the PRIMARY subject and the loaded `<context>` **ALWAYS wins over self-knowledge** for generic project/code requests. Because the `{self_knowledge}` and `{context}` placeholders are shared by ALL chains (basic / history-aware / unified / prompt-only), this single prompt edit fixes every chain uniformly. (2) **Deterministic, model-agnostic reinforcement** — new `agent/rag/utils.py::prepend_loaded_context_scope()` (+ shared `_LOADED_CONTEXT_SCOPE_HEADER`) prefixes the user-loaded context blob with a "LOADED USER CONTEXT — the USER'S own project, NOT Tlamatini's own source code ..." header before it is bound to the prompt/agent input, so even a weak local Ollama model can't confuse the two. Applied in `OptimizedHistoryAwareRAGChain.invoke` (`rag/chains/history_aware.py`), `UnifiedAgentRAGChain.invoke` + `UnifiedAgentChain.invoke` (`rag/chains/unified.py`), and `BasicPromptOnlyChain.invoke` (`rag/chains/basic.py`). **The header is applied only to the value bound to the prompt — the blob saved by `save_context_blob()` stays the raw retrieved text** (don't move the prefix above the save call). The `UnifiedAgentChain` fallback keeps its pre-existing `"Loaded Context from Knowledge Base Fallback:"` label (a test asserts it) and only *adds* the "NOT Tlamatini's own" scoping. **DO NOT** revert the self-knowledge intro to the un-scoped wording or drop the Rule 5 priority clause — that re-introduces the "summarized myself" bug. **DO NOT** remove `prepend_loaded_context_scope` from any one chain — the regression guard `LoadedContextPriorityTests.test_all_loaded_context_chains_apply_the_scope_header` greps all three chain modules for the call. Coverage: `LoadedContextPriorityTests` (6) in `agent/tests.py` + the pre-existing `LoadedContextFallbackTests` (6) still green; ruff clean. No frontend/JS change (the Context-menu plumbing was already correct — this was purely a prompt-priority/disambiguation fix). Works in source AND frozen mode with no rebuild, since `prompt.pmt`, `Tlamatini.md`, and the chain code are all read/run at runtime from the application directory.
+
+- **"Set directory as context" now loads nested project sub-directories (native picker sends the FULL path) — 2026-05-25** — Loading a codebase that lived more than one level under the app root via the chat **Context ▸ Set directory as context** menu failed with the generic *"Your agent cannot process your requests. Check that you didn't specify context outside of the root directory."* — in BOTH frozen and source mode — even though the directory was a perfectly valid descendant of the application root. **Root cause was in the FRONTEND, not the path validator**: the menu handler used the browser's `window.showDirectoryPicker()`, whose `FileSystemDirectoryHandle.name` exposes **only the leaf folder name** (e.g. `"src"`), never the full path (a hard browser-security limitation). The server then resolved that bare name with `path_guard.safe_join_under(runtime_root, "src")`, which only exists when the folder is a **direct child** of the runtime root — so `<app>/applications/proj/src` became `<runtime_root>/src`, didn't exist, the RAG build returned `None`, and the catch-all error fired. Direct children of the install dir happened to work in frozen mode (runtime_root == install dir), which is why it looked like "only depth-1 works". **Fix (mirrors the existing Set-DB / Backup-DB Browse buttons exactly):** (1) new backend view `views.pick_context_directory_view` + route `pick_context_directory/` (`urls.py`) drives the native server-side Win32 folder picker (`_run_native_picker('directory', …)` → `native_dialogs.pick_folder`) and returns the **real absolute path** (`{"path": "<abs>"}` / `{"path":"","canceled":true}` / `_picker_failure_payload`); (2) `agent_page_init.js` `setDirContextMenu` handler now `fetch`es that endpoint via the new `_pickContextDirectory()` helper (with `_promptForContextDirectory()` manual-entry fallback when the native dialog is unavailable, e.g. non-Windows) and sends the full path in `set-directory-as-context` — `window.showDirectoryPicker()` is gone; (3) `path_guard.py` gained `is_within_application_root(path)` (depth-agnostic, mode-aware via `_get_application_root()`) and `resolve_runtime_agent_path` now accepts an absolute path that is the application root **or any descendant of it at any depth**, in addition to the existing runtime-root and `allowed_paths` rules — so a deep nested project is accepted regardless of whether `"application"` is still in `config.json.allowed_paths`. **DO NOT revert the frontend back to `showDirectoryPicker()`** — it structurally cannot send the full path and silently re-breaks every non-direct-child directory. The application-root relaxation is **scoped, not open**: a path under no allowed root is still rejected (covered by a test). Coverage: `SetDirectoryAsContextPathTests` (6: depth-agnostic accept, sibling reject, deep-subdir resolve, outside-everything reject, **frozen-mode** root+nested resolve, source-mode ancestor invariant) + `ContextDirectoryPickerViewTests` (4: full-path, cancel, picker-unavailable, auth-required) in `agent/tests.py`; ruff + ESLint clean. (Pre-existing, unrelated: `PromptValidationDecisionTests.test_seeded_prompts_use_deterministic_validation_only` fails on a seeded `.java`-listing demo prompt that reaches the LLM indirect classifier — that path never touches `resolve_runtime_agent_path`/`is_within_application_root`.)
+
+- **Extended Unreal MCP fork published — `XAIHT/XaihtUnrealEngineMCP` is the canonical "MCP git location" — 2026-05-24** — The improved Unreal MCP plugin the Unrealer agent targets (the 53-verb / 9-category surface previously living **uncommitted** at the local working copy `C:\Development\unreal-mcp`) now has a public canonical home: **`https://github.com/XAIHT/XaihtUnrealEngineMCP.git`** — "the Unreal Engine MCP modified specifically for Tlamatini." This was a **docs-reference pass only** (no code / agent / migration changes): the new repo is named as the recommended, drop-in plugin (built on upstream `chongdashu/unreal-mcp`, identical wire protocol + `127.0.0.1:55557` port + `UnrealMCP` folder name) across `README.md` §6.2 (heading renamed "Upstream plugin" → "The MCP plugin source"; its TOC anchor updated in lock-step — **do not change one without the other**), §6 intro, §6.4; `BookOfTlamatini.md` §57.1 / §57.2 / §57.5 / glossary + a new Recent-Updates entry; `agents_descriptions.md`; `docs/claude/agents.md`; `agentic_skill.md` #60; `KIMI.md`. The upstream `chongdashu/unreal-mcp` is still named as the canonical base the `UnrealConnection` adapter mirrors verbatim. When a future fork supersedes this one, update the same place-set together (they were deliberately kept aligned).
+
+- **Unrealer per-command read-timeout floors: `create_material` shader-compile no longer aborts the chain — 2026-05-24** — Two consecutive "Scene Forge" demo runs *partially* failed: `get_current_level` → `list_assets` → `create_folder` (all ok) → **`create_material` timed out at the flat 10 s** → then `create_material_instance` ("Parent material not found"), `set_material_parameter` ("Material instance not found"), and `assign_material` ("Material not found") all cascaded off that single abort (only `spawn_actor` / `take_screenshot` / `save_all` survived). Root cause (confirmed in the upstream C++ `FUnrealMCPMaterialCommands::HandleCreateMaterial` at `C:\Development\unreal-mcp\…\UnrealMCPMaterialCommands.cpp`): it calls `IAssetTools::CreateAsset(...)` which **synchronously compiles the new material's shaders on the editor game thread before it returns**, and the FIRST material in a fresh editor session (cold shader DDC + compiler-worker spin-up) routinely needs 15-40 s — so the agent's `recv` hit the 10 s read-timeout while a valid op was still compiling, the material was never finished, and every dependent step then 404'd. This is NOT the modal-dialog case (that fails fast as a *connection* error, not a clean recv timeout). Fix in `agent/agents/unrealer/unrealer.py`: (1) new module-level `_SLOW_COMMAND_TIMEOUT_FLOORS` map giving compute-bound commands a per-command recv-timeout floor (`create_material` 60 s, `create_material_instance`/`set_material_parameter`/`new_level` 45 s, `compile_blueprint`/`execute_python`/`open_level` 60 s, `import_asset` 90 s) + `_effective_read_timeout(command, configured) = max(configured, floor)` — so an operator's explicit higher `read_timeout` is never lowered, and unknown read/query commands keep the configured value verbatim; (2) `main()` computes the effective timeout per run and logs `↳ '<cmd>' is a known slow operation; raising read_timeout 10s → 60s`; (3) new `_COMPILE_SLOW_COMMANDS` frozenset so `_diagnose_no_response` appends a **shader-compile** remedy (distinct from the existing `_MODAL_PRONE_COMMANDS` Save-dialog remedy) — "cold DDC still warming up, retry; or a Python script blocked on input; verify the asset exists before chaining". **`save_*` are deliberately NOT floored** — a save that hangs is parked on an unclearable modal dialog, so a short timeout surfaces the actionable diagnostic faster (a real, already-pathed level saves sub-second). The floor lives in `unrealer.py` itself, NOT config.yaml, so it applies regardless of how the per-run config is generated (chat tool, canvas, or `.flw`). **The running frozen install `C:\Tlamatini\agents\unrealer\{unrealer.py,config.yaml}` was patched in place** (byte-identical template copied per chat-run) so the next Unrealer run benefits without a rebuild. Coverage: `EffectiveReadTimeoutTests` (6) + 3 new `DiagnoseNoResponseTests` in `agent/test_unrealer_agent.py` (37 → 46 green; a guard test asserts every floored command is also modal-prone and/or compile-slow so no floor is silent); ruff clean. Builds on the 2026-05-24 save-timeout entry below — same subsystem, complementary fix (that one stopped the *unsafe double-wait retry*; this one stops the *premature abort* of slow-but-valid ops). **DO NOT lower these floors to a single global timeout** — the read/query commands genuinely answer in <1 s and the compile commands genuinely need tens of seconds; one number cannot serve both.
+
+- **Unrealer save-on-Untitled-level timeout: no retry + actionable diagnostic — 2026-05-24** — A Multi-Turn flow (`get_current_level` → `spawn_actor` → `take_screenshot` → `save_current_level`) failed at the save step with an opaque `Timeout receiving Unreal response` and burned **20 seconds** doing it. Root cause: the upstream C++ `FUnrealMCPLevelCommands::HandleSaveCurrentLevel` calls `UEditorLoadingAndSavingUtils::SaveCurrentLevel()`, which on a never-saved "Untitled" level pops a **modal Save-As dialog** (no path arg) — the editor's game thread parks on the dialog, the plugin never writes a response, and our `recv` hits the 10 s read-timeout. The agent's `send_command` retry set included `"timeout"`, so it re-sent and waited a **second** full read-timeout for a command that can never succeed by repeating. Two fixes in `agent/agents/unrealer/unrealer.py` (`UnrealConnection.send_command`): (1) **`"timeout"` removed from the transient-retry set** — that retry exists ONLY to mask the connect-time race (which fails *instantly* as `"connection closed before receiving data"`; `connection closed`/`connection reset`/`broken pipe` are still retried). A full read-timeout is a different failure: retrying it doubles the wall-clock wait AND is **unsafe for state-changing commands** (the first `spawn_actor`/`save` may still be queued/running — a retry could execute it twice). (2) New module-level `_diagnose_no_response(command, base_error, read_timeout)` + `_MODAL_PRONE_COMMANDS` set (`save_current_level`/`save_all`/`save_asset`/`open_level`/`new_level`) rewrites the bare timeout into a single-line actionable message that names the command, the elapsed timeout, the `read_timeout` knob, and — for the save/level commands — the modal-dialog cause and remedy (give the level a real package path first, or use `new_level` with `params.path`; `save_all` also prompts for a never-saved map). **DO NOT re-add `"timeout"` to the transient set** — it re-introduces the 20 s double-wait and the double-execution hazard. The standalone `save_all` (`SaveDirtyPackages(true,true)`) and `new_level` (accepts a `path` to save silently) are the non-interactive escape hatches; `save_current_level` has none. **The running frozen install `C:\Tlamatini\agents\unrealer\unrealer.py` was patched in place** (byte-identical master template copied per chat-run) so new Unrealer runs benefit without a rebuild. Coverage: `DiagnoseNoResponseTests` (4) + `SendCommandRetryTests` (4) in `agent/test_unrealer_agent.py` (29 → 37 green); ruff clean. NOTE (separate, not fixed here): the wrapped `chat_agent_unrealer` config writer leaks `text: '<command-name>'` and the typed-default placeholders (`recursive`/`slot`/`font_size`/`z_order`/`is_exposed`) into every command's params — harmless (the plugin ignores unknown keys) but noisy in the logs; a per-command param allow-list would be the real fix and lives in the wrapped-launch path, not `unrealer.py`.
+
+- **Unrealer expanded to the 53-command / 9-category Unreal MCP surface + 3 demo prompts — 2026-05-24** — Tracks the improved Unreal MCP fork at `C:\Development\unreal-mcp` (uncommitted P0/P1/P2 work). **The authoritative TCP command surface is the C++ dispatch in `UnrealMCPBridge.cpp::ExecuteCommand`, NOT the Python FastMCP tools** (Unrealer talks the raw socket directly): base editor/blueprint/node/project/umg PLUS new **system** (`execute_python`/`execute_console_command`/`get_class_info`/`list_assets`), **level**, **asset**, **material** categories and new verbs (`take_screenshot`/`focus_viewport`/`create_actor`/`set_pawn_properties`/`find_blueprint_nodes`) = **53 verbs / 9 categories**. **The P3 automation tools (`build_project`/`run_automation_tests`/`run_macro`) are NOT bridge commands** — they shell out to `UnrealEditor-Cmd` / loop `send_command` in Python and are unreachable over the editor TCP socket; do NOT advertise them to Unrealer (the canvas equivalent of `run_macro` is chaining Unrealer nodes via Parametrizer). `unrealer.py` is a generic forwarder so it needed no new verbs, but three forwarder fixups were added that MUST stay aligned with `config.yaml`'s placeholder catalog: (1) `_CONTENT_PATH_PARAM_KEYS` extended with `destination_path`/`source`/`destination`/`parent_material`/`material` — disk-path keys `source_file`/`filepath` are deliberately EXCLUDED (never `/Content/`→`/Game/`-normalize a disk path); (2) `_remap_console_command` maps `params.console_command` → wire `params.command` for `execute_console_command` (its param name collides with the agent's top-level `command:` selector, which would make a bare `command=` override ambiguous); (3) `_prune_unset_params` drops `''`/`[]`/`{}`/`None` placeholders before send (keeps `0`/`False`). **Every new command's params MUST exist as a `config.yaml` placeholder** or `_resolve_config_path` (tools.py) drops/errors the dotted `params.X` override — the Flow Compiler only writes leaves that already exist — and the prune keeps that large catalog from flooding every command with empty args. `recursive` defaults `true` and `slot` defaults `0` (always-sent typed defaults). Migration `0100_add_unrealer_extended_demo_prompts.py` appends 3 tiered demos at idPrompt **60/61/62** (Snapshot / Scene Forge / Python+Introspection) exercising the new surface — append-only, catalog now contiguous 1-62, `update_or_create`, depends on `0099`; the existing idPrompt 25 (`0087`) covers only the base categories. The `execute_python` demo passes multi-line code as a TRIPLE-QUOTED `params.code='''…'''` — the NL assignment parser (`_split_assignment_segments` / `_coerce_assignment_value`) is triple-quote-aware so internal `=` / newlines / quotes survive. **Surfaces kept aligned (change together when the verb set changes):** `chat_agent_registry.py` purpose/aliases/security_hints, `config.yaml` header + placeholders, `unrealer.py` fixups, `agents_descriptions.md`, `agentic_skill.md` #60 + catalog line, `README.md` §6, `docs/claude/agents.md`, `KIMI.md`, `BookOfTlamatini.md` §57, `doc_generation/complete_project_docs.py`, `flowhypervisor/monitoring-prompt.pmt`. Coverage: `agent/test_unrealer_agent.py` (29 tests). Also fixed the long-stale **README/Book `idPrompt 32`→`25`** (the Unrealer base demo has always been seeded at 25).
+
+- **Kalier "embedded client" — config-injected Kali server URL — 2026-05-23** — Makes the chat UX "paste the Linux block on Kali → enable Multi-Turn + Exec-Report → just prompt 'scan 10.0.0.5 and give me a report'" work WITHOUT the user (or LLM) ever repeating the Kali box URL — Tlamatini IS the client now (the embedded replacement for Claude Desktop's `client.py --server http://IP:5000`; the old guide is `Claude-Desktop-KALI-MCP-Session.md`, the new one is `Tlamatini-Kali-Setup.md` at the repo root). New config key **`config.json` → `kali_server_url`** (default `http://127.0.0.1:5000`, a non-secret — works for WSL2 localhost-forwarding / SSH-tunnel out of the box; editable via **Config ▸ URLs**, wired in `views.CONFIG_URL_KEYS` + `CONFIG_URL_URL_FIELDS`, plus the `data-config-key="kali_server_url"` input in `agent_page.html`). The injection point is **`tools.py::_seed_global_agent_defaults(template_dir, runtime_config)`**, called from `_launch_wrapped_chat_agent` **BEFORE** `_apply_requested_assignments_to_config` so the seeded default is overridable — an explicit `server_url=` in the LLM's request still wins (ordering contract is locked by a source-level test). It is **kalier-only** (guarded on `template_dir == "kalier"`), reads via `get_config_value` (imported into `tools.py`), and **fails open** (any read error / blank / None / non-str value leaves the template default — a broken config read must never crash a wrapped-tool launch). The registry `purpose` in `chat_agent_registry.py` was flipped from "ALWAYS pass server_url" to "DO NOT pass server_url normally — Tlamatini injects the configured box; only override for a one-off different box". The standalone `kalier.py` and its `config.yaml` default are UNCHANGED (canvas/.flw runs still set `server_url` in the node dialog). Coverage: `EmbeddedClientConfigTests` + `EmbeddedClientEndpointTests` in `agent/test_kalier_agent.py` (25 new tests; module now 83 green). When you change the config key name or the injection ordering, keep `_seed_global_agent_defaults`, the `views` URL-key tuples, the HTML input, and the registry purpose aligned.
+
+- **Kalier agent — Kali Linux / MCP-Kali-Server bridge, dual-surface + skill — 2026-05-22** — Kalier (agent #66 in `agentic_skill.md`, FlowCreator bumped to #67; catalog now **67** / wrapped chat-agents now **42** / **74** Multi-Turn tools / skills now **24**; migrations `0097_add_kalier` + `0098_add_chat_agent_kalier_tool`) integrates the **MCP-Kali-Server** (`https://www.kali.org/tools/mcp-kali-server/`) for AI-assisted pentesting/recon/CTF, on BOTH surfaces (canvas node + wrapped `chat_agent_kalier`) PLUS a `kali-pentest` SKILL.md companion (chat-surface runbook, mirroring Reviewer→code-review / Analyzer→security-audit). Non-obvious points: (1) **It bridges to the Flask API half over HTTP with stdlib `urllib`, NOT the FastMCP stdio half and NOT `requests`/`mcp`.** Upstream ships `server.py` (Flask API on the Kali box: `/api/command`, `/api/tools/<tool>`, `/health`) + `client.py` (a thin FastMCP→HTTP bridge); `agent/agents/kalier/kalier.py` ports the `KaliToolsClient` HTTP logic inline with `urllib` (Apirer's pattern) — no `agent.*` import (Pitfall #10), no third-party deps in the pool subprocess, identical in source + frozen. `server_url` defaults to `http://127.0.0.1:5000` (remote Kali → SSH tunnel). (2) **`action` selects the capability** ∈ `command`/`nmap`/`gobuster`/`dirb`/`nikto`/`sqlmap`/`metasploit`/`hydra`/`john`/`wpscan`/`enum4linux`/`health`; `_build_payload` sends only that action's params so the server applies its own defaults. metasploit `options` may arrive as a JSON string (the flat wrapped grammar can't express a dict) → `kalier.py` `json.loads` it. (3) **State-changing**, so it IS in `_EXEC_REPORT_TOOLS` under `agent_key="kalier"` (read-only `health` shares the key). It emits `INI_SECTION_KALIER` and ALWAYS triggers `target_agents` (success OR failure) so a Forker can branch on `{success}`/`{return_code}`; `success: false` / `timed_out: true` is routable evidence, NOT an error — FlowHypervisor `monitoring-prompt.pmt` KALIER SPECIAL NOTES codifies this (a silent scan up to ~3 min is normal; only "Cannot reach MCP-Kali-Server" is a real fault). (4) **Builtin contract with `secret_paths=('password',)`** in `agent_contracts._BUILTIN_CONTRACTS` (redacts the hydra single-password from `.flw` exports); parametrizer fields in `_PARAMETRIZER_OUTPUT_FIELDS['kalier']` = `action, endpoint, method, subject, return_code, success, timed_out, server_url, response_body` + `parametrizer.SECTION_AGENT_TYPES`. (5) Connection wiring mirrors Windower/Mouser exactly (source-side only, 3-param `updateKalierConnection`, writes `target_agents`). **Frozen mode needs no build.py change** — `build.py` copies `agent/agents/` + `agent/skills_pkg/` wholesale and ships `agents_descriptions.md`; post-build `migrate` seeds the Agent+Tool rows. **Authorized targets only.** When you change the action set, change `kalier.py::_ACTION_ROUTES`/`_build_payload`, the registry `purpose`, the Flow-Generator branch in `agent_page_chat.js`, the `agentic_skill.md` #66 entry, and the `kali-pentest` SKILL.md together.
+
+- **Playwrighter `hold_open_seconds` / `hold_open_ms` linger before close — 2026-05-21** — Playwrighter closed the browser the instant the last step returned (`run_browser_flow`'s `finally` tears the browser down with no delay), so a user's "wait 10 seconds before closing so I can watch it" was silently ignored — and the LLM did NOT append a trailing `{"action":"wait"}` step (fragile to rely on anyway). The fix adds a dedicated linger honored AFTER the last step and BEFORE close, on success OR a mid-flow error (a failed run is exactly when watching helps): `hold_open_seconds` (natural unit) with `hold_open_ms` as a finer alias that wins when both are > 0. Five surfaces stay aligned: (1) `agent/agents/playwrighter/playwrighter.py` — new `_coerce_int` (never raises on a bad value → a malformed linger can't abort a good run), reads both keys in `run_browser_flow`, `page.wait_for_timeout(hold_open_total_ms)` right before the close `finally`; (2) `agent/agents/playwrighter/config.yaml` — `hold_open_seconds: 0` / `hold_open_ms: 0` MUST exist as keys because the wrapped-tool config writer (`tools._apply_requested_assignments_to_config`) silently IGNORES any requested key that is not already a resolvable config path; (3) `agent/chat_agent_registry.py` — Playwrighter `purpose` now tells the LLM to pass `hold_open_seconds=<N>` on "wait before closing / let me watch it" prompts (do NOT rely on a trailing wait step); (4) `agent/static/agent/js/agent_page_chat.js::_mapToolArgsToAgentConfig` — Playwrighter branch maps both keys onto the Create-Flow node config; (5) migration `0095` BROWSER SPOTLIGHT (#53) + BROWSER WIZARD demos now pass `hold_open_seconds=10`. Honored regardless of `headless` (harmless when `headless=true`). Coverage: 6 new tests in `agent/test_playwrighter_agent.py` (60 total green), ruff + ESLint clean. **The running frozen install `C:\Tlamatini\agents\playwrighter\{playwrighter.py,config.yaml}` was patched in place** so the capability works without a rebuild — BUT the registry `purpose` + demo-prompt migration are baked into the frozen executable, so without a rebuild the LLM won't auto-translate natural-language "wait N seconds" → `hold_open_seconds`; in that case pass `hold_open_seconds=10` explicitly in the `chat_agent_playwrighter` call. When you change the linger semantics keep all five surfaces aligned.
+
+- **Windower agent — Win32 window manager, dual-surface — 2026-05-21** — Windower (agent #65 in `agentic_skill.md`, FlowCreator bumped to #66; catalog now **66** / wrapped chat-agents now **41** / **73** Multi-Turn tools; migrations `0093_add_windower` + `0094_add_chat_agent_windower_tool`) is the **window manager** of the desktop-UI trio (Windower=the window itself, Mouser=clicks-inside, Keyboarder=types-into) and ships on BOTH surfaces (canvas node + wrapped `chat_agent_windower`), the same dual pattern as Playwrighter/Unrealer. `action` ∈ `list` / `focus` / `minimize` / `maximize` / `restore` / `move` / `resize` / `move_resize` / `close` / `topmost` / `untopmost` / `arrange`. Non-obvious points: (1) **Self-contained Win32, NOT the Windows-MCP server.** `agent/agents/windower/windower.py` ports the *window-management subset* of Microsoft's Windows-MCP (`https://github.com/CursorTouch/Windows-MCP`) inline using only `pywin32` (`win32gui`/`win32con`/`win32process`) + `ctypes` — it does NOT import `agent.*` (pool subprocesses have no path back into Django, Pitfall #10) and does NOT pull the heavy Windows-MCP stack (fastmcp/comtypes/dxcam/uiautomation). The genuinely valuable bit ported verbatim is the **AttachThreadInput focus-transfer dance** in `bring_to_front()` — a plain `SetForegroundWindow` fails cross-process, so it attaches the caller thread to both the current-foreground and target threads to make the focus change stick. All Win32 imports are guarded → a non-Windows / stripped host degrades to `state: win32_unavailable` instead of crashing the chain. (2) **It is state-changing** (moves/resizes/closes windows), so it IS in `_EXEC_REPORT_TOOLS` under `agent_key="windower"` — the read-only `list` action shares that key on purpose so a mixed flow renders as one "List of Windower Operations" table. Mouser-vs-Windower hint split is deliberate: "the window itself" verbs (bring to front/maximize/resize/close/tile/list) score Windower; "click the control" verbs stay Mouser. (3) **Parametrizer fields** live in `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS['windower']` = `action, window_title, matched, match_count, state, left, top, width, height, response_body` (auto-merged onto the disk-discovered contract — no `_BUILTIN_CONTRACTS` entry needed since it has plain `target_agents`) + `parametrizer.SECTION_AGENT_TYPES`. It emits `INI_SECTION_WINDOWER` and ALWAYS triggers `target_agents` (success or soft no-op); set `fail_if_absent=true` to hard-exit non-zero when no window matches so an upstream Forker can branch. Connection wiring mirrors Mouser/Shoter exactly (source-side only, 3-param `updateWindowerConnection`, writes `target_agents`). When you change the action verbs, change `windower.py::dispatch`, the registry `purpose`, the Flow-Generator branch in `agent_page_chat.js::_mapToolArgsToAgentConfig`, and the `agentic_skill.md` #65 entry together.
+
+- **Playwrighter agent — scripted browser automation, two input shapes — 2026-05-20** — Playwrighter (agent #65, catalog now **65** / wrapped chat-agents now **40** / **72** Multi-Turn tools) drives a real browser (Playwright) through a declarative step list and ships on BOTH surfaces (canvas node + wrapped `chat_agent_playwrighter`), the same dual pattern as Unrealer. Three things are non-obvious: (1) **The script has two valid input shapes that must stay interchangeable.** The canvas authors a YAML `steps:` list in `config.yaml`; the chat/Multi-Turn LLM passes the whole script as a single JSON string in **`steps_json`** because the flat `key=value` wrapped-request grammar cannot express a list-of-dicts (the request splitter in `tools.py` keeps the JSON intact only because it's inside one set of single-quotes). `agent/agents/playwrighter/playwrighter.py` `json.loads` `steps_json` and it **wins over** the YAML `steps`. The Flow-Generator branch in `agent_page_chat.js::_mapToolArgsToAgentConfig` parses `steps_json` back into a `steps` list so a Create-Flow download is canvas-shaped. If you change the step verbs, change all three (the agent's `_run_one_step`, the registry `purpose`/`example_request`, and the Flow-Generator branch) together. (2) **The pool agent calls `playwright.sync_api` directly — do NOT wrap it in a `ThreadPoolExecutor`.** The ThreadPoolExecutor dance is only required by the in-process `googler` tool (it runs inside Django Channels' asyncio loop where `sync_playwright()` raises `NotImplementedError`); pool agents are separate subprocesses with no event loop, so they call it directly like `googler.py`'s agent does. (3) **It is state-changing** (submits forms, logs in, downloads), so it IS in `_EXEC_REPORT_TOOLS` under `agent_key="playwrighter"` — unlike Crawler/Googler which are read-only and stay out of the Exec Report. Parametrizer fields: `start_url`, `final_url`, `status`, `steps_run`, `assert_result`, `response_body`; it ALWAYS triggers `target_agents` (success or failure) so a Forker can branch on `{assert_result}`/`{status}`. Migrations `0091_add_playwrighter` + `0092_add_chat_agent_playwrighter_tool`.
+
+- **Image interpretation NEVER opens a viewer window — 2026-05-20** — A Multi-Turn flow that *starts from* an "interpret / describe / analyze / read / OCR / what's-in-this-image" prompt must route the work through a VISION tool that returns TEXT and opens no window: `chat_agent_image_interpreter` (canonical), `opus_analyze_image` (Claude), or `qwen_analyze_image` (Qwen). It must **NEVER** call `launch_view_image` to satisfy interpretation — that tool ONLY pops a viewer (os.startfile / Start-Process) and produces zero analysis. A window is opened ONLY when the user EXPLICITLY asks to view/show/open/display the image. This is codified in `agent/prompt.pmt` Rule 11 as the **"Image-interpretation tool-choice rule"** (sibling of the code-authorship rule), and mirrored across four surfaces that MUST stay aligned: (1) `launch_view_image`'s docstring in `agent/tools.py` (now states "ONLY opens a viewer, produces no analysis; never for interpretation"); (2) the `chat_agent_image_interpreter` `purpose` string in `agent/chat_agent_registry.py`; (3) the `opus_analyze_image` / `qwen_analyze_image` docstrings in `agent/imaging/image_interpreter.py`; (4) the planner's capability hints in `agent/capability_registry.py::_EXTRA_HINTS_BY_TOOL_NAME` — `launch_view_image` hints were narrowed to explicit VIEW-verb phrases only (no bare "image"/"picture" nouns, which collide with interpret prompts), and `opus_analyze_image` / `qwen_analyze_image` gained interpret/describe/OCR hints (plus the wrapped interpreter's `security_hints` were broadened) so on an interpretation prompt the vision tools score ~22-46 while the viewer scores 0-2, guaranteeing the planner binds the interpreter, not the viewer. When you touch any one of these five surfaces, keep the phrasing aligned across all five — divergence re-introduces the "described an image by popping a window instead of reading it" failure.
+
+- **Reviewer commit-state + secret-handling precision — v1.4.2, 2026-05-20** — Patch (commit `2e1c2d0`, tag `v1.4.2`) that kills the Reviewer agent's #1 false positive: calling the developer's local working-copy credentials "API keys committed to source". `agent/agents/reviewer/reviewer.py::build_review_prompt(diff_text, stat_text, focus, diff_ref="")` gained the `diff_ref` arg (passed from `main()`) and now prepends two grounding blocks to the prompt: (1) a **COMMIT-STATE** block — empty `diff_ref` ⇒ the diff is the UNCOMMITTED working tree + staged area, so the model MUST NOT say "committed"/"pushed" (only "staged"/"in the working tree"); a non-empty `diff_ref` naming committed history may be called "committed"; (2) a **SECRET-HANDLING CONVENTION** block teaching the `regen_secrets.py` scrub convention — `agent/config.json` + `agent/agents/*/config.yaml` hold local "keyed" credentials in the working copy and are scrubbed to `<NAME goes here>` placeholders (real values only in gitignored `data.keys`) before any commit, so placeholders/empties are never secrets and real-looking creds in those managed files inside an uncommitted diff are expected local state (≤1 low-severity "run `regen_secrets.py --mode push-able`" note), while genuine secrets in source code or outside that managed set are still hard-flagged. The identical two rules are mirrored into `agent/skills_pkg/code_review/SKILL.md` (new "Secret findings — read before flagging credentials" section + commit-state wording in the diff-resolution / Security steps) so the `code-review` skill and the canvas Reviewer agent never diverge. Also bundled: migration `0090_add_reviewer_analyzer_demo_prompts.py` (idPrompt 26 code-review / 27 security-audit). Agent/skill counts unchanged (64 / 23) — accuracy patch, not new capability. **When editing either the secret or commit-state ruleset, change BOTH `reviewer.py` and `code_review/SKILL.md` together** — they are intentional verbatim mirrors.
+
+- **Reviewer + Analyzer agents & code-review/security-audit skills — v1.4.2, 2026-05-20** — Delivered the roadmap's Reviewer (#2) and Analyzer (#3) as **canvas-only** workflow agents (#63/#64; migrations `0088_add_reviewer`/`0089_add_analyzer`) plus their LLM-facing twins as SKILL.md packages (`code_review/SKILL.md` name `code-review`, `security_audit/SKILL.md` name `security-audit` — skill catalog now **23**, agent catalog **64**). Reviewer = LLM `git diff` review emitting `INI_SECTION_REVIEWER` with a `verdict` (APPROVE/REQUEST_CHANGES/COMMENT); Analyzer = deterministic multi-scanner (bandit/semgrep/ruff/eslint/gitleaks/pip-audit) emitting `INI_SECTION_ANALYZER` with `status` (clean/findings/error) + `total_findings`. Both ALWAYS trigger `target_agents` so a Forker can branch on `{verdict}`/`{status}`. **Deliberately NO wrapped `chat_agent_*` tool** — the two skills cover the chat surface, so neither agent is in `_EXEC_REPORT_TOOLS` (canvas-only agents never enter the Exec Report). Parametrizer fields live in `agent_contracts._PARAMETRIZER_OUTPUT_FIELDS` + `parametrizer.SECTION_AGENT_TYPES`; the two new connector fns were added to `eslint.config.mjs` globals (the real source of truth for cross-file JS connector functions — NOT the per-file `/* global */` comments, which is why ESLint still passes with 0 errors despite the comments not listing every fn). **Frozen + source both verified**: `build.py` copies `agent/agents` and `agent/skills_pkg` **wholesale** (`shutil.copytree`, not an enumerated list), runs `migrate` + `collectstatic`, and ships `agents_descriptions.md` — so the new agent dirs, DB rows, skills, and static assets land exactly where the frozen resolvers (`get_agents_root`, `skill_registry._default_roots`, `views._find_path`) look. Skills auto-discover from disk (no migration). Doc counts bumped 62→64 / 21→23 across CLAUDE.md, docs/claude/*, README.md, BookOfTlamatini.md, KIMI.md, agentic_skill.md, agents_descriptions.md; FlowHypervisor `monitoring-prompt.pmt` gained REVIEWER/ANALYZER notes (verdict `REQUEST_CHANGES` and status `findings` are NOT flow errors — they are routable content for a downstream Forker).
+
+- **prompt.pmt PRIME DIRECTIVE + Rule 14 styling contract — v1.3.2, 2026-05-19** — `Tlamatini/agent/prompt.pmt` now opens its rules block with a **PRIME DIRECTIVE** banner that outranks every other styling concern: every HTML element the LLM emits MUST carry both an explicit `background` AND an explicit `color:` on the SAME element AND on every text-bearing child; body text is `#0f172a` on light backgrounds and `#ffffff` on dark; `<tbody> <td>` is ALWAYS light-background with dark text (`background:#ffffff;color:#0f172a;…` or stripe-row `#f1f5f9`); the medium-grey list (`#94a3b8 / #9ca3af / #a0a0a0 / #c0c0c0 …`) is HARD-BANNED for body text on any coloured background; three named failure patterns (`image.png` light-pastel-no-color, `image copy.png` grey-on-dark-purple-tbody, `image copy 2.png` transparent-tbody-grey-text) are banned by name. The detail-level companion is the new Rule 14 (palette pairings ≥ 7:1 / WCAG AAA, banner / panel / table templates, banned-grey hex list, mandatory silent self-check before `END-RESPONSE`). **Rule 14 was renumbered**: the previous Rule 14 (Conflict resolution rule) is now **Rule 15**. If you wrote code that grepped for `rule 14|14\)` referring to "conflict resolution", update it to `rule 15`. The Prime Directive itself explicitly overrides Rule 15 for visual-readability conflicts. Existing references that were renumbered correctly: none yet — both surfaces that previously named "rule 12" / "rule 13" (`docs/claude/acpx.md`, the ASCII diagrams rule) are unaffected. Touched by commit `141d104`.
+
+- **Tool-choice rule: file_creator / pythonxer / executer >> keyboarder / mouser for code authorship — v1.3.1, 2026-05-18** — `prompt.pmt` gained a **Code-authorship tool-choice rule** (top of Rule 8) and a **Keyboarder / Mouser explicit-instruction rule** (commit `9392af4`). To AUTHOR / WRITE code or scripts or configs, prefer (in this order) `chat_agent_file_creator` → `chat_agent_pythonxer` → `chat_agent_executer`. **NEVER drive `chat_agent_keyboarder` or `chat_agent_mouser` to type source code or click through editors.** Keyboarder / Mouser are reserved for genuine desktop-UI automation explicitly named by the user, or when there is genuinely no programmatic alternative. The same guidance is mirrored into `chat_agent_registry.py` (purpose strings for executer / pythonxer / file_creator / keyboarder / mouser), `agent/tools.py` (`execute_file` / `execute_command` docstrings), and `agents_descriptions.md` (sidebar tooltips for those five agents). When tweaking any of those five `purpose` strings, keep the cross-document phrasing aligned — the tool-choice guidance appears in five places and divergence between them is exactly the failure mode the rule was added to prevent.
+
+- **Seeded Prompts catalog is now learner-path-sorted — v1.3.2, 2026-05-19** — `Tlamatini/agent/migrations/0002_populate_db.py` was reordered into 10 explicit tiers (context-only Q&A → metrics → files-search → shell → code-gen → vision → specialized → agent control → Unrealer → Multi-Turn / ACPX); the docstring at the top of `populate_initial_values` is the authoritative map of which idPrompt range each migration owns (0002 owns 1-20 and 26-28; 0062 / 0063 own 21-24; 0087 owns 25; 0072 / 0073 / 0074 own 29-48). When seeding a new demo prompt, pick the range that matches the tier and add a comment line in the migration's docstring; do NOT just append to the highest idPrompt because the dropdown is rendered in idPrompt order.
+
+- **Planner statelessness on short follow-ups** — Solved by passing `chat_history_text` into the planner and boosting capability scores. If you touch `_select_planner_tool_names()` or `build_global_execution_plan()`, preserve this argument.
+- **Wrapped chat-agent dedup** — `MultiTurnToolAgentExecutor` hashes `tool_name + sorted-JSON args` into `_wrapped_agent_signatures` and short-circuits duplicates with a `ToolMessage` explaining the skip. Do not remove this without replacing it; the LLM reliably launches the same sub-agent twice otherwise.
+- **Googler Playwright + async loop** — `sync_playwright()` raises `NotImplementedError` inside Django Channels' running asyncio loop. The Googler tool wraps its Playwright work in a `ThreadPoolExecutor(max_workers=1)` with a 120s timeout. Any new sync-Playwright tool must do the same.
+- **Cancel/rebuild race** — `consumers.py` now `await`s `setup_rag_chain()` during cancel-current instead of `asyncio.create_task(...)`. Otherwise the client receives `MSG_LLM_REESTABLISHED` while the httpx client is still torn down, and the next request hits "Cannot send a request, as the client has been closed." All `getHttpxClientInstance()` callers must also guard against `None`.
+- **Exec-report persistence ordering** — In `services/response_parser.py::process_llm_response()`, `save_message(bot_user, llm_response, ...)` must run AFTER the exec-report HTML is appended to `llm_response`, otherwise the tables live only in the broadcast and vanish from chat history on page reload. An earlier revision saved the message before the append step; the fix (commit `e99d2b8`) reorders the operations to: classify → append exec-report HTML → save → broadcast. See the "Exec Report" pipeline step 9 in `docs/claude/exec-report.md` for the full contract. Do not reorder these steps.
+- **ACP canvas DOM split (`#canvas-content` vs `#submonitor-container`)** — The ACP canvas is scrollable (commit `9249349`). `#submonitor-container` is the viewport with scrollbars; `#canvas-content` is the content layer where items, the SVG connections layer, and the rubber-band selection box live. All coordinate math (`createCanvasItem`, `makeDraggable`, `startSelectionBox`, `getCenter`, tempPath drawing in `initCanvasEvents`) must use `canvasContent.getBoundingClientRect()`, which already reflects scroll offset — do NOT add `submonitor.scrollLeft/scrollTop` manually, and do NOT append new items to `submonitor`. Item positions are clamped `>= 0` only; the canvas grows to the right/bottom via `updateCanvasContentSize()` in `acp-globals.js`, which must be called after item creation, drag end, .flw load, and undo/redo restoration. Full contract in "ACP Canvas DOM Contract" section of `docs/claude/frontend.md`.
+
+- **ACPX `oneshot-prompt` is the only path that captures TUI agents on Windows** — `claude`, `gemini`, `cursor`, `qwen`, and `codex` are all configured with `transport="oneshot-prompt"` in `agent/acpx/agent_registry.py::DEFAULT_ACP_AGENTS`. They were previously `json-acp` (claude/codex) or `tui-repl` (the others), and the transcript only contained the OUTBOUND prompt — the answer was lost because TUI CLIs detect a piped stdout and refuse to flush. The fix re-spawns the CLI fresh per turn with the prompt as a CLI argument behind `prompt_arg_flag` (`-p` for claude/cursor/gemini/qwen) or `prompt_subcommand_args` (`["exec"]` for codex), closes stdin immediately, and captures stdout to EOF via `proc.communicate(timeout=180)`. Inter-turn session state inside the child does NOT persist (each turn is a brand-new process) — caller must include prior context in the next prompt if continuity is required. Implementation: `AcpSession._oneshot_send_turn` in `agent/acpx/runtime.py` and the mirrored `run_oneshot_prompt` in `agent/agents/acpxer/acpxer.py` (the canvas counterpart). DO NOT revert these to long-lived stdin-fed children; the only thing you'll capture is the outbound prompt, and the user will report responses like "the transcript only shows the outbound prompts, not the inbound responses." Coverage: `OneshotPromptCaptureTests` in `agent/acpx/tests.py` (4 tests) plus `AgentRegistryTransportProfileTests.test_oneshot_prompt_agents_have_capture_path` pin the contract.
+
+- **ACPXer self-contained (do NOT import `agent.acpx.runtime` in pool agents)** — The ACPXer workflow agent (`agent/agents/acpxer/acpxer.py`) is a visual-canvas counterpart of the 12 LLM-facing `acp_*` tools, BUT it does not — and must not — import from `agent.acpx`. Workflow agents in the pool run as separate Python subprocesses started via the user's system Python (or a bundled python.exe in frozen builds); they have no `sys.path` back into the Django app, so `from agent.acpx import AcpxRuntime` would `ModuleNotFoundError`. The agent therefore mirrors the runtime's transport-aware drain (4 completion rules: `done:true` envelope / child exit / hard timeout / transport-aware idle), the `agent_id` registry (claude/codex/tlamatini = json-acp, gemini/cursor/qwen/etc = tui-repl), and the NDJSON transcript format inline in ~120 lines. The transcript format is byte-identical to what `agent.acpx.runtime.AcpSession.send_turn` writes, so transcripts produced by ACPXer are interchangeable with those produced by `acp_spawn`. If you ever consolidate the two implementations into a shared package, the package must NOT live under `agent.*` — extract it to a top-level path that's importable from a fresh subprocess (or vendor it as a wheel that ships with the agent pool).
+- **ACPX toolbar toggle filters the entire ACPX/Skill tool surface per-request — and now defaults to OFF** — `agent/acpx/__init__.py` exposes `ACPX_TOOL_NAMES` (the 12 LLM-facing ACPX/Skill tool names) and `filter_acpx_tools(tools, acpx_enabled)`. The chat toolbar's third checkbox (`#acpx-enabled` in `templates/agent/agent_page.html`) **starts unchecked** on a fresh session — JS hydration in `agent_page_state.js::applyStoredAcpxState` falls back to `false` when sessionStorage has no prior value — and every backend read site defaults `acpx_enabled` to `False` (`rag/interface.py::ask_rag` for both dict and raw-string payloads, `rag/factory.py`, `rag/chains/unified.py` payload-rebuild whitelist in three places, `mcp_agent.py::CapabilityAwareToolAgentExecutor.invoke`, and `consumers.py::receive` plus the `queue_llm_retrieval` signature). When the user explicitly ticks the box the planner / executor get the ACPX/Skill tools; otherwise those tool names are filtered out. **Do NOT remove the `acpx_enabled` key from `UnifiedAgentChain.invoke`'s payload-rebuild whitelist** in `rag/chains/unified.py` — it lives next to `multi_turn_enabled` and `exec_report_enabled` and the same drop-on-rebuild bug class applies. When the flag is unticked, `bypass_prompt_validation` is computed as `multi_turn_enabled OR acpx_enabled`, which means a request with neither flag set still goes through the normal prompt-shape validator.
+
+- **Summarizer one-shot mode (`input_text` + `target_words`)** — `agent/agents/summarizer/summarizer.py` now accepts a one-shot path: when `input_text` is non-empty AND `source_agents` is empty, the agent skips the polling loop entirely, sends `input_text` directly to the LLM, emits exactly one `INI_SECTION_SUMMARIZER<<<` block (so Parametrizer / Exec Report consume the result the same way they consume a polling-mode summary), and triggers `target_agents` whenever the summary is non-empty. The chat tool `chat_agent_summarize_text` (registered in `chat_agent_registry.py`, `template_dir="summarizer"`) is the canonical caller — its `example_request` is `input_text='<full text>' and target_words=40`. Pre-existing canvas behavior (polling `source_agents` for `[EVENT_TRIGGERED]`) is unchanged when `input_text` is left at its default empty string. Coverage: the agent's own log shows `One-shot input_text length: <N> chars; target_words=<M>` so a quick grep of `summarizer_<n>.log` confirms which path fired.
+
+- **`setup-new-acpx-key` skill is the canonical key-injection path** — When the user wants to plug a new credential into an ACPX `agent_id` (claude/codex/cursor/gemini/qwen/...), prefer `invoke_skill('setup-new-acpx-key', {...})` over hand-editing config.json. The skill's SKILL.md (`agent/skills_pkg/setup_new_acpx_key/SKILL.md`) is the single source of truth for the canonical env-var map (claude → `ANTHROPIC_API_KEY`, gemini → `GEMINI_API_KEY` + `GOOGLE_API_KEY` alias, codex → `OPENAI_API_KEY`, qwen → `DASHSCOPE_API_KEY`) and the two-layer config.json wiring (top-level for callers like `image_interpreter.py` / `opus_client.py`; `acpx.agents.<id>.env` for the spawned child). The merge order is `{**os.environ, **spec.env}`, so explicit `acpx.agents.<id>.env` wins over an exported shell variable. The skill also patches `regen_secrets.py` when introducing a brand-new key, keeping the push-able / keyed toggle accurate.
+
+- **`regen_secrets.py` is a two-mode scrubber/restorer for config.json** — `python regen_secrets.py --mode push-able` rewrites real secrets in `Tlamatini/agent/config.json` (top-level `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` / `OLLAMA_TOKEN` and the `acpx.agents.<id>.env` blocks) into placeholders like `<ANTHROPIC_API_KEY goes here>` so the file is safe to commit. `--mode keyed` restores the values from `data.keys` (gitignored, `KEY=VALUE` format) so the local working tree stays usable. The same script is the splat target after editing `data.keys`. **Never commit `data.keys`** — line 265 of `.gitignore` already excludes it but a `git add -A` could accidentally stage it from a fresh checkout if the line drifts; verify with `git status` before pushing.
+
+- **Keyboarder + Shoter usable from Multi-Turn (`chat_agent_keyboarder` / `chat_agent_shoter`)** — Both desktop-UI agents are wrapped chat-agent tools. Shoter (`chat_agent_shoter`) was already registered (read-only screenshot capture). Keyboarder (`chat_agent_keyboarder`) is now wrapped too — it accepts `input_sequence` (literal text in single/double quotes; key names and `+`-joined chords go bare; comma-separated tokens) and `stride_delay` (ms between strokes), exactly mirroring `agents/keyboarder/config.yaml`. This unblocks the canonical "open notepad → verify → type into it" flow: `execute_command(notepad)` → `chat_agent_shoter` (+ optional `chat_agent_image_interpreter` to confirm the window is ready) → `chat_agent_keyboarder` to type. Keyboarder is state-changing (keystrokes target the foreground window), so it lives in `_EXEC_REPORT_TOOLS` under `agent_key="keyboarder"` with its own caption gradient (`#F44336 → #FF9800 → #FFEB3B → #4CAF50`, mirroring `.canvas-item.keyboarder-agent`). Shoter remains read-only and stays out of the report on purpose. **Tool row** is seeded by migration `0078_add_chat_agent_keyboarder_tool.py` (description `Chat-Agent-Keyboarder`); without that row the registry's `_tool_status_key()` lookup falls back to "enabled" so the tool still binds, but the Tools dialog cannot toggle it. Quirk: pyautogui hotkey names — Keyboarder normalizes via `get_pyautogui_key()` (`escape→esc`, `windows→win`, `altgr→altright`, `mayus/caps→capslock`); pass `'win+r'`, `'ctrl+alt+t'`, etc. lowercase.
+
+- **Wrapped-agent assignment parser must split on `and`/`with`, not just `,`/`;`** — Every `example_request` string in `chat_agent_registry.py` separates parameters with the natural-language conjunction `and` (occasionally `with`): `filepath='X' and content='Y'`, `url='X' with system_prompt='Y' and content_mode='Z'`. The LLM reliably copies that style. Before the fix, `_split_assignment_segments` only split on `,` and `;`, and `_closes_outer_quote` only closed a single-line quote on `,`/`;`/EOF — so multi-arg calls collapsed into one swollen segment whose first value absorbed the entire tail (`file_path='X' and content='Y'` → file_path became `X' and content='Y`). Evidence: six consecutive `file_creator_00N` runs with paths like `C:\Development\AngysBackInCUDA\drone_knap.h' and content='/*...`, each failing with WinError 123 and one leaving a literal directory named `drone_knapsack.h' and content='`. The fix (in `agent/tools.py`) adds a `_looks_like_conjunction_assignment_start(text, pos)` helper matching `(and|with) <ident>=`, and plugs it into both `_closes_outer_quote` (as an additional closer in both single-line AND multi-line mode) and `_split_assignment_segments` (as a top-level segment boundary whenever a whitespace char outside quotes/brackets is followed by the conjunction pattern). Coverage: the new `AssignmentParserRobustnessTests.test_and_conjunction_splits_file_creator_pair`, `test_with_conjunction_also_splits`, `test_parametric_file_creator_example_request_parses`, and the sweep `test_no_registry_example_leaks_conjunction_into_a_value` pin the contract — the sweep scans every `WRAPPED_CHAT_AGENT_SPECS` example and fails if any resulting value contains a leaked conjunction pattern. Do NOT narrow the close-heuristic back to `,;EOF` only — it will silently re-break every multi-arg wrapped chat-agent call.
+
+- **Flow Compiler + Agent Contracts (commit `0bea21d`, May 2026) are the single backend pipeline both Save/Validate/Start AND Chat Create-Flow now go through** — `agent/services/agent_contracts.py` (the `AgentContract` registry: connection-field shape per slot, `parametrizer_fields`, `secret_paths`, `singleton`/`long_running`/`never_starts_targets`/`exclude_from_validation` flags), `agent/services/agent_paths.py` (frozen/source-aware pool resolution + canvas-id normalization — strips `(2)` cardinals, hyphenates spaces, collapses any `[^A-Za-z0-9_]` into underscores), `agent/services/flow_spec.py` (`FlowSpec` / `FlowNode` / `FlowConnection` dataclasses + `normalize_flow_payload()` / `flow_spec_to_legacy_json(redact=True)`), and `agent/services/flow_compiler.py` (`compile_flow_spec` / `compile_flow_payload` / `list_pool_agents_for_validation`) jointly own the pipeline. New endpoints: `POST /agent/compile_flow/` (called from `acp-flow-snapshot.js::compileCurrentACPFlow` with `mode='write'` from Start and `mode='dry_run'` from Validate), `POST /agent/flow_from_tool_calls/` (called from `agent_page_chat.js::_normalizeChatFlowBeforeDownload` so the Create-Flow download is a backend-redacted, registry-canonical `.flw`), and `GET /agent/agent_contracts/` (returns `list_contract_summaries()` for diagnostics). **Do NOT bypass the contracts**: the legacy `os.listdir` loop in `views.compile_flow_view`'s ancestor was deleted in favor of `list_pool_agents_for_validation()` precisely so a future agent type cannot drift between Validate's allow-list and Compile's known-types. **Do NOT hand-edit `_BUILTIN_CONTRACTS` for an agent that the disk-discovery pass would already cover** — the discovery pass infers `output_field_by_slot={0: "output_agents"}` automatically when `target_agents` is absent from the template, infers `never_starts_targets` from `_NEVER_START_TARGETS`, and merges `_PARAMETRIZER_OUTPUT_FIELDS` even on top of builtins. Add a builtin only when an agent has slot-2/slot-3 quirks (Forker/Asker/Counter/AND/OR), is a singleton (FlowCreator/FlowHypervisor), is `excluded_from_validation`, or has a non-trivial `secret_paths` list. Coverage: `agent/test_flow_contracts.py` pins the source-mode agents-root resolution, alias normalization, the Ender kill-list contract, and the Parametrizer-mappings-as-CSV-artifact behavior. The `_compiled_configs()` step **clears** all known connection fields before re-writing so a stale wiring left over from a previous compile cannot resurrect.
+
+- **`agents_descriptions.md` is the authoritative source for sidebar tooltips and canvas Description dialogs (commit `88dd99b`, May 2026)** — `Tlamatini/agent/views.py::_load_agent_purpose_map()` resolves descriptions via `_resolve_agent_descriptions_search_paths()`, which probes `agents_descriptions.md` first (next to `manage.py` in source mode, next to `sys.executable` in frozen mode) and falls back to `README.md` only if `agents_descriptions.md` is absent or yields zero rows. The parser is `_parse_agent_purpose_map(lines)` — it scans every `## Workflow Agents` table for rows of shape `| **Name** | <description> |` and keys them by `re.sub(r'[^a-z0-9]+', '', name.lower())`. The legacy alias `_load_agent_purpose_map_from_readme = _load_agent_purpose_map` is preserved so any out-of-tree caller (dev script, scheduled remote agent) keeps working. **Build implication**: `build.py` now lists `Path("agents_descriptions.md"): dist_manage / "agents_descriptions.md"` in `required_file_copies` next to `README.md` — drop that line and frozen builds revert to README-only descriptions, which works but is fragile because the long-form README sections evolve faster than the descriptions table. **UI implication**: `acp-canvas-core.js::showAgentPurposeTooltip` and `contextual_menus.js::openDescriptionDialog` were updated to fall back to "No description was found for this agent in agents_descriptions.md." (was: "in README.md."). Editing a row's `Description` cell in `agents_descriptions.md` changes both the human docs AND the live UI text — there is no other source of truth. Coverage: `agent/tests.py::AgentPurposeMapResolutionTests` pins the resolution-order behavior end-to-end.
+
+- **TeleTlamatini now bridges the full three-flag toolbar surface (commit `1287e56`, May 2026)** — Each Telegram message TeleTlamatini forwards to Tlamatini carries `multi_turn_enabled`, `exec_report_enabled`, AND `acpx_enabled` verbatim, so a Telegram user gets exactly the operational surface that a browser user with all three checkboxes ticked would. Resolver-level default for `acpx_enabled` is `False` (matches the chat toolbar's system-wide default and keeps pre-change deploys behaving as before), but the **shipped `config.yaml` sets `acpx_enabled: true`** so a fresh install can drive the full ACPX scheme out of the box. WhatsTlamatini was later retired; WhatsApp send/receive now belongs to **Whatsapper**, while **TeleTlamatini** remains the only current long-running remote full-chat bridge. **Don't pin `acpx_enabled: true` in the resolver default** — the `config.yaml` is the user-facing knob and the resolver default is the legacy-deploy backstop; flipping the resolver would make every old TeleTlamatini deploy silently start exposing the ACPX tool surface on its first restart.
+
+- **`SuppressHttpGet200` logging filter generalizes the runtime-poller silencer (commit `8bb4047`, May 2026)** — `Tlamatini/tlamatini/logging_filters.py::SuppressHttpGet200` (was `SuppressRuntimePollerOk`, hard-coded to `/agent/check_chat_runtimes_status/`) now drops the daphne access log line for **any** HTTP GET that returned a 200, while keeping every non-GET request, every redirect (3xx), and every error (4xx/5xx) visible. Settings entry was renamed `suppress_http_get_200` and rebound to `django.channels.server`. Net effect: the unified `tlamatini.log` is near-zero-noise during normal operation (the runtime poller, every static-file fetch, every WebSocket-handshake-as-GET — all silenced) but a real failure still surfaces because non-200s pass through. **Do NOT narrow it back to a path-based match** — the explicit goal of the rename was that adding a new GET endpoint never re-introduces noise; do NOT extend it to drop POST/PUT/DELETE either, because state-changing requests are the ones an oncall reader most needs to see in the log.
+
+- **Whatsapper vs WhatsTlamatini are different agents — keep them straight** — At the 2026-06-22 consolidation, `Whatsapper` became the short-lived official Meta Cloud action/notification agent and `WhatsTlamatini` was retired. **Current behavior supersedes the old "Cloud only" wording:** Whatsapper still defaults to the official business Cloud API, but an explicitly selected `provider=web` / `me` now sends from the operator's own personal account through unofficial WhatsApp Web automation with a one-time QR login and account-ban risk. TeleTlamatini remains the only remote full-chat bridge. TextMeBot/Twilio remain absent, providers must never be switched silently, and older "no WhatsApp Web" prose is historical rather than current guidance.
+
+- **ACPX-Skills navbar dropdown (2026-05-17) — DB stays at "enumeration + enable/disable", disk is source of truth** — A new **ACPX-Skills** dropdown lives between **Agents** and **Config** in the chat navbar (`agent/templates/agent/agent_page.html`). Four entries: **Browse Skills** (`GET /agent/skills/` + `/agent/skills/<name>/`), **Configure Skills** (WebSocket `set-skills`, mirrors `set-mcps` / `set-agents`), **Diagnostics** (`GET /agent/skills/_/diagnostics/`), **Reload Registry** (`POST /agent/skills/_/reload/`). The `Skill` DB model already existed from migration `0071_acpx_skills.py` and is auto-seeded by `boot_skills()` on a background thread from `apps.AgentConfig.ready()` — only the UI + HTTP endpoints + WebSocket wiring + tool-surface gating in `agent/acpx/tools.py` were missing. **Key constraint**: `save_skill(name, enabled)` only touches `Skill.enabled`; the cached fields (`description`, `runtime`, `acpx_agent`, `frontmatter_json`, `body_sha256`) are owned by `boot_skills()` and are intentionally NOT user-configurable. Browse / Diagnostics read fresh from `agent.skills.registry.skill_registry` — SKILL.md on disk is the only source of truth for permissions, budgets, body. **Tool-surface gating** is via `_disabled_skill_names()` in `agent/acpx/tools.py`: when `Skill.enabled = False`, `list_skills` filters the row out and `invoke_skill` returns `{"ok":false,"code":"SKILL_DISABLED"}`. Fails OPEN on DB exception so a broken admin layer never silently hides skills. **WebSocket parity** with Mcps/Tools/Agents: `consumers.skill_establishment()` sends `type:'skill'` system messages on connect; frontend pushes them into the module-level `skills = []` array (`agent_page_state.js`); Configure dialog reads from there and sends `set-skills` on Continue with the `name=description=true/false,...` shape. **Skill names key directly** (no `skill-N` prefix unlike `mcp-N` / `tool-N`) because `Skill.name` is the SKILL.md frontmatter `name` and is already unique. Coverage: 14 tests in 3 classes (`SkillsAdminEndpointTests`, `SkillsToolSurfaceGatingTests`, `SkillsNavbarTemplateContractTests`). **Do NOT** add granular skill config (permission overrides, budget overrides, per-user toggles) to the DB — the user-stated constraint is "DB only for enumeration and enable/disable like MCPs/Agents". If those features are ever needed, put them in `config.json` or a separate sidecar table.
+
+## 2026-09-15 — Desktop input and complete flow knowledge
+
+Mouser/Keyboarder/Shoter received the coordinate, target-binding and receipt changes documented in [desktop input and flow contracts](../desktop-input-and-flow-contracts.md). Parametrizer preserves CRLF/empty fields, converts typed targets, refuses partial mappings and blocks replay of interrupted desktop input. FlowCreator now selects from all 89 agents, validates schemas/references/slots/mappings, repairs within configured limits, preserves canonical labels and never emits success after a failed .flw write. Early failures exit nonzero. Hypervisor uses contract-based execution edges and durable desktop receipt context. Credential-only contract overrides no longer erase passive Emailer/Recmailer lifecycle behavior. [Generated coverage](../agent-coverage.md) is checked against installed templates; GUI-Manager remains a design.
+
+
+## 2026-10-04 — Windows .flw / .fpmt lifecycle (source changes)
+
+Both flow types now support owned per-user registration/removal, update repair, Default Apps, early command-line opening, running-instance reuse and login handoff. Chat routes each to its editor. Invalid .flw files preserve the canvas; saved agent IDs remain stable and failed credential redaction blocks unsafe downloads. See [verification and changes](../changes/2026-10-04-windows-flow-files.md) and [Windows flow files](../windows-flow-files.md). No executable rebuild or commit.

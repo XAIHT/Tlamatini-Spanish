@@ -1,0 +1,101 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/pdf_context_progress.js",
+ "segmentos": [
+  {
+   "en": "'Skipped'",
+   "es": "'Omitido'",
+   "n": 2
+  },
+  {
+   "en": "'Done'",
+   "es": "'Listo'",
+   "n": 1
+  },
+  {
+   "en": "'Working…'",
+   "es": "'Procesando…'",
+   "n": 1
+  },
+  {
+   "en": "'Pending'",
+   "es": "'Pendiente'",
+   "n": 2
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 1
+  },
+  {
+   "en": "'2. Read text and extract images'",
+   "es": "'2. Leer el texto y extraer las imágenes'",
+   "n": 1
+  },
+  {
+   "en": "'2. Read document text'",
+   "es": "'2. Leer el texto del documento'",
+   "n": 1
+  },
+  {
+   "en": "'Ready to prepare text and analyze images. Press Continue to begin.'",
+   "es": "'Todo listo para preparar el texto y analizar las imágenes. Presiona Continuar para empezar.'",
+   "n": 1
+  },
+  {
+   "en": "'Ready to prepare selectable text. Press Continue to begin.'",
+   "es": "'Todo listo para preparar el texto seleccionable. Presiona Continuar para empezar.'",
+   "n": 1
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 3
+  },
+  {
+   "en": "'PDF processing is complete. Loading its text and image analyses into Tlamatini’s context…'",
+   "es": "'Terminó el procesamiento del PDF. Cargando su texto y los análisis de imágenes en el contexto de Tlamatini…'",
+   "n": 1
+  },
+  {
+   "en": "'PDF text extraction is complete. Loading its text into Tlamatini’s context…'",
+   "es": "'Terminó la extracción del texto del PDF. Cargando su texto en el contexto de Tlamatini…'",
+   "n": 1
+  },
+  {
+   "en": "'Your PDF context is ready. You can now ask Tlamatini about the document.'",
+   "es": "'El contexto de tu PDF está listo. Ya puedes preguntarle a Tlamatini sobre el documento.'",
+   "n": 1
+  },
+  {
+   "en": "'The PDF was processed, but context loading failed. Please retry and check the configured model service if the problem persists.'",
+   "es": "'El PDF se procesó, pero hubo un error al cargar el contexto. Vuelve a intentarlo y, si el problema sigue, revisa el servicio de modelos configurado.'",
+   "n": 1
+  },
+  {
+   "en": "'Failed'",
+   "es": "'Error'",
+   "n": 1
+  },
+  {
+   "en": "'The live connection was lost during context loading. Reconnect to check the context status.'",
+   "es": "'Se perdió la conexión en vivo mientras se cargaba el contexto. Vuelve a conectarte para revisar el status del contexto.'",
+   "n": 1
+  },
+  {
+   "en": "'Uploading the PDF to Tlamatini…'",
+   "es": "'Subiendo el PDF a Tlamatini…'",
+   "n": 1
+  },
+  {
+   "en": "'PDF context preparation cancelled.'",
+   "es": "'Se canceló la preparación del contexto del PDF.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'PDF Image-Interpreter'",
+   "motivo": "nombre de agent (etiqueta de origen del error en el diálogo compartido)"
+  }
+ ]
+}

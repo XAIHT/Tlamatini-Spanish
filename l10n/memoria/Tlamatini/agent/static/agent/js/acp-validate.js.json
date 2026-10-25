@@ -1,0 +1,156 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-validate.js",
+ "segmentos": [
+  {
+   "en": "'Failed to read agent configurations: '",
+   "es": "'Error al leer la configuración de los agents: '",
+   "n": 1
+  },
+  {
+   "en": "'No agents found in the pool directory. Deploy agents to the canvas first.'",
+   "es": "'No hay agents en el directorio del pool. Primero arrastra agents al canvas.'",
+   "n": 1
+  },
+  {
+   "en": "'Starter agents must only have target_agents'",
+   "es": "'Los agents Starter sólo pueden tener target_agents'",
+   "n": 1
+  },
+  {
+   "en": "'Ender agents can only have output_agents of type Cleaner or FlowBacker'",
+   "es": "'Los agents Ender sólo pueden tener output_agents de tipo Cleaner o FlowBacker'",
+   "n": 1
+  },
+  {
+   "en": "'Ender agents must not launch Cleaner directly when they also launch FlowBacker. Route Cleaner only from FlowBacker so backup completes before logs are deleted'",
+   "es": "'Los agents Ender no deben lanzar Cleaner directamente si también lanzan FlowBacker. Conecta Cleaner sólo desde FlowBacker para que el backup termine antes de que se borren los logs'",
+   "n": 1
+  },
+  {
+   "en": "'Cleaner agents can only be connected from source_agents of type Ender or FlowBacker'",
+   "es": "'Los agents Cleaner sólo se pueden conectar desde source_agents de tipo Ender o FlowBacker'",
+   "n": 1
+  },
+  {
+   "en": "'Cleaner agents must be triggered by either Ender or FlowBacker, but never by both in the same flow branch'",
+   "es": "'Los agents Cleaner deben activarse con Ender o con FlowBacker, pero nunca con los dos en el mismo branch del flow'",
+   "n": 1
+  },
+  {
+   "en": "'FlowBacker agents can only be connected from Starter, Ender, Forker, or Asker source_agents'",
+   "es": "'Los agents FlowBacker sólo se pueden conectar desde source_agents Starter, Ender, Forker o Asker'",
+   "n": 1
+  },
+  {
+   "en": "'FlowBacker agents can only have target_agents of type Cleaner'",
+   "es": "'Los agents FlowBacker sólo pueden tener target_agents de tipo Cleaner'",
+   "n": 1
+  },
+  {
+   "en": "\"All of the agent's outputs must not connect to itself\"",
+   "es": "\"Ningún output de un agent puede conectarse al mismo agent\"",
+   "n": 1
+  },
+  {
+   "en": "'Some agents have no connections to its input'",
+   "es": "'Algunos agents no tienen ninguna conexión en su input'",
+   "n": 1
+  },
+  {
+   "en": "`${agentNames[i]} references target \"${targetName}\" which is not present in the flow`",
+   "es": "`${agentNames[i]} hace referencia al destino \"${targetName}\", que no está en el flow`",
+   "n": 1
+  },
+  {
+   "en": "`${agentNames[i]} references target \"${targetName}\" which is a ${agentTypes[j]} agent (no input)`",
+   "es": "`${agentNames[i]} hace referencia al destino \"${targetName}\", que es un agent ${agentTypes[j]} (sin input)`",
+   "n": 1
+  },
+  {
+   "en": "`${agentNames[i]} references kill target \"${targetName}\" which is not present in the flow`",
+   "es": "`${agentNames[i]} hace referencia al agent a detener \"${targetName}\", que no está en el flow`",
+   "n": 1
+  },
+  {
+   "en": "`${agentNames[i]} references source \"${sourceName}\" which is not present in the flow`",
+   "es": "`${agentNames[i]} hace referencia al origen \"${sourceName}\", que no está en el flow`",
+   "n": 1
+  },
+  {
+   "en": "'Some agents reference target agents that are not present in the flow'",
+   "es": "'Algunos agents hacen referencia a agents de destino que no están en el flow'",
+   "n": 1
+  },
+  {
+   "en": "'Some agents reference target agents that do not have an input (e.g. Starter agents cannot be targets)'",
+   "es": "'Algunos agents hacen referencia a agents de destino que no tienen input (p. ej., los agents Starter no pueden ser destinos)'",
+   "n": 1
+  },
+  {
+   "en": "'Some agents reference source agents that are not present in the flow'",
+   "es": "'Algunos agents hacen referencia a agents de origen que no están en el flow'",
+   "n": 1
+  },
+  {
+   "en": "`\r\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">✅</div>\r\n            <h4 style=\"color: #10B981; margin-bottom: 10px;\">Flow is Valid</h4>\r\n            <p style=\"color: var(--tlm-dlg-body);\">All verification checks passed successfully. The flow structure is correct.</p>\r\n        `",
+   "es": "`\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">✅</div>\n            <h4 style=\"color: #10B981; margin-bottom: 10px;\">El flow es válido</h4>\n            <p style=\"color: var(--tlm-dlg-body);\">Todas las verificaciones pasaron correctamente. La estructura del flow es correcta.</p>\n        `",
+   "n": 1
+  },
+  {
+   "en": "`\r\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">❌</div>\r\n            <h4 style=\"color: #e74c3c; margin-bottom: 10px;\">Validation Failed</h4>\r\n            <div style=\"text-align: left; max-height: 300px; overflow-y: auto; margin-top: 10px;\">\r\n                ${errorHtml}\r\n            </div>\r\n        `",
+   "es": "`\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">❌</div>\n            <h4 style=\"color: #e74c3c; margin-bottom: 10px;\">Error de validación</h4>\n            <div style=\"text-align: left; max-height: 300px; overflow-y: auto; margin-top: 10px;\">\n                ${errorHtml}\n            </div>\n        `",
+   "n": 1
+  },
+  {
+   "en": "'Flow Validation: Passed ✅'",
+   "es": "'Validación del flow: aprobada ✅'",
+   "n": 1
+  },
+  {
+   "en": "'Flow Validation: Failed ❌'",
+   "es": "'Validación del flow: no aprobada ❌'",
+   "n": 1
+  },
+  {
+   "en": "\"Continue!\"",
+   "es": "\"Continuar\"",
+   "n": 1
+  },
+  {
+   "en": "`\r\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">⚠️</div>\r\n            <h4 style=\"color: #F59E0B; margin-bottom: 10px;\">Validation Errors Found</h4>\r\n            <p style=\"color: var(--tlm-dlg-body);\">Some errors were found during flow validation. Are you sure you want to start running it?</p>\r\n        `",
+   "es": "`\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">⚠️</div>\n            <h4 style=\"color: #F59E0B; margin-bottom: 10px;\">Se encontraron errores de validación</h4>\n            <p style=\"color: var(--tlm-dlg-body);\">Se encontraron errores al validar el flow. ¿Seguro que quieres ejecutarlo?</p>\n        `",
+   "n": 1
+  },
+  {
+   "en": "`\r\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">ℹ️</div>\r\n            <h4 style=\"color: #3B82F6; margin-bottom: 10px;\">Flow Not Validated</h4>\r\n            <p style=\"color: var(--tlm-dlg-body);\">No validation has been executed for the present flow. Would you like to verify it or start running without verification?</p>\r\n        `",
+   "es": "`\n            <div style=\"font-size: 48px; margin-bottom: 15px;\">ℹ️</div>\n            <h4 style=\"color: #3B82F6; margin-bottom: 10px;\">Flow sin validar</h4>\n            <p style=\"color: var(--tlm-dlg-body);\">Este flow todavía no se ha validado. ¿Quieres verificarlo o ejecutarlo sin verificar?</p>\n        `",
+   "n": 1
+  },
+  {
+   "en": "'⚠️ Validation Errors Found'",
+   "es": "'⚠️ Se encontraron errores de validación'",
+   "n": 1
+  },
+  {
+   "en": "'ℹ️ Flow Not Validated'",
+   "es": "'ℹ️ Flow sin validar'",
+   "n": 1
+  },
+  {
+   "en": "\"Run\"",
+   "es": "\"Ejecutar\"",
+   "n": 2
+  },
+  {
+   "en": "\"Verify\"",
+   "es": "\"Verificar\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "`<div style=\"margin-bottom: 10px; padding: 8px; background: rgba(231, 76, 60, 0.14); border-left: 3px solid #e74c3c; border-radius: 4px;\">\r\n                    <p style=\"color: #f87171; font-weight: bold; margin: 0 0 5px 0;\">⚠️ ${err.message}</p>\r\n                    <p style=\"color: var(--tlm-dlg-body); margin: 0; font-size: 0.9em;\">Agents: ${err.agents.join(', ')}</p>\r\n                </div>`",
+   "motivo": "sólo marcado HTML y el término de producto Agents"
+  }
+ ]
+}

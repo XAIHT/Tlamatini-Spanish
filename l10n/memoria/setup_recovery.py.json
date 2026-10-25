@@ -1,0 +1,250 @@
+{
+ "archivo": "setup_recovery.py",
+ "segmentos": [
+  {
+   "en": "f\"Waiting briefly for Windows to release {Path(path).name}…\"",
+   "es": "f\"Esperando un momento a que Windows libere {Path(path).name}…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Windows is preventing access to:\\n{path}\\n\\n\"",
+   "es": "f\"Windows está impidiendo el acceso a:\\n{path}\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Programs using this file: {owners}.\\n\"",
+   "es": "f\"Programas que usan este archivo: {owners}.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Close programs using this installation, check the file's permissions, and retry. \"",
+   "es": "\"Cierra los programas que usan esta instalación, revisa los permisos del archivo y vuelve a intentarlo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"No application files have been removed during recovery preparation.\"",
+   "es": "\"No se eliminó ningún archivo de la aplicación durante la preparación de la recuperación.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Unsafe recovery path: {relative}\"",
+   "es": "f\"Path de recuperación no seguro: {relative}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Redirected setup path is not supported: {current}\"",
+   "es": "f\"No se admite un path de instalación redirigido: {current}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Another Tlamatini installation or removal is running. Close it or wait for it to finish, then retry.\"",
+   "es": "\"Ya se está ejecutando otra instalación o eliminación de Tlamatini. Ciérrala o espera a que termine, y vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Unrecognized recovery journal. Keep it for inspection: {self.folder}\"",
+   "es": "f\"Journal de recuperación no reconocido. Consérvalo para inspección: {self.folder}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery journal cannot target itself\"",
+   "es": "\"El journal de recuperación no puede apuntar a sí mismo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unrecognized removal recovery journal\"",
+   "es": "\"Journal de recuperación de eliminación no reconocido\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Unsafe removal recovery entry: {name}\"",
+   "es": "f\"Entrada de recuperación de eliminación no segura: {name}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unrecognized removal move state\"",
+   "es": "\"Estado de movimiento de eliminación no reconocido\"",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid removal file identity\"",
+   "es": "\"Identidad de archivo de eliminación inválida\"",
+   "n": 1
+  },
+  {
+   "en": "f\"An incomplete recovery folder needs inspection: {self.folder}\"",
+   "es": "f\"Una carpeta de recuperación incompleta necesita inspección: {self.folder}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restoring the interrupted operation before continuing…\"",
+   "es": "\"Restaurando la operación interrumpida antes de continuar…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recover the previous operation before starting another\"",
+   "es": "\"Recupera la operación anterior antes de empezar otra\"",
+   "n": 1
+  },
+  {
+   "en": "f\"A directory destination is occupied by a file: {path}\"",
+   "es": "f\"Un destino de directorio está ocupado por un archivo: {path}\"",
+   "n": 1
+  },
+  {
+   "en": "\"A package cannot overwrite setup recovery data\"",
+   "es": "\"Un paquete no puede sobrescribir los datos de recuperación del instalador\"",
+   "n": 1
+  },
+  {
+   "en": "f\"A file destination is occupied by a directory: {path}\"",
+   "es": "f\"Un destino de archivo está ocupado por un directorio: {path}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Checking destination… {index:,} / {len(names):,} files\"",
+   "es": "f\"Revisando el destino… {index:,} / {len(names):,} archivos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Not enough free disk space for setup and its recovery copy. Free space on the destination drive and retry.\"",
+   "es": "\"No hay suficiente espacio libre en disco para el instalador y su copia de recuperación. Libera espacio en la unidad de destino y vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Preparing recovery copy… 0 / {total / (1024*1024):,.1f} MB\"",
+   "es": "f\"Preparando la copia de recuperación… 0 / {total / (1024*1024):,.1f} MB\"",
+   "n": 1
+  },
+  {
+   "en": "f\"File changed while preparing recovery: {name}\"",
+   "es": "f\"Un archivo cambió mientras se preparaba la recuperación: {name}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Preparing recovery… {i:,} / {len(records):,} files · \"",
+   "es": "f\"Preparando la recuperación… {i:,} / {len(records):,} archivos … \"",
+   "n": 1
+  },
+  {
+   "en": "f\"Recovery ready: {len(moves):,} application entries; no payload copy needed\"",
+   "es": "f\"Recuperación lista: {len(moves):,} entradas de la aplicación; no se necesita copiar el payload\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Removal entry was not prepared: {name}\"",
+   "es": "f\"La entrada de eliminación no se preparó: {name}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Installation entry changed during removal: {source}\"",
+   "es": "f\"La entrada de instalación cambió durante la eliminación: {source}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Recovery destination is already occupied: {destination}\"",
+   "es": "f\"El destino de recuperación ya está ocupado: {destination}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Removal recovery must remain on the installation drive\"",
+   "es": "\"La recuperación de eliminación debe permanecer en la unidad de instalación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restoration destination is occupied; existing content was kept\"",
+   "es": "\"El destino de restauración está ocupado; se conservó el contenido existente\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery entry identity changed\"",
+   "es": "\"La identidad de la entrada de recuperación cambió\"",
+   "n": 1
+  },
+  {
+   "en": "\"Neither the original entry nor its recovery copy was found\"",
+   "es": "\"No se encontró ni la entrada original ni su copia de recuperación\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Restoring application entries… {index:,} / {len(moves):,}\"",
+   "es": "f\"Restaurando las entradas de la aplicación… {index:,} / {len(moves):,}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery needs attention. Retained data: \"",
+   "es": "\"La recuperación necesita atención. Datos conservados: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery copy is missing or damaged\"",
+   "es": "\"La copia de recuperación falta o está dañada\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restored file did not pass verification\"",
+   "es": "\"El archivo restaurado no pasó la verificación\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Restoring previous files… {i:,} / {len(self.data['files']):,}\"",
+   "es": "f\"Restaurando los archivos anteriores… {i:,} / {len(self.data['files']):,}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restoring Windows registrations…\"",
+   "es": "\"Restaurando los registros de Windows…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Windows integration: {exc}\"",
+   "es": "f\"Integración con Windows: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery needs attention. Its copies are retained at \"",
+   "es": "\"La recuperación necesita atención. Sus copias se conservan en \"",
+   "n": 1
+  },
+  {
+   "en": "\"Finishing recovery cleanup…\"",
+   "es": "\"Terminando la limpieza de la recuperación…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Temporary recovery copy could not be cleared: {self.folder}. \"",
+   "es": "f\"No se pudo borrar la copia temporal de recuperación: {self.folder}. \"",
+   "n": 1
+  },
+  {
+   "en": "f\"{exc}. Cleanup will be retried on the next setup run.\"",
+   "es": "f\"{exc}. La limpieza se reintentará en la próxima ejecución del instalador.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Cleanup time limit reached; remaining files are at {path}\"",
+   "es": "f\"Se alcanzó el límite de tiempo de la limpieza; los archivos restantes están en {path}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Deleting files and folders… {removed:,} removed ({path.name})\"",
+   "es": "f\"Eliminando archivos y carpetas… {removed:,} eliminados ({path.name})\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Deleted {removed:,} files and folders ({path.name})\"",
+   "es": "f\"Se eliminaron {removed:,} archivos y carpetas ({path.name})\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Temp\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "f\"{copied_bytes / (1024*1024):,.1f} / {total / (1024*1024):,.1f} MB\"",
+   "motivo": "sólo unidades y expresiones (MB)"
+  }
+ ]
+}

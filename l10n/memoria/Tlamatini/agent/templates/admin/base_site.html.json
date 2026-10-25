@@ -1,0 +1,16 @@
+{
+ "archivo": "Tlamatini/agent/templates/admin/base_site.html",
+ "segmentos": [
+  {
+   "en": ">\n{% endblock %}\n{% block title %}{{ title }} | Tlamatini administration{% endblock %}\n{% block branding %}<",
+   "es": ">\n{% endblock %}\n{% block title %}{{ title }} | Administración de Tlamatini{% endblock %}\n{% block branding %}<",
+   "n": 1
+  },
+  {
+   "en": ">Tlamatini administration<",
+   "es": ">Administración de Tlamatini<",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

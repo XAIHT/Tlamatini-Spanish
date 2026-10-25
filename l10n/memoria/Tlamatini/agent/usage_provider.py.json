@@ -1,0 +1,98 @@
+{
+ "archivo": "Tlamatini/agent/usage_provider.py",
+ "segmentos": [
+  {
+   "en": "\"Ollama's usage response exceeds the size limit.\"",
+   "es": "\"La respuesta de uso de Ollama supera el límite de tamaño.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama temporarily limited usage requests.\"",
+   "es": "\"Ollama limitó temporalmente las solicitudes de uso.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama refused account access. Check its sign-in or configured API key.\"",
+   "es": "\"Ollama rechazó el acceso a la cuenta. Revisa su inicio de sesión o la API key configurada.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This Ollama server does not provide the requested usage endpoint.\"",
+   "es": "\"Este servidor de Ollama no ofrece el endpoint de uso solicitado.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Ollama returned HTTP {exc.code}.\"",
+   "es": "f\"Ollama respondió con HTTP {exc.code}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama's secure connection could not be verified. Check its certificate and connection settings.\"",
+   "es": "\"No se pudo verificar la conexión segura con Ollama. Revisa su certificado y la configuración de la conexión.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama did not respond before the usage request timed out.\"",
+   "es": "\"Ollama no respondió antes de que se agotara el tiempo de espera de la solicitud de uso.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama closed this usage connection before the response completed. The request will be retried automatically.\"",
+   "es": "\"Ollama cerró esta conexión de uso antes de completar la respuesta. La solicitud se reintentará automáticamente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama returned an invalid usage response.\"",
+   "es": "\"Ollama devolvió una respuesta de uso no válida.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Cannot connect to the configured Ollama server. Check that Ollama is running.\"",
+   "es": "\"No se puede conectar con el servidor de Ollama configurado. Revisa que Ollama esté corriendo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Account identity could not be verified for the saved figures.\"",
+   "es": "\"No se pudo verificar la identidad de la cuenta para las cifras guardadas.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Usage data is not available from this Ollama server.\"",
+   "es": "\"Este servidor de Ollama no ofrece datos de uso.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama did not return a supported balance. Open Ollama Usage to check your account.\"",
+   "es": "\"Ollama no devolvió un saldo compatible. Abre Uso en Ollama para revisar tu cuenta.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama account\"",
+   "es": "\"Cuenta de Ollama\"",
+   "n": 1
+  },
+  {
+   "en": "'Account identity was not returned.'",
+   "es": "'No se devolvió la identidad de la cuenta.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Account\"",
+   "motivo": "valor de datos de Ollama; el JS no lo muestra"
+  },
+  {
+   "en": "\"Retry-After\"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "\"Bearer \"",
+   "motivo": "esquema de autorización HTTP"
+  },
+  {
+   "en": "\"The configured Ollama URL is not a supported HTTP address.\"",
+   "motivo": "excepción que sólo va al log; la vista muestra su propio mensaje"
+  }
+ ]
+}

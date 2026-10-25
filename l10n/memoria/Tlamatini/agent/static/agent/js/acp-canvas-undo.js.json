@@ -1,0 +1,16 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-canvas-undo.js",
+ "segmentos": [
+  {
+   "en": "'Could not restore mappings for '",
+   "es": "'No se pudieron restaurar los mapeos de '",
+   "n": 1
+  },
+  {
+   "en": "'Could not restore configuration for '",
+   "es": "'No se pudo restaurar la configuración de '",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

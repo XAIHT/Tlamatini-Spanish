@@ -1,0 +1,39 @@
+{
+ "archivo": "Tlamatini/agent/test_prompt_catalog_contiguous.py",
+ "segmentos": [
+  {
+   "en": "            self.assertIn(\n                'step-by-step', body,",
+   "es": "            self.assertRegex(\n                body, r'step-by-step|paso a paso',",
+   "codigo": "la prueba acepta la casilla \"Paso a paso\" del catálogo en español",
+   "n": 1
+  },
+  {
+   "en": "            self.assertIn(\n                'wait', body,",
+   "es": "            self.assertRegex(\n                body, r'wait|esp[eé]r',",
+   "codigo": "la prueba acepta la promesa de esperar en español (ESPERA / espérame, con o sin acento)",
+   "n": 1
+  },
+  {
+   "en": "'visible fatal error'",
+   "es": "'error fatal visible'",
+   "maquina": "la prueba busca frases de la tarjeta 126 (0207 + 0210), que ahora están en español",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "'Preserve Tlamatini retries'",
+   "es": "'Conserva los reintentos de Tlamatini'",
+   "maquina": "la prueba busca frases de la tarjeta 126 (0207 + 0210), que ahora están en español",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "'Report missing audio or partial results honestly'",
+   "es": "'Reporta con honestidad si falta audio o hay resultados parciales'",
+   "maquina": "la prueba busca frases de la tarjeta 126 (0207 + 0210), que ahora están en español",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -1,0 +1,483 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/terminater_dock.js",
+ "segmentos": [
+  {
+   "en": "'Tabs'",
+   "es": "'Pestañas'",
+   "n": 2
+  },
+  {
+   "en": "'Tile'",
+   "es": "'Mosaico'",
+   "n": 2
+  },
+  {
+   "en": "'Side by side'",
+   "es": "'Lado a lado'",
+   "n": 1
+  },
+  {
+   "en": "'Stacked'",
+   "es": "'Apiladas'",
+   "n": 1
+  },
+  {
+   "en": "'Grid'",
+   "es": "'Cuadrícula'",
+   "n": 2
+  },
+  {
+   "en": "'Tlamatini is typing'",
+   "es": "'Tlamatini está escribiendo'",
+   "n": 1
+  },
+  {
+   "en": "'your turn'",
+   "es": "'tu turno'",
+   "n": 1
+  },
+  {
+   "en": "'Terminals are switched off on this server.'",
+   "es": "'Las terminales están desactivadas en este servidor.'",
+   "n": 1
+  },
+  {
+   "en": "'Sign in again to use terminals.'",
+   "es": "'Vuelve a iniciar sesión para usar las terminales.'",
+   "n": 1
+  },
+  {
+   "en": "'Terminal type'",
+   "es": "'Tipo de terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Terminal type for new terminals (and the active one)'",
+   "es": "'Tipo de terminal para las terminales nuevas (y para la activa)'",
+   "n": 1
+  },
+  {
+   "en": "'Side'",
+   "es": "'Columnas'",
+   "n": 1
+  },
+  {
+   "en": "'Stack'",
+   "es": "'Filas'",
+   "n": 1
+  },
+  {
+   "en": "'Lower part of the canvas area'",
+   "es": "'Parte inferior del área del canvas'",
+   "n": 1
+  },
+  {
+   "en": "'Cover the whole canvas area'",
+   "es": "'Cubrir toda el área del canvas'",
+   "n": 2
+  },
+  {
+   "en": "'Dock to the lower part of the canvas area'",
+   "es": "'Acoplar en la parte inferior del área del canvas'",
+   "n": 1
+  },
+  {
+   "en": "'Dock'",
+   "es": "'Acoplada'",
+   "n": 1
+  },
+  {
+   "en": "'Full'",
+   "es": "'Completa'",
+   "n": 1
+  },
+  {
+   "en": "'Resize the Terminals area'",
+   "es": "'Cambiar el tamaño del área Terminals'",
+   "n": 1
+  },
+  {
+   "en": "'Drag to resize · Up/Down to adjust · Shift for larger steps · double-click to fit'",
+   "es": "'Arrastra para cambiar el tamaño · Arriba/Abajo para ajustar · Shift para pasos más grandes · doble clic para ajustar'",
+   "n": 1
+  },
+  {
+   "en": "'New'",
+   "es": "'Nueva'",
+   "n": 1
+  },
+  {
+   "en": "'Raise a new terminal of the selected type'",
+   "es": "'Abre una terminal nueva del tipo seleccionado'",
+   "n": 1
+  },
+  {
+   "en": "'Interrupt'",
+   "es": "'Interrumpir'",
+   "n": 2
+  },
+  {
+   "en": "'Interrupt the running command (Ctrl+C, then stop its processes)'",
+   "es": "'Interrumpe el comando en ejecución (Ctrl+C y luego detiene sus procesos)'",
+   "n": 1
+  },
+  {
+   "en": "'Kill'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'Close this terminal'",
+   "es": "'Cierra esta terminal'",
+   "n": 2
+  },
+  {
+   "en": "'Force kill'",
+   "es": "'Forzar cierre'",
+   "n": 3
+  },
+  {
+   "en": "'Kill this terminal and everything it started'",
+   "es": "'Cierra esta terminal y todo lo que inició'",
+   "n": 1
+  },
+  {
+   "en": "'Clear'",
+   "es": "'Limpiar'",
+   "n": 1
+  },
+  {
+   "en": "'Clear the screen of this terminal'",
+   "es": "'Limpia la pantalla de esta terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Copy'",
+   "es": "'Copiar'",
+   "n": 1
+  },
+  {
+   "en": "'Copy the selected text'",
+   "es": "'Copia el texto seleccionado'",
+   "n": 1
+  },
+  {
+   "en": "'Layout'",
+   "es": "'Distribución'",
+   "n": 1
+  },
+  {
+   "en": "'Area'",
+   "es": "'Área'",
+   "n": 1
+  },
+  {
+   "en": "'No terminals yet'",
+   "es": "'Todavía no hay terminales'",
+   "n": 1
+  },
+  {
+   "en": "'Pick CMD or PowerShell and press “New”, or ask Tlamatini to raise one for you.'",
+   "es": "'Elige CMD o PowerShell y presiona “Nueva”, o pídele a Tlamatini que abra una por ti.'",
+   "n": 1
+  },
+  {
+   "en": "'New terminal'",
+   "es": "'Nueva terminal'",
+   "n": 2
+  },
+  {
+   "en": "'Hide the Terminals area (terminals keep running)'",
+   "es": "'Oculta el área Terminals (las terminales siguen corriendo)'",
+   "n": 1
+  },
+  {
+   "en": "'Hide the Terminals area'",
+   "es": "'Ocultar el área Terminals'",
+   "n": 1
+  },
+  {
+   "en": "'Terminal controls'",
+   "es": "'Controles de la terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Type'",
+   "es": "'Tipo'",
+   "n": 1
+  },
+  {
+   "en": "'Warn me about dangerous or mistyped commands in this terminal'",
+   "es": "'Avísame de comandos peligrosos o mal escritos en esta terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Advisor'",
+   "es": "'Asesor'",
+   "n": 2
+  },
+  {
+   "en": "'Click to focus this terminal'",
+   "es": "'Haz clic para enfocar esta terminal'",
+   "n": 1
+  },
+  {
+   "en": "'The terminal renderer (xterm.js) did not load.'",
+   "es": "'No se cargó el renderizador de la terminal (xterm.js).'",
+   "n": 1
+  },
+  {
+   "en": "'Dismiss'",
+   "es": "'Descartar'",
+   "n": 2
+  },
+  {
+   "en": "'your part'",
+   "es": "'tu parte'",
+   "n": 1
+  },
+  {
+   "en": "`<strong>Your turn.</strong> Tlamatini typed part of the command. Type <code>${escapeHtml(hint)}</code>${secret ? ' (private — Tlamatini will not see it)' : ''}, then press <strong>Enter</strong>${resume ? ' — she will finish the line' : ' to run it'}.`",
+   "es": "`<strong>Tu turno.</strong> Tlamatini escribió parte del comando. Escribe <code>${escapeHtml(hint)}</code>${secret ? ' (private — Tlamatini will not see it)' : ''} y luego presiona <strong>Enter</strong>${resume ? ' — she will finish the line' : ' to run it'}.`",
+   "n": 1
+  },
+  {
+   "en": "' (private — Tlamatini will not see it)'",
+   "es": "' (privado: Tlamatini no lo verá)'",
+   "n": 1
+  },
+  {
+   "en": "' — she will finish the line'",
+   "es": "' — ella terminará la línea'",
+   "n": 1
+  },
+  {
+   "en": "' to run it'",
+   "es": "' para ejecutarlo'",
+   "n": 1
+  },
+  {
+   "en": "'Continue ▶'",
+   "es": "'Continuar ▶'",
+   "n": 1
+  },
+  {
+   "en": "'Terminal request failed.'",
+   "es": "'Error en la solicitud a la terminal.'",
+   "n": 1
+  },
+  {
+   "en": "'\\r\\n\\x1b[90m[process exited'",
+   "es": "'\\r\\n\\x1b[90m[proceso terminado'",
+   "n": 1
+  },
+  {
+   "en": "' with code '",
+   "es": "' con el código '",
+   "n": 1
+  },
+  {
+   "en": "`No output for <strong>${Math.round(m.idle_seconds || 0)}s</strong> — <code>${escapeHtml(m.command || 'the command')}</code> looks hung.`",
+   "es": "`Sin output durante <strong>${Math.round(m.idle_seconds || 0)}s</strong>: <code>${escapeHtml(m.command || 'the command')}</code> parece colgado.`",
+   "n": 1
+  },
+  {
+   "en": "'the command'",
+   "es": "'el comando'",
+   "n": 1
+  },
+  {
+   "en": "'Keep waiting'",
+   "es": "'Seguir esperando'",
+   "n": 1
+  },
+  {
+   "en": "`The program is asking: <code>${escapeHtml(m.hint || '')}</code> — answer in the terminal.`",
+   "es": "`El programa pregunta: <code>${escapeHtml(m.hint || '')}</code>. Responde en la terminal.`",
+   "n": 1
+  },
+  {
+   "en": "` Try <code>${escapeHtml(m.suggestion)}</code>.`",
+   "es": "` Prueba <code>${escapeHtml(m.suggestion)}</code>.`",
+   "n": 1
+  },
+  {
+   "en": "'Not connected to the terminal hub yet.'",
+   "es": "'Todavía no hay conexión con el hub de terminales.'",
+   "n": 1
+  },
+  {
+   "en": "`Force kill “${T.title}”?`",
+   "es": "`¿Forzar el cierre de “${T.title}”?`",
+   "n": 1
+  },
+  {
+   "en": "`Close “${T.title}”?`",
+   "es": "`¿Cerrar “${T.title}”?`",
+   "n": 1
+  },
+  {
+   "en": "'The shell and every process it started are killed immediately.'",
+   "es": "'El shell y todos los procesos que inició se terminan de inmediato.'",
+   "n": 1
+  },
+  {
+   "en": "'A running command is interrupted and the shell is closed.'",
+   "es": "'Se interrumpe el comando en ejecución y se cierra el shell.'",
+   "n": 1
+  },
+  {
+   "en": "'Force kill terminal'",
+   "es": "'Forzar el cierre de la terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Close terminal'",
+   "es": "'Cerrar la terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 1
+  },
+  {
+   "en": "`Restart “${T.title}” as ${kindText(wanted)}?`",
+   "es": "`¿Reiniciar “${T.title}” como ${kindText(wanted)}?`",
+   "n": 1
+  },
+  {
+   "en": "`The current shell is closed and a new ${kindText(wanted)} terminal opens in its place. Choose “Only for new terminals” to keep this one and raise ${kindText(wanted)} terminals with New.`",
+   "es": "`Se cierra el shell actual y en su lugar se abre una terminal nueva de ${kindText(wanted)}. Elige “Sólo para terminales nuevas” para conservar esta y abrir terminales de ${kindText(wanted)} con Nueva.`",
+   "n": 1
+  },
+  {
+   "en": "'Change terminal type'",
+   "es": "'Cambiar el tipo de terminal'",
+   "n": 1
+  },
+  {
+   "en": "'Restart as '",
+   "es": "'Reiniciar como '",
+   "n": 1
+  },
+  {
+   "en": "'Only for new terminals'",
+   "es": "'Sólo para terminales nuevas'",
+   "n": 1
+  },
+  {
+   "en": "`Close ${T.title}`",
+   "es": "`Cerrar ${T.title}`",
+   "n": 1
+  },
+  {
+   "en": "'Terminal name'",
+   "es": "'Nombre de la terminal'",
+   "n": 1
+  },
+  {
+   "en": "'press Esc to take over'",
+   "es": "'presiona Esc para tomar el control'",
+   "n": 1
+  },
+  {
+   "en": "'connected'",
+   "es": "'conectado'",
+   "n": 1
+  },
+  {
+   "en": "'Terminals area '",
+   "es": "'Área Terminals: '",
+   "n": 1
+  },
+  {
+   "en": "' pixels high'",
+   "es": "' píxeles de alto'",
+   "n": 1
+  },
+  {
+   "en": "starting: 'starting'",
+   "es": "starting: 'iniciando'",
+   "n": 1
+  },
+  {
+   "en": "running: 'running', exited: 'exited', closed: 'closed'",
+   "es": "running: 'en ejecución', exited: 'terminada', closed: 'cerrada'",
+   "n": 1
+  },
+  {
+   "en": "'connecting…'",
+   "es": "'conectando…'",
+   "n": 2
+  },
+  {
+   "en": "'reconnecting…'",
+   "es": "'reconectando…'",
+   "n": 1
+  },
+  {
+   "en": "prompt: 'ready'",
+   "es": "prompt: 'lista'",
+   "n": 1
+  },
+  {
+   "en": "title: LAYOUT_TEXT[l] + ' layout', 'aria-label': LAYOUT_TEXT[l] + ' layout'",
+   "es": "title: LAYOUT_TEXT[l] + ' (distribución)', 'aria-label': LAYOUT_TEXT[l] + ' (distribución)'",
+   "n": 1
+  },
+  {
+   "en": "/^Tlamatini is typing/i.test(m.message || '')",
+   "es": "/^Tlamatini (is typing|está escribiendo)/i.test(m.message || '')",
+   "codigo": "el regex reconoce también el aviso en español del Terminater (terminater_engine.py)",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'CMD'",
+   "motivo": "nombre de producto"
+  },
+  {
+   "en": "'PowerShell'",
+   "motivo": "nombre de producto"
+  },
+  {
+   "en": "'PowerShell 7'",
+   "motivo": "nombre de producto"
+  },
+  {
+   "en": "'Terminals'",
+   "motivo": "nombre de un área del producto"
+  },
+  {
+   "en": "'tlm-primary tlm-term-new'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlm-danger tlm-term-force'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "\"'Cascadia Mono','Cascadia Code',Consolas,'Courier New',monospace\"",
+   "motivo": "lista de fuentes CSS"
+  },
+  {
+   "en": "'Tlamatini'",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": "'ready'",
+   "motivo": "'ready' a secas es un estado de máquina en muchos archivos; esta etiqueta de pantalla se traduce con contexto (prompt: 'ready') en la decisión manual"
+  },
+  {
+   "en": "' layout'",
+   "motivo": "a secas no se toca: \"layout\" es también un tipo de mensaje del WebSocket (terminal_consumer.py); se traduce con contexto en el title/aria-label de los botones de distribución"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "archivo": "Tlamatini/agent/config_loader.py",
+ "segmentos": [
+  {
+   "en": "\"config.json could not be located on disk\"",
+   "es": "\"No se encontró config.json en el disco\"",
+   "n": 1
+  },
+  {
+   "en": "\"config.json must be a JSON object at the top level\"",
+   "es": "\"config.json debe ser un objeto JSON en el nivel superior\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"--- [CONFIG] WARNING: {config_path} is not a JSON object \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"(got {type(loaded).__name__}) - using empty config\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONFIG] ERROR: could not read {config_path}: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CONFIG] Tlamatini is starting with an EMPTY config - the \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"chat agent will report 'not ready' until this file is valid JSON.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"save_config_updates requires a dict of updates\"",
+   "motivo": "error de programación (interno)"
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "archivo": "Tlamatini/agent/terminal_hub.py",
+ "segmentos": [
+  {
+   "en": "f\"Terminater engine not found at {path}\"",
+   "es": "f\"No se encontró el motor de Terminater en {path}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Terminater engine cannot be loaded from {path}\"",
+   "es": "f\"No se puede cargar el motor de Terminater desde {path}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Terminater is switched off (terminater_enabled=false).\"",
+   "es": "\"Terminater está desactivado (terminater_enabled=false).\"",
+   "n": 1
+  },
+  {
+   "en": "f\"The terminal hub could not start: {exc}\"",
+   "es": "f\"No se pudo iniciar el hub de las terminales: {exc}\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Temp\"",
+   "motivo": "nombre de carpeta"
+  }
+ ]
+}

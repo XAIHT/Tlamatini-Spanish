@@ -1,0 +1,72 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/mic_settings.js",
+ "segmentos": [
+  {
+   "en": "'Use configured Whisperer microphone'",
+   "es": "'Usar el micrófono configurado en Whisperer'",
+   "n": 1
+  },
+  {
+   "en": "'System default input'",
+   "es": "'Input predeterminado del sistema'",
+   "n": 1
+  },
+  {
+   "en": "'Saved input unavailable — refresh or choose another'",
+   "es": "'El input guardado no está disponible — actualiza o elige otro'",
+   "n": 1
+  },
+  {
+   "en": "'Input discovery is unavailable. The configured or system default microphone can still be used.'",
+   "es": "'No se pueden detectar los inputs. Todavía puedes usar el micrófono configurado o el predeterminado del sistema.'",
+   "n": 1
+  },
+  {
+   "en": "' host input device'",
+   "es": "' input'",
+   "n": 1
+  },
+  {
+   "en": "'Finish or cancel the current recording before refreshing inputs.'",
+   "es": "'Termina o cancela la grabación actual antes de actualizar los inputs.'",
+   "n": 1
+  },
+  {
+   "en": "'Microphone settings are reconnecting. Try Refresh inputs when the connection is ready.'",
+   "es": "'La configuración del micrófono se está reconectando. Prueba Actualizar inputs cuando la conexión esté lista.'",
+   "n": 1
+  },
+  {
+   "en": "'Input refresh timed out. Try again or keep the configured microphone.'",
+   "es": "'Hubo un timeout al actualizar los inputs. Vuelve a intentarlo o conserva el micrófono configurado.'",
+   "n": 1
+  },
+  {
+   "en": "'Applied for this tab. Browser storage is unavailable, so these settings may not survive a reload.'",
+   "es": "'Se aplicó en esta pestaña. El almacenamiento del browser no está disponible, así que esta configuración podría perderse al recargar.'",
+   "n": 1
+  },
+  {
+   "en": "'Whisperer defaults restored in this dialog. Save to apply.'",
+   "es": "'Se restauraron en este diálogo los valores predeterminados de Whisperer. Guarda para aplicarlos.'",
+   "n": 1
+  },
+  {
+   "en": "'Mic preferences changed in another tab. Close and reopen to load them, or Save your edits.'",
+   "es": "'Las preferencias del micrófono cambiaron en otra pestaña. Cierra y vuelve a abrir para cargarlas, o guarda tus cambios.'",
+   "n": 1
+  },
+  {
+   "en": "' available.'",
+   "es": "' de audio en el host.'",
+   "n": 1
+  },
+  {
+   "en": "    channels: 1, language: '', task: 'transcribe', beam_size: 5, vad_filter: true};",
+   "es": "    channels: 1, language: 'es', task: 'transcribe', beam_size: 5, vad_filter: true};",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

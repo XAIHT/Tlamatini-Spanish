@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0206_qwen35_cloud_model_tag_rename.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

@@ -1,0 +1,151 @@
+{
+ "archivo": "Tlamatini/agent/canvas_file_views.py",
+ "segmentos": [
+  {
+   "en": "\"The request size is invalid.\"",
+   "es": "\"El tamaño de la solicitud no es válido.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This request exceeds the native-save size limit.\"",
+   "es": "\"Esta solicitud supera el límite de tamaño del guardado nativo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Native Save As is available on the computer running Tlamatini.\"",
+   "es": "\"El cuadro Guardar como nativo sólo está disponible en la computadora donde corre Tlamatini.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Sign in again before saving this file.\"",
+   "es": "\"Vuelve a iniciar sesión antes de guardar este archivo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This file's save access expired. Use Save as to choose it again.\"",
+   "es": "\"El acceso para guardar este archivo expiró. Usa Guardar como para volver a elegirlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The destination moved or became a link. Choose it again with Save as.\"",
+   "es": "\"El destino se movió o se convirtió en un link. Vuelve a elegirlo con Guardar como.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose an ordinary file, rather than a folder or link.\"",
+   "es": "\"Elige un archivo normal, no una carpeta ni un link.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This file exceeds the 64 MiB native-save limit.\"",
+   "es": "\"Este archivo supera el límite de 64 MiB del guardado nativo.\"",
+   "n": 2
+  },
+  {
+   "en": "f\"The save failed and its original could not be restored. \"",
+   "es": "f\"No se pudo guardar el archivo ni restaurar su original. \"",
+   "n": 1
+  },
+  {
+   "en": "f\"The original is preserved at {backup}. \"",
+   "es": "f\"El original se conserva en {backup}. \"",
+   "n": 1
+  },
+  {
+   "en": "f\"Recovery error: {recovery_error}\"",
+   "es": "f\"Error de recuperación: {recovery_error}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"The save failed. Its original recovery copy is preserved at {backup}. \"",
+   "es": "f\"No se pudo guardar. La copia de recuperación del original se conserva en {backup}. \"",
+   "n": 1
+  },
+  {
+   "en": "f\"Windows error: {error}\"",
+   "es": "f\"Error de Windows: {error}\"",
+   "n": 1
+  },
+  {
+   "en": "\"This file changed outside the canvas. Refresh it or use Save as to keep your edits.\"",
+   "es": "\"Este archivo cambió fuera del canvas. Actualízalo o usa Guardar como para conservar tus cambios.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This file changed while saving. Refresh it or use Save as to keep your edits.\"",
+   "es": "\"Este archivo cambió mientras se guardaba. Actualízalo o usa Guardar como para conservar tus cambios.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Native Save As requires Windows. Choose a browser save location instead.\"",
+   "es": "\"El cuadro Guardar como nativo sólo funciona en Windows. Mejor elige dónde guardar desde el browser.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A Save As window is already open. Finish or cancel it first.\"",
+   "es": "\"Ya hay una ventana Guardar como abierta. Termínala o cancélala primero.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Save canvas file as\"",
+   "es": "\"Guardar el archivo del canvas como\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose a valid file name.\"",
+   "es": "\"Elige un nombre de archivo válido.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose the destination in Save As; a browser path is not accepted.\"",
+   "es": "\"Elige el destino en Guardar como; no se acepta un path del browser.\"",
+   "n": 1
+  },
+  {
+   "en": "\"No file content was supplied.\"",
+   "es": "\"No se envió el contenido del archivo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Native saves support files up to 64 MiB.\"",
+   "es": "\"El guardado nativo admite archivos de hasta 64 MiB.\"",
+   "n": 2
+  },
+  {
+   "en": "\"The file revision is missing. Refresh it or use Save as.\"",
+   "es": "\"Falta la revisión del archivo. Actualízalo o usa Guardar como.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose an absolute destination that is not a link.\"",
+   "es": "\"Elige un destino absoluto que no sea un link.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The native Save As dialog is unavailable.\"",
+   "es": "\"El cuadro Guardar como nativo no está disponible.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Could not save the file: \"",
+   "es": "\"No se pudo guardar el archivo: \"",
+   "n": 1
+  },
+  {
+   "en": "\"The saved file was moved or deleted.\"",
+   "es": "\"El archivo guardado se movió o se eliminó.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Could not read the saved file: \"",
+   "es": "\"No se pudo leer el archivo guardado: \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Capability\"",
+   "motivo": "anotación de tipos"
+  }
+ ]
+}

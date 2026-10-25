@@ -1,0 +1,3994 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+# MCP Agent (mcp_agent.py)
+import hashlib
+import json
+import logging
+import re
+
+# Local-model tool-call recovery. Stdlib-only and imports nothing from agent.*,
+# so it can never create an import cycle (see agent/local_toolcall_parser.py).
+from agent.local_toolcall_parser import (
+    describe_toolcall_shape,
+    extract_text_tool_calls,
+    looks_like_tool_call_attempt,
+    suggest_tool_names,
+)
+from typing import Dict, Any, Optional, Tuple
+
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
+
+from . import agent_verdict
+from . import terminal_guard
+from .acpx import ACPX_TOOL_NAMES, filter_acpx_tools
+from .capability_registry import (
+    _normalize_text,
+    _score_capability,
+    _tokenize,
+    build_tool_capabilities,
+)
+from .chat_agent_registry import WRAPPED_CHAT_AGENT_BY_TOOL_NAME
+from .config_loader import get_int_config_value, load_config as _shared_load_config
+from .context_governor import (
+    measure_async as _context_measure_async,
+    next_seq as _context_next_seq,
+    record_call_usage as _context_record_call,
+    report_real_usage as _context_report_real,
+    resolve_ceiling_tokens as _context_ceiling_tokens,
+    resolve_settings as _context_settings,
+    usage_from_llm_result as _context_usage_from,
+)
+from . import context_governor as _cg
+from . import compact_mode as _compact_mode
+from .context_fitter import (
+    COMPACT_TOOL_NAMES,
+    MODE_COMPACT,
+    MODE_FULL,
+    ContextWindowExceeded,
+    FitReport,
+    compact_mode_setting,
+    compact_prompt,
+    compact_tool_rule,
+    fit_history,
+    fit_input,
+    message_chars as _fit_message_chars,
+    resolve_window,
+    unwrap_display_tables,
+)
+from .exec_permission import get_broker
+from .global_execution_planner import (
+    selected_tool_names_from_plan,
+    summarize_global_execution_plan,
+)
+from .global_state import get_request_state, global_state, scoped_request_state
+from .orphan_reaper import reap_orphans
+# Import the MCP tools defined in the same package
+from .tools import get_mcp_tools
+from .llm_timing import llm_timing_callbacks
+from .self_healing import ModelStepUnrecoverable, SelfHealingInvoker, recovery_preamble
+
+
+# Tool names whose invocation is likely to spawn an external console
+# child (and therefore may leave a conhost.exe orphan if the child
+# misbehaves on exit). Running the Tier-1 reaper after EVERY tool call
+# would be wasteful — most tools are pure Python with no subprocess
+# fan-out. The reaper is cheap (low double-digit ms with a few hundred
+# processes on the box), but cheap-times-frequent still matters.
+_PROCESS_SPAWNING_TOOL_NAMES: frozenset = frozenset({
+    "execute_command",
+    "execute_file",
+    "execute_netstat",
+    "unzip_file",
+    "decompile_java",
+    "googler",  # Playwright spawns a Chromium subtree
+    "agent_starter",
+    "agent_stopper",
+    "agent_parametrizer",
+})
+
+
+def _is_external_mcp_tool_name(name: str) -> bool:
+    try:
+        from .external_mcp_manager import is_external_mcp_tool_name as _is_external
+        return bool(_is_external(name))
+    except Exception:
+        return str(name or "").startswith("ext__") or str(name or "") in {
+            "external_mcp_status",
+            "external_mcp_reconnect",
+            "external_mcp_doctor",
+            "external_mcp_list_tools",
+            "external_mcp_call",
+            "external_mcp_import",
+            "external_mcp_set_active",
+            "external_mcp_wait",
+        }
+
+
+# ── Tool-name → ACP agent display name mapping ─────────────────────────
+# Used to translate multi-turn tool calls into .flw workflow nodes.
+# Wrapped chat-agent tools are resolved dynamically from the registry;
+# this dict covers the non-wrapped tools.
+_TOOL_TO_AGENT_DISPLAY_NAME: Dict[str, str] = {
+    "execute_command": "Executer",
+    "execute_file": "Pythonxer",
+    "execute_netstat": "Monitor Netstat",
+    "googler": "Googler",
+    "agent_parametrizer": "Parametrizer",
+    "agent_starter": "Starter",
+    "agent_stopper": "Stopper",
+    "launch_view_image": "Image-Interpreter",
+    "opus_analyze_image": "Image-Interpreter",
+    "qwen_analyze_image": "Image-Interpreter",
+    "unzip_file": "Executer",
+    "decompile_java": "J-Decompiler",
+}
+
+# Tools that are management/monitoring only — never produce .flw nodes.
+_MANAGEMENT_TOOLS: set[str] = {
+    "agent_stat_getter",
+    "get_current_time",
+    "chat_agent_run_list",
+    "chat_agent_run_status",
+    "chat_agent_run_log",
+    "chat_agent_run_stop",
+    # Inspection / polling helpers — same role as the run_* siblings above.
+    # window_present is a <100 ms yes/no probe of the desktop window list;
+    # chat_agent_run_wait is a single-call replacement for a polling loop.
+    # Neither is a canvas agent, so they must not surface in tool_calls_log
+    # entries that drive Create Flow / agent-registry validation.
+    "chat_agent_run_wait",
+    "window_present",
+}
+
+
+# Outbound "I'm done" notification tools — Telegram / email / WhatsApp / the
+# in-browser Notifier popup. Used by the completion-notification ("notification
+# debt") guard in ``MultiTurnToolAgentExecutor``: when the original request
+# asked to be notified ON COMPLETION and the model tries to finish WITHOUT
+# having called one of these, the executor injects ONE nudge to actually send
+# it — instead of letting the model confabulate a "tool backend unavailable /
+# re-enable Multi-Turn" excuse (the FlowPills bug, 2026-06-24).
+_NOTIFICATION_TOOLS: frozenset = frozenset({
+    "chat_agent_telegrammer",
+    "chat_agent_send_email",
+    "chat_agent_whatsapper",
+    "chat_agent_notifier",
+})
+
+# Completion cue: "when/once/after/as soon as/upon ... finish/done/complete/...".
+_COMPLETION_CUE_RE = re.compile(
+    r"\b(when|once|after|as soon as|upon|by the time)\b[^.?!]{0,80}?\b"
+    r"(finish|finishes|finished|done|complete|completes|completed|completion|"
+    r"end|ends|ended|ready|over|wrap(?:s|ped)? up)\b",
+    re.IGNORECASE,
+)
+# Standalone completion phrasings the windowed cue above can miss.
+_COMPLETION_PHRASE_RE = re.compile(
+    r"\b(at the end|on completion|upon completion|when you(?:'?re| are)? done|"
+    r"when you finish|after finishing|once finished|after it'?s? done)\b",
+    re.IGNORECASE,
+)
+# A channel mentioned elsewhere (e.g. an optional email field) is not consent.
+# Require an outbound action in the same sentence as the completion condition.
+_NOTIFY_ACTION_RE = re.compile(
+    r"\b(?:e-?mail|text|message|ping|notify|alert)\s+(?:me|us|him|her|them)\b|"
+    r"\b(?:send|shoot|drop)\s+[^.?!;\n]{0,60}?\b"
+    r"(?:telegram|whats\s?app|e-?mail|mail|notification|sms|slack|discord)\b",
+    re.IGNORECASE,
+)
+_NOTIFY_NEGATION_RE = re.compile(
+    r"\b(?:do\s+not|don'?t|never|no\s+need\s+to|without|avoid|stop)\s+(?:\w+\s+){0,3}$",
+    re.IGNORECASE,
+)
+_NOTIFY_QUOTED_RE = re.compile(r"```.*?```|(?<!\w)([\"']).*?\1(?!\w)|\u201c.*?\u201d", re.DOTALL)
+
+
+def _detect_completion_notification_request(text: str) -> bool:
+    """Heuristic: did the user ask to be NOTIFIED ON COMPLETION of this task?
+
+    Require a positive send/notify instruction tied to completion in one sentence.
+    Quoted examples, negations, form fields and ordinary chat replies are not
+    notification requests. Be conservative: a false positive can cause a real
+    unsolicited message, whereas a false negative leaves normal tool selection alone.
+    """
+    if not text:
+        return False
+    sample = _NOTIFY_QUOTED_RE.sub(" ", str(text).replace("\u2019", "'"))
+    for sentence in re.split(r"[.?!;]+|\n\s*\n", sample):
+        if not (_COMPLETION_CUE_RE.search(sentence) or _COMPLETION_PHRASE_RE.search(sentence)):
+            continue
+        for action in _NOTIFY_ACTION_RE.finditer(sentence):
+            prefix = sentence[:action.start()]
+            # "Don't forget to email me" is an affirmative reminder, not a refusal.
+            prefix = re.sub(r"\b(?:do not|don't)\s+forget\s+to\s*$", "", prefix, flags=re.IGNORECASE)
+            if not _NOTIFY_NEGATION_RE.search(prefix):
+                return True
+    return False
+
+
+# Curated Exec-report map: ``tool_name`` -> ``(agent_key, agent_display)``.
+# ``agent_key`` is the lowercase, separator-free token used to scope the
+# per-agent CSS class (``.exec-report-<agent_key>`` /
+# ``.exec-report-caption-<agent_key>``) and SHOULD match a canvas-item CSS class
+# in ``agentic_control_panel.css`` so the appended table inherits the agent's
+# canvas gradient. ``agent_display`` is the human-facing caption. Direct @tool
+# calls and wrapped chat-agent launches that correspond to the SAME agent share
+# an ``agent_key`` on purpose — their rows merge into a single
+# "List of <Agent> Operations" table.
+#
+# IMPORTANT (2026-06-07 completeness contract): this map is NO LONGER the gate
+# for *whether* an agent is captured. The Exec report must show EVERY agent that
+# actually runs during a Multi-Turn request — observational/output agents
+# (Talker, Shoter, Camcorder, Recorder, AudioPlayer, VideoPlayer, ...), read-only
+# LLM agents (Crawler, Prompter, Summarizer, File/Image interpreters, ...) and
+# any NEWLY-CREATED agent included. That auto-capture is implemented by
+# ``_resolve_exec_report_spec`` below, which falls back to the wrapped chat-agent
+# registry for any ``chat_agent_*`` not listed here (only the management/polling
+# helpers in ``_MANAGEMENT_TOOLS`` and direct read-only @tools like ``googler``
+# are excluded). Entries here are therefore an OPTIONAL refinement — add one only
+# to merge a shared agent_key (a direct @tool + its wrapped launch), fix the
+# display casing, or pin a CSS-matched caption gradient. A new Multi-Turn agent
+# is captured even with NO entry here.
+DEFAULT_LLM_CLIENT_TIMEOUT_SECONDS = 120.0
+
+
+def resolve_llm_client_timeout(config) -> float:
+    """Seconds to wait on ONE Ollama HTTP call. FAIL-OPEN to 120 s.
+
+    Configurable since 2026-08-11 (Angela). This was HARDCODED at 120 s, and a
+    full Multi-Turn request carries the entire system prompt plus every bound
+    tool schema (100+ tools) - which on a cloud model can legitimately need far
+    longer than a bare prompt. Angela's OpenMP LaTeX run ReadTimeout'd at exactly
+    120.0 s on EVERY attempt, so the self-healing ladder retried forever, while a
+    one-line probe of the SAME model answered in 1 second. It is REQUEST SIZE,
+    not a broken model. Raise ``llm_client_timeout_seconds`` in config.json for
+    big-document work.
+
+    A missing / empty / non-numeric / non-positive value keeps the 120 s default:
+    a config typo must never make the chat hang longer than before.
+    """
+    try:
+        raw = (config or {}).get("llm_client_timeout_seconds")
+        if raw is None or raw == "":
+            return DEFAULT_LLM_CLIENT_TIMEOUT_SECONDS
+        value = float(raw)
+        return value if value > 0 else DEFAULT_LLM_CLIENT_TIMEOUT_SECONDS
+    except Exception:
+        return DEFAULT_LLM_CLIENT_TIMEOUT_SECONDS
+
+
+_EXEC_REPORT_TOOLS: Dict[str, Tuple[str, str]] = {
+    # direct @tool calls
+    "execute_command":           ("executer",       "Executer"),
+    "execute_file":              ("pythonxer",      "Pythonxer"),
+    "unzip_file":                ("unzip",          "Unzip"),
+    "decompile_java":            ("jdecompiler",    "J-Decompiler"),
+    # wrapped chat-agent launches (see chat_agent_registry.py)
+    "chat_agent_executer":       ("executer",       "Executer"),
+    "chat_agent_pythonxer":      ("pythonxer",      "Pythonxer"),
+    "chat_agent_dockerer":       ("dockerer",       "Dockerer"),
+    "chat_agent_kuberneter":     ("kuberneter",     "Kuberneter"),
+    "chat_agent_ssher":          ("ssher",          "SSHer"),
+    "chat_agent_scper":          ("scper",          "SCPer"),
+    "chat_agent_pser":           ("pser",           "PSer"),
+    "chat_agent_sqler":          ("sqler",          "SQLer"),
+    "chat_agent_mongoxer":       ("mongoxer",       "Mongoxer"),
+    "chat_agent_jenkinser":      ("jenkinser",      "Jenkinser"),
+    "chat_agent_gitter":         ("gitter",         "Gitter"),
+    "chat_agent_instant_messaging_doctor": ("instantmessagingdoctor", "Instant Messaging Doctor"),
+    "chat_agent_file_creator":   ("filecreator",    "File-Creator"),
+    "chat_agent_move_file":      ("mover",          "Mover"),
+    "chat_agent_deleter":        ("deleter",        "Deleter"),
+    "chat_agent_apirer":         ("apirer",         "Apirer"),
+    # Unrealer mutates the Unreal Editor's state (spawns/deletes actors,
+    # creates and compiles Blueprints, adds UMG widgets, wires input
+    # mappings). Read-only commands like ``get_actors_in_level`` also
+    # share this agent_key on purpose so a mixed read-and-mutate flow
+    # renders as one cohesive "List of Unrealer Operations" table.
+    "chat_agent_unrealer":       ("unrealer",       "Unrealer"),
+    # Blenderer mutates the Blender scene (creates/deletes objects, assigns
+    # materials, renders, runs arbitrary editor Python) via the official
+    # Blender MCP add-on socket. Read verbs (scene_info / get_objects /
+    # blendfile_summary) share this agent_key so a mixed read-and-mutate flow
+    # renders as one cohesive "List of Blenderer Operations" table.
+    "chat_agent_blenderer":      ("blenderer",      "Blenderer"),
+    "chat_agent_globber":        ("globber",        "Globber"),
+    "chat_agent_grepper":        ("grepper",        "Grepper"),
+    "chat_agent_editor":         ("editor",         "Editor"),
+    # Video-Analyzer is observational (it WATCHES a recorded video and returns a
+    # verdict — it mutates no state), but EVERY Multi-Turn agent must appear in the
+    # Exec Report, so it gets its own row + caption gradient (agent_key videoanalyzer).
+    "chat_agent_video_analyzer": ("videoanalyzer",  "Video-Analyzer"),
+    # NetSpeed-Calculator measures rather than mutates, but the completeness
+    # contract is absolute: EVERY Multi-Turn agent gets an Exec-Report row.
+    # agent_key drops the dash to match .exec-report-caption-netspeedcalculator.
+    "chat_agent_netspeed_calculator": ("netspeedcalculator", "NetSpeed-Calculator"),
+    # Playwrighter drives a real browser through a scripted flow: it submits
+    # forms, clicks, logs into sites, downloads files, and otherwise changes
+    # remote/web state. Read-only steps (extract_text / screenshot) share the
+    # same ``playwrighter`` agent_key on purpose so a mixed read-and-act flow
+    # renders as one "List of Playwrighter Operations" table.
+    "chat_agent_playwrighter":   ("playwrighter",   "Playwrighter"),
+    "chat_agent_send_email":     ("emailer",        "Emailer"),
+    "chat_agent_telegrammer":    ("telegrammer",    "Telegrammer"),
+    "chat_agent_whatsapper":     ("whatsapper",     "Whatsapper"),
+    "chat_agent_notifier":       ("notifier",       "Notifier"),
+    "chat_agent_j_decompiler":   ("jdecompiler",    "J-Decompiler"),
+    # De-Compresser is state-changing: it CREATES files/directories on disk
+    # (decompression output, compression archive). The single agent_key
+    # ``decompresser`` merges both the wrapped chat-agent launch and any
+    # future direct @tool call into one "List of De-Compresser Operations"
+    # table in the Exec Report.
+    "chat_agent_de_compresser":  ("decompresser",   "De-Compresser"),
+    "chat_agent_kyber_keygen":   ("kyberkeygen",    "Kyber Keygen"),
+    "chat_agent_kyber_cipher":   ("kybercipher",    "Kyber Cipher"),
+    "chat_agent_kyber_deciph":   ("kyberdecipher",  "Kyber Deciph"),
+    # Keyboarder is state-changing: every keystroke affects whichever
+    # window currently has focus (typing into Notepad, firing hotkeys,
+    # etc.). Shoter remains read-only (it only observes the screen) so
+    # it stays out of the report on purpose.
+    "chat_agent_keyboarder":     ("keyboarder",     "Keyboarder"),
+    # Mouser is state-changing: it moves the system mouse pointer and
+    # may issue a click — both observable side-effects on the desktop
+    # (focus changes, foreground-window switch, button events fired at
+    # whatever window happens to be at the target coordinates).
+    "chat_agent_mouser":         ("mouser",         "Mouser"),
+    # Windower is state-changing: it moves / resizes / minimizes / maximizes /
+    # restores / closes / pins application windows (focus-only and the read-only
+    # ``list`` action share the same ``windower`` agent_key on purpose so a mixed
+    # query-and-manage flow renders as one "List of Windower Operations" table).
+    "chat_agent_windower":       ("windower",       "Windower"),
+    # Kalier is state-changing: it drives Kali offensive-security tooling
+    # (nmap / gobuster / nikto / sqlmap / metasploit / hydra / john / wpscan /
+    # enum4linux) and arbitrary shell commands on a Kali box via the
+    # MCP-Kali-Server API. The read-only ``health`` probe shares the same
+    # ``kalier`` agent_key so a mixed flow renders as one "List of Kalier
+    # Operations" table.
+    "chat_agent_kalier":         ("kalier",         "Kalier"),
+    # PDFer is state-changing (it WRITES a PDF). The generic wrapped-agent fallback
+    # would already capture it; this entry exists only so the table gets the native
+    # "Crimson Parchment" caption gradient defined in agent_page.css.
+    "chat_agent_pdfer":          ("pdfer",          "PDFer"),
+    # LaTeXer is state-changing (it WRITES .tex sources and a PDF). The generic
+    # wrapped-agent fallback would already capture it; this entry exists only so the
+    # table gets the native "Scholar's Vellum" caption gradient defined in agent_page.css.
+    "chat_agent_latexer":        ("latexer",        "LaTeXer"),
+    # PPTXer is state-changing (it WRITES a .pptx and fetches media). The generic
+    # wrapped-agent fallback would already capture it; this entry exists only so the
+    # table gets the native "Aurora Stage" caption gradient defined in agent_page.css.
+    "chat_agent_pptxer":         ("pptxer",         "PPTXer"),
+    # Terminater types real commands into VISIBLE terminals the user supervises. The
+    # generic wrapped-agent fallback already captures it; this entry only gives the
+    # table its native "Phosphor Console" caption gradient defined in agent_page.css.
+    "chat_agent_terminater":     ("terminater",     "Terminater"),
+    # STM32er is state-changing: it drives the STM32 Template Project MCP server
+    # to scaffold / write / build / flash / erase / reset firmware and to
+    # write_memory on a running MCU. Read-only actions (get_config / read_source /
+    # list_sources / read_memory / serial reads) share the ``stm32er`` agent_key
+    # so a mixed firmware flow renders as one "List of STM32er Operations" table.
+    "chat_agent_stm32er":        ("stm32er",        "STM32er"),
+    # ESP32er is state-changing: it drives PlatformIO Core's `pio` CLI to scaffold /
+    # write / build / upload (flash) ESP32 firmware. Read-only actions (boards /
+    # read_source / list_sources / device_list / monitor) share the ``esp32er``
+    # agent_key so a mixed firmware flow renders as one "List of ESP32er Operations"
+    # table.
+    "chat_agent_esp32er":        ("esp32er",        "ESP32er"),
+    # ESPHomer is state-changing: it drives the `esphome` CLI to author / validate /
+    # compile / upload (flash) ESPHome smart-home device firmware (YAML, no C++).
+    # Read-only actions (version / read_config / config / list_artifacts / logs) share
+    # the ``esphomer`` agent_key so a mixed device flow renders as one "List of ESPHomer
+    # Operations" table.
+    "chat_agent_esphomer":       ("esphomer",       "ESPHomer"),
+    # Arduiner is state-changing: it drives the Arduino CLI (`arduino-cli`) to scaffold /
+    # write / build / upload (flash) Arduino firmware. Read-only actions (boards /
+    # device_list / read_source / list_sources / core_list / lib_list / monitor) share
+    # the ``arduiner`` agent_key so a mixed firmware flow renders as one "List of
+    # Arduiner Operations" table.
+    "chat_agent_arduiner":       ("arduiner",       "Arduiner"),
+    # ACPX child-process launchers (spawn / send-turn / kill an external
+    # coding-agent CLI such as claude / cursor / codex / qwen / etc.).
+    # All three share the ``acpx`` agent_key on purpose so spawn + every
+    # follow-up send + the eventual kill merge into a single ACPx table
+    # in execution order.
+    "acp_spawn":                 ("acpx",           "ACPx"),
+    "acp_send":                  ("acpx",           "ACPx"),
+    "acp_send_and_wait":         ("acpx",           "ACPx"),
+    "acp_kill":                  ("acpx",           "ACPx"),
+    # acp_relay is state-changing on the destination session: it sends a
+    # turn there. Group it under the same ``acpx`` key so a relay run
+    # appears in execution order alongside spawn/send/kill.
+    "acp_relay":                 ("acpx",           "ACPx"),
+    # Markdown-driven Skill invocation through the SkillHarness. Treated
+    # as state-changing because a skill can run @tool commands, write
+    # files, hit external APIs, or delegate to ACPX itself.
+    "invoke_skill":              ("skill",          "Skill"),
+}
+
+
+def _resolve_exec_report_spec(tool_name: str) -> Tuple[str, str] | None:
+    """Resolve the ``(agent_key, agent_display)`` for an Exec-report row, or None.
+
+    MANDATORY COMPLETENESS CONTRACT (2026-06-07): the Exec report must show
+    EVERY agent that actually runs during a Multi-Turn request — including
+    observational/output agents (Talker, Shoter, Camcorder, Recorder,
+    AudioPlayer, VideoPlayer, ...), read-only LLM agents (Crawler, Prompter,
+    Summarizer, File/Image interpreters, ...), AND any newly-created agent —
+    automatically, with no per-agent wiring.
+
+    Resolution order:
+      1. The curated ``_EXEC_REPORT_TOOLS`` map wins (shared agent_keys that
+         merge a direct @tool with its wrapped launch, nicer display casing, a
+         CSS-matched caption gradient).
+      2. Otherwise ANY wrapped ``chat_agent_*`` tool that is NOT a
+         management/polling helper is captured generically: ``agent_key`` is the
+         registry spec key with separators stripped (to match the canvas-item
+         CSS convention) and ``agent_display`` is the spec's display name. This
+         is what makes a brand-new agent appear in the report the instant it is
+         wired as a Multi-Turn tool.
+      3. Everything else — the management/polling helpers in
+         ``_MANAGEMENT_TOOLS`` and direct read-only @tools such as ``googler`` —
+         returns None (never captured).
+    """
+    spec = _EXEC_REPORT_TOOLS.get(tool_name)
+    if spec is not None:
+        return spec
+    if tool_name.startswith("chat_agent_") and tool_name not in _MANAGEMENT_TOOLS:
+        wrapped = WRAPPED_CHAT_AGENT_BY_TOOL_NAME.get(tool_name)
+        if wrapped is not None:
+            agent_key = wrapped.key.replace("_", "").replace("-", "")
+            return (agent_key, wrapped.display_name)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Ask-Execs allowlist
+# ---------------------------------------------------------------------------
+# Ask Execs prompts the user (Proceed / Deny) ONLY before the tools listed
+# here. This is a tight ALLOWLIST — every other tool runs without a prompt.
+# The set is exactly the agents that *execute a command / script / .bat /
+# instruction, locally or remotely* (Tier 1 + Tier 2). Any tool not in this
+# set — including read-only tools, file/notify/messaging agents, the Kyber
+# crypto agents, desktop-input agents (Mouser / Keyboarder / Windower), SCPer
+# (file transfer), Apirer, Playwrighter, and ``invoke_skill`` — is NOT gated.
+#
+# Each tool maps back to a Tier-1/Tier-2 execution agent. Both the direct
+# @tool name and the wrapped ``chat_agent_*`` launcher are listed where both
+# exist, so the prompt fires regardless of which surface the LLM uses.
+_ASK_EXECS_REQUIRED_TOOLS: frozenset = frozenset({
+    "interactor",              # native file creation/save; visible buffer actions exempt
+    # ----- Tier 1: general-purpose arbitrary command / script execution -----
+    "execute_command",          # Executer  (local shell / .bat / .sh)
+    "chat_agent_executer",      # Executer
+    "execute_file",             # Pythonxer (local script file)
+    "chat_agent_pythonxer",     # Pythonxer
+    "chat_agent_ssher",         # SSHer     (remote shell / script over SSH)
+    "chat_agent_kalier",        # Kalier    (arbitrary shell on a Kali box, local/remote)
+    # ----- Tier 2: domain / tool-specific command runners -------------------
+    "chat_agent_pser",          # PSer       (ps / tasklist system command)
+    "chat_agent_dockerer",      # Dockerer   (docker CLI; local or remote daemon)
+    "chat_agent_kuberneter",    # Kuberneter (kubectl; local or remote cluster)
+    "chat_agent_jenkinser",     # Jenkinser  (triggers remote CI builds)
+    "chat_agent_gitter",        # Gitter     (git CLI)
+    "chat_agent_sqler",         # SQLer      (executes SQL; local or remote DB)
+    "chat_agent_mongoxer",      # Mongoxer   (MongoDB ops; local or remote DB)
+    "decompile_java",           # J-Decompiler (runs jd-cli)
+    "chat_agent_j_decompiler",  # J-Decompiler
+    # ══════════════════════════════════════════════════════════════════════
+    # Angela's decision, 2026-07-14 (after she found Ask-Execs was NOT gating
+    # what the toolbar/docs promised). The gate used to cover ONLY "things that
+    # run a command/script" — so DELETER could wipe a glob of files, and
+    # WHATSAPPER could message a real human, with NO prompt at all.
+    # She chose to gate tiers A + B + D and DELIBERATELY NOT C:
+    #   C (Keyboarder/Mouser/Windower/Playwrighter/firmware/Blender/Unreal) stays
+    #   UNGATED ON PURPOSE — "I need the AI to move fast and they are operations
+    #   of VISIBLE proceeding": you SEE the mouse move / the window shift / the
+    #   board flash, so a prompt buys nothing and only slows her down.
+    # ══════════════════════════════════════════════════════════════════════
+    # ----- Tier A: DESTROYS or OVERWRITES data — silent and irreversible ----
+    "chat_agent_deleter",       # Deleter       (deletes files/folders, GLOB patterns)
+    "chat_agent_move_file",     # Mover         (move/rename — can clobber the target)
+    "chat_agent_file_creator",  # File-Creator  (creates OR OVERWRITES any file)
+    "chat_agent_editor",        # Editor        (in-place edit of an existing file)
+    "chat_agent_de_compresser", # De-Compresser (unpacks archives over existing paths)
+    "unzip_file",               # Unzip         (direct @tool — same risk as above)
+    "chat_agent_pdfer",         # PDFer         (writes a PDF to ANY output_dir/filename)
+    # LaTeXer writes .tex sources AND a PDF to a free-form path, edits an existing .tex
+    # in place, `clean` DELETES auxiliary files, and it RUNS A REAL COMMAND (pdflatex,
+    # which with shell_escape can execute anything). Tier A + command-runner, twice over.
+    "chat_agent_latexer",       # LaTeXer       (writes/edits .tex, deletes aux, runs pdflatex)
+    # PPTXer writes a .pptx (and a folder of rendered slide PNGs) to a free-form
+    # output_dir/filename exactly like PDFer — tier A — AND it REACHES REMOTE HOSTS
+    # to fetch images, video and audio the deck references — tier D. It qualifies
+    # twice over, so it is gated once here.
+    "chat_agent_pptxer",        # PPTXer        (writes a .pptx to ANY path; fetches media)
+    # Terminater is a COMMAND RUNNER: it types arbitrary shell commands into a real
+    # cmd.exe / PowerShell. That it is VISIBLE does not make a command harmless (a visible
+    # `Remove-Item -Recurse` still deletes), so it sits with Executer/Pythonxer/SSHer here
+    # rather than in the desktop-UI tier C. Only users who ticked Ask Execs see the prompt.
+    "chat_agent_terminater",    # Terminater    (types commands into a visible shell)
+    # ----- Tier B: MESSAGING — DELIBERATELY *NOT* GATED (Angela, 2026-07-26) --
+    # Emailer / Whatsapper / Telegrammer used to be gated here on the
+    # "you cannot unsend it" argument. Angela REVERSED that:
+    #     "Messages must be able to be sent without asking,
+    #      it depends only on AI decision."
+    # Sending is now the LLM's own judgement call — no Proceed/Deny prompt stands
+    # between Tlamatini and a message. The remaining safeguards are the LLM's
+    # judgement, the Exec Report (every send is still captured as a row), and the
+    # user's Cancel. Instant Messaging Doctor stays ungated for the same reason,
+    # including when `retry_send=true` makes it re-send.
+    # This policy is pinned by test_ask_execs_allowlist.py.
+    # ----- Tier D: TOUCHES REMOTE SYSTEMS / THE NETWORK ---------------------
+    "chat_agent_scper",         # SCPer         (uploads/downloads to remote hosts)
+    "chat_agent_apirer",        # Apirer        (any REST call — incl. POST / DELETE)
+    "chat_agent_nmapper",       # Nmapper       (local nmap scans — offensive recon)
+    "chat_agent_discoverer",    # Discoverer    (ProjectDiscovery active recon)
+    "chat_agent_crawler",       # Crawler       (fetches arbitrary URLs)
+    # NetSpeed-Calculator sits in tier D for the SAME reason Crawler does — it
+    # reaches out to remote hosts — but with one extra edge: it deliberately
+    # SATURATES the link, moving ~100-200 MB of real traffic per full run. On a
+    # metered or capped connection that costs money, and it will briefly slow
+    # everything else on the network, so Angela gets to say when.
+    "chat_agent_netspeed_calculator",  # NetSpeed-Calculator (saturates the link)
+})
+
+
+def _tool_name_to_agent_display(tool_name: str) -> str | None:
+    """Map a unified-agent tool name to the ACP agent display name, or None if skipped."""
+    if tool_name in _MANAGEMENT_TOOLS:
+        return None
+    if tool_name in _TOOL_TO_AGENT_DISPLAY_NAME:
+        return _TOOL_TO_AGENT_DISPLAY_NAME[tool_name]
+    spec = WRAPPED_CHAT_AGENT_BY_TOOL_NAME.get(tool_name)
+    if spec:
+        return spec.display_name
+    return None
+
+
+def _classify_tool_kind(tool_name: str) -> str:
+    """Classify a tool name into the human-facing kind shown in the Ask-Execs
+    permission dialog ("what Tlamatini Tool/MCP/Agent is going to execute")."""
+    if tool_name == "invoke_skill":
+        return "Skill"
+    if tool_name.startswith("acp_"):
+        return "MCP / ACPX agent"
+    if tool_name.startswith("chat_agent_"):
+        return "Agent"
+    return "Tool"
+
+
+# PowerShell-flavoured tools whose execution shell is unambiguous.
+_POWERSHELL_TOOLS: frozenset = frozenset({"chat_agent_pser"})
+# Tools that run through the OS shell (the program text is a shell command).
+_OS_SHELL_TOOLS: frozenset = frozenset({
+    "execute_command", "chat_agent_executer", "unzip_file", "decompile_java",
+    "execute_netstat", "googler",
+})
+# Tools that run through a Python interpreter rather than a shell.
+_PYTHON_TOOLS: frozenset = frozenset({"execute_file", "chat_agent_pythonxer"})
+
+
+def _infer_execution_shell(tool_name: str, tool_input: Any) -> str:
+    """Best-effort description of the SHELL the tool will execute through,
+    shown read-only in the Ask-Execs dialog. Informational only — it never
+    changes how the tool runs."""
+    import platform
+
+    is_windows = platform.system() == "Windows"
+    os_shell = "cmd.exe / PowerShell (Windows)" if is_windows else "/bin/sh (POSIX)"
+    name = tool_name or ""
+
+    if name in _POWERSHELL_TOOLS:
+        return "PowerShell"
+    if name in _PYTHON_TOOLS:
+        return "Intérprete de Python"
+    if name in _OS_SHELL_TOOLS:
+        return os_shell
+    if name == "chat_agent_ssher":
+        host = tool_input.get("host") if isinstance(tool_input, dict) else None
+        return f"Shell remota por SSH{(' @ ' + str(host)) if host else ''}"
+    if name == "chat_agent_terminater":
+        try:
+            from .terminater_tool import shell_kind
+            kind = shell_kind(tool_input)
+        except Exception:  # noqa: BLE001 - informational only
+            kind = "powershell"
+        label = {"cmd": "cmd.exe", "powershell": "Windows PowerShell", "pwsh": "PowerShell 7"}.get(
+            kind, "Windows PowerShell")
+        return f"{label} en una terminal visible de Terminater (se escribe tecla por tecla)"
+    if name == "chat_agent_dockerer":
+        return f"CLI de Docker mediante {os_shell}"
+    if name == "chat_agent_kuberneter":
+        return f"CLI de kubectl mediante {os_shell}"
+    if name == "chat_agent_kalier":
+        return "Kali Linux (MCP-Kali-Server)"
+    if name == "chat_agent_stm32er":
+        return "STM32 Template Project MCP"
+    if name == "chat_agent_esp32er":
+        return "PlatformIO Core (pio CLI)"
+    if name == "chat_agent_esphomer":
+        return "ESPHome (esphome CLI)"
+    if name == "chat_agent_arduiner":
+        return "Arduino CLI (arduino-cli)"
+    if name.startswith("acp_"):
+        return "External coding-agent CLI"
+    if name == "invoke_skill":
+        return "Tlamatini SkillHarness"
+    return os_shell
+
+
+logger = logging.getLogger(__name__)
+
+# Try to import ChatOllama (newer location) – fall back to the community package
+try:
+    from langchain_ollama import ChatOllama
+except ImportError:
+    try:
+        from langchain_community.chat_models import ChatOllama
+    except ImportError:  # pragma: no cover
+        ChatOllama = None  # type: ignore
+
+
+def _load_config() -> Dict[str, Any]:
+    """Load ``config.json`` using the shared frozen/source-aware loader."""
+    return _shared_load_config()
+
+
+def _ensure_chat_tool_model(llm):
+    """Return a chat model that supports ``bind_tools`` when possible."""
+    from langchain_ollama.llms import OllamaLLM
+
+    if isinstance(llm, OllamaLLM) and ChatOllama is not None:
+        config = _load_config()
+
+        # Resolve model, endpoint and temperature from config → llm → defaults
+        model = (
+            config.get("unified_agent_model")
+            or getattr(llm, "model", None)
+            or "llama3.2:latest"
+        )
+        base_url = (
+            config.get("unified_agent_base_url")
+            or getattr(llm, "base_url", None)
+            or "http://localhost:11434"
+        )
+        temperature = (
+            config.get("unified_agent_temperature")
+            if config.get("unified_agent_temperature") is not None
+            else (getattr(llm, "temperature", None) or 0.0)
+        )
+
+        # Logging source of each parameter
+        if config.get("unified_agent_model"):
+            print(f"--- Using unified_agent_model from config.json: {model} ---")
+        elif getattr(llm, "model", None):
+            print(f"--- Using model from LLM instance: {model} ---")
+        else:
+            print(f"--- Using default model: {model} ---")
+
+        # Authentication / extra client kwargs
+        client_kwargs: Dict[str, Any] = {}
+        token = config.get("ollama_token", "")
+        private_client_kwargs = getattr(llm, "_client_kwargs", None)
+        public_client_kwargs = getattr(llm, "client_kwargs", None)
+        if token:
+            client_kwargs["headers"] = {"Authorization": f"Bearer {token}"}
+        elif private_client_kwargs:
+            client_kwargs = private_client_kwargs or {}
+        elif public_client_kwargs:
+            client_kwargs = public_client_kwargs or {}
+
+        # Bound the Ollama call so a transient cloud/serving stall fails fast
+        # instead of hanging the whole turn forever. setdefault never overrides
+        # an explicit/inherited timeout. The bound is CONFIGURABLE via
+        # `llm_client_timeout_seconds` - see resolve_llm_client_timeout().
+        _llm_timeout = resolve_llm_client_timeout(config)
+        client_kwargs.setdefault("timeout", _llm_timeout)
+        print("--- [LLM-TIMEOUT] one Ollama call may take up to %.0fs "
+              "(llm_client_timeout_seconds) ---" % _llm_timeout)
+
+        # Build kwargs accepted by ChatOllama
+        chat_kwargs: Dict[str, Any] = {
+            "model": model,
+            "base_url": base_url,
+            "temperature": temperature,
+            "callbacks": llm_timing_callbacks(),
+        }
+
+        # Propagate optional Ollama parameters if they exist
+        for attr in ["top_k", "top_p", "repeat_penalty", "repeat_last_n", "num_ctx", "num_predict"]:
+            if hasattr(llm, attr):
+                val = getattr(llm, attr)
+                if val is not None:
+                    chat_kwargs[attr] = val
+
+        # #2 STABLE-PROMPT REUSE: pin the model in memory (keep_alive) so the
+        # byte-stable system-prompt prefix — the executor caches one prompt per
+        # tool-set, with no per-turn variance — keeps its KV cache between turns.
+        # Ollama then reuses the common prefix instead of re-prefilling the whole
+        # (now-trimmed) tool block every turn. Honors the OLLAMA_KEEP_ALIVE
+        # contract from gpu_perf.py (default -1 = never unload). No-op for :cloud
+        # models (they don't live in local VRAM).
+        import os as _os
+        _keep_alive_raw = _os.environ.get("OLLAMA_KEEP_ALIVE", "-1").strip()
+        try:
+            chat_kwargs["keep_alive"] = int(_keep_alive_raw)
+        except (TypeError, ValueError):
+            chat_kwargs["keep_alive"] = _keep_alive_raw or -1
+
+        # Pass auth headers if supported
+        if client_kwargs:
+            chat_kwargs["client_kwargs"] = client_kwargs
+
+        # ── MODEL BRAIN (2026-10-08) ─────────────────────────────────────────
+        # The fixed values above (temperature 0.0, repeat_penalty 1.2, ...) were
+        # one setting for EVERY model. The brain replaces them with what THIS
+        # model's vendor publishes, keeps a thinking model's reasoning inside the
+        # tool loop (as Z.ai, OpenAI, DeepSeek, Moonshot and Google document) and
+        # sends only thinking levels the model itself publishes. model_brain=off
+        # keeps the legacy values exactly. Fail-open: any problem = legacy model.
+        chat_class = ChatOllama
+        try:
+            from . import model_brain as _model_brain
+            _brain = _model_brain.plan(model, base_url, config,
+                                       headers=(client_kwargs or {}).get("headers"))
+            if _brain.enabled:
+                from .model_brain_chat import BrainChatOllama, client_accepts_think
+                for _key in ("temperature", "top_k", "top_p", "repeat_penalty", "repeat_last_n"):
+                    chat_kwargs.pop(_key, None)
+                _fields = ("temperature", "top_k", "top_p", "repeat_penalty")
+                for _key, _value in _brain.sampling.items():
+                    if _key in _fields:
+                        chat_kwargs[_key] = _value
+                chat_kwargs["extra_options"] = {k: v for k, v in _brain.sampling.items()
+                                                if k not in _fields}
+                if _brain.num_ctx:
+                    chat_kwargs["num_ctx"] = _brain.num_ctx
+                chat_kwargs["keep_reasoning"] = bool(_brain.keep_reasoning)
+                if _brain.think is not None:
+                    if client_accepts_think(_brain.think):
+                        chat_kwargs["think"] = _brain.think
+                    else:
+                        print("--- [MODEL-BRAIN] the installed ollama client cannot send "
+                              f"think={_brain.think!r}; {model} keeps its own default ---")
+                chat_class = BrainChatOllama
+                temperature = chat_kwargs.get("temperature")
+        except Exception as _brain_exc:  # noqa: BLE001 - never block the chat on the brain
+            print(f"--- [MODEL-BRAIN] not applied ({_brain_exc}); legacy parameters kept ---")
+            chat_class = ChatOllama
+            for _key in ("extra_options", "keep_reasoning", "think"):
+                chat_kwargs.pop(_key, None)
+
+        # Instantiate ChatOllama – fall back to a minimal config on TypeError
+        try:
+            getted_llm = chat_class(**chat_kwargs)
+        except TypeError as e:  # pragma: no cover
+            print(
+                f"--- Warning: Some parameters not supported by ChatOllama, retrying with basic config: {e} ---"
+            )
+            basic_kwargs = {
+                "model": model,
+                "base_url": base_url,
+                "temperature": temperature,
+                "callbacks": llm_timing_callbacks(),
+            }
+            if client_kwargs:
+                basic_kwargs["client_kwargs"] = client_kwargs
+            getted_llm = ChatOllama(**basic_kwargs)
+
+        print(
+            f"--- Converted OllamaLLM to ChatOllama for tool calling (model={model}, base_url={base_url}) ---"
+        )
+
+        # ── [LLM-PARAMS] one-shot banner (2026-08-08) ────────────────────────
+        # The sampling options actually sent to Ollama used to be INVISIBLE, which
+        # is how repeat_penalty=1.9 (garbles small models) and a silently-ignored
+        # context_window=128000 (left num_ctx at Ollama's 4096 default) both
+        # survived unnoticed for so long. If a param is missing from this line it
+        # is NOT being sent — that is the whole point. Fail-open: never raises.
+        #
+        # 2026-09-13: that 1.9 was finally measured and is now 1.2 — at 1.9 a
+        # reasoning model spent whole turns emitting `thinking` and returned
+        # EMPTY content (7/8 runs, once 3.1M thinking chars over 51 minutes).
+        # repeat_last_n was added to this banner in the same pass because it was
+        # NOT in the passthrough above, so setting it in config.json had been a
+        # silent no-op — exactly the failure this banner exists to expose.
+        # ⚠️ ADD EVERY NEW SAMPLER KEY HERE AS WELL AS TO THE LOOP ABOVE.
+        # See docs/claude/architecture.md → Ollama sampler settings.
+        try:
+            _p = {k: chat_kwargs.get(k) for k in
+                  ("num_ctx", "repeat_penalty", "repeat_last_n", "top_k", "top_p",
+                   "temperature", "num_predict", "keep_alive")}
+            print(
+                "--- [LLM-PARAMS] model=%s | %s | (a param shown as None is NOT sent to Ollama)"
+                % (model, " ".join(f"{k}={v}" for k, v in _p.items()))
+            )
+        except Exception:  # pragma: no cover - diagnostics must never break the chain
+            pass
+        return getted_llm
+
+    return llm
+
+
+def _cap_tool_message_content(text, cap=None, *, tool_name=""):
+    """Bound a SINGLE tool result before it is fed BACK to the model.
+
+    A huge observation (a directory dump, a whole-file read, a long build log) fed
+    verbatim into the next model request is how the accumulated Multi-Turn context
+    balloons until the model server rejects the WHOLE body with
+    'request body too large (status code: 400)' — which used to be mislabeled a
+    'transient network error' and silently demoted the run to a tool-less refusal
+    (the 2026-07-25 HackRF-migration incident). Capping the copy the MODEL re-reads
+    keeps every observation bounded; the FULL result is still captured for the Exec
+    Report / tool_calls_log (that capture happens inside _invoke_tool, BEFORE this
+    trim). Head + tail are kept so the model still sees how the output began and
+    ended. (Angela, 2026-07-26)
+    """
+    if not isinstance(text, str):
+        return text
+    if cap is None:
+        try:
+            cap = get_int_config_value(
+                "unified_agent_tool_output_char_cap", 24000, minimum=2000)
+        except Exception:  # noqa: BLE001 — a cap lookup must never break tool handling
+            cap = 24000
+    if len(text) <= cap:
+        return text
+    if tool_name == "interactor":
+        from .interactor.context import current
+        request = current.get()
+        if request:
+            request.handed_off = True
+        return json.dumps({
+            "ok": False, "status": "context_limit", "retryable": False,
+            "message": "The live editor receipt exceeds this request's tool-result budget. "
+                       "No partial document was delivered. An earlier action may have completed; "
+                       "do not replay it. End this turn and ask the user to use a smaller document "
+                       "or a model/configuration with enough context.",
+            "characters": len(text), "budget": cap,
+        })
+    head = cap * 2 // 3
+    tail = cap - head
+    dropped = len(text) - head - tail
+    return (
+        text[:head]
+        + "\n\n…[TRUNCATED " + str(dropped) + " characters so the request stays within "
+        "the model's size limit — the FULL output was captured for the Exec Report; "
+        "ask for a specific part if you need more of it]…\n\n"
+        + text[-tail:]
+    )
+
+
+class MultiTurnToolAgentExecutor:
+    """
+    Explicit multi-turn tool-calling executor.
+
+    This avoids the opaque AgentExecutor path and gives the backend direct
+    control over tool-call / observation turns, which is required for the
+    wrapped chat-agent runtime tools.
+    """
+
+    def __init__(self, llm, system_prompt: str, tools, max_iterations: int = 4096):
+        self.llm = llm
+        self.system_prompt = system_prompt
+        self.tools = list(tools)
+        self.tool_map = {tool.name: tool for tool in self.tools}
+        self.max_iterations = max_iterations
+        # Names bound for THIS request. The local-model text-tool-call recovery
+        # will only accept a parsed call whose name is in here — an unbound name
+        # means the content was prose that merely looked like JSON.
+        self.bound_llm = llm.bind_tools(self.tools) if self.tools else None
+        # Per-invocation log of every tool call (populated during invoke()).
+        self._tool_calls_log: list[Dict[str, Any]] = []
+        # Per-invocation Exec report buffer — one entry per state-changing
+        # tool call (see _EXEC_REPORT_TOOLS). Only surfaced to the browser
+        # when the user toggled the Exec report checkbox on.
+        self._exec_report_enabled: bool = False
+        self._exec_report_entries: list[Dict[str, Any]] = []
+        # Ask-Execs (per-tool permission prompt) per-invocation state. Set
+        # fresh at the top of invoke() because executor instances are cached
+        # and reused across requests (see CapabilityAwareToolAgentExecutor).
+        self._ask_execs_enabled: bool = False
+        self._ask_execs_user_id: Any = None
+        # Populated when the user DENIED a tool execution: halts the chain and
+        # is surfaced to the browser as the red "Execution interrupted" banner.
+        self._exec_denied: Optional[Dict[str, Any]] = None
+        self._pending_denial_detail: Optional[Dict[str, Any]] = None
+        # Per-invocation accumulator of Tier-1 orphan-reaper survivors
+        # (processes the executor failed to kill after a tool call).
+        # The consumer flushes this list AFTER it broadcasts the final
+        # answer to the user, surfacing it as a follow-up chat message.
+        self._orphan_survivors: list = []
+        # Per-tool invocation counter (populated during invoke()). Complements
+        # the consecutive-signature repetition detector: that one catches
+        # identical-arg loops, this one catches semantic loops where the LLM
+        # keeps reaching for the same hammer (e.g. pythonxer) with varying
+        # scripts when a specialized tool would finish the job faster.
+        self._tool_call_counts: Dict[str, int] = {}
+        # How many times we corrected the model for inventing a tool name this
+        # request. Bounded so a stubborn model cannot loop forever.
+        self._hallucinated_tool_nudges: int = 0
+        self._last_hallucinated_name: str = ""
+        # Live-terminal honesty rails (terminal_guard.py); reset for every request in invoke().
+        self._terminal_ledger: list = []
+        self._claim_nudged: bool = False
+        self._claim_problems: list = []
+        self._tutorial_mode: Any = None
+        self._request_input_text: str = ""
+
+    def _sanitize_user_facing_answer(self, answer: Any) -> Any:
+        """Never let INTERNAL plumbing text reach the user. NEVER raises.
+
+        Small models echo a correction back verbatim: Angela was shown
+        "I'm sorry, but there is no tool named 'system_status'. Did you mean
+        external_mcp_status ...?" — machine talk that means nothing to a person
+        and makes Tlamatini look broken. If the final answer is really just the
+        model parroting our internal correction, replace it with an honest,
+        human sentence instead.
+        """
+        try:
+            text = answer if isinstance(answer, str) else str(answer or "")
+            low = text.lower()
+            leak_markers = (
+                "internal system correction",
+                "there is no tool named",
+                "no tool named",
+                "proper tool-calling mechanism",
+                "did you mean to call one of the available tools",
+            )
+            if not any(m in low for m in leak_markers):
+                return answer
+            print("--- [LOCAL-TOOLCALL] Final answer echoed the INTERNAL correction "
+                  "- replacing it with a human-readable message.")
+            return (
+                "No pude completar eso con los tools que tengo disponibles en este "
+                "momento, y no quiero adivinar una respuesta. El modelo local con el que "
+                "estoy corriendo siguió pidiendo un tool que no existe. Intenta "
+                "reformular tu solicitud o cambia a un modelo más potente en Config ▸ Modelos."
+            )
+        except Exception:  # pragma: no cover - totality guard
+            return answer
+
+    def _user_runs_now(self) -> bool:
+        """True while the user has said THEY run the commands (a live tutorial). NEVER raises."""
+        try:
+            mode = getattr(self, "_tutorial_mode", None)
+            return bool(mode is not None and mode.user_runs and terminal_guard.enabled())
+        except Exception:  # noqa: BLE001
+            return False
+
+    def _record_refused_call(self, tool_call: Dict[str, Any], note: str) -> None:
+        """A call refused BEFORE it ran still shows up, red, in the Create-Flow log and the Exec report."""
+        tool_name = tool_call.get("name", "")
+        args = tool_call.get("args", {}) or {}
+        display_name = _tool_name_to_agent_display(tool_name)
+        if display_name is not None:
+            self._tool_calls_log.append({
+                "tool_name": tool_name,
+                "args": dict(args) if isinstance(args, dict) else {},
+                "success": False,
+                "agent_display_name": display_name,
+            })
+        exec_report_spec = _resolve_exec_report_spec(tool_name)
+        if exec_report_spec is not None:
+            agent_key, agent_display = exec_report_spec
+            self._exec_report_entries.append({
+                "tool_name": tool_name,
+                "agent_key": agent_key,
+                "agent_display": agent_display,
+                "command": self._extract_exec_report_command(args, tool_name) + "  ->  " + note,
+                "success": False,
+            })
+
+    def _terminal_claim_nudge(self, response: Any, messages: list) -> bool:
+        """Check the draft FINAL answer against this request's record of what the tools really did.
+
+        "I typed it", "it is sitting on your prompt", "I ran it" are claims, and the user acts on
+        them. True = ONE correction round was appended to ``messages`` (the loop continues). When
+        a claim survives its correction it is flagged on the answer itself (_build_result_dict).
+        NEVER raises: a broken guard must not break the chat path.
+        """
+        try:
+            problems = terminal_guard.audit_answer(
+                getattr(response, "content", "") or "", self._terminal_ledger,
+                getattr(self, "_tutorial_mode", None), self._bound_tool_names(),
+                user_text=getattr(self, "_request_input_text", ""))
+        except Exception:  # noqa: BLE001
+            return False
+        if not problems:
+            return False
+        for problem in problems:
+            print(f"--- [TERMINAL-GUARD] unsupported claim ({problem.code}): {problem.claim[:160]!r} -> {problem.detail}")
+        if self._claim_nudged:
+            self._claim_problems = list(problems)
+            return False
+        self._claim_nudged = True
+        messages.append(HumanMessage(content=terminal_guard.nudge_text(problems)))
+        return True
+
+    def _bound_tool_names(self) -> set:
+        """Names of the tools bound for this request. NEVER raises.
+
+        Used as the decisive guard by the local-model text-tool-call recovery:
+        a parsed call whose name is NOT bound is treated as ordinary prose, so a
+        model explaining a tool call in JSON can never be executed by accident.
+        """
+        try:
+            return set(self.tool_map or {})
+        except Exception:  # pragma: no cover - totality guard
+            return set()
+
+    @staticmethod
+    def _extract_exec_report_command(tool_input: Any, tool_name: str = "") -> str:
+        """Pull a human-readable "command / intent" string out of the tool
+        input dict so it can be rendered in the Exec report. Covers:
+
+        - direct @tool inputs (``{"command": "..."}`` / ``{"path_filename":
+          "..."}``)
+        - wrapped chat-agent launches (``{"__arg1": "..."}`` /
+          ``{"request": "..."}``)
+        - ACPX child-process launchers (``acp_spawn`` shows
+          ``[<agent_id>] <task>``, ``acp_send`` shows the turn text,
+          ``acp_kill`` shows ``kill <session_id>``)
+        - Skill harness invocations (``invoke_skill`` shows
+          ``<skill_name>(<args>)``)
+
+        Falls back to a compact ``key=value`` summary so the report never
+        shows an empty cell. ``tool_name`` is optional only for backward
+        compatibility with older callers; new code should always pass it.
+        """
+        if tool_input is None:
+            return ""
+        if isinstance(tool_input, str):
+            return tool_input
+        if not isinstance(tool_input, dict):
+            return str(tool_input)
+
+        # ACPX / Skill tool-specific formatters. These use argument keys
+        # the legacy tools never use, and the user wants the report to
+        # show the meaningful intent (which CLI was spawned, which skill
+        # was invoked, which session was killed) rather than a raw
+        # key=value dump.
+        if tool_name == "acp_spawn":
+            agent_id = str(tool_input.get("agent_id") or "").strip()
+            task = str(tool_input.get("task") or "").strip()
+            if agent_id and task:
+                return f"[{agent_id}] {task}"
+            return task or agent_id or ""
+        if tool_name in ("acp_send", "acp_send_and_wait"):
+            text = str(tool_input.get("text") or "").strip()
+            session_id = str(tool_input.get("session_id") or "").strip()
+            if session_id and text:
+                return f"[{session_id}] {text}"
+            return text or session_id or ""
+        if tool_name == "acp_kill":
+            session_id = str(tool_input.get("session_id") or "").strip()
+            return f"kill {session_id}" if session_id else "kill"
+        if tool_name == "acp_relay":
+            src = str(tool_input.get("session_id_src") or "").strip()
+            dst = str(tool_input.get("session_id_dst") or "").strip()
+            transform = str(tool_input.get("transform") or "last_assistant_text").strip()
+            if src and dst:
+                return f"relay [{src}] → [{dst}] ({transform})"
+            return transform
+        if tool_name == "invoke_skill":
+            skill_name = str(tool_input.get("skill_name") or "").strip()
+            args_json = tool_input.get("args_json")
+            if args_json in (None, "", {}):
+                return skill_name
+            args_repr = (
+                args_json if isinstance(args_json, str)
+                else json.dumps(args_json, ensure_ascii=False, sort_keys=True)
+            )
+            return f"{skill_name}({args_repr})" if skill_name else args_repr
+        if tool_name == terminal_guard.TERMINATER_TOOL:
+            # Typed arguments: show the action, the terminal and the line - and say plainly
+            # when Enter was left to the user (terminal_guard.describe_call).
+            return terminal_guard.describe_call(tool_input)
+
+        for key in ("command", "path_filename", "request", "__arg1"):
+            value = tool_input.get(key)
+            if value:
+                return str(value)
+        values = [v for v in tool_input.values() if v not in (None, "")]
+        if len(values) == 1:
+            return str(values[0])
+        return ", ".join(f"{k}={v}" for k, v in tool_input.items() if v not in (None, ""))
+
+    # ------------------------------------------------------------------
+    # Ask-Execs permission gate
+    # ------------------------------------------------------------------
+
+    def _requires_exec_permission(self, tool_name: str, tool_args=None) -> bool:
+        """True when a tool call should be confirmed by the user before it
+        runs under Ask Execs.
+
+        This is an ALLOWLIST — ``_ASK_EXECS_REQUIRED_TOOLS``. As of 2026-07-14 it
+        covers (Angela's explicit decision):
+
+          * command / script runners (Executer, Pythonxer, SSHer, Kalier, Dockerer,
+            Kuberneter, SQLer, Mongoxer, Gitter, Jenkinser, PSer, J-Decompiler);
+          * A — things that DESTROY or OVERWRITE data, silently and irreversibly
+            (Deleter, Mover, File-Creator, Editor, De-Compresser, unzip_file, PDFer);
+          * D — things that TOUCH REMOTE SYSTEMS / THE NETWORK
+            (SCPer, Apirer, Nmapper, Discoverer, Crawler).
+
+        DELIBERATELY NOT GATED (tier C — Angela, 2026-07-14): the desktop-UI and
+        hardware agents (Keyboarder, Mouser, Windower, Playwrighter, STM32er,
+        ESP32er, Arduiner, ESPHomer, Blenderer, Unrealer). Her reason: "I need the
+        AI to move fast and they are operations of VISIBLE proceeding" — you can SEE
+        the pointer move, the window shift, the board flash, so a prompt adds nothing
+        but latency. Also not gated: read-only tools, the management / polling
+        helpers, crypto, the observational media agents, and ``invoke_skill``.
+
+        If you add a NEW agent that deletes/overwrites data, contacts a human, or
+        reaches a remote system, ADD ITS TOOL NAME to ``_ASK_EXECS_REQUIRED_TOOLS``.
+        Pinned by ``agent.test_ask_execs_allowlist.AskExecsAllowlistTests``."""
+        if not tool_name:
+            return False
+        if tool_name == "interactor" and isinstance(tool_args, dict):
+            return tool_args.get("action") not in {"read", "open", "type", "guide", "select", "stop"}
+        return tool_name in _ASK_EXECS_REQUIRED_TOOLS
+
+    def _build_exec_permission_detail(self, tool_call: Dict[str, Any]) -> Dict[str, Any]:
+        """Assemble the detail dict shown in the browser's Ask-Execs dialog:
+        what is going to execute, its parameters, the program text, and the
+        shell it runs through."""
+        tool_name = tool_call.get("name", "")
+        raw_args = tool_call.get("args", {}) or {}
+        agent_display = (
+            (_resolve_exec_report_spec(tool_name) or (None, None))[1]
+            or _tool_name_to_agent_display(tool_name)
+            or tool_name
+        )
+        try:
+            parameters = json.dumps(raw_args, indent=2, ensure_ascii=False, sort_keys=True)
+        except (TypeError, ValueError):
+            parameters = str(raw_args)
+        return {
+            "tool_name": tool_name,
+            "agent_display": agent_display,
+            "kind": _classify_tool_kind(tool_name),
+            "program": self._extract_exec_report_command(raw_args, tool_name),
+            "shell": _infer_execution_shell(tool_name, raw_args),
+            "parameters": parameters,
+        }
+
+    def _request_exec_permission(self, tool_call: Dict[str, Any]) -> str:
+        """Block on the browser's Proceed/Deny choice for ``tool_call``.
+
+        Returns ``"proceed"`` or ``"deny"``. Stashes the detail so a denial can
+        reuse it for the banner without rebuilding. Fails OPEN only when no
+        broker is registered (unit tests / detached browser) — the consumer
+        always registers a broker when Ask Execs is on, so in production this
+        is a real round-trip."""
+        detail = self._build_exec_permission_detail(tool_call)
+        self._pending_denial_detail = detail
+        broker = (
+            get_broker(self._ask_execs_user_id)
+            if self._ask_execs_user_id is not None
+            else None
+        )
+        if broker is None:
+            logger.warning(
+                "[AskExecs] no broker registered for user=%s; proceeding (fail-open)",
+                self._ask_execs_user_id,
+            )
+            return "proceed"
+        decision = broker.request_permission(detail)
+        logger.info(
+            "[AskExecs] tool=%s decision=%s", detail.get("tool_name"), decision
+        )
+        return decision
+
+    def _record_exec_denial(self, tool_call: Dict[str, Any]) -> None:
+        """Capture the denied tool call so the chain can halt and the browser
+        can render the red "Execution interrupted" banner."""
+        detail = self._pending_denial_detail or self._build_exec_permission_detail(tool_call)
+        self._exec_denied = {
+            "tool_name": detail.get("tool_name", ""),
+            "agent_display": detail.get("agent_display", ""),
+            "kind": detail.get("kind", "Tool"),
+            "command": detail.get("program", ""),
+            "shell": detail.get("shell", ""),
+            "parameters": detail.get("parameters", ""),
+        }
+
+    def _reap_after_tool(self, tool_name: str) -> None:
+        """Tier-1 cleanup: after a tool call that may have spawned an
+        external console child, reap any orphaned conhost.exe / dead
+        descendants it left behind.
+
+        Cheap and silent: errors are swallowed (they go to the reaper's
+        own log). Survivors are accumulated on the executor instance so
+        Tier 2 (the consumer's post-answer hook) can surface them to
+        the user in a single follow-up chat message.
+        """
+        if not tool_name:
+            return
+        if (tool_name not in _PROCESS_SPAWNING_TOOL_NAMES
+                and not tool_name.startswith("chat_agent_")
+                and not tool_name.startswith("acp_")):
+            return
+        try:
+            result = reap_orphans(
+                scope=f"tier1:after:{tool_name}",
+                include_self_tree=True,
+                include_pool_scan=False,   # Tier 2/3 do the wider sweep
+                include_console_host_sweep=True,
+                # Coalesce: a Multi-Turn burst calls this after every tool. The
+                # cheap self-tree zombie reap still runs each time, but the wider
+                # console-host snapshot scan runs at most once per this interval, so
+                # rapid back-to-back tool calls can't stack full sweeps.
+                min_full_scan_interval=8.0,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.debug("[MultiTurnExecutor] Tier-1 reap raised: %s", exc)
+            return
+        if result.survivors:
+            # Accumulate so the consumer can render one summary at the
+            # end of the request instead of N per-tool pop-ups.
+            self._orphan_survivors.extend(result.survivors)
+
+    def _invoke_tool(self, tool_call: Dict[str, Any]) -> str:
+        tool_name = tool_call.get("name", "")
+        from .interactor.context import current as interactor_request
+        editor_request = interactor_request.get()
+        if editor_request and editor_request.handed_off and tool_name != "interactor":
+            return json.dumps({"ok": False, "status": "operator_required", "retryable": False,
+                               "message": "The editor has been handed to the learner. End this turn with guidance; do not continue through another tool."})
+        tool = self.tool_map.get(tool_name)
+        if tool is None:
+            logger.warning("[MultiTurnExecutor._invoke_tool] Tool '%s' NOT FOUND in tool_map. Available: %s",
+                           tool_name, list(self.tool_map.keys()))
+            display_name = _tool_name_to_agent_display(tool_name)
+            if display_name is not None:
+                self._tool_calls_log.append({
+                    "tool_name": tool_name,
+                    "args": tool_call.get("args", {}),
+                    "success": False,
+                    "agent_display_name": display_name,
+                })
+            return json.dumps({
+                "status": "error",
+                "message": f"Tool '{tool_name}' is not available in this session.",
+                "retryable": False,
+            })
+
+        raw_args = tool_call.get("args", {})
+        tool_input = raw_args if raw_args not in (None, "") else {}
+        is_chat_agent_tool = tool_name.startswith("chat_agent_")
+        if is_chat_agent_tool:
+            logger.info("[MultiTurnExecutor._invoke_tool] Invoking WRAPPED CHAT AGENT tool: %s with args: %.500s",
+                        tool_name, str(tool_input))
+
+        # LIVE-TUTORIAL MODE reaches the tool through the call context (terminal_guard.py):
+        # Terminater then types the line and leaves Enter to the user.
+        _runs_token = terminal_guard.enter_mode(self._user_runs_now())
+        try:
+            result = tool.invoke(tool_input)
+        except Exception as exc:
+            logger.error("[MultiTurnExecutor._invoke_tool] Tool '%s' raised exception: %s", tool_name, exc, exc_info=True)
+            display_name = _tool_name_to_agent_display(tool_name)
+            if display_name is not None:
+                self._tool_calls_log.append({
+                    "tool_name": tool_name,
+                    "args": dict(tool_input) if isinstance(tool_input, dict) else {},
+                    "success": False,
+                    "agent_display_name": display_name,
+                })
+            # ── Exec report capture (exception path) ──
+            # The tables must show what was attempted regardless of whether
+            # the underlying tool returned cleanly, raised, or the wrapping
+            # answer was later classified FAILURE. Skipping capture here
+            # would silently drop ACPX/Skill rows whenever the child CLI is
+            # missing on PATH, the harness raised, or the tool args were
+            # malformed — exactly the cases the user most needs to see.
+            exec_report_spec = _resolve_exec_report_spec(tool_name)
+            if exec_report_spec is not None:
+                agent_key, agent_display = exec_report_spec
+                self._exec_report_entries.append({
+                    "tool_name": tool_name,
+                    "agent_key": agent_key,
+                    "agent_display": agent_display,
+                    "command": self._extract_exec_report_command(tool_input, tool_name),
+                    "success": False,
+                })
+            # Tier-1 reap: tool just blew up, almost certainly leaving
+            # half-spawned children behind. Sweep them now so the orphan
+            # count stays bounded across long Multi-Turn loops.
+            self._reap_after_tool(tool_name)
+            return json.dumps({
+                "status": "error",
+                "message": f"Tool '{tool_name}' raised an exception: {exc}",
+                "retryable": False,
+            })
+        finally:
+            terminal_guard.leave_mode(_runs_token)
+
+        if is_chat_agent_tool:
+            logger.info("[MultiTurnExecutor._invoke_tool] WRAPPED CHAT AGENT tool '%s' returned: %.1000s", tool_name, str(result))
+
+        # Determine success: check for error/failure indicators in the result.
+        result_str = result if isinstance(result, str) else json.dumps(result, ensure_ascii=False)
+        # Central failure classifier - catches EVERY result shape (JSON envelope,
+        # ok/success/isError flags, or an anchored plain-text error like the
+        # Roblox MCP's "false | Unable to cast double to Vector3"). (2026-07-17)
+        failed, _fail_err = self._result_is_failure(result_str)
+        call_success = not failed
+        # The record the final answer is audited against (terminal_guard.py).
+        _evidence = terminal_guard.evidence_from(tool_name, tool_input, result_str, call_success)
+        if _evidence is not None:
+            self._terminal_ledger.append(_evidence)
+
+        display_name = _tool_name_to_agent_display(tool_name)
+        if display_name is not None:
+            self._tool_calls_log.append({
+                "tool_name": tool_name,
+                "args": dict(tool_input) if isinstance(tool_input, dict) else {},
+                "success": call_success,
+                "agent_display_name": display_name,
+            })
+
+        # ── Exec report capture ──
+        # Always record entries for any tool in _EXEC_REPORT_TOOLS, regardless
+        # of the per-request flag — capture is cheap, and decoupling capture
+        # from rendering means a future layer that drops the flag (as the
+        # UnifiedAgentChain payload whitelist once did) cannot silently hide
+        # the data. The flag only gates whether the tables reach the user.
+        exec_report_spec = _resolve_exec_report_spec(tool_name)
+        if exec_report_spec is not None:
+            agent_key, agent_display = exec_report_spec
+            self._exec_report_entries.append({
+                "tool_name": tool_name,
+                "agent_key": agent_key,
+                "agent_display": agent_display,
+                "command": (
+                    terminal_guard.exec_report_command(tool_input, result_str)
+                    if tool_name == terminal_guard.TERMINATER_TOOL
+                    else self._extract_exec_report_command(tool_input, tool_name)
+                ),
+                "success": call_success,
+            })
+
+        # Tier-1 reap: tool returned cleanly. Sweep any console-host
+        # orphans left behind by the child process tree (only a no-op
+        # for pure-Python tools — see _PROCESS_SPAWNING_TOOL_NAMES).
+        self._reap_after_tool(tool_name)
+
+        if isinstance(result, str):
+            return result
+        return result_str
+
+    # ------------------------------------------------------------------
+    # Repetition detection helpers
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _call_signature(cls, tool_calls) -> str:
+        """Return a deterministic string fingerprint for a list of tool calls.
+
+        Polling/management tools listed in ``_TOOL_QUOTA_EXEMPT`` are excluded
+        from the signature on purpose: calling ``chat_agent_run_status`` with
+        the same ``run_id`` 3+ times while the underlying child is still
+        ``status=running`` is legitimate progress, not a repetition. Counting
+        them tripped the breaker on long-running tools (image_interpreter,
+        crawler) before the LLM had any new information to act on.
+        """
+        parts = []
+        for call in sorted(tool_calls, key=lambda c: c.get("name", "")):
+            name = call.get("name", "")
+            if name in cls._TOOL_QUOTA_EXEMPT:
+                continue
+            args = call.get("args") or {}
+            parts.append(f"{name}:{json.dumps(args, sort_keys=True, ensure_ascii=False)}")
+        return "|".join(parts)
+
+    # ------------------------------------------------------------------
+    # Tool-result failure classification + self-correction (2026-07-17)
+    # ------------------------------------------------------------------
+    # ONE place decides "did this tool call fail?" for EVERY surface - wrapped
+    # chat-agents, built-in MCPs, External MCPs (ext__*), ACPX (acp_*) and raw
+    # @tools - because they ALL return through _invoke_tool. The old check only
+    # caught a JSON {status: error/failed} envelope, so a PLAIN-TEXT tool error
+    # (e.g. the Roblox MCP's "false | Unable to cast double to Vector3") was
+    # scored SUCCESS; the model then retried the identical failing call and the
+    # run looped until the repetition-breaker dumped the raw error. (Angela)
+    _FAILURE_TEXT_PREFIXES = (
+        "error:", "false |", "false|", "traceback (most recent",
+        "exception:", "unable to ", "cannot ", "could not ",
+        "permission denied", "unauthorized", "forbidden",
+    )
+
+    # Identical (tool + args) failures allowed before the call is BLOCKED so no
+    # surface can loop forever on a failing tool. Corrective feedback is injected
+    # from the 2nd identical failure - one guided chance before the block.
+    _FAIL_BLOCK_LIMIT = 3
+
+    # Bool-ish / count-ish coercion for ``_result_is_failure``.  A pool agent's
+    # INI_SECTION KV header is parsed into STRINGS, so "False" and "0" arrive as
+    # TEXT -- and Python's truthiness reads BOTH of them as True.  These helpers
+    # are what stop a perfect run being stamped FAILURE in the Exec Report (and,
+    # just as important, a genuine failure being stamped SUCCESS).
+    _FALSEY_STRINGS = frozenset({"false", "no", "0", "off", "none", "null"})
+    _TRUEY_STRINGS = frozenset({"true", "yes", "1", "on"})
+
+    # Statuses meaning "the tool RAN TO COMPLETION and is reporting what it
+    # found". Deliberately narrow: only read-only / diagnostic verdicts, where
+    # an adverse finding is the DELIVERABLE rather than a malfunction.
+    #
+    # NOT in this set, on purpose:
+    #   refused  - a fail-safe refusal is correct behaviour, but the work the
+    #              user asked for genuinely did not happen, so red is honest.
+    #   not_found / not_unique / engine_unavailable - the requested change or
+    #              build did not happen either.
+    # ONE definition, shared with tools.py — see agent_verdict.py. Two copies
+    # of this vocabulary would drift, and a drifted copy silently mis-colours
+    # Exec-Report rows. Do NOT re-inline it here.
+    _DIAGNOSTIC_COMPLETED_STATUSES = agent_verdict.DIAGNOSTIC_COMPLETED_STATUSES
+
+    @classmethod
+    def _is_falsey(cls, value):
+        """True only when ``value`` EXPLICITLY means no: a bool or a bool-ish str.
+
+        An absent key (``None``) is not a failure signal, so it returns False.
+        """
+        if isinstance(value, bool):
+            return value is False
+        if isinstance(value, str):
+            return value.strip().lower() in cls._FALSEY_STRINGS
+        return False
+
+    @classmethod
+    def _is_truthy(cls, value):
+        """True only when ``value`` EXPLICITLY means yes: a bool or bool-ish str."""
+        if isinstance(value, bool):
+            return value is True
+        if isinstance(value, str):
+            return value.strip().lower() in cls._TRUEY_STRINGS
+        return False
+
+    @staticmethod
+    def _as_count(value):
+        """Coerce ``value`` to an int COUNT, or None when it is not countable.
+
+        ``0`` and ``"0"`` both mean "no errors" -- that is the whole point.  A
+        list/tuple/set/dict counts its members, so ``errors: ["a", "b"]`` is 2.
+        """
+        if isinstance(value, bool):
+            return None
+        if isinstance(value, int):
+            return value
+        if isinstance(value, float):
+            return int(value)
+        if isinstance(value, (list, tuple, set, dict)):
+            return len(value)
+        if isinstance(value, str):
+            text = value.strip()
+            try:
+                return int(text)
+            except ValueError:
+                pass
+            try:
+                return int(float(text))
+            except ValueError:
+                return None
+        return None
+
+    @classmethod
+    def _result_is_failure(cls, result_str):
+        """Return (failed: bool, short_error: str) for ANY tool-result shape.
+
+        Conservative on purpose: prefers unambiguous STRUCTURED signals, and only
+        treats plain text as a failure when it STARTS with a clear error marker,
+        so a normal result that merely mentions an error is never misflagged.
+        """
+        s = (result_str or "").strip()
+        if not s:
+            return (False, "")
+        parsed = None
+        try:
+            parsed = json.loads(s)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            parsed = None
+        if isinstance(parsed, dict):
+            # ══ THE AGENT'S OWN VERDICT OUTRANKS THE PROCESS EXIT CODE ══
+            # `tools._launch_wrapped_chat_agent` stamps a deterministic
+            # `verdict` via agent_verdict.py (typed AST over the agent's
+            # INI_SECTION self-report + an ordered rule table). Consult it
+            # FIRST: the `status` key below is the PROCESS view, derived from a
+            # one-bit exit code, and it is routinely WRONG -- a linter that
+            # correctly finds a bug exits non-zero. Testing `status` first is
+            # what made the `_DIAGNOSTIC_COMPLETED_STATUSES` branch below
+            # unreachable dead code. (Angela, LaTeXer STEP 4, 2026-08-06.)
+            verdict = agent_verdict.classify_payload(parsed)
+            if verdict.source == "agent":
+                if verdict.ok:
+                    return (False, "")
+                return (True, f"{verdict.reason} [{verdict.rule}]"[:300])
+
+            status = str(parsed.get("status", "")).lower()
+            if status in ("error", "failed", "failure"):
+                return (True, str(parsed.get("message") or parsed.get("reason") or status)[:300])
+            # ⚠️ A DIAGNOSTIC THAT REPORTS A PROBLEM HAS SUCCEEDED.
+            # This column answers "did the tool do its job?", NOT "was the input
+            # clean?". A linter asked to check a deliberately broken document
+            # and correctly finding 2 errors returns status=invalid, success=
+            # False, errors=2 -- and used to be stamped FAILURE for working
+            # perfectly. (Live: LaTeXer wizard STEP 4, 2026-08-05.) The finding
+            # itself is in the agent's own output where it belongs; a red row
+            # here would mean the tool malfunctioned, which it did not.
+            if status in cls._DIAGNOSTIC_COMPLETED_STATUSES:
+                return (False, "")
+            # Boolean-ish flags.  A pool agent's INI_SECTION KV header is parsed
+            # into STRINGS, so a real failure arrives as ``success: "False"`` --
+            # and ``"False" is False`` evaluates False, which used to let a REAL
+            # failure be reported as SUCCESS.  Compare bool-ish VALUES, not ids.
+            if (cls._is_falsey(parsed.get("ok")) or cls._is_falsey(parsed.get("success"))
+                    or cls._is_truthy(parsed.get("isError"))
+                    or cls._is_truthy(parsed.get("is_error"))):
+                return (True, str(parsed.get("message") or parsed.get("reason")
+                                  or parsed.get("error") or "tool reported failure")[:300])
+            # Error COUNTERS -- the same string problem in the other direction.
+            # LaTeXer reports ``errors: 0`` on a PERFECT build, and because the
+            # value arrives as the string "0" (and ``bool("0") is True``) every
+            # flawless compile used to be stamped FAILURE in the Exec Report.
+            # A numeric value is a COUNT: only a NON-ZERO count is a failure.
+            for key in ("error", "errors"):
+                err = parsed.get(key)
+                if err is None or err == "" or err == [] or err == {}:
+                    continue
+                count = cls._as_count(err)
+                if count is None:
+                    return (True, str(err)[:300])
+                if count > 0:
+                    return (True, f"{count} {key}")
+            return (False, "")
+        low = s.lower().lstrip(" \t\r\n-*>#\"'[]()")
+        for p in cls._FAILURE_TEXT_PREFIXES:
+            if low.startswith(p):
+                return (True, s[:300])
+        if "failed with return code" in low:
+            return (True, s[:300])
+        return (False, "")
+
+    # Maximum consecutive identical tool-call rounds before the loop is
+    # broken.  Keeping this small prevents runaway iteration while still
+    # allowing legitimate retries (e.g. polling a running agent twice).
+    _REPEAT_LIMIT = 3
+
+    # Per-tool invocation ceilings for a single Multi-Turn request. Exceeded
+    # counts short-circuit the call with a directed nudge instead of letting
+    # the LLM burn iterations retrying the same tool with shuffled arguments.
+    # Management/polling tools are exempt (see ``_TOOL_QUOTA_EXEMPT``) because
+    # polling a ``run_id`` 10+ times is legitimate.
+    _TOOL_QUOTA_SOFT_WARN = 64
+    _TOOL_QUOTA_HARD_STOP = 256
+    _TOOL_QUOTA_EXEMPT: set[str] = {
+        "agent_stat_getter",
+        "chat_agent_run_list",
+        "chat_agent_run_status",
+        "chat_agent_run_log",
+        "chat_agent_run_stop",
+        "chat_agent_run_wait",
+        "window_present",
+        "get_current_time",
+    }
+    # Tools for which a soft-warn nudge recommends a specialized alternative.
+    _TOOL_ALTERNATIVE_HINT: Dict[str, str] = {
+        "chat_agent_pythonxer": (
+            "You have already launched Pythonxer several times in this request. "
+            "If the remaining work is file creation, prefer chat_agent_file_creator "
+            "(one call per file) — it is more reliable for multi-line content with "
+            "embedded quotes than embedding Python ``open(..., 'w')`` scripts. "
+            "For file deletion use chat_agent_deleter; for moves, chat_agent_move_file. "
+            "Keep using Pythonxer only if the remaining step is genuine computation."
+        ),
+        "execute_command": (
+            "You have already executed several shell commands in this request. "
+            "If you are verifying files you just created, a single ``dir /s`` or "
+            "``ls -R`` is enough — further execute_command calls with similar "
+            "intent are probably redundant. Consider summarizing and finalizing."
+        ),
+    }
+
+    def _run_cancelled(self) -> bool:
+        """Did the USER cancel THIS run? (Angela, 2026-07-14)
+
+        The executor used to have NO cancellation awareness at all — a Cancel could
+        only ever be honoured at the next MODEL step (and after ``consumers`` Step 8
+        cleared the old boolean, not even there), so tools kept firing and the run
+        came back to life. This is now checked at the top of every tool-loop
+        iteration and immediately before every tool call.
+        """
+        from .cancellation import is_run_cancelled
+        try:
+            return is_run_cancelled(
+                getattr(self, "_run_user_id", None), getattr(self, "_run_epoch", None)
+            )
+        except Exception:  # noqa: BLE001 — a cancellation probe must never break the run
+            return False
+
+    def _cancelled_result(self, messages) -> Dict[str, Any]:
+        """Stop NOW, keeping every agent that already ran.
+
+        RETURNS (never raises): a raise would land in ``unified.py``'s fallback,
+        which fires ANOTHER uncancellable LLM call and prints a "transient network
+        error" notice — a lie after a user cancel. Returning through
+        ``_build_result_dict`` preserves the Exec report + the Create-Flow tool log.
+        """
+        print(
+            "--- MultiTurnToolAgentExecutor: USER CANCELLED — stopping the run now; "
+            f"keeping the {len(self._tool_calls_log)} tool call(s) already done ---"
+        )
+        return self._build_result_dict(
+            self._degraded_answer_from_results(messages, None, reason="user_cancelled")
+        )
+
+    def _degraded_answer_from_results(self, messages, step=None, *, reason: str = "") -> str:
+        """Build a TRUTHFUL final answer from the tool results already collected,
+        used when a model step could not be reached (the user cancelled, or every
+        recovery tactic was exhausted) AFTER >=1 agent ran. It NEVER claims 'no
+        tools ran' — the real work is preserved and surfaced, and the Create Flow
+        button reflects the successful agents."""
+        ran = list(self._tool_calls_log)
+        ok = [e for e in ran if e.get("success")]
+        last_results: list[str] = []
+        for msg in reversed(messages):
+            if isinstance(msg, ToolMessage):
+                content = str(getattr(msg, "content", "") or "")
+                if "[REPETITION BREAKER]" in content:
+                    continue
+                last_results.append(content)
+                if len(last_results) >= 5:
+                    break
+        # ``step`` is the ModelStepUnrecoverable when the STOP came from a model step;
+        # the tool-loop cancel guards have no such object and pass ``reason`` instead.
+        _reason = getattr(step, "reason", "") or reason
+        cancelled = _reason == "user_cancelled"
+        if cancelled and not ran:
+            # Truthful: the user cancelled before a single agent had run. Do NOT claim
+            # the model "became unreachable" — that was the old wording and it lied.
+            return (
+                "🛑 Cancelaste esta solicitud. Detuve la ejecución; todavía no se había "
+                "ejecutado nada, así que nada quedó a medias."
+            )
+        why = ("lo cancelaste" if cancelled
+               else "el modelo dejó de responder y se agotaron todas las tácticas de recuperación")
+        lines = [
+            f"⚠️ Detuve el paso del modelo porque {why}, pero tu ejecución de Multi-Turn "
+            "YA había ejecutado sus agents: no se perdió nada y la ejecución NO se descartó. "
+            "Esto es lo que de verdad se ejecutó en este turno:",
+            "",
+        ]
+        for e in ran:
+            mark = "✅" if e.get("success") else "❌"
+            name = e.get("tool_name") or e.get("agent_display") or "tool"
+            lines.append(f"- {mark} {name}")
+        if last_results:
+            lines.append("")
+            lines.append("Resultados más recientes de los tools:")
+            lines.append("\n---\n".join(reversed(last_results)))
+        lines.append("")
+        lines.append(
+            f"({len(ok)} de {len(ran)} llamadas a tools terminaron bien; puedes hacer clic en "
+            "**Crear flow** para armar un workflow con los agents que funcionaron.)"
+        )
+        return "\n".join(lines)
+
+    # ── CONTEXT GOVERNOR — step 1: MEASURE (Angela, 2026-09-20) ──────────
+    # EVERY model call in this executor goes through ``_model_step``, so there
+    # is exactly ONE place that measures what is about to be sent — the same
+    # reason the healer has one entry point. This slice MEASURES ONLY: it does
+    # not read, reorder, shorten or drop a single message, so it cannot change
+    # an answer. It prints one grep-able ``--- [CONTEXT]`` line per model step
+    # and pushes a frame to the chat gauge. Folding is steps 2–10 and is NOT
+    # implemented yet — the watermarks must be set from real numbers first.
+    def _tool_schema_prefix_bytes(self) -> Tuple[int, int]:
+        """``(wire_bytes, prompt_chars)`` of the bound tool surface.
+
+        These are sent with EVERY request and are the largest part of the
+        static prefix — with 109 tools bound they dwarf the conversation — yet
+        they live nowhere in ``messages``, so a measurement that ignored them
+        would under-report the wire size badly. Computed once per request and
+        cached: the tool list cannot change inside one run.
+
+        ⚠️ It measures the REAL serialized spec via ``convert_to_openai_tool``
+        — ``{"type":"function","function":{"name":…,"description":…,
+        "parameters":{…}}}`` — not a concatenation of the tool's name,
+        description and ``args``. Measured 2026-09-20: the concatenation
+        under-reports each tool by **20–24 %**, because it drops the JSON
+        structure and the ``parameters`` wrapper that really do travel. Over
+        the whole bound surface that is tens of KB missing from every request.
+        Fail-open: if the helper cannot be imported or a tool cannot be
+        converted, fall back to the old rough sum for that tool rather than
+        reporting nothing.
+        """
+        cached = getattr(self, "_context_schema_bytes", None)
+        if cached is not None:
+            return cached
+        try:
+            from langchain_core.utils.function_calling import convert_to_openai_tool
+        except Exception:  # noqa: BLE001
+            convert_to_openai_tool = None  # type: ignore[assignment]
+        total_bytes = 0
+        total_chars = 0
+        try:
+            for tool in (self.tools or []):
+                text = ""
+                if convert_to_openai_tool is not None:
+                    try:
+                        text = json.dumps(convert_to_openai_tool(tool),
+                                          ensure_ascii=False, default=str)
+                    except Exception:  # noqa: BLE001
+                        text = ""
+                if not text:
+                    name = str(getattr(tool, "name", "") or "")
+                    desc = str(getattr(tool, "description", "") or "")
+                    schema = getattr(tool, "args", None)
+                    try:
+                        schema_text = json.dumps(schema, default=str) if schema else ""
+                    except Exception:  # noqa: BLE001
+                        schema_text = str(schema or "")
+                    text = name + desc + schema_text
+                total_bytes += len(text.encode("utf-8"))
+                total_chars += len(text)
+        except Exception:  # noqa: BLE001
+            total_bytes, total_chars = 0, 0
+        self._context_schema_bytes = (total_bytes, total_chars)
+        return self._context_schema_bytes
+
+    @staticmethod
+    def _llm_identity(llm) -> Tuple[str, str]:
+        """``(model, base_url)`` of the Ollama chat model behind ``llm``.
+
+        ``llm`` is either the ChatOllama itself or the RunnableBinding that
+        ``bind_tools`` wraps it in (``.bound``).  Fail-open to empty strings.
+        """
+        try:
+            target = getattr(llm, "bound", None) or llm
+            return (str(getattr(target, "model", "") or ""),
+                    str(getattr(target, "base_url", "") or ""))
+        except Exception:  # noqa: BLE001
+            return "", ""
+
+    def _model_step(self, llm, messages, label: str = ""):
+        """Measure, call through the self-healer, then report Ollama's REAL count.
+
+        THIS is Tlamatini's main inference - the only call the gauge meters
+        (Angela, 2026-09-28).  Before the call: snapshot and signal (the
+        meter's worker does the arithmetic).  After it: Ollama's own
+        ``prompt_eval_count`` for THIS request (paired by ``seq``) replaces the
+        estimate on the ring, and the call joins the answer's real totals.
+
+        FAIL-OPEN both ways: a measuring or reporting problem is swallowed and
+        printed - the model call still happens with the very same list, and its
+        result is returned untouched. A governor that breaks the chat is worse
+        than the overflow it prevents.
+        """
+        seq = 0
+        model = ""
+        settings = getattr(self, "_context_governor_settings", None)
+        try:
+            if settings is not None and settings.enabled:
+                schema_bytes, schema_chars = self._tool_schema_prefix_bytes()
+                model, base_url = self._llm_identity(llm)
+                seq = _context_next_seq()
+                # SNAPSHOT AND SIGNAL — no arithmetic on this thread. The
+                # meter's worker serializes the payload and pushes the gauge;
+                # the user's latency is never spent on the ring.
+                _context_measure_async(
+                    self._ask_execs_user_id,
+                    messages,
+                    label=label,
+                    # The SAME executor serves both modes: name the one this
+                    # request is really in (the ring used to say "multi-turn"
+                    # on every one-shot answer).
+                    source=("multi-turn" if get_request_state("multi_turn_enabled", True)
+                            else "one-shot"),
+                    loop_start_index=getattr(self, "_context_loop_start", 0),
+                    prefix_message_count=getattr(self, "_context_prefix_count", 1),
+                    extra_prefix_bytes=schema_bytes,
+                    extra_prefix_chars=schema_chars,
+                    config=getattr(self, "_context_config", None),
+                    settings=settings,
+                    seq=seq,
+                    model=model,
+                    base_url=base_url,
+                )
+        except Exception as _cg_err:  # noqa: BLE001 — measuring must never break a turn
+            print(f"--- [CONTEXT] measurement skipped ({_cg_err}) — nothing changed")
+        response = self._healer.invoke(llm, messages, label=label)
+        try:
+            if settings is not None and settings.enabled:
+                self._report_real_step_usage(response, seq, model, label)
+        except Exception as _cg_err:  # noqa: BLE001 — reporting must never break a turn
+            print(f"--- [CONTEXT-REAL] report skipped ({_cg_err})")
+        cut_check = getattr(self, "_check_context_cut", None)
+        if cut_check is not None:
+            cut_check(llm, messages, response, label)
+        return response
+
+    def _check_context_cut(self, llm, messages, response, label: str = "") -> None:
+        """Did Ollama CUT this request?  (Angela, 2026-10-01)
+
+        A local Ollama does not refuse an oversize request - it silently keeps
+        the tail that fits and answers from THAT.  Every step's real count is
+        judged against the characters sent (``context_governor.note_real_count``)
+        so the model's true window is learned the first time it bites.  On the
+        FIRST step of a turn nothing has executed yet, so the step is thrown
+        away and ``ContextWindowExceeded`` asks the caller to re-fit and re-send:
+        a cut request is never answered from.  Later steps keep their work and
+        are reported loudly instead.  Never raises anything else.
+        """
+        try:
+            self._fit_steps = int(getattr(self, "_fit_steps", 0) or 0) + 1
+            tactic = str(getattr(self._healer, "last_tactic", "") or "")
+            unchanged = getattr(self._healer, "UNCHANGED_REQUEST_TACTICS", frozenset())
+            if tactic and tactic not in unchanged:
+                return          # the healer sent a DIFFERENT request than this list
+            usage = _context_usage_from(response)
+            if not usage or not usage.get("prompt_tokens"):
+                return
+            model, base_url = self._llm_identity(llm)
+            schema_chars = 0
+            if llm is not None and llm is getattr(self, "bound_llm", None):
+                schema_chars = int(self._tool_schema_prefix_bytes()[1] or 0)
+            chars = _fit_message_chars(messages) + schema_chars
+            verdict = _cg.note_real_count(
+                model, base_url, usage.get("prompt_tokens"), chars,
+                source=f"live: {label or 'model step'}",
+            )
+            if not verdict.get("truncated"):
+                return
+            window = int(verdict.get("window") or 0)
+            if getattr(self, "accept_context_cut", False):
+                # The last attempt (Angela, 2026-10-02): the user's own Compact
+                # selection still does not fit - answer from what the model read
+                # and let the chat say so.
+                print(f"--- [CONTEXT-FIT] ⚠️ {model}: the request was CUT again (window {window} "
+                      "tokens) - the selection the user ticked still does not fit; answering from "
+                      "what the model could read, with a CONTEXT-WINDOW warning in the chat")
+                return
+            if self._fit_steps == 1 and not self._tool_calls_log:
+                print(f"--- [CONTEXT-FIT] {model}: the FIRST step of this turn was cut by "
+                      f"Ollama (window {window}) - discarding that answer and re-fitting")
+                # That answer is thrown away: it must not leave a warning behind.
+                _cg.clear_turn_cut(_cg.current_user())
+                raise ContextWindowExceeded(window, model)
+            print(f"--- [CONTEXT-FIT] ⚠️ {model}: step '{label}' was CUT by Ollama (window "
+                  f"{window} tokens) after tools already ran - the run continues on what "
+                  "the model could read")
+        except ContextWindowExceeded:
+            raise
+        except Exception as _cut_err:  # noqa: BLE001 — a judge must never break a turn
+            print(f"--- [CONTEXT-FIT] cut check skipped ({_cut_err})")
+
+    def _report_real_step_usage(self, response, seq: int, model: str, label: str) -> None:
+        """Hand Ollama's own counts for one main-chain step to the governor.
+
+        Paired with the measured frame ONLY when the self-healer's winning
+        tactic re-sent that exact request.  A trimmed / tool-less retry sent a
+        DIFFERENT request, so its real count is logged and totalled but never
+        pinned on a frame it does not describe.
+        """
+        usage = _context_usage_from(response)
+        if not usage:
+            print(f"--- [CONTEXT-REAL] [{label}] Ollama returned no prompt_eval_count "
+                  "for this step - the ring keeps the ESTIMATE, labelled as one")
+            return
+        user_id = self._ask_execs_user_id
+        used_model = str(usage.get("model") or model or "")
+        tactic = str(getattr(self._healer, "last_tactic", "") or "")
+        unchanged = getattr(self._healer, "UNCHANGED_REQUEST_TACTICS", frozenset())
+        if seq and (not tactic or tactic in unchanged):
+            _context_report_real(
+                user_id, seq, usage.get("prompt_tokens"), usage.get("completion_tokens"),
+                model=used_model, label=label,
+                field_name=str(usage.get("field") or "prompt_eval_count"),
+                config=getattr(self, "_context_config", None),
+            )
+        else:
+            print(f"--- [CONTEXT-REAL] [{label}] tactic '{tactic}' sent a CHANGED request: "
+                  f"prompt_eval_count={usage.get('prompt_tokens')} belongs to that "
+                  "request, not to the one measured - not paired with the ring")
+        _context_record_call(
+            usage.get("prompt_tokens"), usage.get("completion_tokens"),
+            user_id=user_id, model=used_model,
+            source=f"main chain: {label}" + (f" ({tactic})" if tactic and tactic != "normal" else ""),
+        )
+
+    def build_request_messages(
+        self,
+        input_text: str,
+        chat_history: Any,
+        planner_summary: str = "",
+    ) -> Tuple[list, int]:
+        """The exact message list the FIRST model step of a request sends.
+
+        Returns ``(messages, prefix_count)``.  PURE: it reads only the prompt
+        and its arguments and touches no per-run state, which is what lets the
+        context gauge rebuild the NEXT request while nothing is running (after
+        Clear history, Clear context, a context load...) with the very same
+        code a real message uses - one definition, so the at-rest number and
+        the live number cannot drift apart (2026-09-28).
+        """
+        messages: list = [SystemMessage(content=self.system_prompt)]
+        planner_summary = str(planner_summary or "").strip()
+        if planner_summary:
+            messages.append(SystemMessage(
+                content=(
+                    "REQUEST-SCOPED GLOBAL EXECUTION PLAN:\n"
+                    f"{planner_summary}\n\n"
+                    "Follow this planner output. Prefetch stages have already been applied before this executor runs. "
+                    "Use only the planned tool and monitor stages unless the plan is empty."
+                )
+            ))
+        prefix_count = len(messages)
+
+        def _history_content(msg: Any) -> str:
+            if isinstance(msg, BaseMessage):
+                return str(getattr(msg, "content", "") or "")
+            if isinstance(msg, dict):
+                return str(msg.get("content", "") or "")
+            return str(msg or "")
+
+        def _is_the_current_question(msg: Any) -> bool:
+            # The chat saves the question BEFORE it loads the history, so the
+            # last history message is normally the question being asked - and
+            # it must not be sent twice.  The chains may WRAP the question
+            # (system metrics, file search, loaded / retrieved context, web
+            # context) but always put it LAST, after a line break or
+            # "User Question: ".  Matching only the bare equality let every
+            # wrapped question go out twice (measured 2026-09-28: one-shot
+            # with System-Metrics on sent it as history AND as input).
+            last = _history_content(msg).strip()
+            text = str(input_text).strip()
+            if not last:
+                return False
+            if last == text:
+                return True
+            is_human = isinstance(msg, HumanMessage) or (
+                isinstance(msg, dict)
+                and str(msg.get("type") or msg.get("role") or "").lower() in {"human", "user"}
+            )
+            return is_human and (text.endswith("\n" + last)
+                                 or text.endswith("User Question: " + last))
+
+        history_items = list(chat_history)[-8:] if isinstance(chat_history, (list, tuple)) else []
+        if history_items and _is_the_current_question(history_items[-1]):
+            history_items = history_items[:-1]
+        for hist_msg in history_items:
+            if isinstance(hist_msg, ToolMessage):
+                continue
+            if isinstance(hist_msg, BaseMessage):
+                messages.append(hist_msg)
+                continue
+            if isinstance(hist_msg, dict):
+                role = str(hist_msg.get("type") or hist_msg.get("role") or "").lower()
+                content = _history_content(hist_msg)
+                if not content:
+                    continue
+                messages.append(AIMessage(content=content) if role in {"assistant", "ai"} else HumanMessage(content=content))
+                continue
+            content = _history_content(hist_msg)
+            if content:
+                messages.append(HumanMessage(content=content))
+        messages.append(HumanMessage(content=input_text))
+        return messages, prefix_count
+
+    def invoke(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        # Reset per-invocation tool call log.
+        self._tool_calls_log = []
+        # Track wrapped chat-agent calls to avoid duplicate launches.
+        self._wrapped_agent_signatures: set[str] = set()
+        # Reset Exec report state for this request; honour the per-request flag.
+        self._exec_report_enabled = bool(payload.get("exec_report_enabled", False))
+        self._exec_report_entries = []
+        # Reset per-tool call counters for this request.
+        self._tool_call_counts = {}
+        # Per (tool+args) FAILURE memory (2026-07-17): escalate corrective
+        # feedback from the 2nd identical failure, then BLOCK the call after
+        # _FAIL_BLOCK_LIMIT so no surface (agent/MCP/ext-MCP/ACPX) loops forever.
+        self._tool_fail_counts = {}
+        self._blocked_call_sigs = set()
+        self._last_failure_error = ""
+        # Reset Ask-Execs permission state for this request.
+        self._ask_execs_enabled = bool(payload.get("ask_execs_enabled", False))
+        self._ask_execs_user_id = payload.get("ask_execs_user_id")
+        self._exec_denied = None
+        self._pending_denial_detail = None
+        # ── This run's CANCELLATION IDENTITY (Angela, 2026-07-14) ──
+        # MUST be reset on every invoke(): executor instances are CACHED and reused
+        # across requests (_get_executor_for_tools), so a stale epoch from a previous
+        # (cancelled) request would make a brand-new run think it was cancelled.
+        # ``ask_execs_user_id`` is the conversation user id (always forwarded, even
+        # when Ask-Execs is off) and is the key the epoch latch is stored under.
+        self._run_user_id = payload.get("ask_execs_user_id")
+        self._run_epoch = payload.get("cancel_run_epoch")
+
+        # -- Live-terminal honesty rails (terminal_guard.py, 2026-10-21) --
+        # Reset per request (executors are cached). The mode is read from the user's own words:
+        # "show me the commands, I will execute them" blocks every command runner and makes
+        # Terminater type without pressing Enter, until the user says Tlamatini may run them.
+        self._terminal_ledger = []
+        self._claim_nudged = False
+        self._claim_problems = []
+        self._request_input_text = str(payload.get("input", "") or "")
+        self._tutorial_mode = terminal_guard.observe(
+            self._run_user_id, self._request_input_text, payload.get("chat_history"))
+        if self._tutorial_mode.user_runs and terminal_guard.enabled():
+            print(
+                f"--- [TERMINAL-GUARD] live-tutorial mode ON ({self._tutorial_mode.phrase!r}): command "
+                "runners are blocked and Terminater only types - the user presses Enter"
+            )
+
+        # ── Context governor (measurement only) per-request state ──
+        # Resolved ONCE per request: executor instances are cached and reused,
+        # so these must be reset here like every other per-run field above.
+        try:
+            self._context_config = _load_config()
+        except Exception:  # noqa: BLE001 — never block a request on a config read
+            self._context_config = {}
+        self._context_governor_settings = _context_settings(self._context_config)
+        self._context_schema_bytes = None   # recomputed for this run's tool list
+        self._context_prefix_count = 1      # system prompt (+ planner, set below)
+        self._context_loop_start = 0        # set just before the tool loop opens
+        self._fit_steps = 0                 # model steps judged for an Ollama cut (2026-10-01)
+
+        # ── Self-healing model-step invoker (Angela, 2026-07-06 REDESIGN) ──
+        # EVERY model call in this loop is routed through the healer so a
+        # transient network blip is retried / re-strategized and ANNOUNCED to
+        # the user live, and a run that already did real work is finished
+        # gracefully (never discarded, never a lying "no tools ran"). Reset per
+        # request because executor instances are cached and reused.
+        self._healer = SelfHealingInvoker(
+            user_id=self._ask_execs_user_id,
+            # The healer's tactic ladder is what used to run forever after a Cancel.
+            # Give it THIS run's cancellation identity so a Cancel latches it dead.
+            run_user_id=self._run_user_id,
+            run_epoch=self._run_epoch,
+            plain_llm=self.llm,
+            # She keeps trying distinct tactics up to her full turn budget and
+            # never gives up on her own — only the USER (Cancel) stops her.
+            max_attempts=get_int_config_value(
+                "unified_agent_llm_step_max_tactics", 4096, minimum=1
+            ),
+            # Per-attempt watchdog: a call that does not answer in this many
+            # seconds is ABANDONED (never waited on) so she never hangs.
+            attempt_timeout=float(get_int_config_value(
+                "unified_agent_llm_step_timeout_seconds", 80, minimum=15
+            )),
+        )
+
+        input_text = payload.get("input", "")
+        # ── Completion-notification ("notification debt") guard state ──
+        # If the request asked to be notified ON COMPLETION (telegram/email/...),
+        # the loop must not finish until a notification tool has actually been
+        # called. Enforced in the final-answer branch below.
+        self._completion_notification_due = _detect_completion_notification_request(input_text)
+        self._notification_tools_called: set[str] = set()
+        self._notification_nudged = False
+        self._stashed_final_answer = ""
+        chat_history = payload.get("chat_history", []) or []
+        planner_summary = str(payload.get("planner_summary", "") or "").strip()
+        messages, prefix_count = self.build_request_messages(
+            input_text, chat_history, planner_summary
+        )
+        # Everything before ``prefix_count`` is the STATIC PREFIX bucket: the
+        # system prompt, plus the planner's system message when there is one.
+        # The bound tool schemas belong to it too but live outside this list,
+        # so they are added by ``_tool_schema_prefix_bytes()``.
+        self._context_prefix_count = prefix_count
+
+        if not self.tools:
+            try:
+                response = self._model_step(self.llm, messages, label="respondiendo")
+            except ModelStepUnrecoverable as _step:
+                if _step.reason == "user_cancelled":
+                    return self._cancelled_result(messages)
+                return self._build_result_dict(
+                    "⚠️ No pude comunicarme con el modelo para esta solicitud después de probar todas "
+                    f"las tácticas de recuperación ({_step.reason}). No se eligió ningún tool para esta "
+                    "solicitud, así que no se ejecutó nada. Vuelve a intentarlo."
+                )
+            answer = getattr(response, "content", "") or ""
+            if not str(answer).strip():
+                answer = "El planner no eligió ningún tool para esta solicitud y el modelo devolvió una respuesta vacía."
+            return self._build_result_dict(str(answer))
+
+        # --- Repetition tracking state ---
+        last_signature: str | None = None
+        repeat_count: int = 0
+
+        # Everything appended from here on is appended BY THE LOOP — the hot
+        # bucket, the one that grows without limit (a model reply plus a FULL
+        # tool result per turn, re-sent on every turn that follows). The
+        # governor reports it separately from prefix and history precisely so
+        # a day of real use can show whether it really is the leak.
+        self._context_loop_start = len(messages)
+
+        for iteration in range(self.max_iterations):
+            # ── Cancel guard: BETWEEN model steps ──
+            # Stop before spending another model call. Returns (never raises) so the
+            # Exec report + Create-Flow log survive. (Angela, 2026-07-14)
+            if self._run_cancelled():
+                return self._cancelled_result(messages)
+            try:
+                response = self._model_step(
+                    self.bound_llm, messages, label=f"trabajando en el paso {iteration + 1}"
+                )
+            except ModelStepUnrecoverable as _step:
+                # The model step could not be reached — either the USER cancelled,
+                # or every distinct recovery tactic was exhausted. NEVER discard
+                # the run: if any agent already ran, finish GRACEFULLY from that
+                # real work so the Create Flow button + Exec report survive and the
+                # answer is TRUTHFUL. Only when nothing ran yet do we surface it to
+                # the chain (a pure-Q&A with no work to preserve).
+                # A USER CANCEL always RETURNS — never `raise`, even with zero tool
+                # calls. A raise lands in unified.py's fallback, which fires ANOTHER
+                # uncancellable LLM call and tells the user "the tool-calling backend
+                # is currently unavailable (transient network error)" — a lie, and one
+                # more chance for the dead run to talk to the browser. (2026-07-14)
+                if _step.reason == "user_cancelled":
+                    return self._cancelled_result(messages)
+                if self._tool_calls_log or self._exec_report_entries:
+                    print(
+                        "--- MultiTurnToolAgentExecutor: model step unreachable "
+                        f"({_step.reason}) after {_step.attempts} tactic(s); finishing "
+                        f"gracefully from {len(self._tool_calls_log)} tool call(s) already "
+                        "done (run NOT discarded) ---"
+                    )
+                    return self._build_result_dict(
+                        self._degraded_answer_from_results(messages, _step)
+                    )
+                raise
+            messages.append(response)
+            tool_calls = getattr(response, "tool_calls", None) or []
+
+            # ── LOCAL-MODEL TOOL-CALL RECOVERY (2026-08-08) ──────────────────
+            # Small local models (qwen2.5-coder:7b, llama3.x:8b, ...) often write
+            # the tool call as PLAIN TEXT in .content instead of the structured
+            # tool_calls field. Without this, the executor saw "no tool calls" and
+            # shipped that raw JSON to the user as the final answer — the live
+            # symptom Angela hit: asking "What is the current time now?" produced
+            # the literal text {"name": "current_time", "arguments": {}}.
+            # CLOUD-SAFE BY CONSTRUCTION: this only runs when tool_calls is EMPTY,
+            # and a cloud model always populates it, so the branch is never reached
+            # for one. See agent/local_toolcall_parser.py for the strict guards.
+            _recovered = []
+            if not tool_calls:
+                _recovered = extract_text_tool_calls(
+                    getattr(response, "content", ""),
+                    self._bound_tool_names(),
+                    model_name=getattr(self.llm, "model", None),
+                )
+                if _recovered:
+                    tool_calls = _recovered
+                    # Patch the calls back onto the AIMessage already appended
+                    # above, so the ToolMessages that follow reference a real
+                    # tool_use. Without this the transcript is schema-invalid
+                    # and a strict provider 400s on the NEXT turn.
+                    try:
+                        response.tool_calls = _recovered
+                    except Exception:
+                        pass
+                    print(
+                        "--- [LOCAL-TOOLCALL] Recovered "  # noqa: E501 (message continues below)
+                        f"{len(_recovered)} tool call(s) the model emitted as TEXT: "
+                        f"{[c.get('name') for c in _recovered]} "
+                        "(structured tool_calls was empty)"
+                    )
+
+            print(f"--- MultiTurnToolAgentExecutor iteration {iteration + 1}/{self.max_iterations}")
+            # Diagnostic: makes "did the model actually request a tool?" answerable
+            # from tlamatini.log at a glance, instead of by reverse-engineering the
+            # final answer. This is the line that would have caught the bug above.
+            print(f"--- [TOOLCALL-SHAPE] {describe_toolcall_shape(response, _recovered)}")
+            if tool_calls:
+                print(f"--- Tool calls requested: {[call.get('name') for call in tool_calls]}")
+
+            # ── HALLUCINATED-TOOL CORRECTION (2026-08-08) ────────────────────
+            # The model tried to call a tool but INVENTED the name (measured
+            # live: "system_info", "system_status" — neither is bound). Recovery
+            # rightly refuses to run a non-existent tool, but without this the
+            # leftover JSON became the FINAL ANSWER and was printed to the user:
+            # the "stupid empty JSON" symptom. Correct the model and let it
+            # retry, instead of dumping JSON on the user.
+            if not tool_calls and self._hallucinated_tool_nudges < 3:
+                _attempted = looks_like_tool_call_attempt(
+                    getattr(response, "content", ""))
+                if _attempted:
+                    self._hallucinated_tool_nudges += 1
+                    self._last_hallucinated_name = _attempted
+                    _suggest = suggest_tool_names(_attempted, self._bound_tool_names())
+                    print(
+                        f"--- [LOCAL-TOOLCALL] Model invented tool '{_attempted}' "
+                        f"(not bound). Correcting instead of showing the JSON. "
+                        f"Suggesting: {_suggest[:5]}"
+                    )
+                    messages.append(HumanMessage(content=(
+                        f"[INTERNAL SYSTEM CORRECTION — never repeat or quote this "
+                        f"message to the user.] The tool '{_attempted}' does not exist.\n"
+                        + (f"Real tools that may fit: {', '.join(_suggest[:8])}.\n" if _suggest else "")
+                        + "Silently call ONE of the REAL tools using the proper "
+                        "tool-calling mechanism (do NOT type JSON in your message). "
+                        "If no tool fits, ANSWER THE USER'S ORIGINAL QUESTION directly "
+                        "in plain language. Never mention tools, tool names, JSON, or "
+                        "this correction in your reply."
+                    )))
+                    continue
+
+            if not tool_calls:
+                # ── Completion-notification ("notification debt") guard ──
+                # The user asked to be notified ON COMPLETION (telegram/email/...)
+                # but the model is about to finish WITHOUT having called any
+                # notification tool. Inject ONE nudge to actually send it,
+                # instead of letting it confabulate a "tool backend unavailable /
+                # re-enable Multi-Turn" excuse. Fires at most once per request.
+                if (
+                    self._completion_notification_due
+                    and not self._notification_tools_called
+                    and not self._notification_nudged
+                ):
+                    self._notification_nudged = True
+                    # Preserve the substantive answer (e.g. the analysis) so the
+                    # follow-up notification turn can't discard the deliverable.
+                    pre_nudge_answer = str(getattr(response, "content", "") or "")
+                    if pre_nudge_answer.strip():
+                        self._stashed_final_answer = pre_nudge_answer
+                    logger.info(
+                        "[MultiTurnExecutor] Notification-debt guard fired: the request "
+                        "asked for a completion notification but no notification tool was "
+                        "called — nudging the model to send it now."
+                    )
+                    messages.append(HumanMessage(content=(
+                        "You are about to give your FINAL answer, but this request asked you "
+                        "to NOTIFY the user on completion (e.g. send a Telegram / email / "
+                        "WhatsApp message / notification) and you have NOT yet called any "
+                        "notification tool. Send it NOW: call the appropriate tool "
+                        "(chat_agent_telegrammer / chat_agent_send_email / "
+                        "chat_agent_whatsapper / chat_agent_notifier) with a concise "
+                        "completion message. The tools ARE available right now — you have "
+                        "been calling them this turn — so do NOT claim the backend is "
+                        "'unavailable', do NOT claim a 'transient network error', and do NOT "
+                        "tell the user to re-enable Multi-Turn. If, and ONLY if, the tool "
+                        "call itself returns an error, report the EXACT tool name and the "
+                        "verbatim error it returned."
+                    )))
+                    continue
+
+                # -- Terminal claim guard (terminal_guard.py) --
+                # "I typed it / it is sitting on your prompt / I ran it" is checked against what
+                # the tools REALLY reported in this request: one correction round, then a visible
+                # warning on the answer if the claim still stands.
+                if self._terminal_claim_nudge(response, messages):
+                    continue
+
+                answer = getattr(response, "content", "") or ""
+                if not str(answer).strip():
+                    # The model finished tool-calling but returned empty content.
+                    # Nudge it once to produce a summary from the collected tool results.
+                    print("--- MultiTurnToolAgentExecutor: empty final response, nudging model to summarize ---")
+                    # response already appended at line 211 — just add the nudge
+                    messages.append(HumanMessage(content=(
+                        "You have finished executing tools but returned an empty response. "
+                        "Please now provide your final answer summarizing what you did and "
+                        "the results you obtained. Do NOT call any more tools."
+                    )))
+                    try:
+                        retry_response = self._model_step(
+                            self.bound_llm, messages, label="resumiendo los resultados"
+                        )
+                    except ModelStepUnrecoverable as _step:
+                        # Do NOT swallow a user cancel here — the old code set
+                        # retry_response = None and carried on fabricating an answer
+                        # for a run the user had already stopped. (2026-07-14)
+                        if _step.reason == "user_cancelled" or self._run_cancelled():
+                            return self._cancelled_result(messages)
+                        retry_response = None
+                    if retry_response is not None:
+                        answer = getattr(retry_response, "content", "") or ""
+                        retry_tool_calls = getattr(retry_response, "tool_calls", None) or []
+                    else:
+                        answer = ""
+                        retry_tool_calls = []
+                    if not str(answer).strip() or retry_tool_calls:
+                        # Nudge failed — collect last real tool results as fallback answer.
+                        print("--- MultiTurnToolAgentExecutor: nudge failed, collecting tool results as fallback ---")
+                        last_real_results = []
+                        for msg in reversed(messages):
+                            if isinstance(msg, ToolMessage) and "[REPETITION BREAKER]" not in msg.content:
+                                last_real_results.append(msg.content)
+                                if len(last_real_results) >= 5:
+                                    break
+                        if last_real_results:
+                            answer = (
+                                "Estos son los resultados de las llamadas a tools que se ejecutaron:\n\n"
+                                + "\n---\n".join(reversed(last_real_results))
+                            )
+                        else:
+                            answer = "El modelo de tool calling devolvió una respuesta final vacía."
+                # The stashed deliverable (if any) is folded back in CENTRALLY by
+                # _build_result_dict, so EVERY terminal exit path preserves it —
+                # not just this clean-finish return (the repetition-breaker,
+                # iteration-limit and degraded paths dropped it). (2026-07-11 audit #3)
+                return self._build_result_dict(str(answer))
+
+            # --- Repetition detection ---
+            # An empty signature means every tool in this turn is in
+            # ``_TOOL_QUOTA_EXEMPT`` (polling / management). Skip the
+            # repetition check entirely for that turn — polling a running
+            # child is the whole point of those tools.
+            sig = self._call_signature(tool_calls)
+            if sig == "":
+                # Reset the counter so a real tool call coming after a
+                # polling burst can still be detected as repeating.
+                last_signature = None
+                repeat_count = 0
+            elif sig == last_signature:
+                repeat_count += 1
+            else:
+                last_signature = sig
+                repeat_count = 1
+
+            if repeat_count >= self._REPEAT_LIMIT:
+                # Give the LLM one chance to wrap up by injecting a
+                # nudge message instead of executing the duplicate calls.
+                tool_names = [c.get("name") for c in tool_calls]
+                print(
+                    f"--- Repetition breaker activated: '{tool_names}' "
+                    f"called {repeat_count} times with identical args. "
+                    "Injecting stop nudge."
+                )
+                # Append synthetic ToolMessage results so the message
+                # list stays schema-valid, then add a nudge.
+                for tool_call in tool_calls:
+                    messages.append(
+                        ToolMessage(
+                            tool_call_id=tool_call.get("id", ""),
+                            name=tool_call.get("name", ""),
+                            content=(
+                                "[REPETITION BREAKER] This exact tool call with identical "
+                                "parameters has already been executed and its output was "
+                                "returned in a previous iteration. Repeating it will not "
+                                "produce new information. You MUST now produce your final "
+                                "answer based on the results you already have. Do NOT call "
+                                "any more tools."
+                            ),
+                        )
+                    )
+                # Give the model one more chance to produce a final answer.
+                try:
+                    final_response = self._model_step(
+                        self.bound_llm, messages, label="terminando"
+                    )
+                except ModelStepUnrecoverable as _step:
+                    # Same as the nudge path above: a user cancel must STOP the run,
+                    # not be swallowed into a fabricated wrap-up. (2026-07-14)
+                    if _step.reason == "user_cancelled" or self._run_cancelled():
+                        return self._cancelled_result(messages)
+                    final_response = None
+                if final_response is not None:
+                    answer = getattr(final_response, "content", "") or ""
+                    final_tool_calls = getattr(final_response, "tool_calls", None) or []
+                else:
+                    answer = ""
+                    final_tool_calls = []
+                if final_tool_calls:
+                    # Model still insists on calling tools — force-stop.
+                    print("--- Repetition breaker: model still requesting tools after nudge. Force-stopping.")
+                    if not str(answer).strip():
+                        # Collect the last real tool result to include in the answer.
+                        last_real_results = []
+                        for msg in reversed(messages):
+                            if isinstance(msg, ToolMessage) and "[REPETITION BREAKER]" not in msg.content:
+                                last_real_results.append(msg.content)
+                                if len(last_real_results) >= 3:
+                                    break
+                        _last_err = (self._last_failure_error or "").strip()
+                        if _last_err:
+                            answer = (
+                                "No pude terminar esta solicitud. Un tool siguió dando el "
+                                "mismo error y repetirlo no iba a servir, así que me detuve en lugar "
+                                "de quedarme en un ciclo. El error fue:\n\n" + _last_err + "\n\n"
+                                "Lo que puedes intentar: reformular la solicitud, ajustar los valores "
+                                "involucrados o revisar la configuración del tool o de la app de destino. "
+                                "Los últimos resultados en bruto de los tools, como referencia:\n\n"
+                                + "\n---\n".join(reversed(last_real_results))
+                            )
+                        else:
+                            answer = (
+                                "Me detuve porque el modelo siguió repitiendo la misma llamada a un tool "
+                                "sin avanzar. Estos son los últimos resultados de los tools:\n\n"
+                                + "\n---\n".join(reversed(last_real_results))
+                            )
+                return self._build_result_dict(str(answer))
+
+            # --- Normal tool execution ---
+            for tool_call in tool_calls:
+                # ── Cancel guard: BEFORE each tool in this turn ──
+                # A turn can request several tools; a Cancel must stop the ones that
+                # have not started yet instead of grinding through all of them.
+                if self._run_cancelled():
+                    return self._cancelled_result(messages)
+                tool_name = tool_call.get("name", "")
+                # Mark that the model has attempted the requested completion
+                # notification so the notification-debt guard above stays quiet.
+                if tool_name in _NOTIFICATION_TOOLS:
+                    self._notification_tools_called.add(tool_name)
+                # LIVE-TUTORIAL MODE (terminal_guard.py): the user said THEY run the commands, so
+                # no general command runner may run. Refused BEFORE the dedup memory and the
+                # quota, so lifting the mode later lets the very same call through.
+                _runner_refusal = terminal_guard.runner_block(tool_name, self._tutorial_mode)
+                if _runner_refusal:
+                    print(f"--- [TERMINAL-GUARD] '{tool_name}' NOT run: live-tutorial mode")
+                    messages.append(ToolMessage(
+                        tool_call_id=tool_call.get("id", ""),
+                        name=tool_name,
+                        content=_runner_refusal,
+                    ))
+                    self._record_refused_call(tool_call, "NOT run - live-tutorial mode")
+                    continue
+                # Dedup: skip duplicate wrapped chat-agent calls with identical args.
+                # Terminater is exempt: reading the same screen twice is how a tutorial waits.
+                if (tool_name.startswith("chat_agent_") and tool_name not in _MANAGEMENT_TOOLS
+                        and tool_name != terminal_guard.TERMINATER_TOOL):
+                    dedup_sig = f"{tool_name}:{json.dumps(tool_call.get('args', {}), sort_keys=True, ensure_ascii=False)}"
+                    if dedup_sig in self._wrapped_agent_signatures:
+                        logger.info(
+                            "[MultiTurnExecutor] DEDUP: skipping duplicate wrapped-agent call: %s",
+                            tool_name,
+                        )
+                        messages.append(
+                            ToolMessage(
+                                tool_call_id=tool_call.get("id", ""),
+                                name=tool_name,
+                                content=json.dumps({
+                                    "status": "skipped",
+                                    "message": (
+                                        f"This exact '{tool_name}' call with identical parameters "
+                                        "was already executed earlier in this session. "
+                                        "Use the results from the previous execution."
+                                    ),
+                                }),
+                            )
+                        )
+                        continue
+                    self._wrapped_agent_signatures.add(dedup_sig)
+
+                # Per-tool quota: hard-stop after HARD cap, warn after SOFT cap.
+                prior_count = self._tool_call_counts.get(tool_name, 0)
+                if tool_name not in self._TOOL_QUOTA_EXEMPT:
+                    if prior_count >= self._TOOL_QUOTA_HARD_STOP:
+                        logger.info(
+                            "[MultiTurnExecutor] QUOTA HARD-STOP for tool=%s count=%d",
+                            tool_name, prior_count,
+                        )
+                        messages.append(
+                            ToolMessage(
+                                tool_call_id=tool_call.get("id", ""),
+                                name=tool_name,
+                                content=json.dumps({
+                                    "status": "skipped",
+                                    "message": (
+                                        f"[QUOTA HARD-STOP] You have invoked '{tool_name}' "
+                                        f"{prior_count} times in this request — the per-tool cap "
+                                        f"is {self._TOOL_QUOTA_HARD_STOP}. No further calls to "
+                                        f"'{tool_name}' will be executed this turn. "
+                                        "Produce your FINAL answer summarizing what has been "
+                                        "accomplished so far. Do NOT call any more tools."
+                                    ),
+                                }),
+                            )
+                        )
+                        # Record the attempt in the log so Create-Flow / Exec Report
+                        # can still see that the LLM tried (with success=False).
+                        display_name = _tool_name_to_agent_display(tool_name)
+                        if display_name is not None:
+                            self._tool_calls_log.append({
+                                "tool_name": tool_name,
+                                "args": dict(tool_call.get("args", {}) or {}),
+                                "success": False,
+                                "agent_display_name": display_name,
+                            })
+                        continue
+                    if prior_count + 1 == self._TOOL_QUOTA_SOFT_WARN:
+                        hint = self._TOOL_ALTERNATIVE_HINT.get(
+                            tool_name,
+                            f"You have invoked '{tool_name}' {self._TOOL_QUOTA_SOFT_WARN} times "
+                            "in this request. If the task is complete, produce your final answer; "
+                            "otherwise consider whether a specialized tool would finish faster.",
+                        )
+                        # Attach the hint to the tool result below so the LLM
+                        # sees it alongside the actual output (non-blocking).
+                        soft_warn_hint = hint
+                    else:
+                        soft_warn_hint = None
+                else:
+                    soft_warn_hint = None
+                self._tool_call_counts[tool_name] = prior_count + 1
+
+                # ── Ask-Execs permission gate ──
+                # When enabled, block on the browser's Proceed/Deny choice
+                # BEFORE the tool runs. A denial halts the entire chain: we
+                # record what was denied (for the red banner) and finalize
+                # immediately, so no further tools in this or later turns run.
+                if self._ask_execs_enabled and self._requires_exec_permission(tool_name, tool_call.get("args")):
+                    decision = self._request_exec_permission(tool_call)
+                    if decision != "proceed":
+                        # A CANCEL also unblocks this prompt as "deny" (that is the
+                        # fail-safe). But the user CANCELLED — she did not DENY. Without
+                        # this check the run is reported (and PERSISTED to chat history)
+                        # as "⛔ Execution interrupted. You denied the Tool …", which is a
+                        # lie: it names a decision she never made. Truthful cancel answer
+                        # instead. (Angela, 2026-07-14 — she hit this live.)
+                        if self._run_cancelled():
+                            return self._cancelled_result(messages)
+                        self._record_exec_denial(tool_call)
+                        denied = self._exec_denied or {}
+                        denied_kind = denied.get("kind", "Tool")
+                        denied_name = denied.get("agent_display") or tool_name
+                        denied_cmd = denied.get("command", "")
+                        answer = (
+                            f"⛔ Ejecución interrumpida. Denegaste que el {denied_kind} "
+                            f"\"{denied_name}\" se ejecutara"
+                            + (f": {denied_cmd}" if denied_cmd else "")
+                            + ". El chain de Multi-Turn se detuvo en este paso y no se "
+                            "ejecutaron más tools."
+                        )
+                        return self._build_result_dict(answer)
+
+                # ── Cancel guard: the LAST gate before the tool actually runs ──
+                # NOT redundant with the one at the top of this loop: the Ask-Execs
+                # gate above BLOCKS on a browser round-trip, and the previous tool may
+                # have run for minutes (a firmware build), so the user may well have
+                # cancelled while we were parked between the two checks.
+                if self._run_cancelled():
+                    return self._cancelled_result(messages)
+
+                # -- Self-correction gate: a call that already failed identically
+                # too many times is BLOCKED so no surface can loop forever --
+                _fail_sig = tool_name + ":" + json.dumps(
+                    tool_call.get("args", {}) or {}, sort_keys=True, ensure_ascii=False)
+                if _fail_sig in self._blocked_call_sigs:
+                    messages.append(ToolMessage(
+                        tool_call_id=tool_call.get("id", ""),
+                        name=tool_name,
+                        content=(
+                            "[BLOCKED] '" + tool_name + "' with these exact arguments has "
+                            "already FAILED " + str(self._tool_fail_counts.get(_fail_sig, 0))
+                            + " times (last error: " + (self._last_failure_error or "see above")
+                            + "). It is now blocked. Do NOT call it again with the same "
+                            "arguments - CHANGE the arguments to fix the error, use a DIFFERENT "
+                            "tool, or STOP and tell the user plainly what failed and what to try."
+                        ),
+                    ))
+                    continue
+
+                tool_result = self._invoke_tool(tool_call)
+
+                # -- Classify the result + escalate on a REPEATED failure --
+                _failed, _err = self._result_is_failure(tool_result)
+                if _failed:
+                    self._tool_fail_counts[_fail_sig] = self._tool_fail_counts.get(_fail_sig, 0) + 1
+                    _n = self._tool_fail_counts[_fail_sig]
+                    self._last_failure_error = (_err or "").strip()[:300]
+                    if _n >= self._FAIL_BLOCK_LIMIT:
+                        self._blocked_call_sigs.add(_fail_sig)
+                    if _n >= 2:
+                        tool_result = (
+                            "[REPEATED FAILURE - attempt " + str(_n) + "] This exact '"
+                            + tool_name + "' call has now FAILED " + str(_n) + " times with the "
+                            "same error. Repeating identical arguments will keep failing. You MUST "
+                            "change your approach: (1) FIX the arguments (read the error carefully "
+                            "- a type/cast/shape mismatch means the value you passed is the wrong "
+                            "type or form), (2) or use a DIFFERENT tool, (3) or STOP and tell the "
+                            "user plainly what failed and suggest a next step. "
+                            + ("This call is now BLOCKED. " if _n >= self._FAIL_BLOCK_LIMIT else "")
+                            + "\n\n--- tool error ---\n" + tool_result
+                        )
+
+                if soft_warn_hint:
+                    tool_result = (
+                        tool_result
+                        + "\n\n[PLANNER HINT] "
+                        + soft_warn_hint
+                    )
+                messages.append(
+                    ToolMessage(
+                        tool_call_id=tool_call.get("id", ""),
+                        name=tool_name,
+                        # A compact request carries a window-sized cap (the
+                        # fitter sets it); a full one keeps the configured cap.
+                        content=_cap_tool_message_content(
+                            tool_result, getattr(self, "fit_tool_output_cap", None), tool_name=tool_name),
+                    )
+                )
+
+        return self._build_result_dict(
+            "El loop de tool calling llegó a su límite de iteraciones antes de dar una respuesta final. "
+            "Pide un resumen del último estado de los tools o afina la solicitud."
+        )
+
+    def _merge_stashed_final_answer(self, answer: str) -> str:
+        """Fold a deferred deliverable back into the FINAL answer, on EVERY path.
+
+        The notification-debt guard stashes the substantive answer and continues
+        the loop so the requested completion notification is sent first. Whatever
+        path the run then exits by — clean finish, repetition-breaker,
+        iteration-limit, or degraded/unrecoverable — the deferred deliverable
+        must survive. Success-aware: if the notification SUCCEEDED prefer the
+        (longer) stashed deliverable; if it FAILED keep the honest failure report
+        visible and append the deliverable below it. Idempotent — a stash already
+        present in ``answer`` is not re-appended. (2026-07-11 audit #3)
+        """
+        stash = (self._stashed_final_answer or "").strip()
+        if not stash:
+            return str(answer)
+        answer_str = str(answer)
+        if stash in answer_str:
+            return answer_str  # already folded in (defensive; only one exit fires)
+        notification_ok = any(
+            entry.get("tool_name") in _NOTIFICATION_TOOLS and entry.get("success")
+            for entry in self._tool_calls_log
+        )
+        if notification_ok:
+            if len(stash) > len(answer_str.strip()):
+                return self._stashed_final_answer
+            return answer_str
+        return answer_str.rstrip() + "\n\n---\n\n" + self._stashed_final_answer
+
+    def _build_result_dict(self, answer: str) -> Dict[str, Any]:
+        """Assemble the final executor return dict. ``exec_report_entries``
+        is always populated from the captured state-changing tool calls;
+        the chain above gates rendering on ``exec_report_enabled``. Emitting
+        the entries unconditionally prevents a whitelist-style bug from ever
+        silently hiding the data again.
+        """
+        # Fold a deferred deliverable (stashed before the completion-notification
+        # nudge) back into the FINAL answer on EVERY terminal exit path — not just
+        # the clean-finish return, which was the only path that restored it.
+        # (2026-07-11 audit #3)
+        answer = self._merge_stashed_final_answer(answer)
+        # LAST LINE OF DEFENCE: strip internal plumbing text (e.g. a parroted
+        # "there is no tool named X" correction) before it can reach the user.
+        # Every terminal exit path funnels through here, so this cannot be
+        # bypassed by a new return added later.
+        answer = self._sanitize_user_facing_answer(answer)
+        # An unsupported "I typed it / I ran it" claim that survived its correction round is
+        # flagged on the answer itself, so the user checks the terminal before acting on it.
+        if getattr(self, "_claim_problems", None):
+            answer = str(answer) + terminal_guard.banner_text(self._claim_problems)
+        # Drop into global_state so the WebSocket consumer can surface
+        # surviving orphan PIDs as a follow-up chat message after it
+        # broadcasts the main answer. The list is small (usually empty)
+        # but bypassing the result_dict/chain whitelist gauntlet keeps
+        # the contract robust against future payload-rebuild drops.
+        try:
+            # Keyed by THIS request's user id (like last_request_meta) so a
+            # concurrent request (another tab / TeleTlamatini / a different user)
+            # can never read OUR survivor list — or clear it before we do. The id
+            # is always forwarded as ask_execs_user_id (== the conversation user
+            # id), so writer and consumer agree on the slot. (2026-07-12 audit [3])
+            global_state.set_state(
+                f"last_orphan_survivors::{self._ask_execs_user_id}",
+                list(self._orphan_survivors),
+            )
+        except Exception:  # noqa: BLE001 — never block the answer path
+            pass
+        # Prepend the self-healing recovery note (if any) so the FINAL, persisted
+        # answer ALWAYS tells the user what Tlamatini went through — never silent,
+        # never dishonest. Covers every exit path since they all funnel here.
+        healer = getattr(self, "_healer", None)
+        if healer is not None and getattr(healer, "recovery_events", None):
+            answer = recovery_preamble(healer.recovery_events) + str(answer)
+        result: Dict[str, Any] = {
+            "output": answer,
+            "tool_calls_log": list(self._tool_calls_log),
+            "exec_report_enabled": bool(self._exec_report_enabled),
+            "exec_report_entries": list(self._exec_report_entries),
+            "orphan_survivors": list(self._orphan_survivors),
+        }
+        # When the user denied a tool under Ask Execs, carry the denial detail
+        # up so the consumer can render the red "Execution interrupted" banner.
+        # This is independent of exec_report_enabled — the banner always shows.
+        if self._exec_denied:
+            result["exec_report_denied"] = dict(self._exec_denied)
+        return result
+
+
+# Wrapped chat-agent tools whose presence means the firmware/engine "scaffold
+# projects under your Templates directory" rule (prompt.pmt Rule 16) is relevant
+# for the request. When none are bound the whole Templates rule block is dropped.
+_FIRMWARE_TEMPLATE_TOOL_NAMES = frozenset({
+    "chat_agent_stm32er",
+    "chat_agent_esp32er",
+    "chat_agent_esphomer",
+    "chat_agent_arduiner",
+    "chat_agent_unrealer",
+    "chat_agent_blenderer",
+})
+
+
+_STEP_BY_STEP_SYSTEM_GUIDANCE = """
+**STEP-BY-STEP MODE**:
+- The user explicitly asked for paced setup or troubleshooting. Do exactly one concrete step at a time, then stop and wait for the user's requested short reply, READY, screenshot, log, or command output before continuing.
+- Treat the user's next short reply as the answer to your previous Step-by-Step checkpoint. A bare username, DONE, ERROR, NOWINDOW, yes/no, path, or pasted output is continuation state, not a brand-new unrelated request.
+- Keep each step short enough for a non-expert to perform. Include the exact command, menu path, file path, or click target for that one step.
+- For new or unknown MCP setup, call `external_mcp_doctor` first. If it reports source/docs/repository URLs, investigate those through Crawler/Googler only when the next step is unclear.
+- To ADD an MCP the user names or pastes (e.g. "add the redis MCP"), call `external_mcp_import` with its JSON config, then `external_mcp_set_active` to connect it, then `external_mcp_wait('<key>', 120)` to BLOCK until it is ready (a first-run Docker image pull or npx/uvx download is slow — do NOT poll external_mcp_status in a loop and give up; wait, and if it times out call external_mcp_wait again with a bigger timeout). Do this YOURSELF with these tools — never claim you lack a file-writing/shell tool and never push the user to the dialog.
+- For MCP setup, inspect `external_mcp_status`; if tools are missing or a server is large, use `external_mcp_list_tools` before saying a tool is unavailable.
+- For any External MCP tool not directly selected, use `external_mcp_call` with the raw tool name discovered from `external_mcp_list_tools`.
+- Diagnose in layers: config JSON, required runtime (Docker/node/npx/uvx/python), process spawn, transport, initialize, tools/list, schema, then a small safe read/write test when appropriate.
+- Never dump a whole installation plan at once unless the user asks for the full plan. In normal Step-by-Step mode, end with a clear READY checkpoint.
+"""
+
+
+def _build_system_prompt(preeliminary_prompt: str, tools, step_by_step_enabled: bool = False,
+                         self_knowledge: Optional[bool] = None) -> str:
+    import platform
+    import sys as _sys
+    # Lazy import (avoids any rag<->mcp_agent import-cycle at module load).
+    from .rag.config import apply_conditional_rule_blocks, apply_self_modify_switch, self_modify_on
+
+    # The Self-modify switch (Angela, 2026-10-03): Tlamatini's self-knowledge
+    # is sent only while it is ON.  None = read the switch; the fitter passes
+    # its own verdict (the model must also be able to hold it).
+    if self_knowledge is None:
+        self_knowledge = self_modify_on()
+    preeliminary_prompt = apply_self_modify_switch(preeliminary_prompt, bool(self_knowledge))
+
+    # Keep the per-tool system-prompt list to ONE short line each. The model
+    # ALREADY receives every tool's full name / description / parameters through
+    # bind_tools() (the API ``tools`` field) — repeating the full multi-line
+    # descriptions here is pure duplication that, with the entire tool surface
+    # bound in Multi-Turn, costs ~5k redundant tokens EVERY turn. One short line
+    # keeps the model oriented while the real schema travels through bind_tools.
+    def _one_line(text: str) -> str:
+        flat = " ".join(str(text or "").split())
+        if not flat:
+            return ""
+        dot = flat.find(". ")
+        if 0 < dot <= 96:
+            return flat[: dot + 1]
+        return (flat[:108].rstrip() + "…") if len(flat) > 110 else flat
+
+    tool_descriptions = "\n".join(
+        f"- {tool.name}: {_one_line(tool.description)}" for tool in tools
+    )
+
+    # Inject the feature-gated rule blocks (ACPX mechanics → Rule 12, Templates
+    # directory → Rule 16) ONLY when their tool surface is actually bound for
+    # this request. With ACPX disabled, filter_acpx_tools has already stripped
+    # every acp_*/skill tool from ``tools`` upstream, so this drops ~1.8k words
+    # of ACPX instructions a smaller model would otherwise have to read and obey
+    # for tools it does not even have. Same idea for the firmware Templates rule.
+    tool_names = {getattr(tool, "name", "") for tool in tools}
+    preeliminary_prompt = apply_conditional_rule_blocks(
+        preeliminary_prompt,
+        include_acpx=bool(tool_names & ACPX_TOOL_NAMES),
+        include_templates=bool(tool_names & _FIRMWARE_TEMPLATE_TOOL_NAMES),
+    )
+
+    # Remove the empty placeholder blocks from the base prompt since context
+    # is injected into the user message by the chain, not into the system prompt.
+    cleaned_prompt = re.sub(
+        r"<system_context>\s*\{system_context\}\s*</system_context>",
+        "",
+        preeliminary_prompt,
+    )
+    cleaned_prompt = re.sub(
+        r"<files_context>\s*\{files_context\}\s*</files_context>",
+        "",
+        cleaned_prompt,
+    )
+    cleaned_prompt = re.sub(
+        r"<context>\s*\{context\}\s*</context>",
+        "",
+        cleaned_prompt,
+    )
+    # Escape any remaining curly braces that could break .format()
+    escaped_prompt = cleaned_prompt.replace("{", "{{").replace("}", "}}")
+
+    # Build a live platform information block
+    os_name = platform.system()  # 'Windows', 'Linux', 'Darwin'
+    os_version = platform.version()
+    os_arch = platform.machine()
+    is_windows = os_name == "Windows"
+    is_frozen = getattr(_sys, "frozen", False)
+
+    platform_block = (
+        f"**PLATFORM INFORMATION** (live detection — use the correct commands for this OS):\n"
+        f"- Operating System: {os_name} {platform.release()} ({os_version})\n"
+        f"- Architecture: {os_arch}\n"
+        f"- Runtime: {'Frozen executable' if is_frozen else 'Python source'}\n"
+    )
+    if is_windows:
+        platform_block += (
+            "- Shell: cmd.exe / PowerShell (Windows)\n"
+            "- Package managers: winget, choco, pip, npm (NOT apt, yum, pacman, brew)\n"
+            "- Path separator: backslash (\\)\n"
+            "- Use Windows-native commands: dir (not ls), type (not cat), mkdir, rmdir, copy, move, del\n"
+            "- NEVER use Linux/macOS commands (apt, sudo, chmod, chown, ln, grep) — they do not exist on this system\n"
+        )
+    else:
+        platform_block += (
+            "- Shell: bash / sh\n"
+            "- Use Unix-native commands: ls, cat, mkdir, rm, cp, mv\n"
+        )
+
+    step_by_step_block = _STEP_BY_STEP_SYSTEM_GUIDANCE if step_by_step_enabled else ""
+
+    return f"""{escaped_prompt}
+
+{platform_block}
+{step_by_step_block}
+
+You have access to the following tools. Use them proactively whenever the user's request can benefit from them:
+
+{tool_descriptions}
+
+**TOOL SELECTION GUIDE** (pick the right tool for the task):
+- **Run a shell/system command** → `execute_command` (install packages, build software, run any CLI command)
+- **Run a Python script file** → `execute_file`
+- **Run inline Python code** → `chat_agent_pythonxer` (with script='...')
+- **Crawl/scrape a website** → `chat_agent_crawler` (with url='...' and system_prompt='...')
+- **Search the web** → `googler` (with query='...')
+- **Call an HTTP API** → `chat_agent_apirer` (with url='...' and method='GET/POST')
+- **Run SQL on a database** → `chat_agent_sqler` (with connection_string='...' and query='...')
+- **Run MongoDB queries** → `chat_agent_mongoxer` (with mongodb.connection_string='...')
+- **SSH into a remote host** → `chat_agent_ssher` (with host='...' and command='...')
+- **Transfer files via SCP** → `chat_agent_scper` (with host='...' and local_path='...')
+- **Git operations** → `chat_agent_gitter` (with repo_path='...' and operation='...')
+- **Docker operations** → `chat_agent_dockerer` (with command='docker ...')
+- **Kubernetes operations** → `chat_agent_kuberneter` (with command='kubectl ...')
+- **Send email** → `chat_agent_send_email` (with smtp.username='...' and to='...')
+- **Send Telegram message** → `chat_agent_telegrammer`
+- **Send WhatsApp message** → `chat_agent_whatsapper`
+- **Desktop notification** → `chat_agent_notifier` (with title='...' and message='...')
+- **Take a screenshot** → `chat_agent_shoter` (silent — file saved to disk, NO viewer popup. Pair with `chat_agent_image_interpreter` to read what's on screen. NEVER follow with `launch_view_image` — that would pop a viewer window and steal focus from the workflow's target app)
+- **Move the mouse / click a desktop control** → `chat_agent_mouser`. Use movement_type='inspect' for physical monitor geometry. For screenshot coordinates supply coordinate_space='screenshot', Shoter's capture rectangle, and the analyzed image dimensions; never guess pixels. Prefer window_title/window_handle to scope the action. Window anchors are geometric points, not semantic controls.
+- **Type into a desktop app / send keystrokes / press hotkeys** → `chat_agent_keyboarder`. Supply window_title/window_handle to bind the target; it verifies foreground ownership and stops on focus loss. Use input_mode='text' with text='...' for literal Unicode, or input_sequence="home, 'Hello world', enter" for key sequences. Check action_status; input delivery does not verify the resulting application state.
+- **Analyze an image** → `chat_agent_image_interpreter` (with images_pathfilenames='...')
+- **Create a file** → `chat_agent_file_creator` (with filepath='...' and content='...')
+- **Extract text from documents** → `chat_agent_file_extractor` (with path='...')
+- **Summarize text with LLM** → `chat_agent_summarize_text` (with input_text='...')
+- **Send a sub-prompt to LLM** → `chat_agent_prompter` (with prompt='...')
+- **Encrypt data (PQC)** → `chat_agent_kyber_cipher`
+- **Decrypt data (PQC)** → `chat_agent_kyber_deciph`
+- **Generate PQC keys** → `chat_agent_kyber_keygen`
+- **PowerShell** → `chat_agent_pser` (with command='...')
+- **Jenkins jobs** → `chat_agent_jenkinser`
+- **Monitor a log file** → `chat_agent_monitor_log` (long-running)
+- **Monitor network** → `chat_agent_monitor_netstat` (long-running)
+- **Check running agents** → `chat_agent_run_list`, `chat_agent_run_status`, `chat_agent_run_log`
+- **Stop an agent** → `chat_agent_run_stop` (with run_id='...')
+- **Get current time** → `get_current_time`
+- **View network connections** → `execute_netstat`
+- **Open an image** → `launch_view_image`
+- **Unzip archive** → `unzip_file`
+- **Decompile Java** → `decompile_java`
+- **Configure a template agent** → `agent_parametrizer`
+- **Start a template agent** → `agent_starter`
+- **Stop a template agent** → `agent_stopper`
+- **Check template agent status** → `agent_stat_getter`
+
+**IMPORTANT**: If the user's request requires an action that can be performed with a tool, you **MUST use that tool** — do not just explain how the user could do it themselves. You are an OPERATOR: execute, don't advise.
+
+**TOOL ROUTING RULES** (MANDATORY — always prefer the specialized tool):
+- **Image analysis** → ALWAYS use `chat_agent_image_interpreter`. NEVER use `chat_agent_pythonxer` to write vision API scripts — the Image Interpreter agent already handles base64 encoding, LLM vision calls, and multi-image batch processing internally. Pass images_pathfilenames='<path or wildcard>' and optionally prompt_user='<what to describe>' — it runs interpreter_model_1 (mistral-large-3:675b-cloud) + interpreter_model_2 (gemma4:cloud) IN PARALLEL on two Ollama connections, then merging_model (glm-5.3:cloud) fuses both interpretations into one definitive report.
+- **File reading/interpretation** → use `chat_agent_file_interpreter`, NOT `chat_agent_pythonxer` with open().
+- **Text extraction from PDFs/DOCX** → use `chat_agent_file_extractor`, NOT `chat_agent_pythonxer`.
+- **Web crawling** → use `chat_agent_crawler`, NOT `chat_agent_pythonxer` with requests.
+- **API calls** → use `chat_agent_apirer`, NOT `chat_agent_pythonxer` with requests.
+- **Writing ANY file to disk (source code, config, README, data)** → use `chat_agent_file_creator` with `filepath='<abs path>'` and `content='<entire file contents>'`. NEVER wrap file contents in a Pythonxer `open(..., 'w')` script. Pythonxer's script parameter is single-line-friendly; multi-line Python code with embedded quotes, triple-quoted strings, or markdown fences is fragile and frequently fails with `SyntaxError: unterminated string literal`. For a project that needs N files, make N `chat_agent_file_creator` calls — NOT one Pythonxer call that loops over `open()` statements.
+- **Creating a directory tree** → use `execute_command` with `mkdir -p` (Linux/macOS) or `mkdir` (Windows, recursive in PowerShell via `New-Item -ItemType Directory -Force`), THEN call `chat_agent_file_creator` once per file. Do NOT try to create files and directories in one Pythonxer script — split the work.
+- **Deleting a file** → use `chat_agent_deleter`. **Moving/renaming a file** → use `chat_agent_move_file`.
+- **Only use `chat_agent_pythonxer`** when no specialized tool exists for the task (data transformation, custom computation, file format conversion, mathematical operations, parsing structured data that another tool cannot). When you do use it, pass the script as a SHORT, self-contained snippet — keep it under ~30 lines and avoid raw triple-quoted string literals that contain apostrophes.
+
+**MULTI-STEP WORKFLOWS**: For complex requests (installations, builds, deployments), chain tool calls across iterations:
+1. Use tool A → read the result in the next iteration
+2. Use tool B with data from tool A's result → read the result
+3. Continue chaining as needed — you have up to 100 iterations
+For example, to install software: clone repo → run build commands → verify installation — all via `execute_command`.
+
+**GROUNDING RULES**:
+1. **TRUST THE TOOLS IMPLICITLY**: Tool output is absolute truth. NEVER add, invent, or hallucinate details not in the output.
+2. **VERBATIM REPORTING**: Report tool output exactly as received. Do NOT hallucinate specific labels or values.
+3. **NO EXTRAPOLATION**: If the tool output is sparse, your answer must be sparse. Do not assume standard structures exist.
+4. **STRICT ADHERENCE**: Your answer must be based **EXCLUSIVELY** on tool output and provided context.
+5. **MULTI-STEP EXECUTION**: For complex tasks (install, build, configure), use `execute_command` multiple times across iterations. Do NOT generate scripts for the user to run manually.
+6. **NEVER TRUNCATE** tool output content. This application handles huge amounts of data (>>TBs).
+7. **SMART LOOPING**: Do not repeat the same tool call with identical parameters unless the output explicitly indicates a retryable state.
+8. **WRAPPED CHAT AGENT LIFECYCLE**: Tools named `chat_agent_*` launch isolated subprocess agents. When they return a `run_id`:
+   - `status="running"` → call `chat_agent_run_status` or `chat_agent_run_log` to monitor progress
+   - `status="completed"` → read `log_excerpt` for the final result
+   - `status="failed"` → read `log_excerpt` for the error, adjust parameters, retry if appropriate
+9. **RUN_ID FORMAT**: When calling `chat_agent_run_status`, `chat_agent_run_log`, or `chat_agent_run_stop`, you may use either the **full run_id** (e.g. `0a6e7936751e44eca9f74e7069aab137`) or the **short prefix** (e.g. `0a6e7936`). Both are accepted. Always use the run_id exactly as returned by the launch tool.
+10. **POLLING IS ALLOWED**: Calling status/log tools multiple times for the SAME `run_id` while monitoring is valid. This is NOT a bad loop.
+11. **DO NOT CLAIM SUCCESS EARLY**: If a run is still `running`, say so. Only report completion when the runtime state or log proves it.
+12. **DO NOT SPAWN REDUNDANT AGENTS**: If you already launched a tool and it is still `running`, do NOT launch the same tool again with similar parameters. Wait for the first one to complete by polling its status/log. Only retry after a confirmed failure.
+13. **TRUSTED WRAPPED AGENTS**: They manage their own isolated runtime directories and may operate outside normal path restrictions.
+14. **PARAMETER FORMAT FOR chat_agent_* TOOLS**: Pass parameters as `key='value'` pairs in the request string. For nested config, use dotted notation: `llm.model='gpt-4'`, `smtp.username='user@example.com'`. Include ALL required parameters.
+
+<question>
+{{input}}
+</question>
+
+
+Answer:
+
+"""
+
+
+# ---------------------------------------------------------------------------
+# Tool-surface token budgeting (Angela, 2026-06-19)
+# ---------------------------------------------------------------------------
+# Binding the FULL enabled surface (86 agents + active External-MCP tools) can
+# overflow the model context window. Observed live: "prompt too long 273284 >
+# 262144", which crashed Multi-Turn into a basic-LLM fallback ("tool backend
+# unavailable"). Instead of blindly binding everything OR starving the operator
+# with a tiny planner subset, we RANK the surface (reusing the same capability
+# scorer + planner picks used elsewhere) and fill a token budget: a guaranteed
+# operator CORE is always kept, then the planner's picks, then capability-scored
+# tools by descending score until the budget is reached. The low-rank tail is
+# dropped — never silently (the dropped count is always logged).
+_TOOL_BUDGET_CONTEXT_LIMIT_DEFAULT = 262144
+_TOOL_BUDGET_RESPONSE_HEADROOM = 8192
+_TOOL_BUDGET_SAFETY_MARGIN = 4096
+
+# Operator essentials the LLM must never be starved of, even on an off-topic
+# prompt — the file / shell / python / edit / search core plus the cheap
+# run-control + time/window helpers. Kept regardless of score so Multi-Turn
+# always has hands to work with.
+_CORE_ALWAYS_BOUND_TOOLS = frozenset({
+    "chat_agent_file_creator", "chat_agent_editor", "chat_agent_grepper",
+    "chat_agent_globber", "chat_agent_file_extractor", "chat_agent_file_interpreter",
+    "chat_agent_executer", "chat_agent_pythonxer",
+    "execute_command", "execute_file",
+    "chat_agent_run_status", "chat_agent_run_log", "chat_agent_run_list",
+    "chat_agent_run_stop", "get_current_time", "window_present",
+})
+
+_EMERGENCY_CORE_TOOL_ORDER = (
+    "get_current_time",
+    "execute_command",
+    "execute_file",
+    "chat_agent_executer",
+    "chat_agent_pythonxer",
+    "chat_agent_file_creator",
+    "chat_agent_editor",
+    "chat_agent_grepper",
+    "chat_agent_globber",
+    "chat_agent_file_extractor",
+    "chat_agent_file_interpreter",
+    "chat_agent_run_status",
+    "chat_agent_run_log",
+    "chat_agent_run_list",
+    "chat_agent_run_stop",
+    "window_present",
+)
+
+# The smallest operator surface worth binding when the budgeter says "nothing
+# fits". Ordered cheapest-and-most-essential first by _EMERGENCY_CORE_TOOL_ORDER.
+_EMERGENCY_MIN_TOOLS = 8
+
+
+def _emergency_core_tools(request_tools):
+    """Never hand back an EMPTY tool surface. (Angela, 2026-09-20)
+
+    Binding nothing is never the right answer. A Multi-Turn request with zero
+    tools does not fail — it takes the no-tools branch and Tlamatini answers in
+    prose, so she reports "I created the file" and creates nothing. Measured on
+    the installed v1.65.0: ``kept 0/121`` tools, and a whole Step-by-Step wizard
+    produced an empty ``C:\\Tlamatini\\Templates``.
+
+    An oversize prompt fails LOUDLY at the server (HTTP 400 naming the limit),
+    which is recoverable and honest. A silently disarmed operator is neither.
+    So when the arithmetic says zero, keep a handful of core tools anyway and
+    let the caller warn the user.
+    """
+    try:
+        by_name = {getattr(tool, "name", ""): tool for tool in request_tools}
+        picked = [by_name[name] for name in _EMERGENCY_CORE_TOOL_ORDER if name in by_name]
+        if picked:
+            return picked[:_EMERGENCY_MIN_TOOLS]
+        return list(request_tools)[:1]
+    except Exception:  # noqa: BLE001 — a rescue path must never raise
+        try:
+            return list(request_tools)[:1]
+        except Exception:  # noqa: BLE001
+            return []
+
+
+def _estimate_text_tokens(text) -> int:
+    """Cheap, model-agnostic token estimate (~4 chars per token)."""
+    return max(0, len(str(text or "")) // 4)
+
+
+def _estimate_tool_schema_tokens(tool) -> int:
+    """Approximate the tokens one tool's schema costs through ``bind_tools()``."""
+    try:
+        from langchain_core.utils.function_calling import convert_to_openai_tool
+        text = json.dumps(convert_to_openai_tool(tool), ensure_ascii=False, default=str)
+    except Exception:
+        parts = [getattr(tool, "name", ""), getattr(tool, "description", "")]
+        try:
+            parts.append(json.dumps(getattr(tool, "args", {}) or {}, ensure_ascii=False, default=str))
+        except Exception:
+            pass
+        text = " ".join(part for part in parts if part)
+    return max(1, len(text) // 4)
+
+
+def _budget_select_tools(request_tools, *, system_prompt_text, input_text,
+                         chat_history, global_execution_plan):
+    """Rank-and-budget the bound tool surface so the prompt fits the model window.
+
+    Best case (everything fits): return the full surface unchanged (dropped=0).
+    Otherwise: keep the guaranteed operator CORE + the planner's picks + the
+    highest capability-scored tools, filling a token budget, and drop the
+    low-rank tail. Returns ``(selected_tools, used_tool_tokens, dropped_count)``.
+    """
+    tools_list = list(request_tools)
+    if len(tools_list) <= 1:
+        return tools_list, 0, 0
+
+    # ── ONE DEFINITION OF THE BUDGET (Angela, 2026-09-20) ──────────────────
+    # This used to fall back to a private 262,144 constant while the model on
+    # the other end really accepted 1,048,576 (`ollama_num_ctx`). Two parts of
+    # Tlamatini disagreeing about the size of the window is not academic: with
+    # a ~433k-token conversation — 41% of the REAL ceiling — this function
+    # concluded it was 171k OVER, dropped ALL 121 tools, and the operator
+    # silently became a chatbot that answered "created" without creating
+    # anything (measured on the installed v1.65.0, 2026-09-20).
+    #
+    # So the ceiling now comes from the SAME resolver the context gauge uses.
+    # An explicit `unified_agent_context_limit` still wins, for anyone who
+    # deliberately pinned a smaller window.
+    # ⚠️ An EXPLICIT setting is OBEYED EXACTLY, even a small one — that is the
+    # house rule, and pinning a deliberately tiny window is the only way to
+    # test this function's exhausted-budget path. So "absent" (<= 0) is the
+    # ONLY case that falls through to the shared resolver; a configured value
+    # is never second-guessed.
+    context_limit = get_int_config_value("unified_agent_context_limit", 0, minimum=0)
+    if context_limit <= 0:
+        try:
+            context_limit, _ceiling_source = _context_ceiling_tokens(_load_config())
+        except Exception:  # noqa: BLE001 — never block a request on a config read
+            context_limit = _TOOL_BUDGET_CONTEXT_LIMIT_DEFAULT
+    context_limit = max(1, int(context_limit or _TOOL_BUDGET_CONTEXT_LIMIT_DEFAULT))
+    overhead = (
+        _estimate_text_tokens(system_prompt_text)
+        + _estimate_text_tokens(input_text)
+        + sum(_estimate_text_tokens(message) for message in (chat_history or []))
+    )
+    tool_budget = (
+        context_limit - overhead - _TOOL_BUDGET_RESPONSE_HEADROOM - _TOOL_BUDGET_SAFETY_MARGIN
+    )
+    costs = [(_estimate_tool_schema_tokens(tool), tool) for tool in tools_list]
+    full_cost = sum(cost for cost, _ in costs)
+    cost_by_id = {id(tool): cost for cost, tool in costs}
+    if tool_budget <= 0:
+        # Prompt + context/history already consumed the response/safety reserve.
+        # Do NOT reopen a fresh 32k-ish tool budget here: that was the exact
+        # overflow bug (the prompt alone was near the ceiling, then tools pushed
+        # it over). Keep only the always-safe operator core, and only the core
+        # tools that fit inside the remaining hard context window. If nothing
+        # fits, return no tools; upstream context summarization/truncation must
+        # reduce the non-tool prompt before a tool surface can be safely bound.
+        hard_tool_budget = max(0, context_limit - overhead)
+        by_name = {getattr(tool, "name", ""): tool for tool in tools_list}
+        selected, used = [], 0
+        for name in _EMERGENCY_CORE_TOOL_ORDER:
+            tool = by_name.get(name)
+            if tool is None:
+                continue
+            cost = cost_by_id[id(tool)]
+            if used + cost <= hard_tool_budget:
+                selected.append(tool)
+                used += cost
+        dropped = len(tools_list) - len(selected)
+        return selected, used, dropped
+
+    if full_cost <= tool_budget:
+        return tools_list, full_cost, 0  # everything fits — bind the full surface
+
+    planner_names = (
+        set(selected_tool_names_from_plan(global_execution_plan))
+        if global_execution_plan else set()
+    )
+    try:
+        normalized_request = _normalize_text(input_text)
+        request_tokens = _tokenize(input_text)
+        capability_by_name = {
+            capability.tool_name: capability
+            for capability in build_tool_capabilities(tools_list)
+        }
+    except Exception:
+        normalized_request, request_tokens, capability_by_name = "", set(), {}
+
+    def _priority(tool) -> tuple:
+        name = getattr(tool, "name", "")
+        capability = capability_by_name.get(name)
+        score = 0
+        if capability is not None:
+            try:
+                score = _score_capability(capability, normalized_request, request_tokens)
+            except Exception:
+                score = 0
+        if name in _CORE_ALWAYS_BOUND_TOOLS:
+            tier = 3
+        elif name in planner_names:
+            tier = 2
+        elif score > 0:
+            tier = 1
+        else:
+            tier = 0
+        return (tier, score, name)
+
+    ranked = sorted(tools_list, key=_priority, reverse=True)
+    selected, used = [], 0
+    for tool in ranked:
+        cost = cost_by_id[id(tool)]
+        is_core = getattr(tool, "name", "") in _CORE_ALWAYS_BOUND_TOOLS
+        if is_core or used + cost <= tool_budget:
+            selected.append(tool)
+            used += cost
+    dropped = len(tools_list) - len(selected)
+    return selected, used, dropped
+
+
+def _build_compact_system_prompt(preeliminary_prompt: str, tools, *, budget_chars: int,
+                                 model: str = "", window_tokens: int = 0,
+                                 step_by_step_enabled: bool = False,
+                                 context_loaded: bool = False,
+                                 strict: bool = True) -> Tuple[str, Dict[str, Any]]:
+    """The system prompt of a COMPACT request (Angela, 2026-10-01).
+
+    Angela's own prompt.pmt, rebuilt by rule priority until it fits
+    ``budget_chars`` (``context_fitter.compact_prompt``), a one-line platform
+    note, the Step-by-Step guidance when that mode is on, and an honest
+    COMPACT MODE note naming the only tools bound - instead of Rule 11's
+    31,000-character manual and the 100+ tool catalogue a small model cannot
+    hold.  Returns ``(prompt, info)``.
+    """
+    import platform
+    text, info = compact_prompt(preeliminary_prompt, budget_chars, keep_placeholders=False,
+                                context_loaded=context_loaded)
+    os_name = platform.system()
+    if os_name == "Windows":
+        plat = (f"**PLATFORM**: {os_name} {platform.release()} - Windows commands (dir, type, "
+                "PowerShell) and backslash paths.")
+    else:
+        plat = f"**PLATFORM**: {os_name} {platform.release()} - Unix commands and / paths."
+    step = _STEP_BY_STEP_SYSTEM_GUIDANCE if step_by_step_enabled else ""
+    rule = compact_tool_rule([getattr(t, "name", "") for t in tools], model=model,
+                             window_tokens=window_tokens, strict=strict)
+    prompt = text.rstrip() + "\n\n" + plat + "\n" + (step.strip() + "\n" if step else "") + "\n" + rule + "\n"
+    info["prompt_chars"] = len(prompt)
+    return prompt, info
+
+
+def _self_knowledge_text() -> str:
+    """Tlamatini's self-knowledge as plain text (empty when this build cannot
+    self-modify) - what a COMPACT request carries when Self-modify is ON and
+    the model can hold it.  Never raises."""
+    try:
+        from .rag.config import self_knowledge_text
+        return self_knowledge_text()
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+class CapabilityAwareToolAgentExecutor:
+    """
+    Delegates to the legacy full-tool executor by default and only applies
+    Phase 1 selective capability binding when the request explicitly enables it.
+
+    Since 2026-10-01 every request is FITTED to the model it is sent to
+    (``fit_request``): the complete request when the model can hold it, a
+    COMPACT one when it cannot - see ``agent/context_fitter.py``.
+    """
+
+    #: How many (tool-set, prompt) executors are kept warm.  Each one holds a
+    #: bound LLM; the oldest is dropped first.
+    _EXECUTOR_CACHE_LIMIT = 48
+
+    def __init__(self, llm, preeliminary_prompt: str, tools, max_iterations: int = 4096):
+        self.llm = llm
+        self.preeliminary_prompt = preeliminary_prompt
+        self.tools = list(tools)
+        self.max_iterations = max_iterations
+        self._executor_cache: Dict[tuple[str, ...], MultiTurnToolAgentExecutor] = {}
+        self._tool_chars_cache: Dict[str, int] = {}
+        self.legacy_executor = self._get_executor_for_tools(self.tools)
+        self.last_fit: Optional[FitReport] = None
+        # The Configure rows this tool surface was built from (Angela,
+        # 2026-10-02): a saved dialog moves the version and the next request
+        # re-reads the surface - no reconnect, no rebuild.
+        try:
+            self._toggles_version = _compact_mode.toggles_version()
+        except Exception:  # noqa: BLE001
+            self._toggles_version = None
+        self._everything_chars: Optional[int] = None
+        self._everything_names: list = []
+
+    def _get_executor_for_tools(self, tools_subset, step_by_step_enabled: bool = False,
+                                system_prompt: Optional[str] = None,
+                                self_knowledge: Optional[bool] = None):
+        key_parts = [f"__step_by_step__={int(bool(step_by_step_enabled))}"]
+        if system_prompt is not None:
+            digest = hashlib.sha1(system_prompt.encode("utf-8", "replace")).hexdigest()[:16]
+            key_parts.append(f"__compact__={digest}")
+        else:
+            # The Self-modify switch decides the prompt, so it is part of the key.
+            if self_knowledge is None:
+                try:
+                    from .rag.config import self_modify_on
+                    self_knowledge = self_modify_on()
+                except Exception:  # noqa: BLE001
+                    self_knowledge = True
+            key_parts.append(f"__self__={int(bool(self_knowledge))}")
+        key = tuple(key_parts + [tool.name for tool in tools_subset])
+        cached = self._executor_cache.get(key)
+        if cached is not None:
+            return cached
+
+        executor = MultiTurnToolAgentExecutor(
+            llm=self.llm,
+            system_prompt=(
+                system_prompt if system_prompt is not None else _build_system_prompt(
+                    self.preeliminary_prompt,
+                    tools_subset,
+                    step_by_step_enabled=step_by_step_enabled,
+                    self_knowledge=self_knowledge,
+                )
+            ),
+            tools=tools_subset,
+            max_iterations=self.max_iterations,
+        )
+        if len(self._executor_cache) >= self._EXECUTOR_CACHE_LIMIT:
+            # Insertion order = age; the legacy executor stays referenced on self.
+            self._executor_cache.pop(next(iter(self._executor_cache)), None)
+        self._executor_cache[key] = executor
+        return executor
+
+    def _refresh_external_mcp_tool_surface(self) -> None:
+        """Refresh External-MCP tools before each request.
+
+        The unified agent is normally cached for speed, but External MCP tools
+        are live capabilities: they can appear after Roblox Studio, Docker, npx,
+        or another backend finishes connecting. Reconcile just that slice of the
+        tool surface per request so the 86-agent planner sees reality.
+        """
+        try:
+            from .external_mcp_manager import get_external_mcp_tools
+            fresh_external = list(get_external_mcp_tools())
+        except Exception:
+            logger.exception("[ExternalMCP] request-time tool refresh failed")
+            return
+
+        current_external_names = [
+            tool.name for tool in self.tools
+            if _is_external_mcp_tool_name(getattr(tool, "name", ""))
+        ]
+        fresh_external_names = [tool.name for tool in fresh_external]
+        if current_external_names == fresh_external_names:
+            return
+
+        base_tools = [
+            tool for tool in self.tools
+            if not _is_external_mcp_tool_name(getattr(tool, "name", ""))
+        ]
+        self.tools = base_tools + fresh_external
+        self._executor_cache = {
+            key: executor
+            for key, executor in self._executor_cache.items()
+            if not any(_is_external_mcp_tool_name(name) for name in key)
+        }
+        self.legacy_executor = self._get_executor_for_tools(self.tools)
+        print(
+            "--- CapabilityAwareToolAgentExecutor: refreshed External MCP tool surface "
+            f"{current_external_names} -> {fresh_external_names}",
+            flush=True,
+        )
+
+    # ── The CONTEXT FITTER (Angela, 2026-10-01) ─────────────────────────────
+    def _refresh_toggle_tool_surface(self) -> bool:
+        """Re-read the tool surface when a Configure dialog (or the Compact-mode
+        switch) changed the rows since the last request (Angela, 2026-10-02).
+
+        The rows are applied to ``global_state`` the moment they are saved
+        (``compact_mode.apply_rows_to_global_state``), so ``get_mcp_tools``
+        already answers with them - the cached unified agent only has to ask
+        again.  Returns True when the surface changed.  Never raises.
+        """
+        try:
+            version = _compact_mode.toggles_version()
+        except Exception:  # noqa: BLE001
+            return False
+        if not hasattr(self, "_toggles_version"):
+            # Built without __init__ (a caller that handed over its own tool
+            # list): that list IS the surface - adopt the version, keep it.
+            self._toggles_version = version
+            return False
+        if version == self._toggles_version:
+            return False
+        self._toggles_version = version
+        try:
+            fresh = list(get_mcp_tools())
+        except Exception:  # noqa: BLE001
+            logger.exception("[TOGGLES] request-time tool refresh failed")
+            return False
+        old = [getattr(t, "name", "") for t in self.tools]
+        new = [getattr(t, "name", "") for t in fresh]
+        if old == new:
+            return False
+        self.tools = fresh
+        self.legacy_executor = self._get_executor_for_tools(self.tools)
+        print(f"--- [TOGGLES] tool surface re-read from the Configure rows: {len(old)} -> "
+              f"{len(new)} tool(s) (version {version})", flush=True)
+        return True
+
+    def _everything_static_chars(self) -> int:
+        """What EVERYTHING activated costs on the wire: the complete system
+        prompt over every built-in tool plus all of their schemas (Angela,
+        2026-10-02).  A model that cannot hold it is STRICT - Compact mode is
+        locked ON.  Cached per executor; never raises."""
+        cached = getattr(self, "_everything_chars", None)
+        if cached:
+            return int(cached)
+        try:
+            every = list(get_mcp_tools(ignore_gates=True))
+        except Exception:  # noqa: BLE001
+            every = [t for t in self.tools if not _is_external_mcp_tool_name(getattr(t, "name", ""))]
+        try:
+            # Measured WITHOUT the self-knowledge: Self-modify is its own
+            # switch (below) and must never lock Compact mode ON by itself.
+            prompt_chars = len(_build_system_prompt(self.preeliminary_prompt, every, self_knowledge=False))
+        except Exception:  # noqa: BLE001
+            prompt_chars = len(str(self.preeliminary_prompt or ""))
+        chars = prompt_chars + self._tool_chars(every)
+        self._everything_chars = chars
+        self._everything_names = [str(getattr(t, "name", "") or "") for t in every]
+        return chars
+
+    def _self_knowledge_chars(self) -> int:
+        """What Tlamatini's self-knowledge adds to a request, in characters
+        (0 when this build cannot self-modify).  Cached; never raises."""
+        cached = getattr(self, "_self_chars", None)
+        if cached is not None:
+            return int(cached)
+        try:
+            with_self = len(_build_system_prompt(self.preeliminary_prompt, [], self_knowledge=True))
+            without = len(_build_system_prompt(self.preeliminary_prompt, [], self_knowledge=False))
+            chars = max(0, with_self - without)
+        except Exception:  # noqa: BLE001
+            chars = 0
+        self._self_chars = chars
+        return chars
+
+    def _prompt_chars_without_self(self, tools, step_by_step: bool = False) -> int:
+        """The complete system prompt for ``tools`` WITHOUT the self-knowledge,
+        in characters - the base the Self-modify verdict adds it to.  Cached
+        per tool set; never raises."""
+        cache = getattr(self, "_off_prompt_cache", None)
+        if cache is None:
+            cache = self._off_prompt_cache = {}
+        key = (int(bool(step_by_step)),) + tuple(str(getattr(t, "name", "") or "") for t in tools or [])
+        cached = cache.get(key)
+        if cached is None:
+            try:
+                cached = len(_build_system_prompt(self.preeliminary_prompt, list(tools or []),
+                                                  step_by_step_enabled=step_by_step, self_knowledge=False))
+            except Exception:  # noqa: BLE001
+                cached = len(str(self.preeliminary_prompt or ""))
+            if len(cache) > 32:
+                cache.clear()
+            cache[key] = cached
+        return int(cached)
+
+    def _tool_chars(self, tools) -> int:
+        """Characters the tools' schemas cost on the wire (cached per name)."""
+        cache = getattr(self, "_tool_chars_cache", None)
+        if cache is None:
+            cache = self._tool_chars_cache = {}
+        total = 0
+        for tool in tools or []:
+            name = str(getattr(tool, "name", "") or "")
+            cost = cache.get(name)
+            if cost is None:
+                cost = int(_estimate_tool_schema_tokens(tool)) * 4
+                if name:
+                    cache[name] = cost
+            total += cost
+        return total
+
+    def _active_external_servers(self) -> list:
+        """Names of the External MCP servers the user has ACTIVE (paused in
+        compact mode - her selection itself is never touched)."""
+        try:
+            from .external_mcp_manager import load_catalog
+            catalog = load_catalog() or {}
+            active = catalog.get("active") or []
+            if isinstance(active, (list, tuple)):
+                return [str(name) for name in active][:16]
+        except Exception:  # noqa: BLE001 — a status list must never break a request
+            pass
+        names = set()
+        for tool in self.tools:
+            name = str(getattr(tool, "name", "") or "")
+            if _is_external_mcp_tool_name(name) and name.count("__") >= 2:
+                names.add(name.split("__")[1])
+        return sorted(names)
+
+    def fit_request(
+        self,
+        *,
+        input_text: str,
+        chat_history: Any,
+        request_tools,
+        multi_turn: bool = False,
+        step_by_step: bool = False,
+        acpx_requested: bool = False,
+        global_execution_plan: Any = None,
+        user_id: Any = None,
+        publish: bool = True,
+    ) -> Dict[str, Any]:
+        """FULL or COMPACT - and the request fitted to the model's REAL window.
+
+        ONE definition: ``invoke`` AND the at-rest gauge rebuild
+        (``context_baseline``) call this, so the ring always shows the request
+        that is really sent.  Fail-open: on any error the complete request is
+        returned unchanged, exactly as before the fitter existed.
+
+        The Compact-mode SWITCH (Angela, 2026-10-02, ``agent/compact_mode.py``):
+        a model that cannot hold EVERYTHING activated is STRICT - Compact mode
+        is switched ON (the Configure rows rewritten) and locked.  While the
+        switch is ON the request binds EXACTLY the tools the user ticked;
+        nothing is dropped behind her back - the CONTEXT-WINDOW gauge shows
+        what her selection costs.
+        """
+        # A Configure dialog saved since the last request applies NOW.
+        if self._refresh_toggle_tool_surface():
+            request_tools = filter_acpx_tools(self.tools, acpx_requested)
+        hist = list(chat_history or []) if isinstance(chat_history, (list, tuple)) else []
+        input_text = str(input_text or "")
+        request_tools = list(request_tools or [])
+        result: Dict[str, Any] = {"executor": None, "input": input_text, "history": hist,
+                                  "tools": request_tools, "mode": MODE_FULL, "report": None,
+                                  "dropped": 0, "tool_tokens": 0, "starved": False,
+                                  "acpx_bound": bool(acpx_requested)}
+        try:
+            config = _load_config()
+            model, base_url = MultiTurnToolAgentExecutor._llm_identity(self.llm)
+            window = resolve_window(config, model, base_url)
+            setting = compact_mode_setting(config)
+            usable = window.usable_chars
+            cpt = window.chars_per_token
+
+            # 0. STRICT?  EVERYTHING activated (every built-in tool) must fit
+            #    with room for a short question - or Compact mode is locked ON.
+            everything_chars = self._everything_static_chars()
+            everything_tokens = int(everything_chars / cpt) if cpt else 0
+            if setting == "always":
+                strict = True
+            elif setting == "never":
+                strict = False
+            else:
+                strict = everything_chars + 2400 > usable
+            compact_active = _compact_mode.is_active()
+            if strict and not compact_active:
+                switched = _compact_mode.enter_compact(
+                    f"{model or 'this model'} reads only {window.tokens:,} tokens and everything "
+                    f"activated needs ~{everything_tokens:,}", auto=True)
+                if switched.get("ok") and _compact_mode.is_active():
+                    compact_active = True
+                    if self._refresh_toggle_tool_surface():
+                        request_tools = list(filter_acpx_tools(self.tools, acpx_requested))
+                        result["tools"] = request_tools
+
+            # The mode follows the SWITCH: Compact mode ON (by the user, or
+            # locked ON by a model too small for everything) sends exactly the
+            # user's Compact selection; OFF sends the complete request.
+            mode = MODE_COMPACT if (compact_active or strict) else MODE_FULL
+
+            # 0b. SELF-MODIFY (Angela, 2026-10-03): Tlamatini's self-knowledge
+            #     rides along only when this build can self-modify (always from
+            #     source), the user wants it, AND the model can hold it on top
+            #     of this request - otherwise the box is locked OFF.
+            self_available = _compact_mode.self_modify_available()
+            self_wanted = bool(self_available and _compact_mode.self_modify_wanted())
+            self_chars = self._self_knowledge_chars() if self_available else 0
+            self_fits: Optional[bool] = None
+            self_on = False
+            self_need_chars = 0
+
+            # 1. The COMPLETE request - exactly what was sent before the fitter.
+            if multi_turn and not compact_active:
+                full_tools, tool_tokens, dropped = _budget_select_tools(
+                    request_tools,
+                    system_prompt_text=self.preeliminary_prompt,
+                    input_text=input_text,
+                    chat_history=hist,
+                    global_execution_plan=global_execution_plan,
+                )
+                if request_tools and not full_tools:
+                    full_tools = _emergency_core_tools(request_tools)
+                    dropped = len(request_tools) - len(full_tools)
+                    result["starved"] = True
+                result.update(dropped=dropped, tool_tokens=tool_tokens)
+            else:
+                full_tools = list(request_tools)
+            if mode == MODE_FULL and self_available:
+                self_need_chars = (self._prompt_chars_without_self(full_tools, step_by_step)
+                                   + self._tool_chars(full_tools) + self_chars)
+                self_fits = self_need_chars + 2400 <= usable
+                self_on = bool(self_wanted and self_fits)
+            if not multi_turn and acpx_requested and not step_by_step and not compact_active:
+                # The legacy one-shot path with ACPX on reuses the cached
+                # full-tool executor (the same cache entry legacy_executor is),
+                # exactly as before the fitter.
+                full_executor = self._get_executor_for_tools(self.tools, self_knowledge=self_on)
+            else:
+                full_executor = self._get_executor_for_tools(full_tools, step_by_step_enabled=step_by_step,
+                                                             self_knowledge=self_on)
+            full_prompt_chars = len(str(getattr(full_executor, "system_prompt", "") or ""))
+            static_chars = full_prompt_chars + self._tool_chars(full_tools)
+            input_chars = len(input_text)
+            hist_chars = _fit_message_chars(hist[-8:])
+            full_chars = static_chars + input_chars + hist_chars
+            full_tokens = int(full_chars / cpt) if cpt else 0
+
+            report = FitReport(
+                mode=mode, model=model, window_tokens=window.tokens,
+                window_source=window.source, reserve_tokens=window.reserve_tokens,
+                chars_per_token=cpt, full_tokens_estimate=full_tokens,
+                tools_total=len(request_tools), acpx_requested=bool(acpx_requested),
+                setting=setting,
+            )
+            report.compact_active = bool(compact_active)
+            report.strict = bool(strict)
+            report.everything_tokens = everything_tokens
+            report.toggles_version = int(getattr(self, "_toggles_version", 0) or 0)
+            details: Dict[str, Any] = {"history_total": len(hist[-8:]),
+                                       "history_kept": len(hist[-8:])}
+            if mode == MODE_FULL:
+                executor, tools = full_executor, full_tools
+                fitted_input, fitted_hist = input_text, hist
+                if full_chars > usable and setting != "never":
+                    # Only the DYNAMIC parts shrink - the rules and the tools a
+                    # big model can hold are never touched.
+                    dynamic = max(0, usable - static_chars)
+                    in_budget = max(min(input_chars, 2000), int(dynamic * 0.65))
+                    fitted_input, in_info = fit_input(input_text, in_budget)
+                    details.update(in_info)
+                    hist_budget = max(0, dynamic - len(fitted_input))
+                    fitted_hist, h_info = fit_history(
+                        hist, hist_budget, input_text=fitted_input, max_messages=8)
+                    details.update(h_info)
+                try:
+                    executor.fit_tool_output_cap = None
+                except Exception:  # noqa: BLE001 — a read-only stand-in executor
+                    pass
+                details.update(prompt_profile="full",
+                               prompt_chars=full_prompt_chars,
+                               prompt_full_chars=full_prompt_chars,
+                               tools_kept_count=len(tools))
+                fitted_chars = static_chars + len(fitted_input) + _fit_message_chars(fitted_hist[-8:])
+                base_chars = full_prompt_chars
+                report.reason = (
+                    f"{model} reads {window.tokens:,} tokens at a time; Tlamatini's complete "
+                    f"request (~{full_tokens:,}) fits, so nothing is held back."
+                )
+            else:
+                if compact_active:
+                    # EXACTLY what the user ticked - the switch rewrote the
+                    # Configure rows, so the enabled surface IS her selection.
+                    # External MCPs are paused in Compact mode (their tools and
+                    # the supervisors that manage them are listed in no
+                    # Configure dialog), so none of them ride along.
+                    supervisors = _external_mcp_supervisor_names()
+                    tools = [t for t in request_tools
+                             if getattr(t, "name", "") not in supervisors
+                             and not _is_external_mcp_tool_name(getattr(t, "name", ""))]
+                else:
+                    # The switch could not rewrite the rows (no database): the
+                    # Compact defaults, from what is enabled - a capability the
+                    # user switched OFF is never switched back on.
+                    tools = [t for t in filter_acpx_tools(self.tools, False)
+                             if getattr(t, "name", "") in COMPACT_TOOL_NAMES]
+                prompt_budget = int(min(max(usable * 0.40, 1500), 30000))
+                system_prompt, p_info = _build_compact_system_prompt(
+                    self.preeliminary_prompt, tools, budget_chars=prompt_budget,
+                    model=model, window_tokens=window.tokens,
+                    step_by_step_enabled=step_by_step,
+                    context_loaded=any(opener in input_text
+                                       for opener, _closer in _cg.CONTEXT_BLOCKS[:2]),
+                    strict=bool(strict),
+                )
+                # Self-modify in Compact mode: the self-knowledge is added to the
+                # compact prompt only when the window still holds it - measured
+                # on the very text that would be appended.
+                self_text = _self_knowledge_text() if self_available else ""
+                if self_text:
+                    self_chars = len(self_text)
+                    self_need_chars = len(system_prompt) + self._tool_chars(tools) + self_chars
+                    self_fits = self_need_chars + 2400 <= usable
+                    self_on = bool(self_wanted and self_fits)
+                    if self_on:
+                        system_prompt = system_prompt.rstrip() + "\n\n" + self_text.rstrip() + "\n"
+                        p_info["prompt_chars"] = len(system_prompt)
+                details.update(p_info)
+                details["prompt_full_chars"] = full_prompt_chars
+                fixed = len(system_prompt) + self._tool_chars(tools)
+                min_hist = min(1500, int(usable * 0.10))
+                in_budget = max(min(input_chars, 1200), usable - fixed - min_hist)
+                fitted_input, in_info = fit_input(input_text, in_budget)
+                details.update(in_info)
+                hist_budget = max(0, usable - fixed - len(fitted_input))
+                fitted_hist, h_info = fit_history(
+                    hist, hist_budget, input_text=fitted_input, max_messages=6,
+                    per_message_cap=max(800, usable // 6),
+                )
+                details.update(h_info)
+                executor = self._get_executor_for_tools(
+                    tools, step_by_step_enabled=step_by_step, system_prompt=system_prompt)
+                executor.fit_tool_output_cap = max(1500, int(usable * 0.25))
+                fitted_chars = fixed + len(fitted_input) + _fit_message_chars(fitted_hist)
+                base_chars = len(system_prompt)
+                kept_names = [getattr(t, "name", "") for t in tools]
+                report.tools_kept = kept_names
+                report.acpx_bound = any(name in ACPX_TOOL_NAMES for name in kept_names)
+                every_agents = sum(1 for n in (self._everything_names or []) if n.startswith("chat_agent_"))
+                bound_agents = sum(1 for n in kept_names if str(n).startswith("chat_agent_"))
+                report.agents_paused = max(0, every_agents - bound_agents)
+                report.external_mcps_paused = self._active_external_servers() if not compact_active else (
+                    _compact_mode_saved_external())
+                details["tools_kept_count"] = len(tools)
+                if strict:
+                    report.reason = (
+                        f"{model} reads only {window.tokens:,} tokens at a time ({window.source}), "
+                        f"and everything activated needs ~{everything_tokens:,} - so Compact mode is "
+                        "locked ON. Tick what you need in Config > Configure Agents / Configure MCPs; "
+                        "the CONTEXT-WINDOW gauge shows what still fits."
+                    )
+                else:
+                    report.reason = (
+                        f"Compact mode is switched on: Tlamatini sends only what you ticked "
+                        f"({len(tools)} tool(s)). Untick the Compact mode box to bring everything back."
+                    )
+            report.self_modify_available = bool(self_available)
+            report.self_modify_wanted = bool(self_wanted)
+            report.self_modify_fits = self_fits
+            report.self_modify_active = bool(self_on)
+            report.self_modify_tokens = int(self_chars / cpt) if cpt else 0
+            report.self_modify_need_tokens = int(self_need_chars / cpt) if cpt else 0
+            report.fitted_tokens_estimate = int(fitted_chars / cpt) if cpt else 0
+            report.details = details
+            result.update(executor=executor, input=fitted_input, history=fitted_hist,
+                          tools=tools, mode=mode, report=report, window=window,
+                          acpx_bound=bool(report.acpx_bound) if mode == MODE_COMPACT
+                          else bool(acpx_requested))
+            self.last_fit = report
+            _compact_mode.note_capacity(
+                model=model, strict=bool(strict), window_tokens=window.tokens,
+                usable_tokens=window.usable_tokens, everything_tokens=everything_tokens,
+                base_tokens=int(base_chars / cpt) if cpt else 0, chars_per_token=cpt,
+                setting=setting, auto_enter=False,
+            )
+            if self_available and self_fits is not None:
+                _compact_mode.note_self_modify(fits=bool(self_fits),
+                                               tokens=report.self_modify_tokens,
+                                               need_tokens=report.self_modify_need_tokens)
+            if publish:
+                self._publish_fit(report, user_id)
+            return result
+        except Exception as fit_err:  # noqa: BLE001 — the fitter must never break a request
+            print(f"--- [CONTEXT-FIT] failed open ({type(fit_err).__name__}: {fit_err}) - "
+                  "sending the complete request unchanged")
+            if result["executor"] is None:
+                result["executor"] = (
+                    self._get_executor_for_tools(request_tools, step_by_step_enabled=step_by_step)
+                    if (step_by_step or not acpx_requested) else self.legacy_executor
+                )
+                try:
+                    result["executor"].fit_tool_output_cap = None
+                except Exception:  # noqa: BLE001
+                    pass
+            return result
+
+    def _publish_fit(self, report: Optional[FitReport], user_id: Any = None) -> None:
+        """Log the verdict and hand it to the page (rides on every gauge frame)."""
+        if report is None:
+            return
+        try:
+            print(report.log_line())
+            uid = user_id if user_id is not None else _cg.current_user()
+            if uid is not None and _cg.set_capacity(uid, report.as_capacity()):
+                _cg.publish_capacity(uid)
+        except Exception as pub_err:  # noqa: BLE001
+            print(f"--- [CONTEXT-FIT] verdict not published ({pub_err})")
+
+    def invoke(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        input_text = payload.get("input", "")
+        chat_history = payload.get("chat_history", []) or []
+        multi_turn_enabled = bool(payload.get("multi_turn_enabled", False))
+        # Exec report is multi-turn-only: outside multi-turn we strip it.
+        exec_report_enabled = bool(payload.get("exec_report_enabled", False)) and multi_turn_enabled
+        # ACPX defaults to DISABLED. The user must explicitly tick the
+        # toolbar checkbox to opt into the ACPX-aided flow; otherwise we
+        # filter every LLM-facing ACPX tool out of self.tools BEFORE planning
+        # or capability-based selection runs, so the entire ACPX surface
+        # is invisible to the request and the system runs the legacy
+        # Multi-Turn / one-shot mechanics.
+        acpx_requested = bool(payload.get("acpx_enabled", False))
+        acpx_enabled = acpx_requested
+        global_execution_plan = payload.get("global_execution_plan")
+        # Ask-Execs is a Multi-Turn-only modifier: the per-tool permission
+        # prompt only exists in the multi-turn executor loop, so it is ignored
+        # entirely on the legacy one-shot path below.
+        ask_execs_enabled = bool(payload.get("ask_execs_enabled", False)) and multi_turn_enabled
+        ask_execs_user_id = payload.get("ask_execs_user_id")
+        step_by_step_enabled = bool(payload.get("step_by_step_enabled", False))
+
+        def _fit(publish: bool) -> Dict[str, Any]:
+            return self.fit_request(
+                input_text=input_text,
+                chat_history=chat_history,
+                request_tools=filter_acpx_tools(self.tools, acpx_enabled),
+                multi_turn=multi_turn_enabled,
+                step_by_step=step_by_step_enabled,
+                acpx_requested=acpx_requested,
+                global_execution_plan=global_execution_plan,
+                user_id=ask_execs_user_id,
+                publish=publish,
+            )
+
+        # ── FIT FIRST (Angela, 2026-10-01; the Compact-mode switch 2026-10-02) ──
+        # The Configure rows are re-read first, so a dialog saved since the last
+        # request applies NOW.  A COMPACT request never refreshes the
+        # External-MCP surface - those servers are PAUSED, not reconnected.  A
+        # FULL request refreshes them exactly as before and is re-fitted with
+        # whatever they added.
+        self._refresh_toggle_tool_surface()
+        fit = _fit(publish=False)
+        if fit["mode"] == MODE_COMPACT:
+            if not fit.get("acpx_bound"):
+                if acpx_requested:
+                    print("--- [CONTEXT-FIT] ACPX was ticked, but no ACPX tool is ticked in Compact "
+                          "mode - ACPX is OFF for this request")
+                acpx_enabled = False
+            self._publish_fit(fit["report"], ask_execs_user_id)
+        else:
+            self._refresh_external_mcp_tool_surface()
+            fit = _fit(publish=True)
+
+        with scoped_request_state(
+            multi_turn_enabled=multi_turn_enabled,
+            suppress_visible_consoles=multi_turn_enabled,
+            # A long-running tool (the googler search) polls these so the user's
+            # Cancel stops it mid-flight instead of being waited out.
+            cancel_user_id=ask_execs_user_id,
+            cancel_run_epoch=payload.get("cancel_run_epoch"),
+        ):
+            # ── A CUT request (Angela, 2026-10-01 / 2026-10-02) ──
+            # When Ollama proves a smaller window on the first step, the
+            # executor raises ContextWindowExceeded before ANY tool ran; the
+            # window is learned, the request is re-fitted and sent again.  When
+            # the user's OWN Compact selection still does not fit after that,
+            # the LAST attempt is answered from what the model could read - her
+            # selection is never dropped behind her back - and the chat shows a
+            # CONTEXT-WINDOW warning above the answer.
+            for attempt in range(1, 5):
+                executor = fit.get("executor")
+                try:
+                    if executor is not None:
+                        executor.accept_context_cut = attempt == 4
+                except Exception:  # noqa: BLE001 — a read-only stand-in executor
+                    executor = None
+                try:
+                    result = self._run_fitted(
+                        fit,
+                        payload=payload,
+                        multi_turn_enabled=multi_turn_enabled,
+                        exec_report_enabled=exec_report_enabled,
+                        ask_execs_enabled=ask_execs_enabled,
+                        ask_execs_user_id=ask_execs_user_id,
+                        acpx_enabled=acpx_enabled,
+                        global_execution_plan=global_execution_plan,
+                    )
+                    if fit["mode"] == MODE_COMPACT and isinstance(result, dict):
+                        # A small model fences the table the user asked to
+                        # SEE; show it as a table (context_fitter).
+                        shown, lifted = unwrap_display_tables(result.get("output") or "", input_text)
+                        if lifted:
+                            result["output"] = shown
+                            print(f"--- [CONTEXT-FIT] showed {lifted} fenced table(s) as tables "
+                                  "(Compact mode: the small model fenced what the user asked to see)")
+                    return result
+                except ContextWindowExceeded as cut:
+                    if attempt >= 4:
+                        raise RuntimeError(
+                            f"Ollama kept cutting the request to {cut.model} even after it was "
+                            f"fitted to {cut.window} tokens") from cut
+                    print(f"--- [CONTEXT-FIT] re-fitting to the window Ollama just proved "
+                          f"({cut.window} tokens) and sending again (attempt {attempt + 1}/4"
+                          + (", the last one is answered even if it is cut" if attempt == 3 else "")
+                          + ")")
+                    fit = _fit(publish=True)
+                    if fit["mode"] == MODE_COMPACT and not fit.get("acpx_bound"):
+                        acpx_enabled = False
+                finally:
+                    try:
+                        if executor is not None:
+                            executor.accept_context_cut = False
+                    except Exception:  # noqa: BLE001
+                        pass
+        return {"output": ""}  # unreachable - the loop returns or raises
+
+    def _run_fitted(self, fit: Dict[str, Any], *, payload: Dict[str, Any],
+                    multi_turn_enabled: bool, exec_report_enabled: bool,
+                    ask_execs_enabled: bool, ask_execs_user_id: Any,
+                    acpx_enabled: bool, global_execution_plan: Any) -> Dict[str, Any]:
+        executor = fit["executor"]
+        compact = fit["mode"] == MODE_COMPACT
+        fitted_input = fit["input"]
+        # The history the executor receives IS the fitted one (identical to the
+        # chat's own history whenever it fits the model).
+        chat_history = fit["history"]
+
+        if not multi_turn_enabled:
+            print(
+                "--- CapabilityAwareToolAgentExecutor: multi-turn disabled; "
+                + ("COMPACT request: " + str([t.name for t in fit["tools"]])
+                   + f" (ACPX {'on' if acpx_enabled else 'off'}) ---"
+                   if compact else f"using legacy full-tool binding (acpx_enabled={acpx_enabled}) ---")
+            )
+            # Legacy path: a one-shot executor over the request-scoped tool set
+            # (fit_request built it), so disabling ACPX in legacy mode also
+            # strips the ACPX tools from the LLM's bind_tools() list.
+            return executor.invoke({"input": fitted_input, "chat_history": chat_history})
+
+        # === MANDATE (Angela, 2026-06-16, refined 2026-06-19) ===
+        # Multi-Turn must let Tlamatini SEE the tools she needs — binding a tiny
+        # planner subset once starved the operator ("no file/shell tool bound").
+        # But blindly binding the FULL surface (86 agents + active External-MCP
+        # tools) overflowed the model window live ("prompt too long 273284 >
+        # 262144") and crashed the turn into a basic-LLM fallback. So we
+        # RANK-AND-BUDGET (_budget_select_tools, inside fit_request): when the
+        # whole surface fits, bind it all unchanged; when it does not, keep a
+        # guaranteed operator CORE + the planner's picks + the highest
+        # capability-scored tools until a token budget is reached, and drop the
+        # low-rank tail (logged, never silent). ACPX is still filtered per the
+        # toolbar checkbox; External MCP tools were refreshed above; the planner
+        # summary is still forwarded below for ordering hints.
+        # (2026-10-01) A model too small for even that runs COMPACT instead —
+        # Current-Time only, ACPX off, External MCPs paused — and the planner
+        # summary is NOT forwarded: it would order tools that are not bound.
+        _planned_count = (
+            len(selected_tool_names_from_plan(global_execution_plan))
+            if global_execution_plan else 0
+        )
+        selected_tools = fit["tools"]
+        _dropped = int(fit.get("dropped") or 0)
+        _tool_tokens = int(fit.get("tool_tokens") or 0)
+        # ⚠️ NEVER SILENTLY DISARM (Angela, 2026-09-20).
+        # If the budgeter returns NOTHING while tools were requested, the
+        # executor takes its no-tools branch and Tlamatini answers in prose
+        # — reporting "I created the file" while creating nothing. That is
+        # exactly what emptied C:\Tlamatini\Templates on v1.65.0. Keep the
+        # operator core anyway, and TELL HER — in the chat, not only here.
+        if not compact and fit.get("starved"):
+            _starved_notice = (
+                "⚠️ Esta conversación creció mucho, así que no pude conectar todos mis "
+                f"tools en este turno: sólo conservé {len(selected_tools)} "
+                "tools básicos. Si un paso necesita un agent que ya no tengo, borra el "
+                "historial del chat o empieza un chat nuevo y vuelvo a tener todos mis tools. "
+                "Te lo digo ahora en lugar de reportarte un trabajo que no puedo hacer."
+            )
+            print(
+                "--- CapabilityAwareToolAgentExecutor: TOOL SURFACE CAME BACK EMPTY "
+                f"({len(filter_acpx_tools(self.tools, acpx_enabled))} requested) — restored "
+                f"{len(selected_tools)} core tool(s) so the operator is not silently "
+                "turned into a chatbot."
+            )
+            try:
+                from .self_healing import notify_user
+                notify_user(ask_execs_user_id, _starved_notice)
+            except Exception as _warn_err:  # noqa: BLE001 — a warning must never break the turn
+                print(f"--- [CONTEXT] could not surface the starved-surface notice: {_warn_err}")
+        if compact:
+            print(
+                "--- CapabilityAwareToolAgentExecutor: multi-turn enabled; COMPACT request — "
+                f"binding {[t.name for t in selected_tools]} (Current-Time only; ACPX off; "
+                "External MCPs paused; planner hint withheld)"
+            )
+        elif _dropped:
+            print(
+                "--- CapabilityAwareToolAgentExecutor: multi-turn enabled; tool "
+                f"surface OVER budget — kept {len(selected_tools)}/{len(selected_tools) + _dropped} "
+                f"highest-ranked tools (~{_tool_tokens} tool-tokens), dropped {_dropped} "
+                f"low-rank tools to fit the model window (planner hinted "
+                f"{_planned_count}; acpx_enabled={acpx_enabled})"
+            )
+        else:
+            print(
+                "--- CapabilityAwareToolAgentExecutor: multi-turn enabled; binding "
+                f"the FULL enabled surface: {len(selected_tools)} tools (~{_tool_tokens} "
+                f"tool-tokens, within budget; planner hinted {_planned_count}; "
+                f"acpx_enabled={acpx_enabled})"
+            )
+        executor_payload = {"input": fitted_input, "chat_history": chat_history}
+        # Always forward the conversation user id so the executor's
+        # self-healing invoker can push LIVE recovery status to THIS user's
+        # chat (independent of Ask-Execs).
+        executor_payload["ask_execs_user_id"] = ask_execs_user_id
+        # Always forward this run's cancellation epoch. The LAST of the three
+        # plumbing hops (ask_rag payload → UnifiedAgentChain's rebuild whitelist →
+        # the executor sub-payloads → here). Drop it and the executor's run_epoch
+        # is None, every cancel guard silently no-ops, and a cancelled Multi-Turn
+        # run comes back to life. (Angela, 2026-07-14)
+        executor_payload["cancel_run_epoch"] = payload.get("cancel_run_epoch")
+        if exec_report_enabled:
+            executor_payload["exec_report_enabled"] = True
+        if ask_execs_enabled:
+            executor_payload["ask_execs_enabled"] = True
+        if global_execution_plan and not compact:
+            executor_payload["global_execution_plan"] = global_execution_plan
+            executor_payload["planner_summary"] = (
+                payload.get("planner_summary")
+                or summarize_global_execution_plan(global_execution_plan)
+            )
+        return executor.invoke(executor_payload)
+
+
+def _external_mcp_supervisor_names() -> frozenset:
+    """The External-MCP supervisor tools - listed in no Configure dialog, so a
+    Compact request (exactly what the user ticked) never binds them."""
+    try:
+        from .external_mcp_manager import _SUPERVISOR_TOOL_NAMES
+        return frozenset(_SUPERVISOR_TOOL_NAMES)
+    except Exception:  # noqa: BLE001
+        return frozenset()
+
+
+def _compact_mode_saved_external() -> list:
+    """The External MCPs the Compact-mode switch paused (and will restore)."""
+    try:
+        from .models import CompactState
+        row = CompactState.objects.filter(pk=1).first()
+        return [str(k) for k in json.loads((row.saved_external_active if row else "") or "[]")]
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def create_unified_agent(llm, preeliminary_prompt: str):
+    """
+    Build a single multi-turn tool‑calling agent that can both chat and invoke MCP tools.
+    """
+    tools = get_mcp_tools()
+    print(f"--- create_unified_agent: {len(tools)} tools available:")
+    for t in tools:
+        print(f"    - {t.name}: {t.description[:50]}..." if len(t.description) > 50 else f"    - {t.name}: {t.description}")
+
+    getted_llm = _ensure_chat_tool_model(llm)
+    if not hasattr(getted_llm, "bind_tools"):
+        raise RuntimeError("The configured unified agent model does not support bind_tools().")
+
+    max_iterations = get_int_config_value("unified_agent_max_iterations", 4096, minimum=1)
+    print(f"--- Unified agent max iterations: {max_iterations} ---")
+    return CapabilityAwareToolAgentExecutor(
+        llm=getted_llm,
+        preeliminary_prompt=preeliminary_prompt,
+        tools=tools,
+        max_iterations=max_iterations,
+    )

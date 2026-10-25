@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0179_regroup_resort_prompts_no_gaps.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

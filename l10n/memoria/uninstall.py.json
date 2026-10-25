@@ -1,0 +1,549 @@
+{
+ "archivo": "uninstall.py",
+ "segmentos": [
+  {
+   "en": "\"running from the installation directory\"",
+   "es": "\"en ejecución desde el directorio de instalación\"",
+   "n": 1
+  },
+  {
+   "en": "\"image path unreadable - matched by name\"",
+   "es": "\"no se pudo leer el path de la imagen; coincidió por nombre\"",
+   "n": 1
+  },
+  {
+   "en": "\"Removing shortcuts…\"",
+   "es": "\"Quitando los accesos directos…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Unregistering .flw and .fpmt file associations…\"",
+   "es": "\"Quitando el registro de las asociaciones de archivo .flw y .fpmt…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Removing application files…\"",
+   "es": "\"Eliminando los archivos de la aplicación…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Cleaning up…\"",
+   "es": "\"Limpiando…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Refreshing Windows Desktop…\"",
+   "es": "\"Actualizando el escritorio de Windows…\"",
+   "n": 2
+  },
+  {
+   "en": "f\"Tlamatini Uninstaller v{self.version}\"",
+   "es": "f\"Desinstalador de Tlamatini v{self.version}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini Uninstaller\"",
+   "es": "\"Desinstalador de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"Select the Tlamatini installation directory\"",
+   "es": "\"Selecciona el directorio de instalación de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"No path selected\"",
+   "es": "\"No seleccionaste un path\"",
+   "n": 1
+  },
+  {
+   "en": "\"Please select the installation directory.\"",
+   "es": "\"Selecciona el directorio de instalación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid path\"",
+   "es": "\"Path inválido\"",
+   "n": 1
+  },
+  {
+   "en": "f\"The directory does not exist:\\n{raw}\"",
+   "es": "f\"El directorio no existe:\\n{raw}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid installation directory\"",
+   "es": "\"Directorio de instalación inválido\"",
+   "n": 1
+  },
+  {
+   "en": "\"Select the installed Tlamatini folder. A drive root, shared system \"",
+   "es": "\"Selecciona la carpeta instalada de Tlamatini. Una raíz de unidad, una carpeta de sistema \"",
+   "n": 1
+  },
+  {
+   "en": "\"folder, source checkout or redirected directory cannot be uninstalled.\"",
+   "es": "\"compartida, una copia del código fuente o un directorio redirigido no se pueden desinstalar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Not a Tlamatini installation\"",
+   "es": "\"No es una instalación de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "f\"The selected directory does not appear to contain a \"",
+   "es": "f\"El directorio que elegiste no parece contener una \"",
+   "n": 1
+  },
+  {
+   "en": "f\"Tlamatini installation:\\n{raw}\\n\\nSelect the installed application folder.\"",
+   "es": "f\"instalación de Tlamatini:\\n{raw}\\n\\nSelecciona la carpeta de la aplicación instalada.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Finish Uninstallation\"",
+   "es": "\"Terminar la desinstalación\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Tlamatini was already removed from:\\n{raw}\\n\\n\"",
+   "es": "f\"Tlamatini ya se quitó de:\\n{raw}\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Finish removing the remaining temporary application files?\\n\"",
+   "es": "\"¿Quieres terminar de quitar los archivos temporales de la aplicación que quedan?\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Your preserved content and agents will remain untouched.\"",
+   "es": "\"El contenido y los agents que conservaste no se tocarán.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Confirm Uninstallation\"",
+   "es": "\"Confirmar la desinstalación\"",
+   "n": 1
+  },
+  {
+   "en": "f\"This will remove Tlamatini from:\\n{raw}\\n\\n\"",
+   "es": "f\"Esto quitará Tlamatini de:\\n{raw}\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"The agents/ directory is preserved — and so are application/, \"",
+   "es": "\"Se conserva el directorio agents/ — y también application/, \"",
+   "n": 1
+  },
+  {
+   "en": "\"and Templates/ whenever they hold content.\\n\"",
+   "es": "\"y Templates/ cuando contienen contenido.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"All other files will be permanently deleted.\\n\\n\"",
+   "es": "\"Todos los demás archivos se eliminarán de forma permanente.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Remaining workers launched from this installation, including \"",
+   "es": "\"Los workers que quedan, lanzados desde esta instalación, incluidos \"",
+   "n": 1
+  },
+  {
+   "en": "\"agents and their child processes, will be stopped.\\n\\n\"",
+   "es": "\"los agents y sus procesos hijos, se detendrán.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Do you want to continue?\"",
+   "es": "\"¿Quieres continuar?\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini is still running\"",
+   "es": "\"Tlamatini sigue en ejecución\"",
+   "n": 1
+  },
+  {
+   "en": "\"Close Tlamatini to continue.\"",
+   "es": "\"Cierra Tlamatini para continuar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Close the main application normally so it can finish its work. \"",
+   "es": "\"Cierra la aplicación principal de forma normal para que termine su trabajo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"In the Tlamatini console, Ctrl+C requests a clean shutdown. Then select Retry.\"",
+   "es": "\"En la consola de Tlamatini, Ctrl+C pide un cierre limpio. Después selecciona Reintentar.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"STILL RUNNING — retry #{self._gate_attempts} detected \"",
+   "es": "f\"SIGUE EN EJECUCIÓN — reintento #{self._gate_attempts} detectado \"",
+   "n": 1
+  },
+  {
+   "en": "f\"{len(found)} Tlamatini process(es) in:\\n{target}\"",
+   "es": "f\"{len(found)} proceso(s) de Tlamatini en:\\n{target}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{len(found)} Tlamatini process(es) are running in:\\n{target}\"",
+   "es": "f\"{len(found)} proceso(s) de Tlamatini en ejecución en:\\n{target}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Exit\"",
+   "es": "\"Salir\"",
+   "n": 1
+  },
+  {
+   "en": "\"⟳  Retry\"",
+   "es": "\"⟳  Reintentar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Stopping remaining agent workers…\"",
+   "es": "\"Deteniendo los agent workers que quedan…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Inspecting installed files and preserved content…\"",
+   "es": "\"Revisando los archivos instalados y el contenido conservado…\"",
+   "n": 1
+  },
+  {
+   "en": "\"An interrupted setup operation must be restored before removal can continue.\"",
+   "es": "\"Hay que restaurar una operación de instalación interrumpida antes de poder continuar con la eliminación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restoring the previous installation…\"",
+   "es": "\"Restaurando la instalación anterior…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{exc}\\n\\nThe installation files and Windows registrations were restored. You can retry.\"",
+   "es": "f\"{exc}\\n\\nSe restauraron los archivos de instalación y los registros de Windows. Puedes volver a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Deleting application files…\"",
+   "es": "\"Eliminando los archivos de la aplicación…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"\\nEmpty-folder cleanup can be retried: {exc}\"",
+   "es": "f\"\\nSe puede reintentar la limpieza de carpetas vacías: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Application removed; cleanup needs attention.\"",
+   "es": "\"Aplicación quitada; la limpieza necesita atención.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Uninstallation complete!\"",
+   "es": "\"¡Desinstalación completa!\"",
+   "n": 1
+  },
+  {
+   "en": "\"Windows integration removed. Finishing file cleanup…\"",
+   "es": "\"Se quitó la integración con Windows. Terminando la limpieza de archivos…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"The removal helper {filename} is missing from {target_dir}. \"",
+   "es": "f\"Falta el script auxiliar de eliminación {filename} en {target_dir}. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Restore the complete installation with its Installer, then retry removal.\"",
+   "es": "\"Restaura la instalación completa con su instalador y vuelve a intentar la eliminación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The removal time limit was reached before file deletion. Restoring the installation.\"",
+   "es": "\"Se alcanzó el límite de tiempo de la eliminación antes de borrar los archivos. Restaurando la instalación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Skipping agents/ (preserved)…\"",
+   "es": "\"Omitiendo agents/ (conservado)…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Skipping {item}/ (your content is preserved)…\"",
+   "es": "f\"Omitiendo {item}/ (tu contenido se conserva)…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Removing files… ({processed}/{total})\"",
+   "es": "f\"Eliminando archivos… ({processed}/{total})\"",
+   "n": 1
+  },
+  {
+   "en": "\"Some application files could not be removed. Close programs \"",
+   "es": "\"No se pudieron eliminar algunos archivos de la aplicación. Cierra los programas \"",
+   "n": 1
+  },
+  {
+   "en": "\"using this installation and retry.\\n\\n\"",
+   "es": "\"que usan esta instalación y vuelve a intentarlo.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Temporary files remain at {folder}: {exc}\"",
+   "es": "f\"Quedan archivos temporales en {folder}: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Temporary cleanup could not finish for {folder / name}: {exc}\"",
+   "es": "f\"No se pudo terminar la limpieza temporal de {folder / name}: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Temporary cleanup could not finish for {folder}: {exc}\"",
+   "es": "f\"No se pudo terminar la limpieza temporal de {folder}: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Could not remove {name}: another program keeps it open (an \"",
+   "es": "f\"No se pudo eliminar {name}: otro programa lo mantiene abierto (un \"",
+   "n": 1
+  },
+  {
+   "en": "\"antivirus scan or an Explorer window showing this folder are \"",
+   "es": "\"análisis de antivirus o una ventana del Explorador mostrando esta carpeta son \"",
+   "n": 1
+  },
+  {
+   "en": "f\"the usual causes). Close it and press Uninstall again.\\n\\n{held}\"",
+   "es": "f\"las causas habituales). Ciérralo y presiona Desinstalar otra vez.\\n\\n{held}\"",
+   "n": 1
+  },
+  {
+   "en": "\"The Installed-apps entry has no installation owner. Repair it with the Installer before retrying.\"",
+   "es": "\"La entrada de las aplicaciones instaladas no tiene un dueño de instalación. Repárala con el instalador antes de volver a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The Installed-apps entry has an invalid installation owner. Repair it with the Installer before retrying.\"",
+   "es": "\"La entrada de las aplicaciones instaladas tiene un dueño de instalación inválido. Repárala con el instalador antes de volver a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Windows still reports the Installed-apps entry after its removal. Retry after closing other setup windows.\"",
+   "es": "\"Windows sigue reportando la entrada de las aplicaciones instaladas después de quitarla. Vuelve a intentarlo tras cerrar otras ventanas del instalador.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Could not remove the Installed-apps entry: {e}\"",
+   "es": "f\"No se pudo quitar la entrada de las aplicaciones instaladas: {e}\"",
+   "n": 1
+  },
+  {
+   "en": "\"\\n\\nContent was detected in the directory below, so it was \"",
+   "es": "\"\\n\\nSe detectó contenido en el directorio de abajo, así que quedó \"",
+   "n": 1
+  },
+  {
+   "en": "\"left untouched:\"",
+   "es": "\"sin tocar:\"",
+   "n": 2
+  },
+  {
+   "en": "\"\\n\\nContent was detected in the directories below, so they were \"",
+   "es": "\"\\n\\nSe detectó contenido en los directorios de abajo, así que quedaron \"",
+   "n": 1
+  },
+  {
+   "en": "f\"\\n\\nThe agents/ directory was preserved at:\\n{agents_dir}\"",
+   "es": "f\"\\n\\nEl directorio agents/ se conservó en:\\n{agents_dir}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Shortcuts and .flw / .fpmt file associations have been removed.\"",
+   "es": "\"Se quitaron los accesos directos y las asociaciones de archivo .flw / .fpmt.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Finishing file cleanup.\"",
+   "es": "\"Terminando la limpieza de archivos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"An application is present again. Cleanup stopped to protect the new installation.\"",
+   "es": "\"Hay una aplicación presente otra vez. Se detuvo la limpieza para proteger la instalación nueva.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Setup recovery changed since this removal. Cleanup stopped; files were kept.\"",
+   "es": "\"Los datos de recuperación del instalador cambiaron desde esta eliminación. Se detuvo la limpieza; se conservaron los archivos.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Recovery journal is unavailable. Files were kept at {recovery.folder}.\"",
+   "es": "f\"El journal de recuperación no está disponible. Los archivos se conservaron en {recovery.folder}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The completed-removal receipt is unavailable. Files were kept.\"",
+   "es": "\"El recibo de eliminación completada no está disponible. Se conservaron los archivos.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Application cleanup remains at {recovery.folder}: {exc}\"",
+   "es": "f\"Queda limpieza de la aplicación en {recovery.folder}: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "\"\\n\\nWindows was still holding \"",
+   "es": "\"\\n\\nWindows seguía reteniendo \"",
+   "n": 1
+  },
+  {
+   "en": "\" (usually an \"",
+   "es": "\" (lo habitual es un \"",
+   "n": 1
+  },
+  {
+   "en": "\"antivirus scan or Explorer reading its icon), so it was set aside. \"",
+   "es": "\"análisis de antivirus o que el Explorador lea su icono), así que se dejó aparte. \"",
+   "n": 1
+  },
+  {
+   "en": "\"It is deleted automatically a few seconds after you close this \"",
+   "es": "\"Se elimina automáticamente unos segundos después de que cierres esta \"",
+   "n": 1
+  },
+  {
+   "en": "\"window, together with the installation folder if nothing else \"",
+   "es": "\"ventana, junto con la carpeta de instalación si no queda nada más \"",
+   "n": 1
+  },
+  {
+   "en": "\"is left in it.\"",
+   "es": "\"en ella.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Templates\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "\"Segoe UI\"",
+   "motivo": "nombre de fuente"
+  },
+  {
+   "en": "\"Tlamatini\"",
+   "motivo": "valor de dato (archivo marcador)"
+  },
+  {
+   "en": "\"applications/, content_generated/, context_files/, doc_generated/ \"",
+   "motivo": "nombres de carpeta"
+  },
+  {
+   "en": "f\"  {rec['name']}   (PID {rec['pid']})   {rec['evidence']}\"",
+   "motivo": "sólo PID y expresiones"
+  },
+  {
+   "en": "\"uninstallation worker start\"",
+   "motivo": "etiqueta de contexto (log)"
+  },
+  {
+   "en": "f\"UNINSTALL ELAPSED: {elapsed:.2f}s; target {UNINSTALL_TARGET_SECONDS}s; \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"limit {UNINSTALL_LIMIT_SECONDS}s; cleanup warnings: {len(self.cleanup_warnings)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Temp\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "f\"[UNINSTALL] {warning}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{name} was still held by Windows ({held}); moved aside for \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"deletion after the uninstaller closes.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Tlamatini application binaries were removed by the uninstaller, \"",
+   "motivo": "texto de archivo marcador (no es pantalla)"
+  },
+  {
+   "en": "\"but this agents/ directory was intentionally preserved.\"",
+   "motivo": "texto de archivo marcador (no es pantalla)"
+  },
+  {
+   "en": "\"before Installed-apps removal\"",
+   "motivo": "etiqueta de contexto (log)"
+  },
+  {
+   "en": "\"Installed-apps entry is already absent (HKCU).\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Keeping Installed-apps entry owned by another installation.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Removed and verified Installed-apps entry (HKCU).\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"WARNING: Shell refresh failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"WARNING: could not relocate the uninstaller to Temp ({exc}); \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"running in place.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'rd /s /q \"{p}\"'",
+   "motivo": "fragmento de línea de comandos (batch)"
+  },
+  {
+   "en": "f'del /f /q \"{p}\"'",
+   "motivo": "fragmento de línea de comandos (batch)"
+  },
+  {
+   "en": "f'rd \"{p}\"'",
+   "motivo": "fragmento de línea de comandos (batch)"
+  },
+  {
+   "en": "f\"{step} 2>nul\"",
+   "motivo": "fragmento de línea de comandos (batch)"
+  },
+  {
+   "en": "f'if not exist \"{p}\" '",
+   "motivo": "fragmento de línea de comandos (batch)"
+  },
+  {
+   "en": "f'\"{comspec}\" /d /q /s /c \"for /l %i in (1,1,{int(attempts)}) do '",
+   "motivo": "fragmento de línea de comandos (batch)"
+  },
+  {
+   "en": "f'@(ping -n 3 127.0.0.1 >nul & {body} & {done})\"'",
+   "motivo": "fragmento de línea de comandos (batch)"
+  }
+ ]
+}

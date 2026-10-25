@@ -1,0 +1,264 @@
+/* Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 */
+/* =====================================================================
+ * Context gauge — the ring in the chat window (Angela, 2026-09-20)
+ * ---------------------------------------------------------------------
+ * A sibling row between the toolbar (#tools-div) and the message box,
+ * showing the REAL size of the request about to go on the wire.
+ *
+ * Contracts (design Part IV / Part V — do NOT weaken):
+ *   · NO GAUGE DATA ⇒ NO GAUGE. Until the first frame arrives the row is
+ *     `display:none` and occupies ZERO height, so a page that never gets
+ *     a measurement is byte-for-byte what it is today.
+ *   · Colour is NEVER the only signal — the zone WORD and the number
+ *     carry it too, so the row still reads correctly for a colour-blind
+ *     user and in a screenshot.
+ *   · The FLOOR state uses a STATIC halo, not a flash. A blinking element
+ *     beside a text box is an accessibility problem, not urgency.
+ *   · Bytes are the headline (measured); tokens are smaller and always
+ *     carry "est." — never present the estimate as the measurement.
+ *   · Colours come from the page's own --tlm-dlg-* tokens (with literal
+ *     fallbacks) so the row belongs to the theme rather than fighting it.
+ * ===================================================================== */
+
+#context-gauge-row {
+    /* Hidden AND zero-height until the first frame. */
+    display: none;
+    /* The composer measures this row's natural height. Never let flex shrink
+       its contents before that measurement, especially when the avatar docks. */
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 10px;
+    margin: 2px 0 0;
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.16);
+    color: var(--tlm-dlg-body, #c1c5d0);
+    font-family: var(--tlm-dlg-font, 'Nunito', sans-serif);
+    font-size: 11px;
+    line-height: 1.25;
+    overflow: hidden;
+}
+
+#context-gauge-row.ctxg-visible {
+    display: flex;
+}
+
+/* ── the legend: what IS this row? ────────────────────────────────── */
+/* A number with no name is a puzzle. The row says what it is before it
+   says how big it is, and the second line names which call produced the
+   reading (one-shot / multi-turn / acpx). */
+.ctxg-title {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 9px;
+    margin-right: 3px;
+    border-right: 1px solid rgba(255, 255, 255, 0.10);
+    cursor: help;
+}
+
+.ctxg-title-main {
+    color: var(--tlm-dlg-text, #f0f1f7);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.ctxg-title-sub {
+    max-width: 130px;
+    overflow: hidden;
+    color: var(--tlm-dlg-body, #c1c5d0);
+    font-size: 9px;
+    line-height: 1.2;
+    opacity: 0.7;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── the ring ─────────────────────────────────────────────────────── */
+.ctxg-ring {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    display: block;
+}
+
+.ctxg-ring-track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-width: 4;
+}
+
+.ctxg-ring-value {
+    fill: none;
+    stroke: var(--ctxg-zone, #35c08a);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 220ms ease, stroke 220ms ease;
+}
+
+.ctxg-ring-pct {
+    fill: var(--tlm-dlg-text, #f0f1f7);
+    font-size: 9.5px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+/* ── the legend: bytes lead, tokens follow ────────────────────────── */
+.ctxg-legend {
+    flex: 0 0 auto;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ctxg-bytes {
+    color: var(--tlm-dlg-title, #ffffff);
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+}
+
+/* The estimate is DELIBERATELY quieter than the measurement. */
+.ctxg-tokens {
+    color: var(--tlm-dlg-body, #c1c5d0);
+    font-size: 10px;
+    opacity: 0.85;
+    white-space: nowrap;
+}
+
+/* Ollama's OWN prompt_eval_count (2026-09-28): a measurement, not an
+   estimate, so it is shown at full strength and says REAL. */
+.ctxg-tokens.ctxg-real {
+    color: #eef1f8;
+    opacity: 1;
+    font-weight: 600;
+}
+
+.ctxg-zone-word {
+    flex: 0 0 auto;
+    padding: 1px 6px;
+    border: 1px solid var(--ctxg-zone, #35c08a);
+    border-radius: 3px;
+    color: var(--ctxg-zone, #35c08a);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ── the sparkline: one point per model step ──────────────────────── */
+.ctxg-spark {
+    flex: 1 1 auto;
+    min-width: 40px;
+    height: 26px;
+    display: block;
+}
+
+.ctxg-spark-line {
+    fill: none;
+    stroke: var(--ctxg-zone, #35c08a);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.ctxg-spark-mark {
+    fill: var(--ctxg-zone, #35c08a);
+}
+
+/* ── the stream bar: WHY it is that big ───────────────────────────── */
+.ctxg-streams {
+    flex: 0 0 auto;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ctxg-bar {
+    display: flex;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ctxg-seg {
+    height: 100%;
+}
+
+.ctxg-seg-prefix {
+    background: rgba(255, 255, 255, 0.34);
+}
+
+.ctxg-seg-history {
+    background: rgba(255, 255, 255, 0.20);
+}
+
+/* The user's loaded / retrieved project context (2026-09-28) - its own
+   colour, so "Clear context" visibly removes exactly this slice. */
+.ctxg-seg-context {
+    background: #5aa9e6;
+}
+
+/* The loop is the stream that grows without limit — it wears the zone
+   colour so its share is the thing your eye lands on. */
+.ctxg-seg-loop {
+    background: var(--ctxg-zone, #35c08a);
+}
+
+.ctxg-streams-label {
+    color: var(--tlm-dlg-body, #c1c5d0);
+    font-size: 9px;
+    opacity: 0.75;
+    white-space: nowrap;
+}
+
+/* ── the four zones ───────────────────────────────────────────────── */
+/* IDLE - on screen from page load, before anything has been measured.
+   Deliberately colourless: the row is present and named, but it is not
+   claiming a reading it does not have. */
+#context-gauge-row[data-zone="idle"]  { --ctxg-zone: #6f7f9c; }
+#context-gauge-row[data-zone="green"] { --ctxg-zone: #35c08a; }
+#context-gauge-row[data-zone="amber"] { --ctxg-zone: #e0b341; }
+#context-gauge-row[data-zone="red"]   { --ctxg-zone: #e07a3f; }
+#context-gauge-row[data-zone="floor"] { --ctxg-zone: #e05a70; }
+
+/* STATIC halo — never a flash. */
+#context-gauge-row[data-zone="floor"] {
+    border-color: rgba(224, 90, 112, 0.55);
+    box-shadow: 0 0 0 1px rgba(224, 90, 112, 0.25) inset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ctxg-ring-value {
+        transition: none;
+    }
+}
+
+/* Narrow chat column: drop the decorations, never the numbers. */
+@media (max-width: 720px) {
+    .ctxg-spark,
+    .ctxg-streams {
+        display: none;
+    }
+}
+
+/* A request PAST the window, or one Ollama CUT (2026-10-02): the strongest
+   colour the ring has - not everything will work. */
+#context-gauge-row[data-over="true"],
+#context-gauge-row[data-cut="true"] { --ctxg-zone: #ff3b5c; }

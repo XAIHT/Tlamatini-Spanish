@@ -1,0 +1,54 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0157_add_whatsapper_identity_demo_prompt.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Tlamatini, run the **WHATSAPP 'AS ME' demo**: send ONE short WhatsApp message \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"to MYSELF, FROM MY OWN number (not the business number). Use ONLY the \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"chat_agent_whatsapper tool with mode='send', provider='me' (so it goes out via \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"WhatsApp Web from my own personal number), contact_name='me' (so it reaches only \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"me), and message='Hi from my own WhatsApp - Whatsapper personal-mode test'.\\n\"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"Safety: provider='me' uses WhatsApp Web and needs a one-time QR login. If my \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"WhatsApp Web personal mode is NOT set up yet (no login, or no 'me' contact), do \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"NOT keep retrying and do NOT reopen anything - just tell me it could not send \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"because personal mode isn't set up, and stop. Do not message anyone other than me.\\n\"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"Tick ONLY the Multi-Turn checkbox; use ONLY chat_agent_whatsapper. \"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "demo de identidad de mensajería; 0158 la redisena y la busca por marcador en inglés; conservar"
+  }
+ ]
+}

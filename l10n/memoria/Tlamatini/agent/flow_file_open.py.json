@@ -1,0 +1,182 @@
+{
+ "archivo": "Tlamatini/agent/flow_file_open.py",
+ "segmentos": [
+  {
+   "en": "'This is not an Agentic Control Panel .flw file.'",
+   "es": "'Este no es un archivo .flw de Agentic Control Panel.'",
+   "n": 1
+  },
+  {
+   "en": "'This .flw version is not supported by this Tlamatini.'",
+   "es": "'Esta versión de .flw no es compatible con este Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "'A .flw file must contain nodes and connections arrays.'",
+   "es": "'Un archivo .flw debe contener los arreglos nodes y connections.'",
+   "n": 1
+  },
+  {
+   "en": "'This agent flow contains too many nodes or connections.'",
+   "es": "'Este flow de agents tiene demasiados nodos o conexiones.'",
+   "n": 1
+  },
+  {
+   "en": "'Every agent node must have a nonempty text name.'",
+   "es": "'Cada nodo de agent debe tener un nombre de texto no vacío.'",
+   "n": 1
+  },
+  {
+   "en": "'An agent configuration must be an object.'",
+   "es": "'La configuración de un agent debe ser un objeto.'",
+   "n": 1
+  },
+  {
+   "en": "'Agent positions must be pixel coordinates.'",
+   "es": "'Las posiciones de los agents deben ser coordenadas en píxeles.'",
+   "n": 1
+  },
+  {
+   "en": "'Agent node IDs must be unique nonempty strings.'",
+   "es": "'Los IDs de los nodos de agent deben ser cadenas únicas y no vacías.'",
+   "n": 1
+  },
+  {
+   "en": "f'A flow can contain only one {node[\"text\"]}.'",
+   "es": "f'Un flow sólo puede contener un {node[\"text\"]}.'",
+   "n": 1
+  },
+  {
+   "en": "'Every connection must be an object.'",
+   "es": "'Cada conexión debe ser un objeto.'",
+   "n": 1
+  },
+  {
+   "en": "'A connection references a missing agent node.'",
+   "es": "'Una conexión hace referencia a un nodo de agent que no existe.'",
+   "n": 1
+  },
+  {
+   "en": "'A connection slot must be a nonnegative integer.'",
+   "es": "'El slot de una conexión debe ser un entero no negativo.'",
+   "n": 1
+  },
+  {
+   "en": "'Choose a .flw agent flow or a .fpmt prompting flow.'",
+   "es": "'Elige un flow de agents .flw o un prompt flow .fpmt.'",
+   "n": 1
+  },
+  {
+   "en": "'The flow file must be no larger than 5 MiB.'",
+   "es": "'El archivo del flow no puede pesar más de 5 MiB.'",
+   "n": 1
+  },
+  {
+   "en": "f'Could not open {Path(filename).name}: {exc}'",
+   "es": "f'No se pudo abrir {Path(filename).name}: {exc}'",
+   "n": 1
+  },
+  {
+   "en": "f'Invalid JSON number: {value}.'",
+   "es": "f'Número JSON no válido: {value}.'",
+   "n": 1
+  },
+  {
+   "en": "'Too many unopened flows. Open an existing request or try again in 15 minutes.'",
+   "es": "'Hay demasiados flows sin abrir. Abre una solicitud existente o vuelve a intentarlo en 15 minutos.'",
+   "n": 1
+  },
+  {
+   "en": "'This flow-file opening link is invalid. Open the flow file again.'",
+   "es": "'Este link para abrir el archivo del flow no es válido. Vuelve a abrir el archivo del flow.'",
+   "n": 1
+  },
+  {
+   "en": "'This flow-file opening link expired. Open the flow file again.'",
+   "es": "'Este link para abrir el archivo del flow expiró. Vuelve a abrir el archivo del flow.'",
+   "n": 1
+  },
+  {
+   "en": "'The opening request is too large.'",
+   "es": "'La solicitud de apertura es demasiado grande.'",
+   "n": 1
+  },
+  {
+   "en": "'This prompt flow was opened by another signed-in user.'",
+   "es": "'Otro usuario con sesión iniciada abrió este prompt flow.'",
+   "n": 1
+  },
+  {
+   "en": "'This file belongs in the other flow editor. Open the original file again.'",
+   "es": "'Este archivo corresponde al otro editor de flows. Vuelve a abrir el archivo original.'",
+   "n": 1
+  },
+  {
+   "en": "'This flow-file opening link has already been used or is unavailable. Open the flow file again.'",
+   "es": "'Este link para abrir el archivo del flow ya se usó o no está disponible. Vuelve a abrir el archivo del flow.'",
+   "n": 1
+  },
+  {
+   "en": "'The flow-file opening request is damaged. Open the flow file again.'",
+   "es": "'La solicitud para abrir el archivo del flow está dañada. Vuelve a abrir el archivo del flow.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not coordinate prompt-flow startup'",
+   "es": "'No se pudo coordinar el inicio del prompt flow'",
+   "n": 1
+  },
+  {
+   "en": "'The flow file does not exist or is not a regular file.'",
+   "es": "'El archivo del flow no existe o no es un archivo normal.'",
+   "n": 1
+  },
+  {
+   "en": "'Windows could not open a browser. Choose a default web browser and try again.'",
+   "es": "'Windows no pudo abrir un browser. Elige un browser predeterminado y vuelve a intentarlo.'",
+   "n": 2
+  },
+  {
+   "en": "'Tlamatini did not finish starting. Check its main console, then open the file again.'",
+   "es": "'Tlamatini no terminó de iniciar. Revisa su consola principal y vuelve a abrir el archivo.'",
+   "n": 1
+  },
+  {
+   "en": "f'Port {port} is already used by another application or an older Tlamatini. Close it or configure a different Tlamatini web port.'",
+   "es": "f'El puerto {port} ya lo usa otra aplicación o un Tlamatini anterior. Cierra ese programa o configura otro puerto web para Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "f'Could not open the flow file.\\n\\n{error}'",
+   "es": "f'No se pudo abrir el archivo del flow.\\n\\n{error}'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini — Open flow file'",
+   "es": "'Tlamatini — Abrir archivo de flow'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Tlamatini'",
+   "motivo": "valor de máquina: identifica la instancia en la sonda local"
+  },
+  {
+   "en": "'--- [FLOW] Startup did not become ready. Open the flow file again after Tlamatini starts.'",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'http://localhost:{port}{opening_path(path.name, token)}'",
+   "motivo": "URL"
+  },
+  {
+   "en": "'--- [FLOW] Waiting for Tlamatini to finish starting...'",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'--- [FLOW] '",
+   "motivo": "prefijo de log"
+  }
+ ]
+}

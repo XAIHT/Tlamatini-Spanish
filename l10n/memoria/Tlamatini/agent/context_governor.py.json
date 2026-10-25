@@ -1,0 +1,251 @@
+{
+ "archivo": "Tlamatini/agent/context_governor.py",
+ "segmentos": [
+  {
+   "en": "\"learned: Ollama read only %d tokens of a larger request\"",
+   "es": "\"aprendido: Ollama leyó sólo %d tokens de una solicitud más grande\"",
+   "n": 1
+  },
+  {
+   "en": "\"ollama_num_ctx (unverified: cloud ignores num_ctx)\"",
+   "es": "\"ollama_num_ctx (sin verificar: los modelos cloud ignoran num_ctx)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama read only %d of about %d tokens sent and DROPPED the rest - this \"",
+   "es": "\"Ollama leyó sólo %d de unos %d tokens enviados y DESCARTÓ el resto: esta \"",
+   "n": 1
+  },
+  {
+   "en": "\"request does not fit the model's real context window\"",
+   "es": "\"solicitud no cabe en la ventana de contexto real del modelo\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Measurement\"",
+   "motivo": "nombre exportado en __all__"
+  },
+  {
+   "en": "\"Loaded Context from Knowledge Base Fallback:\\n\"",
+   "motivo": "marcador de contexto para el LLM"
+  },
+  {
+   "en": "\"\\n\\nIMPORTANT: The loaded context above\"",
+   "motivo": "marcador de contexto para el LLM"
+  },
+  {
+   "en": "\"Retrieved Context from Knowledge Base:\\n\"",
+   "motivo": "marcador de contexto para el LLM"
+  },
+  {
+   "en": "\"\\n\\nUser Question: \"",
+   "motivo": "marcador de contexto para el LLM"
+  },
+  {
+   "en": "\"ollama /api/show\"",
+   "motivo": "nombre de endpoint (origen técnico del límite)"
+  },
+  {
+   "en": "\"ollama_num_ctx (< /api/show %d)\"",
+   "motivo": "llave de configuración y endpoint"
+  },
+  {
+   "en": "f\"{value:.1f} GB\"",
+   "motivo": "unidad de tamaño"
+  },
+  {
+   "en": "\"--- [CONTEXT] measurement unavailable (fail-open, nothing changed)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT]{where} {measurement.total_bytes} B \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({humanize_bytes(measurement.total_bytes)}) on the wire | \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"prefix {humanize_bytes(measurement.prefix_bytes)} + \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"history {humanize_bytes(measurement.history_bytes)} + \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"loop {humanize_bytes(measurement.loop_bytes)} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({measurement.loop_messages} msg) | \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"~{measurement.tokens_estimated} tokens est. of \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"= {pct:.1f}% est. | zone {measurement.zone.upper()}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"estimate (chars / %g)\"",
+   "motivo": "valor técnico que no se muestra"
+  },
+  {
+   "en": "\"Dict[Any, Callable[[Dict[str, Any]], None]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Callable[[Dict[str, Any]], None]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Optional[Callable[[Dict[str, Any]], None]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Dict[Tuple[str, str], Tuple[float, Dict[str, Any]]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Bearer \"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "f\"--- [CONTEXT-CEILING] {name}: context_length {ctx_len} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"(REAL, from {base}/api/show)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-CEILING] {name}: /api/show gave no context_length\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{' (' + error + ')' if error else ''} - using config / fallback\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Dict[Tuple[str, str], Dict[str, Any]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Dict[Tuple[str, str], float]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "f\"--- [CONTEXT-WINDOW] {name}: Ollama CUT a request - it read only \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{tokens} tokens of ~{chars} characters ({cpt:.1f} chars/token, \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"limit {limit:.1f}; ~{kept_pct:.0f}% kept). The REAL window of this \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"model on this server is {tokens} tokens - learned\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-WINDOW] {name}: Ollama read {tokens} tokens, more than the \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{known['tokens']} learned earlier - that window is forgotten\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Dict[Any, Dict[str, Any]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Dict[Tuple[Any, int], Dict[str, Any]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Dict[str, Tuple[Any, int]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Ollama \"",
+   "motivo": "valor técnico que no se muestra"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REAL]{where} seq={real.get('seq')} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"model={real.get('model') or (payload or {}).get('model') or '?'} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"prompt_eval_count={prompt} eval_count=\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\" | estimate for this request not measured yet\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{head} | estimate {est} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{prompt} of {ceiling} ({payload.get('ceiling_source')}) = \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{pct:.2f}% REAL | {payload.get('kind', 'live')}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CONTEXT-REAL] (unformattable)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-CALL] {name} prompt_eval_count={prompt} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"eval_count={completion} ({source or 'ollama'})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\" | no user bound - not attributed to an answer\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [USAGE] Recording failed: {type(exc).__name__}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{line} | answer so far: {totals[0]} call(s), \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{totals[1]} prompt + {totals[2]} output tokens (REAL)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-TURN] answer finished: {snap['calls']} Ollama call(s), \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{snap['prompt_tokens']} prompt + {snap['completion_tokens']} output \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"tokens (REAL, prompt_eval_count/eval_count), largest single prompt \"",
+   "motivo": "log de consola"
+  }
+ ]
+}

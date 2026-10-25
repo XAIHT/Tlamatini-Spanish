@@ -1,0 +1,11 @@
+{
+ "archivo": "Tlamatini/agent/contacts.py",
+ "segmentos": [
+  {
+   "en": "\"contacts must be a list\"",
+   "es": "\"contacts debe ser una lista\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

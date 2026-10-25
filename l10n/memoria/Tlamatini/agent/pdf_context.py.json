@@ -1,0 +1,139 @@
+{
+ "archivo": "Tlamatini/agent/pdf_context.py",
+ "segmentos": [
+  {
+   "en": "\"PDF context preparation cancelled.\"",
+   "es": "\"Se canceló la preparación del contexto del PDF.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The selected file is not a readable PDF.\"",
+   "es": "\"El archivo seleccionado no es un PDF legible.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The PDF password is missing or incorrect. Reopen and unlock the PDF first.\"",
+   "es": "\"Falta la contraseña del PDF o es incorrecta. Vuelve a abrir el PDF y desbloquéalo primero.\"",
+   "n": 1
+  },
+  {
+   "en": "f'Extracting PDF page {page_number} of {document.page_count}…'",
+   "es": "f'Extrayendo la página {page_number} de {document.page_count} del PDF…'",
+   "n": 1
+  },
+  {
+   "en": "'This PDF has no selectable text. Enable Process images and press Continue to read scanned pages.'",
+   "es": "'Este PDF no tiene texto seleccionable. Activa Procesar imágenes y presiona Continuar para leer las páginas escaneadas.'",
+   "n": 1
+  },
+  {
+   "en": "f'{error} The PDF context was NOT loaded.'",
+   "es": "f'{error} El contexto del PDF NO se cargó.'",
+   "n": 1
+  },
+  {
+   "en": "f'Image-Interpreter: analyzing image {number} of {len(artifacts)}…'",
+   "es": "f'Image-Interpreter: analizando la imagen {number} de {len(artifacts)}…'",
+   "n": 1
+  },
+  {
+   "en": "f'{error} (image {number} of {len(artifacts)}: {artifact.name}). '",
+   "es": "f'{error} (imagen {number} de {len(artifacts)}: {artifact.name}). '",
+   "n": 1
+  },
+  {
+   "en": "'The PDF context was NOT loaded.'",
+   "es": "'El contexto del PDF NO se cargó.'",
+   "n": 1
+  },
+  {
+   "en": "f'FATAL: Image-Interpreter returned \"{status}\" for image {number} of '",
+   "es": "f'FATAL: Image-Interpreter devolvió \"{status}\" para la imagen {number} de '",
+   "n": 1
+  },
+  {
+   "en": "f'{len(artifacts)} ({artifact.name}). The PDF context was NOT loaded.'",
+   "es": "f'{len(artifacts)} ({artifact.name}). El contexto del PDF NO se cargó.'",
+   "n": 1
+  },
+  {
+   "en": "\"This PDF was uploaded under a different Tlamatini account than this chat: another \"",
+   "es": "\"Este PDF se subió con una cuenta de Tlamatini distinta a la de este chat: otra \"",
+   "n": 1
+  },
+  {
+   "en": "\"account signed in from this browser after this page was opened, so the upload went \"",
+   "es": "\"cuenta inició sesión en este browser después de abrir esta página, así que la subida salió \"",
+   "n": 1
+  },
+  {
+   "en": "\"out as that account. Reload this page (F5) so the chat and the upload belong to the \"",
+   "es": "\"con esa cuenta. Recarga esta página (F5) para que el chat y la subida sean de la \"",
+   "n": 1
+  },
+  {
+   "en": "\"same account, then use the PDF as context again.\"",
+   "es": "\"misma cuenta, y luego vuelve a usar el PDF como contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This PDF context is unavailable. Use Reopen and try again.\"",
+   "es": "\"Este contexto del PDF no está disponible. Vuelve a abrir el PDF e inténtalo otra vez.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"PDF canvas context\\nOriginal filename: {upload.name}\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "f\"Original PDF: {source}\\nPages: {document.page_count}\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "\"Mode: complete text and images (File-Interpreter equivalent).\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "\"Each page preview and embedded image below is a local artifact available to Image-Interpreter.\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "\"Mode: complete selectable text only. Image processing is disabled.\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "f\"\\n--- Page {page_number} of {document.page_count} ---\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "\"[No selectable text; consult the page image.]\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "\"[No selectable text on this page. Enable Process images to interpret scanned content.]\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "f\"Page image: {preview}\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "f\"Embedded image: {saved_images[xref]}\\n\"",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "'\\n=== Image-Interpreter visual analyses ===\\n'",
+   "motivo": "texto del contexto que lee el LLM"
+  },
+  {
+   "en": "f'Source image: {artifact}\\nStatus: {status}\\n\\n{description}'",
+   "motivo": "reporte de análisis que lee el LLM"
+  },
+  {
+   "en": "f'\\nSource image: {artifact}\\nAnalysis report: {report}\\nStatus: {status}\\n{description}\\n'",
+   "motivo": "texto del contexto que lee el LLM"
+  }
+ ]
+}

@@ -1,0 +1,391 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0090_add_reviewer_analyzer_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **CODE REVIEW SPOTLIGHT** demo, please &mdash; a fancy, \"",
+   "es": "\"Tlamatini, ejecuta la demo **REVISIÓN DE CÓDIGO BAJO EL REFLECTOR**, por favor &mdash; una muestra vistosa, \"",
+   "n": 1
+  },
+  {
+   "en": "\"end-to-end showcase of the new **Reviewer** agent driven from chat through \"",
+   "es": "\"de principio a fin, del nuevo agent **Reviewer**, controlado desde el chat a través de \"",
+   "n": 1
+  },
+  {
+   "en": "\"its **code-review** Skill (a senior-engineer git-diff review that returns a \"",
+   "es": "\"su Skill **code-review** (una revisión de git diff como la de un ingeniero senior, que devuelve un \"",
+   "n": 1
+  },
+  {
+   "en": "\"verdict plus line-anchored findings). \"",
+   "es": "\"veredicto más hallazgos anclados a líneas). \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS (tick these in the toolbar BEFORE sending): the **Multi-Turn** \"",
+   "es": "\"PRECONDICIONES (márcalas en la barra de herramientas ANTES de enviar): la casilla **Multi-Turn** \"",
+   "n": 2
+  },
+  {
+   "en": "\"checkbox AND the **ACPX** checkbox must both be ON, because invoke_skill \"",
+   "es": "\"AND la casilla **ACPX** deben estar activadas las dos, porque invoke_skill \"",
+   "n": 2
+  },
+  {
+   "en": "\"lives behind the ACPX/Skill tool surface; the target must be a git \"",
+   "es": "\"vive detrás de la superficie de tools ACPX/Skill; el objetivo debe ser un repositorio \"",
+   "n": 1
+  },
+  {
+   "en": "\"repository with at least one prior commit. \"",
+   "es": "\"git con al menos un commit previo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 2
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;color:#ffffff;'>&#128269; CODE REVIEW SPOTLIGHT &#128269;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;color:#ffffff;'>&#128269; REVISIÓN DE CÓDIGO BAJO EL REFLECTOR &#128269;</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;color:#ffffff;'>Tlamatini Reviewer &mdash; the code-review Skill, senior-engineer verdict</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;color:#ffffff;'>Tlamatini Reviewer &mdash; el Skill code-review, veredicto de ingeniero senior</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call **invoke_skill** with skill_name='code-review' and \"",
+   "es": "\"Paso 1: llama a **invoke_skill** con skill_name='code-review' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"focus\\\":\\\"security and correctness regressions\\\"}'. If the returned summary \"",
+   "es": "\"\\\"focus\\\":\\\"security and correctness regressions\\\"}'. Si el summary que devuelve \"",
+   "n": 1
+  },
+  {
+   "en": "\"says the diff was empty, call it once more with \"",
+   "es": "\"dice que el diff estaba vacío, llámalo una vez más con \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"focus\\\":\\\"uncommitted working-tree and staged changes\\\"}' so the demo always \"",
+   "es": "\"\\\"focus\\\":\\\"uncommitted working-tree and staged changes\\\"}' para que la demo siempre \"",
+   "n": 1
+  },
+  {
+   "en": "\"has something to review. \"",
+   "es": "\"tenga algo que revisar. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: parse the skill envelope and capture three things: the verdict \"",
+   "es": "\"Paso 2: analiza el envelope del skill y captura tres cosas: el veredicto \"",
+   "n": 1
+  },
+  {
+   "en": "\"(APPROVE | REQUEST_CHANGES | COMMENT), the findings array (each is \"",
+   "es": "\"(APPROVE | REQUEST_CHANGES | COMMENT), el array findings (cada uno es \"",
+   "n": 1
+  },
+  {
+   "en": "\"{file, line, severity, category, message, suggestion}), and the summary. \"",
+   "es": "\"{file, line, severity, category, message, suggestion}) y el summary. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: render a big VERDICT CHIP &mdash; one HTML \"",
+   "es": "\"Paso 3: muestra un CHIP DE VEREDICTO grande &mdash; un bloque HTML \"",
+   "n": 1
+  },
+  {
+   "en": "\"block showing the verdict text, where VERDICT_COLOR is #16a34a for APPROVE, \"",
+   "es": "\"que muestre el texto del veredicto, donde VERDICT_COLOR es #16a34a para APPROVE, \"",
+   "n": 1
+  },
+  {
+   "en": "\"#d97706 for COMMENT, and #dc2626 for REQUEST_CHANGES. \"",
+   "es": "\"#d97706 para COMMENT y #dc2626 para REQUEST_CHANGES. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 4: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 2
+  },
+  {
+   "en": "\"'<strong>Code Review Findings</strong>' and columns \"",
+   "es": "\"'<strong>Hallazgos de la revisión de código</strong>' y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>file</em>, <em>line</em>, <em>severity</em>, <em>category</em>, \"",
+   "es": "\"<em>archivo</em>, <em>línea</em>, <em>severidad</em>, <em>categoría</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>message</em>, <em>suggestion</em>. One row per finding, ordered most \"",
+   "es": "\"<em>mensaje</em>, <em>sugerencia</em>. Una fila por hallazgo, ordenadas de la más \"",
+   "n": 1
+  },
+  {
+   "en": "\"severe first (critical, then high, then medium, then low, then nit). Keep \"",
+   "es": "\"severa a la menos (critical, luego high, luego medium, luego low y luego nit). Deja \"",
+   "n": 1
+  },
+  {
+   "en": "\"every body cell light-background with dark text \"",
+   "es": "\"cada celda del cuerpo con fondo claro y texto oscuro \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9) and tint ONLY the \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9) y colorea SÓLO la \"",
+   "n": 1
+  },
+  {
+   "en": "\"severity cell (critical #fee2e2, high #ffedd5, medium #fef9c3, low/nit \"",
+   "es": "\"celda de severidad (critical #fee2e2, high #ffedd5, medium #fef9c3, low/nit \"",
+   "n": 1
+  },
+  {
+   "en": "\"#ecfccb) while keeping its text dark. If the findings array is empty, render \"",
+   "es": "\"#ecfccb) sin dejar de mantener su texto oscuro. Si el array findings está vacío, muestra \"",
+   "n": 1
+  },
+  {
+   "en": "\"a single celebratory row spanning the table that reads 'No substantive \"",
+   "es": "\"una sola fila de celebración que abarque toda la tabla y diga 'Sin hallazgos \"",
+   "n": 1
+  },
+  {
+   "en": "\"findings &mdash; the diff is clean.' \"",
+   "es": "\"importantes &mdash; el diff está limpio.' \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: render the skill's summary inside an HTML \"",
+   "es": "\"Paso 5: muestra el summary del skill dentro de un elemento HTML \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: close with one HTML banner that reuses the Step 0 gradient and prints \"",
+   "es": "\"Paso 6: cierra con un banner HTML que reutilice el gradiente del Paso 0 y muestre \"",
+   "n": 1
+  },
+  {
+   "en": "\"the verdict in big white letters, and underneath it a one-line metric \"",
+   "es": "\"el veredicto en letras blancas grandes y, debajo, una métrica de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Verdict: <verdict> &middot; findings: <N> (critical <c>, high <h>, medium \"",
+   "es": "\"'Veredicto: <verdict> &middot; hallazgos: <N> (critical <c>, high <h>, medium \"",
+   "n": 1
+  },
+  {
+   "en": "\"<m>, low/nit <l>)'. End with END-RESPONSE.\"",
+   "es": "\"<m>, low/nit <l>)'. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **SECURITY AUDIT FLOODLIGHT** demo, please &mdash; a \"",
+   "es": "\"Tlamatini, ejecuta la demo **AUDITORÍA DE SEGURIDAD A PLENA LUZ**, por favor &mdash; una \"",
+   "n": 1
+  },
+  {
+   "en": "\"fancy, end-to-end showcase of the new **Analyzer** agent driven from chat \"",
+   "es": "\"muestra vistosa, de principio a fin, del nuevo agent **Analyzer**, controlado desde el chat \"",
+   "n": 1
+  },
+  {
+   "en": "\"through its **security-audit** Skill (deterministic SAST + secret + \"",
+   "es": "\"a través de su Skill **security-audit** (SAST determinista + escaneo de secretos + \"",
+   "n": 1
+  },
+  {
+   "en": "\"dependency scanning, no LLM guessing). \"",
+   "es": "\"escaneo de dependencias, sin que el LLM adivine). \"",
+   "n": 1
+  },
+  {
+   "en": "\"lives behind the ACPX/Skill tool surface. The skill runs whichever of \"",
+   "es": "\"vive detrás de la superficie de tools ACPX/Skill. El skill ejecuta los que estén en el PATH de \"",
+   "n": 1
+  },
+  {
+   "en": "\"bandit, semgrep, ruff, eslint, gitleaks and pip-audit are on PATH &mdash; any \"",
+   "es": "\"bandit, semgrep, ruff, eslint, gitleaks y pip-audit &mdash; los que \"",
+   "n": 1
+  },
+  {
+   "en": "\"that are missing are reported as coverage gaps rather than failing the run. \"",
+   "es": "\"falten se reportan como huecos de cobertura en lugar de hacer que la ejecución termine en error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;color:#ffffff;'>&#128737;&#65039; SECURITY AUDIT FLOODLIGHT &#128737;&#65039;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;color:#ffffff;'>&#128737;&#65039; AUDITORÍA DE SEGURIDAD A PLENA LUZ &#128737;&#65039;</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;color:#ffffff;'>Tlamatini Analyzer &mdash; the security-audit Skill, every scanner on PATH</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;color:#ffffff;'>Tlamatini Analyzer &mdash; el Skill security-audit, cada scanner del PATH</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call **invoke_skill** with skill_name='security-audit' and \"",
+   "es": "\"Paso 1: llama a **invoke_skill** con skill_name='security-audit' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: parse the skill envelope and capture: the findings array (each is \"",
+   "es": "\"Paso 2: analiza el envelope del skill y captura: el array findings (cada uno es \"",
+   "n": 1
+  },
+  {
+   "en": "\"{tool, file, line, severity, rule_id, message}), the severity_counts object \"",
+   "es": "\"{tool, file, line, severity, rule_id, message}), el objeto severity_counts \"",
+   "n": 1
+  },
+  {
+   "en": "\"({critical, high, medium, low}), the summary, and &mdash; from the summary \"",
+   "es": "\"({critical, high, medium, low}), el summary y &mdash; a partir del summary \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; which scanners actually ran and which were unavailable. \"",
+   "es": "\"&mdash; qué scanners corrieron de verdad y cuáles no estaban disponibles. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: render a SEVERITY SCOREBOARD &mdash; a row of four HTML chips of the \"",
+   "es": "\"Paso 3: muestra un MARCADOR DE SEVERIDAD &mdash; una fila de cuatro chips HTML con la \"",
+   "n": 1
+  },
+  {
+   "en": "\"form <span style='display:inline-block;padding:8px 16px;margin:3px;\"",
+   "es": "\"forma <span style='display:inline-block;padding:8px 16px;margin:3px;\"",
+   "n": 1
+  },
+  {
+   "en": "\"<count> <label></span> for critical (CHIP_BG #7F1D1D / CHIP_FG #ffffff), high \"",
+   "es": "\"<count> <label></span> para critical (CHIP_BG #7F1D1D / CHIP_FG #ffffff), high \"",
+   "n": 1
+  },
+  {
+   "en": "\"#0f172a) and low (CHIP_BG #FACC15 / CHIP_FG #0f172a). \"",
+   "es": "\"#0f172a) y low (CHIP_BG #FACC15 / CHIP_FG #0f172a). \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Static-Analysis &amp; Secret-Scan Findings</strong>' and columns \"",
+   "es": "\"'<strong>Hallazgos del análisis estático y del escaneo de secretos</strong>' y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>tool</em>, <em>file</em>, <em>line</em>, <em>severity</em>, \"",
+   "es": "\"<em>tool</em>, <em>archivo</em>, <em>línea</em>, <em>severidad</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>rule_id</em>, <em>message</em>. One row per finding, ordered most severe \"",
+   "es": "\"<em>rule_id</em>, <em>mensaje</em>. Una fila por hallazgo, ordenadas de la más severa \"",
+   "n": 1
+  },
+  {
+   "en": "\"first (critical, then high, then medium, then low). Keep every body cell \"",
+   "es": "\"a la menos (critical, luego high, luego medium y luego low). Deja cada celda del cuerpo \"",
+   "n": 1
+  },
+  {
+   "en": "\"light-background with dark text (background:#ffffff;color:#0f172a; or striped \"",
+   "es": "\"con fondo claro y texto oscuro (background:#ffffff;color:#0f172a; o rayado \"",
+   "n": 1
+  },
+  {
+   "en": "\"#f1f5f9) and tint ONLY the severity cell (critical #fee2e2, high #ffedd5, \"",
+   "es": "\"#f1f5f9) y colorea SÓLO la celda de severidad (critical #fee2e2, high #ffedd5, \"",
+   "n": 1
+  },
+  {
+   "en": "\"medium #fef9c3, low #ecfccb) while keeping its text dark. If the findings \"",
+   "es": "\"medium #fef9c3, low #ecfccb) sin dejar de mantener su texto oscuro. Si el array \"",
+   "n": 1
+  },
+  {
+   "en": "\"array is empty, render a single celebratory row spanning the table that reads \"",
+   "es": "\"findings está vacío, muestra una sola fila de celebración que abarque toda la tabla y diga \"",
+   "n": 1
+  },
+  {
+   "en": "\"'No findings at or above the low threshold &mdash; clean scan.' \"",
+   "es": "\"'Sin hallazgos en el umbral low o por encima &mdash; escaneo limpio.' \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: render the skill's remediation summary inside an HTML \"",
+   "es": "\"Paso 5: muestra el resumen de remediación del skill dentro de un elemento HTML \"",
+   "n": 1
+  },
+  {
+   "en": "\"and beneath it an HTML <ul> with two <li> bullets: 'Scanners run: <list>' and \"",
+   "es": "\"y debajo una lista HTML <ul> con dos viñetas <li>: 'Scanners ejecutados: <list>' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Scanners unavailable (coverage gaps): <list>'. \"",
+   "es": "\"'Scanners no disponibles (huecos de cobertura): <list>'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: close with one HTML banner that reuses the Step 0 gradient and prints, \"",
+   "es": "\"Paso 6: cierra con un banner HTML que reutilice el gradiente del Paso 0 y muestre, \"",
+   "n": 1
+  },
+  {
+   "en": "\"in big white letters, 'SECURITY: CLEAN' (if there are zero findings) or \"",
+   "es": "\"en letras blancas grandes, 'SEGURIDAD: LIMPIO' (si no hay ningún hallazgo) o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'SECURITY: <total> FINDINGS' (otherwise), and underneath a one-line metric \"",
+   "es": "\"'SEGURIDAD: <total> HALLAZGOS' (en caso contrario) y, debajo, una métrica de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"scanned C:/Development/Tlamatini/Tlamatini/agent'. End with END-RESPONSE.\"",
+   "es": "\"escaneado: C:/Development/Tlamatini/Tlamatini/agent'. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='display:inline-block;padding:10px 22px;border-radius:999px;\"",
+   "motivo": "CSS del chip (valor de máquina)"
+  },
+  {
+   "en": "\"<blockquote style='border-left:6px solid #4F46E5;padding:12px 18px;\"",
+   "motivo": "CSS del blockquote (valor de máquina)"
+  },
+  {
+   "en": "\"(CHIP_BG #DC2626 / CHIP_FG #ffffff), medium (CHIP_BG #F59E0B / CHIP_FG \"",
+   "motivo": "valores de severidad y colores (valores de máquina)"
+  },
+  {
+   "en": "\"<blockquote style='border-left:6px solid #DC2626;padding:12px 18px;\"",
+   "motivo": "CSS del blockquote (valor de máquina)"
+  },
+  {
+   "en": "\"'critical <c> &middot; high <h> &middot; medium <m> &middot; low <l> &middot; \"",
+   "motivo": "valores de severidad y slots <...> (valores de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

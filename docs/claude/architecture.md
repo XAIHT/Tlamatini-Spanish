@@ -1,0 +1,859 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# Tlamatini — Architecture & Core Systems
+
+> Current release: **[v1.90.0](../changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+## v1.90.0 — editable canvas and Interactor
+
+The current source has **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 direct/module + 67 wrapped + 12 ACPX/Skills + 10 supervisors), and 219 migrations**. Interactor adds a module/tool; do not register it as an Agent. The annotated tag resolves to `ebc5c3b4`; its GitHub release was published on 2026-10-22 and is marked Latest. `main` continues after the tag (`d274f89c`, `8c577d3a`, `939acf6b`, `5403fa49`) and still reports 1.90.0; migration 0219 (`939acf6b`) makes the catalog's account wizard request local Notifier pop-ups at its checkpoints (`docs/user-creation-wizard.md`). Dated source and frozen runs remain separate.
+
+- **Editor:** `agent_page_editing.js` owns the CodeMirror document, dirty baseline, encoding and save snapshot. `agent_page_canvas.js` owns load/refresh generation and cancellation. Markdown Preview and Source share the buffer; HTML/SVG remain inert source; PDF saving copies the original PDF. Never read a hidden compatibility element instead of the editor.
+- **Native files:** `canvas_file_views.py` and `native_dialogs.py` provide local Save As/read/save. Authentication, CSRF, loopback-only host access, account/session-bound capabilities and full revision checks prevent a browser name from becoming an arbitrary host path. Existing Windows replacement preserves metadata; DB backup/restore mechanics are unchanged.
+- **Interactor:** `agent/interactor/` connects the synchronous tool loop to the browser through session-authenticated `ws/interactor/`. Server-issued tab identity travels through ContextVar; bounded commands and receipts verify document/revision and full buffer. Browser messages acknowledge/access/stop; they cannot request arbitrary host-path commands.
+- **Tutor:** read fresh unsaved text, type a small segment, guide the next field and end mutations for the turn. Continue begins a fresh chat/read. Prepared choices match locally, with no per-key model call. User input and Stop win; hidden tabs pause with bounded recovery rather than repeating edits.
+- **Carriage:** migration 0218 seeds the Tool/catalog rows; `tool_gate_table()` supplies binding, Compact selection and cost labels. The offline editor bundle, Interactor browser files, frozen imports and source/static inventories must travel together.
+- **Intent:** password input is not ownership of every command; a wizard email field or DONE reply is not notification consent. Preserve genuine user-runs tutorials. The catalog wizard uses createsuperuser and therefore creates an administrative account.
+
+Contracts and evidence: [v1.90.0](../changes/2026-10-22-v1.90.0.md), [Canvas editing](../canvas-editing.md), [Interactor](../interactor.md), [Account wizard](../user-creation-wizard.md). Source/frozen rendering tests do not certify a rebuilt installed executable.
+
+
+> **Carried from v1.88.0 (tagged 2026-10-20):** [Terminater](../terminater.md) (workflow agent #86 and the Terminals area) and a private release that carries the builder's own data. Counts: 86 workflow agents, 67 wrapped chat agents, 109 built-in tools, 217 migrations. See the [v1.88.0 release record](../changes/2026-10-20-v1.88.0.md) and the change records [Terminater](../changes/2026-10-19-terminater.md) and [private-release data](../changes/2026-10-19-private-release-data.md).
+
+
+## v1.87.0 — Leaner catalog, safer removal, smaller release (carried)
+
+**v1.87.0** (tagged 2026-10-18; it also carries
+v1.86.0, tagged 2026-10-17) came before v1.88.0. Its catalog was **85 workflow agents, 66 wrapped
+chat agents and 108 built-in tools**: Gatewayer, Gateway-Relayer, Node-Manager
+and Zavuerer were removed, and migration **0214** deletes their rows and the
+Zavuerer prompts without renumbering. Removal moves application entries into a
+same-drive recovery folder (schema 2 journal, **Retry cleanup**,
+`.tlamatini-removal.json`) instead of copying the payload. `build.py` keeps the
+carried-Python-only media and browser packages out of the frozen interpreter
+(`test_release_payload_ownership.py`). About ▸ Usage waits for real data and
+sends a bodyless `POST /api/me`. `npm run lint:python` runs
+`scripts/check_python_quality.py`. From v1.86.0: Mover creates a missing
+destination name as a folder (`_names_a_file()`), and `scripts/architecture_atlas/`
+rebuilds `Tlamatini-Architecture.pdf` with LaTeXer. The static suffix for that release was
+`-agent-catalog-1-quality-cleanup-1-usage-status-2`.
+
+See [the v1.87.0 release record](../changes/2026-10-18-v1.87.0.md).
+
+## v1.85.0 — Refresh, Views and centered avatar (carried)
+
+**v1.85.0** (2026-10-16) added Refresh, Views and the centered avatar. `agent_page_canvas.js` owns Refresh
+source access, complete-text comparison, cancellation and status. Retain browser
+file handles during the drop event; snapshot-only access cannot refresh a path.
+PDF replacement stages a ready viewer and keeps its iframe attached at commit.
+
+`agent_page_layout.js` exposes `TlamatiniViews.setCanvasVisible`,
+`isCanvasVisible` and `resetLayout`. Hiding toggles `tlm-canvas-hidden`, preserves
+the canvas DOM and context, cancels divider gestures and moves focus only when
+its current region disappears. The account/browser preference is
+`tlamatini.chat.views.v1.<user id>`. `avatar_size.js::setDockedOnly` enforces the
+hidden-canvas docking rule in pointer, keyboard and public API paths. Reset shows
+both panes, resets their sizes and docks the portrait without clearing content.
+
+The docked frame uses `--tlm-avatar-docked-right` measured from the full Mic/Send
+row. Its square size and 120 px minimum stay independent of floating geometry.
+v1.85.0's static suffix was `-avatar-center-1`; Views scripts retain `_views1`.
+`build_runtime_assets.py` and `copy_source_assets.py` require the Views template,
+scripts and snapshot harnesses. No migration or dependency was added.
+
+See [the release implementation and evidence matrix](../changes/2026-10-16-v1.85.0.md),
+[Refresh](../canvas-refresh.md) and [carriage](../self-management-carriage.md).
+
+
+
+> **HEADLESS IS FORBIDDEN. ALL EXECUTION MUST BE VISIBLE.** Every automated test, command, diagnostic, script, build, agent, prompt and browser must run in a visible, forked foreground window on Angela's real desktop. Use visible CMD/PowerShell consoles and headed browsers (`headless=False`); keep output on screen and monitor live. No hidden/background execution, including CI or quick checks. If visibility cannot be confirmed, do not run. Mandatory policy: [visible execution](../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+> **Developer/product boundary (Angela, 2026-09-27):** these visibility requirements govern development and verification. They must not create extra windows, steal focus or expose internal diagnostics in the shipped UX. Direct chat dictation keeps status in chat and uses only Tlamatini's main console/log.
+
+## Terminater — the hub, the WebSocket and the loopback API (2026-10-19, shipped in `v1.88.0`)
+
+Terminater (workflow agent #86, `chat_agent_terminater`) drives real `cmd.exe` / PowerShell terminals the
+user watches. The full contract is [docs/terminater.md](../terminater.md); the architecture in one table:
+
+| Piece | Where | Role |
+| --- | --- | --- |
+| Engine | `agents/terminater/terminater_engine.py` (+ `terminater_conpty.py`, `terminater_text.py`) | `TerminalHub`, sessions, human typing, hang detection, hand-over, advisor. Stdlib-only; **loaded BY PATH** from the agents tree (`get_agents_root()`) so the web process, the pool copy and the tests share one definition |
+| ConPTY | `terminater_conpty.py` | `CreatePseudoConsole` through `ctypes`, a job object that kills the whole process tree, never raises on import |
+| The hub | `terminal_hub.py` | one `TerminalHub` per Django process; token and rendezvous (`<app>/Temp/.terminater_hub.json`); `live_pids()` for the reapers; `run_action()` for the in-process Prompt Flow Panel runner; `terminater_enabled`, `terminater_max_terminals`, `terminater_hang_seconds` |
+| Browser door | `terminal_consumer.TerminalConsumer` at `ws/terminals/` | session-authenticated, same-origin, ordered keystrokes, coalesced output (~60 fps), replay on reconnect |
+| Agent door | `terminal_views.terminater_api_view` at `POST /agent/terminater/api/` | loopback only + `X-Terminater-Token` (constant-time compare, never logged); `GET /agent/terminater/state/` is the authenticated read-only view |
+| UI | `static/agent/js/terminater_dock.js` + vendored xterm.js | mounted by chat, Agentic Control Panel and Prompt Flow Panel |
+
+**Contracts (do NOT weaken):** nothing here raises into a caller that merely asks a question
+(`live_pids()` / `hub_status()` are fail-open); `live_pids()` never creates the hub, because a
+reaper must not spawn machinery; `command_watchdog` and `orphan_reaper` protect the hub's shells
+(a parked prompt looks like a hung shell) while the shutdown sweep and the hub's `atexit` hook still
+remove every shell tree; the token is scrubbed from the shells' environment together with
+`DJANGO_SECRET_KEY`; the engine files stay flat, standard-library-only siblings. `apps.ready()` and
+`tools._seed_global_agent_defaults` call `terminal_hub.ensure_ready()` **before** any pool agent can be
+spawned (they inherit the token); no hub, thread or shell is created at that point.
+
+**Frozen builds.** `agent.terminal_hub`, `agent.terminal_consumer`, `agent.terminal_views` and
+`agent.management.commands.check_terminater` are hidden imports and `_FROZEN_TERMINATER_MODULES`;
+the agents tree ships loose beside the executable; the pool agent runs under the carried Python.
+`build.py` runs `check_terminater` inside the freshly frozen app after the Prompt Flow Panel gate and
+refuses to package on failure.
+
+## Usage accounting and cloud balances (2026-10-10, shipped in `v1.78.0`)
+
+`apps.py` registers the `context_governor` usage sink. Completed measured main-chat
+calls enqueue metadata-only writes through `usage_tracking.py`; gauge probes do
+not count as activity. `UsageDaily` (migration 0213) aggregates by user/model/UTC
+day. The bounded queue does not block inference; missing measurements and write
+failures are reported. It is not a durable, exhaustive billing ledger.
+
+Authenticated read-only `GET /agent/usage/?range=7d|30d` combines this user’s
+ledger with `usage_provider.snapshot()`. The configured Ollama connection supplies
+`/api/me`, authoritative `/api/balance`, rolling `/api/usage`, model inventory,
+loaded models and version. Requests have timeouts/size limits, no credential
+redirects, a 60-second single-flight cache and account-aware stale-data handling.
+Cloud scope follows that configured account; default usage scope is self, while
+team balances may be shared. No browser login or local model totals may substitute
+for the server’s balance. Credentials never reach the dashboard.
+
+Monthly, legacy session/weekly and purchased-only responses determine layout.
+No manual allowance editor, guessed plan quota, fabricated historical tokens or
+account-wide per-model graph exists. See [Usage](../usage-dashboard.md) for exact
+coverage, privacy, frontend behavior, delivery and source-only test evidence.
+
+## Direct voice input beside Send
+
+`chat_dictation.js` opens authenticated same-origin `/ws/chat-voice/`.
+`ChatVoiceConsumer` prepares `VoiceRuntime`, which launches
+`agents/whisperer/chat_worker.py` with source/carried Python and authenticates
+it over an ephemeral private loopback socket. Preparation imports capture
+libraries but opens no microphone or model. A click sends `start` directly:
+no Ollama planning, wrapped-agent preparation or pool launch precedes capture.
+
+The worker reuses Whisperer's configured gate and recognition code, warms the
+model after the first samples, caches it across prompts and reloads config per
+job. Config → Mic snapshots browser-local preferences per run; validated
+capture overrides reach the worker through `start.settings`. `ready`/`options`
+expose public defaults and host input choices, never credentials; metadata
+refresh opens no stream. Shared `chat_voice_settings.py` validates both ends
+and explicit device identity is checked before capture. The worker returns
+telemetry and text. The browser either submits the existing form with current
+flags or leaves an editable draft for manual Send. The avatar acknowledges actual dispatch through
+browser speech. The dictation transport itself does not execute the prompt.
+
+This worker is internal product infrastructure: no extra console, shell,
+foreground activation or console-visibility prerequisite. Its output reaches
+the main `agent.chat_voice_runtime` INFO logger. Cancellation, bounded
+shutdown, per-process ownership, stale-run rejection and draft preservation are
+part of the contract. One web process owns one resident worker; this is not a
+host-wide microphone mutex across multiple servers.
+
+The standalone Whisperer workflow surface still has its own files, structured
+outputs and targets. Do not apply those contracts to the direct button. See
+[protocol, packaging and verification](../chat-microphone-design.md).
+
+## Central model configuration
+
+The stdlib-only `agent/agents/model_settings.py` registry supplies 38 field schemas,
+defaults, fallback keys and 21 agent YAML mappings. Models GET returns this metadata;
+the UI renders it dynamically. Save validates the complete string-valued selection
+and atomically merges that section, preserving credentials and unrelated settings.
+Frozen web code imports the compiled module; portable agent copies use a refreshed
+helper from `get_agents_root()`. Both honor `CONFIG_PATH`. Never derive template
+paths from frozen service `__file__` values. For exact precedence, paths and the
+release gate, see [model configuration](../model_configuration.md).
+
+## Configuration
+
+Main config: `Tlamatini/agent/config.json`
+
+Key settings:
+- `embeding-model`: Embedding model for RAG. **Default**: `Nomic-Embed-Text:latest` (~600 MB resident VRAM, low-footprint baseline that works on 8 GB consumer GPUs). For higher-detail retrieval on dense technical corpora, users can switch to `qwen3-embedding:8b` from the **Config → Models** menu — **with caution**, since that model needs roughly **10× more VRAM** (~6.24 GB resident on Q4_K_M) and will trip the embedding-memory pre-flight guard on smaller GPUs.
+- `chained-model`: Primary chat model
+- `unified_agent_model`: Model for multi-turn tool loop
+- `ollama_base_url`: Ollama server URL
+- `django_port`: **TCP port the web UI + chat WebSocket bind** (default `8000`). See *Configurable web port* below — it is honoured on every launch path, an explicit CLI port still wins, and resolution is fail-open.
+- `ANTHROPIC_API_KEY`: Claude API key
+- `enable_unified_agent`: Enable tool-calling agent
+- `unified_agent_max_iterations`: Max tool-call turns (default 4096)
+- `unified_agent_llm_step_max_tactics` / `unified_agent_llm_step_timeout_seconds`: Self-healing model-step invoker budgets (default **4096** distinct recovery tactics / **80 s** per-attempt watchdog). Govern `agent/self_healing.py::SelfHealingInvoker`, which wraps every model `.invoke()` in the Multi-Turn executor so a transient model failure never hangs, never discards work already done, and never produces a silent/untruthful answer. See `docs/claude/multi-turn.md` → *Self-healing model steps*.
+- `ollama_repeat_penalty` / `ollama_repeat_last_n` / `ollama_num_ctx`: **The Ollama sampler triple** (defaults **1.2** / **256** / **1048576**) — since 2026-10-08 the LEGACY set, sent only with `model_brain: off` (see *The Model Brain*). Applied by BOTH chains in `rag/factory.py` and forwarded to `ChatOllama` by `mcp_agent.py`'s parameter passthrough. See *Ollama sampler settings* below — these are measured values with a real failure behind them, not taste.
+- `model_brain` / `model_brain_research` / `model_brain_keep_reasoning` / `model_brain_overrides`: **The Model Brain** (2026-10-08, `v1.76.0`). `model_brain` = `auto` (default) | `off` (the legacy fixed sampler, exactly); `model_brain_research` lets it learn an unknown model's profile once, in the background; `model_brain_keep_reasoning` hands a thinking model its own reasoning back inside the current tool loop; `model_brain_overrides` sets any value per model and always wins. See *The Model Brain* below.
+- `console_colors`: paints the console WINDOW by log level (ships `true`; `tlamatini.log` always stays plain text). See *Console colours and the console TYPE* below.
+- `context_sidecar_llm_timeout_seconds`: Time limit (default **60 s**) on each Ollama call the Files-Search and System-Metrics sidecars make before the main answer (routing, file-search planning). At the limit, or on the user's Cancel, the sidecar skips its context, logs `[CONTEXT-SIDECAR]`, and the answer goes ahead. See `agent/context_sidecar_timeout.py` and `recent-fixes.md` (2026-10-05).
+- `chat_agent_limit_runs`: Wrapped-run listing limit
+- `binary_context_detection`: **Master switch for the binary-content guard on the context loader** (default `true`). See *Binary-content guard* below.
+- `binary_detection_sample_bytes` / `binary_detection_control_ratio` / `binary_detection_log_each_file` / `binary_detection_extra_binary_extensions` / `binary_detection_force_text_extensions`: Binary-guard tuning knobs (8192 / 0.30 / true / [] / []).
+- `stm32_mcp_server_script` / `stm32_mcp_repo_url` / `stm32_mcp_install_dir`: STM32er template-MCP globals (seeded by `tools._seed_global_agent_defaults`). `stm32_mcp_server_script` now defaults to `""` — empty means the STM32er agent **self-provisions** the STM32 Template Project MCP on first use (zero-config auto-bootstrap: shallow `git clone`, GitHub-zip fallback when git is absent, into `%LOCALAPPDATA%/Tlamatini/STM32TemplateProjectMCP`), so the user installs only STM32CubeIDE + Tlamatini. **Since Phase 1, STM32er is DUAL-backend (Blue Pill → F7/G/L/H7/U5/WB): `stm32_backend`=`auto` also routes to a PlatformIO `ststm32` backend that SHARES ESP32er's `pio_executable` / `pio_core_dir` globals (one PlatformIO install for both firmware agents).** See `docs/claude/agents.md` (STM32er entry).
+
+Frozen builds resolve config from the install directory next to the executable. Source mode resolves from `Tlamatini/agent/config.json`. `CONFIG_PATH` env var overrides both.
+
+---
+
+## Ollama sampler settings — measured, not taste (2026-09-13)
+
+> ⚠️ **Since 2026-10-08 (`v1.76.0`) this is the LEGACY sampler.** With `model_brain` at its default `auto`, both chains send what the Model Brain decided for that model (see *The Model Brain* below) and a value it does not set is not sent; these three keys apply only with `model_brain: off`, or when the brain cannot plan. The measurements below still explain why each model needs its own profile.
+
+Three keys govern how the chat model samples. All three are read in **both**
+chains of `rag/factory.py` and forwarded to `ChatOllama` by `mcp_agent.py`'s
+parameter passthrough loop.
+
+| key | ships | what it does |
+|---|---|---|
+| `ollama_repeat_penalty` | **1.2** | how hard a already-used token is penalised |
+| `ollama_repeat_last_n` | **256** | how far back that penalty looks (Ollama's own default is 64) |
+| `ollama_num_ctx` | **1048576** | requested context window |
+
+### Why these values
+
+`repeat_penalty` shipped at **1.9** for months and was emptying answers. These
+are REASONING models: they emit `thinking` separately from `content`, and when
+the sampler cannot converge they spend the whole turn thinking and return empty
+content — measured at **196,003** and once **3,101,216** characters of thinking
+with nothing to show for it. 1.9 was roughly double any documented ceiling (the
+llama.cpp/Ollama guide caps the repetition remedy at *"start with 1.05, max
+1.15-1.2"*; vLLM's default is 1.0, Ollama's is 1.1) and `glm-5.3:cloud` itself
+declares **no** parameters at all. Full story, with the trial tables:
+`docs/claude/recent-fixes.md` (2026-09-13).
+
+### Contracts (do NOT weaken)
+
+1. **⚠️ THIS FAILURE IS HEAVY-TAILED — NEVER TUNE IT FROM ONE RUN.** A 6-trial
+   run scored `1.9/64` at **0/6**; eight trials of the same cell scored **7/8**.
+   `temperature` is 0.0 and it still varies, because cloud MoE routing changes
+   between calls. Any single fast result here is noise.
+2. **`repeat_last_n` is PER-MODEL; `repeat_penalty` is not.** 1.2 won on every
+   model tested. 256 makes glm-5.3 **6× faster** at the median (154 s → 26 s)
+   and **hurts** kimi-k3 (0/8 → 1/8, 50 s → 98 s). It ships at 256 because
+   glm-5.3 is what users overwhelmingly run. **If the shipped model changes,
+   re-measure this key — it does not carry over.**
+3. **Set a new sampler key in BOTH chains.** They had already drifted twice —
+   `num_ctx` was 128000 in one and 8192 in the other, `repeat_penalty` 1.9 vs
+   1.1 — so a missing config key silently gave the retrieval chain an 8k window.
+4. **Add any new key to the `[LLM-PARAMS]` banner too.** That banner exists so
+   an unsent parameter cannot hide; `repeat_last_n` was unwired for months and
+   setting it in `config.json` did nothing at all.
+5. **⚠️ `frequency_penalty` / `presence_penalty` do NOT exist in
+   `langchain-ollama` 0.2.1.** Ollama accepts them; our wrapper does not expose
+   them, so they would be dropped silently. Do not add them without upgrading.
+
+### ⚠️ `num_ctx` is a NO-OP for a `:cloud` model — proved
+
+A **263,159-token** prompt sent with `num_ctx=8192` recalled a needle planted
+near its start. The cloud server enforces its own limit instead, and does it
+cleanly:
+
+| prompt sent | result |
+|---|---|
+| 167,587 / 334,847 / 660,717 tokens | needle recalled, 100% |
+| 1,297,992 tokens | **HTTP 400** *"prompt is too long: 1297992, model maximum context length: 1048576"* |
+
+So 1,048,576 (which matches `glm_dsa_moe.context_length` reported by Ollama and
+docs.z.ai) is a **real** capability, not a spec number, and oversize fails loudly
+rather than truncating in silence. The old 63,536 described nothing — real
+requests were already running at **78,288** prompt tokens, 23% above it.
+
+**But `num_ctx` IS meaningful for a LOCAL model**, where it sizes the KV cache at
+load time. Tlamatini is cloud-first, so 1,048,576 is the right default here; a
+local-model user on a small GPU will feel it — loudly, at load, not as a wrong
+answer.
+
+### Known blind spot
+
+`langchain-ollama` **0.2.1** (our pin) **drops the `thinking` field entirely**,
+so a model that burns its whole turn reasoning surfaces to the user only as
+*"The tool-calling model returned an empty final response."* 1.1.0 is current.
+Upgrading is separate work and is NOT done.
+
+---
+
+## The Model Brain — every model tuned from formal sources (2026-10-08, `v1.76.0`)
+
+Angela: *"MAKE IT DYNAMIC BY MODEL IN TLAMATINI brain … do not hardwire code in Tlamatini for using GLM-5.3 OR GLM-5.2!!!"* and *"Taken from the formal documentation from the models from ollama dont just put idiot stupid timers in Tlamatini"*. Every chain used ONE fixed sampler for every model (temperature 0.0, top_k 20, top_p 0.8, repeat_penalty 1.2), and first-chunk / stall clocks abandoned calls that were only thinking.
+
+| Piece | Where | Role |
+|---|---|---|
+| The planner | `agent/model_brain.py::plan(model, base_url, config, headers)` | the sampling, `think` level and `num_ctx` for THAT model, with the source of every value; fail-open to the legacy set |
+| The knowledge base | `agent/model_profiles.json` | sourced profiles (GLM-5, DeepSeek-V4, MiniMax-M3, Gemma 4, Qwen 3.5, Qwen 2.5, gpt-oss, Kimi, Mistral Large 3, Nemotron 3); every entry cites its vendor model card, Hugging Face `generation_config.json` or API docs |
+| Learned profiles | `%LOCALAPPDATA%\Tlamatini\model_brain\model_profiles.learned.json` | an unknown model is researched ONCE, in the background (its ollama.com page and Hugging Face `generation_config.json`); outside the install, so it survives updates |
+| The chat class | `agent/model_brain_chat.py::BrainChatOllama` | `ChatOllama` that keeps the model's `thinking` on the `AIMessage` (`reasoning_content`), sends it back inside the same tool loop, and sends `think` only when the installed client accepts that value (`client_accepts_think`) |
+| The dialog | `agent/model_brain_views.py` + `model_brain_tuning.js` / `.css` | `GET /agent/model_brain/models/` lists the configured models; `POST /agent/model_brain/tune/` tunes one and returns every stage; opened after Config ▸ Models ▸ Save |
+| The chains | `rag/factory.py::_model_sampling_kwargs`, `mcp_agent.py` | the factory chains send the brain's sampling and `num_ctx`; the Multi-Turn executor builds `BrainChatOllama` while the brain is on |
+
+**Order of sources (the first that sets a value wins):** an explicit `model_brain_overrides` entry (full name, base name or `re:<regex>`) › the knowledge base › a learned profile › the Modelfile parameters Ollama publishes (`/api/show`) › the model's own defaults (the value is simply not sent). `num_ctx` is clamped to the model's REAL `context_length`. Each chain logs `--- [MODEL-BRAIN] model=… | sampling: … [formal profile '…'] | thinking: … | num_ctx=…` and then its sources.
+
+**Contracts (do NOT weaken):**
+1. **No model name is hardcoded in code.** A new model gets its values from the knowledge base, research, Ollama or its own defaults — never from an `if model == …` branch.
+2. **An explicit value always wins** (`model_brain_overrides`), and `model_brain: off` restores the legacy fixed set exactly (*Ollama sampler settings* above).
+3. **Fail-open.** A planning error, an unreachable Ollama or a broken profile keeps the legacy set and logs why; the brain never blocks a chain, and a broken dialog never blocks saving the models.
+4. **Reasoning is kept only inside the current tool loop** and dropped across user turns (`model_brain_keep_reasoning`), as Z.ai interleaved thinking, OpenAI harmony, DeepSeek, Moonshot and Gemma 4 require. The context gauge counts it (the estimate stayed within +1.3 % .. +5.9 % of Ollama's `prompt_eval_count` over 9 steps).
+5. **No stall clocks.** `llm_liveness.py` and the "write long files in pieces" prompt rule were erased: measured with Ollama's own numbers, reading the prompt is not the bottleneck on Ollama cloud (a 169K-token prompt reached its first byte in 5.5 s on glm-5.2 and 11.2 s cold on glm-5.3, ~1 s cached); the time is the GENERATED reasoning, and a clock cannot tell a dead call from a slow one. The self-healing watchdog (`unified_agent_llm_step_timeout_seconds`) and `llm_client_timeout_seconds` are separate, long bounds and stay.
+
+Carriage: `build.py` names `agent.model_brain`, `agent.model_brain_chat` and `agent.model_brain_views` in `_FROZEN_REQUIRED_AGENT_MODULES` and as hidden imports, and ships `model_profiles.json` with `--add-data` into `agent` (read beside the module when frozen). Proof: unit `agent/test_model_brain.py`; visible `model_brain_visible.py` (25/25 in dev, 2026-10-08). Story: `recent-fixes.md` (2026-10-08).
+
+---
+
+## The REAL context gauge — Ollama's own numbers (2026-09-28)
+
+Shipped in `v1.72.1`.
+
+The ring beside the message box shows what Tlamatini's MAIN chain sends to the
+model, per connected user. Bytes are measured; tokens are **Ollama's own
+`prompt_eval_count`** for that exact request, shown as `N tokens REAL`. A chars/4
+estimate (`≈N tokens est.`) appears only until Ollama has answered.
+
+| Piece | Where | Role |
+|---|---|---|
+| Live metering | `mcp_agent._model_step` | each model step: `measure_async(seq=…)` before, `report_real_usage(seq, prompt_eval_count)` after; pairs only if the self-healer re-sent the SAME request (`UNCHANGED_REQUEST_TACTICS`) |
+| Answer chains | `rag/chains/base.Callbacks(main=True)` | the same for the basic / history-aware / RAG answer calls, paired by LangChain `run_id` |
+| At rest | `agent/context_baseline.py` | rebuilds the NEXT request with the chain's own code and probes Ollama once (`num_predict=1`); cached by sha256 of the wire body |
+| Ceiling | `context_governor.resolve_ceiling_tokens` | Ollama `/api/show` → `<arch>.context_length` (cloud); a local model is bounded by its `num_ctx`; cached 1 h |
+| Change points | `consumers.py` + `context_gauge.js` | page open, reconnect, Clear history, Clear context, context loaded, answer finished, toolbar toggles, skills changed, cancel → `context-gauge-refresh` |
+
+**Contracts (do NOT weaken):**
+1. **Main chain only.** Out-of-band calls (Prompter-style agents, the question
+   rewriter, the history summarizer, ACPX children) never reach the ring; ACPX
+   frames are `KIND_SIDE` (logged only).
+2. **Per user.** Frames, pending counts, turn totals and probe caches are keyed by
+   the user id; `consumers` restores the connection's own sink after every answer.
+3. **A count is pinned only on the request that produced it** (`seq`), arrives
+   early or late, and never overwrites a newer frame.
+4. **Exact, both modes.** The live request = the at-rest prediction + the
+   question's own bytes + (Multi-Turn only) the planner's plan (`bytes_plan`,
+   measured). The rebuild therefore shares the chain's own builders -
+   `MultiTurnToolAgentExecutor.build_request_messages`, `history_summary_tail`
+   and `wrap_loaded_context`; both chains prepend live metrics through ONE
+   `with_system_context`. Re-inlining any of them makes the prediction drift
+   silently. The System-Metrics sidecar sends NOTHING when a question needs no
+   metrics - its old "No system context required for this question." placeholder
+   went out with every one-shot question and was removed on Angela's decision
+   (2026-09-28). Do not bring it back.
+5. **The current question is sent once.** `build_request_messages` drops the last
+   history message when it IS the question, bare or wrapped.
+6. **Say what cannot be known.** The at-rest frame's `note` names what depends on
+   the next question (its text, the Multi-Turn plan, retrieved RAG context, live
+   system metrics). An unanswered request stays labelled an estimate.
+7. **Fail-open.** Nothing here may break a turn; a probe that cannot run leaves
+   the estimate on screen and says so.
+
+**Config:** `context_ceiling_from_ollama` (true), `context_ollama_show_timeout_seconds`
+(4), `context_gauge_real_tokens` (true), `context_gauge_probe_enable` (true),
+`context_gauge_probe_after_answer` (true). The probe costs one real request per
+changed state (logged as `[CONTEXT-PROBE]`). Log lines: `[CONTEXT]` (bytes),
+`[CONTEXT-REAL]` (Ollama's count), `[CONTEXT-CALL]` / `[CONTEXT-TURN]` (answer
+totals), `[CONTEXT-CEILING]`. Visible proof: `context_gauge_real_lab.py`
+(60/60 on 2026-09-28); unit coverage: `agent/test_context_real_tokens.py`.
+
+---
+
+## Compact mode — every request fits the model it is sent to (2026-10-01, shipped in `v1.74.0`; the SWITCH 2026-10-02, shipped in `v1.75.0`)
+
+A model whose REAL window cannot hold Tlamatini's complete request (~100K+ tokens: the whole `prompt.pmt` plus every bound tool schema) is no longer handed it. Ollama never refuses an oversized request for a local model — it silently keeps the tail and answers from that.
+
+| Piece | Where | Role |
+|---|---|---|
+| Cut detection | `context_governor.note_real_count` | chars sent ÷ `prompt_eval_count` > 6.0 (or > 1.6× the measured ratio) = CUT; the count IS the window, learned per (server, model) and used by `resolve_ceiling_tokens` |
+| The switch | `agent/compact_mode.py`, model `CompactState` (pk=1, migration 0211) | `enter_compact` / `leave_compact` rewrite the Configure rows atomically; `note_capacity` locks it for a strict model; `after_toggles_saved` chains and applies saved dialogs; `costs()` prices every row |
+| The decision + fitting | `agent/context_fitter.py`, `CapabilityAwareToolAgentExecutor.fit_request` | STRICT when everything activated does not fit the usable window; COMPACT when the switch is ON (or strict); FULL otherwise |
+| The tool surface | `tools.tool_gate_table()` + `get_mcp_tools(ignore_gates=False)` | ONE table of every built-in tool and the rows gating it; in Compact a gate with no row reads OFF; `ignore_gates=True` = everything activated |
+| Tool-less chains | `rag/chains/unified.py::_fit_tool_less`, `rag/factory.py::_fit_non_tool_prompt_for_model` | same fitter, same closing note |
+| The verdict on the page | `detail.capacity` on every `context-gauge` frame + `compact-mode-state` frames → `model_capacity.js` | the toolbar box (checked / locked 🔒), the dialog, the resync |
+
+**The switch (Angela, 2026-10-02).** Ticking the toolbar's **Compact mode** box REALLY unticks every MCP / Tool / Agent / Skill row except **System-Metrics, Files-Search and Current-Time** and empties the External-MCP active list (saved in `CompactState.saved_external_active`). The user then ticks back only what she needs, one by one, in the existing Configure dialogs; a COMPACT request binds EXACTLY the enabled tools (External-MCP tools and their supervisors stay paused) under the compact prompt (rule priority, ≤ 40% of the window, a seven-rule COMPACT MODE note whose rule 5 lists the ticked tools and rule 6 names what is missing), history ≤ 6, tool output capped at 25% of the window. Unticking the box ticks EVERY row again and restores the External MCPs.
+
+**STRICT.** `fit_request` measures everything activated (`_everything_static_chars`: the full system prompt over every built-in tool + all schemas, cached per executor) against the usable window; `everything + 2400 > usable` ⇒ strict. A strict model with the switch OFF switches it ON at once (`enter_compact(auto=True)`, then the surface is re-read so the same request already carries the Compact selection) and the box is locked; `leave_compact` refuses while strict (the server re-checks; a forged frame cannot unlock it). A big model unlocks the box and **keeps Compact ON** until the user unticks it. If the database cannot be written, a strict request falls back to the old defaults (Current-Time only). ⚠️ "Everything activated" is measured WITHOUT the self-knowledge (`_everything_static_chars` builds its prompt with `_build_system_prompt(…, self_knowledge=False)`), so the Self-modify switch can never lock Compact mode ON by itself — see *The Self-modify switch* below.
+
+**Rows apply at once.** `consumers` saves the rows, then `compact_mode.after_toggles_saved(kind, before)`: chains Agent X ↔ Tool `Chat-Agent-X` (and Pythonxer/Executer/Googler → their direct tools; a direct tool ticked ticks its agent), ticks `Chat-Agent-Run-Wait/Status` with the first agent in Compact, copies every row into the same `global_state` keys `setup_llm` sets, and moves `toggles_version`. `CapabilityAwareToolAgentExecutor._refresh_toggle_tool_surface` re-reads `get_mcp_tools()` when the version moved — on the next request or at-rest rebuild; no reconnect, no rebuild. Every tab joins the `tlamatini_compact_mode` Channels group and receives `compact-mode-state` + the REAL rows. `apps.py` preserves each Agent row's flag across the startup rebuild (a NEW agent starts unticked while Compact is ON).
+
+**Cut answers.** A first step Ollama cut is re-fitted and resent (3 attempts); the 4th attempt sets `executor.accept_context_cut` and is answered from what the model read. A live cut of an open answer is recorded on the turn (`context_governor._note_frame_cut` / `turn_cut`; a thrown-away first step clears it) and `consumers.queue_llm_retrieval` prepends `compact_mode.cut_warning_html` — the **CONTEXT-WINDOW exceeded** line — before the answer is saved. A cut frame's ratio is now *sent ÷ read* (`tokens_sent_estimate`, `window_real`), so the gauge can read 300%, not a polite 100%.
+
+**Contracts (do NOT weaken):** a model that can hold everything activated gets exactly the request it always got while the switch is OFF; the window comes from Ollama's own proof first (a local `/api/show` `context_length` is NOT the per-request window — `OLLAMA_NUM_PARALLEL` splits it); `context_compact_mode` = `auto` | `always` (strict) | `never` (never locked, never automatic), an explicit value obeyed; every piece fails open (no database ⇒ the switch reads OFF). Register a new built-in tool in `tools.tool_gate_table()` — never a second gate list. A model's VERDICT (`compact_mode.VERDICT_KINDS`: `capacity`, `self_modify_fit`) updates every tab's box and STOPS there: it must never re-send rows or re-measure, or two tabs on two models ping-pong forever (2026-10-08: 209,006 log lines in 60 idle seconds before the fix). Story and proof: `recent-fixes.md` (2026-10-01, 2026-10-02, 2026-10-08); coverage `agent/test_model_capacity.py`, `agent/test_compact_mode_switch.py`, `agent/test_compact_mode_pingpong.py`, visible `compact_switch_visible.py`, `compact_pingpong_visible.py`.
+
+---
+## Binary-content guard for context loading (`agent/rag/binary_guard.py`)
+
+Every file that enters the RAG chain is now screened for **binary content** before it is read as text, split, embedded and indexed. Binary files are dropped exactly the way a user-configured omission is dropped — and **every drop is named in `tlamatini.log`**.
+
+### Why it exists
+
+Until this landed, the only way to keep a file out of the embedding chain was to name it (or its extension) in **Context ▸ Set file type omissions**. That list is manual and name-based, so it structurally cannot know about the `.bin` blob, the stray `.pyc`, the vendored `.so`, the `.faiss` index, or the screenshot someone dropped into a project folder. Those files were read as "text", decoded into mojibake, chunked and embedded — poisoning FAISS/BM25 with megabytes of noise, burning embedding VRAM and wall-clock, and diluting every real retrieval hit.
+
+The guard is the **content-based** counterpart of that name-based list. Both survive; they are complementary:
+
+| | Decides on | Configured in | Catches |
+|---|---|---|---|
+| **File type omissions** (pre-existing) | the NAME (`*.doc`, `package-lock.json`) | Context ▸ Set file type omissions | what the user chooses to ignore |
+| **Binary guard** (this) | the BYTES | `config.json` (on by default) | what is binary regardless of its name |
+
+### The cascade — cheapest test first, at most ONE read
+
+A directory load can sweep tens of thousands of files across 12 worker threads, so per-file cost is the whole game. Every stage that can answer without I/O runs before any stage that touches the disk, and **at most one `read()` of one block (8 KiB) ever happens** — sampling a 4 GB video costs exactly what sampling a README costs.
+
+| # | Stage | I/O | Verdict |
+|---|---|---|---|
+| 1 | **EXTENSION** — O(1) frozenset lookup against 192 known-binary extensions | **none** | BINARY (short-circuit; a `.exe` is never opened) |
+| 2 | **SAMPLE** — one `open()`, one `read(sample_bytes)` | 1 read | — (every later stage reuses this buffer) |
+| 3 | **EMPTY** — zero bytes | — | TEXT (nothing to embed, no evidence of binary) |
+| 4 | **BOM** — UTF-8 / UTF-16 / UTF-32 byte-order mark | — | **TEXT** |
+| 5 | **SIGNATURE** — 45 magic numbers (PE, ELF, Mach-O, ZIP, PNG, JPEG, PDF, SQLite, gzip, GGUF, WASM, OLE2, …) | — | BINARY (beats a lying extension) |
+| 6 | **NUL** — a `0x00` in the sample | — | BINARY (the classic git / `file(1)` heuristic) |
+| 7 | **CONTROL RATIO** — share of non-text control bytes via `bytes.translate` (single C-speed pass) | — | BINARY above `binary_detection_control_ratio` |
+| 8 | **UTF-8 DECODE** — undecodable **and** control-dirty | — | BINARY |
+| — | default | — | TEXT |
+
+**⚠️ STAGE 4 MUST PRECEDE STAGE 6 — do NOT reorder.** UTF-16/UTF-32 text is legitimately full of `0x00` bytes. If the NUL test ran first, every UTF-16 document on the user's disk would silently vanish from the context. `test_utf16_bom_beats_the_nul_test` pins this, and `test_bom_table_is_ordered_longest_prefix_first` pins that the UTF-32-LE BOM is tested before its UTF-16-LE prefix `\xff\xfe`.
+
+Two deliberate non-decisions keep false positives near zero: **all high bytes (0x80-0xFF) count as text** (so accented UTF-8 and legacy cp1252/latin-1 files pass — Angela's Spanish sources must never be stripped), and a sample below `MIN_RATIO_SAMPLE` (32 B) skips the ratio stage entirely (one stray byte cannot condemn a tiny file).
+
+### FAIL-OPEN CONTRACT (do NOT weaken)
+
+A detector that crashes — or that guesses "binary" when unsure — is **worse than no detector**, because it silently deletes the user's real context. Therefore:
+
+- Every failure path resolves to **TEXT** (load it): unreadable file, permission error, a race with a deleted file, a directory passed as a path, a `None` argument. `classify_file()` **never raises**.
+- The module is **stdlib-only** and imports nothing from `agent.*`, so it behaves identically in source and frozen mode.
+- `binary_detection_force_text_extensions` always **beats** the built-in denylist, so the user can rescue any file the tables get wrong.
+- A malformed value in `config.json` falls back to the default rather than disabling the loader.
+
+### Logging — visible in `tlamatini.log`, frozen AND source
+
+`manage.py` tees `stdout`/`stderr` into `tlamatini.log` before Django initializes, so the guard simply `print()`s and the lines land in the log in **both** modes. Every line carries the grep-able prefix `--- [BINARY-GUARD]`, sitting right beside the existing `--- Excluded filenames:` / `--- Excluded extensions:` banner:
+
+```
+--- [BINARY-GUARD] ENABLED - sampling 8192 bytes/file, control-byte limit 0.3
+--- Loading all files with exclusions:
+--- Excluded filenames: ['package-lock.json', 'yarn.lock', ...]
+--- [BINARY-GUARD] ══════════════════════════════════════════════
+--- [BINARY-GUARD] 3 binary file(s) OMITTED from the context / embedding chain
+--- [BINARY-GUARD] Detected by: extension=2, signature=1
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\assets\logo.png  [extension: known binary extension .png]
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\build\core.pyc   [extension: known binary extension .pyc]
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\notes.md         [signature: PNG image]
+--- [BINARY-GUARD] ══════════════════════════════════════════════
+```
+
+A clean load prints `--- [BINARY-GUARD] No binary content detected (…) - nothing omitted`, so the log always proves the guard ran. The listing is capped at 200 entries but **the total is always truthful** (`… and N more`).
+
+Because `DirectoryLoader` fans out over 12 threads, drops are accumulated in a lock-protected `BinaryOmissionRecorder` and printed as one coherent block after `loader.load()` returns — never interleaved mid-line.
+
+### Wiring
+
+`agent/rag/factory.py` resolves the settings once per load (`binary_guard.resolve_settings(config)`), passes them into `loader_kwargs` at **all three** `DirectoryLoader` call sites, and the hook lives in `CustomTextLoader.__init__`: on a binary verdict it records the drop and `raise`s `ValueError`, which `DirectoryLoader(silent_errors=True)` swallows — **the exact mechanism the name-based omissions already used**, so a binary drop is indistinguishable downstream from a user omission.
+
+| Entry point | Path | Guarded |
+|---|---|---|
+| `setup_llm_with_context` | a chosen directory (Context ▸ Set directory as context) | ✅ |
+| `setup_llm_with_context` | a single chosen file | ✅ |
+| `setup_llm` | the `application/` directory | ✅ |
+
+**Miss one call site and that context path silently loads binaries again** — `test_all_three_directory_loaders_receive_the_settings` asserts the count is exactly 3.
+
+### Configuration
+
+```jsonc
+"binary_context_detection": true,            // master switch
+"binary_detection_sample_bytes": 8192,       // head bytes sampled per file
+"binary_detection_control_ratio": 0.3,       // non-text byte share that condemns a file
+"binary_detection_log_each_file": true,      // false = count-only summary
+"binary_detection_extra_binary_extensions": [],  // e.g. [".myblob"]
+"binary_detection_force_text_extensions": []     // e.g. [".dat"] - always wins
+```
+
+Setting `binary_context_detection: false` restores the exact pre-guard behaviour (the log then says `DISABLED`).
+
+Coverage: `agent/test_binary_guard.py` (45 tests — the cascade, every signature, fail-open, the recorder under 12 threads, the one-read efficiency contract, the factory wiring, table sanity, and a documentation check).
+
+---
+
+## Configurable web port (`django_port`) — v1.40.1, 2026-07-13
+
+The port Tlamatini's web UI + chat WebSocket bind is **no longer hardcoded to 8000** — `8000` is now only the *default*. Set **`django_port`** in `config.json` and restart; no rebuild, no code edit.
+
+**Why it exists.** On a machine where Windows/Hyper-V has **reserved** port 8000 (the dynamic-port exclusion ranges — `netsh interface ipv4 show excludedportrange protocol=tcp`), Daphne cannot bind it and Tlamatini dies at startup with **`WinError 10013`** — *"an attempt was made to access a socket in a way forbidden by its access permissions"*. Before this, a frozen install had **no escape** from that: the port was baked into `manage.py` and only a rebuild could move it. Now it is one line of `config.json`.
+
+**The two helpers (both in `Tlamatini/manage.py`, stdlib-only on purpose — they run BEFORE Django is imported):**
+
+| Helper | Role |
+|---|---|
+| `_resolve_config_path()` | Absolute path to `config.json`. `CONFIG_PATH` env wins; else next to the frozen `Tlamatini.exe`; else `agent/config.json` in source mode. |
+| `_resolve_django_port(default_port=8000)` | Reads `django_port`, validates `1 ≤ port ≤ 65535`, returns it. **Fail-open** on anything wrong. |
+| `_apply_configured_port(argv)` | Injects the resolved port into `sys.argv` for `runserver` / `startserver` **when the command line omitted one**. Called once from `main()`. |
+
+**Coverage — every launch path honours the key** (this was the 2026-07-13 completion; the original commit only covered the frozen paths):
+
+- frozen bare double-click → `runserver --noreload 0.0.0.0:<port>`
+- frozen `.flw` file association → same
+- frozen browser auto-open → `http://localhost:<port>/`
+- **source `python manage.py runserver`** ← was still binding 8000 before
+- **`python manage.py startserver`** ← was still binding 8000 before (its `addrport` is forwarded verbatim to `runserver`)
+
+**Contract — do NOT weaken either half:**
+
+1. **Fail-open, always.** A missing key / missing file / unparseable JSON / non-numeric / out-of-range value falls back to **8000** and prints a `--- [PORT] …` line. A config typo must never stop the server from starting. (`utf-8-sig` read, so a BOM is tolerated.)
+2. **An explicit CLI port always wins.** `runserver 9100` or `runserver 127.0.0.1:9100` is never second-guessed, and the injector never double-appends onto the frozen `0.0.0.0:<port>` rewrite. Detection is "any non-flag token after the command".
+
+**Not covered (by design):** a direct `daphne` / `uvicorn` launch bypasses `manage.py` entirely — pass the port on that CLI yourself. The two MCP helper listeners are a separate axis with their own keys (`mcp_system_server_port` → `:8765`, Files-Search gRPC → `:50051`). If you run the **TeleTlamatini** bridge, point its `tlamatini.base_url` at the same port.
+
+Coverage: `agent/test_django_port_config.py` (24 tests — fail-open matrix, CLI-wins matrix, and a source contract pinning the wiring; `manage.py` cannot be imported in a test process, so the helpers are AST-lifted, the same trick `test_temp_dir_policy.py` uses).
+
+---
+
+## System Prompt & Identity
+
+The chat LLM system prompt lives in `Tlamatini/agent/prompt.pmt`. The LLM is given the identity **"Tlamatini"** (Nahuatl for "one who knows"). When users address "Tlamatini" in their prompts, the LLM understands they are speaking to the system itself. The bot username in chat messages and DB records is `Tlamatini`.
+
+Key rules:
+
+1. Referenced rephrases must be ignored
+2. System context (MCP metrics) is real-time
+3. Files context (MCP file search) is real-time
+4. Code blocks use `BEGIN-CODE<<<FILENAME>>>` / `END-CODE` format (NOT markdown fences)
+5. Context usage: if tools are available (Multi-Turn), use them for ANY request
+6. Tables must use HTML, not markdown pipe syntax
+7. Responses must end with `END-RESPONSE`
+8. Tool-usage rule: in Multi-Turn, the LLM is an OPERATOR, not just an advisor
+9. Up to 4096 multi-turn iterations available (`unified_agent_max_iterations`; bumped 256 → 4096 in commit `1f36217`. Not to be confused with the tool-call quota hard-stop of 256, which is a separate cap.)
+10. Identity rule: the LLM IS Tlamatini — it responds to its name and can describe its own capabilities
+
+---
+
+## Self-Knowledge & Self-Modification (2026-05-25)
+
+Two related capabilities let Tlamatini describe — and potentially rewrite — herself.
+
+### Self-knowledge injection (`Tlamatini.md` → `{self_knowledge}`)
+
+`Tlamatini/agent/Tlamatini.md` is the LLM's **first-person self-reference file** — an authoritative map of *what she is*: who/what she is, the two runtime modes (frozen vs source) and how to detect which one she is in, the ports she opens (8000 / 8765 / 50051), her main pages, her tech stack, her capability surface, and how to improve herself. Its audience is the LLM alone, so it **deliberately does NOT follow `prompt.pmt`'s HTML/contrast styling rules** — it is private self-reference, not text rendered to a user.
+
+It is injected into `prompt.pmt`'s `<self_knowledge>{self_knowledge}</self_knowledge>` block **at prompt-build time** by `agent/rag/config.py`:
+
+- **⚠️ GATED ON `--self-modify` (2026-08-08).** The self-knowledge is NOT unconditional any more. `is_self_able_modify(application_path)` — is `TlamatiniSourceCode/` present beside `prompt.pmt`? — decides, and `apply_self_knowledge_blocks()` keeps XOR drops the **entire** `<self_knowledge>` section via the same sentinel machinery that gates the ACPX / Templates rule blocks (`<!--SELF_KNOWLEDGE_BEGIN/END-->` vs `<!--NOT_SELF_MODIFY_BEGIN/END-->`). In a not-self-able-modify build the section is dropped whole and one short honest line takes its place: **138,225 → 75,371 chars, ≈15.7k tokens saved on EVERY request**. With `--self-modify` the block is byte-identical to what it always was, so she can still modify herself. `build.py` bundles `Tlamatini.md` only under the flag, and both `build_complete_*` wrappers default to OFF and then verify `pkg.zip`. The marker check fails CLOSED; the block resolution fails OPEN; the placeholder is never left raw. Contract + coverage: `docs/claude/recent-fixes.md` (2026-08-08), `agent/test_self_modify_gate.py`. **Since 2026-10-03 the loader asks `self_modify_available()` instead: a source run of this checkout is ALWAYS self-able** (dev mode is always like `--self-modify`); a frozen build still needs `TlamatiniSourceCode/` beside the exe. See *The Self-modify switch* below.
+- Constants `SELF_KNOWLEDGE_FILENAME = 'Tlamatini.md'`, `SELF_KNOWLEDGE_PLACEHOLDER = '{self_knowledge}'`, `SELF_MODIFY_DIRNAME = 'TlamatiniSourceCode'`.
+- `_load_self_knowledge_block(application_path)` reads the file, **brace-escapes** it (`{` → `{{`, `}` → `}}`) so code snippets inside it don't collide with the f-string template variables (`{system_context}`, `{files_context}`, `{context}`), and **fails open** — a missing / empty / unreadable file yields a short literal notice instead of raising, so it can never break the system prompt.
+- `load_config_and_prompt()` performs the `.replace()` at the **single prompt-load site**, so the injection covers **every chain** (basic, history-aware, unified, prompt-only) without adding a new input variable.
+- Resolved from the **application directory** exactly like `prompt.pmt` / `config.json` (install root next to the `.exe` in frozen mode, `Tlamatini/agent/` in source mode — the same `application_path` `rag/factory.py` uses). `build.py` ships it via `--add-data=…/Tlamatini.md;agent` **and** copies it to the install root (`optional_file_copies`) so the frozen "next to the exe" resolution works — **both now gated on `--self-modify`** (see the first bullet); without the flag neither copy exists.
+- `prompt.pmt`'s identity rules point the LLM at `Tlamatini.md` and tell her to read it whenever a prompt concerns who/what she is, her architecture / modes / ports / pages / internals, or improving herself.
+
+### Self-modification (`TlamatiniSourceCode/`)
+
+`Tlamatini/agent/TlamatiniSourceCode/` is an **OPTIONAL** directory that, when present, holds Tlamatini's own source code so she can read/inspect/modify herself. It is a **second capability axis, independent of frozen vs source**:
+
+- **Present** → a **self-able-modify** build; **absent** → a **not-self-able-modify** build.
+- Bundled **only** when `build.py` is invoked with the new **`--self-modify`** flag (`self_modify = "--self-modify" in sys.argv and "--no-self-modify" not in sys.argv`): the build **generates the tree fresh** via `copy_source_assets.py` (repo root, 2026-06-12) straight into `dist/manage/TlamatiniSourceCode` — a complete rebuildable snapshot of the live repo (all source + build scripts + .ps1 + build-required .ico/.wav/.svg; media/.pdf/.pptx/jd-cli.jar/secrets omitted, config secrets redacted to `<KEY goes here>` placeholders; ships `_SOURCE_SNAPSHOT_MANIFEST.json` + `_REBUILD_INSTRUCTIONS.md` with the restore-from-install steps for the omitted binaries). Generation/copy errors abort the build; there is no stale static-tree fallback. The shared runtime inventory checks every snapshot input, and both release wrappers validate the manifest's self-modify mode. Prints `Self-modify build : YES/no`. Without the flag the directory is omitted entirely.
+- `prompt.pmt` instructs the LLM to **always verify the directory's presence** (e.g. a Multi-Turn directory listing) before claiming she can read or edit her own code; if absent, she must say so and fall back to the injected self-knowledge + the docs.
+
+Commits: `a927f5c` (self-knowledge file + injection + `prompt.pmt` identity rules), `2aab751` (`build.py --self-modify`), `1f36217` (4096 iterations). Authored by "Tlamatini's-AutoBot".
+
+### The Self-modify switch (2026-10-03)
+
+> Landed on `main` right after the `v1.75.0` tag (commit `70aeeb87`) and ships in the `v1.76.0` tag (2026-10-08).
+
+The load decides what the build CAN send; the **Self-modify** toolbar box decides, per request, whether it IS sent.
+
+| Piece | Where | Role |
+|---|---|---|
+| Availability | `rag/config.self_modify_available()` | `is_source_checkout()` (not frozen AND the app path is this checkout's `agent/`) OR `is_self_able_modify()` (the `TlamatiniSourceCode/` marker). Fails CLOSED. Decides the prompt the loader injects AND whether `views.agent_page` renders the box (`self_modify_available` in the template context) |
+| The text | `rag/config.self_knowledge_segments()` | the exact strings a self-able load injects (identity bullets, then `<self_knowledge>` with Tlamatini.md), recomputed from `prompt.pmt` + `Tlamatini.md`, cached on their size/mtime |
+| OFF | `rag/config.apply_self_modify_switch(prompt, on)` | bullets → `SELF_MODIFY_OFF_NOTICE`; the section dropped; a reshaped prompt still loses `<self_knowledge>…</self_knowledge>`. ON / not available → unchanged. Never raises |
+| The switch | `compact_mode` (`CompactState.self_modify`, migration 0212) | `self_modify_wanted` (persisted, ON by default) · `note_self_modify(fits, tokens, need_tokens)` · `self_modify_active()` = available AND wanted AND not known-too-big · `set_self_modify()` refuses `unavailable` / `too_small`; `notify("self_modify")` (the consumer re-sends no rows for it) |
+| Per request | `CapabilityAwareToolAgentExecutor.fit_request` | FULL: `_prompt_chars_without_self(full_tools) + tool schemas + _self_knowledge_chars() + 2400 ≤ usable`; COMPACT: the compact prompt + its tools + the very text that would be appended. `self_on` goes into `_build_system_prompt(self_knowledge=…)` and the executor cache key `__self__`; `FitReport.self_modify_*` → `capacity.self_modify` on every gauge frame; the `[CONTEXT-FIT]` line ends `self-modify ON / OFF / locked OFF` |
+| Tool-less | `unified._non_tool_system_prompt`, factory non-tool chains | read `self_modify_on()` (fail-open ON); the factory chains read it when BUILT |
+
+Contracts (do NOT weaken): her CHOICE is never rewritten by a small model (only the verdict locks it); Compact mode's STRICT check is measured WITHOUT the self-knowledge; no sentinel marker is ever left in a prompt for this (the gate tests enforce it); the box is rendered only where self-modify is possible — never just hidden with CSS. Coverage: `agent/test_self_modify_switch.py` (availability incl. frozen, the prompt, the switch, the fitter, the page as source AND as a frozen build); visible `self_modify_visible.py`.
+
+### Loaded-context priority (the user's project beats self-knowledge)
+
+Because `{self_knowledge}` is **always** present and authoritative, a generic prompt like *"summarize the project's source code in the provided context"* used to make her summarize **herself**. The fix gives the **user-loaded `<context>` priority** over `<self_knowledge>` for generic "the project / the source code / the provided context / this codebase / the loaded files" requests (she only describes herself when the user *explicitly* names Tlamatini / you / this-system / yourself). It is enforced two ways: a `prompt.pmt` Rule 5 **"Loaded-context priority"** clause + a **"CRITICAL SCOPE"** clause on the `<self_knowledge>` block, and a deterministic, model-agnostic scope header — `agent/rag/utils.py::prepend_loaded_context_scope()` — prefixed onto the loaded context blob in all four chains (`history_aware.py`, both chains in `unified.py`, `basic.py`). See `docs/claude/recent-fixes.md` (2026-05-25) for the full contract.
+
+---
+
+## Self-Update (in-app) & Post-Update DB Migration
+
+Tlamatini updates herself from **About ▸ Check for updates** (`agent/self_update.py`): she checks the latest `XAIHT/Tlamatini` GitHub release, downloads + stages it, and hands off to the external `apply_update.ps1` (run from OUTSIDE the install so it can replace locked files — `Tlamatini.exe`, `python\`, `jre\`, `git\`). The swapper kills the running app's process tree (sparing its own PID), renames `agents → agents_backup` (one generation kept), deletes the old install except the preserved set, moves the new build in except the preserved set, and relaunches. **Preserved across the swap:** `config.json`, `DB`, `Temp`, `Templates`, `application(s)`, the `*_generated` / `context_files` dirs, and `Uninstaller.exe` (built separately, never inside `pkg.zip`).
+
+**Post-update DB migration (2026-06-15, v1.23.0).** The live `db.sqlite3` sits inside `_internal/` (PyInstaller `_MEIPASS`), which is replaced wholesale on update — so it cannot be protected by the top-level preserve set. To keep the user's chat history + custom toggles AND still deliver new migrations (new agent / tool / prompt rows), `apply_update.ps1` (step 3b) copies the user's DB into the preserved `DB/ToLoad/` and drops `DB/post_update_migrate.flag`. On the next launch `manage.py::_apply_pending_db_swap()` swaps that DB back over the freshly-shipped one and `_run_post_update_migrate_if_flagged()` runs `migrate` in a **child process** — safe because `agent/apps.py::AgentConfig.ready()` only starts the MCP servers for `runserver`/`startserver`/`daphne`/`asgi`, so a child `migrate` neither starts a second server nor recurses. The two preserve lists (`apply_update.ps1 $Preserve` and the `self_update.py` docstring) must stay byte-coherent; the `tlamatini-self-update-inclusion` sweep enforces it. See `docs/claude/recent-fixes.md` (2026-06-15).
+
+---
+
+## Companion-App Discovery — `HKCU\Software\XAIHT\Tlamatini` + agents manifest (2026-07-12)
+
+So XAIHT **companion apps** (e.g. **Tlamatini-FlowPills**) can find Tlamatini's agent-template catalog **without importing Python, running Tlamatini, or scanning drives**, Tlamatini publishes three read-only, **HKCU-only, fail-open** surfaces (engine: `agent/agent_manifest.py`):
+
+- **Registry key** `HKCU\Software\XAIHT\Tlamatini` (`windows_app_registration.register_discovery_entry`) — values `InstallLocation`, `AgentsRoot` (the exact root, read FIRST), `SourceAgentsRoot`, `AgentManifestPath`, `Version`, `AgentCatalogVersion` (`<count>-<sha8>`). Written by `install.py`; refreshed by `agent_manifest.publish_discovery()` on **every launch** (background thread in `apps.ready()`), so a source checkout that has run once is discoverable too.
+- **Agents manifest** `<agents_root>\_tlamatini_agents_manifest.json` — complete templates only (`<type>.py` + `config.yaml`; `pools`/`__pycache__` excluded), each with `sha256`. Generated at build (`build.py`) and refreshed on launch: **every complete agent file body is hashed on each background check** and the manifest is **rewritten only when meaningful content differs** (the volatile `generated_at` alone never rewrites; an edit to any agent file refreshes its `sha256`). `read_manifest` reads `utf-8-sig` (BOM-tolerant). Gitignored in source mode.
+- **Preserved marker** `<install>\agents\.tlamatini-preserved-agents.json` — left by `uninstall.py` when it preserves `agents/`; the discovery key is intentionally **kept** so companion apps still find the preserved agents.
+
+Contract (do NOT weaken): HKCU only, never admin, every writer fail-open, read-only w.r.t. Tlamatini **except our own manifest file + our own registry key**. Implements `Tlamatini-FlowPills-Lookup.md` §15 (PROP-001…004). Full contract + companion lookup sequence: `docs/companion-app-discovery.md`.
+
+---
+
+## The Five Layers of the System
+
+### Layer 1: Persisted Toggles (Database)
+- `Mcp` model rows: UI toggles for MCP context providers
+- `Tool` model rows: UI toggles for unified-agent tools
+- `Agent` model rows: Agent type registry (sidebar list)
+- Loaded by `consumers.py`, converted to status flags in `factory.py`
+
+### Layer 2: Runtime MCP Services
+- **System-Metrics**: `mcp_system_server.py` (WebSocket JSON)
+- **Files-Search**: `mcp_files_search_server.py` (gRPC)
+- Started from `apps.py` and `management/commands/startserver.py`
+
+Both services and their clients resolve `CONFIG_PATH` first, then the installed
+configuration beside the frozen executable or the source configuration; UTF-8
+BOM files are accepted. System-Metrics uses its configured WebSocket host/port
+and client URI. Files-Search uses `mcp_files_search_server_host`,
+`mcp_files_search_server_port` and `mcp_files_search_server_max_workers`; its
+client resolves `mcp_files_search_client_uri` (including the legacy `ws://`
+spelling) into a gRPC endpoint. Defaults remain 8765 and 50051. Changing a server
+port requires matching the client URI. Invalid endpoints/bind failures surface
+as errors, and Files-Search RPCs have bounded deadlines. `serve()` is synchronous;
+startup must not pass its return value to `asyncio.run`.
+
+### Layer 3: Context Fetcher Chains (Sidecars)
+- `SystemRAGChain` in `chain_system_lcel.py`
+- `FileSearchRAGChain` in `chain_files_search_lcel.py`
+- These inject `system_context` / `files_context` into the payload
+
+### Layer 4: Main Answer Chains
+- `basic.py`: BasicPromptOnlyChain (no docs)
+- `history_aware.py`: History-aware RAG with reranking
+- `unified.py`: Tool-enabled agent chains (LangGraph)
+- `factory.py` monkey-patches `invoke()` to inject context from sidecars
+
+### Layer 5: Unified-Agent Tools
+- Defined in `tools.py` as synchronous `@tool` functions
+- Returned by `get_mcp_tools()` (misnamed - returns LangChain tools, NOT MCP services)
+- Only active when unified-agent chain is selected
+- Includes 21 direct/module tools, 67 wrapped chat-agent launchers (see `chat_agent_registry.WRAPPED_CHAT_AGENT_SPECS`), 12 ACPX/Skill tools, and 10 External-MCP supervisors for **110 built-ins** before dynamic `ext__*` remotes. The wrapped set includes `chat_agent_flowcreator`, PDFer, LaTeXer, and the media playback pair.
+- Googler tool must run Playwright inside a `ThreadPoolExecutor` — `sync_playwright()` is incompatible with Django Channels' running event loop
+
+---
+
+## External MCPs (universal MCP client) — distinct from the `Mcp`-model context providers
+
+`agent/external_mcp_manager.py` is a **config-driven generic MCP CLIENT**: it connects Tlamatini to ANY external MCP server declared in a JSON catalog and exposes that server's tools to the LLM. It is a **separate axis** from the two runtime context providers above — `System-Metrics` / `Files-Search` are servers Tlamatini *hosts* (Layer 2) and toggles via `Mcp`-model rows; the External MCPs are servers Tlamatini *consumes* as a client, with no `Mcp` row, no `factory.py` wiring, and no prompt-context injection.
+
+- **Catalog = user state.** `agent/external_mcps.json` holds the standard `mcpServers` shape (identical to a Claude Desktop / VS Code config) plus an `active` list. It is resolved **next to `config.json`** with the same precedence (`CONFIG_PATH` env > frozen install root > source `agent/`), so it is user state that survives a self-update.
+- **Four connect transports.** The client speaks `stdio`, `streamable-http`, `sse`, and `websocket` (the normalizer also recognizes `tcp` / `named-pipe` labels). A `_NetworkMcpClientBase` (httpx + websockets) duck-types the `_StdioMcpClient`, so the supervisor tools treat every transport uniformly.
+- **LLM surface = 10 supervisor tools + lazily-bound remote tools.** The LLM drives the manager with `external_mcp_status` / `external_mcp_reconnect` / `external_mcp_doctor` / `external_mcp_list_tools` / `external_mcp_call` / `external_mcp_import` / `external_mcp_set_active` / `external_mcp_wait`, plus `external_mcp_runtime_status` / `external_mcp_runtime_install` (2026-08-15) for the npx/uvx toolchain. Each active server's remote tools are wrapped as `ext__<server>__<tool>` (the catalog can hold hundreds of servers; at most **5** are active at once so the bound surface stays small). The browser surface is the **External ▸ MCPs** navbar dialog (`docs/claude/frontend.md`).
+- **NOT ACPX.** The `external_mcp_*` and `ext__*` tools are **not** part of ACPX — not in `ACPX_TOOL_NAMES`, not gated by the ACPX checkbox — they are gated only by Multi-Turn. See `docs/claude/acpx.md`.
+- **Runtimes are PROVISIONED, not assumed** (2026-08-15). Because most servers are `npx -y <pkg>` / `uvx <pkg>`, `agent/runtime_provisioner.py` keeps Tlamatini's OWN `node`/`npm`/`npx`/`pnpm`/`uv`/`uvx` in `%LOCALAPPDATA%\Tlamatini\runtimes`, downloaded once on demand from the official upstreams with sha256 verification and an atomic install — no admin, no system-PATH change, nothing bundled into the installer. Resolution order is `<tool>_executable` config → an existing private runtime → system PATH → well-known per-user locations. The private runtime is provisioned only when the manager was missing, so it does not displace a usable system install; once provisioned it is deterministic and takes precedence unless the user sets an explicit executable. `_StdioMcpClient` spawns through `augment_env()` + `resolve_spawn()`, the latter rewriting Windows' `npx.cmd` shim to `node.exe <npx-cli.js>`; `_connect` provisions a missing manager on the background connect thread before spawning. Toggle with `runtime_autoprovision` (default `true`).
+- ⚠️ **`resolve_spawn` resolves EVERY command, not just the six it provisions (2026-09-07).** It used to `return [raw, *args]` untouched for anything outside `MANAGED_TOOLS`, and because `_resolve_argv` does `if argv: return argv`, that non-empty pass-through made `_resolve_argv`'s own `.cmd`→COMSPEC fallback **unreachable dead code** — so every npm/pnpm-installed MCP server with a bare command name died with `[WinError 2] The system cannot find the file specified`, because `CreateProcess` cannot execute a `.cmd` (measured live on `deepwebresearch`). Outside `MANAGED_TOOLS` means *"we do not PROVISION this"*, never *"we cannot RESOLVE this"*. Resolution now runs through **`agent/win_shim.py`**, the single tree-wide definition of Windows spawning (prefer a real `.exe` → rewrite an npm/pnpm shim to `node.exe <script.js>` → shell only as a last resort), shared with ACPX and the stdio MCP server so no copy can drift. `agent.win_shim` is imported fail-open, so it is in `build._FROZEN_REQUIRED_AGENT_MODULES` and has a `--hidden-import`. Coverage: `agent/test_win_shim.py` (27 tests); full story: `docs/claude/recent-fixes.md` (2026-09-07).
+- **Two servers ship by DEFAULT, INACTIVE** — `memory` and `sequential-thinking` from the official `@modelcontextprotocol` suite, declared in `agent/external_mcp_defaults.py` and seeded by `load_catalog()`. Seeding lives in CODE because `external_mcps.json` is preserved across self-update, so a JSON-only default would never reach an existing install. Deleting a default **tombstones** it (`_removed_defaults`) so it is not resurrected; editing one is never overwritten; neither is ever auto-activated. The `memory` graph is stored at `%LOCALAPPDATA%\Tlamatini\memory\memory.json`, outside the install dir, so it survives every update.
+- **Static triage counterpart.** The **MCP Doctor** workflow agent (`chat_agent_mcp_doctor`) reads the same catalog WITHOUT connecting — the offline, on-paper sibling of the live `external_mcp_doctor` tool (`docs/claude/agents.md`).
+
+---
+
+## Application Log (tlamatini.log)
+
+`Tlamatini/manage.py` defines a `_TeeStream` wrapper that replaces `sys.stdout` and `sys.stderr` **before Django initializes**. Every print, every Django logger (they all use `StreamHandler`), and every tool's stdout/stderr lands in both the console and a single file:
+
+- **Source mode**: `Tlamatini/tlamatini.log` (next to `manage.py`)
+- **Frozen mode**: next to the executable (e.g. `C:\Program Files\Tlamatini\tlamatini.log`)
+
+Characteristics:
+
+- **Truncate-on-start**: the file is opened with mode `'w'`, so each run begins with a fresh log
+- **No rotation / no size cap**: long sessions grow unbounded — copy or rename before restart if you need to preserve the history
+- **Not a Django LOGGING handler**: the tee is stream-level, upstream of Django's logging config, so it picks up print() calls and third-party stdout as well
+- **The FILE is written FIRST, the console SECOND** — see the Console Shield below. That order is load-bearing, not stylistic.
+
+### The CONSOLE SHIELD — clicking the console must never freeze Tlamatini (2026-09-10)
+
+Windows consoles ship with **QuickEdit Mode ON**. The moment a user clicks or drags inside the window — to copy a line of the log, or merely to make it the active window — Windows puts the console into **selection mode** and **`WriteConsoleW` stops returning**. It does not fail; it **BLOCKS**, for as long as the selection is held.
+
+⚠️ **A block is not an exception.** The `try/except` around the console write could never catch it, which is why the symptom read as a *hang* rather than an error.
+
+**The defect was wider than "the console pauses."** `_TeeStream.write()` used to write the **console first** and `tlamatini.log` **second**, so one mouse click froze three things: the calling thread (parked inside `WriteConsoleW`), **the log file itself** — the durable record held hostage by the cosmetic one, which is why the log *also* stopped growing and made the freeze look total — and then every other thread, one by one, as each reached the same line. Django, Channels, the Multi-Turn executor and every pool agent log, so the whole application stopped.
+
+**Two independent defences, deliberately layered:**
+
+| # | Mechanism | Where | Scope |
+|---|---|---|---|
+| **1** | **`console_quick_edit: false`** — clears `ENABLE_QUICK_EDIT_INPUT` so a click cannot start a selection at all | `manage.py::_apply_console_quick_edit_policy()` | **FROZEN builds only** |
+| **2** | **`_ConsoleWriter`** — the console becomes a sink that cannot apply backpressure: chunks go to a **bounded queue** drained by **one daemon thread** | `manage.py::_ConsoleWriter` + `_TeeStream._CONSOLE_WRITER` | **BOTH modes, always** |
+
+Defence 1 is what the user *sees* (the window keeps scrolling). Defence 2 is what actually guarantees correctness, and it covers everything the flag cannot reach: a source run, **Windows Terminal** (which ignores the flag), a piped stdout whose reader stalls, and anyone who sets the knob back to `true` to keep mouse-copy.
+
+**Config:**
+
+```jsonc
+"console_quick_edit": false     // SHIPPED value. Frozen-only. Copy with right-click ▸ Mark.
+```
+
+⚠️ **Shipped value `false`; code fallback `true`** — two different defaults, both deliberate. The shipped config clears QuickEdit; a **missing or malformed** key makes **no Windows API call at all**, so a broken config can never stop startup. It shipped `true` for one day and produced the exact hang-looking symptom the change exists to remove (§ `recent-fixes.md` 2026-09-10).
+
+**Contracts that must NOT be weakened:**
+
+1. **The log file is written BEFORE the console is queued.** Reversing the sink order restores the original bug in full.
+2. **`submit()` never blocks and never raises** — it is on the hot path of every `print()` in the process.
+3. **The queue is BOUNDED (10,000 chunks) and drops the OLDEST**; a drop is **never silent** (reported on screen *and* in `tlamatini.log`). **Console chunks may be dropped; LOG LINES NEVER ARE.**
+4. ⚠️ **Lock ordering is one-way** — nothing may hold `_ConsoleWriter._cond` while taking `_TeeStream._LOG_LOCK`, or vice versa. Nest them and you trade a console freeze for a **deadlock**.
+5. ⚠️ **User tags stay on the CALLER's thread.** `_USER_TAG_HOOK` reads a **ContextVar**; computing the tag on the drain thread would stamp every line with the *drain thread's* identity and turn `[a3]` into garbage (see the section below).
+6. ⚠️ **CTRL+C (`ENABLE_PROCESSED_INPUT`, 0x0001) is FORCED ON, VERIFIED, and ROLLED BACK on doubt.** It is a different bit from QuickEdit but shares the same DWORD, which is how programs silently lose it — and losing it here would also lose the SIGINT that runs `apps.py`'s **Tier-3 orphan reaper** and the pool-directory cleanup. QuickEdit is the **only** bit that function may ever clear. **Fail toward Ctrl+C, always.**
+7. ⚠️ **Disabling QuickEdit is FROZEN-ONLY and the shield is NOT — do not "make them consistent."** Console mode belongs to the **console**, not the process: from source, that console is the developer's own terminal and **outlives** Tlamatini, so clearing the flag there would leave their shell unable to select text after the server exits. A frozen build owns its window and takes it down with the process. (Save-and-restore was rejected: a hard kill skips `atexit` and leaks anyway.) The shield is ungated because the freeze is **identical** in dev, where log text gets selected most.
+8. **Fail-open everywhere.** Nothing here may raise into a caller.
+
+`close()` is bounded at **2 s**, so a user still holding a selection at exit can never keep the process alive. `flush()` writes the file synchronously and **delegates** the console flush, because flushing a selected console blocks exactly like writing to one.
+
+Coverage: `agent/test_console_shield.py` (**28 tests**). Full audit record: `TlamatiniConsoleShieldByClaude.md` (repo root); dated entry in `docs/claude/recent-fixes.md` (2026-09-10).
+
+### Console colours and the console TYPE (2026-10-08)
+
+The WINDOW is painted by level (`_ConsoleColorizer`, config `console_colors`, ships `true`): errors and tracebacks red, CRITICAL/FATAL white on red, warnings yellow, debug grey, successes green; plain INFO keeps the console colour with `--- [TAG]` cyan and the user tag `[a3]` magenta. **`tlamatini.log` stays plain text** — `_TeeStream._plain` even strips the codes Django prints into its access log. At startup `_console_host()` measures which program draws the window (window class `ConsoleWindowClass` = conhost; `PseudoConsoleWindow` = a terminal app, named by its owner process: Windows Terminal, VS Code, Antigravity) and logs `--- [CONSOLE] host: ... | code page ...`. ⚠️ **Windows Terminal is Windows 11's default console** — it ignores the QuickEdit flag (the queue shield above covers it).
+
+Contracts (do NOT weaken): painting runs ONLY on the drain thread; every painted piece closes its colour in the same write; the text itself is never changed; a pipe or a file never receives a colour code; `NO_COLOR` is honoured (note: Claude Code sets it for programs it launches); virtual-terminal processing is only ever ADDED and read back (both modes); the UTF-8 code page is set in FROZEN builds only. Coverage: `agent/test_console_colors.py`; story: `recent-fixes.md` (2026-10-08).
+
+### Per-line USER attribution — whose line is this? (2026-08-13)
+
+Tlamatini serves **several logged-in users at once** on one machine (open a session as `angela` and another as `alice` and both are served by the same process, the same event loop and the same thread pool). The log used to interleave them with no way to tell whose line was whose. Now every line that belongs to a user carries a tiny prefix:
+
+```
+--- [WHO] a = angela (user id 1)          <- legend, printed once per user per run
+--- [WHO] b = alice (user id 2)
+[a3] --- Message parsed: 'compile the report' **** to be sent to LLM
+[b1] --- [BINARY-GUARD] ENABLED - sampling 8192 bytes/file
+[a3] --- [Tier-1 reaper] killed=0 survivors=0
+```
+
+`[a3]` = user `a` (angela), turn 3. The **turn** is what separates two concurrent requests of the SAME user (two browser tabs), so `[a3]` and `[a4]` never blur. Grep one user's whole session with `findstr "[a"`.
+
+**Engine**: `agent/log_identity.py` (stdlib-only, imports nothing from `agent.*`). **Choke point**: `manage.py`'s `_TeeStream.write` — the one place every `print()`, every Django logger and every third-party stdout already passes through. **Bind points**: `consumers.py` (`connect` / `receive` / `queue_llm_retrieval`) for the chat path and `tlamatini/middleware.py::UserLogTagMiddleware` for the ~100 HTTP endpoints.
+
+| Setting (`config.json`) | Default | Meaning |
+|---|---|---|
+| `log_user_tags` | `true` | master switch |
+| `log_user_tag_style` | `"short"` | `"short"` → `[a3] ` (5 chars) · `"name"` → `[angela#3] ` · `"off"` |
+| `log_user_tag_thread_inherit` | `true` | child threads inherit the spawning user's tag |
+
+**Contract — do NOT weaken:**
+
+1. **Minimal characters.** Five per attributed line, and **none at all** for lines that belong to no user (startup, the MCP servers, the reaper) or for blank lines. That is the whole reason the tag is a one-letter code plus a turn number rather than a verbose `[user=angela thread=Thread-42]` preamble.
+2. **Minimal CPU.** The prefix is rendered ONCE per (user, turn) and stored **ready-to-write** in the ContextVar, so the hot path is one `ContextVar.get()` plus one concatenation — no formatting, no lookup, no lock, per line. With nothing bound the tee pays a single `is not None` test.
+3. **`ContextVar`, never `threading.local`.** ONE event-loop thread serves EVERY connected user, so a thread-local would smear angela's identity over alice's coroutine. `sync_to_async` propagates the context, so the whole synchronous Multi-Turn executor stays attributed for free; `install()` additionally wraps `Thread.start` so raw threads (the self-healing watchdog, the Tier-2 reaper, agent launchers) inherit it too.
+4. **Inverted coupling.** `manage.py` exposes an empty `_USER_TAG_HOOK` slot and `log_identity.install()` fills it in when the Django app boots. The tee must **never** `import agent.*` — it runs before Django exists, and that import would drag protobuf/gRPC into startup. A launch without the module simply writes untagged lines.
+5. **FAIL-OPEN everywhere**, and the prefix stays **ASCII** (the tee also writes to a cp1252 console).
+
+Coverage: `agent/test_log_identity.py` (27 tests — the exact characters that reach the file, two users in two contexts, thread inheritance, blank/partial-line handling, a hook that raises, and the wiring contracts).
+
+When asked to debug an issue, `Tlamatini/tlamatini.log` is the first artifact to consult.
+
+---
+
+## Doc Generation (agent/doc_generation)
+
+- `complete_project_docs.py` — the project-dossier generator (2026-09-26). One run rebuilds BOTH `tlamatini_app_summary.pdf` and `Tlamatini_eXtended_Artificial_Intelligence_Humanly_Tempered.pptx` from facts it derives from the source and Git (agent, tool, skill and migration counts, release tags, the tracked file tree). It then verifies both files: no glyph off the page, no overlapping lines, every PowerPoint text box inside its shape, and the file tree in each file matching `git ls-files`. It exits non-zero rather than publish a file that failed. The version is derived from an existing source tag: `TLAMATINI_RELEASE_TAG=vX.Y.Z` selects it explicitly; otherwise `git describe --tags --abbrev=0 --match v[0-9]* HEAD` selects the latest reachable tag. The console prints `Current released version: vX.Y.Z`. This identifies the documented source release, not a verified published GitHub package. Helpers: `dossier_content.py` (the chapters), `dossier_editor_content.py` (canvas editing, Interactor and the account wizard), `dossier_theme.py` (palette, fonts, glyph coverage), `dossier_pdf.py`, `dossier_pptx.py` and `dossier_verify.py`. It needs Git and the Windows fonts it names. The normal native presentation check requires PowerPoint; if Office cannot start, record that limitation separately from structural checks and any alternate rendered-slide review.
+- `refresh_project_docs.py` — thin entry point that calls `complete_project_docs.main()`.
+- `mardown_to_pdf.py` *(sic, typo preserved)* — the older Markdown → PDF helper; PDFer's pipeline was ported from it. The dossier no longer uses it.
+
+Output artifacts: the PDF and the PPTX in the repository root; the tracked-file tree, the fact context and `dossier_verification.json` under `build/documentation_refresh/`.
+
+---
+
+## Services Layer (agent/services)
+
+The `agent/services/` package owns cross-cutting backend logic that does not fit cleanly into a chain, a tool, or an agent script. As of May 2026 it groups three concerns:
+
+**Answer / response post-processing**
+- `response_parser.py` — strips the `END-RESPONSE` sentinel and miscellaneous LLM-output artifacts; renders the per-agent **Exec Report** HTML and appends it to the answer in the order documented in `docs/claude/exec-report.md`
+- *(removed 2026-07-06)* `answer_analizer.py` used to hold an LLM-based SUCCESS/FAILURE answer classifier that gated the Multi-Turn Create-Flow button. It was **dropped entirely**: the button now appears whenever Multi-Turn ran with ≥1 successfully-executed agent, and the generated flow contains only the successful agents — so no whole-answer verdict is computed.
+- `filesystem.py` — filesystem helpers shared across views and tools
+
+**Agent contracts & flow compilation** (commit `0bea21d`, May 2026)
+- `agent_paths.py` — Frozen/source-aware resolution of `agents/` root and the per-session pool, plus canvas-id ↔ pool-name normalization (handles `Monitor Netstat` → `monitor_netstat`, `(2)` cardinal stripping)
+- `agent_contracts.py` — `AgentContract` registry: per-agent connection-field shape (`input_field_by_slot` / `output_field_by_slot`), `parametrizer_fields`, `secret_paths`, plus `singleton` / `long_running` / `never_starts_targets` / `exclude_from_validation` flags. Discovers contracts from disk and merges builtin overrides; lru-cached and alias-normalized
+- `flow_spec.py` — `FlowNode` / `FlowConnection` / `FlowSpec` dataclasses + `normalize_flow_payload()` / `flow_spec_to_legacy_json()`. The `schemaVersion: 2` in-memory representation that both surfaces (canvas snapshot from `acp-flow-snapshot.js` AND chat tool-call log from `agent_page_chat.js`) compile through
+- `flow_compiler.py` — `compile_flow_spec()` / `compile_flow_payload()` (called from `views.compile_flow_view` and `views.flow_from_tool_calls_view`) and `list_pool_agents_for_validation()` (the new ground-truth replacement for the legacy `os.listdir` loop in Validate). Wires every connection per its contract, clears stale connection fields before re-writing, redacts `secret_paths` from `.flw` exports, and writes both `config.yaml` and `interconnection-scheme.csv` to the session pool when called with `write=True`. Coverage: `agent/test_flow_contracts.py`
+
+The frontend reaches this layer over three new endpoints: `POST /agent/compile_flow/`, `POST /agent/flow_from_tool_calls/`, and `GET /agent/agent_contracts/` — all wired in `agent/urls.py`.
+
+---
+
+## Database Models (18 models in agent/models.py)
+
+Key models:
+- `Agent` - Agent type registry (idAgent, agentName, agentDescription, agentContent). **⚠️ This table is DELETED and rebuilt from the `agents/` folder listing on EVERY startup** by `apps.py::AgentConfig.ready()`, so `agentDescription` is derived, not authored: the boot resolver `_canonical_agent_display_name()` reads `services/agent_paths.py::display_name_from_agent_type`, which is the real source of truth for a display name (a migration's value survives only until the next launch). See `docs/claude/recent-fixes.md` (2026-07-26).
+- `Mcp` - MCP UI toggle rows (enable/disable context providers)
+- `Tool` - Tool UI toggle rows (enable/disable unified-agent tools)
+- `Skill` - SKILL.md registry mirror (name, description, runtime, acpx_agent, **enabled**, frontmatter_json, body_sha256, last_loaded_at). Created in migration `0071_acpx_skills.py`; auto-seeded from `agent/skills_pkg/*/SKILL.md` by `agent/acpx/service.py::boot_skills()` (called on a background thread from `apps.AgentConfig.ready()`). The **ACPX-Skills navbar dropdown** (Browse / Configure / Diagnostics / Reload — added 2026-05-17) is the only user-facing edit surface and only ever touches the `enabled` boolean; all other fields are owned by `boot_skills()` and refreshed from disk on every reload. The disk-derived cache fields are NOT used by the admin UI (it reads fresh from `skill_registry`); they exist so historical revisions could surface frontmatter snapshots without an extra disk read.
+- `AcpAgent` - Mirror of the ACPX agent registry (agent_id, command, description, enabled, healthy)
+- `AcpSession` - One row per ACP child-process session
+- `SkillInvocation` - Append-only audit row for each `SkillHarness.invoke()` call
+- `AgentMessage` - One row per chat message (user, Tlamatini, greetings, status lines, hidden `Referenced Rephrase:` rows). It is the ONLY store of the history the model reads: `DBChatHistoryLoader.load(limit=8)` re-reads the newest rows for that user on EVERY request, with no cache and no summary. The **Drop** button (2026-09-30) deletes one row, so the model forgets it on the next question with no reconnect (see *Chat history and the Drop button* below)
+- `CompactState` - ONE row (pk=1) holding the toolbar switches: `active` (the Compact mode switch), `strict` (its lock), the `model` and `window_tokens` the verdict was made for, and `saved_external_active` (the External-MCP active list kept while Compact pauses it) — migration 0211, 2026-10-02 — plus `self_modify`, the Self-modify switch (migration 0212, ON by default, 2026-10-03). Owned by `agent/compact_mode.py`; see *Compact mode* and *The Self-modify switch* above
+- Plus session, context, and configuration models (`LLMProgram`, `LLMSnippet`, `Prompt`, `Omission`, `ContextCache`, `AgentProcess`, `ChatAgentRun`, `Asset`, `SessionState`)
+
+### Chat history and the Drop button (2026-09-30, shipped in `v1.73.0`)
+
+Every chat card has a **Drop** button beside Copy (`agent_page_chat.js`). After a themed `tlmConfirm` (Cancel focused; Escape and ✕ cancel) the page sends a `drop-message` frame; `AgentConsumer._handle_drop_message` refuses while an answer is running (`_active_run`), then `delete_message_for_user` deletes the row — filtered by `conversation_user`, so a user can only drop their own — plus, for a dropped prompt, the `Referenced Rephrase:` rows saved right after it (`rag/interaction.py::show_rephrased_question` repeats the prompt's words there). Nothing else is touched: the messages before and after stay, and the 8-message window simply slides back one row. The group frame `message-dropped` carries `message_ids`, so every open tab removes every deleted card, and the context gauge is refreshed. Each card knows its row id because `save_message(...)` returns `.pk` on all three save paths (greeting, prompt, answer) and `views.initial_messages` sends `id` on first render.
+
+⚠️ **Chat history is not the only memory.** The `memory` External MCP keeps a knowledge graph at `%LOCALAPPDATA%\Tlamatini\memory\memory.json`, shared by every install on the machine; a fact she wrote there survives a Drop (the dialog says so). Tests must never write into that graph. Coverage: `agent/test_drop_message.py`; visible proof: `drop_message_visible.py`.
+
+## Desktop control and flow contracts — 2026-09-15
+
+Mouser now resolves explicit physical, window and screenshot coordinates; Keyboarder binds Unicode/key delivery to a verified window; Shoter publishes capture geometry. `input_sent` is delivery evidence, not application success, and a failed or interrupted input segment must be observed before replay.
+
+Parametrizer derives its parser registry from current contracts and validates complete typed mappings. FlowCreator selects from all 86 installed agents and validates the generated graph before publishing; FlowHypervisor separates execution, kill and observation relationships and uses current desktop receipts/timing. GUI-Manager remains design only.
+
+See [configuration, examples and limitations](../desktop-input-and-flow-contracts.md), the [complete generated coverage inventory](../agent-coverage.md), and the [GUI-Manager design](../GUI-Manager-design.md).
+
+## PDFer design pipeline — 2026-09-15
+
+PDFer remains a standalone pool agent. Its twelve flat helper siblings include `pdfer_styles.py` (24 explicit identities, normalized aliases, palette/type defaults) and `pdfer_artwork.py` (original ReportLab vector art). `pdfer_nuance.py` still classifies 20 content treatments; `pdfer_theme.py` resolves the semantic theme, optional visual style, seed color and overrides before final palette validation. `pdfer_atelier.py` measures and renders the document, and `pdfer_audit.py` reopens the finished PDF when `layout_audit` is enabled.
+
+Style selection does not reclassify content or increase its decoration budget. Cover art is deterministic and clipped away from opaque cover text. Title/subtitle continuation, measured footer fitting, small-text contrast and a table-width rounding allowance address specific rendering failures. Existing raster ornament seeds use SHA-256, with all palette roles and raster scale in cache keys. Host fonts remain local and may differ between machines.
+
+`mode: styles` returns a catalog with `status: inspected`, without writing a PDF. The integration contract spans the template config, `chat_agent_registry.py`, `pdfer.py`'s `INI_SECTION_PDFER`, `services/agent_contracts.py`, and FlowCreator's PDFer reference. `style` and `style_family` join existing operation/design fields. Copy the complete template directory to pools; no Django imports or new runtime packages are required for the style extension.
+
+Signature styling belongs to atelier composition. Custom CSS with `engine: auto` selects legacy xhtml2pdf; image-only pages and existing merged PDFs retain their layouts. The [style guide](../../Tlamatini/agent/agents/pdfer/STYLES.md) documents the full catalog, output semantics and validation commands. Generated gallery PDFs/PNGs, reports and atlas are ignored, reproducible development outputs.
+
+## LaTeXer design pipeline — 2026-09-15
+
+The native LaTeXer template now carries three flat sibling modules: `latexer_styles.py` owns the 30-style catalogue, aliases and contrast-corrected palette; `latexer_artwork.py` emits original deterministic TikZ geometry; `latexer_design.py` emits document and separate Beamer layouts. `latexer.py` integrates them with existing authoring, preflight and compilation. Copy the entire template directory to a pool; importing these siblings must work without a Django package context.
+
+Style resolution is explicit and opt-in. Empty styles keep legacy rendering. Generated scaffolds and bare fragments may use a style; complete input documents/projects retain their own preamble and reject an explicit style. `list_styles` bypasses toolchain resolution, so discovery works on a machine without TeX. PDF generation still uses installed engines and the existing convergence/repair pipeline.
+
+The end-to-end contract spans `config.yaml` and `chat_agent_registry.py` (inputs), `agent_page_chat.js` (canvas argument mapping), `services/agent_contracts.py` (21 output fields including the body), and `tools.py` (promotion of `style`, `style_family`, `style_mode`, `style_count`). Screen/print palettes, vector cover art and content stay deterministic without model calls. [Design guide and verification](../../Tlamatini/agent/agents/latexer/STYLES.md).
+
+## PPTXer composition and verification — 2026-09-15
+
+PPTXer's flat sibling modules form a deterministic pipeline: document model → `nuance` selection → theme/font resolution → measured trial composition and pagination → atomic PPTX save → render → audit. Keep these modules beside `pptxer.py` in isolated pool copies. The 36 named treatments comprise 24 original automatic content treatments and 12 explicit visual styles; the font catalogue has 17 pairings. Explicit colors, background, fonts, and density override preset defaults.
+
+Font measurement includes face variants, tracking, line spacing, insets, and 1152-dpi width sampling. Dense content continues across slides. Audit the saved shape tree, grouped text/table cells, native glyph bounds, and sampled rendered contrast. Report measurement errors and skipped checks; the approximate preview has separate confidence from native PowerPoint. The bounded Office worker may clean up only attributable child Office processes; atomic saves preserve previous output on failure. [Canonical contracts, evidence, and reproduction](../../Tlamatini/agent/agents/pptxer/STYLES.md).
+
+## Prompt Flow Panel runtime — a second WebSocket route and a context-free chain (2026-09-25)
+
+`agent/routing.py` now serves **two** WebSocket routes: `ws/prompt-flow-panel/` → `PromptFlowPanelConsumer` (listed first) and the chat's `ws/agent/` → `AgentConsumer`. The panel's page is `/agent/prompt_flow_panel/` (`views.prompt_flow_panel`, `@login_required`).
+
+| Layer | Module | Role |
+|---|---|---|
+| Transport | `agent/prompt_flow_panel_consumer.py` | Rejects anonymous sockets (close code 4401). One active run per connection: `start` / `pause` / `resume` / `stop` / `reply` / `ping`. Every event carries the `run_id`, and commands for a stale run are refused. Messages over 5 MiB are refused. |
+| Interpreter | `agent/services/prompt_flow_panel.py` | `validate_flow(payload, playable)` (the `.fpmt` contract, mirrored in `prompt-flow-panel-model.js`), `FlowRunner` (step-bounded walk; `gate()` for pause/stop; relative delays count only ACTIVE time, a scheduled time is absolute; decisions and user replies), `expand_text()` (`{{last_output}}` substitution, literal only). |
+| Model adapter | `agent/prompt_flow_panel_runtime.py` | `PromptFlowPanelRuntime`: reads the Agent/Mcp/Tool/Omission rows once, builds its OWN chain, calls `ask_rag` on a worker thread with `multi_turn_enabled` / `acpx_enabled` taken from the operation, keeps its own history (last 16 messages sent per prompt), and relays self-healing status lines to the page through the existing `register_status_broadcaster` under its own run key. |
+| Build gate | `agent/management/commands/check_prompt_flow_panel.py` | Renders the page, checks its local assets, validates the shipped example, plays a User Input/history-clear flow containing static commentary through the real consumer with no model, and round-trips a UTF-8 context file under `<app>/Temp`. `build.py` runs it inside the frozen app. |
+
+**Static commentary and runtime input (2026-10-03).** File version 2 uses `user_input` for the old reply step and `user_commentary` for static speech-bubble notes. Both validators migrate version 1 reply steps without altering their graph/settings. Static notes preserve literal text, dimensions and allowlisted color/font/style choices, reject connections/Start, and are excluded from executable reachability and step counts. They never enter the conversation or model prompts. The old runtime WebSocket event/reply-kind name `commentary` is retained internally for compatibility; it belongs to User Input and must not be mistaken for static annotations. The frontend grows notes and their inline editors to contain wrapped text without internal scrollbars; saved height is a minimum, while measured height determines canvas bounds/Fit. Opening a file or restoring a draft is passive. The compatible browser-storage key remains `tlamatini.prompting-flow.draft.v1.<user id>`, even though new documents are version 2.
+
+**`setup_llm(..., include_application_context=True)` gained a keyword-only switch.** The default is unchanged, so every chat caller still loads the shared `application/` corpus. The panel passes `False` for its initial build and for **Flush embeddings**; without it, "flush" silently reloaded the global corpus into a run that was supposed to be empty. `test_chain_readiness.py::ContextFreeChainTests` pins both directions. The `finally` that re-opens the build lane is untouched.
+
+**Cancellation is per run.** Each run's key is `prompt_flow_panel_<user pk>_<uuid4>`; `cancel()` raises that key's latch through `cancellation.request_cancel_generation(key)` and then clears the legacy process-wide flag, so stopping a flow never cancels a chat request in another tab. Stop and disconnect drain the active `asyncio.to_thread` worker instead of abandoning it, and `close()` removes the run's temporary context directory.
+
+## Image/video error reporting and recovery (2026-09-26)
+
+Image/video model failures accumulate in one shared, themed, non-modal fatal-error dialog with an audible notification. Tlamatini keeps running: preserve its retry/tactic ladder, cancellation controls and configured flow recovery routes. Keep the configured model identities; never report a surviving observer or raw concatenation as successful analysis. Dismiss hides the dialog while retaining its history; new failures reopen it. See [the shared behavior and verification contract](../visual-analysis-errors.md).
+
+**Graphical commentary update (2026-10-04):** User Commentary has no configuration dialog. Its floating toolbar formats selected ranges or subsequent typing with mixed fonts/sizes/colors/bold/italic/underline; eight borders/corners resize the bubble directly. Both validators preserve allowlisted rich `runs` whose literal concatenation equals `text`, normalize older plain version 2 notes, and retain version 1 User Input migration. Full-text containment, static runtime isolation and portable/draft persistence remain required. See [the designer guide](../prompting-flow-designer.md).
+
+**Run output layout (2026-10-04, shipped in `v1.76.0`):** Drag the horizontal divider to give Run output 5–95% of the combined canvas/output pane height, excluding fixed headers, status and divider (initial share: 20%). Each pane scrolls independently; resizing preserves zoom, node geometry and text size. Up/Down changes one percentage point, Shift+Up/Down five, Home/End selects 5%/95%. Escape, blur or pointer cancellation ends a drag. Collapse/reopen and window resizing retain the ratio. The per-user `tlamatini.prompting-flow.layout.v1.<user id>` preference is separate from flow files, drafts, dirty state and Undo/Redo. Keep the native details log viewport explicitly sized so its scrollbar remains usable. See `docs/changes/2026-10-04-run-output-resize.md`.
+
+
+## Windows flow-file lifecycle — 2026-10-04, shipped in `v1.76.0`
+
+Both `.flw` agent flows and `.fpmt` prompting flows now have Windows registration, repair, removal, status and Default Apps handling. Explorer/source command-line opening validates a bounded snapshot, reuses a matching running server before database startup, and returns through login to the correct editor without execution. Main-chat Open/drop routes both formats into separate editor tabs while preserving the chat document. The historical `.flw` installer wrappers cover both types for old installer/uninstaller binaries; independent management uses `flow_file_associations.ps1 -Extensions`. Never erase UserChoice or another application’s Open With entries. Update Repair respects explicit unregistration and installation ownership. See [Windows flow files](../windows-flow-files.md). Cache suffix at that change: `-flow-file-opening-2`. Committed to `main` on 2026-10-04. The October 4 local release-validation campaign also rebuilds isolated frozen artifacts; its dated evidence distinguishes build completion from runtime acceptance.

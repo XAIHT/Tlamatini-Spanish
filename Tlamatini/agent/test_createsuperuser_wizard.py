@@ -1,0 +1,78 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+"""Tests for the create-superuser wizard catalog prompt (migration 0145).
+
+The wizard is INSERTED at catalog slot #1 (prompt-1) by 0145, which shifts every
+pre-existing prompt up by one. These tests pin the contract the frontend relies
+on: the wizard is genuinely first, surviving prompt IDs stay stable, and the prompt
+carries the exact keywords the catalog classifier (static/agent/js/tools_dialog.js
+::classifyPromptModes) keys on to badge it Multi-turn + Step-by-Step + Exec-report
+(and NOT ACPX) and to run createsuperuser in both frozen and source modes.
+"""
+from django.test import TestCase
+
+from agent.models import Prompt
+
+
+class CreateSuperuserWizardPromptTests(TestCase):
+    def _wizard(self):
+        return Prompt.objects.get(idPrompt=1)
+
+    def test_wizard_is_catalog_slot_one(self):
+        p = self._wizard()
+        self.assertEqual(p.promptName, 'prompt-1')
+        self.assertIn('createsuperuser', p.promptContent)
+        # Angela's opening phrasing + the placeholder the user edits before sending.
+        # The catalog moved to the standardized parameter grammar (migrations
+        # 0182-0185): `[[ ... ]]` marks a value the USER types. The old
+        # `----<set name here>----` marker no longer exists anywhere.
+        self.assertIn('[[ ESCRIBE AQUÍ EL NOMBRE DE USUARIO', p.promptContent)
+        # `{{ ... }}` marks a value TLAMATINI fills at runtime (the standardized
+        # grammar); the old `<USERNAME>` angle form is now a REPORT slot only.
+        self.assertIn('toma esa respuesta como {{ el nombre de usuario }} y continúa al Paso 1',
+                      p.promptContent)
+
+    def test_catalog_preserves_ids_and_wizard_first(self):
+        ids = sorted(Prompt.objects.values_list('idPrompt', flat=True))
+        self.assertEqual(ids[0], 1, 'the wizard must be the very first catalog prompt')
+        gaps = [n for n in range(ids[0], ids[-1] + 1) if n not in ids]
+        self.assertEqual(
+            gaps, [90, 91, 92, 93],
+            'Only the retired catalog slots may be absent; surviving IDs stay stable',
+        )
+
+    def test_classifier_keywords_present(self):
+        # Mirrors tools_dialog.js::classifyPromptModes — these substrings are what
+        # make the card badge Multi-turn + Step-by-Step + Exec-report and tick the
+        # three toolbar checkboxes on click.
+        c = self._wizard().promptContent
+        self.assertIn('Multi-Turn', c)            # -> Multi-turn (+ Exec-report)
+        self.assertIn('chat_agent_executer', c)   # -> Multi-turn (operator tool)
+        # -> Step-by-Step (hyphenated form + intent word; the spaced "step by step"
+        #    used elsewhere in the catalog must NOT trip the same detector).
+        #    Spanish edition: the same detector also accepts "wizard/casillas ... Paso a paso".
+        self.assertRegex(
+            c,
+            r'[Ss]tep-by-[Ss]tep\s+(?:setup|wizard|checkbox)'
+            r'|(?i:(?:casillas?|modo|wizard|asistente)\b[^.\n]{0,60}\bpaso\s+a\s+paso\b)'
+            r'|(?i:\bpaso\s+a\s+paso\s+(?:wizard|asistente|mode|modo)\b)'
+            r'|(?i:\b(?:marca|activa)\b[^.\n]{0,60}\bpaso\s+a\s+paso\b)',
+        )
+        # Must NOT look like an ACPX prompt.
+        self.assertNotIn('acp_spawn', c)
+        self.assertNotIn('invoke_skill', c)
+
+    def test_runs_in_both_frozen_and_source(self):
+        c = self._wizard().promptContent
+        self.assertIn('Tlamatini.exe" createsuperuser', c)      # frozen branch
+        self.assertIn('python manage.py createsuperuser', c)    # source branch
+        self.assertIn('execute_forked_window=true', c)          # visible console
+        self.assertIn('non_blocking=true', c)                   # detached, returns
+        self.assertIn('reinicia', c.lower())                     # restart guidance

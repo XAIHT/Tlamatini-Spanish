@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0209_retire_qwen35_vision_model.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

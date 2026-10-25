@@ -1,0 +1,699 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_init.js",
+ "segmentos": [
+  {
+   "en": "\"Use as context\"",
+   "es": "\"Usar como contexto\"",
+   "n": 3
+  },
+  {
+   "en": "'Send'",
+   "es": "'Enviar'",
+   "n": 3
+  },
+  {
+   "en": "'Confirmation...'",
+   "es": "'Confirmación...'",
+   "n": 3
+  },
+  {
+   "en": "'Are you sure you want to clean the history?'",
+   "es": "'¿Seguro que quieres borrar el historial?'",
+   "n": 1
+  },
+  {
+   "en": "'This will clear the current context followed by Tlamatini and reset the conversation.'",
+   "es": "'Esto borrará el contexto actual que sigue Tlamatini y reiniciará la conversación.'",
+   "n": 1
+  },
+  {
+   "en": "'Are you sure you want to cancel now?'",
+   "es": "'¿Seguro que quieres cancelar ahora?'",
+   "n": 2
+  },
+  {
+   "en": "'Cancel will break the actual operation and drop the actual context'",
+   "es": "'Si cancelas, se interrumpirá la operación en curso y se descartará el contexto actual'",
+   "n": 2
+  },
+  {
+   "en": "\"Omissions...\"",
+   "es": "\"Omisiones...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Specify extensions or filenames to be omitted, separated by coma\"",
+   "es": "\"Indica las extensiones o los nombres de archivo que se van a omitir, separados por comas\"",
+   "n": 1
+  },
+  {
+   "en": "\"File omission will completely ignore this files in the retrieval process.\"",
+   "es": "\"Los archivos omitidos se ignoran por completo durante la recuperación del contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Configure Mcps...\"",
+   "es": "\"Configurar MCPs...\"",
+   "n": 1
+  },
+  {
+   "en": "\"MCPs will be used to provide additional information to Tlamatini.\"",
+   "es": "\"Los MCPs se usarán para darle información adicional a Tlamatini.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Specify the Rag-MCPs to be used:\"",
+   "es": "\"Marca los Rag-MCPs que quieres usar:\"",
+   "n": 1
+  },
+  {
+   "en": "\"Specify the Tool-MCPs to be used:\"",
+   "es": "\"Marca los Tool-MCPs que quieres usar:\"",
+   "n": 1
+  },
+  {
+   "en": "\"Configure Agents...\"",
+   "es": "\"Configurar Agents...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Agents will be used to provide additional information to Tlamatini.\"",
+   "es": "\"Los Agents se usarán para darle información adicional a Tlamatini.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Specify the Rag-Agents to be used:\"",
+   "es": "\"Marca los Rag-Agents que quieres usar:\"",
+   "n": 1
+  },
+  {
+   "en": "\"Configure ACPX-Skills...\"",
+   "es": "\"Configurar ACPX-Skills...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Toggle SKILL.md packages on or off. Disabled skills are hidden from list_skills and rejected by invoke_skill.\"",
+   "es": "\"Activa o desactiva los paquetes SKILL.md. Los skills desactivados no aparecen en list_skills, e invoke_skill los rechaza.\"",
+   "n": 1
+  },
+  {
+   "en": "'Live connection lost. Use Reconnect or refresh before cancelling the current request.'",
+   "es": "'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de cancelar la solicitud actual.'",
+   "n": 1
+  },
+  {
+   "en": "\"The number of tokens in the loaded file (if used as context) may not be completely processed by Tlamatini, it wont fit the context window.\"",
+   "es": "\"Es posible que Tlamatini no procese todos los tokens del archivo cargado (si lo usas como contexto): no caben en la ventana de contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "`${s.url} (${s.count} models)`",
+   "es": "`${s.url} (${s.count} modelos)`",
+   "n": 1
+  },
+  {
+   "en": "`${s.url} (unreachable: ${s.error})`",
+   "es": "`${s.url} (no responde: ${s.error})`",
+   "n": 1
+  },
+  {
+   "en": "`Tlamatini answered HTTP ${response.status}`",
+   "es": "`Tlamatini respondió con HTTP ${response.status}`",
+   "n": 1
+  },
+  {
+   "en": "'Ollama model · choose from the catalog or enter a tag.'",
+   "es": "'Modelo de Ollama · elige uno del catálogo o escribe un tag.'",
+   "n": 1
+  },
+  {
+   "en": "'Model name or local model directory.'",
+   "es": "'Nombre del modelo o directorio local del modelo.'",
+   "n": 1
+  },
+  {
+   "en": "'Loading Ollama suggestions…'",
+   "es": "'Cargando las sugerencias de Ollama…'",
+   "n": 1
+  },
+  {
+   "en": "`${(models || []).length} Ollama models available on ${_ollamaServersText(_ollamaCatalogServers)}. Local speech and provider models use their own names.`",
+   "es": "`${(models || []).length} modelos de Ollama disponibles en ${_ollamaServersText(_ollamaCatalogServers)}. Los modelos de voz locales y de proveedores usan sus propios nombres.`",
+   "n": 1
+  },
+  {
+   "en": "`Ollama suggestions unavailable: ${err.message}. Local speech and provider settings can still be saved.`",
+   "es": "`Las sugerencias de Ollama no están disponibles: ${err.message}. Aun así puedes guardar los ajustes de voz locales y de proveedores.`",
+   "n": 1
+  },
+  {
+   "en": "'Reconnection required...'",
+   "es": "'Se requiere reconexión...'",
+   "n": 1
+  },
+  {
+   "en": "'You must execute a reconnection (Reconnect) in order to get/set the new configured values.'",
+   "es": "'Tienes que hacer una reconexión (Reconectar) para leer y aplicar los nuevos valores configurados.'",
+   "n": 1
+  },
+  {
+   "en": "'Click the Reconnect button in the toolbar to apply the changes to the live session.'",
+   "es": "'Haz clic en el botón Reconectar de la barra de herramientas para aplicar los cambios a la sesión activa.'",
+   "n": 1
+  },
+  {
+   "en": "`Save failed: HTTP ${response.status}`",
+   "es": "`No se pudo guardar: HTTP ${response.status}`",
+   "n": 1
+  },
+  {
+   "en": "'Save failed on server'",
+   "es": "'No se pudo guardar en el servidor'",
+   "n": 1
+  },
+  {
+   "en": "'Configure Models...'",
+   "es": "'Configurar modelos...'",
+   "n": 1
+  },
+  {
+   "en": "'Choose models for every agent.'",
+   "es": "'Elige los modelos de cada agent.'",
+   "n": 1
+  },
+  {
+   "en": "'Agent settings marked @config follow these choices. Explicit agent overrides take priority.'",
+   "es": "'Los ajustes de los agents marcados con @config siguen lo que elijas aquí. Si un agent fija su propio valor, ese valor tiene prioridad.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not load the current configuration from the server. Please try again.'",
+   "es": "'No se pudo cargar la configuración actual del servidor. Vuelve a intentarlo.'",
+   "n": 2
+  },
+  {
+   "en": "'Configure URLs...'",
+   "es": "'Configurar URLs...'",
+   "n": 1
+  },
+  {
+   "en": "'Set the base URLs, hosts and ports used by Tlamatini.'",
+   "es": "'Define las URLs base, los hosts y los puertos que usa Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "'URLs must include an http(s):// or ws(s):// scheme; ports must be 1-65535.'",
+   "es": "'Las URLs deben incluir el esquema http(s):// o ws(s)://; los puertos van de 1 a 65535.'",
+   "n": 1
+  },
+  {
+   "en": "'Access Keys Wizard is not available in this build.'",
+   "es": "'Access Keys Wizard no está disponible en este build.'",
+   "n": 1
+  },
+  {
+   "en": "'must not be empty'",
+   "es": "'no puede quedar en blanco'",
+   "n": 2
+  },
+  {
+   "en": "'is not a valid URL'",
+   "es": "'no es una URL válida'",
+   "n": 1
+  },
+  {
+   "en": "'must use http(s):// or ws(s):// scheme'",
+   "es": "'debe usar el esquema http(s):// o ws(s)://'",
+   "n": 1
+  },
+  {
+   "en": "'must include a host'",
+   "es": "'debe incluir un host'",
+   "n": 1
+  },
+  {
+   "en": "'must be a hostname (e.g. localhost) or IPv4 address'",
+   "es": "'debe ser un nombre de host (p. ej. localhost) o una dirección IPv4'",
+   "n": 1
+  },
+  {
+   "en": "'must be an integer between 1 and 65535'",
+   "es": "'debe ser un número entero entre 1 y 65535'",
+   "n": 1
+  },
+  {
+   "en": "'The following fields are required:\\n\\n'",
+   "es": "'Estos campos son obligatorios:\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'Could not reach Ollama to validate the changed Ollama model choices:\\n\\n'",
+   "es": "'No se pudo conectar con Ollama para validar los modelos de Ollama que cambiaste:\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'\\n\\nCheck Config -> URLs and ollama_token. Local speech settings do not require Ollama.'",
+   "es": "'\\n\\nRevisa Config -> URLs y ollama_token. Los ajustes de voz locales no necesitan Ollama.'",
+   "n": 1
+  },
+  {
+   "en": "`The Ollama server(s) ${serversText} replied with an empty catalog.\\n\\nPlease make sure at least one model is installed in Ollama before clicking \"Save\" again.`",
+   "es": "`Ollama respondió con un catálogo vacío en ${serversText}.\\n\\nAsegúrate de que haya al menos un modelo instalado en Ollama antes de volver a hacer clic en \"Guardar\".`",
+   "n": 1
+  },
+  {
+   "en": "`model \"${values[key]}\" is not installed`",
+   "es": "`el modelo \"${values[key]}\" no está instalado`",
+   "n": 1
+  },
+  {
+   "en": "`The following models are NOT installed on the configured Ollama server(s) ${serversText}:\\n\\n`",
+   "es": "`Estos modelos NO están instalados en los servidores de Ollama configurados, ${serversText}:\\n\\n`",
+   "n": 1
+  },
+  {
+   "en": "'\\n\\nPlease correct them (or install them in Ollama) before clicking \"Save\" again.'",
+   "es": "'\\n\\nCorrígelos (o instálalos en Ollama) antes de volver a hacer clic en \"Guardar\".'",
+   "n": 1
+  },
+  {
+   "en": "'Server-side validation failed:\\n\\n'",
+   "es": "'Error en la validación del servidor:\\n\\n'",
+   "n": 2
+  },
+  {
+   "en": "'Saving the configuration failed: '",
+   "es": "'Error al guardar la configuración: '",
+   "n": 2
+  },
+  {
+   "en": "'unknown error'",
+   "es": "'error desconocido'",
+   "n": 5
+  },
+  {
+   "en": "'The following fields are invalid:\\n\\n'",
+   "es": "'Estos campos no son válidos:\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'\\n\\nPlease correct them before clicking \"Save\" again.'",
+   "es": "'\\n\\nCorrígelos antes de volver a hacer clic en \"Guardar\".'",
+   "n": 1
+  },
+  {
+   "en": "`Validation failed: HTTP ${response.status}`",
+   "es": "`Error de validación: HTTP ${response.status}`",
+   "n": 2
+  },
+  {
+   "en": "'Checking path...'",
+   "es": "'Revisando el path...'",
+   "n": 2
+  },
+  {
+   "en": "'Directory exists. db.sqlite3 will be saved here.'",
+   "es": "'El directorio existe. db.sqlite3 se guardará aquí.'",
+   "n": 1
+  },
+  {
+   "en": "'A filename was specified — please specify the directory only.'",
+   "es": "'Indicaste un nombre de archivo — indica sólo el directorio.'",
+   "n": 2
+  },
+  {
+   "en": "'Directory does not exist.'",
+   "es": "'El directorio no existe.'",
+   "n": 2
+  },
+  {
+   "en": "'Could not validate the directory.'",
+   "es": "'No se pudo validar el directorio.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not open the '",
+   "es": "'No se pudo abrir el selector de '",
+   "n": 1
+  },
+  {
+   "en": "'Native browser unavailable — type the full path here'",
+   "es": "'Selector nativo no disponible — escribe aquí el path completo'",
+   "n": 1
+  },
+  {
+   "en": "'The native folder browser is unavailable on this machine. '",
+   "es": "'El selector de carpetas nativo no está disponible en esta computadora. '",
+   "n": 1
+  },
+  {
+   "en": "'Please type or paste the FULL absolute path to the project '",
+   "es": "'Escribe o pega el path absoluto COMPLETO del directorio '",
+   "n": 1
+  },
+  {
+   "en": "'directory (it must live under the application root).'",
+   "es": "'del proyecto (debe estar dentro del directorio raíz de la aplicación).'",
+   "n": 1
+  },
+  {
+   "en": "'Could not open the folder picker: '",
+   "es": "'No se pudo abrir el selector de carpetas: '",
+   "n": 1
+  },
+  {
+   "en": "'network error'",
+   "es": "'error de red'",
+   "n": 4
+  },
+  {
+   "en": "'Backup database...'",
+   "es": "'Hacer backup de la base de datos...'",
+   "n": 1
+  },
+  {
+   "en": "'Specify the target directory where db.sqlite3 will be backed up.'",
+   "es": "'Indica el directorio de destino donde se guardará el backup de db.sqlite3.'",
+   "n": 1
+  },
+  {
+   "en": "'Provide ONLY the directory — Tlamatini will save the file as \"db.sqlite3\" so it can be loaded back correctly later.'",
+   "es": "'Indica SÓLO el directorio — Tlamatini guardará el archivo como \"db.sqlite3\" para poder volver a cargarlo correctamente después.'",
+   "n": 1
+  },
+  {
+   "en": "'The target directory must not be empty.'",
+   "es": "'El directorio de destino no puede quedar vacío.'",
+   "n": 1
+  },
+  {
+   "en": "'The target directory must not be empty.\\n\\nPlease specify an existing directory before clicking \"Backup\".'",
+   "es": "'El directorio de destino no puede quedar vacío.\\n\\nIndica un directorio existente antes de hacer clic en \"Hacer backup\".'",
+   "n": 1
+  },
+  {
+   "en": "'Could not validate the target directory: '",
+   "es": "'No se pudo validar el directorio de destino: '",
+   "n": 1
+  },
+  {
+   "en": "'It is NOT recommended to change the file name.\\n\\nIf you rename db.sqlite3 the system will not be able to load it back correctly. Please specify only the target directory — Tlamatini will save the file as \"db.sqlite3\".'",
+   "es": "'NO se recomienda cambiar el nombre del archivo.\\n\\nSi le cambias el nombre a db.sqlite3, el sistema no podrá volver a cargarlo correctamente. Indica sólo el directorio de destino — Tlamatini guardará el archivo como \"db.sqlite3\".'",
+   "n": 2
+  },
+  {
+   "en": "'The target directory does not exist:\\n\\n'",
+   "es": "'El directorio de destino no existe:\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'\\n\\nPlease specify an existing directory before clicking \"Backup\".'",
+   "es": "'\\n\\nIndica un directorio existente antes de hacer clic en \"Hacer backup\".'",
+   "n": 1
+  },
+  {
+   "en": "'Backup failed: '",
+   "es": "'Error al hacer el backup: '",
+   "n": 2
+  },
+  {
+   "en": "'Database backed up successfully to:\\n\\n'",
+   "es": "'Se hizo el backup de la base de datos en:\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'The selected file does not look like a SQLite database.'",
+   "es": "'El archivo seleccionado no parece una base de datos SQLite.'",
+   "n": 2
+  },
+  {
+   "en": "'File found, but its name is not \"db.sqlite3\". Tlamatini will still stage it as db.sqlite3.'",
+   "es": "'Se encontró el archivo, pero no se llama \"db.sqlite3\". Aun así, Tlamatini lo preparará como db.sqlite3.'",
+   "n": 1
+  },
+  {
+   "en": "'File exists. It will be loaded on the next start-up.'",
+   "es": "'El archivo existe. Se cargará en el próximo arranque.'",
+   "n": 1
+  },
+  {
+   "en": "'Specify the full path to a db.sqlite3 file, not a directory.'",
+   "es": "'Indica el path completo de un archivo db.sqlite3, no un directorio.'",
+   "n": 2
+  },
+  {
+   "en": "'File does not exist.'",
+   "es": "'El archivo no existe.'",
+   "n": 2
+  },
+  {
+   "en": "'Could not validate the file path.'",
+   "es": "'No se pudo validar el path del archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not open the file picker: '",
+   "es": "'No se pudo abrir el selector de archivos: '",
+   "n": 1
+  },
+  {
+   "en": "'Set database...'",
+   "es": "'Elegir la base de datos...'",
+   "n": 1
+  },
+  {
+   "en": "'Specify the full path to a db.sqlite3 file to load on the next start-up.'",
+   "es": "'Indica el path completo de un archivo db.sqlite3 para cargarlo en el próximo arranque.'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini will stage the file under DB/ToLoad/ and swap it in BEFORE Django opens its database on the next launch. The current db.sqlite3 is moved into DB/Older/<timestamp>/ so it can be recovered later.'",
+   "es": "'Tlamatini preparará el archivo en DB/ToLoad/ y lo pondrá en lugar del actual ANTES de que Django abra su base de datos en el próximo arranque. El db.sqlite3 actual se mueve a DB/Older/<timestamp>/ para que se pueda recuperar después.'",
+   "n": 1
+  },
+  {
+   "en": "'Database staged for next session'",
+   "es": "'Base de datos lista para la siguiente sesión'",
+   "n": 1
+  },
+  {
+   "en": "'The selected database will be loaded the next time Tlamatini starts.'",
+   "es": "'La base de datos seleccionada se cargará la próxima vez que inicie Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "'If you want it loaded immediately, you must restart Tlamatini completely so the swap-in can run BEFORE Django opens the live database.'",
+   "es": "'Si quieres que se cargue de inmediato, reinicia Tlamatini por completo para que el cambio se haga ANTES de que Django abra la base de datos activa.'",
+   "n": 1
+  },
+  {
+   "en": "'The file path must not be empty.'",
+   "es": "'El path del archivo no puede quedar vacío.'",
+   "n": 1
+  },
+  {
+   "en": "'The file path must not be empty.\\n\\nPlease specify an existing db.sqlite3 file before clicking \"Set\".'",
+   "es": "'El path del archivo no puede quedar vacío.\\n\\nIndica un archivo db.sqlite3 existente antes de hacer clic en \"Establecer\".'",
+   "n": 1
+  },
+  {
+   "en": "'Could not validate the file path: '",
+   "es": "'No se pudo validar el path del archivo: '",
+   "n": 1
+  },
+  {
+   "en": "'The path points to a directory.\\n\\nPlease specify the full path to a db.sqlite3 file (e.g. C:\\\\Backups\\\\Tlamatini\\\\db.sqlite3).'",
+   "es": "'El path apunta a un directorio.\\n\\nIndica el path completo de un archivo db.sqlite3 (p. ej. C:\\\\Backups\\\\Tlamatini\\\\db.sqlite3).'",
+   "n": 1
+  },
+  {
+   "en": "'The file does not exist:\\n\\n'",
+   "es": "'El archivo no existe:\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'\\n\\nPlease specify an existing db.sqlite3 file before clicking \"Set\".'",
+   "es": "'\\n\\nIndica un archivo db.sqlite3 existente antes de hacer clic en \"Establecer\".'",
+   "n": 1
+  },
+  {
+   "en": "'The selected file does not look like a SQLite database.\\n\\nPlease specify a real db.sqlite3 file.'",
+   "es": "'El archivo seleccionado no parece una base de datos SQLite.\\n\\nIndica un archivo db.sqlite3 real.'",
+   "n": 1
+  },
+  {
+   "en": "'Set DB failed: '",
+   "es": "'Error al elegir la DB: '",
+   "n": 2
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "maquina": "contrato de etiquetas (GLOSARIO §5): compara la etiqueta del botón del chat que pone agent_page_ui.js",
+   "n": 2
+  },
+  {
+   "en": "' picker: '",
+   "es": "': '",
+   "n": 1
+  },
+  {
+   "en": "setDbSourcePathInput, 'file')",
+   "es": "setDbSourcePathInput, 'archivos')",
+   "n": 2
+  },
+  {
+   "en": "backupDbTargetDirInput, 'folder')",
+   "es": "backupDbTargetDirInput, 'carpetas')",
+   "n": 2
+  },
+  {
+   "en": "\"<<< pending directory context: \"",
+   "es": "\"<<< contexto de directorio pendiente: \"",
+   "n": 1
+  },
+  {
+   "en": "\"<<< pending context: \"",
+   "es": "\"<<< contexto pendiente: \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'dropdown'",
+   "motivo": "valor de atributo (data-bs-toggle)"
+  },
+  {
+   "en": "'reconnect'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "\"display: none !important;\"",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "\"col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-invisible\"",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'clean-history'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "'cancel'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "\"--- Cancel dialog triggered. inLongOperation: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\", lapseLoadingContext: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"Catched error in onsubmit(): \"",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "\"col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-visible\"",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "\"--- Waiting for server confirmation of directory context: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"Catched error in listener of setDirContextMenu: \"",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "\"--- The number of tokens in file is: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- The content is: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- Waiting for server confirmation of file context: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- actualContextDir is: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\", message 'view-context-dir-in-canvas' has been sent.\"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- Catched error in listener of viewContextDirInCanvasMenu: \"",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "\"Catched error at getItem of ChatHistory: \"",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'set-ask-execs-runtime'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "'Available Ollama models on '",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "'tab'",
+   "motivo": "valor de atributo (role)"
+  },
+  {
+   "en": "`model-panel-${index}`",
+   "motivo": "id de elemento (aria-controls)"
+  },
+  {
+   "en": "'Home'",
+   "motivo": "nombre de tecla"
+  },
+  {
+   "en": "'End'",
+   "motivo": "nombre de tecla"
+  },
+  {
+   "en": "'tabpanel'",
+   "motivo": "valor de atributo (role)"
+  },
+  {
+   "en": "'config-models-ollama-options'",
+   "motivo": "id de elemento (list)"
+  },
+  {
+   "en": "`Failed to load ${section} config: HTTP ${response.status}`",
+   "motivo": "mensaje interno (sólo va a la consola)"
+  },
+  {
+   "en": "`Failed to load ${section} config: bad payload`",
+   "motivo": "mensaje interno (sólo va a la consola)"
+  },
+  {
+   "en": "'ok'",
+   "motivo": "valor de máquina (clase de status)"
+  },
+  {
+   "en": "'warn'",
+   "motivo": "valor de máquina (clase de status)"
+  },
+  {
+   "en": "'error'",
+   "motivo": "valor de máquina (clase de status)"
+  },
+  {
+   "en": "'file'",
+   "motivo": "valor de máquina (kind === 'file'); la etiqueta del selector se traduce con su contexto en la decisión manual"
+  },
+  {
+   "en": "'folder'",
+   "motivo": "etiqueta del selector; se traduce con su contexto en la decisión manual (el comentario no se toca)"
+  }
+ ]
+}

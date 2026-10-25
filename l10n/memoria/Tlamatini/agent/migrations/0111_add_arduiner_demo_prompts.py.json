@@ -1,0 +1,1031 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0111_add_arduiner_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **ARDUINO GENESIS** demo, please &mdash; a basic, end-to-end showcase of \"",
+   "es": "\"Tlamatini, ejecuta la demo **ARDUINO GENESIS**, por favor &mdash; una muestra básica, de principio a fin, \"",
+   "n": 1
+  },
+  {
+   "en": "\"Arduiner's *zero-config self-provisioning*, *auto-core-install* and *safety preflight*, driven \"",
+   "es": "\"del *autoaprovisionamiento zero-config*, la *auto-instalación del core* y el *preflight de seguridad* de Arduiner, \"",
+   "n": 1
+  },
+  {
+   "en": "\"entirely from chat through the wrapped **chat_agent_arduiner** tool: from a clean machine it \"",
+   "es": "\"controlada por completo desde el chat a través del tool wrapper **chat_agent_arduiner**: desde una máquina limpia \"",
+   "n": 1
+  },
+  {
+   "en": "\"DOWNLOADS and installs the arduino-cli binary itself, validates the build environment, scaffolds \"",
+   "es": "\"DESCARGA e instala el binario arduino-cli ella misma, valida el entorno de build, arma \"",
+   "n": 1
+  },
+  {
+   "en": "\"an Arduino sketch from the bundled ArduinoTemplateProject, AUTHORS a tiny blink .ino, then \"",
+   "es": "\"un sketch de Arduino a partir del ArduinoTemplateProject incluido, ESCRIBE un pequeño .ino de blink y luego \"",
+   "n": 1
+  },
+  {
+   "en": "\"compiles + LINKS it to a firmware image (auto-installing the AVR core on the way) and lists the \"",
+   "es": "\"compila + ENLAZA a una imagen de firmware (auto-instalando el core AVR en el camino) y lista el \"",
+   "n": 1
+  },
+  {
+   "en": "\".hex/.elf &mdash; all WITHOUT a board attached (a pure provision + build demo). \"",
+   "es": "\".hex/.elf &mdash; todo SIN una placa conectada (una demo pura de aprovisionar + construir). \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; trust them and go straight to \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; confía en ellas y ve directo al \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1): (a) **the user installed ONLY Tlamatini** (plus, for a real upload later, the board's \"",
+   "es": "\"Paso 1): (a) **el usuario instaló SÓLO Tlamatini** (más, para un upload real después, el \"",
+   "n": 1
+  },
+  {
+   "en": "\"USB-serial driver) &mdash; you do NOT install or configure arduino-cli, Arduiner downloads it \"",
+   "es": "\"driver USB-serial de la placa) &mdash; NO instalas ni configuras arduino-cli, Arduiner lo descarga \"",
+   "n": 1
+  },
+  {
+   "en": "\"automatically; (b) NO Arduino hardware is needed &mdash; nothing is flashed; (c) tick ONLY the \"",
+   "es": "\"automáticamente; (b) NO hace falta hardware Arduino &mdash; no se flashea nada; (c) marca SÓLO la \"",
+   "n": 1
+  },
+  {
+   "en": "\"**Multi-Turn** checkbox before sending (ACPX is NOT required &mdash; chat_agent_arduiner is the \"",
+   "es": "\"casilla **Multi-Turn** antes de enviar (ACPX NO se requiere &mdash; chat_agent_arduiner es el \"",
+   "n": 1
+  },
+  {
+   "en": "\"ONLY tool you may use; do NOT use chat_agent_executer / chat_agent_pythonxer / acp_spawn). Every \"",
+   "es": "\"ÚNICO tool que puedes usar; no uses chat_agent_executer / chat_agent_pythonxer ni tools de ACPX). Cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"step is exactly ONE chat_agent_arduiner call shaped \\\"Run Arduiner with action='<action>' and \"",
+   "es": "\"paso es exactamente UNA llamada a chat_agent_arduiner con la forma \\\"Run Arduiner with action='<action>' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"<k>='<v>' ...\\\". After each call read the JSON return (an INI_SECTION_ARDUINER block under the \"",
+   "es": "\"<k>='<v>' ...\\\". Después de cada llamada lee el JSON que devuelve (un bloque INI_SECTION_ARDUINER bajo el \"",
+   "n": 1
+  },
+  {
+   "en": "\"run's log_excerpt) and capture action / tool / ok / returncode / success / fqbn / sketch_path / \"",
+   "es": "\"log_excerpt de la ejecución) y captura action / tool / ok / returncode / success / fqbn / sketch_path / \"",
+   "n": 1
+  },
+  {
+   "en": "\"stage plus the body. If a step returns ok=false / success=false, record it verbatim, DO NOT \"",
+   "es": "\"stage, además del body. Si un paso devuelve ok=false / success=false, regístralo tal cual, NO \"",
+   "n": 1
+  },
+  {
+   "en": "\"abort, continue. \"",
+   "es": "\"canceles, continúa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 3
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128268; ARDUINO GENESIS &#128295;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128268; ARDUINO GÉNESIS &#128295;</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Arduiner &mdash; provision &middot; validate &middot; author &middot; compile</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Arduiner &mdash; aprovisionar &middot; validar &middot; escribir &middot; compilar</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (ZERO-CONFIG provision): call **chat_agent_arduiner** with request \"",
+   "es": "\"Paso 1 (aprovisionamiento ZERO-CONFIG): llama a **chat_agent_arduiner** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Arduiner with action='bootstrap'\\\". This makes Arduiner DOWNLOAD the official arduino-cli \"",
+   "es": "\"\\\"Run Arduiner with action='bootstrap'\\\". Esto hace que Arduiner DESCARGUE el binario oficial de release de arduino-cli \"",
+   "n": 1
+  },
+  {
+   "en": "\"release binary into a per-user install dir and run config init + core update-index &mdash; with \"",
+   "es": "\"en un directorio de instalación por usuario y corra config init + core update-index &mdash; con \"",
+   "n": 1
+  },
+  {
+   "en": "\"NO manual setup. From the body capture the install action (present / download-extract), the \"",
+   "es": "\"NINGUNA configuración manual. Del body captura la acción de instalación (present / download-extract), el \"",
+   "n": 1
+  },
+  {
+   "en": "\"install_dir, and 'overall : OK'. If overall is FAILED, the host likely has no internet &mdash; \"",
+   "es": "\"install_dir y 'overall : OK'. Si overall es FAILED, lo más probable es que el host no tenga internet &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"skip to the closing banner with a 'PROVISION FAILED' verdict. \"",
+   "es": "\"salta al banner de cierre con un veredicto 'ERROR DE APROVISIONAMIENTO'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (safety preflight): call **chat_agent_arduiner** with request \"",
+   "es": "\"Paso 2 (preflight de seguridad): llama a **chat_agent_arduiner** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run Arduiner with action='validate'\\\". This validates the environment WITHOUT building: \"",
+   "es": "\"\\\"Run Arduiner with action='validate'\\\". Esto valida el entorno SIN construir: \"",
+   "n": 1
+  },
+  {
+   "en": "\"capture arduino_cli_resolvable and (since validate also probes for hardware) the serial summary \"",
+   "es": "\"captura arduino_cli_resolvable y (como validate también sondea el hardware) el resumen del serial \"",
+   "n": 1
+  },
+  {
+   "en": "\"(present / arduino_like). A missing serial port is FINE here &mdash; this demo never flashes. \"",
+   "es": "\"(present / arduino_like). Que falte un puerto serial está BIEN aquí &mdash; esta demo nunca flashea. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (scaffold from the template): call **chat_agent_arduiner** with request \\\"Run Arduiner \"",
+   "es": "\"Paso 3 (scaffold desde la plantilla): llama a **chat_agent_arduiner** con el request \\\"Run Arduiner \"",
+   "n": 1
+  },
+  {
+   "en": "\"with action='create_project' and sketch_path='C:/Temp/arduino/tlamatini_genesis' and \"",
+   "es": "\"with action='create_project' and sketch_path='C:/Temp/arduino/tlamatini_genesis' and \""
+  },
+  {
+   "en": "\"fqbn='arduino:avr:uno'\\\". This copies the bundled ArduinoTemplateProject, renames its .ino to \"",
+   "es": "\"fqbn='arduino:avr:uno'\\\". Esto copia el ArduinoTemplateProject incluido, renombra su .ino al \"",
+   "n": 1
+  },
+  {
+   "en": "\"the folder name, and stamps the FQBN into sketch.yaml; CAPTURE the **sketch_path** &mdash; pass \"",
+   "es": "\"nombre de la carpeta y estampa el FQBN en sketch.yaml; CAPTURA el **sketch_path** &mdash; pásalo \"",
+   "n": 1
+  },
+  {
+   "en": "\"it to every later step. \"",
+   "es": "\"a cada paso posterior. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (author the firmware &mdash; overwrite the .ino): call **chat_agent_arduiner** with \"",
+   "es": "\"Paso 4 (escribe el firmware &mdash; sobrescribe el .ino): llama a **chat_agent_arduiner** con el \"",
+   "n": 1
+  },
+  {
+   "en": "\"request \\\"Run Arduiner with action='write_source' and \"",
+   "es": "\"request \\\"Run Arduiner with action='write_source' and \""
+  },
+  {
+   "en": "\"sketch_path='C:/Temp/arduino/tlamatini_genesis' and rel_path='tlamatini_genesis.ino' and \"",
+   "es": "\"sketch_path='C:/Temp/arduino/tlamatini_genesis' and rel_path='tlamatini_genesis.ino' and \""
+  },
+  {
+   "en": "\"content='''<CODE>'''\\\". For <CODE> author a MINIMAL, COMPILABLE Arduino-core blink sketch: a \"",
+   "es": "\"content='''<CODE>'''\\\". Para <CODE> escribe un sketch de blink de core Arduino MÍNIMO y COMPILABLE: un \"",
+   "n": 1
+  },
+  {
+   "en": "\"`setup()` that calls pinMode(LED_BUILTIN, OUTPUT) and Serial.begin(115200), and a `loop()` that \"",
+   "es": "\"`setup()` que llame a pinMode(LED_BUILTIN, OUTPUT) y Serial.begin(115200), y un `loop()` que \"",
+   "n": 1
+  },
+  {
+   "en": "\"toggles the LED with digitalWrite + delay(500). Pass it as a TRIPLE-QUOTED content literal \"",
+   "es": "\"conmute el LED con digitalWrite + delay(500). Pásalo como un literal content con comillas triples \"",
+   "n": 1
+  },
+  {
+   "en": "\"(content='''...''') so the newlines and braces survive the assignment parser. (NOTE: arduino-cli \"",
+   "es": "\"(content='''...''') para que los newlines y las llaves sobrevivan al parser de asignaciones. (NOTA: arduino-cli \"",
+   "n": 1
+  },
+  {
+   "en": "\"requires the primary .ino basename to equal the sketch folder name &mdash; hence \"",
+   "es": "\"requiere que el basename del .ino principal sea igual al nombre de la carpeta del sketch &mdash; de ahí \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (compile + LINK &rarr; firmware): call **chat_agent_arduiner** with request \\\"Run Arduiner \"",
+   "es": "\"Paso 5 (compila + ENLAZA &rarr; firmware): llama a **chat_agent_arduiner** con el request \\\"Run Arduiner \"",
+   "n": 1
+  },
+  {
+   "en": "\"with action='build' and sketch_path='C:/Temp/arduino/tlamatini_genesis' and \"",
+   "es": "\"with action='build' and sketch_path='C:/Temp/arduino/tlamatini_genesis' and \""
+  },
+  {
+   "en": "\"fqbn='arduino:avr:uno'\\\". Arduiner first AUTO-INSTALLS the arduino:avr core (arduino-cli does not \"",
+   "es": "\"fqbn='arduino:avr:uno'\\\". Arduiner primero AUTO-INSTALA el core arduino:avr (arduino-cli no \"",
+   "n": 1
+  },
+  {
+   "en": "\"auto-install platforms on compile), then compiles. Confirm returncode=0 and that the stdout shows \"",
+   "es": "\"auto-instala plataformas al compilar), luego compila. Confirma returncode=0 y que el stdout muestre \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Sketch uses ... program storage space'. NOTE: the first core install + compile downloads the AVR \"",
+   "es": "\"'Sketch uses ... program storage space'. NOTA: la primera instalación del core + compile descarga el toolchain AVR, \"",
+   "n": 1
+  },
+  {
+   "en": "\"toolchain so it can take a minute &mdash; that is normal. \"",
+   "es": "\"así que puede tardar un minuto &mdash; eso es normal. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (artifacts): call **chat_agent_arduiner** with request \\\"Run Arduiner with \"",
+   "es": "\"Paso 6 (artefactos): llama a **chat_agent_arduiner** con el request \\\"Run Arduiner with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='list_artifacts' and sketch_path='C:/Temp/arduino/tlamatini_genesis'\\\". Capture the \"",
+   "es": "\"action='list_artifacts' and sketch_path='C:/Temp/arduino/tlamatini_genesis'\\\". Captura los \"",
+   "n": 1
+  },
+  {
+   "en": "\".hex / .elf paths from the body (build is run with --export-binaries, so they land under \"",
+   "es": "\"paths .hex / .elf del body (el build corre con --export-binaries, así que quedan bajo \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 7: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 2
+  },
+  {
+   "en": "\"'<strong>Arduino Genesis &mdash; Provision &amp; Build Report</strong>' and columns \"",
+   "es": "\"'<strong>Arduino Genesis &mdash; Reporte de aprovisionamiento y build</strong>' y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>step</em>, <em>stage</em> (bootstrap|validate|project|author|build), <em>arduiner_action</em>, \"",
+   "es": "\"<em>paso</em>, <em>stage</em> (bootstrap|validate|project|author|build), <em>arduiner_action</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>status</em> (ok|error), <em>headline</em> (install_dir for bootstrap; arduino_cli_resolvable \"",
+   "es": "\"<em>status</em> (ok|error), <em>resumen</em> (install_dir para bootstrap; arduino_cli_resolvable \"",
+   "n": 1
+  },
+  {
+   "en": "\"for validate; sketch_path for create; .ino written for author; returncode for build; the firmware \"",
+   "es": "\"para validate; sketch_path para create; .ino escrito para author; returncode para build; los paths de firmware \"",
+   "n": 1
+  },
+  {
+   "en": "\"paths for list_artifacts) &mdash; one row per call in execution order, status verbatim from the \"",
+   "es": "\"para list_artifacts) &mdash; una fila por cada llamada en orden de ejecución, status tal cual del \"",
+   "n": 1
+  },
+  {
+   "en": "\"INI_SECTION_ARDUINER block (do NOT re-classify). Light body cells \"",
+   "es": "\"bloque INI_SECTION_ARDUINER (NO lo reclasifiques). Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9), green tint ok, subtle red error. \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9), tono verde ok, rojo suave error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 8: cierra con un banner HTML que reutilice el estilo del Paso 0, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; ARDUINO-CLI PROVISIONED &amp; FIRMWARE BUILT' (bootstrap OK, validate resolved the CLI, \"",
+   "es": "\"'&#9989; ARDUINO-CLI APROVISIONADO &amp; FIRMWARE CONSTRUIDO' (bootstrap OK, validate resolvió el CLI, \"",
+   "n": 1
+  },
+  {
+   "en": "\"build returncode=0 and artifacts listed), '&#9888;&#65039; GENESIS PARTIAL' (some steps ok, some \"",
+   "es": "\"build returncode=0 y artefactos listados), '&#9888;&#65039; GÉNESIS PARCIAL' (algunos pasos ok, algunos \"",
+   "n": 1
+  },
+  {
+   "en": "\"error), or '&#10060; PROVISION FAILED' (bootstrap overall FAILED), and underneath a one-line \"",
+   "es": "\"error) o '&#10060; ERROR DE APROVISIONAMIENTO' (overall de bootstrap FAILED), y debajo una métrica \"",
+   "n": 1
+  },
+  {
+   "en": "\"metric 'arduino-cli: <install action> &middot; install_dir: <...> &middot; sketch: <sketch_path> \"",
+   "es": "\"de una línea 'arduino-cli: <install action> &middot; install_dir: <...> &middot; sketch: <sketch_path> \"",
+   "n": 1
+  },
+  {
+   "en": "\"&middot; build rc: <0> &middot; artifacts: .hex/.elf'. End with END-RESPONSE.\"",
+   "es": "\"&middot; build rc: <0> &middot; artefactos: .hex/.elf'. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **ARDUINO BLINKY** demo, please &mdash; a medium-complexity take on the \"",
+   "es": "\"Tlamatini, ejecuta la demo **ARDUINO BLINKY**, por favor &mdash; una versión de complejidad media del \"",
+   "n": 1
+  },
+  {
+   "en": "\"classic embedded 'hello world', driven entirely from chat through the wrapped \"",
+   "es": "\"clásico 'hello world' embebido, controlada por completo desde el chat a través del tool wrapper \"",
+   "n": 1
+  },
+  {
+   "en": "\"**chat_agent_arduiner** tool: it preflight-validates the environment, scaffolds a sketch from \"",
+   "es": "\"**chat_agent_arduiner**: valida el entorno en preflight, arma un sketch desde \"",
+   "n": 1
+  },
+  {
+   "en": "\"the bundled ArduinoTemplateProject, AUTHORS a pin-13 blink .ino that also prints over Serial, \"",
+   "es": "\"el ArduinoTemplateProject incluido, ESCRIBE un .ino de blink en el pin 13 que también imprime por Serial, \"",
+   "n": 1
+  },
+  {
+   "en": "\"compiles + links it (auto-installing the AVR core), lists the artifacts, then attempts to upload \"",
+   "es": "\"lo compila + enlaza (auto-instalando el core AVR), lista los artefactos y luego intenta subirlo \"",
+   "n": 1
+  },
+  {
+   "en": "\"it to an Arduino board so the on-board LED blinks. \"",
+   "es": "\"a una placa Arduino para que el LED on-board parpadee. \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify; go straight to Step 1): (a) the user \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques; ve directo al Paso 1): (a) el usuario \"",
+   "n": 2
+  },
+  {
+   "en": "\"installed ONLY Tlamatini &mdash; Arduiner auto-downloads/installs arduino-cli itself on first \"",
+   "es": "\"instaló SÓLO Tlamatini &mdash; Arduiner auto-descarga/instala arduino-cli ella misma en el primer \"",
+   "n": 1
+  },
+  {
+   "en": "\"use, so you NEVER configure tool paths; (b) the build needs NO board; the UPLOAD step needs an \"",
+   "es": "\"uso, así que NUNCA configuras paths de tools; (b) el build NO necesita placa; el paso de UPLOAD necesita un \"",
+   "n": 1
+  },
+  {
+   "en": "\"Arduino board on USB (it flashes over the board's USB-serial bridge &mdash; NO external \"",
+   "es": "\"Arduino por USB (flashea por el puente USB-serial de la placa &mdash; SIN programmer externo \"",
+   "n": 1
+  },
+  {
+   "en": "\"programmer for the common path) &mdash; BUT Arduiner's safety preflight will REFUSE the upload \"",
+   "es": "\"para el camino común) &mdash; PERO el preflight de seguridad de Arduiner RECHAZARÁ el upload \"",
+   "n": 1
+  },
+  {
+   "en": "\"with 'No serial port detected' if no board is connected, which is EXPECTED and routable, NOT a \"",
+   "es": "\"con 'No serial port detected' si no hay placa conectada, lo cual es ESPERADO y enrutable, NO un \"",
+   "n": 1
+  },
+  {
+   "en": "\"crash: record it verbatim and CONTINUE; (c) tick ONLY the **Multi-Turn** checkbox (ACPX is NOT \"",
+   "es": "\"crash: regístralo tal cual y CONTINÚA; (c) marca SÓLO la casilla **Multi-Turn** (ACPX NO se \"",
+   "n": 1
+  },
+  {
+   "en": "\"required). Use ONLY chat_agent_arduiner, ONE call per step shaped \\\"Run Arduiner with \"",
+   "es": "\"requiere). Usa SÓLO chat_agent_arduiner, UNA llamada por paso con la forma \\\"Run Arduiner with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='<action>' and <k>='<v>' ...\\\". Read each JSON return (INI_SECTION_ARDUINER block under \"",
+   "es": "\"action='<action>' and <k>='<v>' ...\\\". Lee cada JSON que devuelve (bloque INI_SECTION_ARDUINER bajo \"",
+   "n": 1
+  },
+  {
+   "en": "\"log_excerpt), capture action/tool/ok/returncode/success/fqbn/sketch_path/port/stage, and on \"",
+   "es": "\"log_excerpt), captura action/tool/ok/returncode/success/fqbn/sketch_path/port/stage, y con \"",
+   "n": 1
+  },
+  {
+   "en": "\"ok=false record verbatim and CONTINUE. \"",
+   "es": "\"ok=false regístralo tal cual y CONTINÚA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128161; ARDUINO BLINKY &#128161;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128161; ARDUINO BLINKY &#128161;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Arduiner &mdash; validate &middot; author &middot; build &middot; upload</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Arduiner &mdash; validar &middot; escribir &middot; build &middot; upload</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (safety preflight): \\\"Run Arduiner with action='validate'\\\" &mdash; capture \"",
+   "es": "\"Paso 1 (preflight de seguridad): \\\"Run Arduiner with action='validate'\\\" &mdash; captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"arduino_cli_resolvable and the serial summary (present / arduino_like) as the 'before' baseline \"",
+   "es": "\"arduino_cli_resolvable y el resumen del serial (present / arduino_like) como la base 'before' \"",
+   "n": 1
+  },
+  {
+   "en": "\"(Arduiner auto-provisions arduino-cli as part of this if needed). \"",
+   "es": "\"(Arduiner auto-aprovisiona arduino-cli como parte de esto si hace falta). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (scaffold): \\\"Run Arduiner with action='create_project' and \"",
+   "es": "\"Paso 2 (scaffold): \\\"Run Arduiner with action='create_project' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky' and fqbn='arduino:avr:uno'\\\". CAPTURE the \"",
+   "es": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky' and fqbn='arduino:avr:uno'\\\". CAPTURA el \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (author the firmware &mdash; overwrite the .ino): \\\"Run Arduiner with \"",
+   "es": "\"Paso 3 (escribe el firmware &mdash; sobrescribe el .ino): \\\"Run Arduiner with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='write_source' and sketch_path='C:/Temp/arduino/tlamatini_blinky' and \"",
+   "es": "\"action='write_source' and sketch_path='C:/Temp/arduino/tlamatini_blinky' and \""
+  },
+  {
+   "en": "\"rel_path='tlamatini_blinky.ino' and content='''<CODE>'''\\\". For <CODE> author a MINIMAL, \"",
+   "es": "\"rel_path='tlamatini_blinky.ino' and content='''<CODE>'''\\\". Para <CODE> escribe un sketch MÍNIMO y \"",
+   "n": 1
+  },
+  {
+   "en": "\"COMPILABLE Arduino-core sketch: setup() with pinMode(LED_BUILTIN, OUTPUT) + Serial.begin(115200) \"",
+   "es": "\"COMPILABLE de core Arduino: setup() con pinMode(LED_BUILTIN, OUTPUT) + Serial.begin(115200) \"",
+   "n": 1
+  },
+  {
+   "en": "\"+ a 'ARDUINO BLINKY starting' banner print, and a loop() that drives the LED HIGH \"",
+   "es": "\"+ un banner 'ARDUINO BLINKY starting', y un loop() que ponga el LED en HIGH \"",
+   "n": 1
+  },
+  {
+   "en": "\"(Serial.println \\\"LED ON\\\"), delay(500), LED LOW (Serial.println \\\"LED OFF\\\"), delay(500). Pass \"",
+   "es": "\"(Serial.println \\\"LED ON\\\"), delay(500), LED en LOW (Serial.println \\\"LED OFF\\\"), delay(500). Pásalo \"",
+   "n": 1
+  },
+  {
+   "en": "\"it as a TRIPLE-QUOTED content literal (content='''...''') so newlines and braces survive the \"",
+   "es": "\"como un literal content con comillas triples (content='''...''') para que los newlines y las llaves sobrevivan al \"",
+   "n": 1
+  },
+  {
+   "en": "\"parser. (arduino-cli requires the .ino basename to equal the folder name &mdash; hence \"",
+   "es": "\"parser. (arduino-cli requiere que el basename del .ino sea igual al nombre de la carpeta &mdash; de ahí \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (compile + LINK): \\\"Run Arduiner with action='build' and \"",
+   "es": "\"Paso 4 (compila + ENLAZA): \\\"Run Arduiner with action='build' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky' and fqbn='arduino:avr:uno'\\\". Arduiner \"",
+   "es": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky' and fqbn='arduino:avr:uno'\\\". Arduiner \""
+  },
+  {
+   "en": "\"auto-installs the arduino:avr core first, then compiles. Confirm returncode=0 and the 'Sketch \"",
+   "es": "\"auto-instala primero el core arduino:avr, luego compila. Confirma returncode=0 y la línea 'Sketch \"",
+   "n": 1
+  },
+  {
+   "en": "\"uses ... program storage space' line. (First core install + build pulls the AVR toolchain &mdash; \"",
+   "es": "\"uses ... program storage space'. (La primera instalación del core + build jala el toolchain AVR &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"can take a minute.) If returncode is non-zero, capture the compiler diagnostic from stderr \"",
+   "es": "\"puede tardar un minuto.) Si returncode es distinto de cero, captura el diagnóstico del compilador del stderr \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; routable evidence; you may stop after the report with a 'BUILD FAILED' verdict. \"",
+   "es": "\"&mdash; evidencia enrutable; puedes detenerte después del reporte con un veredicto 'ERROR DE BUILD'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (artifacts): \\\"Run Arduiner with action='list_artifacts' and \"",
+   "es": "\"Paso 5 (artefactos): \\\"Run Arduiner with action='list_artifacts' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky'\\\". Capture the .hex path. \"",
+   "es": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky'\\\". Captura el path del .hex. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (upload &mdash; flash over USB-serial): \\\"Run Arduiner with action='build_and_upload' and \"",
+   "es": "\"Paso 6 (upload &mdash; flashea por USB-serial): \\\"Run Arduiner with action='build_and_upload' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky' and fqbn='arduino:avr:uno'\\\". If a board is \"",
+   "es": "\"sketch_path='C:/Temp/arduino/tlamatini_blinky' and fqbn='arduino:avr:uno'\\\". Si hay una placa \"",
+   "n": 1
+  },
+  {
+   "en": "\"connected, the body shows avrdude writing + verifying the firmware over the USB-serial bridge; if \"",
+   "es": "\"conectada, el body muestra a avrdude escribiendo + verificando el firmware por el puente USB-serial; si \"",
+   "n": 1
+  },
+  {
+   "en": "\"not, Arduiner's preflight returns ok=false with 'No serial port detected' &mdash; record it \"",
+   "es": "\"no, el preflight de Arduiner devuelve ok=false con 'No serial port detected' &mdash; regístralo tal cual \"",
+   "n": 1
+  },
+  {
+   "en": "\"verbatim and CONTINUE (board-absent is the expected soft-fail for this demo). \"",
+   "es": "\"y CONTINÚA (placa ausente es el soft-fail esperado de esta demo). \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Arduino Blinky &mdash; Run Report</strong>' and columns <em>step</em>, <em>stage</em> \"",
+   "es": "\"'<strong>Arduino Blinky &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, <em>stage</em> \"",
+   "n": 1
+  },
+  {
+   "en": "\"(validate|project|author|build|upload), <em>arduiner_action</em>, <em>status</em> (ok|error), \"",
+   "es": "\"(validate|project|author|build|upload), <em>arduiner_action</em>, <em>status</em> (ok|error), \""
+  },
+  {
+   "en": "\"<em>headline</em> (cli resolved; sketch_path; build returncode; .hex path; upload verify or \"",
+   "es": "\"<em>resumen</em> (cli resolved; sketch_path; build returncode; path del .hex; upload verify o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'preflight refused: no board') &mdash; one row per call in execution order, status verbatim from \"",
+   "es": "\"'preflight refused: no board') &mdash; una fila por cada llamada en orden de ejecución, status tal cual de \"",
+   "n": 1
+  },
+  {
+   "en": "\"the INI_SECTION_ARDUINER block. Light body cells (background:#ffffff;color:#0f172a; or striped \"",
+   "es": "\"el bloque INI_SECTION_ARDUINER. Celdas del cuerpo claras (background:#ffffff;color:#0f172a; o rayado \"",
+   "n": 1
+  },
+  {
+   "en": "\"#f1f5f9); green tint ok, subtle red error. \"",
+   "es": "\"#f1f5f9); tono verde ok, rojo suave error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 8: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; BLINKY LIVE' (build returncode=0 AND upload verified), \"",
+   "es": "\"'&#9989; BLINKY EN VIVO' (build returncode=0 AND upload verified), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9888;&#65039; BUILT, NO BOARD' (build ok but the preflight refused the upload / no board), or \"",
+   "es": "\"'&#9888;&#65039; CONSTRUIDO, SIN PLACA' (build ok pero el preflight rechazó el upload / sin placa) o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#10060; BUILD FAILED' (build returncode &ne; 0), and underneath a one-line metric \"",
+   "es": "\"'&#10060; ERROR DE BUILD' (build returncode &ne; 0), y debajo una métrica de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"'sketch: <sketch_path> &middot; build rc: <0> &middot; upload: <verified|no-board> &middot; led: \"",
+   "es": "\"'sketch: <sketch_path> &middot; build rc: <0> &middot; upload: <verified|no-board> &middot; led: \""
+  },
+  {
+   "en": "\"pin&nbsp;13 @ 500&nbsp;ms'. End with END-RESPONSE.\"",
+   "es": "\"pin&nbsp;13 @ 500&nbsp;ms'. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **ARDUINO HIL OBSERVATORY** demo, please &mdash; an advanced \"",
+   "es": "\"Tlamatini, ejecuta la demo **ARDUINO HIL OBSERVATORY**, por favor &mdash; una muestra avanzada \"",
+   "n": 1
+  },
+  {
+   "en": "\"**hardware-in-the-loop** showcase that UPLOADS TO A REAL BOARD and OBSERVES it end-to-end, \"",
+   "es": "\"**hardware-in-the-loop** que SUBE A UNA PLACA REAL y la OBSERVA de principio a fin, \"",
+   "n": 1
+  },
+  {
+   "en": "\"driven entirely from chat through the wrapped **chat_agent_arduiner** tool: it preflight-\"",
+   "es": "\"controlada por completo desde el chat a través del tool wrapper **chat_agent_arduiner**: valida en preflight\"",
+   "n": 1
+  },
+  {
+   "en": "\"validates that a serial port is connected, scaffolds and AUTHORS firmware that increments a \"",
+   "es": "\"que haya un puerto serial conectado, arma y ESCRIBE un firmware que incrementa un \"",
+   "n": 1
+  },
+  {
+   "en": "\"global counter and streams it over Serial, builds + UPLOADS it to the Arduino, then PROVES it is \"",
+   "es": "\"contador global y lo transmite por Serial, lo construye + SUBE al Arduino y luego PRUEBA que está \"",
+   "n": 1
+  },
+  {
+   "en": "\"running on real silicon by reading the live serial stream from the RUNNING board and watching \"",
+   "es": "\"corriendo en silicio real leyendo el stream serial en vivo de la placa EN EJECUCIÓN y viendo \"",
+   "n": 1
+  },
+  {
+   "en": "\"the counter climb. \"",
+   "es": "\"subir el contador. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Arduino hardware note (do not skip): a classic Arduino (Uno/Nano/Mega) flashes over its \"",
+   "es": "\"Nota de hardware del Arduino (no la omitas): un Arduino clásico (Uno/Nano/Mega) flashea por su \"",
+   "n": 1
+  },
+  {
+   "en": "\"**USB-serial bridge** (ATmega16U2 / CH340 / FTDI), and that SAME USB-serial port carries the \"",
+   "es": "\"**puente USB-serial** (ATmega16U2 / CH340 / FTDI), y ESE MISMO puerto USB-serial lleva el \"",
+   "n": 1
+  },
+  {
+   "en": "\"firmware's `Serial.print` output &mdash; so, like the ESP32 (and UNLIKE the STM32F4-Discovery \"",
+   "es": "\"output `Serial.print` del firmware &mdash; así que, como el ESP32 (y A DIFERENCIA de la STM32F4-Discovery \"",
+   "n": 1
+  },
+  {
+   "en": "\"whose ST-LINK VCP is not routed to the MCU's USART), the serial monitor reads the firmware \"",
+   "es": "\"cuyo VCP del ST-LINK no se enruta al USART del MCU), el serial monitor lee el output del firmware \"",
+   "n": 1
+  },
+  {
+   "en": "\"output natively with NO extra wiring. The serial monitor is therefore the authoritative HIL \"",
+   "es": "\"de forma nativa SIN cableado extra. El serial monitor es, por lo tanto, la prueba HIL autoritativa \"",
+   "n": 1
+  },
+  {
+   "en": "\"proof here. \"",
+   "es": "\"aquí. \"",
+   "n": 1
+  },
+  {
+   "en": "\"installed ONLY Tlamatini + the board's USB-serial driver (Arduiner auto-provisions arduino-cli \"",
+   "es": "\"instaló SÓLO Tlamatini + el driver USB-serial de la placa (Arduiner auto-aprovisiona arduino-cli \"",
+   "n": 1
+  },
+  {
+   "en": "\"itself); (b) **an Arduino board IS connected** over USB and enumerates as a serial port &mdash; \"",
+   "es": "\"ella misma); (b) **hay una placa Arduino CONECTADA** por USB y se enumera como un puerto serial &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"this demo REQUIRES hardware; (c) tick ONLY the **Multi-Turn** checkbox (ACPX is NOT required). \"",
+   "es": "\"esta demo REQUIERE hardware; (c) marca SÓLO la casilla **Multi-Turn** (ACPX NO se requiere). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Use ONLY chat_agent_arduiner, ONE call per step shaped \\\"Run Arduiner with action='<action>' and \"",
+   "es": "\"Usa SÓLO chat_agent_arduiner, UNA llamada por paso con la forma \\\"Run Arduiner with action='<action>' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"<k>='<v>' ...\\\". Read each JSON return (INI_SECTION_ARDUINER block under log_excerpt), capture \"",
+   "es": "\"<k>='<v>' ...\\\". Lee cada JSON que devuelve (bloque INI_SECTION_ARDUINER bajo log_excerpt), captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"action/tool/ok/returncode/success/fqbn/sketch_path/port/stage, and on ok=false record verbatim \"",
+   "es": "\"action/tool/ok/returncode/success/fqbn/sketch_path/port/stage, y con ok=false regístralo tal cual \"",
+   "n": 1
+  },
+  {
+   "en": "\"and CONTINUE. \"",
+   "es": "\"y CONTINÚA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128300; ARDUINO HIL OBSERVATORY &#9889;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128300; ARDUINO HIL OBSERVATORY &#9889;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Arduiner &mdash; validate &middot; upload &middot; observe live serial</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Arduiner &mdash; validate &middot; upload &middot; observar serial en vivo</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (safety preflight &mdash; CONFIRM THE BOARD): \\\"Run Arduiner with action='validate'\\\". \"",
+   "es": "\"Paso 1 (preflight de seguridad &mdash; CONFIRMA LA PLACA): \\\"Run Arduiner with action='validate'\\\". \"",
+   "n": 1
+  },
+  {
+   "en": "\"This auto-provisions arduino-cli if needed and validates the environment INCLUDING the serial \"",
+   "es": "\"Esto auto-aprovisiona arduino-cli si hace falta y valida el entorno INCLUIDO el serial \"",
+   "n": 1
+  },
+  {
+   "en": "\"port (validate probes for a connected adapter). From the report capture arduino_cli_resolvable \"",
+   "es": "\"port (validate sondea un adaptador conectado). Del reporte captura arduino_cli_resolvable \"",
+   "n": 1
+  },
+  {
+   "en": "\"and the serial summary (present / arduino_like / ports / matched FQBN). **If no serial port is \"",
+   "es": "\"y el resumen del serial (present / arduino_like / ports / matched FQBN). **Si no hay puerto serial \"",
+   "n": 1
+  },
+  {
+   "en": "\"present, STOP**: skip to the closing banner with a 'NO BOARD' verdict and tell the user to \"",
+   "es": "\"presente, DETENTE**: salta al banner de cierre con un veredicto 'SIN PLACA' y dile al usuario que \"",
+   "n": 1
+  },
+  {
+   "en": "\"connect the Arduino over USB (this is a hardware demo). Only proceed to Step 2 when a serial port \"",
+   "es": "\"conecte el Arduino por USB (esto es una demo de hardware). Sólo pasa al Paso 2 cuando haya un puerto serial \"",
+   "n": 1
+  },
+  {
+   "en": "\"is present. \"",
+   "es": "\"presente. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (enumerate ports + discover the FQBN): \\\"Run Arduiner with action='device_list'\\\". From \"",
+   "es": "\"Paso 2 (enumera puertos + descubre el FQBN): \\\"Run Arduiner with action='device_list'\\\". Del \"",
+   "n": 1
+  },
+  {
+   "en": "\"the JSON capture the connected serial port(s) (e.g. COM3 on Windows) and any matching_boards \"",
+   "es": "\"JSON captura el puerto(s) serial conectado(s) (p. ej. COM3 en Windows) y cualquier FQBN de matching_boards. \"",
+   "n": 1
+  },
+  {
+   "en": "\"FQBN. Pick the Arduino's port &mdash; pass it as **port** to the upload/monitor steps &mdash; and, \"",
+   "es": "\"Elige el puerto del Arduino &mdash; pásalo como **port** a los pasos de upload/monitor &mdash; y, \"",
+   "n": 1
+  },
+  {
+   "en": "\"if a matching FQBN was reported, prefer it; else use **fqbn='arduino:avr:uno'**. \"",
+   "es": "\"si se reportó un FQBN que coincide, prefiérelo; si no, usa **fqbn='arduino:avr:uno'**. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (scaffold): \\\"Run Arduiner with action='create_project' and \"",
+   "es": "\"Paso 3 (scaffold): \\\"Run Arduiner with action='create_project' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"sketch_path='C:/Temp/arduino/tlamatini_hil' and fqbn='<the FQBN from Step 2>'\\\". CAPTURE the \"",
+   "es": "\"sketch_path='C:/Temp/arduino/tlamatini_hil' and fqbn='<the FQBN from Step 2>'\\\". CAPTURA el \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (author the firmware &mdash; overwrite the .ino): \\\"Run Arduiner with \"",
+   "es": "\"Paso 4 (escribe el firmware &mdash; sobrescribe el .ino): \\\"Run Arduiner with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='write_source' and sketch_path='C:/Temp/arduino/tlamatini_hil' and \"",
+   "es": "\"action='write_source' and sketch_path='C:/Temp/arduino/tlamatini_hil' and \""
+  },
+  {
+   "en": "\"rel_path='tlamatini_hil.ino' and content='''<CODE>'''\\\". For <CODE> author a MINIMAL, COMPILABLE \"",
+   "es": "\"rel_path='tlamatini_hil.ino' and content='''<CODE>'''\\\". Para <CODE> escribe un programa MÍNIMO y COMPILABLE \"",
+   "n": 1
+  },
+  {
+   "en": "\"Arduino-core program that declares a file-scope `unsigned long g_count = 0;`, in setup() calls \"",
+   "es": "\"de core Arduino que declare, a nivel de archivo, un `unsigned long g_count = 0;`, en setup() llame a \"",
+   "n": 1
+  },
+  {
+   "en": "\"Serial.begin(115200) and pinMode(LED_BUILTIN, OUTPUT), and in loop() increments g_count, toggles \"",
+   "es": "\"Serial.begin(115200) y pinMode(LED_BUILTIN, OUTPUT), y en loop() incremente g_count, conmute \"",
+   "n": 1
+  },
+  {
+   "en": "\"the LED, prints a single newline-terminated status line of the EXACT form \"",
+   "es": "\"el LED, imprima una sola línea de status terminada en newline con la forma EXACTA \"",
+   "n": 1
+  },
+  {
+   "en": "\"'BOOT tlamatini arduino count=<n>' with Serial.println, and delay(500). Pass it as a \"",
+   "es": "\"'BOOT tlamatini arduino count=<n>' con Serial.println, y delay(500). Pásalo como un literal \"",
+   "n": 1
+  },
+  {
+   "en": "\"TRIPLE-QUOTED content literal (content='''...''') so newlines and braces survive the parser. \"",
+   "es": "\"content con comillas triples (content='''...''') para que los newlines y las llaves sobrevivan al parser. \"",
+   "n": 1
+  },
+  {
+   "en": "\"(arduino-cli requires the .ino basename to equal the folder name &mdash; hence \"",
+   "es": "\"(arduino-cli requiere que el basename del .ino sea igual al nombre de la carpeta &mdash; de ahí \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (compile + LINK): \\\"Run Arduiner with action='build' and \"",
+   "es": "\"Paso 5 (compila + ENLAZA): \\\"Run Arduiner with action='build' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"sketch_path='C:/Temp/arduino/tlamatini_hil' and fqbn='<the FQBN from Step 2>'\\\". Arduiner \"",
+   "es": "\"sketch_path='C:/Temp/arduino/tlamatini_hil' and fqbn='<the FQBN from Step 2>'\\\". Arduiner \""
+  },
+  {
+   "en": "\"auto-installs the board's core first. Require returncode=0. (First core install + build pulls \"",
+   "es": "\"auto-instala primero el core de la placa. Exige returncode=0. (La primera instalación del core + build jala \"",
+   "n": 1
+  },
+  {
+   "en": "\"the toolchain &mdash; can take a minute.) If the build fails, capture the diagnostic and you may \"",
+   "es": "\"el toolchain &mdash; puede tardar un minuto.) Si el build falla, captura el diagnóstico y puedes \"",
+   "n": 1
+  },
+  {
+   "en": "\"stop after the report with 'BUILD FAILED'. \"",
+   "es": "\"detenerte después del reporte con 'ERROR DE BUILD'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (UPLOAD &mdash; REAL flash over USB-serial): \\\"Run Arduiner with \"",
+   "es": "\"Paso 6 (UPLOAD &mdash; flash REAL por USB-serial): \\\"Run Arduiner with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='build_and_upload' and sketch_path='C:/Temp/arduino/tlamatini_hil' and fqbn='<the FQBN \"",
+   "es": "\"action='build_and_upload' and sketch_path='C:/Temp/arduino/tlamatini_hil' and fqbn='<the FQBN \""
+  },
+  {
+   "en": "\"from Step 2>' and port='<the port from Step 2>'\\\". The preflight already confirmed the board in \"",
+   "es": "\"from Step 2>' and port='<the port from Step 2>'\\\". El preflight ya confirmó la placa en el \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1; the body should show avrdude 'writing' / 'reading on-chip flash data' / 'verified' over \"",
+   "es": "\"Paso 1; el body debería mostrar a avrdude 'writing' / 'reading on-chip flash data' / 'verified' por \"",
+   "n": 1
+  },
+  {
+   "en": "\"the USB-serial bridge. Capture the verify result &mdash; this is the actual UPLOAD of the program \"",
+   "es": "\"el puente USB-serial. Captura el resultado del verify &mdash; este es el UPLOAD real del programa \"",
+   "n": 1
+  },
+  {
+   "en": "\"to the Arduino board. \"",
+   "es": "\"a la placa Arduino. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7 (HIL proof &mdash; observe the live serial stream): \\\"Run Arduiner with action='monitor' \"",
+   "es": "\"Paso 7 (prueba HIL &mdash; observa el stream serial en vivo): \\\"Run Arduiner with action='monitor' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and sketch_path='C:/Temp/arduino/tlamatini_hil' and port='<the port from Step 2>' and \"",
+   "es": "\"and sketch_path='C:/Temp/arduino/tlamatini_hil' and port='<the port from Step 2>' and \""
+  },
+  {
+   "en": "\"baud='115200' and monitor_seconds='6'\\\". This opens a bounded `arduino-cli monitor \"",
+   "es": "\"baud='115200' and monitor_seconds='6'\\\". Esto abre un `arduino-cli monitor \"",
+   "n": 1
+  },
+  {
+   "en": "\"--config baudrate=115200`, drains the RUNNING board's serial output for 6 seconds, then stops. \"",
+   "es": "\"--config baudrate=115200` acotado, drena el output serial de la placa EN EJECUCIÓN por 6 segundos, luego se detiene. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Capture the FIRST and LAST 'BOOT tlamatini arduino count=<n>' lines and confirm the count is \"",
+   "es": "\"Captura la PRIMERA y la ÚLTIMA línea 'BOOT tlamatini arduino count=<n>' y confirma que el count va \"",
+   "n": 1
+  },
+  {
+   "en": "\"INCREASING &mdash; direct, on-silicon proof the loop() is executing on real hardware (not merely \"",
+   "es": "\"AUMENTANDO &mdash; prueba directa, sobre silicio, de que el loop() se está ejecutando en hardware real (no sólo \"",
+   "n": 1
+  },
+  {
+   "en": "\"that the .hex flashed). \"",
+   "es": "\"que el .hex se flasheó). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: render a STATUS SCOREBOARD &mdash; a row of HTML chips of the form \"",
+   "es": "\"Paso 8: muestra un MARCADOR DE STATUS &mdash; una fila de chips HTML con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: a 'validate: <ok|err>' chip, a \"",
+   "es": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: un chip 'validate: <ok|err>', un \"",
+   "n": 1
+  },
+  {
+   "en": "\"'port: <COMx>' chip, a 'build: <ok|err>' chip, an 'upload: <ok|err>' chip, a 'monitor: <ok|err>' \"",
+   "es": "\"chip 'port: <COMx>', un chip 'build: <ok|err>', un chip 'upload: <ok|err>', un chip 'monitor: <ok|err>' \"",
+   "n": 1
+  },
+  {
+   "en": "\"chip (CHIP_BG #16a34a when ok else #dc2626), and a 'count: <first>&rarr;<last>' chip \"",
+   "es": "\"(CHIP_BG #16a34a cuando es ok, si no #dc2626), y un chip 'count: <first>&rarr;<last>' \"",
+   "n": 1
+  },
+  {
+   "en": "\"(CHIP_BG #008184). \"",
+   "es": "\"(CHIP_BG #008184). \""
+  },
+  {
+   "en": "\"Step 9: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 9: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Arduino HIL Observatory &mdash; Run Report</strong>' and columns <em>step</em>, \"",
+   "es": "\"'<strong>Arduino HIL Observatory &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>stage</em> (validate|device_list|project|author|build|upload|monitor), <em>arduiner_action</em>, \"",
+   "es": "\"<em>stage</em> (validate|device_list|project|author|build|upload|monitor), <em>arduiner_action</em>, \""
+  },
+  {
+   "en": "\"<em>status</em> (ok|error), <em>headline</em> (serial present; chosen port; sketch_path; build \"",
+   "es": "\"<em>status</em> (ok|error), <em>resumen</em> (serial present; puerto elegido; sketch_path; build \"",
+   "n": 1
+  },
+  {
+   "en": "\"returncode; upload verify; the captured serial count lines first&rarr;last) &mdash; one row per \"",
+   "es": "\"returncode; upload verify; las líneas de count serial capturadas first&rarr;last) &mdash; una fila por \"",
+   "n": 1
+  },
+  {
+   "en": "\"call in execution order, status verbatim from the INI_SECTION_ARDUINER block (do NOT re-classify). \"",
+   "es": "\"cada llamada en orden de ejecución, status tal cual del bloque INI_SECTION_ARDUINER (NO lo reclasifiques). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Light body cells (background:#ffffff;color:#0f172a; or striped #f1f5f9). \"",
+   "es": "\"Celdas del cuerpo claras (background:#ffffff;color:#0f172a; o rayado #f1f5f9). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 10: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 10: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; SILICON VERIFIED' (build returncode=0 AND upload AND monitor all ok &mdash; the counter \"",
+   "es": "\"'&#9989; SILICIO VERIFICADO' (build returncode=0 AND upload AND monitor todos ok &mdash; el contador \"",
+   "n": 1
+  },
+  {
+   "en": "\"was observed RISING over the live serial stream), '&#9888;&#65039; NO BOARD' (Step 1 found no \"",
+   "es": "\"se observó SUBIENDO por el stream serial en vivo), '&#9888;&#65039; SIN PLACA' (el Paso 1 no encontró \"",
+   "n": 1
+  },
+  {
+   "en": "\"serial port connected), or '&#10060; BUILD FAILED' (build returncode &ne; 0), and underneath a \"",
+   "es": "\"un puerto serial conectado) o '&#10060; ERROR DE BUILD' (build returncode &ne; 0), y debajo una \"",
+   "n": 1
+  },
+  {
+   "en": "\"one-line metric 'sketch: <sketch_path> &middot; port: <COMx> &middot; build rc: <0> &middot; \"",
+   "es": "\"métrica de una línea 'sketch: <sketch_path> &middot; port: <COMx> &middot; build rc: <0> &middot; \"",
+   "n": 1
+  },
+  {
+   "en": "\"upload: <verified> &middot; serial count: <first>&rarr;<last>'. End with END-RESPONSE.\"",
+   "es": "\"upload: <verified> &middot; serial count: <first>&rarr;<last>'. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#00363A 0%,#008184 38%,#00C4CC 70%,#C8F2F0 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"<span style='display:inline-block;padding:8px 16px;margin:3px;border-radius:10px;\"",
+   "motivo": "CSS del chip (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

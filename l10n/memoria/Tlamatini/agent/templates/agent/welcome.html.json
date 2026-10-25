@@ -1,0 +1,36 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/welcome.html",
+ "segmentos": [
+  {
+   "en": "lang=\"en\"",
+   "es": "lang=\"es-MX\"",
+   "n": 1
+  },
+  {
+   "en": ">Welcome - Tlamatini<",
+   "es": ">Bienvenida - Tlamatini<",
+   "n": 1
+  },
+  {
+   "en": ">Welcome, {{ user.username }}!<",
+   "es": ">¡Te damos la bienvenida, {{ user.username }}!<",
+   "n": 1
+  },
+  {
+   "en": ">You have successfully logged in.<",
+   "es": ">Iniciaste sesión correctamente.<",
+   "n": 1
+  },
+  {
+   "en": ">Go to Chat<",
+   "es": ">Ir al chat<",
+   "n": 1
+  },
+  {
+   "en": ">Logout<",
+   "es": ">Cerrar sesión<",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

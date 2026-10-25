@@ -1,0 +1,41 @@
+{
+ "archivo": "Tlamatini/agent/usage_views.py",
+ "segmentos": [
+  {
+   "en": "\"Ready\"",
+   "es": "\"Listo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat activity available\"",
+   "es": "\"Actividad del chat disponible\"",
+   "n": 1
+  },
+  {
+   "en": "\"Checking usage…\"",
+   "es": "\"Revisando el uso…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Usage is temporarily unavailable. Checking again automatically.\"",
+   "es": "\"El uso no está disponible por ahora. Se volverá a revisar automáticamente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat usage could not load. Check the application log and database migrations.\"",
+   "es": "\"No se pudo cargar el uso del chat. Revisa el log de la aplicación y las migraciones de la base de datos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama could not refresh. Check its connection and try Refresh.\"",
+   "es": "\"No se pudieron actualizar los datos de Ollama. Revisa su conexión y prueba con Actualizar.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Choose 7d or 30d.\"",
+   "motivo": "el JS no muestra este texto (usa su propio mensaje con el status HTTP)"
+  }
+ ]
+}

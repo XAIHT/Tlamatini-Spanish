@@ -1,0 +1,23 @@
+{# Tlamatini Author Banner — Angela López Mendoza #}
+<div id="interactor-bar" role="group" aria-label="Tutor del editor en vivo">
+  <label title="Permite que Tlamatini lea y guíe el editor de esta pestaña cuando se lo pidas en el chat, incluidos los cambios sin guardar.">
+    <input id="interactor-access" type="checkbox" checked> Editor en vivo
+  </label>
+  <span id="interactor-status" role="status" aria-live="polite">Conectando con el editor en vivo…</span>
+  <button id="interactor-explain" type="button" disabled>Explicar la selección</button>
+  <button id="interactor-settings" type="button" data-interaction-settings="editor" title="Configurar el Editor en vivo">Configuración</button>
+  <button id="interactor-stop" type="button" disabled>Detener el tutor</button>
+</div>
+<section id="interactor-card" aria-labelledby="interactor-label" hidden>
+  <div class="interactor-card-heading">
+    <strong id="interactor-label">Tu turno</strong>
+    <label><input id="interactor-suggestions" type="checkbox" checked> Sugerencias</label>
+  </div>
+  <p id="interactor-hint" tabindex="0" aria-label="Instrucciones del campo"></p>
+  <div id="interactor-choices" aria-label="Valores sugeridos para el campo"></div>
+  <div class="interactor-card-actions">
+    <span id="interactor-completion">Empieza a escribir en el espacio marcado.</span>
+    <button id="interactor-ask" type="button">Pedir una pista</button>
+    <button id="interactor-continue" type="button">Continuar en el chat</button>
+  </div>
+</section>

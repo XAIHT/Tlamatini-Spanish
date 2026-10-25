@@ -1,0 +1,2083 @@
+{
+ "archivo": "Tlamatini/agent/views.py",
+ "segmentos": [
+  {
+   "en": "'Voice Commands'",
+   "es": "'Comandos de voz'",
+   "n": 1
+  },
+  {
+   "en": "'Getting Started'",
+   "es": "'Primeros pasos'",
+   "n": 1
+  },
+  {
+   "en": "'Files & Search'",
+   "es": "'Archivos y búsqueda'",
+   "n": 1
+  },
+  {
+   "en": "'Run & Execute'",
+   "es": "'Correr y ejecutar'",
+   "n": 1
+  },
+  {
+   "en": "'Code & Project Generation'",
+   "es": "'Código y generación de proyectos'",
+   "n": 1
+  },
+  {
+   "en": "'Documents & PDF'",
+   "es": "'Documentos y PDF'",
+   "n": 1
+  },
+  {
+   "en": "'Images & Vision'",
+   "es": "'Imágenes y visión'",
+   "n": 1
+  },
+  {
+   "en": "'Agents & Flows'",
+   "es": "'Agents y Flows'",
+   "n": 1
+  },
+  {
+   "en": "'ACPX, Skills & MCPs'",
+   "es": "'ACPX, Skills y MCPs'",
+   "n": 1
+  },
+  {
+   "en": "'Desktop Automation'",
+   "es": "'Automatización del escritorio'",
+   "n": 1
+  },
+  {
+   "en": "'Games & 3D'",
+   "es": "'Juegos y 3D'",
+   "n": 1
+  },
+  {
+   "en": "'Firmware & IoT'",
+   "es": "'Firmware e IoT'",
+   "n": 1
+  },
+  {
+   "en": "'Security & Recon'",
+   "es": "'Seguridad y reconocimiento'",
+   "n": 1
+  },
+  {
+   "en": "'Messaging & Contacts'",
+   "es": "'Mensajería y contactos'",
+   "n": 1
+  },
+  {
+   "en": "'Media & Voice'",
+   "es": "'Multimedia y voz'",
+   "n": 2
+  },
+  {
+   "en": "'More'",
+   "es": "'Más'",
+   "n": 1
+  },
+  {
+   "en": "'Pool directory path could not be resolved'",
+   "es": "'No se pudo resolver el path del directorio del pool'",
+   "n": 1
+  },
+  {
+   "en": "f'Failed to create pool: {e}'",
+   "es": "f'Error al crear el pool: {e}'",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid agent name\"",
+   "es": "\"Nombre de agent no válido\"",
+   "n": 82
+  },
+  {
+   "en": "f\"Agent directory not found: {pool_folder_name}\"",
+   "es": "f\"No se encontró el directorio del agent: {pool_folder_name}\"",
+   "n": 6
+  },
+  {
+   "en": "f\"Source agent not found: {base_folder_name}\"",
+   "es": "f\"No se encontró el agent de origen: {base_folder_name}\"",
+   "n": 3
+  },
+  {
+   "en": "f\"Invalid JSON: {str(e)}\"",
+   "es": "f\"JSON no válido: {str(e)}\"",
+   "n": 11
+  },
+  {
+   "en": "\"Config not found\"",
+   "es": "\"No se encontró la config\"",
+   "n": 4
+  },
+  {
+   "en": "f\"Agent script not found: {base_folder_name}.py\"",
+   "es": "f\"No se encontró el script del agent: {base_folder_name}.py\"",
+   "n": 5
+  },
+  {
+   "en": "f\"{pool_folder_name} exited before creating its log \"",
+   "es": "f\"{pool_folder_name} terminó antes de crear su log \"",
+   "n": 1
+  },
+  {
+   "en": "f\"(exit code {exit_code}). Check Python/PYTHON_HOME dependencies.\"",
+   "es": "f\"(código de salida {exit_code}). Revisa las dependencias de Python/PYTHON_HOME.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Pool directory not found\"",
+   "es": "\"No se encontró el directorio del pool\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Log file not found: {pool_folder_name}.log\"",
+   "es": "f\"No se encontró el archivo de log: {pool_folder_name}.log\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Error reading log file: {str(read_err)}\"",
+   "es": "f\"Error al leer el archivo de log: {str(read_err)}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Agent '{pool_folder_name}' could not be fully stopped before restart. Remaining PID(s): {remaining_pids}\"",
+   "es": "f\"No se pudo detener por completo el agent '{pool_folder_name}' antes de reiniciarlo. PID(s) restantes: {remaining_pids}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Agent exited without producing a result. Check the agent log for details.\"",
+   "es": "\"El agent terminó sin producir un resultado. Revisa el log del agent para ver los detalles.\"",
+   "n": 1
+  },
+  {
+   "en": "\"must be a string\"",
+   "es": "\"debe ser una cadena de texto\"",
+   "n": 2
+  },
+  {
+   "en": "\"must not be empty\"",
+   "es": "\"no puede quedar en blanco\"",
+   "n": 2
+  },
+  {
+   "en": "\"is not a valid URL\"",
+   "es": "\"no es una URL válida\"",
+   "n": 1
+  },
+  {
+   "en": "\"must use http(s):// or ws(s):// scheme\"",
+   "es": "\"debe usar el esquema http(s):// o ws(s)://\"",
+   "n": 1
+  },
+  {
+   "en": "\"must include a host\"",
+   "es": "\"debe incluir un host\"",
+   "n": 1
+  },
+  {
+   "en": "\"must be a hostname (e.g. localhost) or IPv4 address\"",
+   "es": "\"debe ser un nombre de host (p. ej. localhost) o una dirección IPv4\"",
+   "n": 1
+  },
+  {
+   "en": "\"must be an integer between 1 and 65535\"",
+   "es": "\"debe ser un número entero entre 1 y 65535\"",
+   "n": 1
+  },
+  {
+   "en": "\"must be between 1 and 65535\"",
+   "es": "\"debe estar entre 1 y 65535\"",
+   "n": 1
+  },
+  {
+   "en": "\" - check ollama_token\"",
+   "es": "\" - revisa ollama_token\"",
+   "n": 1
+  },
+  {
+   "en": "\"timed out\"",
+   "es": "\"no respondió a tiempo\"",
+   "n": 2
+  },
+  {
+   "en": "'the reply has no \"models\" list - is this an Ollama server?'",
+   "es": "'la respuesta no tiene una lista \"models\": ¿es un servidor de Ollama?'",
+   "n": 1
+  },
+  {
+   "en": "f\"invalid JSON: {exc}\"",
+   "es": "f\"JSON no válido: {exc}\"",
+   "n": 5
+  },
+  {
+   "en": "\"payload must be a JSON object\"",
+   "es": "\"el payload debe ser un objeto JSON\"",
+   "n": 5
+  },
+  {
+   "en": "\"Default database NAME is not configured\"",
+   "es": "\"No está configurado el NAME de la base de datos predeterminada\"",
+   "n": 1
+  },
+  {
+   "en": "\"target_dir must be a non-empty string\"",
+   "es": "\"target_dir debe ser una cadena de texto no vacía\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Target directory does not exist: {target_dir}\"",
+   "es": "f\"El directorio de destino no existe: {target_dir}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Live database file not found at: {source_path}\"",
+   "es": "f\"No se encontró el archivo de la base de datos activa en: {source_path}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Source and destination resolve to the same file — choose a different target directory.\"",
+   "es": "\"El origen y el destino apuntan al mismo archivo: elige otro directorio de destino.\"",
+   "n": 1
+  },
+  {
+   "en": "\"the backup could not be verified\"",
+   "es": "\"no se pudo verificar el backup\"",
+   "n": 1
+  },
+  {
+   "en": "\"source_path must be a non-empty string\"",
+   "es": "\"source_path debe ser una cadena de texto no vacía\"",
+   "n": 1
+  },
+  {
+   "en": "\"The path points to a directory. Please specify the full path to a db.sqlite3 file.\"",
+   "es": "\"El path apunta a un directorio. Indica el path completo de un archivo db.sqlite3.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Source file does not exist: {source_path}\"",
+   "es": "f\"El archivo de origen no existe: {source_path}\"",
+   "n": 1
+  },
+  {
+   "en": "\"The selected file does not look like a SQLite database (missing magic header).\"",
+   "es": "\"El archivo seleccionado no parece una base de datos SQLite (no tiene el magic header).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Source already is the staged file — choose a different db.sqlite3 file.\"",
+   "es": "\"El origen ya es el archivo preparado: elige otro archivo db.sqlite3.\"",
+   "n": 1
+  },
+  {
+   "en": "\"the database could not be staged\"",
+   "es": "\"no se pudo preparar la base de datos\"",
+   "n": 1
+  },
+  {
+   "en": "'SQLite database (db.sqlite3)'",
+   "es": "'Base de datos SQLite (db.sqlite3)'",
+   "n": 1
+  },
+  {
+   "en": "'All files (*.*)'",
+   "es": "'Todos los archivos (*.*)'",
+   "n": 1
+  },
+  {
+   "en": "\"The native file browser isn't available on this machine, so \"",
+   "es": "\"El selector de archivos nativo no está disponible en esta computadora, así que \"",
+   "n": 1
+  },
+  {
+   "en": "\"please type or paste the full path into the field below \"",
+   "es": "\"escribe o pega el path completo \"",
+   "n": 1
+  },
+  {
+   "en": "\"Could not open the native file browser: \"",
+   "es": "\"No se pudo abrir el selector de archivos nativo: \"",
+   "n": 1
+  },
+  {
+   "en": "'Select backup target directory'",
+   "es": "'Seleccionar el directorio de destino del backup'",
+   "n": 1
+  },
+  {
+   "en": "'Select db.sqlite3 file to load on next start-up'",
+   "es": "'Seleccionar el archivo db.sqlite3 que se cargará en el siguiente inicio'",
+   "n": 1
+  },
+  {
+   "en": "'Select project directory to load as context'",
+   "es": "'Seleccionar el directorio del proyecto que se cargará como contexto'",
+   "n": 1
+  },
+  {
+   "en": "\"No source agent connected to Parametrizer's input. \"",
+   "es": "\"No hay ningún agent de origen conectado al input de Parametrizer. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Connect exactly one source agent before opening the configuration dialog.\"",
+   "es": "\"Conecta exactamente un agent de origen antes de abrir el diálogo de configuración.\"",
+   "n": 1
+  },
+  {
+   "en": "\"No target agent connected to Parametrizer's output. \"",
+   "es": "\"No hay ningún agent de destino conectado al output de Parametrizer. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Connect exactly one target agent before opening the configuration dialog.\"",
+   "es": "\"Conecta exactamente un agent de destino antes de abrir el diálogo de configuración.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Only one source agent allowed but {len(source_agents_list)} are connected.\"",
+   "es": "f\"Sólo se permite un agent de origen, pero hay {len(source_agents_list)} conectados.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Only one target agent allowed but {len(target_agents_list)} are connected.\"",
+   "es": "f\"Sólo se permite un agent de destino, pero hay {len(target_agents_list)} conectados.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Source agent '{source_agent}' does not produce structured output, so \"",
+   "es": "f\"El agent de origen '{source_agent}' no produce un output estructurado, así que \"",
+   "n": 1
+  },
+  {
+   "en": "\"it cannot be a Parametrizer source. Only agents that emit an \"",
+   "es": "\"no puede ser el origen de un Parametrizer. Sólo se permiten los agents que emiten un \"",
+   "n": 1
+  },
+  {
+   "en": "f\"INI_SECTION_<TYPE> block are allowed ({len(PARAMETRIZER_ALLOWED_SOURCES)} \"",
+   "es": "f\"bloque INI_SECTION_<TYPE> ({len(PARAMETRIZER_ALLOWED_SOURCES)} \"",
+   "n": 1
+  },
+  {
+   "en": "\"structured-output agents are currently registered, e.g. Apirer, \"",
+   "es": "\"agents con output estructurado registrados por ahora, p. ej. Apirer, \"",
+   "n": 1
+  },
+  {
+   "en": "\"File Explorer\"",
+   "es": "\"Explorador de archivos\"",
+   "n": 1
+  },
+  {
+   "en": "\"app_id and directory or agent_name are required\"",
+   "es": "\"Se requieren app_id y directory o agent_name\"",
+   "n": 1
+  },
+  {
+   "en": "\"Directory does not exist\"",
+   "es": "\"El directorio no existe\"",
+   "n": 1
+  },
+  {
+   "en": "\"VS Code not found\"",
+   "es": "\"No se encontró VS Code\"",
+   "n": 1
+  },
+  {
+   "en": "\"Antigravity not found\"",
+   "es": "\"No se encontró Antigravity\"",
+   "n": 1
+  },
+  {
+   "en": "\"CMD is only supported on Windows\"",
+   "es": "\"CMD sólo es compatible con Windows\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Unknown app: {app_id}\"",
+   "es": "f\"Aplicación desconocida: {app_id}\"",
+   "n": 1
+  },
+  {
+   "en": "\"active must be a list\"",
+   "es": "\"active debe ser una lista\"",
+   "n": 1
+  },
+  {
+   "en": "\"keys must be a non-empty list\"",
+   "es": "\"keys debe ser una lista no vacía\"",
+   "n": 1
+  },
+  {
+   "en": "\"contacts must be a list\"",
+   "es": "\"contacts debe ser una lista\"",
+   "n": 1
+  },
+  {
+   "en": "f\"unknown skill '{skill_name}'\"",
+   "es": "f\"Skill desconocido: '{skill_name}'\"",
+   "n": 1
+  },
+  {
+   "en": "\"No image was sent.\"",
+   "es": "\"No se envió ninguna imagen.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Image is too large ({upload.size // (1024 * 1024)} MB); the limit is 25 MB.\"",
+   "es": "f\"La imagen es demasiado grande ({upload.size // (1024 * 1024)} MB); el límite es de 25 MB.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The image was empty.\"",
+   "es": "\"La imagen estaba vacía.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Pillow is not available, so the screenshot could not be converted.\"",
+   "es": "\"Pillow no está disponible, así que no se pudo convertir el screenshot.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"That file could not be read as an image: {e}\"",
+   "es": "f\"No se pudo leer ese archivo como imagen: {e}\"",
+   "n": 1
+  },
+  {
+   "en": "\"instead.\"",
+   "es": "\"en el campo de abajo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"unreachable\"",
+   "es": "\"sin conexión\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'## Workflow Agents'",
+   "motivo": "valor de máquina: views.py compara este título al leer agents_descriptions.md"
+  },
+  {
+   "en": "f\"Warning: Could not load agent purposes from any known source: {last_error}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Hello, World!\"",
+   "motivo": "vista sin ruta en urls.py; no llega a la pantalla"
+  },
+  {
+   "en": "f\"Warning: Could not load ollama_base_url via config_loader: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"File not found in database\"",
+   "motivo": "respuesta 404 que el JS no muestra (usa su propio texto); igual que sus hermanas de protocolo"
+  },
+  {
+   "en": "\"Prompt not found in database\"",
+   "motivo": "valor que compara el JS (tools_dialog.js)"
+  },
+  {
+   "en": "\"Omission not found in database\"",
+   "motivo": "valor que compara el JS (agent_page_dialogs.js)"
+  },
+  {
+   "en": "\"Mcp not found in database\"",
+   "motivo": "valor que compara el JS (agent_page_dialogs.js)"
+  },
+  {
+   "en": "\"Tool not found in database\"",
+   "motivo": "valor que compara el JS (agent_page_dialogs.js)"
+  },
+  {
+   "en": "\"Agent not found in database\"",
+   "motivo": "valor que compara el JS (acp-canvas-core.js, agent_page_dialogs.js)"
+  },
+  {
+   "en": "'Pool directory created (was empty)'",
+   "motivo": "mensaje de éxito que el JS no muestra (sólo consola)"
+  },
+  {
+   "en": "f\"[CLEAR] rmtree failed ({e}), retrying...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Pool directory completely reset (killed {killed_count} process(es))'",
+   "motivo": "mensaje de éxito que el JS no muestra (sólo consola)"
+  },
+  {
+   "en": "f\"Error clearing pool: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Pool directory not found'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "'Pool directory is empty'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"--- Cleared log file: {log_file}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Cleared {cleared_count} log file(s)'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Error clearing agent logs: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Invalid agent name'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f'Deleted {pool_folder_name}'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f'Directory {pool_folder_name} did not exist'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"[KILL] Killing child process PID {child.pid} ({child.name()})...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[KILL] Killing process PID {parent.pid} ({parent.name()})...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[KILL] Found target process PID {proc.info['pid']}: {cmdline_str[:50]}...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error removing {item_path}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Missing session_id'",
+   "motivo": "respuesta de un beacon; nadie la muestra"
+  },
+  {
+   "en": "'Pools directory not found'",
+   "motivo": "respuesta de un beacon; nadie la muestra"
+  },
+  {
+   "en": "f\"[CLEANUP] Requested cleanup for session: {session_id}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CLEANUP] Removed session dir: {session_pool_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CLEANUP] Info: Session dir already gone: {session_pool_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Already cleaned'",
+   "motivo": "respuesta de un beacon; nadie la muestra"
+  },
+  {
+   "en": "\"WinError 3\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "f\"[CLEANUP] Info: Session dir not found during cleanup (ignoring error): {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CLEANUP] Error: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Session pool did not exist'",
+   "motivo": "respuesta de un beacon; nadie la muestra"
+  },
+  {
+   "en": "r'Environment'",
+   "motivo": "llave del registro de Windows"
+  },
+  {
+   "en": "'Scripts'",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "f\"Config not found for agent: {base_folder_name}\"",
+   "motivo": "el JS no muestra el texto de esta respuesta"
+  },
+  {
+   "en": "f\"Error loading agent config: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error: {str(e)}\"",
+   "motivo": "igual en español"
+  },
+  {
+   "en": "f\"[DEPLOY] Received agent_name: {agent_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] base_folder_name: {base_folder_name}, pool_folder_name: {pool_folder_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] source_dir: {source_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] source_dir exists: {os.path.exists(source_dir)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] pool_dir: {pool_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] ERROR: Source not found: {source_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] Pool dir exists, removing: {pool_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] Copying {source_dir} -> {pool_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] SUCCESS: Copied to {pool_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] Updated logfile_path to: {pool_folder_name}.log\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] Warning: Could not update logfile_path: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[DEPLOY] Error deploying agent template: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] Updating script for {pool_folder_name}...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] Warning: Source script not found: {source_script}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] Warning: Failed to update script for {pool_folder_name}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] Agent {pool_folder_name} already exists (script updated)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] ERROR: Source not found: {source_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] Deploying {base_folder_name} -> {pool_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] Warning: Could not update logfile_path: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] SUCCESS: Deployed {pool_folder_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ENSURE] Error ensuring agent exists: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SAVE] Created new pool directory from template: {pool_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SAVE] Pool directory already exists, preserving files: {pool_dir}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SAVE] Warning: Could not read existing config: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SAVE] Config saved to: {config_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error saving agent config: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[PID] Failed to write PID file in {agent_dir}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing connection_type or connected_agent\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"connection_type must be 'source' or 'target'\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Raiser config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating raiser connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"connection_type must be 'source'\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Emailer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating emailer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing source_agent\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Monitor Log config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Set logfile_path to {relative_log_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Preserved user-configured logfile_path: {current_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Reset logfile_path to {pool_folder_name}.log\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating monitor log connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing args\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"Updated OR config\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating OR connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Updated AND config\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating AND connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating monitor_log connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Ender config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Added {connected_pool_name} to {list_name}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Removed {connected_pool_name} from {list_name}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Unknown action: {action}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating ender connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"connection_type must be 'source' or 'output'\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Stopper config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating stopper connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Notifier config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating notifier connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing target_agent\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Starter config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Added {target_pool_name} to target_agents\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Removed {target_pool_name} from target_agents\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating starter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Session expired\"",
+   "motivo": "endpoint sin consumidor en el JS"
+  },
+  {
+   "en": "f\"Error loading session state: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Session state saved\"",
+   "motivo": "endpoint sin consumidor en el JS"
+  },
+  {
+   "en": "f\"Error saving session state: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[EXECUTE] Started {pool_folder_name} with PID: {process.pid}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Started {pool_folder_name}\"",
+   "motivo": "mensaje de éxito que el JS no muestra"
+  },
+  {
+   "en": "f\"Error executing starter agent: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking starter log: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CHECK_ENDER_LOG] agent_name: {agent_name}, timestamp_ms: {timestamp_ms}, timestamp_sec: {timestamp_sec}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CHECK_ENDER_LOG] base_folder_name: {base_folder_name}, pool_folder_name: {pool_folder_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CHECK_ENDER_LOG] Looking for log file: {log_file_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CHECK_ENDER_LOG] File exists: {os.path.exists(log_file_path)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CHECK_ENDER_LOG] file_mtime: {file_mtime}, timestamp_sec: {timestamp_sec}, modified_after: {modified_after}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking ender log: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error executing ender agent: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Config not found: {pool_folder_name}\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "\"No target agents configured\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Error checking agents running: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Session state cleared\"",
+   "motivo": "respuesta de un beacon; nadie la muestra"
+  },
+  {
+   "en": "f\"Error clearing session state: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking PID file for {folder_name}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking status file for {folder_name}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error removing notification file {notif_file}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error processing notification for {folder_name}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking all agents status: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error reading PID for {entry_name}: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error reading status for {entry_name}: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error removing notification {notif_file_path}: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error reading notification for {entry_name}: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking chat runtimes status: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error reading agent log: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Terminating child process PID {child.pid} ({child.name()})...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Terminating process PID {parent.pid} ({parent.name()})...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Force killing PID {target.pid} ({target.name()})...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Found running agent process PID {proc.pid} on attempt {attempt + 1}.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Confirmed stop of {killed_count} process(es) for {pool_folder_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] No running process found for {pool_folder_name}; starting fresh.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Started {pool_folder_name} with PID: {process.pid}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Restarted {pool_folder_name}\"",
+   "motivo": "mensaje de éxito que el JS no muestra"
+  },
+  {
+   "en": "f\"Error restarting agent: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Pool directory does not exist\"",
+   "motivo": "el JS no lee esta respuesta"
+  },
+  {
+   "en": "f\"[SECURITY] Skipping directory outside pool: {root}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SECURITY] Skipping file outside pool: {file_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CLEAR_POS] Deleted: {file_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CLEAR_POS] Error deleting {file_path}: {del_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Cleared {cleared_count} .pos file(s) with {len(errors)} error(s)\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Successfully cleared {cleared_count} .pos file(s)\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Error clearing .pos files: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error getting session running processes: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"No pool directory exists\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"[PAUSE-KILL] Killing child process PID {child.pid} ({child.name()})...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[PAUSE-KILL] Killing process PID {parent.pid} ({parent.name()})...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[PAUSE-KILL] Found target process PID {proc.info['pid']}: {cmdline_str[:80]}...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Killed {killed_count} process(es)\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Error killing session processes: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"No agents to restart\"",
+   "motivo": "endpoint sin consumidor en el JS"
+  },
+  {
+   "en": "f\"[RESTART] Script not found: {script_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Starting: {' '.join(cmd)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Successfully started: {canvas_id}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESTART] Failed to start {canvas_id}: {start_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Restarted {len(restarted)} agent(s), {len(failed)} failed\"",
+   "motivo": "endpoint sin consumidor en el JS"
+  },
+  {
+   "en": "f\"Error restarting agents: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"No agents to reanimate\"",
+   "motivo": "el JS no muestra este mensaje"
+  },
+  {
+   "en": "f\"[REANIMATE] Script not found: {script_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[REANIMATE] Starting: {' '.join(cmd)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[REANIMATE] Successfully reanimated: {canvas_id}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[REANIMATE] Failed to reanimate {canvas_id}: {start_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Reanimated {len(reanimated)} agent(s), {len(failed)} failed\"",
+   "motivo": "el JS no muestra este mensaje"
+  },
+  {
+   "en": "f\"Error reanimating agents: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[PAUSE] Saved {len(agents)} agent(s) to {reanim_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Saved {len(agents)} paused agent(s)\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Error saving paused agents: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"No paused_agents.reanim file found\"",
+   "motivo": "el JS no muestra este mensaje"
+  },
+  {
+   "en": "f\"[RESUME] Loaded {len(agents)} paused agent(s) from {reanim_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Loaded {len(agents)} paused agent(s)\"",
+   "motivo": "el JS no muestra este mensaje"
+  },
+  {
+   "en": "f\"Error loading paused agents: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[RESUME] Deleted {reanim_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"paused_agents.reanim deleted\"",
+   "motivo": "el JS no muestra este mensaje"
+  },
+  {
+   "en": "f\"Error deleting paused agents file: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing arguments\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"[AUTO-DEPLOY] Deployed {agent_name} during connection update\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Config not found and template {base_folder_name} missing\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Config not found and deploy failed: {e}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"EVENT DETECTED\"",
+   "motivo": "patrón de log que se escribe en la config del agent (máquina)"
+  },
+  {
+   "en": "\"STARTER AGENT STARTED\"",
+   "motivo": "patrón de log que se escribe en la config del agent (máquina)"
+  },
+  {
+   "en": "\"ENDER AGENT FINISHED\"",
+   "motivo": "patrón de log que se escribe en la config del agent (máquina)"
+  },
+  {
+   "en": "f\"Updated {agent_name} config\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating croner connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Missing required fields'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "'Mover agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f'Updated target_agents: {target_agents}'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f'Updated source_agents: {source_agents}'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Mover connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Invalid method\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"Pool not found\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"Updated sleeper config\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"Missing data\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Config not found for agent: {pool_folder_name}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"Config updated\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating cleaner connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Deleter agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Deleter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Executer agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Executer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'SSHer agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating SSHer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'SCPer agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating SCPer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'TeleTlamatini agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating TeleTlamatini connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'ACPXer agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating ACPXer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Telegrammer agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Telegrammer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Pythonxer agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Pythonxer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Whatsapper agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Whatsapper connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'No connected_agent provided'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "\"Invalid agent type\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Config not found for {agent_name}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"[ASKER] Added {connected_pool_name} to {agent_name} {list_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ASKER] Removed {connected_pool_name} from {agent_name} {list_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Updated {list_key}: {current_list}'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating asker connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[FORKER] Added {connected_pool_name} to {agent_name} {list_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[FORKER] Removed {connected_pool_name} from {agent_name} {list_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating forker connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[COUNTER] Added {connected_pool_name} to {agent_name} {list_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[COUNTER] Removed {connected_pool_name} from {agent_name} {list_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating counter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Invalid choice, must be A or B'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"[ASKER] User chose Path {choice} for chat runtime {agent_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Choice {choice} written'",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"Pool dir not found for {agent_name}\"",
+   "motivo": "sólo llega a la consola del browser"
+  },
+  {
+   "en": "f\"[ASKER] User chose Path {choice} for {agent_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error processing asker choice: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'RecMailer agent config not found'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating RecMailer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Shoter config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Shoter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Editor config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"{action} {target_pool} in {list_name}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Grepper config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Globber config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Camcorder config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Camcorder connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Recorder config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Recorder connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Whisperer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Whisperer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"AudioPlayer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating AudioPlayer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Talker config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Talker connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"VideoPlayer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating VideoPlayer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing connected_agent\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"SQLer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Added {connected_pool_name} to {list_key}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Removed {connected_pool_name} from {list_key}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating SQLer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Prompter config not found: {config_path}'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Prompter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Gitter config not found: {config_path}'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Gitter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'Dockerer config not found: {config_path}'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Dockerer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'PSer config not found: {config_path}'",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating PSer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[FLOWCREATOR] Started {pool_folder_name} with PID: {process.pid}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error executing flowcreator agent: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking flowcreator result: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Failed to remove {item_path}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error cleaning pool except {agent_name}: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Kuberneter config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Kuberneter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Apirer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Apirer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Unrealer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Unrealer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Blenderer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Blenderer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Playwrighter config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Playwrighter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Reviewer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Reviewer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Analyzer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Analyzer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Jenkinser config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Jenkinser connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Crawler config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Crawler connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Summarizer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Summarizer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"FlowHypervisor config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating FlowHypervisor connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[FLOWHYPERVISOR] Already running with PID {existing_pid}, skipping launch\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Already running as PID {existing_pid}\"",
+   "motivo": "mensaje de éxito que el JS no muestra"
+  },
+  {
+   "en": "f\"[FLOWHYPERVISOR] Started {pool_folder_name} with PID: {process.pid}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error executing flowhypervisor agent: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error checking flowhypervisor alert: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Mouser config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Mouser connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Windower config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Windower connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Kalier config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Kalier connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Discoverer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Discoverer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Nmapper config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Nmapper connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"PDFer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating PDFer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"PPTXer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating PPTXer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Terminater config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Terminater connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"LaTeXer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating LaTeXer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"STM32er config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating STM32er connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"ESP32er config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating ESP32er connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"ESPHomer config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating ESPHomer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Arduiner config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating Arduiner connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"unknown config section: {section}\"",
+   "motivo": "el JS muestra su propio texto (HTTP status)"
+  },
+  {
+   "en": "f\"HTTP {exc.code}{hint}\"",
+   "motivo": "formato técnico: código HTTP más la pista ya traducida"
+  },
+  {
+   "en": "\"Authorization\"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "f\"Bearer {token}\"",
+   "motivo": "valor del header Authorization"
+  },
+  {
+   "en": "f\"UNREACHABLE ({error})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{len(names)} model(s)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [OLLAMA-CATALOG] {url}: {outcome}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CONFIG] Error saving models config: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[CONFIG] Error saving urls config: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ACCESS-KEYS] Error loading wizard status: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[ACCESS-KEYS] Error saving wizard values: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[BACKUP DB] check_backup_directory failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"The path points to a file. Please specify only the directory; the backup is always saved as db.sqlite3.\"",
+   "motivo": "el JS muestra su propio texto cuando kind es 'file'"
+  },
+  {
+   "en": "f\"[BACKUP DB] Could not resolve source db path: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[BACKUP DB] Copy failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[BACKUP DB] {sqlite_copy.describe(result)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[BACKUP DB] Backed up {source_path} -> {sqlite_copy.describe(result)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SET DB] check_set_db_file failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SET DB] Could not stage db.sqlite3: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SET DB] {sqlite_copy.describe(result)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SET DB] Staged {source_path} -> {sqlite_copy.describe(result)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Unknown picker kind: {kind!r}\"",
+   "motivo": "error interno de programación; no llega a la pantalla"
+  },
+  {
+   "en": "\"requires windows\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"native file dialog\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"native folder dialog\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"can't find a usable\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"no module named 'tkinter'\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"no module named tkinter\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"no module named '_tkinter'\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"no display name\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"couldn't connect to display\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "\"tk wasn't installed\"",
+   "motivo": "marcador que views.py busca en el texto del error (máquina)"
+  },
+  {
+   "en": "f\"[BACKUP DB] folder picker failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SET DB] file picker failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[SET-DIR-CONTEXT] folder picker failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[FLOW COMPILE] Error compiling flow: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing flow_data\"",
+   "motivo": "el JS no muestra este mensaje (sólo consola)"
+  },
+  {
+   "en": "f\"[CHAT FLOW] Error normalizing flow: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Missing flow\"",
+   "motivo": "el JS no muestra este mensaje (usa su propio texto)"
+  },
+  {
+   "en": "f\"[FLOW REDACT] Error redacting snapshot: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Pool directory not found or empty'",
+   "motivo": "el JS no muestra este mensaje"
+  },
+  {
+   "en": "f\"[VALIDATE] Error listing pool agents: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Config not found: {config_path}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Added {target_pool_name} to {list_name}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Removed {target_pool_name} from {list_name}\"",
+   "motivo": "sólo llega a la consola del browser (acp-agent-connectors.js)"
+  },
+  {
+   "en": "f\"Error updating File-Interpreter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Image-Interpreter connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Video-Analyzer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating NetSpeed-Calculator connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating File-Creator connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating File-Extractor connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Kyber-KeyGen connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Kyber-Cipher connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Kyber-DeCipher connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Parametrizer connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Summarizer, Discoverer, Kalier, Telegrammer, Whatsapper).\"",
+   "motivo": "nombres de agents"
+  },
+  {
+   "en": "f\"Error getting Parametrizer dialog data: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Saved {saved_count} mapping(s) to interconnection-scheme.csv\"",
+   "motivo": "mensaje de éxito que el JS sólo manda a la consola"
+  },
+  {
+   "en": "f\"Error saving Parametrizer scheme: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "r\"%LOCALAPPDATA%\\Programs\\Microsoft VS Code\\Code.exe\"",
+   "motivo": "path de Windows"
+  },
+  {
+   "en": "r\"%ProgramFiles%\\Microsoft VS Code\\Code.exe\"",
+   "motivo": "path de Windows"
+  },
+  {
+   "en": "r\"%ProgramFiles(x86)%\\Microsoft VS Code\\Code.exe\"",
+   "motivo": "path de Windows"
+  },
+  {
+   "en": "\"VS Code\"",
+   "motivo": "nombre de producto"
+  },
+  {
+   "en": "\"Antigravity\"",
+   "motivo": "nombre de producto"
+  },
+  {
+   "en": "f\"Error opening in app: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating FlowBacker connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Barrier connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating J-Decompiler connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating De-Compresser connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Keyboarder connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Googler connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating MCP Doctor connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error updating Instant Messaging Doctor connection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [chat-image] saved {destination} ({width}x{height}, {size_on_disk} bytes)\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

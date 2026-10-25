@@ -1,0 +1,159 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0204_add_pptxer_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"FILL IN (optional — leave them exactly as they are for a one-click demo):\\n\"",
+   "es": "\"LLENA LOS CAMPOS (opcional — déjalos exactamente como están para una demo de un solo clic):\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"border-radius:8px;font-weight:600;\\\">🎮 PPTXer — the same deck, two \"",
+   "es": "\"border-radius:8px;font-weight:600;\\\">🎮 PPTXer — el mismo deck, dos \"",
+   "n": 1
+  },
+  {
+   "en": "\"different worlds</div>\\n\\n\"",
+   "es": "\"mundos distintos</div>\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  [[ GAME OR PRODUCT NAME — OPTIONAL, default: \\\"Nexus Protocol\\\" ]]\\n\"",
+   "es": "\"  [[ GAME OR PRODUCT NAME — OPCIONAL, predeterminado: \\\"Nexus Protocol\\\" ]]\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"If you left that unfilled, use the default exactly as written above and do \"",
+   "es": "\"Si dejaste eso sin llenar, usa el valor predeterminado exactamente como está escrito arriba y \"",
+   "n": 1
+  },
+  {
+   "en": "\"not ask me for it.\\n\\n\"",
+   "es": "\"no me lo pidas.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, this one shows what PPTXer is really for. Please:\\n\\n\"",
+   "es": "\"Tlamatini, esta muestra para qué sirve de verdad PPTXer. Por favor:\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"1. Invent a short season-launch deck for the GAME OR PRODUCT NAME — a \"",
+   "es": "\"1. Inventa un deck corto de lanzamiento de temporada para el GAME OR PRODUCT NAME — un \"",
+   "n": 1
+  },
+  {
+   "en": "\"title, a 'What Changed' section with four bullets, a 'By The Numbers' \"",
+   "es": "\"título, una sección 'What Changed' con cuatro viñetas, una sección 'By The Numbers' \"",
+   "n": 1
+  },
+  {
+   "en": "\"section written as four lines in the form NUMBER then LABEL (for example \"",
+   "es": "\"escrita como cuatro líneas en la forma NÚMERO y luego ETIQUETA (por ejemplo \"",
+   "n": 1
+  },
+  {
+   "en": "\"'3.4M Registered players', '12ms Median server latency'), a small pricing \"",
+   "es": "\"'3.4M Registered players', '12ms Median server latency'), una tabla pequeña de precios \"",
+   "n": 1
+  },
+  {
+   "en": "\"table, and one short quote from a player. Keep it tight; a slide is not a \"",
+   "es": "\"y una cita corta de un jugador. Mantenlo compacto; una slide no es una \"",
+   "n": 1
+  },
+  {
+   "en": "\"2. Call chat_agent_pptxer with that content as input_text, \"",
+   "es": "\"2. Llama a chat_agent_pptxer con ese contenido como input_text, \"",
+   "n": 1
+  },
+  {
+   "en": "\"nuance='esports_tournament', predominant_color='#12E2A3', \"",
+   "es": "\"nuance='esports_tournament', predominant_color='#12E2A3', \""
+  },
+  {
+   "en": "\"3. Call chat_agent_pptxer a SECOND time with the SAME input_text, but \"",
+   "es": "\"3. Llama a chat_agent_pptxer una SEGUNDA vez con el MISMO input_text, pero \"",
+   "n": 1
+  },
+  {
+   "en": "\"nuance='cyberpunk_tech', predominant_color='#00F0FF', \"",
+   "es": "\"nuance='cyberpunk_tech', predominant_color='#00F0FF', \""
+  },
+  {
+   "en": "\"4. Then compare them for me. Same words, two different decks — tell me \"",
+   "es": "\"4. Luego compáralos para mí. Las mismas palabras, dos decks distintos — dime \"",
+   "n": 1
+  },
+  {
+   "en": "\"which display typeface each one chose, what the two palettes came out as, \"",
+   "es": "\"qué tipografía de display eligió cada uno, cómo salieron las dos paletas, \"",
+   "n": 1
+  },
+  {
+   "en": "\"which ornament each used, and whether BOTH were verified clean:\\n\"",
+   "es": "\"qué ornamento usó cada uno y si AMBOS se verificaron limpios:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"   · esports    → <font_display>, <palette>, <layout_clean>\\n\"",
+   "es": "\"   · esports    → <font_display>, <palette>, <layout_clean>\\n\""
+  },
+  {
+   "en": "\"   · cyberpunk  → <font_display>, <palette>, <layout_clean>\\n\\n\"",
+   "es": "\"   · cyberpunk  → <font_display>, <palette>, <layout_clean>\\n\\n\""
+  },
+  {
+   "en": "\"Notice what PPTXer did with the 'By The Numbers' lines: four parallel \"",
+   "es": "\"Fíjate en lo que PPTXer hizo con las líneas de 'By The Numbers': cuatro viñetas paralelas \"",
+   "n": 1
+  },
+  {
+   "en": "\"NUMBER-then-LABEL bullets are promoted automatically into big stat tiles, \"",
+   "es": "\"NÚMERO-luego-ETIQUETA se promueven automáticamente a grandes stat tiles, \"",
+   "n": 1
+  },
+  {
+   "en": "\"because that is what they are. Tell me if that happened.\\n\\n\"",
+   "es": "\"porque eso es lo que son. Dime si eso pasó.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"PRE-FLIGHT: tick Multi-Turn and Exec report. Both decks are written to \"",
+   "es": "\"PRE-FLIGHT: marca Multi-Turn y Exec report. Ambos decks se escriben en \"",
+   "n": 1
+  },
+  {
+   "en": "\"PPTXer's own Documents folder under names that will not collide with \"",
+   "es": "\"la propia carpeta Documents de PPTXer con nombres que no van a chocar con \"",
+   "n": 1
+  },
+  {
+   "en": "\"anything, so this is safe to run as often as you like. End with \"",
+   "es": "\"nada, así que es seguro ejecutarla las veces que quieras. Termina con \"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style=\\\"background:linear-gradient(135deg,#0B1F3A 0%,#5A1FB8 38%,\"\n    \"#EC4899 70%,#22D3EE 100%);color:#ffffff;padding:10px 14px;\"\n    \"border-radius:8px;font-weight:600;\\\">🖼️ PPTXer — turn an answer into a \"\n    \"real presentation</div>\\n\\n\"\n    \"FILL IN (optional — leave them exactly as they are for a one-click demo):\\n\"\n    \"  [[ SUBJECT — OPTIONAL, default: \\\"How Tlamatini builds a presentation\\\" ]]\\n\"\n    \"  [[ BRAND COLOUR — OPTIONAL, default: #5A1FB8 ]]\\n\"\n    \"If you left those unfilled, use the defaults exactly as written above and \"\n    \"do not ask me for them.\\n\\n\"\n    \"Tlamatini, please do this in order:\\n\\n\"\n    \"1. Write me a short, well-structured briefing on the SUBJECT — a title, \"\n    \"three or four sections, a few bullets each, and one small table. Keep it \"\n    \"under 400 words.\\n\\n\"\n    \"2. Then call chat_agent_pptxer ONCE, passing that briefing VERBATIM as \"\n    \"input_text, with predominant_color set to the BRAND COLOUR and \"\n    \"filename='tlamatini_briefing.pptx'. Do NOT set nuance — I want to see \"\n    \"which treatment PPTXer picks on its own.\\n\\n\"\n    \"3. When it finishes, report back plainly:\\n\"\n    \"   · the full path of the .pptx it wrote            → <path>\\n\"\n    \"   · how many slides it made                        → <slide_count>\\n\"\n    \"   · which treatment it chose, and why              → <nuance>\\n\"\n    \"   · which display font it used                     → <font_display>\\n\"\n    \"   · whether the layout was verified CLEAN          → <layout_clean>\\n\"\n    \"   · and whether that verdict came from PowerPoint's own rendering \"\n    \"→ <ground_truth>\\n\\n\"\n    \"That last point is the one I care about: PPTXer re-opens the deck it just \"\n    \"wrote and LOOKS at it. If layout_clean is true AND ground_truth is true, \"\n    \"tell me so in plain words — it means the slides were measured on the same \"\n    \"pixels an audience would see, not merely written. If it reports findings \"\n    \"instead, read them out; do not call the deck clean.\\n\\n\"\n    \"PRE-FLIGHT: tick Multi-Turn and Exec report. Nothing else is needed — no \"\n    \"network, no API key, no installation. End with END-RESPONSE.\"",
+   "es": "\"<div style=\\\"background:linear-gradient(135deg,#0B1F3A 0%,#5A1FB8 \"\n    \"38%,#EC4899 70%,#22D3EE 100%);color:#ffffff;padding:10px \"\n    \"14px;border-radius:8px;font-weight:600;\\\">🖼️ PPTXer — convierte una respuesta en una \"\n    \"presentación real</div>\\n\\n\"\n    \"LLENA LOS CAMPOS (opcional — déjalos exactamente como están para una demo de un solo clic):\\n\"\n    \"  [[ SUBJECT — OPCIONAL, predeterminado: \\\"How Tlamatini builds a presentation\\\" ]]\\n\"\n    \"  [[ BRAND COLOUR — OPCIONAL, predeterminado: #5A1FB8 ]]\\n\"\n    \"Si dejaste esos sin llenar, usa los valores predeterminados exactamente como están escritos arriba y \"\n    \"no me los pidas.\\n\\n\"\n    \"Tlamatini, por favor haz esto en orden:\\n\\n\"\n    \"1. Escríbeme un briefing corto y bien estructurado sobre el SUBJECT — un título, \"\n    \"tres o cuatro secciones, unas cuantas viñetas cada una y una tabla pequeña. Que quede \"\n    \"en menos de 400 palabras.\\n\\n\"\n    \"2. Luego llama a chat_agent_pptxer UNA VEZ, pasando ese briefing VERBATIM como \"\n    \"input_text, con predominant_color puesto en el BRAND COLOUR y \"\n    \"filename='tlamatini_briefing.pptx'. NO pongas nuance — quiero ver \"\n    \"qué tratamiento elige PPTXer por su cuenta.\\n\\n\"\n    \"3. Cuando termine, repórtame claramente:\\n\"\n    \"   · el path completo del .pptx que escribió            → <path>\\n\"\n    \"   · cuántas slides hizo                                → <slide_count>\\n\"\n    \"   · qué tratamiento eligió, y por qué                  → <nuance>\\n\"\n    \"   · qué fuente de display usó                          → <font_display>\\n\"\n    \"   · si el layout se verificó LIMPIO                    → <layout_clean>\\n\"\n    \"   · y si ese veredicto vino del propio render de PowerPoint \"\n    \"→ <ground_truth>\\n\\n\"\n    \"Ese último punto es el que me importa: PPTXer vuelve a abrir el deck que acaba de \"\n    \"escribir y lo MIRA. Si layout_clean es true Y ground_truth es true, \"\n    \"dímelo en palabras claras — significa que las slides se midieron sobre los mismos \"\n    \"pixeles que vería una audiencia, no sólo que se escribieron. Si en cambio reporta hallazgos, \"\n    \"léemelos; no llames limpio al deck.\\n\\n\"\n    \"PRE-FLIGHT: marca Multi-Turn y Exec report. No se necesita nada más — sin \"\n    \"red, sin API key, sin instalación. Termina con END-RESPONSE.\"",
+   "libres": [
+    "AND"
+   ],
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style=\\\"background:linear-gradient(135deg,#04060C 0%,#7B2FF7 34%,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#F72585 66%,#00F0FF 100%);color:#ffffff;padding:10px 14px;\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

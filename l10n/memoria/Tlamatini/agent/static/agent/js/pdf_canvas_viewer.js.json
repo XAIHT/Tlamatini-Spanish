@@ -1,0 +1,56 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/pdf_canvas_viewer.js",
+ "segmentos": [
+  {
+   "en": "`Unable to open PDF: ${error.message || error}. Use Open to choose another file.`",
+   "es": "`No se pudo abrir el PDF: ${error.message || error}. Usa Abrir para elegir otro archivo.`",
+   "n": 1
+  },
+  {
+   "en": "`of ${pdfDocument.numPages}`",
+   "es": "`de ${pdfDocument.numPages}`",
+   "n": 1
+  },
+  {
+   "en": "`Page ${event.pageNumber} could not be rendered: ${event.error.message}`",
+   "es": "`No se pudo mostrar la página ${event.pageNumber}: ${event.error.message}`",
+   "n": 1
+  },
+  {
+   "en": "'Incorrect password. Try again:'",
+   "es": "'La contraseña es incorrecta. Prueba otra vez:'",
+   "n": 1
+  },
+  {
+   "en": "'Password for this PDF'",
+   "es": "'Contraseña de este PDF'",
+   "n": 1
+  },
+  {
+   "en": "'PDF is not ready to extract text.'",
+   "es": "'El PDF todavía no está listo para extraer el texto.'",
+   "n": 1
+  },
+  {
+   "en": "`Reading text: page ${number} of ${pdfDocument.numPages}…`",
+   "es": "`Leyendo el texto: página ${number} de ${pdfDocument.numPages}…`",
+   "n": 1
+  },
+  {
+   "en": "'This PDF has no selectable text. Image-only pages require OCR.'",
+   "es": "'Este PDF no tiene texto seleccionable. Las páginas que sólo tienen imágenes necesitan OCR.'",
+   "n": 1
+  },
+  {
+   "en": "'Password entry cancelled'",
+   "es": "'se canceló el ingreso de la contraseña'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'noopener noreferrer'",
+   "motivo": "valor del atributo rel"
+  }
+ ]
+}

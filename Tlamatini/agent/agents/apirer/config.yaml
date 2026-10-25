@@ -1,0 +1,10 @@
+url: https://example.com
+method: GET
+headers:
+  Content-Type: application/json
+  Authorization: ''
+body: ''
+expected_status: 200
+timeout: 30
+source_agents: []
+target_agents: []

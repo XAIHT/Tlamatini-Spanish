@@ -1,0 +1,567 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+"""
+regen_secrets.py — toggle Tlamatini config files between two modes:
+
+    --mode push-able   Replace every secret value with a generic placeholder
+                       like "<ANTHROPIC_API_KEY goes here>" so the repo can be
+                       pushed to GitHub without tripping push-protection.
+    --mode keyed       Read real values from `data.keys` and write them back
+                       into the same files for local development.
+
+Targeted files (resolved relative to this script):
+
+    Tlamatini/agent/config.json
+        ANTHROPIC_API_KEY  (top + acpx.agents.claude.env)
+        GEMINI_API_KEY     (top + acpx.agents.gemini.env)
+        GOOGLE_API_KEY     (acpx.agents.gemini.env, alias)
+        OPENAI_API_KEY     (acpx.agents.codex.env)
+        ollama_token       (top)
+        whatsapp_access_token, whatsapp_phone_number_id  (top — Whatsapper / Meta Cloud API)
+        telegram_bot_token (top — Telegrammer / official Telegram Bot API)
+        pdcp_api_key       (top — Discoverer / ProjectDiscovery Cloud Platform key; OPTIONAL, secret)
+
+    Tlamatini/agent/agents/telegrammer/config.yaml
+        telegram.bot_token   (official Telegram Bot API token from @BotFather)
+
+    Tlamatini/agent/agents/whatsapper/config.yaml
+        whatsapp.phone_number_id, whatsapp.access_token, whatsapp.verify_token
+                                                     (Meta WhatsApp Cloud API)
+
+    Tlamatini/agent/agents/teletlamatini/config.yaml
+        telegram.api_id, telegram.api_hash, telegram.bot_token,
+        password,
+        tlamatini.username, tlamatini.password
+
+    Tlamatini/agent/agents/emailer/config.yaml
+        smtp.username, smtp.password (Gmail app password from
+        https://myaccount.google.com/apppasswords)
+
+    Tlamatini/agent/agents/recmailer/config.yaml
+        imap.username, imap.password (Gmail app password from
+        https://myaccount.google.com/apppasswords)
+
+
+    Tlamatini/agent/agents/discoverer/config.yaml
+        pdcp_api_key (ProjectDiscovery Cloud Platform key from
+        https://cloud.projectdiscovery.io; OPTIONAL — lifts cvemap/vulnx rate
+        limits, enables nuclei -ai / cloud upload)
+
+YAML files are edited line-by-line so all comments survive intact. The JSON
+file is round-tripped through json.load/dump (its existing format already uses
+indent=2 and pseudo "_section_*" comment-keys that survive verbatim).
+
+All writes are atomic (write to .tmp, then os.replace).
+
+Usage:
+    python regen_secrets.py --mode push-able
+    python regen_secrets.py --mode keyed
+    python regen_secrets.py --mode keyed --keys-file other.keys
+    python regen_secrets.py --mode keyed --dry-run
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+REPO_ROOT = Path(__file__).resolve().parent
+
+CONFIG_JSON = REPO_ROOT / "Tlamatini" / "agent" / "config.json"
+TELEGRAMMER_YAML = REPO_ROOT / "Tlamatini" / "agent" / "agents" / "telegrammer" / "config.yaml"
+WHATSAPPER_YAML = REPO_ROOT / "Tlamatini" / "agent" / "agents" / "whatsapper" / "config.yaml"
+TELETLAMATINI_YAML = REPO_ROOT / "Tlamatini" / "agent" / "agents" / "teletlamatini" / "config.yaml"
+EMAILER_YAML = REPO_ROOT / "Tlamatini" / "agent" / "agents" / "emailer" / "config.yaml"
+RECMAILER_YAML = REPO_ROOT / "Tlamatini" / "agent" / "agents" / "recmailer" / "config.yaml"
+DISCOVERER_YAML = REPO_ROOT / "Tlamatini" / "agent" / "agents" / "discoverer" / "config.yaml"
+EXTERNAL_MCPS_JSON = REPO_ROOT / "Tlamatini" / "agent" / "external_mcps.json"
+
+#: Catalog secrets with a HAND-PICKED data.keys name (nicer than the derived one).
+#: Everything else secret-ish is handled generically — see ``patch_external_mcps_json``.
+#: (server key, env field, data.keys name)
+EXTERNAL_MCP_SECRET_RULES: List[Tuple[str, str, str]] = [
+    ("octocode", "GITHUB_TOKEN", "OCTOCODE_GITHUB_TOKEN"),
+    ("Snyk Security Scanner", "API_KEY", "SNYK_API_KEY"),
+]
+
+#: A field name containing any of these is treated as a secret.
+#: NOTE "pat" is deliberately ABSENT: it matches "MEMORY_FILE_PATH" (PATH!), which
+#: turned a harmless file path into a fake secret — it got scrubbed to a
+#: placeholder and vaulted, and `keyed` would then stamp the build machine's own
+#: path onto someone else's install. Real GitHub PATs are named *_TOKEN anyway.
+_SECRETISH_FIELD_PARTS = (
+    "token", "key", "secret", "password", "passwd", "auth", "bearer",
+    "credential", "apikey",
+)
+
+#: ...unless the field name also contains one of THESE, which always WINS.
+#: A location is not a credential: `KEY_FILE`, `SECRET_PATH` and `AUTH_URL` name
+#: where something lives, and redacting them breaks a working config while
+#: protecting nothing.
+_NEVER_SECRET_FIELD_PARTS = (
+    "path", "file", "dir", "folder", "url", "uri", "host", "port",
+    "endpoint", "region", "profile", "timeout", "version",
+)
+
+
+def placeholder(name: str) -> str:
+    """Generic, identifiable, non-secret-looking placeholder string."""
+    return f"<{name} goes here>"
+
+
+def parse_keys_file(path: Path) -> Dict[str, str]:
+    """Parse a `KEY=VALUE` file. Comments (`#...`) and blank lines ignored."""
+    if not path.exists():
+        raise FileNotFoundError(
+            f"keys file not found: {path}\n"
+            f"Create it (see data.keys.example) before running --mode keyed."
+        )
+    out: Dict[str, str] = {}
+    for raw_lineno, raw in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            print(f"WARN  {path.name}:{raw_lineno} no '=' — skipped: {line!r}",
+                  file=sys.stderr)
+            continue
+        k, v = line.split("=", 1)
+        out[k.strip()] = v.strip()
+    return out
+
+
+def atomic_write(path: Path, text: str) -> None:
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    os.replace(tmp, path)
+
+
+# ────────────────────────────────────────────────────────────────────────
+# JSON: config.json
+# ────────────────────────────────────────────────────────────────────────
+
+def resolve_value(mode: str, keys: Dict[str, str], data_key: str,
+                  placeholder_label: str | None = None) -> str:
+    if mode == "push-able":
+        return placeholder(placeholder_label or data_key)
+    # keyed
+    return keys.get(data_key, "")
+
+
+def patch_config_json(mode: str, keys: Dict[str, str], dry_run: bool) -> List[str]:
+    if not CONFIG_JSON.exists():
+        return [f"SKIP  {CONFIG_JSON} (missing)"]
+    data: Dict[str, Any] = json.loads(CONFIG_JSON.read_text(encoding="utf-8"))
+
+    changes: List[str] = []
+
+    def set_top(json_key: str, data_key: str) -> None:
+        new_val = resolve_value(mode, keys, data_key, placeholder_label=json_key)
+        if data.get(json_key) != new_val:
+            changes.append(f"  config.json[{json_key!r}] <- {data_key}")
+        data[json_key] = new_val
+
+    def set_acpx_env(agent_id: str, env_key: str, data_key: str) -> None:
+        acpx = data.setdefault("acpx", {})
+        agents = acpx.setdefault("agents", {})
+        agent = agents.get(agent_id)
+        if not isinstance(agent, dict):
+            return  # leave alone if the agent block doesn't exist
+        env = agent.setdefault("env", {})
+        new_val = resolve_value(mode, keys, data_key, placeholder_label=env_key)
+        if env.get(env_key) != new_val:
+            changes.append(f"  config.json[acpx.agents.{agent_id}.env.{env_key}] <- {data_key}")
+        env[env_key] = new_val
+
+    set_top("ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
+    set_top("GEMINI_API_KEY",    "GEMINI_API_KEY")
+    set_top("ollama_token",      "OLLAMA_TOKEN")
+    set_top("whatsapp_access_token",     "WHATSAPP_ACCESS_TOKEN")
+    set_top("whatsapp_phone_number_id",  "WHATSAPP_PHONE_NUMBER_ID")
+    set_top("telegram_bot_token",        "TELEGRAM_BOT_TOKEN")
+    set_top("pdcp_api_key",              "PDCP_API_KEY")
+
+    set_acpx_env("claude", "ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
+    set_acpx_env("gemini", "GEMINI_API_KEY",    "GEMINI_API_KEY")
+    set_acpx_env("gemini", "GOOGLE_API_KEY",    "GOOGLE_API_KEY")
+    set_acpx_env("codex",  "OPENAI_API_KEY",    "OPENAI_API_KEY")
+
+    serialized = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    if not dry_run:
+        atomic_write(CONFIG_JSON, serialized)
+    return [f"WROTE {CONFIG_JSON.relative_to(REPO_ROOT)}"] + changes
+
+
+# ────────────────────────────────────────────────────────────────────────
+# YAML: surgical line-level edits (preserves every comment + ordering)
+# ────────────────────────────────────────────────────────────────────────
+
+# Each rule: (yaml_path, data_key) where yaml_path is a list of nested keys.
+TELEGRAMMER_RULES: List[Tuple[List[str], str]] = [
+    (["telegram", "bot_token"], "TELEGRAM_BOT_TOKEN"),
+    # api_id / api_hash power the Telegram USER session (the only way a @username
+    # can be resolved at runtime). They reuse the same Telegram app credentials as
+    # TeleTlamatini. With them set, Telegrammer auto-opens a one-time login window
+    # on the first @username send, then sends.
+    (["telegram", "api_id"], "TELETLAMATINI_API_ID"),
+    (["telegram", "api_hash"], "TELETLAMATINI_API_HASH"),
+    # session_string = a one-time-login Telegram USER session, BAKED into a keyed build
+    # so a fresh install can message any @username on the FIRST send with NO login window.
+    # push-able mode redacts it to a placeholder, so a distributed build ships no session.
+    (["telegram", "session_string"], "TELEGRAM_SESSION_STRING"),
+]
+
+WHATSAPPER_RULES: List[Tuple[List[str], str]] = [
+    (["whatsapp", "phone_number_id"], "WHATSAPP_PHONE_NUMBER_ID"),
+    (["whatsapp", "access_token"],    "WHATSAPP_ACCESS_TOKEN"),
+    (["whatsapp", "verify_token"],    "WHATSAPP_VERIFY_TOKEN"),
+]
+
+TELETLAMATINI_RULES: List[Tuple[List[str], str]] = [
+    (["telegram", "api_id"],    "TELETLAMATINI_API_ID"),
+    (["telegram", "api_hash"],  "TELETLAMATINI_API_HASH"),
+    (["telegram", "bot_token"], "TELETLAMATINI_BOT_TOKEN"),
+    (["password"],              "TELETLAMATINI_PASSWORD"),
+    (["tlamatini", "username"], "TLAMATINI_USERNAME"),
+    (["tlamatini", "password"], "TLAMATINI_PASSWORD"),
+]
+
+EMAILER_RULES: List[Tuple[List[str], str]] = [
+    (["smtp", "username"], "EMAILER_USERNAME"),
+    (["smtp", "password"], "EMAILER_PASSWORD"),
+]
+
+RECMAILER_RULES: List[Tuple[List[str], str]] = [
+    (["imap", "username"], "RECMAILER_USERNAME"),
+    (["imap", "password"], "RECMAILER_PASSWORD"),
+]
+
+
+DISCOVERER_RULES: List[Tuple[List[str], str]] = [
+    (["pdcp_api_key"], "PDCP_API_KEY"),
+]
+
+
+_KEY_RE = re.compile(r"^(?P<indent>\s*)(?P<key>[A-Za-z_][A-Za-z0-9_]*)\s*:(?P<rest>.*)$")
+
+
+def _force_quote(value: str) -> str:
+    """Emit one lossless YAML double-quoted string, including control characters."""
+    # JSON string escaping is also valid in YAML. Keep non-BMP Unicode intact;
+    # YAML additionally treats these Unicode separators as line breaks.
+    return (json.dumps(value, ensure_ascii=False)
+            .replace("\u0085", "\\u0085")
+            .replace("\u2028", "\\u2028")
+            .replace("\u2029", "\\u2029"))
+
+
+def _quote_value(value: str, *, force_quote: bool = False) -> str:
+    """Keep credentials as strings; YAML implicit types must not change them.
+
+    The keyword remains accepted for existing callers. All credential strings
+    now receive the same lossless quoting, including numeric-looking values.
+    The explicitly numeric Telegram api_id field is handled by its path below.
+    """
+    return _force_quote(value)
+
+
+def _yaml_inline_comment(rest: str) -> str:
+    """Return a real comment, never a hash inside a quoted credential."""
+    start = len(rest) - len(rest.lstrip())
+    quote = rest[start] if start < len(rest) and rest[start] in "\"'" else ""
+    index = start + 1 if quote else start
+    while index < len(rest):
+        char = rest[index]
+        if quote == '"' and char == "\\":
+            index += 2
+            continue
+        if quote and char == quote:
+            if quote == "'" and index + 1 < len(rest) and rest[index + 1] == "'":
+                index += 2
+                continue
+            quote = ""
+        elif not quote and char == "#" and (index == 0 or rest[index - 1].isspace()):
+            begin = index
+            while begin > 0 and rest[begin - 1].isspace():
+                begin -= 1
+            return rest[begin:]
+        index += 1
+    return ""
+
+
+def _patch_yaml_text(text: str, rules: List[Tuple[List[str], str]],
+                     mode: str, keys: Dict[str, str],
+                     file_label: str,
+                     *,
+                     force_quote_passwords: bool = False) -> Tuple[str, List[str]]:
+    """
+    Walk `text` line-by-line and rewrite the value of each `yaml_path`.
+    Indent-based path tracking is good enough for our hand-written YAML files
+    (no anchors, no flow-style nested mappings, no sequences-of-mappings).
+
+    When `force_quote_passwords=True`, any rule whose YAML path ends in
+    `password` is rendered as a YAML double-quoted scalar regardless of value
+    shape. This is enabled for the Emailer and RecMailer rule sets so the
+    on-disk password line always reads `password: "<...>"` — both for the
+    push-able placeholder and for the keyed real value. All other credential strings are quoted too; only
+    the explicitly numeric Telegram api_id field retains an integer value.
+    """
+    lines = text.splitlines(keepends=False)
+    # Pre-compute target last-key + parent-key chain by indent depth.
+    # indent_stack: list of (indent, key) describing the current path.
+    indent_stack: List[Tuple[int, str]] = []
+    rule_index_by_full_path: Dict[str, Tuple[List[str], str]] = {
+        ".".join(path): (path, dk) for path, dk in rules
+    }
+    matched_paths: set[str] = set()
+    changes: List[str] = []
+
+    out: List[str] = []
+    for line in lines:
+        m = _KEY_RE.match(line)
+        if not m:
+            out.append(line)
+            continue
+        indent = len(m.group("indent"))
+        key = m.group("key")
+        rest = m.group("rest")  # leading colon already consumed
+
+        # Pop any deeper-or-equal-indent frames before recording this one.
+        while indent_stack and indent_stack[-1][0] >= indent:
+            indent_stack.pop()
+        indent_stack.append((indent, key))
+
+        full_path = ".".join(k for _, k in indent_stack)
+
+        rule = rule_index_by_full_path.get(full_path)
+        if rule is None:
+            out.append(line)
+            continue
+
+        path, data_key = rule
+        new_val = resolve_value(mode, keys, data_key)
+        # When `force_quote_passwords` is on (Emailer / RecMailer rule sets),
+        # any path ending in `password` is rendered as a YAML double-quoted
+        # scalar regardless of value shape. Push-able placeholder and keyed
+        # real value both land as `password: "<...>"`.
+        force_quote = (
+            force_quote_passwords
+            and bool(path)
+            and path[-1].lower() == "password"
+        )
+        formatted = (new_val if path[-1] == "api_id" and re.fullmatch(r"[0-9]+", new_val)
+                     else _quote_value(new_val, force_quote=force_quote))
+        # Preserve any inline comment after the value.
+        comment = _yaml_inline_comment(rest)
+        new_line = f"{m.group('indent')}{key}: {formatted}{comment}"
+        if new_line != line:
+            changes.append(f"  {file_label}:{full_path} <- {data_key}")
+        out.append(new_line)
+        matched_paths.add(full_path)
+
+    # Note any rule that never fired — the caller sees this in the change log.
+    for full_path in rule_index_by_full_path:
+        if full_path not in matched_paths:
+            changes.append(f"  WARN {file_label}:{full_path} not present in file (skipped)")
+
+    final = "\n".join(out)
+    if text.endswith("\n") and not final.endswith("\n"):
+        final += "\n"
+    return final, changes
+
+
+def patch_yaml(path: Path, rules: List[Tuple[List[str], str]],
+               mode: str, keys: Dict[str, str], dry_run: bool,
+               *, force_quote_passwords: bool = False) -> List[str]:
+    if not path.exists():
+        return [f"SKIP  {path} (missing)"]
+    original = path.read_text(encoding="utf-8")
+    new_text, changes = _patch_yaml_text(
+        original, rules, mode, keys,
+        file_label=str(path.relative_to(REPO_ROOT)).replace("\\", "/"),
+        force_quote_passwords=force_quote_passwords,
+    )
+    if not dry_run:
+        atomic_write(path, new_text)
+    return [f"WROTE {path.relative_to(REPO_ROOT)}"] + changes
+
+
+# ────────────────────────────────────────────────────────────────────────
+# CLI
+# ────────────────────────────────────────────────────────────────────────
+
+# ────────────────────────────────────────────────────────────────────────
+# JSON: external_mcps.json  (the External ▸ MCPs catalog)
+# ────────────────────────────────────────────────────────────────────────
+#
+# The catalog is TRACKED in git (Angela, 2026-08-15) so the repo shows every
+# server Tlamatini knows about — but an MCP catalog's whole value is the
+# secrets in its `env` blocks, so it gets the same placeholder treatment
+# config.json already has.
+#
+# LOSSLESS CONTRACT: `push-able` AUTO-VAULTS any secret it is about to redact
+# into data.keys (which is gitignored) FIRST. That is what makes the round trip
+# safe for a server the rule table has never heard of: scrub → push → `keyed`
+# restores it exactly. A scrub that silently destroyed an unrecognised token
+# would be far worse than the leak it prevents.
+
+def _extmcp_clean(text: str) -> str:
+    return "".join(ch if ch.isalnum() else "_" for ch in str(text)).strip("_").upper()
+
+
+def _extmcp_data_key(server: str, field: str) -> str:
+    """Stable data.keys name for an UNDECLARED catalog secret."""
+    return f"EXTMCP_{_extmcp_clean(server)}_{_extmcp_clean(field)}"
+
+
+def _extmcp_is_secretish(field: str) -> bool:
+    lowered = str(field).lower()
+    if any(part in lowered for part in _NEVER_SECRET_FIELD_PARTS):
+        return False          # a LOCATION is not a credential — denylist wins
+    return any(part in lowered for part in _SECRETISH_FIELD_PARTS)
+
+
+def _extmcp_is_placeholder(value: Any) -> bool:
+    text = str(value or "").strip()
+    return (not text) or (text.startswith("<") and text.endswith(">"))
+
+
+def patch_external_mcps_json(mode: str, keys: Dict[str, str], dry_run: bool,
+                             keys_path: Path) -> List[str]:
+    if not EXTERNAL_MCPS_JSON.exists():
+        return [f"SKIP  {EXTERNAL_MCPS_JSON} (missing)"]
+    try:
+        data: Dict[str, Any] = json.loads(EXTERNAL_MCPS_JSON.read_text(encoding="utf-8-sig"))
+    except Exception as exc:
+        return [f"SKIP  {EXTERNAL_MCPS_JSON} (unreadable: {exc})"]
+
+    servers = data.get("mcpServers")
+    if not isinstance(servers, dict):
+        return [f"SKIP  {EXTERNAL_MCPS_JSON} (no mcpServers map)"]
+
+    # The vault is read regardless of mode: `keyed` restores FROM it, and
+    # `push-able` needs it to know which secrets are already stored.
+    vault: Dict[str, str] = dict(keys)
+    try:
+        vault.update({k: v for k, v in parse_keys_file(keys_path).items() if v})
+    except Exception:
+        pass
+
+    declared = {(s, f): dk for s, f, dk in EXTERNAL_MCP_SECRET_RULES}
+    changes: List[str] = []
+    additions: Dict[str, str] = {}
+    touched = False
+
+    for server_key in sorted(servers.keys()):
+        spec = servers.get(server_key)
+        if not isinstance(spec, dict):
+            continue
+        env = spec.get("env")
+        if not isinstance(env, dict):
+            continue
+        for field in sorted(env.keys()):
+            if not _extmcp_is_secretish(field):
+                continue
+            value = env.get(field)
+            data_key = declared.get((server_key, field)) or _extmcp_data_key(server_key, field)
+
+            if mode == "push-able":
+                if not _extmcp_is_placeholder(value) and vault.get(data_key) != value:
+                    additions[data_key] = str(value)      # vault BEFORE redacting
+                new_val = placeholder(data_key)
+            else:
+                new_val = vault.get(data_key, "")
+                if not new_val:
+                    changes.append(
+                        f"  WARN external_mcps.json[{server_key!r}].env.{field}: no "
+                        f"{data_key} in {keys_path.name} — left as-is"
+                    )
+                    continue
+
+            if env.get(field) != new_val:
+                env[field] = new_val
+                touched = True
+                changes.append(
+                    f"  external_mcps.json[{server_key!r}].env.{field} <- {data_key}"
+                )
+
+    if additions:
+        changes.append(
+            f"  AUTO-VAULTED {len(additions)} catalog secret(s) into {keys_path.name}: "
+            + ", ".join(sorted(additions))
+        )
+        if not dry_run:
+            with open(keys_path, "a", encoding="utf-8") as fh:
+                fh.write("\n# --- auto-vaulted from external_mcps.json by regen_secrets.py ---\n")
+                for name in sorted(additions):
+                    fh.write(f"{name}={additions[name]}\n")
+
+    if touched and not dry_run:
+        atomic_write(EXTERNAL_MCPS_JSON,
+                     json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+
+    return changes or [f"OK    {EXTERNAL_MCPS_JSON.name} (no secret changes needed)"]
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Toggle Tlamatini config files between push-able and keyed mode.",
+    )
+    parser.add_argument(
+        "--mode", required=True, choices=("push-able", "keyed"),
+        help="push-able = generic placeholders; keyed = real values from data.keys",
+    )
+    parser.add_argument(
+        "--keys-file", default=str(REPO_ROOT / "data.keys"),
+        help="Path to the KEY=VALUE secrets file (default: data.keys next to script).",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Print what would change without writing any files.",
+    )
+    args = parser.parse_args()
+
+    if args.mode == "keyed":
+        keys = parse_keys_file(Path(args.keys_file))
+    else:
+        keys = {}  # push-able doesn't need any real values
+
+    print(f"== Tlamatini regen_secrets.py — mode={args.mode}"
+          f"{' (dry-run)' if args.dry_run else ''} ==")
+
+    reports: List[List[str]] = [
+        patch_config_json(args.mode, keys, args.dry_run),
+        patch_yaml(TELEGRAMMER_YAML,   TELEGRAMMER_RULES,   args.mode, keys, args.dry_run),
+        patch_yaml(WHATSAPPER_YAML,    WHATSAPPER_RULES,    args.mode, keys, args.dry_run),
+        patch_yaml(TELETLAMATINI_YAML, TELETLAMATINI_RULES, args.mode, keys, args.dry_run),
+        patch_yaml(EMAILER_YAML,       EMAILER_RULES,       args.mode, keys, args.dry_run,
+                   force_quote_passwords=True),
+        patch_yaml(RECMAILER_YAML,     RECMAILER_RULES,     args.mode, keys, args.dry_run,
+                   force_quote_passwords=True),
+        patch_yaml(DISCOVERER_YAML,    DISCOVERER_RULES,    args.mode, keys, args.dry_run),
+        patch_external_mcps_json(args.mode, keys, args.dry_run, Path(args.keys_file)),
+    ]
+    for block in reports:
+        for line in block:
+            print(line)
+
+    print("== done ==")
+    if args.mode == "push-able":
+        print("Reminder: confirm with `git diff`, then commit + push.")
+        print("After pushing, run `python regen_secrets.py --mode keyed` to restore real values.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

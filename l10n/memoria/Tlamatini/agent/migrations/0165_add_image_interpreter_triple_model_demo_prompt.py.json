@@ -1,0 +1,17 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0165_add_image_interpreter_triple_model_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **IMAGE-INTERPRETER TRIPLE-MODEL DEMO**, please — tick ONLY the \"\n    \"Multi-Turn checkbox. STEP 1: take one silent screenshot with chat_agent_shoter (no viewer \"\n    \"popup — the result carries a top-level output_path). STEP 2: feed that saved PNG to \"\n    \"chat_agent_image_interpreter with images_pathfilenames='<the output_path from STEP 1>' and \"\n    \"prompt_user='Inventory every visible GUI element with its position (% of image), size (%), \"\n    \"colors and exact text; if any person is visible, describe them exhaustively and hypothesize \"\n    \"who they may be, using the file name as a clue.' — the agent will run interpreter_model_1 \"\n    \"(jcyhsiao/qwen3.5cloud:latest) and interpreter_model_2 (gemma4:cloud) IN PARALLEL on two dedicated Ollama \"\n    \"connections, wait on the BARRIER until BOTH interpretations arrive, then fuse them with \"\n    \"merging_model (glm-5.3:cloud). STEP 3: report the 5 most interesting findings from the \"\n    \"merged report and say which `status` the INI_SECTION_IMAGE_INTERPRETER block carried \"\n    \"(merged / partial_interpreter_1_only / partial_interpreter_2_only / merge_fallback_concat). \"\n    \"Use ONLY chat_agent_shoter and chat_agent_image_interpreter. End with END-RESPONSE.\"",
+   "es": "\"Tlamatini, ejecuta la demo **TRIPLE MODELO DE IMAGE-INTERPRETER**, por favor — marca SÓLO la casilla \"\n    \"Multi-Turn. PASO 1: toma un screenshot silencioso con chat_agent_shoter (sin ventana de \"\n    \"visor — el resultado trae un output_path de nivel superior). PASO 2: pásale ese PNG guardado a \"\n    \"chat_agent_image_interpreter con images_pathfilenames='<the output_path from PASO 1>' y \"\n    \"prompt_user='Inventory every visible GUI element with its position (% of image), size (%), \"\n    \"colors and exact text; if any person is visible, describe them exhaustively and hypothesize who \"\n    \"they may be, using the file name as a clue.' — el agent ejecutará interpreter_model_1 \"\n    \"(jcyhsiao/qwen3.5cloud:latest) e interpreter_model_2 (gemma4:cloud) EN PARALELO en dos conexiones de Ollama dedicadas, \"\n    \"esperará en el BARRIER hasta que lleguen AMBAS interpretaciones y luego las fusionará con \"\n    \"merging_model (glm-5.3:cloud). PASO 3: reporta los 5 hallazgos más interesantes del \"\n    \"reporte fusionado y di qué `status` traía el bloque INI_SECTION_IMAGE_INTERPRETER \"\n    \"(merged / partial_interpreter_1_only / partial_interpreter_2_only / merge_fallback_concat). \"\n    \"Usa SÓLO chat_agent_shoter y chat_agent_image_interpreter. Termina con END-RESPONSE.\"",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

@@ -1,0 +1,137 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0125_add_whisperer_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127908; TLAMATINI LISTENS &#128483;&#65039;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127908; TLAMATINI ESCUCHA &#128483;&#65039;</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Whisperer &mdash; mic in, text out</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Whisperer &mdash; micrófono de entrada, texto de salida</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (record &amp; transcribe): call **chat_agent_whisperer** with request \"",
+   "es": "\"Paso 1 (graba y transcribe): llama a **chat_agent_whisperer** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Transcribe with input_source='mic' and record_seconds=30 and engine='faster-whisper' and \"",
+   "es": "\"\\\"Transcribe with input_source='mic' and record_seconds=30 and engine='faster-whisper' and \""
+  },
+  {
+   "en": "\"model='base' and device='auto'\\\". This records 30 seconds of the default microphone and \"",
+   "es": "\"model='base' and device='auto'\\\". Esto graba 30 segundos del micrófono predeterminado y lo \"",
+   "n": 1
+  },
+  {
+   "en": "\"transcribes it. From the INI_SECTION_WHISPERER block in the run's log_excerpt capture: engine, \"",
+   "es": "\"transcribe. Del bloque INI_SECTION_WHISPERER del log_excerpt de la ejecución captura: engine, \"",
+   "n": 1
+  },
+  {
+   "en": "\"model, device (cuda/cpu), language, status (transcribed | empty | engine_unavailable | error), \"",
+   "es": "\"model, device (cuda/cpu), language, status (transcribed | empty | engine_unavailable | error), \""
+  },
+  {
+   "en": "\"word_count, transcript_path, and the BODY (the recognized text). \"",
+   "es": "\"word_count, transcript_path y el BODY (el texto reconocido). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 2: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Tlamatini Listens &mdash; Transcription Report</strong>' and columns <em>engine</em>, \"",
+   "es": "\"'<strong>Tlamatini Listens &mdash; Reporte de transcripción</strong>' y con las columnas <em>engine</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>model</em>, <em>device</em>, <em>language</em>, <em>status</em>, <em>words</em>, \"",
+   "es": "\"<em>model</em>, <em>device</em>, <em>language</em>, <em>status</em>, <em>palabras</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>saved transcript</em> &mdash; one row, every value verbatim from the INI_SECTION_WHISPERER \"",
+   "es": "\"<em>transcripción guardada</em> &mdash; una fila, cada valor tal cual del bloque INI_SECTION_WHISPERER \"",
+   "n": 1
+  },
+  {
+   "en": "\"block (do NOT re-classify). Light body cells (background:#ffffff;color:#0f172a), green tint for \"",
+   "es": "\"(NO lo reclasifiques). Celdas del cuerpo claras (background:#ffffff;color:#0f172a), tono verde para \"",
+   "n": 1
+  },
+  {
+   "en": "\"status transcribed, amber tint for engine_unavailable. Below the table, quote the recognized \"",
+   "es": "\"status transcribed, tono ámbar para engine_unavailable. Debajo de la tabla, cita el texto \"",
+   "n": 1
+  },
+  {
+   "en": "\"transcript text in a blockquote (or '(no speech detected)' when empty). \"",
+   "es": "\"reconocido en un blockquote (o '(no se detectó voz)' cuando esté vacío). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 3: cierra con un banner HTML que reutilice el estilo del Paso 0 y muestre, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; TRANSCRIBED' (status transcribed &mdash; show the word count), \"",
+   "es": "\"'&#9989; TRANSCRITO' (status transcribed &mdash; muestra el conteo de palabras), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#128266; NO SPEECH' (status empty), or '&#9881;&#65039; ENGINE UNAVAILABLE' (status \"",
+   "es": "\"'&#128266; SIN VOZ' (status empty) o '&#9881;&#65039; MOTOR NO DISPONIBLE' (status \"",
+   "n": 1
+  },
+  {
+   "en": "\"engine_unavailable &mdash; faster-whisper not installed and no cloud key; note the one-line fix \"",
+   "es": "\"engine_unavailable &mdash; faster-whisper no instalado y sin key en la nube; anota el arreglo de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"'pip install faster-whisper'), and underneath a one-line metric \"",
+   "es": "\"'pip install faster-whisper'), y debajo una métrica de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"'engine: <engine> &middot; device: <device> &middot; words: <word_count>'. \"",
+   "es": "\"'engine: <engine> &middot; device: <device> &middot; palabras: <word_count>'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **TLAMATINI LISTENS** demo, please &mdash; a basic showcase of your own \"\n    \"SPEECH-TO-TEXT (voice recognition), driven entirely from chat through the wrapped \"\n    \"**chat_agent_whisperer** tool: you OPEN and RECORD your microphone yourself, run the neural \"\n    \"recognizer, and turn the spoken audio into a STRING of text. \"\n    \"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; go straight to Step 1): \"\n    \"(a) tick ONLY the **Multi-Turn** checkbox before sending (ACPX is NOT required &mdash; \"\n    \"chat_agent_whisperer is the ONLY tool you may use; do NOT use chat_agent_executer / \"\n    \"chat_agent_pythonxer / acp_spawn); (b) Whisperer is 100% self-sufficient for the microphone \"\n    \"&mdash; it opens, configures and records the mic on its own (no Recorder needed); (c) local \"\n    \"transcription needs `faster-whisper` (it auto-uses the GPU and ALWAYS falls back to CPU) OR a \"\n    \"cloud STT key &mdash; if NEITHER is present Whisperer returns status `engine_unavailable` (a \"\n    \"documented degraded mode, NOT a failure): record it verbatim and CONTINUE. \"\n    \"\\n\\n\"\n    \"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Tlamatini, ejecuta la demo **TLAMATINI ESCUCHA**, por favor &mdash; una muestra básica de tu propio \"\n    \"SPEECH-TO-TEXT (reconocimiento de voz), controlado por completo desde el chat a través del tool wrapper \"\n    \"**chat_agent_whisperer**: ABRES y GRABAS tu micrófono tú misma, corres el reconocedor \"\n    \"neuronal y conviertes el audio hablado en una cadena de texto. \"\n    \"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; ve directo al Paso 1): \"\n    \"(a) marca SÓLO la casilla **Multi-Turn** antes de enviar (NO se necesita ACPX &mdash; \"\n    \"chat_agent_whisperer es el ÚNICO tool que puedes usar; no uses chat_agent_executer / \"\n    \"chat_agent_pythonxer ni tools de ACPX); (b) Whisperer es 100% autosuficiente para el micrófono \"\n    \"&mdash; lo abre, lo configura y lo graba por su cuenta (no hace falta Recorder); (c) la transcripción \"\n    \"local necesita `faster-whisper` (usa la GPU automáticamente y SIEMPRE cae a CPU) OR una \"\n    \"key de STT en la nube &mdash; si NINGUNA está presente, Whisperer devuelve status `engine_unavailable` (un \"\n    \"modo degradado documentado, NO un error): regístralo tal cual y CONTINÚA. \"\n    \"\\n\\n\"\n    \"Paso 0: abre con un banner HTML &mdash; \"",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#0a1a3f 0%,#1747c4 33%,#18b6c9 66%,#aef0e6 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

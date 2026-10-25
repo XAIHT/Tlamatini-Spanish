@@ -1,0 +1,343 @@
+{
+ "archivo": "Tlamatini/agent/agents/teletlamatini/teletlamatini.py",
+ "segmentos": [
+  {
+   "en": "\"i'm getting myself ready\"",
+   "es": "\"me estoy preparando\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i'm loading the context you gave me\"",
+   "es": "\"estoy cargando el contexto que me diste\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"you can start chatting with me now\"",
+   "es": "\"ya puedes empezar a platicar conmigo\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"switched to my basic prompt only chain\"",
+   "es": "\"cambié a mi basic prompt only chain\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"might not be able to load them completely\"",
+   "es": "\"quizá no pueda cargarlos completos\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i'm working on your request\"",
+   "es": "\"estoy trabajando en tu solicitud\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"you cancelled it, so i stopped generating\"",
+   "es": "\"lo cancelaste, así que dejé de generar\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i've closed my connection to ollama\"",
+   "es": "\"cerré mi conexión con ollama\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i'm rebuilding myself with a fresh connection\"",
+   "es": "\"me estoy reconstruyendo con una conexión nueva\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i'm back and ready\"",
+   "es": "\"ya volví y estoy lista\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i've completed the reconnection you asked for\"",
+   "es": "\"ya hice la reconexión que me pediste\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i've cleared the context as you asked\"",
+   "es": "\"ya limpié el contexto como me pediste\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i've cleared our chat history\"",
+   "es": "\"ya borré nuestro historial del chat\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i restored our session\"",
+   "es": "\"restauré nuestra sesión\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i'm still getting ready\"",
+   "es": "\"todavía me estoy preparando\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"you're not authenticated\"",
+   "es": "\"no has iniciado sesión\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i can't process your requests\"",
+   "es": "\"no puedo procesar tus solicitudes\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"i'm not ready yet\"",
+   "es": "\"todavía no estoy lista\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"🔒 Send the access password to use this bot.\"",
+   "es": "\"🔒 Envía la contraseña de acceso para usar este bot.\"",
+   "n": 1
+  },
+  {
+   "en": "\"❌ Wrong password. Try again.\"",
+   "es": "\"❌ Contraseña incorrecta. Prueba otra vez.\"",
+   "n": 1
+  },
+  {
+   "en": "\" (legacy one-shot)\"",
+   "es": "\" (modo one-shot clásico)\"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"What's my CPU usage?\\\"\"",
+   "es": "\"\\\"¿Cuánto uso de CPU tengo?\\\"\"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Use ACPX to spawn claude and ask it to summarize the current branch\\\"\"",
+   "es": "\"\\\"Usa ACPX para lanzar claude y pídele que resuma el branch actual\\\"\"",
+   "n": 1
+  },
+  {
+   "en": "\"✅ Authenticated. Send any request — I'll forward it to Tlamatini\"",
+   "es": "\"✅ Acceso concedido. Envía cualquier solicitud y se la paso a Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{suffix}. For example: {' or '.join(examples)}.\"",
+   "es": "f\"{suffix}. Por ejemplo: {' o '.join(examples)}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"🔄 Working on your request...\"",
+   "es": "\"🔄 Trabajando en tu solicitud...\"",
+   "n": 1
+  },
+  {
+   "en": "\"🟡 I need a bit more detail:\"",
+   "es": "\"🟡 Necesito un poco más de detalle:\"",
+   "n": 1
+  },
+  {
+   "en": "\"⚠️ Tlamatini returned an empty response.\"",
+   "es": "\"⚠️ Tlamatini devolvió una respuesta vacía.\"",
+   "n": 1
+  },
+  {
+   "en": "\"✅ Result:\"",
+   "es": "\"✅ Resultado:\"",
+   "n": 2
+  },
+  {
+   "en": "\"🟢 Already authenticated. Send a request to Tlamatini.\"",
+   "es": "\"🟢 Ya tienes acceso. Envía una solicitud a Tlamatini.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"Critical Error: Failed to set working directory: {e}\\n\"",
+   "motivo": "mensaje de consola"
+  },
+  {
+   "en": "'%(asctime)s - %(levelname)s - %(message)s'",
+   "motivo": "formato del log"
+  },
+  {
+   "en": "r'Environment'",
+   "motivo": "llave del registro de Windows"
+  },
+  {
+   "en": "'Scripts'",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "f\"after {int(waited)}s. Will keep waiting...\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"your agent is loading\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"loading the context\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"your agent is ready\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"fallback to a basic prompt only chain\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"be aware tlamatini might not be able to load\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"your request is being processed by tlamatini\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"generation was cancelled\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"connection to ollama has been forcibly terminated\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"rebuilding agent with fresh connection\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"successfully re-established\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"re-connection issued by user\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"clear-context issued by user\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"chat history has been cleared\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"welcome back, session restored\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"welcome back, session and context restored\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"agent is still loading\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"request is being processed\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"agent cannot process your requests\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "\"agent is not ready\"",
+   "motivo": "matcher de versiones anteriores de Tlamatini"
+  },
+  {
+   "en": "'Tlamatini'",
+   "motivo": "usuario de Tlamatini que compara el código"
+  },
+  {
+   "en": "f\"tool_calls_log_len={len(data.get('tool_calls_log') or [])}\"",
+   "motivo": "log de depuración"
+  },
+  {
+   "en": "f\"type={data.get('type')!r} username={data.get('username')!r} \"",
+   "motivo": "log de depuración"
+  },
+  {
+   "en": "f\"len={len(msg)}{extras_s} first80={msg[:80]!r}\"",
+   "motivo": "log de depuración"
+  },
+  {
+   "en": "\"Could not obtain CSRF token from Tlamatini login page\"",
+   "motivo": "excepción interna"
+  },
+  {
+   "en": "f\"Tlamatini login failed: HTTP {post.status_code}\"",
+   "motivo": "excepción interna"
+  },
+  {
+   "en": "\"TlamatiniBridge already closed\"",
+   "motivo": "excepción interna"
+  },
+  {
+   "en": "\"(Use the Telegrammer agent for direct Telegram send/receive.)\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"Decide if the user request is clear and complete. Respond JSON \"",
+   "motivo": "instrucción para el LLM"
+  },
+  {
+   "en": "\"the ACPX tool surface only binds under Multi-Turn, so ACPX will be \"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"inert this run. Set multi_turn_enabled: true to use ACPX.\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"Multi-Turn\"",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": "\"Exec Report\"",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": "\"❌ Error: \"",
+   "motivo": "igual en español"
+  },
+  {
+   "en": "\"https://my.telegram.org → API development tools.\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"bot-only — get a token from @BotFather.\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"The bot will start anyway and retry on first message.\"",
+   "motivo": "log"
+  },
+  {
+   "en": "f\"text_len={len(answer_text)}, counters={counters})\"",
+   "motivo": "log de depuración"
+  }
+ ]
+}

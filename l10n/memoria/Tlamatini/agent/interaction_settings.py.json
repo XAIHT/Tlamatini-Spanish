@@ -1,0 +1,312 @@
+{
+ "archivo": "Tlamatini/agent/interaction_settings.py",
+ "segmentos": [
+  {
+   "en": "\"Typing speed (WPM)\"",
+   "es": "\"Velocidad de escritura (WPM)\"",
+   "n": 2
+  },
+  {
+   "en": "\"Use the same typing speed for both\"",
+   "es": "\"Usar la misma velocidad de escritura para ambos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Pause after each segment (seconds)\"",
+   "es": "\"Pausa después de cada segmento (segundos)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Teaching detail\"",
+   "es": "\"Nivel de detalle de la enseñanza\"",
+   "n": 1
+  },
+  {
+   "en": "\"Offer suggestions for each new field\"",
+   "es": "\"Ofrecer sugerencias para cada campo nuevo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Suggestion presentation\"",
+   "es": "\"Presentación de las sugerencias\"",
+   "n": 1
+  },
+  {
+   "en": "\"Follow Tlamatini’s typing\"",
+   "es": "\"Seguir la escritura de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"Editor font size (px)\"",
+   "es": "\"Tamaño de letra del Editor (px)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Show line numbers\"",
+   "es": "\"Mostrar números de línea\"",
+   "n": 1
+  },
+  {
+   "en": "\"Wrap long lines\"",
+   "es": "\"Ajustar las líneas largas\"",
+   "n": 1
+  },
+  {
+   "en": "\"Default shell\"",
+   "es": "\"Shell predeterminado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Command execution\"",
+   "es": "\"Ejecución del comando\"",
+   "n": 1
+  },
+  {
+   "en": "\"Enable advisor in new terminals\"",
+   "es": "\"Activar el asesor en las nuevas terminales\"",
+   "n": 1
+  },
+  {
+   "en": "\"Command wait window (seconds)\"",
+   "es": "\"Ventana de espera del comando (segundos)\"",
+   "n": 1
+  },
+  {
+   "en": "\"No-output threshold (seconds)\"",
+   "es": "\"Umbral sin output (segundos)\"",
+   "n": 1
+  },
+  {
+   "en": "\"User handoff wait (seconds)\"",
+   "es": "\"Espera de traspaso al usuario (segundos)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Terminal font size (px)\"",
+   "es": "\"Tamaño de letra de la terminal (px)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Cursor style\"",
+   "es": "\"Estilo del cursor\"",
+   "n": 1
+  },
+  {
+   "en": "\"Blink terminal cursor\"",
+   "es": "\"Parpadear el cursor de la terminal\"",
+   "n": 1
+  },
+  {
+   "en": "\"Preferred terminal layout\"",
+   "es": "\"Disposición preferida de las terminales\"",
+   "n": 1
+  },
+  {
+   "en": "\"Narrate every Terminater command\"",
+   "es": "\"Narrar cada comando de Terminater\"",
+   "n": 1
+  },
+  {
+   "en": "\"Narrate each Live Editor teaching segment\"",
+   "es": "\"Narrar cada segmento de enseñanza del Editor en vivo\"",
+   "n": 1
+  },
+  {
+   "en": "\"What to say\"",
+   "es": "\"Qué decir\"",
+   "n": 1
+  },
+  {
+   "en": "\"When to speak\"",
+   "es": "\"Cuándo hablar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Wait for narration before typing\"",
+   "es": "\"Esperar la narración antes de escribir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Announce command outcomes\"",
+   "es": "\"Anunciar los resultados de los comandos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Brief\"",
+   "es": "\"Breve\"",
+   "n": 1
+  },
+  {
+   "en": "\"Balanced\"",
+   "es": "\"Equilibrado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Detailed\"",
+   "es": "\"Detallado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ghost text and choices\"",
+   "es": "\"Texto fantasma y opciones\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choices only\"",
+   "es": "\"Solo opciones\"",
+   "n": 1
+  },
+  {
+   "en": "\"Follow the task’s instructions\"",
+   "es": "\"Seguir las instrucciones de la tarea\"",
+   "n": 1
+  },
+  {
+   "en": "\"I always press Enter\"",
+   "es": "\"Yo siempre presiono Enter\"",
+   "n": 1
+  },
+  {
+   "en": "\"Block\"",
+   "es": "\"Bloque\"",
+   "n": 1
+  },
+  {
+   "en": "\"Bar\"",
+   "es": "\"Barra\"",
+   "n": 1
+  },
+  {
+   "en": "\"Underline\"",
+   "es": "\"Subrayado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tabs\"",
+   "es": "\"Pestañas\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tile\"",
+   "es": "\"Mosaico\"",
+   "n": 1
+  },
+  {
+   "en": "\"Side by side\"",
+   "es": "\"Lado a lado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Stacked\"",
+   "es": "\"Apiladas\"",
+   "n": 1
+  },
+  {
+   "en": "\"Grid\"",
+   "es": "\"Cuadrícula\"",
+   "n": 1
+  },
+  {
+   "en": "\"Brief explanation\"",
+   "es": "\"Explicación breve\"",
+   "n": 1
+  },
+  {
+   "en": "\"Command or code\"",
+   "es": "\"Comando o código\"",
+   "n": 1
+  },
+  {
+   "en": "\"Both\"",
+   "es": "\"Ambos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Before typing\"",
+   "es": "\"Antes de escribir\"",
+   "n": 1
+  },
+  {
+   "en": "\"While typing\"",
+   "es": "\"Mientras escribo\"",
+   "n": 1
+  },
+  {
+   "en": "\"After typing\"",
+   "es": "\"Después de escribir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Errors and user-input requests\"",
+   "es": "\"Errores y solicitudes de entrada del usuario\"",
+   "n": 1
+  },
+  {
+   "en": "\"All results\"",
+   "es": "\"Todos los resultados\"",
+   "n": 1
+  },
+  {
+   "en": "\"Off\"",
+   "es": "\"Desactivado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Settings request is too large.\"",
+   "es": "\"La solicitud de configuración es demasiado grande.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid settings. Check the values and reload if necessary.\"",
+   "es": "\"Configuración no válida. Revisa los valores y recarga si es necesario.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Settings changed in another tab. Reload them before saving.\"",
+   "es": "\"La configuración cambió en otra pestaña. Recárgala antes de guardar.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Unknown account preference. Reload the settings dialog.\"",
+   "motivo": "mensaje interno; settings_view lo sustituye por el genérico que sí se muestra"
+  },
+  {
+   "en": "\"Invalid settings revision.\"",
+   "motivo": "mensaje interno; se sustituye por el genérico"
+  },
+  {
+   "en": "\"Use one short explanation and one clear question for each field.\"",
+   "motivo": "instrucción de enseñanza para el LLM (DETAIL)"
+  },
+  {
+   "en": "\"Explain what the field does, recommend a value, and ask the learner to choose.\"",
+   "motivo": "instrucción de enseñanza para el LLM (DETAIL)"
+  },
+  {
+   "en": "\"Explain why the field matters, alternatives and one example, then ask the learner to choose. Keep edits small.\"",
+   "motivo": "instrucción de enseñanza para el LLM (DETAIL)"
+  },
+  {
+   "en": "\"I’ll prepare this step. Enter the private value yourself when prompted.\"",
+   "motivo": "texto para la cola de voz del browser (capa de voz)"
+  },
+  {
+   "en": "\"I’ll write the next teaching segment.\"",
+   "motivo": "texto para la cola de voz del browser (capa de voz)"
+  },
+  {
+   "en": "\"I’ll prepare this command.\"",
+   "motivo": "texto para la cola de voz del browser (capa de voz)"
+  },
+  {
+   "en": "\"I always press Enter is on. Send one line without control characters; the user submits it.\"",
+   "motivo": "efecto/receipt del tool Terminater para el LLM"
+  },
+  {
+   "en": "\"I always press Enter is on. Only the user may submit the command.\"",
+   "motivo": "efecto/receipt del tool Terminater para el LLM"
+  }
+ ]
+}

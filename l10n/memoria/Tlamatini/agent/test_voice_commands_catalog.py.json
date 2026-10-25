@@ -1,0 +1,66 @@
+{
+ "archivo": "Tlamatini/agent/test_voice_commands_catalog.py",
+ "segmentos": [
+  {
+   "en": "'Voice Commands'",
+   "es": "'Comandos de voz'",
+   "maquina": "la prueba compara la etiqueta de la sección y frases de la tarjeta 122, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, using Whisperer record my voice till I finish to tell you a \"\n    \"prompt, then use the text extracted as a prompt and invoke it, go!.\"",
+   "es": "\"Tlamatini, usando Whisperer graba mi voz hasta que termine de decirte un \"\n    \"prompt, luego usa el texto extraído como prompt e invócalo, ¡dale!.\"",
+   "maquina": "la prueba compara la etiqueta de la sección y frases de la tarjeta 122, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "'record_seconds out entirely'",
+   "es": "'record_seconds fuera por completo'",
+   "maquina": "la prueba compara la etiqueta de la sección y frases de la tarjeta 122, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "_SCRUB = re.compile(r\"(?:do\\s+not|don['’]?t|never|not)\\s+use\\b[^.;]*[.;]?\", re.I)",
+   "es": "_SCRUB = re.compile(r\"(?:do\\s+not|don['’]?t|never|not)\\s+use\\b[^.;]*[.;]?\", re.I)\n# Spanish edition: the same forbidden-tool clauses, scrubbed in a second pass like the JS does.\n_SCRUB_ES = re.compile(\n    r\"(?:\\bno|\\bnunca|\\bjam[aá]s)\\s+(?:uses|utilices)\\b[^.;]*[.;]?|\\bsin\\s+usar\\b[^.;]*[.;]?\", re.I)",
+   "codigo": "el puerto en Python de classifyPromptModes sigue a tools_dialog.js: segunda pasada que quita las cláusulas \"NO uses <tool>\"",
+   "n": 1
+  },
+  {
+   "en": "    scrubbed = _SCRUB.sub(' ', c)",
+   "es": "    scrubbed = _SCRUB_ES.sub(' ', _SCRUB.sub(' ', c))",
+   "codigo": "el puerto aplica también la segunda pasada en español",
+   "n": 1
+  },
+  {
+   "en": "self.assertTrue(_ACPX_TOOLS.search(_SCRUB.sub(' ', body)))",
+   "es": "self.assertTrue(_ACPX_TOOLS.search(_SCRUB_ES.sub(' ', _SCRUB.sub(' ', body))))",
+   "codigo": "la prueba aplica las dos pasadas, como el navegador",
+   "n": 1
+  },
+  {
+   "en": "_SXS_B = re.compile(r\"(?:tick|check|enable|turn\\s+on)[^.\\n]{0,60}step-?by-?step\", re.I)",
+   "es": "_SXS_B = re.compile(r\"(?:tick|check|enable|turn\\s+on)[^.\\n]{0,60}step-?by-?step\", re.I)\n# Spanish edition: the \"Paso a paso\" box, as tools_dialog.js recognises it.\n_SXS_ES = (\n    re.compile(r\"(?:casillas?|modo|wizard|asistente)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b\", re.I),\n    re.compile(r\"\\bpaso\\s+a\\s+paso\\s+(?:wizard|asistente|mode|modo)\\b\", re.I),\n    re.compile(r\"\\b(?:marca|activa)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b\", re.I),\n)",
+   "codigo": "el puerto reconoce la casilla \"Paso a paso\" igual que tools_dialog.js",
+   "n": 1
+  },
+  {
+   "en": "    stepbystep = bool(_SXS_A.search(c) or _SXS_B.search(c))",
+   "es": "    stepbystep = bool(_SXS_A.search(c) or _SXS_B.search(c)\n                      or any(rx.search(c) for rx in _SXS_ES))",
+   "codigo": "el puerto usa las reglas en español de \"Paso a paso\"",
+   "n": 1
+  },
+  {
+   "en": "        self.assertIn('step-by-step', body)\n        self.assertIn('wait', body)",
+   "es": "        self.assertRegex(body, r'step-by-step|paso a paso')\n        self.assertRegex(body, r'wait|esper')",
+   "codigo": "la prueba acepta la casilla \"Paso a paso\" y la promesa de esperar en español",
+   "n": 1
+  },
+  {
+   "en": "        self.assertIn(\"\\\\s+use\\\\b[^.;]*[.;]?\", self.js)",
+   "es": "        self.assertIn(\"\\\\s+use\\\\b[^.;]*[.;]?\", self.js)\n        self.assertIn(\"(?:uses|utilices)\\\\b[^.;]*[.;]?\", self.js)\n        self.assertIn(\"paso\\\\s+a\\\\s+paso\", self.js)",
+   "codigo": "la prueba de fidelidad también exige las reglas en español en tools_dialog.js",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

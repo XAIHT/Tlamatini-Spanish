@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/welcome_enter_default.js",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'a, button, input, textarea, select, [contenteditable=\"true\"]'",
+   "motivo": "selector CSS"
+  }
+ ]
+}

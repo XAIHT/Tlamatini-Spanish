@@ -1,0 +1,78 @@
+{
+ "archivo": "setup_windows.py",
+ "segmentos": [
+  {
+   "en": "\"Windows could not resolve the Desktop folder\"",
+   "es": "\"Windows no pudo ubicar la carpeta del escritorio\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery registry scope differs from the product allowlist\"",
+   "es": "\"El alcance del registro de recuperación no coincide con la lista de permitidos del producto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery registry values differ from the product allowlist\"",
+   "es": "\"Los valores del registro de recuperación no coinciden con la lista de permitidos del producto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unsafe registry recovery suffix\"",
+   "es": "\"Sufijo de recuperación del registro no seguro\"",
+   "n": 1
+  },
+  {
+   "en": "\"Windows could not contain the setup helper. No helper was allowed to continue.\"",
+   "es": "\"Windows no pudo contener el proceso auxiliar del instalador. No se permitió que ningún proceso auxiliar continuara.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{script.name} exceeded {timeout} seconds. Its helper processes were stopped; retry after checking Windows permissions.\"",
+   "es": "f\"{script.name} superó los {timeout} segundos. Sus procesos auxiliares se detuvieron; vuelve a intentarlo después de revisar los permisos de Windows.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{script.name} failed (exit {process.returncode}):\\n{(error.strip() or output.strip())[-4000:]}\"",
+   "es": "f\"{script.name}: error (salida {process.returncode}):\\n{(error.strip() or output.strip())[-4000:]}\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Rstrtmgr\"",
+   "motivo": "nombre de DLL de Windows"
+  },
+  {
+   "en": "f\"{row.name or 'Process'} (PID {row.process.pid})\"",
+   "motivo": "argumento de .join (canal máquina); nombre de proceso"
+  },
+  {
+   "en": "\"Version\"",
+   "motivo": "nombre de valor del registro"
+  },
+  {
+   "en": "\"Affinity\"",
+   "motivo": "nombre de campo de estructura de Windows"
+  },
+  {
+   "en": "\"if ([Console]::ReadLine() -ne 'TLAMATINI_SETUP_READY') { exit 125 }; \"",
+   "motivo": "fragmento de línea de comandos de PowerShell"
+  },
+  {
+   "en": "\"$ErrorActionPreference = 'Stop'; try { & '\"",
+   "motivo": "fragmento de línea de comandos de PowerShell"
+  },
+  {
+   "en": "\"if (-not $?) { exit 1 }; exit $LASTEXITCODE } catch { \"",
+   "motivo": "fragmento de línea de comandos de PowerShell"
+  },
+  {
+   "en": "\"[Console]::Error.WriteLine($_.Exception.Message); exit 1 }\"",
+   "motivo": "fragmento de línea de comandos de PowerShell"
+  },
+  {
+   "en": "\"Bypass\"",
+   "motivo": "valor de argumento de PowerShell"
+  }
+ ]
+}

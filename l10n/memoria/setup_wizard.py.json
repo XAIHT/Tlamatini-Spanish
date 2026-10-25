@@ -1,0 +1,385 @@
+{
+ "archivo": "setup_wizard.py",
+ "segmentos": [
+  {
+   "en": "\"TLAMATINI  /  BEFORE WE CONTINUE\"",
+   "es": "\"TLAMATINI  /  ANTES DE CONTINUAR\"",
+   "n": 1
+  },
+  {
+   "en": "\"Uninstallation\"",
+   "es": "\"Desinstalación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Installation\"",
+   "es": "\"Instalación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Uninstall\"",
+   "es": "\"Desinstalar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Install\"",
+   "es": "\"Instalar\"",
+   "n": 1
+  },
+  {
+   "en": "\"ONE WHO KNOWS\"",
+   "es": "\"LA QUE SABE\"",
+   "n": 1
+  },
+  {
+   "en": "\"Review\"",
+   "es": "\"Revisión\"",
+   "n": 1
+  },
+  {
+   "en": "\"Destination\"",
+   "es": "\"Destino\"",
+   "n": 1
+  },
+  {
+   "en": "\"Complete\"",
+   "es": "\"Completado\"",
+   "n": 1
+  },
+  {
+   "en": "\"YOUR NEXT CHAPTER\"",
+   "es": "\"TU SIGUIENTE CAPÍTULO\"",
+   "n": 2
+  },
+  {
+   "en": "\"INSTALLATION FOLDER\"",
+   "es": "\"CARPETA DE INSTALACIÓN\"",
+   "n": 1
+  },
+  {
+   "en": "\"CHOOSE A DESTINATION\"",
+   "es": "\"ELIGE UN DESTINO\"",
+   "n": 1
+  },
+  {
+   "en": "\"Browse…\"",
+   "es": "\"Examinar…\"",
+   "n": 1
+  },
+  {
+   "en": "\"YOUR WORK STAYS WITH YOU\"",
+   "es": "\"TU TRABAJO SE QUEDA CONTIGO\"",
+   "n": 1
+  },
+  {
+   "en": "\"BUILT FOR YOUR NEXT IDEA\"",
+   "es": "\"HECHO PARA TU SIGUIENTE IDEA\"",
+   "n": 1
+  },
+  {
+   "en": "\"Always kept: agents/\\n\\nKept when they contain files: \"",
+   "es": "\"Siempre se conserva: agents/\\n\\nSe conservan cuando contienen archivos: \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\n\\nEverything else, including Temp/, is removed.\"",
+   "es": "\"\\n\\nTodo lo demás, incluida Temp/, se elimina.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Your local workspace, ready to create.\\n\\n\"",
+   "es": "\"Tu espacio de trabajo local, listo para crear.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Setup extracts Tlamatini, configures its agents, creates Desktop shortcuts \"",
+   "es": "\"El instalador extrae Tlamatini, configura sus agents, crea los accesos directos del escritorio \"",
+   "n": 1
+  },
+  {
+   "en": "\"and connects .flw and .fpmt flow files.\"",
+   "es": "\"y conecta los archivos de flow .flw y .fpmt.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Preparing…\"",
+   "es": "\"Preparando…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Cancel\"",
+   "es": "\"Cancelar\"",
+   "n": 2
+  },
+  {
+   "en": "\"Selected: \"",
+   "es": "\"Seleccionado: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Install to: \"",
+   "es": "\"Instalar en: \"",
+   "n": 1
+  },
+  {
+   "en": "\"A Tlamatini folder will be created inside your selected directory.\"",
+   "es": "\"Se creará una carpeta Tlamatini dentro del directorio que elegiste.\"",
+   "n": 1
+  },
+  {
+   "en": "\"INTELLIGENCE, IN YOUR ORBIT\"",
+   "es": "\"INTELIGENCIA, EN TU ÓRBITA\"",
+   "n": 1
+  },
+  {
+   "en": "\"YOUR WORK. YOUR CHOICE.\"",
+   "es": "\"TU TRABAJO. TU DECISIÓN.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Leave with your work.\"",
+   "es": "\"Llévate tu trabajo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Make room for possibility.\"",
+   "es": "\"Hazle espacio a la posibilidad.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Review what stays before removing Tlamatini from this computer.\"",
+   "es": "\"Revisa lo que se queda antes de quitar Tlamatini de esta computadora.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Bring Tlamatini to your workspace. Choose its home; we’ll take care of the setup.\"",
+   "es": "\"Trae Tlamatini a tu espacio de trabajo. Elige su lugar; nosotros nos encargamos de la instalación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"You’ll confirm before removal.\"",
+   "es": "\"Confirmarás antes de eliminarla.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ready when you are.\"",
+   "es": "\"Cuando quieras.\"",
+   "n": 1
+  },
+  {
+   "en": "\"03    Complete\"",
+   "es": "\"03    Completado\"",
+   "n": 2
+  },
+  {
+   "en": "f\"Tlamatini — {self.operation} in progress\"",
+   "es": "f\"Tlamatini — {self.operation} en progreso\"",
+   "n": 1
+  },
+  {
+   "en": "\"REMOVING TLAMATINI\"",
+   "es": "\"QUITANDO TLAMATINI\"",
+   "n": 1
+  },
+  {
+   "en": "\"SETTING THINGS IN MOTION\"",
+   "es": "\"PONIENDO TODO EN MARCHA\"",
+   "n": 1
+  },
+  {
+   "en": "\"A considered departure.\"",
+   "es": "\"Una despedida pensada.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Your workspace is taking shape.\"",
+   "es": "\"Tu espacio de trabajo va tomando forma.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restoring installation\"",
+   "es": "\"Restaurando la instalación\"",
+   "n": 1
+  },
+  {
+   "en": "\"02    Recovery\"",
+   "es": "\"02    Recuperación\"",
+   "n": 1
+  },
+  {
+   "en": "\"RECOVERING YOUR INSTALLATION\"",
+   "es": "\"RECUPERANDO TU INSTALACIÓN\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restoring your installation.\"",
+   "es": "\"Restaurando tu instalación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The operation could not finish. Your previous installation is being restored.\"",
+   "es": "\"La operación no se pudo terminar. Se está restaurando tu instalación anterior.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Starting recovery…\"",
+   "es": "\"Iniciando la recuperación…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Working…\"",
+   "es": "\"Trabajando…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{self._working_label}  ·  {seconds//60:02}:{seconds%60:02} elapsed\\nPlease keep this window open.\"",
+   "es": "f\"{self._working_label}  ·  {seconds//60:02}:{seconds%60:02} transcurrido\\nMantén esta ventana abierta.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Tlamatini — {self.operation} {'complete' if success else 'needs attention'}\"",
+   "es": "f\"Tlamatini — {self.operation} {'completa' if success else 'necesita atención'}\"",
+   "n": 1
+  },
+  {
+   "en": "\"03    Cleanup pending\"",
+   "es": "\"03    Limpieza pendiente\"",
+   "n": 1
+  },
+  {
+   "en": "\"ALL SET\"",
+   "es": "\"TODO LISTO\"",
+   "n": 1
+  },
+  {
+   "en": "\"LET’S GET THIS RESOLVED\"",
+   "es": "\"VAMOS A RESOLVER ESTO\"",
+   "n": 1
+  },
+  {
+   "en": "\"Your next chapter awaits.\"",
+   "es": "\"Tu siguiente capítulo te espera.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Welcome to Tlamatini.\"",
+   "es": "\"Te damos la bienvenida a Tlamatini.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{self.operation} needs attention.\"",
+   "es": "f\"{self.operation} necesita atención.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini has been removed. Review the retained files below.\"",
+   "es": "\"Tlamatini se quitó. Revisa abajo los archivos que se conservaron.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Setup is complete. Open Tlamatini from your Desktop shortcut.\"",
+   "es": "\"La instalación terminó. Abre Tlamatini desde su acceso directo del escritorio.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The operation stopped before completion. Review the details, then try again.\"",
+   "es": "\"La operación se detuvo antes de terminar. Revisa los detalles y vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"What happened\"",
+   "es": "\"Qué pasó\"",
+   "n": 1
+  },
+  {
+   "en": "\"Close\"",
+   "es": "\"Cerrar\"",
+   "n": 3
+  },
+  {
+   "en": "\"Retry\"",
+   "es": "\"Reintentar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Change folder\"",
+   "es": "\"Cambiar carpeta\"",
+   "n": 1
+  },
+  {
+   "en": "\"Finished.\"",
+   "es": "\"Listo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"You can retry, change the folder, or close this window.\"",
+   "es": "\"Puedes reintentar, cambiar la carpeta o cerrar esta ventana.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini — Application removed; cleanup incomplete\"",
+   "es": "\"Tlamatini — Aplicación quitada; limpieza incompleta\"",
+   "n": 1
+  },
+  {
+   "en": "\"CLEANUP NEEDS ATTENTION\"",
+   "es": "\"LA LIMPIEZA NECESITA ATENCIÓN\"",
+   "n": 1
+  },
+  {
+   "en": "\"Application removed. Files remain.\"",
+   "es": "\"Aplicación quitada. Quedan archivos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Close programs using the files listed below, then retry cleanup. Your preserved content stays untouched.\"",
+   "es": "\"Cierra los programas que usan los archivos de abajo y vuelve a intentar la limpieza. El contenido que conservaste se queda intacto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Retry cleanup\"",
+   "es": "\"Reintentar la limpieza\"",
+   "n": 1
+  },
+  {
+   "en": "\"Cleanup is incomplete. Remaining paths are listed above.\"",
+   "es": "\"La limpieza está incompleta. Los paths restantes se listan arriba.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{self.operation} is still running.\\nThis window will be ready to close when it finishes.\"",
+   "es": "f\"{self.operation} sigue en ejecución.\\nEsta ventana se podrá cerrar cuando termine.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Segoe UI\"",
+   "motivo": "nombre de fuente"
+  },
+  {
+   "en": "\"Tlamatini\"",
+   "motivo": "componente de path (nombre de carpeta Tlamatini)"
+  },
+  {
+   "en": "f\"BEGIN {self.operation}: {target}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Tlamatini — {self._working_label} · {progress_text}\"",
+   "motivo": "sólo nombre de producto y expresiones (nada que traducir)"
+  },
+  {
+   "en": "f\"PROGRESS {progress_text}: {status}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"STEP {idx+1}: {self.steps[idx][0]}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"CLEANUP INCOMPLETE\"",
+   "motivo": "texto que sólo se imprime en consola"
+  }
+ ]
+}

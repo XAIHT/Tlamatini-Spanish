@@ -1,0 +1,17 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0194_add_deep_research_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, search thoroughly all over the entire Internet about the following: \"\n    \"**[[ Place your topic here ... ]]**, provide me with hundreds complete links, \"\n    \"stay searching for **at least a 30 min not less**, and think sequentially \"\n    \"(sequential-thinking mcp) and very smartly following all our golden rules from \"\n    \"memory (memory mcp), additionally feel free to use all Mcps and Agents provided \"\n    \"to you in order to completely fulfill this task, go!\\n\\n\"\n    # Classifier contract (tools_dialog.js::classifyPromptModes): naming the\n    # **Multi-Turn** checkbox badges the card Multi-turn + Exec-report, so clicking\n    # it ticks BOTH toolbar checkboxes. No acp_* tool and no \"step-by-step\" wording\n    # may appear here — those would wrongly tick ACPX / Step-by-Step too.\n    \"PRE-FLIGHT: this run needs the **Multi-Turn** mode with the **Exec report** — \"\n    \"clicking this card ticks both toolbar checkboxes for you.\"",
+   "es": "\"Tlamatini, busca a fondo en todo Internet sobre lo siguiente: **[[ Escribe aquí tu tema \"\n    \"... ]]**, dame cientos de links completos, sigue buscando **por lo menos 30 min, no \"\n    \"menos**, y piensa de forma secuencial (sequential-thinking mcp) y muy inteligentemente \"\n    \"siguiendo todas nuestras reglas de oro guardadas en la memoria (memory mcp); además, \"\n    \"siéntete libre de usar todos los Mcps y Agents que tienes a tu disposición para cumplir esta \"\n    \"tarea por completo, ¡dale!\\n\\n\"\n    # Classifier contract (tools_dialog.js::classifyPromptModes): naming the\n    # **Multi-Turn** checkbox badges the card Multi-turn + Exec-report, so clicking\n    # it ticks BOTH toolbar checkboxes. No acp_* tool and no \"step-by-step\" wording\n    # may appear here — those would wrongly tick ACPX / Step-by-Step too.\n    \"ANTES DE EMPEZAR: esta ejecución necesita el modo **Multi-Turn** con el **Exec report** — al hacer clic en esta tarjeta \"\n    \"se marcan las dos casillas de la barra de herramientas por ti.\"",
+   "llm": "texto del Catálogo de prompts (tarjeta 118)",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "test_deep_research_prompt compara frases exactas en inglés; conservar"
+  }
+ ]
+}

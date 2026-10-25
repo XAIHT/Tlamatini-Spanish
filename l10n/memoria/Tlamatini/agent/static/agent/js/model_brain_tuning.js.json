@@ -1,0 +1,269 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/model_brain_tuning.js",
+ "segmentos": [
+  {
+   "en": "'what can this model do?'",
+   "es": "'¿qué puede hacer este modelo?'",
+   "n": 1
+  },
+  {
+   "en": "'formal profile or research'",
+   "es": "'perfil formal o investigación'",
+   "n": 1
+  },
+  {
+   "en": "'the values to send'",
+   "es": "'los valores que se envían'",
+   "n": 1
+  },
+  {
+   "en": "'levels and tool-loop memory'",
+   "es": "'niveles y memoria del tool loop'",
+   "n": 1
+  },
+  {
+   "en": "'APPLIED TO THE BRAIN'",
+   "es": "'APLICADO AL CEREBRO'",
+   "n": 1
+  },
+  {
+   "en": "'Used by: '",
+   "es": "'Usado por: '",
+   "n": 1
+  },
+  {
+   "en": "'does not think'",
+   "es": "'no piensa'",
+   "n": 1
+  },
+  {
+   "en": "'model default'",
+   "es": "'predeterminado del modelo'",
+   "n": 1
+  },
+  {
+   "en": "\"the model's own defaults\"",
+   "es": "\"los valores predeterminados del modelo\"",
+   "n": 2
+  },
+  {
+   "en": "' (model default)'",
+   "es": "' (predeterminado del modelo)'",
+   "n": 1
+  },
+  {
+   "en": "'reasoning in tool loops'",
+   "es": "'razonamiento en tool loops'",
+   "n": 1
+  },
+  {
+   "en": "'none (thinking off)'",
+   "es": "'ninguno (thinking desactivado)'",
+   "n": 1
+  },
+  {
+   "en": "'Sources: '",
+   "es": "'Fuentes: '",
+   "n": 1
+  },
+  {
+   "en": "'Origin: '",
+   "es": "'Origen: '",
+   "n": 1
+  },
+  {
+   "en": "'could not tune: '",
+   "es": "'no se pudo ajustar: '",
+   "n": 1
+  },
+  {
+   "en": "'not needed'",
+   "es": "'no hace falta'",
+   "n": 1
+  },
+  {
+   "en": "\"Auto-tuning Tlamatini's brain\"",
+   "es": "\"Ajustando automáticamente el cerebro de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini is tuning herself for every model you chose: she asks Ollama what each model can do, '",
+   "es": "'Tlamatini se está ajustando para cada modelo que elegiste: le pregunta a Ollama qué puede hacer cada modelo, '",
+   "n": 1
+  },
+  {
+   "en": "\"applies the settings its vendor publishes (or researches them), and keeps a thinking model's \"",
+   "es": "\"aplica la configuración que publica su fabricante (o la investiga) y conserva el razonamiento de un modelo con thinking \"",
+   "n": 1
+  },
+  {
+   "en": "'reasoning across tool steps, as the vendors document.'",
+   "es": "'entre los pasos de tools, como lo documentan los fabricantes.'",
+   "n": 1
+  },
+  {
+   "en": "'Reading your models…'",
+   "es": "'Leyendo tus modelos…'",
+   "n": 1
+  },
+  {
+   "en": "'The Model Brain is OFF (model_brain = \"off\" in config.json): the legacy fixed parameters are used.'",
+   "es": "'Model Brain está DESACTIVADO (model_brain = \"off\" en config.json): se usan los parámetros fijos de antes.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not read the configured models: '",
+   "es": "'No se pudieron leer los modelos configurados: '",
+   "n": 1
+  },
+  {
+   "en": "'No Ollama models are configured.'",
+   "es": "'No hay modelos de Ollama configurados.'",
+   "n": 1
+  },
+  {
+   "en": "'Tuning '",
+   "es": "'Ajustando '",
+   "n": 1
+  },
+  {
+   "en": "'Tuned '",
+   "es": "'Se ajustaron '",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini's brain is tuned\"",
+   "es": "\"El cerebro de Tlamatini quedó ajustado\"",
+   "n": 1
+  },
+  {
+   "en": "' with vendor-published settings'",
+   "es": "' con la configuración publicada por el fabricante'",
+   "n": 1
+  },
+  {
+   "en": "' researched now'",
+   "es": "' con investigación nueva'",
+   "n": 1
+  },
+  {
+   "en": "' · applied on the next request'",
+   "es": "' · se aplica en la siguiente solicitud'",
+   "n": 1
+  },
+  {
+   "en": "'Ask Ollama'",
+   "es": "'Consultar a Ollama'",
+   "maquina": "etiqueta de pantalla: STAGES[].name sólo se muestra en .tlmtune-stage-name (la llave es STAGES[].key)",
+   "n": 1
+  },
+  {
+   "en": "\"Vendor's settings\"",
+   "es": "\"Configuración del fabricante\"",
+   "maquina": "etiqueta de pantalla: STAGES[].name sólo se muestra en .tlmtune-stage-name (la llave es STAGES[].key)",
+   "n": 1
+  },
+  {
+   "en": "'Calibrate sampling'",
+   "es": "'Calibrar el sampling'",
+   "maquina": "etiqueta de pantalla: STAGES[].name sólo se muestra en .tlmtune-stage-name (la llave es STAGES[].key)",
+   "n": 1
+  },
+  {
+   "en": "'Thinking & reasoning'",
+   "es": "'Pensamiento y razonamiento'",
+   "maquina": "etiqueta de pantalla: STAGES[].name sólo se muestra en .tlmtune-stage-name (la llave es STAGES[].key)",
+   "n": 1
+  },
+  {
+   "en": "'PROFILED'",
+   "es": "'PERFILADO'",
+   "n": 1
+  },
+  {
+   "en": "'levels '",
+   "es": "'niveles '",
+   "n": 1
+  },
+  {
+   "en": "'kept'",
+   "es": "'se conserva'",
+   "n": 1
+  },
+  {
+   "en": "'context'",
+   "es": "'contexto'",
+   "n": 1
+  },
+  {
+   "en": "'OK'",
+   "es": "'Aceptar'",
+   "n": 1
+  },
+  {
+   "en": "' of '",
+   "es": "' de '",
+   "n": 2
+  },
+  {
+   "en": "rows.length + ' models'",
+   "es": "rows.length + ' modelos'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'(prefers-reduced-motion: reduce)'",
+   "motivo": "media query CSS"
+  },
+  {
+   "en": "'tlmtune-chip tlmtune-chip-applied'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmtune-chip tlmtune-chip-profiled'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-overlay tlmtune-overlay'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'dialog'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor de atributo ARIA"
+  },
+  {
+   "en": "'tlmtune-title'",
+   "motivo": "id del título"
+  },
+  {
+   "en": "'tlmpop-card tlmtune-card'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-title tlmtune-title'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'polite'",
+   "motivo": "valor de aria-live"
+  },
+  {
+   "en": "'tlmpop-btn tlmpop-btn-primary'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "' models'",
+   "motivo": "a secas no se toca: \"models\" es también una llave de datos (agent_page_init.js, views.py); se traduce con contexto en el contador 'Tuned … of … models'"
+  }
+ ]
+}

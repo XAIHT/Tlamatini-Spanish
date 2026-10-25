@@ -1,0 +1,50 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/chat_image_paste.js",
+ "segmentos": [
+  {
+   "en": "'Close preview'",
+   "es": "'Cerrar la vista previa'",
+   "n": 1
+  },
+  {
+   "en": "'image preview'",
+   "es": "'vista previa de la imagen'",
+   "n": 1
+  },
+  {
+   "en": "'Remove this image and its path from the message'",
+   "es": "'Quitar esta imagen y su path del mensaje'",
+   "n": 1
+  },
+  {
+   "en": "'That image is larger than 25 MB — Tlamatini did not save it.'",
+   "es": "'Esa imagen pesa más de 25 MB — Tlamatini no la guardó.'",
+   "n": 1
+  },
+  {
+   "en": "`Tlamatini could not save the image (HTTP ${result.status}).`",
+   "es": "`Tlamatini no pudo guardar la imagen (HTTP ${result.status}).`",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini could not be reached to save the image.'",
+   "es": "'No se pudo conectar con Tlamatini para guardar la imagen.'",
+   "n": 1
+  },
+  {
+   "en": "'Image \\u2192 attached to your message (saved in Temp, path inserted)'",
+   "es": "'Imagen \\u2192 se adjunta a tu mensaje (se guarda en Temp y se inserta su path)'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'&times;'",
+   "motivo": "símbolo (entidad HTML)"
+  },
+  {
+   "en": "`${info.width}×${info.height} · ${kilobytes} KB`",
+   "motivo": "igual en español"
+  }
+ ]
+}

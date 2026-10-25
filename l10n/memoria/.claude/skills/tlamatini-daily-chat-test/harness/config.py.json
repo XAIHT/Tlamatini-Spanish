@@ -1,0 +1,30 @@
+{
+ "archivo": ".claude/skills/tlamatini-daily-chat-test/harness/config.py",
+ "segmentos": [
+  {
+   "en": "\"I'm not ready yet\"",
+   "es": "\"Todavía no estoy lista\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"I'm working on your request\"",
+   "es": "\"Estoy trabajando en tu solicitud\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"I'm loading the context you gave me\"",
+   "es": "\"estoy cargando el contexto que me diste\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  },
+  {
+   "en": "\"I restored our session\"",
+   "es": "\"Restauré nuestra sesión\"",
+   "maquina": "acoplada con constants.py",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

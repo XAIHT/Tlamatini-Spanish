@@ -1,0 +1,283 @@
+{
+ "archivo": "apply_update.ps1",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini Updater\"",
+   "es": "\"Actualizador de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"Updater path traverses a reparse point: '$cursor'. Aborting.\"",
+   "es": "\"El path del actualizador pasa por un reparse point: '$cursor'. Se cancela.\"",
+   "n": 1
+  },
+  {
+   "en": "\"         TLAMATINI  --  APPLYING UPDATE\"",
+   "es": "\"         TLAMATINI  --  APLICANDO EL UPDATE\"",
+   "n": 1
+  },
+  {
+   "en": "\"Install dir : $InstallDir\"",
+   "es": "\"Carpeta destino : $InstallDir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Staging dir : $StagingDir\"",
+   "es": "\"Carpeta staging : $StagingDir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Parent PID  : $ParentPid\"",
+   "es": "\"PID padre   : $ParentPid\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unsafe install/staging boundary. Expected staging strictly at InstallDir\\Temp\\_update\\staging.\"",
+   "es": "\"Frontera insegura entre la carpeta destino y staging. Staging debe estar exactamente en InstallDir\\Temp\\_update\\staging.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Install directory does not contain the existing Tlamatini.exe. Aborting.\"",
+   "es": "\"La carpeta destino no tiene el Tlamatini.exe existente. Se cancela.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid application PID.\"",
+   "es": "\"El PID de Tlamatini no es correcto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Staged update is invalid -- Tlamatini.exe not found at '$newExe'. Aborting; nothing was changed.\"",
+   "es": "\"El paquete del update no sirve -- falta Tlamatini.exe en '$newExe'. Se cancela; todo sigue igual.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Install directory '$InstallDir' does not exist. Aborting.\"",
+   "es": "\"No existe la carpeta destino '$InstallDir'. Se cancela.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Required staged updater asset missing: '$required'. Nothing was replaced.\"",
+   "es": "\"Falta un archivo requerido del update: '$required'. Todo sigue igual.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Verifying every staged file before closing Tlamatini...\"",
+   "es": "\"Verificando cada archivo del update antes de cerrar Tlamatini...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Staged release integrity check failed. Nothing was replaced.\"",
+   "es": "\"El update viene incompleto o alterado. Todo sigue igual.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Database backup helper or carried Python is missing. Aborting before closing Tlamatini.\"",
+   "es": "\"Falta el helper de backup de la base de datos o el Python incluido. Se cancela antes de cerrar Tlamatini.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Staged build and database-backup assets validated.\"",
+   "es": "\"Update y archivos de backup de la base de datos validados.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Closing Tlamatini (PID $ParentPid) and its child processes...\"",
+   "es": "\"Cerrando Tlamatini (PID $ParentPid) y sus procesos hijos...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Killed parent + {0} descendant process(es), kept updater (PID {1}).\"",
+   "es": "\"Se cerraron el padre + {0} proceso(s) descendiente(s); el actualizador sigue (PID {1}).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Could not safely enumerate the application process tree; application files were not replaced.\"",
+   "es": "\"No se pudo revisar con seguridad los procesos de Tlamatini; los archivos siguen igual.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini closed.\"",
+   "es": "\"Tlamatini: cerrada.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Database backup failed. Application files have not been replaced; the original database is intact.\"",
+   "es": "\"No se pudo hacer el backup de la base de datos. Los archivos siguen igual; la base de datos original sigue intacta.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Preserved your database including WAL commits -> DB\\ToLoad and flagged a post-update migrate.\"",
+   "es": "\"Tu base de datos (incluidos sus commits WAL) -> DB\\ToLoad, con un migrate marcado para el arranque siguiente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"No existing database at _internal\\db.sqlite3 (fresh install?) -- skipping DB preserve.\"",
+   "es": "\"No hay base de datos en _internal\\db.sqlite3 (primera vez?) -- no hay DB que conservar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Removing previous agents_backup...\"",
+   "es": "\"Borrando el agents_backup anterior...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Renaming agents -> agents_backup ...\"",
+   "es": "\"Renombrando agents -> agents_backup ...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Old agents backed up to 'agents_backup'.\"",
+   "es": "\"Los agents anteriores quedaron en 'agents_backup'.\"",
+   "n": 1
+  },
+  {
+   "en": "\"No existing 'agents' directory to back up.\"",
+   "es": "\"No hay carpeta 'agents' para el backup.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Preserved your security evidence -> $logsCarryover.\"",
+   "es": "\"Tu evidencia de seguridad se conserva -> $logsCarryover.\"",
+   "n": 1
+  },
+  {
+   "en": "\"No security\\security_logs to preserve (toolkit never run?).\"",
+   "es": "\"No hay security\\security_logs que conservar (el toolkit no se ha usado?).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Could not preserve security evidence; application deletion aborted: $($_.Exception.Message)\"",
+   "es": "\"No se pudo conservar la evidencia de seguridad; se cancela el borrado de la app: $($_.Exception.Message)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Removing old application files (keeping your data)...\"",
+   "es": "\"Borrando los archivos anteriores de la app (tus datos se quedan)...\"",
+   "n": 1
+  },
+  {
+   "en": "\"  keep    $name\"",
+   "es": "\"  queda   $name\"",
+   "n": 1
+  },
+  {
+   "en": "\"  remove  $name\"",
+   "es": "\"  borra   $name\"",
+   "n": 1
+  },
+  {
+   "en": "\"Installing the new version...\"",
+   "es": "\"Instalando el nuevo release...\"",
+   "n": 1
+  },
+  {
+   "en": "\"  skip    $name (kept yours)\"",
+   "es": "\"  omite   $name (se queda el tuyo)\"",
+   "n": 1
+  },
+  {
+   "en": "\"  install $name\"",
+   "es": "\"  instala $name\"",
+   "n": 1
+  },
+  {
+   "en": "\"New evidence already exists at '$securityLogs'; retaining both copies.\"",
+   "es": "\"Ya hay evidencia nueva en '$securityLogs'; se conservan las dos copias.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restored your security evidence -> security\\security_logs.\"",
+   "es": "\"Tu evidencia de seguridad regresa -> security\\security_logs.\"",
+   "n": 1
+  },
+  {
+   "en": "\"WARN: security evidence kept at '$logsCarryover' -- move it back by hand: $($_.Exception.Message)\"",
+   "es": "\"AVISO: la evidencia de seguridad sigue en '$logsCarryover' -- hay que regresarla a mano: $($_.Exception.Message)\"",
+   "n": 1
+  },
+  {
+   "en": "'Flow-file registration repair completed.'",
+   "es": "'Registro de archivos de flow: reparado.'",
+   "n": 1
+  },
+  {
+   "en": "\"Flow-file registration repair needs attention: $_\"",
+   "es": "\"El registro de archivos de flow requiere revisarse: $_\"",
+   "n": 1
+  },
+  {
+   "en": "\"UPDATE COMPLETE.\"",
+   "es": "\"UPDATE COMPLETO.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Starting the new Tlamatini...\"",
+   "es": "\"Iniciando el nuevo Tlamatini...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini.exe not found after update -- please start it manually.\"",
+   "es": "\"Falta Tlamatini.exe tras el update -- hay que iniciarlo a mano.\"",
+   "n": 1
+  },
+  {
+   "en": "\"UPDATE FAILED: $($_.Exception.Message)\"",
+   "es": "\"ERROR EN EL UPDATE: $($_.Exception.Message)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Your previous agents are preserved in 'agents_backup'.\"",
+   "es": "\"Tus agents anteriores siguen en 'agents_backup'.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Full log: $LogPath\"",
+   "es": "\"Log completo: $LogPath\"",
+   "n": 1
+  },
+  {
+   "en": "\"Press Enter to close\"",
+   "es": "\"Presiona Enter para cerrar\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Stop\"",
+   "motivo": "valor de PowerShell"
+  },
+  {
+   "en": "'Temp'",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "'Templates'",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "\"Gray\"",
+   "motivo": "color de la consola"
+  },
+  {
+   "en": "\"Green\"",
+   "motivo": "color de la consola"
+  },
+  {
+   "en": "\"Yellow\"",
+   "motivo": "color de la consola"
+  },
+  {
+   "en": "'Yellow'",
+   "motivo": "color de la consola"
+  },
+  {
+   "en": "\"Cyan\"",
+   "motivo": "color de la consola"
+  },
+  {
+   "en": "\"Red\"",
+   "motivo": "color de la consola"
+  }
+ ]
+}

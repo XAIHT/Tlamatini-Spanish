@@ -1,0 +1,18 @@
+{
+ "archivo": "Tlamatini/agent/agents/whisperer/config.yaml",
+ "segmentos": [
+  {
+   "en": "language: \"\"",
+   "es": "# Spanish edition default: \"es\" — Latin-American Spanish is recognized with the single\n# ISO code \"es\" (faster-whisper/Whisper has no es-MX/es-419 recognition variant).\n# Set \"\" to auto-detect instead.\nlanguage: \"es\"",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "cleanup_instruction: \"Add proper punctuation and capitalization and fix obvious transcription errors. Do NOT add, remove, summarize or translate any content. Return ONLY the corrected text.\"",
+   "es": "cleanup_instruction: \"Agrega la puntuación y las mayúsculas correctas y corrige los errores evidentes de transcripción. NO agregues, elimines, resumas ni traduzcas ningún contenido. Devuelve ÚNICAMENTE el texto corregido.\"",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

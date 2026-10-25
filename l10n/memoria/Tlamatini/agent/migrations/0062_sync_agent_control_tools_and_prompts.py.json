@@ -1,0 +1,55 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0062_sync_agent_control_tools_and_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Parametrize the template agent for -------- to set: \"",
+   "es": "\"Parametriza el agent plantilla de -------- para establecer: \"",
+   "n": 1
+  },
+  {
+   "en": "\"then, run the agent, please.\"",
+   "es": "\"y luego ejecuta el agent, por favor.\"",
+   "n": 1
+  },
+  {
+   "en": "'Show the status of the agent \"------\", then summarize its log file, please.'",
+   "es": "'Muestra el status del agent \"------\" y luego resume su archivo de log, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Stop the agent \"------\", then summarize its log file, please.'",
+   "es": "'Detén el agent \"------\" y luego resume su archivo de log, por favor.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Tool'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Execute-Agent'",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "'Stop-Agent'",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "'Agent-Status'",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "'Agent-Stopper'",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "'Agent-Stat-Getter'",
+   "motivo": "nombre de tool (valor de máquina)"
+  }
+ ]
+}

@@ -1,0 +1,148 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0134_add_grepper_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **CONTENT HUNT** demo, please &mdash; a basic showcase of your own \"",
+   "es": "\"Tlamatini, ejecuta la demo **CONTENT HUNT**, por favor &mdash; una muestra básica de tu propio \"",
+   "n": 1
+  },
+  {
+   "en": "\"regex content searcher, driven from chat through the wrapped **chat_agent_grepper** tool \"",
+   "es": "\"buscador de contenido por regex, controlado desde el chat a través del tool wrapper **chat_agent_grepper** \"",
+   "n": 1
+  },
+  {
+   "en": "\"(the grep / find-in-files equivalent that returns matching lines as file:line:match). \"",
+   "es": "\"(el equivalente de grep / find-in-files que devuelve las líneas que coinciden como file:line:match). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tick ONLY the **Multi-Turn** checkbox before sending. Use ONLY chat_agent_file_creator \"",
+   "es": "\"Marca SÓLO la casilla **Multi-Turn** antes de enviar. Usa SÓLO chat_agent_file_creator \"",
+   "n": 1
+  },
+  {
+   "en": "\"(to seed the scratch files) and chat_agent_grepper (to search them). \"",
+   "es": "\"(para sembrar los archivos de prueba) y chat_agent_grepper (para buscar en ellos). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128269; CONTENT HUNT</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128269; CAZA DE CONTENIDO</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Grepper &mdash; regex in, file:line:match out</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Grepper &mdash; regex de entrada, file:line:match de salida</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (seed A): call **chat_agent_file_creator** with request \\\\\\\"Run File Creator with \"",
+   "es": "\"Paso 1 (semilla A): llama a **chat_agent_file_creator** con el request \\\"Run File Creator with \"",
+   "n": 1
+  },
+  {
+   "en": "\"file_path='<TEMP>/grepper_demo/a.txt' and content='alpha TODO_MARK one'\\\\\\\", where <TEMP> is \"",
+   "es": "\"file_path='<TEMP>/grepper_demo/a.txt' and content='alpha TODO_MARK one'\\\", donde <TEMP> es \"",
+   "n": 1
+  },
+  {
+   "en": "\"your app Temp directory (the absolute path the system prompt gives you). \"",
+   "es": "\"tu directorio Temp (el path absoluto que te da el system prompt). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (seed B): call **chat_agent_file_creator** with request \\\\\\\"Run File Creator with \"",
+   "es": "\"Paso 2 (semilla B): llama a **chat_agent_file_creator** con el request \\\"Run File Creator with \"",
+   "n": 1
+  },
+  {
+   "en": "\"file_path='<TEMP>/grepper_demo/b.txt' and content='beta TODO_MARK two'\\\\\\\". \"",
+   "es": "\"file_path='<TEMP>/grepper_demo/b.txt' and content='beta TODO_MARK two'\\\". \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (search): call **chat_agent_grepper** with request \\\\\\\"Run Grepper with \"",
+   "es": "\"Paso 3 (busca): llama a **chat_agent_grepper** con el request \\\"Run Grepper with \"",
+   "n": 1
+  },
+  {
+   "en": "\"pattern='TODO_MARK', path='<TEMP>/grepper_demo', glob='*.txt', output_mode='content'\\\\\\\". From \"",
+   "es": "\"pattern='TODO_MARK', path='<TEMP>/grepper_demo', glob='*.txt', output_mode='content'\\\". Del \"",
+   "n": 1
+  },
+  {
+   "en": "\"the INI_SECTION_GREPPER block in the run's log_excerpt capture status (matches | no_matches | \"",
+   "es": "\"bloque INI_SECTION_GREPPER del log_excerpt de la ejecución captura status (matches | no_matches | \"",
+   "n": 1
+  },
+  {
+   "en": "\"not_found | error), matches, and files_searched, plus the file:line:match body lines. \"",
+   "es": "\"not_found | error), matches y files_searched, además de las líneas file:line:match del body. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 4: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Content Hunt &mdash; Matches</strong>' and columns <em>file</em>, <em>line</em>, \"",
+   "es": "\"'<strong>Content Hunt &mdash; Coincidencias</strong>' y con las columnas <em>archivo</em>, <em>línea</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>text</em> &mdash; one row per file:line:match line in the INI_SECTION_GREPPER body (do NOT \"",
+   "es": "\"<em>texto</em> &mdash; una fila por cada línea file:line:match del body de INI_SECTION_GREPPER (NO la \"",
+   "n": 1
+  },
+  {
+   "en": "\"re-classify). Light body cells (background:#ffffff;color:#0f172a). \"",
+   "es": "\"reclasifiques). Celdas del cuerpo claras (background:#ffffff;color:#0f172a). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 5: cierra con un banner HTML que reutilice el estilo del Paso 0 y muestre, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; FOUND <matches>' (status matches) or '&#128269; NO MATCHES' (status no_matches), and \"",
+   "es": "\"'&#9989; ENCONTRÉ <matches>' (status matches) o '&#128269; SIN COINCIDENCIAS' (status no_matches), y \"",
+   "n": 1
+  },
+  {
+   "en": "\"underneath a one-line metric 'pattern: TODO_MARK &middot; files searched: <files_searched>'. \"",
+   "es": "\"debajo una métrica de una línea 'pattern: TODO_MARK &middot; archivos buscados: <files_searched>'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#0b1d3a 0%,#1e3a8a 33%,#3b82f6 66%,#93c5fd 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

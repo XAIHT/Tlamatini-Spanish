@@ -1,0 +1,24 @@
+{
+ "archivo": "Tlamatini/agent/test_frontend_mutable_state.py",
+ "segmentos": [
+  {
+   "en": "\"Getting Started\"",
+   "es": "\"Primeros pasos\"",
+   "maquina": "la prueba compara las etiquetas de sección de views.PROMPT_CATEGORY_ORDER, que ya están en español",
+   "n": 1
+  },
+  {
+   "en": "\"Messaging & Contacts\"",
+   "es": "\"Mensajería y contactos\"",
+   "maquina": "la prueba compara las etiquetas de sección de views.PROMPT_CATEGORY_ORDER, que ya están en español",
+   "n": 1
+  },
+  {
+   "en": "\"More\"",
+   "es": "\"Más\"",
+   "maquina": "la prueba compara las etiquetas de sección de views.PROMPT_CATEGORY_ORDER, que ya están en español",
+   "n": 3
+  }
+ ],
+ "conservar": []
+}

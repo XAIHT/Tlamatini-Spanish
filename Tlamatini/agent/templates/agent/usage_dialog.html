@@ -1,0 +1,64 @@
+<!-- Tlamatini Author Banner — Angela López Mendoza -->
+<div id="usage-overlay" class="usage-overlay" hidden data-user-id="{{ request.user.pk }}"
+     data-url="{% url 'usage' %}">
+  <section id="usage-dialog" class="usage-dialog" role="dialog" aria-modal="true" aria-labelledby="usage-title" aria-describedby="usage-description" tabindex="-1">
+    <header class="usage-header">
+      <div><h2 id="usage-title">ACERCA DEL USO</h2><p id="usage-description">Tus créditos, tokens y actividad de modelos de un vistazo.</p></div>
+      <button type="button" class="usage-close usage-button" aria-label="Cerrar el panel de uso">×</button>
+    </header>
+    <div class="usage-toolbar">
+      <div class="usage-tabs" role="tablist" aria-label="Vistas del uso">
+        <button type="button" class="usage-button" id="usage-tab-account" role="tab" aria-selected="true" aria-controls="usage-account" data-tab="account">Créditos en la nube</button>
+        <button type="button" class="usage-button" id="usage-tab-activity" role="tab" aria-selected="false" aria-controls="usage-activity" data-tab="activity" tabindex="-1">Actividad del chat</button>
+        <button type="button" class="usage-button" id="usage-tab-models" role="tab" aria-selected="false" aria-controls="usage-models" data-tab="models" tabindex="-1">Modelos</button>
+      </div>
+      <div class="usage-range" role="group" aria-label="Periodo del uso">
+        <button type="button" class="usage-button" data-range="7d" aria-pressed="true">7 días</button>
+        <button type="button" class="usage-button" data-range="30d" aria-pressed="false">30 días</button>
+      </div>
+    </div>
+    <div class="usage-body" tabindex="0" role="region" aria-label="Detalles del uso">
+      <section id="usage-health" class="usage-health" data-state="checking" aria-label="Conexión de la cuenta">
+        <div class="usage-health-row">
+          <span id="usage-connection-state" class="usage-connection-state">Revisando</span>
+          <p id="usage-status" role="status" aria-live="polite">Conectando con tu cuenta…</p>
+          <button type="button" id="usage-retry-account" class="usage-button" hidden>Reintentar conexión</button>
+        </div>
+        <details id="usage-connection-details" hidden>
+          <summary>Detalles de la conexión</summary>
+          <p id="usage-connection-reason"></p>
+        </details>
+      </section>
+      <section id="usage-account" role="tabpanel" aria-labelledby="usage-tab-account">
+        <div class="usage-section-heading"><div><h3>Cuenta de Ollama en la nube</h3><p id="usage-account-note">Los totales de la cuenta incluyen el uso fuera de Tlamatini.</p></div><a class="usage-button" href="https://ollama.com/settings" target="_blank" rel="noopener noreferrer">Uso en Ollama ↗</a></div>
+        <div id="usage-credit-cards" class="usage-credit-grid"></div>
+        <p id="usage-plan-note" class="usage-plan-note"></p>
+        <div id="usage-cloud-totals" class="usage-metrics"></div>
+        <div class="usage-chart-grid">
+          <article id="usage-spend-panel" class="usage-panel"><div class="usage-chart-title"><h3>Uso diario de créditos</h3><span>USD · UTC</span></div><div id="usage-spend-chart" class="usage-chart"></div><p id="usage-spend-peak" class="usage-chart-caption"></p></article>
+          <article id="usage-token-panel" class="usage-panel"><div class="usage-chart-title"><h3>Tráfico de tokens</h3><span>Input / output</span></div><div id="usage-token-chart" class="usage-chart"></div><div class="usage-legend"><span class="usage-dot usage-input">Input (incluye caché)</span><span class="usage-dot usage-output">Output</span></div></article>
+        </div>
+        <article id="usage-composition-panel" class="usage-panel usage-composition"><h3>Composición de tokens</h3><div id="usage-composition"></div></article>
+        <details class="usage-panel usage-details"><summary>Estadísticas diarias de la cuenta · valores exactos</summary><div id="usage-cloud-table" class="usage-table-wrap"></div></details>
+      </section>
+      <section id="usage-activity" role="tabpanel" aria-labelledby="usage-tab-activity" hidden>
+        <div class="usage-section-heading"><div><h3>Tu actividad en Tlamatini</h3><p id="usage-activity-note"></p></div><span class="usage-badge">TOKENS MEDIDOS</span></div>
+        <div id="usage-chat-totals" class="usage-metrics"></div>
+        <div class="usage-chart-grid">
+          <article class="usage-panel"><div class="usage-chart-title"><h3>Tokens por día</h3><span>UTC</span></div><div id="usage-chat-chart" class="usage-chart"></div><div class="usage-legend"><span class="usage-dot usage-input">Input</span><span class="usage-dot usage-output">Output</span></div></article>
+          <article class="usage-panel"><div class="usage-chart-title"><h3>Cuándo usas más los modelos</h3><span>Llamadas medidas</span></div><div id="usage-calendar" class="usage-calendar"></div><p id="usage-chat-peak" class="usage-chart-caption"></p></article>
+        </div>
+        <details class="usage-panel usage-details"><summary>Estadísticas diarias del chat · valores exactos</summary><div id="usage-chat-table" class="usage-table-wrap"></div></details>
+      </section>
+      <section id="usage-models" role="tabpanel" aria-labelledby="usage-tab-models" hidden>
+        <div class="usage-section-heading"><div><h3>Modelos en tu flujo de trabajo</h3><p>Llamadas medidas del chat de Tlamatini en el periodo seleccionado. Para ver el historial de modelos de toda la cuenta, abre Uso en Ollama.</p></div></div>
+        <div class="usage-chart-grid"><article class="usage-panel"><h3>Tokens por modelo</h3><div id="usage-model-chart" class="usage-model-chart"></div><div class="usage-legend"><span class="usage-dot usage-input">Input</span><span class="usage-dot usage-output">Output</span></div></article>
+        <article class="usage-panel"><h3>Llamadas por modelo</h3><div id="usage-model-calls" class="usage-model-chart"></div></article></div>
+        <article class="usage-panel"><h3>Estadísticas de modelos</h3><div id="usage-model-table" class="usage-table-wrap"></div></article>
+        <article class="usage-panel"><div class="usage-chart-title"><h3>Modelos disponibles y cargados</h3><span id="usage-ollama-version"></span></div><p id="usage-running" class="usage-muted"></p><div id="usage-inventory" class="usage-table-wrap"></div></article>
+      </section>
+      <div id="usage-tooltip" class="usage-tooltip" role="tooltip" hidden></div>
+    </div>
+    <footer class="usage-footer"><div><span id="usage-updated">Esperando datos</span><small>Las cifras de la cuenta se actualizan solas. Tu actividad registrada en el chat sigue disponible por separado.</small></div><div class="usage-footer-actions"><button type="button" class="usage-button" id="usage-refresh">Actualizar</button><button type="button" class="usage-button usage-primary usage-close">Cerrar</button></div></footer>
+  </section>
+</div>

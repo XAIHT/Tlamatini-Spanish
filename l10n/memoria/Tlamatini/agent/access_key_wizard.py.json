@@ -1,0 +1,222 @@
+{
+ "archivo": "Tlamatini/agent/access_key_wizard.py",
+ "segmentos": [
+  {
+   "en": "\"ACPX and LLM Providers\"",
+   "es": "\"ACPX y proveedores de LLM\"",
+   "n": 1
+  },
+  {
+   "en": "\"Claude / Anthropic API key\"",
+   "es": "\"API key de Claude / Anthropic\"",
+   "n": 1
+  },
+  {
+   "en": "\"Gemini API key\"",
+   "es": "\"API key de Gemini\"",
+   "n": 1
+  },
+  {
+   "en": "\"Can also fill GOOGLE_API_KEY for gemini-cli compatibility.\"",
+   "es": "\"También puedes llenar GOOGLE_API_KEY para que sea compatible con gemini-cli.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Google API key alias\"",
+   "es": "\"Alias de la API key de Google\"",
+   "n": 1
+  },
+  {
+   "en": "\"Usually the same value as GEMINI_API_KEY.\"",
+   "es": "\"Normalmente es el mismo valor que GEMINI_API_KEY.\"",
+   "n": 1
+  },
+  {
+   "en": "\"OpenAI API key / Codex\"",
+   "es": "\"API key de OpenAI / Codex\"",
+   "n": 1
+  },
+  {
+   "en": "\"DashScope API key / Qwen\"",
+   "es": "\"API key de DashScope / Qwen\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama token\"",
+   "es": "\"Token de Ollama\"",
+   "n": 1
+  },
+  {
+   "en": "\"Optional for local Ollama installs.\"",
+   "es": "\"Opcional en las instalaciones locales de Ollama.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Telegram Bridges\"",
+   "es": "\"Bridges de Telegram\"",
+   "n": 1
+  },
+  {
+   "en": "\"Telegrammer bot token (@BotFather)\"",
+   "es": "\"Token del bot de Telegrammer (@BotFather)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Official Telegram Bot API token (110201543:AAH...). See agents/telegrammer/HOW_TO_GET_YOUR_TELEGRAM_ASSETS.md\"",
+   "es": "\"Token oficial de la Telegram Bot API (110201543:AAH...). Consulta agents/telegrammer/HOW_TO_GET_YOUR_TELEGRAM_ASSETS.md\"",
+   "n": 1
+  },
+  {
+   "en": "\"Telegrammer @username recipient\"",
+   "es": "\"Destinatario @usuario de Telegrammer\"",
+   "n": 1
+  },
+  {
+   "en": "\"TeleTlamatini API ID\"",
+   "es": "\"API ID de TeleTlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"TeleTlamatini API hash\"",
+   "es": "\"API hash de TeleTlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"TeleTlamatini bot token\"",
+   "es": "\"Token del bot de TeleTlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"TeleTlamatini access password\"",
+   "es": "\"Contraseña de acceso a TeleTlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini login username\"",
+   "es": "\"Nombre de usuario para iniciar sesión en Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini login password\"",
+   "es": "\"Contraseña para iniciar sesión en Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"WhatsApp Bridge\"",
+   "es": "\"Bridge de WhatsApp\"",
+   "n": 1
+  },
+  {
+   "en": "\"Whatsapper phone number ID (Meta)\"",
+   "es": "\"ID del número de teléfono de Whatsapper (Meta)\"",
+   "n": 1
+  },
+  {
+   "en": "\"From Meta WhatsApp Manager -> API Setup. See agents/whatsapper/HOW_TO_GET_YOUR_WHATSAPP_ASSETS.md\"",
+   "es": "\"En Meta WhatsApp Manager -> API Setup. Consulta agents/whatsapper/HOW_TO_GET_YOUR_WHATSAPP_ASSETS.md\"",
+   "n": 1
+  },
+  {
+   "en": "\"Whatsapper access token (Meta)\"",
+   "es": "\"Token de acceso de Whatsapper (Meta)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Email Bridges\"",
+   "es": "\"Bridges de correo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Emailer SMTP username\"",
+   "es": "\"Nombre de usuario SMTP de Emailer\"",
+   "n": 1
+  },
+  {
+   "en": "\"Emailer SMTP app password\"",
+   "es": "\"Contraseña de aplicación SMTP de Emailer\"",
+   "n": 1
+  },
+  {
+   "en": "\"RecMailer IMAP username\"",
+   "es": "\"Nombre de usuario IMAP de RecMailer\"",
+   "n": 1
+  },
+  {
+   "en": "\"RecMailer IMAP app password\"",
+   "es": "\"Contraseña de aplicación IMAP de RecMailer\"",
+   "n": 1
+  },
+  {
+   "en": "\"Security Recon (ProjectDiscovery)\"",
+   "es": "\"Reconocimiento de seguridad (ProjectDiscovery)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Discoverer / ProjectDiscovery Cloud Platform (PDCP) API key\"",
+   "es": "\"API key de Discoverer / ProjectDiscovery Cloud Platform (PDCP)\"",
+   "n": 1
+  },
+  {
+   "en": "\"OPTIONAL for every Discoverer tool - lifts cvemap/vulnx rate limits and enables nuclei -ai / cloud upload. Get a free key at https://cloud.projectdiscovery.io. Used by the Discoverer agent + chat_agent_discoverer; auto-injected on every run.\"",
+   "es": "\"OPCIONAL para todos los tools de Discoverer: quita los rate limits de cvemap/vulnx y activa nuclei -ai / la subida a la nube. Obtén una key gratis en https://cloud.projectdiscovery.io. La usan el agent Discoverer y chat_agent_discoverer; se inyecta automáticamente en cada ejecución.\"",
+   "n": 1
+  },
+  {
+   "en": "\"config.json could not be located on disk\"",
+   "es": "\"No se encontró config.json en el disco\"",
+   "n": 1
+  },
+  {
+   "en": "f\"unknown ACPX agent_id: {agent_id}\"",
+   "es": "f\"agent_id de ACPX desconocido: {agent_id}\"",
+   "n": 1
+  },
+  {
+   "en": "\"fields must be a JSON object\"",
+   "es": "\"fields debe ser un objeto JSON\"",
+   "n": 1
+  },
+  {
+   "en": "f\"unknown key field: {key}\"",
+   "es": "f\"campo desconocido: {key}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{key} must be a string\"",
+   "es": "f\"{key} debe ser una cadena de texto\"",
+   "n": 1
+  },
+  {
+   "en": "\"commands must be a JSON object\"",
+   "es": "\"commands debe ser un objeto JSON\"",
+   "n": 1
+  },
+  {
+   "en": "f\"command for {agent_id} must be a string\"",
+   "es": "f\"el comando de {agent_id} debe ser una cadena de texto\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Tlamatini\"",
+   "motivo": "valor que se compara (nombre de carpeta)"
+  },
+  {
+   "en": "\"goes here\"",
+   "motivo": "marcador que se busca en el valor (placeholder)"
+  },
+  {
+   "en": "\"# Tlamatini secrets vault - managed by Access Keys Wizard\\n\"",
+   "motivo": "comentario que se escribe en el archivo de secretos; no es pantalla"
+  },
+  {
+   "en": "\"# Format: KEY=VALUE. Never commit this file.\\n\"",
+   "motivo": "comentario que se escribe en el archivo de secretos; no es pantalla"
+  },
+  {
+   "en": "\"# Added by Tlamatini Access Keys Wizard\"",
+   "motivo": "comentario que se escribe en el archivo de secretos; no es pantalla"
+  }
+ ]
+}

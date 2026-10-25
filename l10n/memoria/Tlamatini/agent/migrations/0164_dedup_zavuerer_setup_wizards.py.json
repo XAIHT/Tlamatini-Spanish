@@ -1,0 +1,18 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0164_dedup_zavuerer_setup_wizards.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"please set up **Zavuerer** with me ONE step at a time\"",
+   "motivo": "dedup de Zavuerer: marcadores __contains en inglés; conservar"
+  },
+  {
+   "en": "\"hold my hand and set up **Zavuerer** with me from zero\"",
+   "motivo": "dedup de Zavuerer: marcadores __contains en inglés; conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "dedup de Zavuerer: marcadores __contains en inglés; conservar"
+  }
+ ]
+}

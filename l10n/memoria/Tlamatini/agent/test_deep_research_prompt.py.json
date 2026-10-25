@@ -1,0 +1,18 @@
+{
+ "archivo": "Tlamatini/agent/test_deep_research_prompt.py",
+ "segmentos": [
+  {
+   "en": "'search thoroughly all over the entire Internet'",
+   "es": "'busca a fondo en todo Internet'",
+   "maquina": "la prueba busca frases de la tarjeta 118, que ahora está en español",
+   "n": 1
+  },
+  {
+   "en": "'[[ Place your topic here ... ]]'",
+   "es": "'[[ Escribe aquí tu tema ... ]]'",
+   "maquina": "la prueba busca frases de la tarjeta 118, que ahora está en español",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

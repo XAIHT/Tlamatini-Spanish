@@ -1,0 +1,260 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+from pathlib import Path
+import re
+import unittest
+
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
+
+from .models import Prompt
+
+
+ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = ROOT.parent
+
+
+class FrontendMutableStateTests(unittest.TestCase):
+    """Guards split-script globals that are reassigned by later browser files."""
+
+    def _read(self, *parts: str) -> str:
+        return (ROOT / Path(*parts)).read_text(encoding="utf-8")
+
+    def assert_declared_with_let(self, text: str, name: str) -> None:
+        self.assertRegex(
+            text,
+            rf"\blet\s+{re.escape(name)}\s*=",
+            msg=f"{name} must stay mutable; browser runtime reassigns it.",
+        )
+        self.assertNotRegex(
+            text,
+            rf"\bconst\s+{re.escape(name)}\s*=",
+            msg=f"{name} cannot be const because later split JS files assign it.",
+        )
+
+    def assert_collected_static_is_not_poisoned(self, relative_path: str, names: list[str]) -> None:
+        collected = PROJECT_ROOT / "staticfiles" / relative_path
+        if not collected.exists():
+            self.skipTest(f"{collected} does not exist; run collectstatic to validate collected assets.")
+
+        text = collected.read_text(encoding="utf-8")
+        for name in names:
+            self.assertNotRegex(
+                text,
+                rf"\bconst\s+{re.escape(name)}\s*=",
+                msg=f"Collected static asset {relative_path} still has poisoned const for {name}.",
+            )
+
+    def _read_collected_static(self, relative_path: str) -> str:
+        collected = PROJECT_ROOT / "staticfiles" / relative_path
+        if not collected.exists():
+            self.skipTest(f"{collected} does not exist; run collectstatic to validate collected assets.")
+        return collected.read_text(encoding="utf-8")
+
+    def test_agent_page_runtime_state_is_mutable(self):
+        text = self._read("static", "agent", "js", "agent_page_state.js")
+        mutable_names = [
+            "contextButtonClicked",
+            "canvasSettedAsContext",
+            "confirmationByUser",
+            # Both drive the busy UI / the Send-vs-Cancel button and are reassigned
+            # from agent_page_init.js AND agent_page_chat.js. A `const` here lints
+            # green per-file and then throws at load, killing the chat page.
+            "inLongOperation",
+            "userCancelledRun",
+            "canvasLoaded",
+            "openEnabled",
+            "reConnectEnabled",
+            "contextEnabled",
+            "cleanCanvasEnabled",
+            "actualContextDir",
+            "clearContextEnabled",
+            "cleanHistoryEnabled",
+            "fileTypeOmissions",
+            "chatHistory",
+            "historyIndex",
+            "tempInput",
+            "buildingInitial",
+            "titleBusyPrefix",
+            "mcp1_enabled",
+            "mcp2_enabled",
+            "tools",
+            "agents",
+            "skills",
+            "installedApps",
+            "textEditorCode",
+        ]
+        for name in mutable_names:
+            self.assert_declared_with_let(text, name)
+        self.assert_collected_static_is_not_poisoned("agent/js/agent_page_state.js", mutable_names)
+
+    def test_acp_runtime_state_is_mutable(self):
+        text = self._read("static", "agent", "js", "acp-globals.js")
+        mutable_names = [
+            "globalRunningState",
+            "flowValidationStatus",
+            "titleBusyPrefix",
+            "isFlowCreatorWaiting",
+            "isBusyProcessing",
+            "hasUnsavedChanges",
+        ]
+        for name in mutable_names:
+            self.assert_declared_with_let(text, name)
+        self.assert_collected_static_is_not_poisoned("agent/js/acp-globals.js", mutable_names)
+
+    def test_acp_status_poller_handle_is_mutable(self):
+        text = self._read("static", "agent", "js", "acp-undo-manager.js")
+        mutable_names = ["agentStatusPollerInterval"]
+        for name in mutable_names:
+            self.assert_declared_with_let(text, name)
+        self.assert_collected_static_is_not_poisoned("agent/js/acp-undo-manager.js", mutable_names)
+
+    # Matches a top-level `const NAME =` (column 0 only — module-level, not a local).
+    _TOP_LEVEL_CONST_RE = re.compile(r"^const\s+([A-Za-z_$][\w$]*)\s*=", re.MULTILINE)
+
+    # Matches an assignment TO a bare identifier: `NAME =`, `NAME +=`, `NAME ??=` ...
+    # Excludes `NAME ==`/`===` (comparison), `NAME =>` (arrow param) and `x.NAME =`
+    # (property write, which is legal on a const).
+    @staticmethod
+    def _assignment_re(name: str) -> re.Pattern:
+        return re.compile(
+            rf"(?<![.\w$]){re.escape(name)}\s*(?:=(?![=>])|\+=|-=|\*=|/=|\|\|=|&&=|\?\?=)"
+        )
+
+    @staticmethod
+    def _redeclaration_re(name: str) -> re.Pattern:
+        return re.compile(rf"\b(?:let|var|const|function)\s+{re.escape(name)}\b")
+
+    def test_no_top_level_const_is_reassigned_by_a_sibling_script(self):
+        """Name-agnostic const-poison sweep across every browser script.
+
+        The scripts are plain <script> tags sharing ONE global scope, so a top-level
+        `const` in one file that a SIBLING file assigns to throws
+        "TypeError: Assignment to constant variable" the moment that code path runs.
+        Per-file ESLint structurally cannot see the cross-file write, so the mistake
+        lints green — it has now shipped twice (the 2026-07-08 const-poison incident,
+        and `agentStatusPollerInterval` on 2026-07-11, which trapped the ACP Start
+        dialog behind a modal with no closable button).
+
+        The hand-listed tests above only guard names somebody remembered to list.
+        This one guards every name, so it catches the NEXT one for free.
+        """
+        # Lexical scopes distinguish a local/destructured canvas from the ACP
+        # global. Text matching cannot prove a cross-file variable write.
+        import json
+        import shutil
+        import subprocess
+        import tempfile
+
+        node = shutil.which("node")
+        if not node:
+            self.skipTest("Node/ESLint is required for the scope-aware cross-file check")
+        repo = PROJECT_ROOT.parent
+        scratch = repo / "Temp"
+        scratch.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="menu-scope-", dir=scratch) as directory:
+            report = Path(directory) / "references.json"
+            subprocess.run([node, str(repo / "scripts/menu_reference_graph.mjs"), str(report)],
+                           cwd=repo, check=True, timeout=60)
+            graph = json.loads(report.read_text(encoding="utf-8"))
+        self.assertEqual([], graph["crossFileConstWrites"],
+                         "A sibling script writes a global const binding")
+
+    def test_changed_state_scripts_force_fresh_browser_cache(self):
+        agent_page = self._read("templates", "agent", "agent_page.html")
+        acp_page = self._read("templates", "agent", "agentic_control_panel.html")
+        self.assertIn("agent_page_state.js' %}?v={{ STATIC_VERSION }}_statefix", agent_page)
+        self.assertIn("agent_page_dialogs.js' %}?v={{ STATIC_VERSION }}_dialogfix", agent_page)
+        self.assertIn("tools_dialog.js' %}?v={{ STATIC_VERSION }}_promptfix", agent_page)
+        self.assertIn("acp-globals.js' %}?v={{ STATIC_VERSION }}_statefix", acp_page)
+
+    def test_prompt_catalog_uses_list_endpoint_without_expected_404_console_noise(self):
+        text = self._read("static", "agent", "js", "tools_dialog.js")
+        collected = self._read_collected_static("agent/js/tools_dialog.js")
+        for asset_text in [text, collected]:
+            self.assertIn("/agent/list_prompts/", asset_text)
+            self.assertNotIn("404 Error: Prompt not found", asset_text)
+            self.assertNotIn("Prompt not found in database:", asset_text)
+
+
+class PromptCatalogEndpointTests(TestCase):
+    def test_list_prompts_groups_by_category_hides_dups_and_stays_contiguous(self):
+        """Catalog grouping + dedup (Angela, 2026-07-14).
+
+        The endpoint must: drop `hidden` prompts, tag each with its `category`,
+        order by (category display-rank, idPrompt), and return the ordered
+        `categories` sections. Ids are never renumbered.
+        """
+        user = get_user_model().objects.create_user(username="catalog-test", password="pw")
+        Prompt.objects.all().delete()
+        # Out of id order, mixed categories, one hidden, one untagged (-> "Más").
+        Prompt.objects.create(idPrompt=3, promptName="prompt-3", promptContent="msg one",
+                              category="messaging", hidden=False)
+        Prompt.objects.create(idPrompt=1, promptName="prompt-1", promptContent="basic one",
+                              category="getting_started", hidden=False)
+        Prompt.objects.create(idPrompt=2, promptName="prompt-2", promptContent="basic two",
+                              category="getting_started", hidden=False)
+        Prompt.objects.create(idPrompt=4, promptName="prompt-4", promptContent="a duplicate",
+                              category="acpx_skills", hidden=True)  # must NOT appear
+        Prompt.objects.create(idPrompt=5, promptName="prompt-5", promptContent="untagged",
+                              category="", hidden=False)  # -> "Más" bucket, last
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("list_prompts"))
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+
+        # Hidden prompt (id 4) is gone; the rest are grouped: Getting Started
+        # (1,2) -> Messaging (3) -> More (5).
+        self.assertEqual(
+            [(p["index"], p["category"]) for p in payload["prompts"]],
+            [(1, "getting_started"), (2, "getting_started"), (3, "messaging"), (5, "other")],
+        )
+        # Every prompt still carries index/name/content (shape kept additive).
+        self.assertEqual(payload["prompts"][0]["name"], "prompt-1")
+        self.assertEqual(payload["prompts"][0]["content"], "basic one")
+        # The sections come back in display order with labels.
+        self.assertEqual(
+            payload["categories"],
+            [
+                {"key": "getting_started", "label": "Primeros pasos"},
+                {"key": "messaging", "label": "Mensajería y contactos"},
+                {"key": "other", "label": "Más"},
+            ],
+        )
+
+    def test_seeded_catalog_is_deduped_and_fully_tagged(self):
+        """The real seeded catalog stays deduplicated, tagged and identifiable.
+
+        Migration 0179 originally made IDs contiguous; 0181 separated display
+        order from identity. Retired slots are now left unused by 0214.
+        """
+        all_ids = sorted(Prompt.objects.values_list("idPrompt", flat=True))
+        if not all_ids:
+            self.skipTest("no seeded prompts in this test DB")
+        self.assertEqual(
+            all_ids, [i for i in range(1, max(all_ids) + 1) if i not in {90, 91, 92, 93}],
+            "Only retired catalog slots may be absent; surviving IDs stay stable",
+        )
+        # No hidden rows remain (the dups were physically deleted, not hidden).
+        self.assertEqual(Prompt.objects.filter(hidden=True).count(), 0,
+                         "no hidden rows should remain")
+        # Deduped: no two prompts share identical content.
+        contents = list(Prompt.objects.values_list("promptContent", flat=True))
+        self.assertEqual(len(contents), len(set(contents)),
+                         "the catalog must contain no duplicate prompt content")
+        # Every prompt has a category (nothing lands in a silent bucket).
+        untagged = list(Prompt.objects.filter(category="").values_list("idPrompt", flat=True))
+        self.assertEqual(untagged, [], f"prompts missing a category: {untagged}")
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

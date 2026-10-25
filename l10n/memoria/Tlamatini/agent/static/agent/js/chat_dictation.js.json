@@ -1,0 +1,201 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/chat_dictation.js",
+ "segmentos": [
+  {
+   "en": "'Listening'",
+   "es": "'Escuchando'",
+   "n": 2
+  },
+  {
+   "en": "'To text'",
+   "es": "'A texto'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel dictation'",
+   "es": "'Cancelar el dictado'",
+   "n": 1
+  },
+  {
+   "en": "'Dictate into the chat input'",
+   "es": "'Dictar en el input del chat'",
+   "n": 1
+  },
+  {
+   "en": "'Dictate and send a prompt'",
+   "es": "'Dictar y enviar un prompt'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel dictation · Escape'",
+   "es": "'Cancelar el dictado · Esc'",
+   "n": 1
+  },
+  {
+   "en": "'Use the microphone on the Tlamatini computer. Stops on silence; '",
+   "es": "'Usa el micrófono de la computadora donde corre Tlamatini. Se detiene al detectar silencio; '",
+   "n": 1
+  },
+  {
+   "en": "'keeps the text in your draft for review.'",
+   "es": "'deja el texto en tu borrador para que lo revises.'",
+   "n": 1
+  },
+  {
+   "en": "'sends automatically.'",
+   "es": "'envía automáticamente.'",
+   "n": 1
+  },
+  {
+   "en": "'Cancelling voice prompt…'",
+   "es": "'Cancelando el prompt de voz…'",
+   "n": 1
+  },
+  {
+   "en": "'The transcript will not be added or sent.'",
+   "es": "'La transcripción no se va a agregar ni enviar.'",
+   "n": 1
+  },
+  {
+   "en": "'Opening microphone…'",
+   "es": "'Abriendo el micrófono…'",
+   "n": 1
+  },
+  {
+   "en": "'Speak when Listening appears. '",
+   "es": "'Habla cuando aparezca Escuchando. '",
+   "n": 1
+  },
+  {
+   "en": "'Your words will stay in the chat input for review.'",
+   "es": "'Tus palabras se quedarán en el input del chat para que las revises.'",
+   "n": 1
+  },
+  {
+   "en": "'Your prompt sends automatically.'",
+   "es": "'Tu prompt se envía automáticamente.'",
+   "n": 1
+  },
+  {
+   "en": "'Voice connection lost. Click the microphone to retry.'",
+   "es": "'Se perdió la conexión de voz. Haz clic en el micrófono para reintentar.'",
+   "n": 1
+  },
+  {
+   "en": "'No words recognized. Your draft is unchanged.'",
+   "es": "'No se reconoció ninguna palabra. Tu borrador no cambió.'",
+   "n": 1
+  },
+  {
+   "en": "'Transcription ready — review your prompt'",
+   "es": "'Transcripción lista — revisa tu prompt'",
+   "n": 1
+  },
+  {
+   "en": "'Edit the text, then press Send when you are ready.'",
+   "es": "'Edita el texto y luego presiona Enviar cuando quieras.'",
+   "n": 1
+  },
+  {
+   "en": "'Your voice prompt is in the draft. Send it when chat is ready.'",
+   "es": "'Tu prompt de voz está en el borrador. Envíalo cuando el chat esté listo.'",
+   "n": 1
+  },
+  {
+   "en": "'Sending your voice prompt…'",
+   "es": "'Enviando tu prompt de voz…'",
+   "n": 1
+  },
+  {
+   "en": "'Your voice prompt is saved in the draft. Reconnect, then send it.'",
+   "es": "'Tu prompt de voz se guardó en el borrador. Vuelve a conectarte y luego envíalo.'",
+   "n": 1
+  },
+  {
+   "en": "'Whisperer is unavailable. Click to retry.'",
+   "es": "'Whisperer no está disponible. Haz clic para reintentar.'",
+   "n": 1
+  },
+  {
+   "en": "'Mic settings were rejected. Open Config → Mic to correct them.'",
+   "es": "'Se rechazó la configuración del micrófono. Abre Config → Micrófono para corregirla.'",
+   "n": 1
+  },
+  {
+   "en": "'Recording ends after '",
+   "es": "'La grabación termina tras '",
+   "n": 1
+  },
+  {
+   "en": "'s of silence'",
+   "es": "'s de silencio'",
+   "n": 1
+  },
+  {
+   "en": "'Speak naturally · click again or press Esc to cancel'",
+   "es": "'Habla con naturalidad · haz clic otra vez o presiona Esc para cancelar'",
+   "n": 1
+  },
+  {
+   "en": "'Turning your voice into a prompt…'",
+   "es": "'Convirtiendo tu voz en un prompt…'",
+   "n": 1
+  },
+  {
+   "en": "'Recording finished. The words will appear in your draft for review.'",
+   "es": "'Terminó la grabación. Las palabras aparecerán en tu borrador para que las revises.'",
+   "n": 1
+  },
+  {
+   "en": "'Recording finished. Sending automatically when the words are ready.'",
+   "es": "'Terminó la grabación. Se enviará automáticamente cuando las palabras estén listas.'",
+   "n": 1
+  },
+  {
+   "en": "'No speech detected. Try again.'",
+   "es": "'No se detectó voz. Vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Dictation failed. Your draft is unchanged.'",
+   "es": "'Error en el dictado. Tu borrador no cambió.'",
+   "n": 1
+  },
+  {
+   "en": "'Preparing voice input…'",
+   "es": "'Preparando el input de voz…'",
+   "n": 1
+  },
+  {
+   "en": "'The microphone is off.'",
+   "es": "'El micrófono está apagado.'",
+   "n": 1
+  },
+  {
+   "en": "'Invalid voice response. Please retry.'",
+   "es": "'La respuesta de voz no es válida. Vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Voice connection lost. Your draft is unchanged.'",
+   "es": "'Se perdió la conexión de voz. Tu borrador no cambió.'",
+   "n": 1
+  },
+  {
+   "en": "'Voice is disconnected. Click the microphone to reconnect.'",
+   "es": "'La voz está desconectada. Haz clic en el micrófono para reconectarte.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Mic'",
+   "motivo": "abreviatura breve para el botón (la plantilla también la conserva)"
+  }
+ ]
+}

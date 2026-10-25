@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/chat_table_contrast.js",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'td, th, caption'",
+   "motivo": "selector CSS"
+  }
+ ]
+}

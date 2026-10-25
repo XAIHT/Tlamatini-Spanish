@@ -1,0 +1,321 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/prompt_flow_panel.html",
+ "segmentos": [
+  {
+   "en": "lang=\"en\"",
+   "es": "lang=\"es-MX\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Toggle navigation\"",
+   "es": "aria-label=\"Mostrar u ocultar la navegación\"",
+   "n": 1
+  },
+  {
+   "en": ">File<",
+   "es": ">Archivo<",
+   "n": 1
+  },
+  {
+   "en": ">New flow<",
+   "es": ">Nuevo flow<",
+   "n": 1
+  },
+  {
+   "en": ">Open .fpmt… <",
+   "es": ">Abrir .fpmt… <",
+   "n": 1
+  },
+  {
+   "en": ">Save as .fpmt… <",
+   "es": ">Guardar como .fpmt… <",
+   "n": 1
+  },
+  {
+   "en": ">Open example<",
+   "es": ">Abrir ejemplo<",
+   "n": 1
+  },
+  {
+   "en": ">Close flow<",
+   "es": ">Cerrar flow<",
+   "n": 1
+  },
+  {
+   "en": ">View<",
+   "es": ">Ver<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Show or hide the Terminals area (Ctrl+`). Your terminals keep running.\"",
+   "es": "title=\"Muestra u oculta el área Terminals (Ctrl+`). Tus terminales siguen corriendo.\"",
+   "n": 1
+  },
+  {
+   "en": ">Reconnect<",
+   "es": ">Reconectar<",
+   "n": 1
+  },
+  {
+   "en": ">Help<",
+   "es": ">Ayuda<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Operations bar\"",
+   "es": "aria-label=\"Barra de operaciones\"",
+   "n": 1
+  },
+  {
+   "en": ">Operations bar<",
+   "es": ">Barra de operaciones<",
+   "n": 1
+  },
+  {
+   "en": ">Drag an operation or static commentary onto the canvas, or click to add it.<",
+   "es": ">Arrastra una operación o un comentario estático al canvas, o haz clic para agregarlo.<",
+   "n": 1
+  },
+  {
+   "en": ">Drag an output triangle to an input triangle to connect.<",
+   "es": ">Arrastra un triángulo de output a un triángulo de input para conectarlos.<",
+   "n": 1
+  },
+  {
+   "en": ">Double-click an operation to configure it.<",
+   "es": ">Haz doble clic en una operación para configurarla.<",
+   "n": 1
+  },
+  {
+   "en": ">Double-click a commentary to write. Format with its floating toolbar; drag any border or corner to resize.<",
+   "es": ">Haz doble clic en un comentario para escribir. Dale formato con su barra de herramientas flotante; arrastra cualquier borde o esquina para cambiar su tamaño.<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Resize Operations bar\"",
+   "es": "aria-label=\"Cambiar el tamaño de la barra de operaciones\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Drag to resize the Operations bar · Left/Right to adjust · Shift for larger steps\"",
+   "es": "title=\"Arrastra para cambiar el tamaño de la barra de operaciones · Izquierda/Derecha para ajustar · Shift para pasos más grandes\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Prompt flow canvas\"",
+   "es": "aria-label=\"Canvas del prompt flow\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Validate flow\"",
+   "es": "title=\"Validar el flow\"",
+   "n": 1
+  },
+  {
+   "en": ">✓ Validate<",
+   "es": ">✓ Validar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Play flow\"",
+   "es": "title=\"Ejecutar el flow\"",
+   "n": 1
+  },
+  {
+   "en": ">▶ Play<",
+   "es": ">▶ Ejecutar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Stop flow\"",
+   "es": "title=\"Detener el flow\"",
+   "n": 1
+  },
+  {
+   "en": ">■ Stop<",
+   "es": ">■ Detener<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Pause before the next operation\"",
+   "es": "title=\"Pausar antes de la siguiente operación\"",
+   "n": 1
+  },
+  {
+   "en": ">Ⅱ Pause<",
+   "es": ">Ⅱ Pausar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Clear canvas\"",
+   "es": "title=\"Limpiar el canvas\"",
+   "n": 1
+  },
+  {
+   "en": ">⌫ Clear<",
+   "es": ">⌫ Limpiar<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Diagram tools\"",
+   "es": "aria-label=\"Herramientas del diagrama\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Undo (Ctrl+Z)\"",
+   "es": "title=\"Deshacer (Ctrl+Z)\"",
+   "n": 1
+  },
+  {
+   "en": ">↶ Undo<",
+   "es": ">↶ Deshacer<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Redo (Ctrl+Shift+Z)\"",
+   "es": "title=\"Rehacer (Ctrl+Shift+Z)\"",
+   "n": 1
+  },
+  {
+   "en": ">↷ Redo<",
+   "es": ">↷ Rehacer<",
+   "n": 1
+  },
+  {
+   "en": ">⚙ Configure<",
+   "es": ">⚙ Configurar<",
+   "n": 1
+  },
+  {
+   "en": ">▣ Duplicate<",
+   "es": ">▣ Duplicar<",
+   "n": 1
+  },
+  {
+   "en": ">⌫ Delete<",
+   "es": ">⌫ Eliminar<",
+   "n": 1
+  },
+  {
+   "en": ">Start<",
+   "es": ">Inicio<",
+   "n": 1
+  },
+  {
+   "en": ">Add an operation<",
+   "es": ">Agregar una operación<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Flow name and step limit\"",
+   "es": "title=\"Nombre del flow y límite de pasos\"",
+   "n": 1
+  },
+  {
+   "en": ">Flow settings<",
+   "es": ">Configuración del flow<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Zoom out\"",
+   "es": "aria-label=\"Alejar\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Zoom in\"",
+   "es": "aria-label=\"Acercar\"",
+   "n": 1
+  },
+  {
+   "en": ">Fit<",
+   "es": ">Ajustar<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Diagram canvas; use arrow keys to move selected operations\"",
+   "es": "aria-label=\"Canvas del diagrama; usa las flechas del teclado para mover las operaciones seleccionadas\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Connections\"",
+   "es": "aria-label=\"Conexiones\"",
+   "n": 1
+  },
+  {
+   "en": ">Design your prompt flow<",
+   "es": ">Diseña tu prompt flow<",
+   "n": 1
+  },
+  {
+   "en": ">Add operations, connect their outputs, then press Play.<",
+   "es": ">Agrega operaciones, conecta sus outputs y luego presiona Ejecutar.<",
+   "n": 1
+  },
+  {
+   "en": ">Try an example<",
+   "es": ">Probar un ejemplo<",
+   "n": 1
+  },
+  {
+   "en": ">Ready to design<",
+   "es": ">Listo para diseñar<",
+   "n": 1
+  },
+  {
+   "en": ">0 operations · 0 connections<",
+   "es": ">0 operaciones · 0 conexiones<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Resize Run output\"",
+   "es": "aria-label=\"Cambiar el tamaño del output de la ejecución\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Drag to resize Run output · ↑ / ↓ to adjust · Home 5% · End 95%\"",
+   "es": "title=\"Arrastra para cambiar el tamaño del output de la ejecución · ↑ / ↓ para ajustar · Home 5% · End 95%\"",
+   "n": 1
+  },
+  {
+   "en": ">Run output <",
+   "es": ">Output de la ejecución <",
+   "n": 1
+  },
+  {
+   "en": ">Idle<",
+   "es": ">En espera<",
+   "n": 1
+  },
+  {
+   "en": ">Execution results appear here. Keep this page open while a flow is playing.<",
+   "es": ">Aquí aparecen los resultados de la ejecución. Mantén esta página abierta mientras se ejecuta un flow.<",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": ">Tlamatini (Prompt Flow Panel)<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Ctrl+O<",
+   "motivo": "atajo de teclado"
+  },
+  {
+   "en": ">Ctrl+S<",
+   "motivo": "atajo de teclado"
+  },
+  {
+   "en": ">Terminals<",
+   "motivo": "nombre de un área del producto"
+  },
+  {
+   "en": ">Prompt Flow:<",
+   "motivo": "nombre de la función"
+  },
+  {
+   "en": ">Untitled.fpmt<",
+   "motivo": "nombre de archivo predeterminado; el JS lo usa igual"
+  }
+ ]
+}

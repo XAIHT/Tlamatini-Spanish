@@ -1,0 +1,84 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0144_insert_java17_maven_demo_prompt_at_5.py",
+ "segmentos": [
+  {
+   "en": "'Tlamatini, starting from the project located in the directory '",
+   "es": "'Tlamatini, partiendo del proyecto que está en el directorio '",
+   "n": 1
+  },
+  {
+   "en": "'\"Tlamatini/applications/<CurrentProjectFolderName>\", **You must create a new project located in '",
+   "es": "'\"Tlamatini/applications/<CurrentProjectFolderName>\", **debes crear un nuevo proyecto en '",
+   "n": 1
+  },
+  {
+   "en": "'\"Tlamatini/applications/<NewProjectFolderName>**\" strictly following these REQUIREMENTS:\\n'",
+   "es": "'\"Tlamatini/applications/<NewProjectFolderName>**\" siguiendo estrictamente estos REQUISITOS:\\n'",
+   "n": 1
+  },
+  {
+   "en": "'- Migrate from Java 1.8 to Java 17\\n'",
+   "es": "'- Migrar de Java 1.8 a Java 17\\n'",
+   "n": 1
+  },
+  {
+   "en": "'- Migrate to use Maven (- ...\\n'",
+   "es": "'- Migrar para usar Maven (- ...\\n'",
+   "n": 1
+  },
+  {
+   "en": "'**You must create the new project directory as '",
+   "es": "'**Debes crear el directorio del nuevo proyecto como '",
+   "n": 1
+  },
+  {
+   "en": "'\"Tlamatini/applications/<NewProjectFolderName>\", as you already know: the Tlamatini '",
+   "es": "'\"Tlamatini/applications/<NewProjectFolderName>\"; como ya sabes, el directorio Tlamatini '",
+   "n": 1
+  },
+  {
+   "en": "'directory is intended for applications; therefore, from each element of the original '",
+   "es": "'está pensado para aplicaciones; por lo tanto, a partir de cada elemento de los recursos '",
+   "n": 1
+  },
+  {
+   "en": "'resources, you must create/copy/etc. (as appropriate in each case) from '",
+   "es": "'originales debes crear/copiar/etc. (según corresponda en cada caso) de '",
+   "n": 1
+  },
+  {
+   "en": "'\"Tlamatini/applications/<CurrentProjectFolderName>\" into '",
+   "es": "'\"Tlamatini/applications/<CurrentProjectFolderName>\" a '",
+   "n": 1
+  },
+  {
+   "en": "'\"Tlamatini/applications/<NewProjectFolderName>\" to meet the requirements. REQUIREMENTS '",
+   "es": "'\"Tlamatini/applications/<NewProjectFolderName>\" para cumplir los requisitos. REQUISITOS '",
+   "n": 1
+  },
+  {
+   "en": "'(Multi-Turn mode — keep the Multi-Turn and Exec Report checkboxes ticked; this request '",
+   "es": "'(modo Multi-Turn: mantén marcadas las casillas Multi-Turn y Exec Report; esta solicitud '",
+   "n": 1
+  },
+  {
+   "en": "'requires execution-report verification.) End with END-RESPONSE.'",
+   "es": "'requiere verificación por Exec report.) Termina con END-RESPONSE.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "f'prompt-{pid + 1}'",
+   "motivo": "id de slot (valor de máquina)"
+  },
+  {
+   "en": "f'prompt-{pid - 1}'",
+   "motivo": "id de slot (valor de máquina)"
+  }
+ ]
+}

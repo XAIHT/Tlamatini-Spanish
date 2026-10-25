@@ -1,0 +1,282 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0173_add_unreal_scaffold_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, SCAFFOLD A NEW UNREAL ENGINE 5.8 C++ PROJECT for me, ready to open in \"",
+   "es": "\"Tlamatini, SCAFFOLD A NEW UNREAL ENGINE 5.8 C++ PROJECT para mí, listo para abrir en \"",
+   "n": 1
+  },
+  {
+   "en": "\"Visual Studio 2026 with the UnrealMCP plugin already wired in. I filled in the two \"",
+   "es": "\"Visual Studio 2026 con el plugin UnrealMCP ya conectado. Ya llené los dos \"",
+   "n": 1
+  },
+  {
+   "en": "\"fields below — the ONLY two things you need from me: the project's NAME and the \"",
+   "es": "\"campos de abajo — las ÚNICAS dos cosas que necesitas de mí: el NOMBRE del proyecto y el \"",
+   "n": 1
+  },
+  {
+   "en": "\"DIRECTORY it should be created in.\\n\"",
+   "es": "\"DIRECTORIO donde debe crearse.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"NEW UNREAL PROJECT\\n\"",
+   "es": "\"PROYECTO UNREAL NUEVO\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"- project name:        [[ TYPE THE PROJECT NAME HERE, e.g. MyAwesomeGame — letters, digits and underscores ONLY, no spaces or dashes, must not start with a digit ]]\\n\"",
+   "es": "\"- project name:        [[ ESCRIBE AQUÍ EL NOMBRE DEL PROYECTO, p. ej. MyAwesomeGame — SÓLO letras, dígitos y guiones bajos, sin espacios ni guiones, no debe empezar con un dígito ]]\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"- directory location:  [[ THE PARENT FOLDER TO CREATE IT IN, e.g. C:\\\\Users\\\\angel\\\\Documents\\\\UnrealProjects ]]\\n\"",
+   "es": "\"- directory location:  [[ LA CARPETA PADRE DONDE CREARLO, p. ej. C:\\\\Users\\\\angel\\\\Documents\\\\UnrealProjects ]]\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"FIRST, a safety check — do this before touching anything: if EITHER line above still \"",
+   "es": "\"PRIMERO, una revisión de seguridad — hazla antes de tocar nada: si CUALQUIERA de las líneas de arriba todavía \"",
+   "n": 1
+  },
+  {
+   "en": "\"shows a [[ ... ]] marker (so I have not filled it in), do NOT create anything and run \"",
+   "es": "\"muestra un marcador [[ ... ]] (o sea que no la llené), NO crees nada ni ejecutes \"",
+   "n": 1
+  },
+  {
+   "en": "\"nothing — just tell me which field to fill and stop. Also, if the project name has a \"",
+   "es": "\"nada — sólo dime qué campo llenar y detente. Además, si el nombre del proyecto tiene un \"",
+   "n": 1
+  },
+  {
+   "en": "\"space or a dash, or starts with a digit, do NOT proceed — explain that it must be a \"",
+   "es": "\"espacio o un guión, o empieza con un dígito, NO continúes — explícame que debe ser un \"",
+   "n": 1
+  },
+  {
+   "en": "\"valid Unreal C++ module name (letters / digits / underscore, no leading digit) and ask \"",
+   "es": "\"nombre de módulo C++ de Unreal válido (letras / dígitos / guión bajo, sin dígito inicial) y pídeme \"",
+   "n": 1
+  },
+  {
+   "en": "\"me to rename it. Only continue when BOTH fields are filled AND the name is valid.\\n\"",
+   "es": "\"que lo renombre. Continúa sólo cuando AMBOS campos estén llenos AND el nombre sea válido.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"THEN, in Multi-Turn, using ONLY your own tools (Executer / Gitter / File-Interpreter), \"",
+   "es": "\"LUEGO, en Multi-Turn, usando SÓLO tus propios tools (Executer / Gitter / File-Interpreter), \"",
+   "n": 1
+  },
+  {
+   "en": "\"do exactly this, in order:\\n\"",
+   "es": "\"haz exactamente esto, en orden:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"1) LOCATE THE SCAFFOLDER. The deterministic scaffolder lives at \"",
+   "es": "\"1) UBICA EL SCAFFOLDER. El scaffolder determinista está en \"",
+   "n": 1
+  },
+  {
+   "en": "\"C:\\\\Development\\\\XaihtUnrealEngineMCP\\\\scaffold_unreal_project.py (its repo also holds \"",
+   "es": "\"C:\\\\Development\\\\XaihtUnrealEngineMCP\\\\scaffold_unreal_project.py (su repo también tiene \"",
+   "n": 1
+  },
+  {
+   "en": "\"the MCPGameProject template and the UnrealMCP editor plugin). Use Executer to check \"",
+   "es": "\"la plantilla MCPGameProject y el plugin de editor UnrealMCP). Usa Executer para revisar \"",
+   "n": 1
+  },
+  {
+   "en": "\"whether that file exists (e.g. `if exist \\\"C:\\\\Development\\\\XaihtUnrealEngineMCP\\\\scaffold_unreal_project.py\\\" (echo FOUND) else (echo MISSING)`). \"",
+   "es": "\"si ese archivo existe (p. ej. `if exist \\\"C:\\\\Development\\\\XaihtUnrealEngineMCP\\\\scaffold_unreal_project.py\\\" (echo FOUND) else (echo MISSING)`). \"",
+   "n": 1
+  },
+  {
+   "en": "\"If it is MISSING, clone the repo first with Gitter (command='custom', custom_command=\"",
+   "es": "\"Si está MISSING, clona primero el repo con Gitter (command='custom', custom_command=\"",
+   "n": 1
+  },
+  {
+   "en": "\"'clone https://github.com/XAIHT/XaihtUnrealEngineMCP.git C:\\\\Development\\\\XaihtUnrealEngineMCP') \"",
+   "es": "\"'clone https://github.com/XAIHT/XaihtUnrealEngineMCP.git C:\\\\Development\\\\XaihtUnrealEngineMCP') \""
+  },
+  {
+   "en": "\"— create C:\\\\Development first if needed. Do NOT continue until the scaffolder file exists.\\n\"",
+   "es": "\"— crea C:\\\\Development primero si hace falta. NO continúes hasta que el archivo del scaffolder exista.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"2) RUN THE SCAFFOLDER (one command does everything). Use Executer to run EXACTLY this, \"",
+   "es": "\"2) CORRE EL SCAFFOLDER (un comando lo hace todo). Usa Executer para correr EXACTAMENTE esto, \"",
+   "n": 1
+  },
+  {
+   "en": "\"substituting my two values and KEEPING the quotes around the directory (it may contain \"",
+   "es": "\"sustituyendo mis dos valores y MANTENIENDO las comillas alrededor del directorio (puede contener \"",
+   "n": 1
+  },
+  {
+   "en": "\"   python \\\"C:\\\\Development\\\\XaihtUnrealEngineMCP\\\\scaffold_unreal_project.py\\\" --name <PROJECT NAME> --dest \\\"<DIRECTORY LOCATION>\\\"\\n\"",
+   "es": "\"   python \\\"C:\\\\Development\\\\XaihtUnrealEngineMCP\\\\scaffold_unreal_project.py\\\" --name <PROJECT NAME> --dest \\\"<DIRECTORY LOCATION>\\\"\\n\""
+  },
+  {
+   "en": "\"That single command copies the template, renames every module file and token to my \"",
+   "es": "\"Ese único comando copia la plantilla, renombra cada archivo de módulo y token a mi \"",
+   "n": 1
+  },
+  {
+   "en": "\"project name, bundles the UnrealMCP plugin, sets EngineAssociation to 5.8, auto-finds \"",
+   "es": "\"nombre de proyecto, empaqueta el plugin UnrealMCP, pone EngineAssociation en 5.8, encuentra solo \"",
+   "n": 1
+  },
+  {
+   "en": "\"my installed UE 5.8 engine, and GENERATES the Visual Studio solution (.sln). Its final \"",
+   "es": "\"mi engine UE 5.8 instalado y GENERA la solución de Visual Studio (.sln). Su línea final de \"",
+   "n": 1
+  },
+  {
+   "en": "\"stdout line starts with `SCAFFOLD_RESULT:` followed by JSON — READ that JSON. If its \"",
+   "es": "\"stdout empieza con `SCAFFOLD_RESULT:` seguido de JSON — LEE ese JSON. Si su \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"ok\\\" is false, show me the \\\"error\\\" verbatim and stop. If \\\"ok\\\" is true, capture \"",
+   "es": "\"\\\"ok\\\" es false, muéstrame el \\\"error\\\" tal cual y detente. Si \\\"ok\\\" es true, captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"project_dir\\\", \\\"uproject\\\" and \\\"solution\\\" for the report.\\n\"",
+   "es": "\"\\\"project_dir\\\", \\\"uproject\\\" y \\\"solution\\\" para el reporte.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"3) OPEN IT IN VISUAL STUDIO. If \\\"solution\\\" is a real .sln path, use Executer to open \"",
+   "es": "\"3) ÁBRELO EN VISUAL STUDIO. Si \\\"solution\\\" es un path .sln real, usa Executer para abrirlo \"",
+   "n": 1
+  },
+  {
+   "en": "\"it on my desktop:\\n\"",
+   "es": "\"en mi escritorio:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"   start \\\"\\\" \\\"<solution>\\\"\\n\"",
+   "es": "\"   start \\\"\\\" \\\"<solution>\\\"\\n\""
+  },
+  {
+   "en": "\"(that launches Visual Studio 2026 on the .sln). If \\\"solution\\\" is empty, do NOT invent \"",
+   "es": "\"(eso lanza Visual Studio 2026 sobre el .sln). Si \\\"solution\\\" está vacío, NO inventes \"",
+   "n": 1
+  },
+  {
+   "en": "\"one — show me the note the script printed under \\\"notes\\\" and point me at the .uproject \"",
+   "es": "\"uno — muéstrame la nota que el script imprimió bajo \\\"notes\\\" y señálame el .uproject \"",
+   "n": 1
+  },
+  {
+   "en": "\"so I can right-click it and choose 'Generate Visual Studio project files' myself.\\n\"",
+   "es": "\"para hacerle clic derecho y elegir 'Generate Visual Studio project files' yo mismo.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"4) CONFIRM + INSTRUCT. Emit a short, tidy HTML summary showing: the project FOLDER, the \"",
+   "es": "\"4) CONFIRMA + INSTRUYE. Muestra un resumen HTML corto y ordenado que presente: la CARPETA del proyecto, el \"",
+   "n": 1
+  },
+  {
+   "en": "\".uproject path, the .sln path, and the engine root that was used. Then give me these \"",
+   "es": "\"path del .uproject, el path del .sln y el engine root que se usó. Luego dame estos \"",
+   "n": 1
+  },
+  {
+   "en": "\"exact next steps for Visual Studio 2026: (a) set the configuration to 'Development \"",
+   "es": "\"pasos siguientes exactos para Visual Studio 2026: (a) pon la configuración en 'Development \"",
+   "n": 1
+  },
+  {
+   "en": "\"Editor' and the platform to 'Win64'; (b) build MY PROJECT ONLY, NOT the whole solution \"",
+   "es": "\"Editor' y la plataforma en 'Win64'; (b) build MY PROJECT ONLY, NOT the whole solution \"",
+   "n": 1
+  },
+  {
+   "en": "\"Unreal Editor with my project. Add this note verbatim: once the editor is running, the \"",
+   "es": "\"Unreal Editor con mi proyecto. Agrega esta nota tal cual: una vez que el editor está corriendo, el \"",
+   "n": 1
+  },
+  {
+   "en": "\"bundled UnrealMCP plugin AUTOMATICALLY starts its TCP listener on 127.0.0.1:55557 (it is \"",
+   "es": "\"plugin UnrealMCP incluido inicia AUTOMÁTICAMENTE su listener TCP en 127.0.0.1:55557 (es \"",
+   "n": 1
+  },
+  {
+   "en": "\"a UEditorSubsystem whose Initialize() starts the server), so you — Tlamatini — can \"",
+   "es": "\"un UEditorSubsystem cuyo Initialize() inicia el servidor), así que tú — Tlamatini — puedes \"",
+   "n": 1
+  },
+  {
+   "en": "\"immediately drive the live editor with the chat_agent_unrealer tool; there is no extra \"",
+   "es": "\"manejar de inmediato el editor en vivo con el tool chat_agent_unrealer; no hay un paso extra \"",
+   "n": 1
+  },
+  {
+   "en": "\"'start server' step.\\n\"",
+   "es": "\"de 'start server'.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Do NOT attempt to compile or launch the engine yourself from chat (a full editor build \"",
+   "es": "\"NO intentes compilar ni lanzar el engine tú misma desde el chat (un build completo del editor \"",
+   "n": 1
+  },
+  {
+   "en": "\"is long and belongs in Visual Studio). Your job in this prompt is to PRODUCE the \"",
+   "es": "\"es largo y pertenece a Visual Studio). Tu trabajo en este prompt es PRODUCIR el \"",
+   "n": 1
+  },
+  {
+   "en": "\"ready-to-open, ready-to-compile project and hand it to me in Visual Studio 2026.\\n\"",
+   "es": "\"proyecto listo para abrir y listo para compilar y entregármelo en Visual Studio 2026.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tick ONLY the Multi-Turn checkbox. End with END-RESPONSE.\"",
+   "es": "\"Marca SÓLO la casilla Multi-Turn. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"— in Solution Explorer right-click the project named after my game (under the 'Games' \"",
+   "motivo": "oración _NEW_B que 0174 compara por __contains; conservar en inglés"
+  },
+  {
+   "en": "\"folder) and choose Build; do NOT use 'Build Solution', because a full-solution build \"",
+   "motivo": "oración _NEW_B que 0174 compara por __contains; conservar en inglés"
+  },
+  {
+   "en": "\"also compiles unrelated engine targets (LiveLinkHub, test harnesses, etc.) that fail \"",
+   "motivo": "oración _NEW_B que 0174 compara por __contains; conservar en inglés"
+  },
+  {
+   "en": "\"for reasons that have nothing to do with my game and just clutter the Error List with \"",
+   "motivo": "oración _NEW_B que 0174 compara por __contains; conservar en inglés"
+  },
+  {
+   "en": "\"red herrings. This first project build compiles the UnrealMCP plugin and takes several \"",
+   "motivo": "oración _NEW_B que 0174 compara por __contains; conservar en inglés"
+  },
+  {
+   "en": "\"minutes; (c) press F5 (or Ctrl+F5) to launch the \"",
+   "motivo": "oración _NEW_B que 0174 compara por __contains; conservar en inglés"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

@@ -1,0 +1,628 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_chat.js",
+ "segmentos": [
+  {
+   "en": "\"outside my application root\"",
+   "es": "\"fuera del path raíz de mi aplicación\"",
+   "maquina": "acoplada con constants.ERROR_*_OUTSIDE_ROOT",
+   "n": 1
+  },
+  {
+   "en": "\"not a valid directory\"",
+   "es": "\"no es un directorio válido\"",
+   "maquina": "acoplada con constants.ERROR_NOT_A_DIRECTORY",
+   "n": 1
+  },
+  {
+   "en": "`---Load in canvas: ${filename}---`",
+   "es": "`---Cargar en el canvas: ${filename}---`",
+   "n": 1
+  },
+  {
+   "en": "'<i class=\"bi bi-clipboard\"></i> Copy'",
+   "es": "'<i class=\"bi bi-clipboard\"></i> Copiar'",
+   "n": 2
+  },
+  {
+   "en": "'<i class=\"bi bi-trash3\"></i> Drop'",
+   "es": "'<i class=\"bi bi-trash3\"></i> Descartar'",
+   "n": 1
+  },
+  {
+   "en": "'Erase this message from the chat and from the history Tlamatini reads'",
+   "es": "'Borra este mensaje del chat y del historial que lee Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'Remove this status line from the screen (it was never saved in the history)'",
+   "es": "'Quita esta línea de status de la pantalla (nunca se guardó en el historial)'",
+   "n": 1
+  },
+  {
+   "en": "'<i class=\"bi bi-diagram-3\"></i> Create Flow'",
+   "es": "'<i class=\"bi bi-diagram-3\"></i> Crear flow'",
+   "n": 1
+  },
+  {
+   "en": "'Validating agents…'",
+   "es": "'Validando los agents…'",
+   "n": 1
+  },
+  {
+   "en": "'Flow includes '",
+   "es": "'El flow incluye '",
+   "n": 1
+  },
+  {
+   "en": "' successful agent(s); '",
+   "es": "' agent(s) con ejecución exitosa; '",
+   "n": 1
+  },
+  {
+   "en": "' unregistered agent(s) will be skipped: '",
+   "es": "' agent(s) sin registrar se omitirán: '",
+   "n": 1
+  },
+  {
+   "en": "'Cannot create flow: no successful agent resolved to a '",
+   "es": "'No se puede crear el flow: ningún agent con ejecución exitosa corresponde a un '",
+   "n": 1
+  },
+  {
+   "en": "'registered canvas agent'",
+   "es": "'agent registrado del canvas'",
+   "n": 1
+  },
+  {
+   "en": "'<i class=\"bi bi-check2\"></i> Copied!'",
+   "es": "'<i class=\"bi bi-check2\"></i> ¡Copiado!'",
+   "n": 1
+  },
+  {
+   "en": "'Remove this status line from the chat?'",
+   "es": "'¿Quieres quitar esta línea de status del chat?'",
+   "n": 1
+  },
+  {
+   "en": "'This line was only a live notice. It was never saved in the '",
+   "es": "'Esta línea sólo era un aviso en vivo. Nunca se guardó en el '",
+   "n": 1
+  },
+  {
+   "en": "'history Tlamatini reads, so removing it does not change how she '",
+   "es": "'historial que lee Tlamatini, así que quitarla no cambia cómo '",
+   "n": 1
+  },
+  {
+   "en": "'answers - it only clears it from your screen.\\n\\n'",
+   "es": "'responde: sólo la borra de tu pantalla.\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'Are you sure you want to remove it?'",
+   "es": "'¿Seguro que quieres quitarla?'",
+   "n": 1
+  },
+  {
+   "en": "'• She will forget she ever wrote this answer. It is erased from the '",
+   "es": "'• Olvidará que alguna vez escribió esta respuesta. Se borra del '",
+   "n": 1
+  },
+  {
+   "en": "'chat and from the history she reads before every reply.'",
+   "es": "'chat y del historial que lee cada vez antes de responder.'",
+   "n": 2
+  },
+  {
+   "en": "'• She will forget you ever sent this message. It is erased from the '",
+   "es": "'• Olvidará que alguna vez le enviaste este mensaje. Se borra del '",
+   "n": 1
+  },
+  {
+   "en": "'• The question that led to it stays, so she may treat it as not '",
+   "es": "'• La pregunta que la originó se queda, así que quizá la trate como si '",
+   "n": 1
+  },
+  {
+   "en": "'answered yet. Drop that message too if you want her to forget the '",
+   "es": "'todavía no tuviera respuesta. Descarta también ese mensaje si quieres que olvide '",
+   "n": 1
+  },
+  {
+   "en": "'whole exchange.'",
+   "es": "'todo el intercambio.'",
+   "n": 1
+  },
+  {
+   "en": "'• Her answer to it stays. Drop that answer too if you want her to '",
+   "es": "'• Su respuesta a ese mensaje se queda. Descarta también esa respuesta si quieres que '",
+   "n": 1
+  },
+  {
+   "en": "'forget the whole exchange.'",
+   "es": "'olvide todo el intercambio.'",
+   "n": 1
+  },
+  {
+   "en": "'Drop this answer from Tlamatini?'",
+   "es": "'¿Quieres descartar esta respuesta de Tlamatini?'",
+   "n": 1
+  },
+  {
+   "en": "'Drop your message from the conversation?'",
+   "es": "'¿Quieres descartar tu mensaje de la conversación?'",
+   "n": 1
+  },
+  {
+   "en": "'What Tlamatini will do after you drop it:\\n\\n'",
+   "es": "'Lo que hará Tlamatini después de que lo descartes:\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'• From your next message on, she answers as if it had never existed.\\n'",
+   "es": "'• Desde tu siguiente mensaje, responderá como si nunca hubiera existido.\\n'",
+   "n": 1
+  },
+  {
+   "en": "'• Every message before and after it stays exactly as it is.\\n'",
+   "es": "'• Todos los mensajes anteriores y posteriores se quedan exactamente como están.\\n'",
+   "n": 1
+  },
+  {
+   "en": "'• A note she saved with her memory tool (External ▸ MCPs ▸ memory) '",
+   "es": "'• Una nota que haya guardado con su tool de memoria (Externos ▸ MCPs ▸ memory) '",
+   "n": 1
+  },
+  {
+   "en": "'lives apart from the chat and stays; ask her to forget it too.\\n'",
+   "es": "'vive aparte del chat y se queda; pídele que también la olvide.\\n'",
+   "n": 1
+  },
+  {
+   "en": "'• No reconnection is needed.\\n\\n'",
+   "es": "'• No hace falta reconectar.\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'This cannot be undone. Are you sure you want to drop it?'",
+   "es": "'Esto no se puede deshacer. ¿Seguro que quieres descartarlo?'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini is still working on a request. Drop this message '",
+   "es": "'Tlamatini todavía está trabajando en una solicitud. Descarta este mensaje '",
+   "n": 1
+  },
+  {
+   "en": "'when she has finished, so the answer in progress is not built on a '",
+   "es": "'cuando termine, para que la respuesta en curso no se construya sobre un '",
+   "n": 1
+  },
+  {
+   "en": "'history that changes under it.'",
+   "es": "'historial que cambia mientras tanto.'",
+   "n": 1
+  },
+  {
+   "en": "'Drop message'",
+   "es": "'Descartar mensaje'",
+   "n": 5
+  },
+  {
+   "en": "'Drop'",
+   "es": "'Descartar'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 3
+  },
+  {
+   "en": "'The live connection is down, so the message was NOT dropped. '",
+   "es": "'No hay conexión en vivo, así que el mensaje NO se descartó. '",
+   "n": 1
+  },
+  {
+   "en": "'Use Reconnect, then try again.'",
+   "es": "'Usa Reconectar y vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'The server did not confirm the drop, so the message is still '",
+   "es": "'El servidor no confirmó el descarte, así que el mensaje sigue '",
+   "n": 1
+  },
+  {
+   "en": "'in the history. Please try again.'",
+   "es": "'en el historial. Vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'The message could not be dropped.'",
+   "es": "'No se pudo descartar el mensaje.'",
+   "n": 1
+  },
+  {
+   "en": "'Unknown'",
+   "es": "'Desconocido'",
+   "n": 1
+  },
+  {
+   "en": "'Entry point, launches first agents'",
+   "es": "'Punto de entrada; lanza los primeros agents'",
+   "n": 2
+  },
+  {
+   "en": "'Terminates all agents, launches Cleaners'",
+   "es": "'Termina todos los agents; lanza los Cleaners'",
+   "n": 2
+  },
+  {
+   "en": "'Enter a name for the flow file:'",
+   "es": "'Escribe un nombre para el archivo del flow:'",
+   "n": 1
+  },
+  {
+   "en": "'Shell commands'",
+   "es": "'Comandos de shell'",
+   "n": 1
+  },
+  {
+   "en": "'Measures real Internet throughput, latency, jitter and bufferbloat across several keyless providers (RFC 6349)'",
+   "es": "'Mide el throughput real de internet, la latencia, el jitter y el bufferbloat con varios proveedores que no requieren API key (RFC 6349)'",
+   "n": 1
+  },
+  {
+   "en": "'Inline Python execution'",
+   "es": "'Ejecución de código Python inline'",
+   "n": 1
+  },
+  {
+   "en": "'Web crawling with LLM analysis'",
+   "es": "'Crawling web con análisis por LLM'",
+   "n": 1
+  },
+  {
+   "en": "'Google search and text extraction'",
+   "es": "'Búsqueda en Google y extracción de texto'",
+   "n": 1
+  },
+  {
+   "en": "'HTTP REST API calls'",
+   "es": "'Llamadas a APIs REST por HTTP'",
+   "n": 1
+  },
+  {
+   "en": "'Git operations'",
+   "es": "'Operaciones de Git'",
+   "n": 1
+  },
+  {
+   "en": "'SSH remote commands'",
+   "es": "'Comandos remotos por SSH'",
+   "n": 1
+  },
+  {
+   "en": "'SCP file transfer'",
+   "es": "'Transferencia de archivos por SCP'",
+   "n": 1
+  },
+  {
+   "en": "'Docker commands'",
+   "es": "'Comandos de Docker'",
+   "n": 1
+  },
+  {
+   "en": "'kubectl commands'",
+   "es": "'Comandos de kubectl'",
+   "n": 1
+  },
+  {
+   "en": "'PowerShell commands'",
+   "es": "'Comandos de PowerShell'",
+   "n": 1
+  },
+  {
+   "en": "'Jenkins job triggers'",
+   "es": "'Ejecución de jobs de Jenkins'",
+   "n": 1
+  },
+  {
+   "en": "'SQL queries'",
+   "es": "'Queries de SQL'",
+   "n": 1
+  },
+  {
+   "en": "'MongoDB operations'",
+   "es": "'Operaciones de MongoDB'",
+   "n": 1
+  },
+  {
+   "en": "'LaTeX typesetting: .tex sources compiled to PDF'",
+   "es": "'Composición con LaTeX: archivos fuente .tex compilados a PDF'",
+   "n": 1
+  },
+  {
+   "en": "'Visible CMD/PowerShell terminals typed like a person, with hand-over to the user'",
+   "es": "'Terminales visibles de CMD/PowerShell, escritas como lo haría una persona, con traspaso al usuario'",
+   "n": 1
+  },
+  {
+   "en": "'LLM prompt execution'",
+   "es": "'Ejecución de prompts en el LLM'",
+   "n": 1
+  },
+  {
+   "en": "'LLM text summarization'",
+   "es": "'Resumen de textos con LLM'",
+   "n": 1
+  },
+  {
+   "en": "'Creates files with specified content'",
+   "es": "'Crea archivos con el contenido indicado'",
+   "n": 1
+  },
+  {
+   "en": "'LLM reads and interprets file contents'",
+   "es": "'El LLM lee e interpreta el contenido de archivos'",
+   "n": 1
+  },
+  {
+   "en": "'Raw text extraction from documents'",
+   "es": "'Extracción de texto plano de documentos'",
+   "n": 1
+  },
+  {
+   "en": "'LLM vision analysis'",
+   "es": "'Análisis de visión con LLM'",
+   "n": 1
+  },
+  {
+   "en": "'Screenshot capture'",
+   "es": "'Toma de screenshots'",
+   "n": 1
+  },
+  {
+   "en": "'Desktop notification with sound'",
+   "es": "'Notificación de escritorio con sonido'",
+   "n": 1
+  },
+  {
+   "en": "'SMTP email sending'",
+   "es": "'Envío de correo por SMTP'",
+   "n": 1
+  },
+  {
+   "en": "'IMAP email receiver'",
+   "es": "'Recepción de correo por IMAP'",
+   "n": 1
+  },
+  {
+   "en": "'Telegram messages'",
+   "es": "'Mensajes de Telegram'",
+   "n": 1
+  },
+  {
+   "en": "'WhatsApp messages'",
+   "es": "'Mensajes de WhatsApp'",
+   "n": 1
+  },
+  {
+   "en": "'LLM-powered log file monitor'",
+   "es": "'Monitor de archivos de log con LLM'",
+   "n": 1
+  },
+  {
+   "en": "'LLM-powered network port monitor'",
+   "es": "'Monitor de puertos de red con LLM'",
+   "n": 1
+  },
+  {
+   "en": "'Maps structured output between agents'",
+   "es": "'Mapea el output estructurado entre agents'",
+   "n": 1
+  },
+  {
+   "en": "'JAR/WAR decompilation'",
+   "es": "'Descompilación de JAR/WAR'",
+   "n": 1
+  },
+  {
+   "en": "'Post-quantum key pair generation'",
+   "es": "'Generación de pares de llaves poscuánticas'",
+   "n": 1
+  },
+  {
+   "en": "'Post-quantum encryption'",
+   "es": "'Cifrado poscuántico'",
+   "n": 1
+  },
+  {
+   "en": "'Post-quantum decryption'",
+   "es": "'Descifrado poscuántico'",
+   "n": 1
+  },
+  {
+   "en": "'File deletion'",
+   "es": "'Eliminación de archivos'",
+   "n": 1
+  },
+  {
+   "en": "'File move/copy'",
+   "es": "'Movimiento o copia de archivos'",
+   "n": 1
+  },
+  {
+   "en": "'Mouse simulation'",
+   "es": "'Simulación del mouse'",
+   "n": 1
+  },
+  {
+   "en": "'Keyboard automation'",
+   "es": "'Automatización del teclado'",
+   "n": 1
+  },
+  {
+   "en": "'Timed delay'",
+   "es": "'Espera temporizada'",
+   "n": 1
+  },
+  {
+   "en": "'Pattern-based trigger'",
+   "es": "'Disparador basado en un pattern'",
+   "n": 1
+  },
+  {
+   "en": "'Conditional branching'",
+   "es": "'Bifurcación condicional'",
+   "n": 1
+  },
+  {
+   "en": "'Log/PID cleanup'",
+   "es": "'Limpieza de logs y PIDs'",
+   "n": 1
+  },
+  {
+   "en": "'Synchronization barrier'",
+   "es": "'Barrera de sincronización'",
+   "n": 1
+  },
+  {
+   "en": "'Session backup'",
+   "es": "'Backup de la sesión'",
+   "n": 1
+  },
+  {
+   "en": "'Save all files received'",
+   "es": "'Guardar todos los archivos recibidos'",
+   "n": 1
+  },
+  {
+   "en": "'Live connection problem. Use Reconnect or refresh before continue.'",
+   "es": "'Hay un problema con la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Live connection lost. Use Reconnect or refresh before continue.'",
+   "es": "'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "/^(?:and|with)\\s+/i",
+   "es": "/^(?:and|with|y|con)\\s+/i",
+   "codigo": "Create Flow en español: los parámetros de un request también se separan con \"y\" / \"con\" (como \"and\" / \"with\")",
+   "n": 2
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"--- Context directory selection failed. message received: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"display: none !important;\"",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "\"col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-invisible\"",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "\"--- Referenced Rephrase: message received: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "'<i class=\"bi bi-x\"></i> Error'",
+   "motivo": "igual en español"
+  },
+  {
+   "en": "'drop-message'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "'--- Message '",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "' dropped from the chat and from the LLM history'",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "' (it was already gone from the history).'",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "'Emailer'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Summarizer'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Mover'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Kyber-Cipher'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Starter'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Ender'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'multi-turn-flow'",
+   "motivo": "nombre de archivo predeterminado"
+  },
+  {
+   "en": "'--- Create Flow: downloaded '",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"Trying to find files into: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "'exec-permission-response'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "'--- Context UI restored: '",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "'--- Received system message from server, message: '",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"MCP-1: Enabled?: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"MCP-2: Enabled?: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- Tool added: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- Agent updated: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- Agent added: \"",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "\"--- The message(tree_view content) is: \"",
+   "motivo": "texto de log (console.log)"
+  }
+ ]
+}

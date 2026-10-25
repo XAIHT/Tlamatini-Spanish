@@ -1,0 +1,150 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-canvas-core.js",
+ "segmentos": [
+  {
+   "en": "'No description was found for this agent in agents_descriptions.md.'",
+   "es": "'No se encontró una descripción para este agent en agents_descriptions.md.'",
+   "n": 1
+  },
+  {
+   "en": "\"Output L (less than)\"",
+   "es": "\"Output L (menor que)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Output G (greater/equal)\"",
+   "es": "\"Output G (mayor o igual)\"",
+   "n": 1
+  },
+  {
+   "en": "\"This agent does not start downstream agents\"",
+   "es": "\"Este agent no inicia a los agents que le siguen\"",
+   "n": 1
+  },
+  {
+   "en": "'Agent Status'",
+   "es": "'Status del agent'",
+   "n": 1
+  },
+  {
+   "en": "'Only one FlowCreator agent is allowed per flow.'",
+   "es": "'Sólo se permite un agent FlowCreator por flow.'",
+   "n": 1
+  },
+  {
+   "en": "'Only one FlowHypervisor agent is allowed per flow.'",
+   "es": "'Sólo se permite un agent FlowHypervisor por flow.'",
+   "n": 1
+  },
+  {
+   "en": "'FlowCreator agents cannot be cloned. Only one allowed per flow.'",
+   "es": "'Los agents FlowCreator no se pueden clonar. Sólo se permite uno por flow.'",
+   "n": 1
+  },
+  {
+   "en": "'FlowHypervisor agents cannot be cloned. Only one allowed per flow.'",
+   "es": "'Los agents FlowHypervisor no se pueden clonar. Sólo se permite uno por flow.'",
+   "n": 1
+  },
+  {
+   "en": "'This selection contains an agent limited to one per flow.'",
+   "es": "'Esta selección contiene un agent que sólo se permite una vez por flow.'",
+   "n": 1
+  },
+  {
+   "en": "'Invalid Connection: Cleaner Agent only accepts input from Ender or FlowBacker Agents.'",
+   "es": "'Conexión no válida: el agent Cleaner sólo acepta input de los agents Ender o FlowBacker.'",
+   "n": 1
+  },
+  {
+   "en": "'Invalid Connection: Cleaner Agent can only accept ONE input connection.'",
+   "es": "'Conexión no válida: el agent Cleaner sólo puede aceptar UNA conexión de input.'",
+   "n": 1
+  },
+  {
+   "en": "'Invalid Connection: Ender Agent outputs can ONLY connect to Cleaner or FlowBacker Agents.'",
+   "es": "'Conexión no válida: los outputs del agent Ender SÓLO se pueden conectar a los agents Cleaner o FlowBacker.'",
+   "n": 1
+  },
+  {
+   "en": "'Invalid Connection: FlowBacker Agent only accepts input from Starter, Ender, Forker, or Asker Agents.'",
+   "es": "'Conexión no válida: el agent FlowBacker sólo acepta input de los agents Starter, Ender, Forker o Asker.'",
+   "n": 1
+  },
+  {
+   "en": "'Invalid Connection: FlowBacker Agent outputs can ONLY connect to Cleaner Agents.'",
+   "es": "'Conexión no válida: los outputs del agent FlowBacker SÓLO se pueden conectar a agents Cleaner.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'notifier-agent'",
+   "motivo": "clase CSS"
+  },
+  {
+   "en": "'prompter-agent'",
+   "motivo": "clase CSS"
+  },
+  {
+   "en": "\"Input 1\"",
+   "motivo": "término técnico (input)"
+  },
+  {
+   "en": "\"Input 2\"",
+   "motivo": "término técnico (input)"
+  },
+  {
+   "en": "'monitor log'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'monitor netstat'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "\"Output A\"",
+   "motivo": "término técnico (output)"
+  },
+  {
+   "en": "\"Output B\"",
+   "motivo": "término técnico (output)"
+  },
+  {
+   "en": "'button'",
+   "motivo": "valor de máquina (role ARIA)"
+  },
+  {
+   "en": "'source'",
+   "motivo": "valor de máquina (argumento de conexión)"
+  },
+  {
+   "en": "'remove'",
+   "motivo": "valor de máquina (argumento de conexión)"
+  },
+  {
+   "en": "'target'",
+   "motivo": "valor de máquina (argumento de conexión)"
+  },
+  {
+   "en": "'HTTP Error: '",
+   "motivo": "texto de consola"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor de máquina (draggable)"
+  },
+  {
+   "en": "'false'",
+   "motivo": "valor de máquina (aria-busy)"
+  },
+  {
+   "en": "'Enter'",
+   "motivo": "nombre de tecla"
+  },
+  {
+   "en": "'add'",
+   "motivo": "valor de máquina (argumento de conexión)"
+  }
+ ]
+}

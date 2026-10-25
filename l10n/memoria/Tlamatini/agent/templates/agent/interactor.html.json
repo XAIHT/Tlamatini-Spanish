@@ -1,0 +1,81 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/interactor.html",
+ "segmentos": [
+  {
+   "en": "aria-label=\"Live editor tutor\"",
+   "es": "aria-label=\"Tutor del editor en vivo\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Let Tlamatini read and guide this tab's current editor when you ask in chat, including unsaved changes.\"",
+   "es": "title=\"Permite que Tlamatini lea y guíe el editor de esta pestaña cuando se lo pidas en el chat, incluidos los cambios sin guardar.\"",
+   "n": 1
+  },
+  {
+   "en": "> Live editor\n  <",
+   "es": "> Editor en vivo\n  <",
+   "n": 1
+  },
+  {
+   "en": ">Connecting to live editor…<",
+   "es": ">Conectando con el editor en vivo…<",
+   "n": 1
+  },
+  {
+   "en": ">Explain selection<",
+   "es": ">Explicar la selección<",
+   "n": 1
+  },
+  {
+   "en": ">Stop tutor<",
+   "es": ">Detener el tutor<",
+   "n": 1
+  },
+  {
+   "en": ">Your turn<",
+   "es": ">Tu turno<",
+   "n": 1
+  },
+  {
+   "en": "> Suggestions<",
+   "es": "> Sugerencias<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Field instructions\"",
+   "es": "aria-label=\"Instrucciones del campo\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Suggested field values\"",
+   "es": "aria-label=\"Valores sugeridos para el campo\"",
+   "n": 1
+  },
+  {
+   "en": ">Start typing in the marked space.<",
+   "es": ">Empieza a escribir en el espacio marcado.<",
+   "n": 1
+  },
+  {
+   "en": ">Ask for a hint<",
+   "es": ">Pedir una pista<",
+   "n": 1
+  },
+  {
+   "en": ">Continue in chat<",
+   "es": ">Continuar en el chat<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Configure Live Editor\"",
+   "es": "title=\"Configurar el Editor en vivo\"",
+   "n": 1
+  },
+  {
+   "en": ">Settings</button>",
+   "es": ">Configuración</button>",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

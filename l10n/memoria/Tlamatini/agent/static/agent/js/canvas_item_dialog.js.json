@@ -1,0 +1,249 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/canvas_item_dialog.js",
+ "segmentos": [
+  {
+   "en": "\"Properties: \"",
+   "es": "\"Propiedades: \"",
+   "n": 2
+  },
+  {
+   "en": "\"Unknown\"",
+   "es": "\"Desconocido\"",
+   "n": 3
+  },
+  {
+   "en": "\"Config: \"",
+   "es": "\"Configuración: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Enter values separated by commas\"",
+   "es": "\"Escribe los valores separados por comas\"",
+   "n": 1
+  },
+  {
+   "en": "\"Select agents to be cleaned (logs & pids deleted) before restart.\"",
+   "es": "\"Selecciona los agents que se van a limpiar (se borran sus logs y PIDs) antes de reiniciar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"No other agents found on canvas.\"",
+   "es": "\"No hay otros agents en el canvas.\"",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#9888; Important:</strong> You must preconfigure SSH keys for passwordless authentication to the remote endpoint before using this agent.<br><em>For <b>send</b>: specify a Windows-like path (e.g. C:\\\\Users\\\\file.txt). For <b>receive</b>: specify a Linux-like path (e.g. /home/user/file.txt).</em>'",
+   "es": "'<strong>&#9888; Importante:</strong> Antes de usar este agent, debes configurar las llaves SSH para autenticarte sin contraseña en el endpoint remoto.<br><em>Para <b>send</b>: escribe un path al estilo de Windows (p. ej. C:\\\\Users\\\\file.txt). Para <b>receive</b>: escribe un path al estilo de Linux (p. ej. /home/user/file.txt).</em>'",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#9888; Important:</strong> You must preconfigure SSH keys for passwordless authentication to the remote endpoint before using this agent.'",
+   "es": "'<strong>&#9888; Importante:</strong> Antes de usar este agent, debes configurar las llaves SSH para autenticarte sin contraseña en el endpoint remoto.'",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#9889; FlowCreator</strong> — Design an agent flow using AI. Enter a prompt describing your flow objective, configure Tlamatini, and click <strong>Go!</strong> to generate the flow automatically.'",
+   "es": "'<strong>&#9889; FlowCreator</strong> — Diseña un flow de agents con IA. Escribe un prompt que describa el objetivo de tu flow, configura Tlamatini y haz clic en <strong>¡Adelante!</strong> para generar el flow automáticamente.'",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#9888; Note:</strong> Each time you save, the canvas will be <strong>completely cleaned</strong> (except this FlowCreator instance) and the flow will be regenerated from scratch.'",
+   "es": "'<strong>&#9888; Nota:</strong> Cada vez que guardes, el canvas se va a <strong>limpiar por completo</strong> (excepto esta instancia de FlowCreator) y el flow se va a generar otra vez desde cero.'",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#128433; Mouser</strong> — Inspect desktop geometry or move, click, drag and scroll. Choose the coordinate space explicitly; screenshot points need capture geometry and the actual image dimensions. Window anchors are geometric positions, not button names. A delivery receipt still needs application verification.'",
+   "es": "'<strong>&#128433; Mouser</strong> — Inspecciona la geometría del escritorio o mueve, haz clic, arrastra y desplázate. Elige el espacio de coordenadas de forma explícita; los puntos de un screenshot necesitan su geometría de captura y las dimensiones reales de la imagen. Los anclajes de ventana son posiciones geométricas, no nombres de botones. Un acuse de entrega todavía requiere que la aplicación lo verifique.'",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#127760; Crawler</strong> — Crawl web pages and process their content with Tlamatini. <b>Small-range</b>: same-domain links only. <b>Medium-range</b>: all links (cross-domain). <b>Large-range</b>: all links recursively up to a configurable depth.'",
+   "es": "'<strong>&#127760; Crawler</strong> — Recorre páginas web y procesa su contenido con Tlamatini. <b>Small-range</b>: sólo links del mismo dominio. <b>Medium-range</b>: todos los links (entre dominios). <b>Large-range</b>: todos los links, de forma recursiva, hasta una profundidad configurable.'",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#128737; FlowHypervisor</strong> — Tlamatini-powered flow monitoring. Configure Tlamatini and monitoring interval, then click <strong>Save</strong> to begin.'",
+   "es": "'<strong>&#128737; FlowHypervisor</strong> — Monitoreo del flow con Tlamatini. Configura Tlamatini y el intervalo de monitoreo, y luego haz clic en <strong>Guardar</strong> para empezar.'",
+   "n": 1
+  },
+  {
+   "en": "'<strong>&#9888; Note:</strong> This agent monitors all other agents in the flow and alerts when anomalies are detected.'",
+   "es": "'<strong>&#9888; Nota:</strong> Este agent monitorea a todos los demás agents del flow y avisa cuando detecta anomalías.'",
+   "n": 1
+  },
+  {
+   "en": "'e.g. \"Ignore warnings from sleeper agents\", \"Alert immediately if executer runs longer than 2 minutes\", \"The crawler agent is expected to take 5+ minutes — do not flag it as stuck\"'",
+   "es": "'p. ej. \"Ignora las advertencias de los agents sleeper\", \"Avisa de inmediato si executer tarda más de 2 minutos\", \"Es normal que el agent crawler tarde 5+ minutos — no lo marques como atorado\"'",
+   "n": 1
+  },
+  {
+   "en": "\"No editable configuration found.\"",
+   "es": "\"No se encontró ninguna configuración editable.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Go!\"",
+   "es": "\"¡Adelante!\"",
+   "n": 1
+  },
+  {
+   "en": "\"Save\"",
+   "es": "\"Guardar\"",
+   "n": 2
+  },
+  {
+   "en": "\"Failed to save configuration: \"",
+   "es": "\"Error al guardar la configuración: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Error saving configuration: \"",
+   "es": "\"Error al guardar la configuración: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Cancel\"",
+   "es": "\"Cancelar\"",
+   "n": 1
+  },
+  {
+   "en": "'Deployment Successful'",
+   "es": "'Deployment exitoso'",
+   "n": 1
+  },
+  {
+   "en": "`Agent \"${agentName}\" has been deployed successfully.`",
+   "es": "`Se hizo el deploy del agent \"${agentName}\" correctamente.`",
+   "n": 1
+  },
+  {
+   "en": "`Directory: ${pathOrError}`",
+   "es": "`Directorio: ${pathOrError}`",
+   "n": 1
+  },
+  {
+   "en": "'Deployment Failed'",
+   "es": "'Error en el deployment'",
+   "n": 1
+  },
+  {
+   "en": "\"Deployment Complete\"",
+   "es": "\"Deployment completo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Deployment Error\"",
+   "es": "\"Error de deployment\"",
+   "n": 1
+  },
+  {
+   "en": "\"OK\"",
+   "es": "\"Aceptar\"",
+   "n": 1
+  },
+  {
+   "en": "'Initializing FlowCreator...'",
+   "es": "'Inicializando FlowCreator...'",
+   "n": 1
+  },
+  {
+   "en": "'Cleaning canvas...'",
+   "es": "'Limpiando el canvas...'",
+   "n": 1
+  },
+  {
+   "en": "'Cleaning pool directory...'",
+   "es": "'Limpiando el directorio del pool...'",
+   "n": 1
+  },
+  {
+   "en": "'Starting FlowCreator agent... Sending prompt to Tlamatini...'",
+   "es": "'Iniciando el agent FlowCreator... Enviando el prompt a Tlamatini...'",
+   "n": 1
+  },
+  {
+   "en": "'Failed to start FlowCreator agent'",
+   "es": "'Error al iniciar el agent FlowCreator'",
+   "n": 1
+  },
+  {
+   "en": "'Waiting for Tlamatini response... This may take a minute...'",
+   "es": "'Esperando la respuesta de Tlamatini... Puede tardar un minuto...'",
+   "n": 1
+  },
+  {
+   "en": "'No result received from FlowCreator agent'",
+   "es": "'No se recibió ningún resultado del agent FlowCreator'",
+   "n": 1
+  },
+  {
+   "en": "'FlowCreator failed: '",
+   "es": "'Error en FlowCreator: '",
+   "n": 1
+  },
+  {
+   "en": "`Rendering flow with ${flowResult.nodes.length} agents...`",
+   "es": "`Dibujando el flow con ${flowResult.nodes.length} agents...`",
+   "n": 1
+  },
+  {
+   "en": "`Flow created successfully! ${flowResult.nodes.length} agents and ${flowResult.connections.length} connections generated.`",
+   "es": "`¡Flow creado correctamente! Se generaron ${flowResult.nodes.length} agents y ${flowResult.connections.length} conexiones.`",
+   "n": 1
+  },
+  {
+   "en": "'FlowCreator error: '",
+   "es": "'Error de FlowCreator: '",
+   "n": 1
+  },
+  {
+   "en": "'Failed to start FlowHypervisor agent'",
+   "es": "'Error al iniciar el agent FlowHypervisor'",
+   "n": 1
+  },
+  {
+   "en": "`FlowHypervisor started successfully (PID: ${result.pid}). Monitoring is now active.`",
+   "es": "`FlowHypervisor se inició correctamente (PID: ${result.pid}). El monitoreo ya está activo.`",
+   "n": 1
+  },
+  {
+   "en": "'FlowHypervisor error: '",
+   "es": "'Error de FlowHypervisor: '",
+   "n": 1
+  },
+  {
+   "en": "`Waiting for Tlamatini response... (${secs}s elapsed)`",
+   "es": "`Esperando la respuesta de Tlamatini... (${secs} s transcurridos)`",
+   "n": 1
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Save\"), .ui-dialog-buttonpane button:contains(\"Go!\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Guardar\"), .ui-dialog-buttonpane button:contains(\"¡Adelante!\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "\" (comma-separated): \"",
+   "es": "\" (separados por comas): \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'background:var(--tlm-dlg-surface);border:1px solid rgba(255,255,255,0.12);'",
+   "motivo": "estilo CSS"
+  },
+  {
+   "en": "'border-radius:8px;box-shadow:0 22px 70px rgba(0,0,0,0.62);'",
+   "motivo": "estilo CSS"
+  },
+  {
+   "en": "'padding:30px 40px;text-align:center;min-width:400px;'",
+   "motivo": "estilo CSS"
+  },
+  {
+   "en": "'@keyframes fc-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}'",
+   "motivo": "regla CSS"
+  }
+ ]
+}

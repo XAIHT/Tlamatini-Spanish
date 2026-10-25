@@ -1,0 +1,131 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/tools_dialog.js",
+ "segmentos": [
+  {
+   "en": "'Needs Multi-Turn — selecting it checks the Multi-Turn box.'",
+   "es": "'Necesita Multi-Turn: al elegirlo se marca la casilla Multi-Turn.'",
+   "n": 1
+  },
+  {
+   "en": "'Needs ACPX (with Multi-Turn) — selecting it checks the ACPX box.'",
+   "es": "'Necesita ACPX (con Multi-Turn): al elegirlo se marca la casilla ACPX.'",
+   "n": 1
+  },
+  {
+   "en": "'Requires the Exec Report (with Multi-Turn) — selecting it checks the Exec Report box.'",
+   "es": "'Requiere Exec Report (con Multi-Turn): al elegirlo se marca la casilla Exec Report.'",
+   "n": 1
+  },
+  {
+   "en": "'Step-by-Step'",
+   "es": "'Paso a paso'",
+   "n": 1
+  },
+  {
+   "en": "'One action at a time, waiting for you between steps; ticks the Step-by-Step box (with Multi-Turn).'",
+   "es": "'Una acción a la vez, esperándote entre cada paso; marca la casilla Paso a paso (con Multi-Turn).'",
+   "n": 1
+  },
+  {
+   "en": "`${content.length.toLocaleString()} chars`",
+   "es": "`${content.length.toLocaleString()} caracteres`",
+   "n": 1
+  },
+  {
+   "en": "'click to insert →'",
+   "es": "'haz clic para insertar →'",
+   "n": 1
+  },
+  {
+   "en": "'no matches'",
+   "es": "'sin coincidencias'",
+   "n": 1
+  },
+  {
+   "en": "'No prompt matches &ldquo;'",
+   "es": "'Ningún prompt coincide con &ldquo;'",
+   "n": 1
+  },
+  {
+   "en": "'&rdquo;. Try fewer letters, initials (e.g. <b>imd</b>), or a #number.'",
+   "es": "'&rdquo;. Prueba con menos letras, con iniciales (p. ej. <b>imd</b>) o con un #número.'",
+   "n": 1
+  },
+  {
+   "en": "' match'",
+   "es": "' coincidencia'",
+   "n": 1
+  },
+  {
+   "en": "' matches'",
+   "es": "' coincidencias'",
+   "n": 1
+  },
+  {
+   "en": "'Single-shot prompt — selecting it turns Multi-Turn AND ACPX OFF.'",
+   "es": "'Prompt de un solo turno: al elegirlo se desactivan Multi-Turn y ACPX.'",
+   "libres": [
+    "AND"
+   ],
+   "n": 1
+  },
+  {
+   "en": "    const m = raw.match(/run\\s+the\\s+(.+?)\\s+demo/i);",
+   "es": "    // Spanish edition: \"Tlamatini, ejecuta la demo <Title>, por favor\" (the English form still works).\n    const m = raw.match(/ejecuta\\s+la\\s+demo\\s+(.+?),\\s*por\\s+favor/i)\n        || raw.match(/run\\s+the\\s+(.+?)\\s+demo/i);",
+   "codigo": "Catálogo en español: el título de la tarjeta también se toma de \"Tlamatini, ejecuta la demo <Título>, por favor\"",
+   "n": 1
+  },
+  {
+   "en": "        .replace(/Tlamatini,\\s*run the[^.]+demo,?\\s*please\\.?\\s*/i, '')\n",
+   "es": "        .replace(/Tlamatini,\\s*run the[^.]+demo,?\\s*please\\.?\\s*/i, '')\n        .replace(/Tlamatini,\\s*ejecuta la demo[^.]+?,\\s*por favor\\.?\\s*/i, '')\n",
+   "codigo": "Catálogo en español: la vista previa de la tarjeta quita el saludo \"ejecuta la demo …, por favor\"",
+   "n": 1
+  },
+  {
+   "en": ".replace(/Step\\s*\\d+\\s*\\([^)]*\\)\\s*:\\s*/gi, ",
+   "es": ".replace(/(?:Step|Paso)\\s*\\d+\\s*\\([^)]*\\)\\s*:\\s*/gi, ",
+   "codigo": "Catálogo en español: \"Paso N (…):\" se vuelve viñeta en la vista previa, igual que \"Step N (…):\"",
+   "n": 1
+  },
+  {
+   "en": ".replace(/Step\\s*\\d+\\s*:\\s*/gi, ",
+   "es": ".replace(/(?:Step|Paso)\\s*\\d+\\s*:\\s*/gi, ",
+   "codigo": "Catálogo en español: \"Paso N:\" se vuelve viñeta en la vista previa, igual que \"Step N:\"",
+   "n": 1
+  },
+  {
+   "en": "    const scrubbed = c.replace(/(?:do\\s+not|don['’]?t|never|not)\\s+use\\b[^.;]*[.;]?/gi, ' ');",
+   "es": "    const scrubbed = c.replace(/(?:do\\s+not|don['’]?t|never|not)\\s+use\\b[^.;]*[.;]?/gi, ' ')\n        // Spanish edition: \"NO uses <...>\", \"nunca uses <...>\" and \"sin usar <...>\" are the same clauses.\n        .replace(/(?:\\bno|\\bnunca|\\bjam[aá]s)\\s+(?:uses|utilices)\\b[^.;]*[.;]?|\\bsin\\s+usar\\b[^.;]*[.;]?/gi, ' ');",
+   "codigo": "Catálogo en español: las cláusulas \"NO uses / nunca uses / sin usar <tool>\" se quitan antes de decidir las casillas, igual que \"do not use\"",
+   "n": 1
+  },
+  {
+   "en": "        || /(?:tick|check|enable|turn\\s+on)[^.\\n]{0,60}step-?by-?step/i.test(c);",
+   "es": "        || /(?:tick|check|enable|turn\\s+on)[^.\\n]{0,60}step-?by-?step/i.test(c)\n        // Spanish edition: the toolbar box reads \"Paso a paso\". Only that box, its mode, a wizard\n        // named after it or an instruction to tick it counts, so prose (\"un paso a la vez\") never does.\n        || /(?:casillas?|modo|wizard|asistente)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b/i.test(c)\n        || /\\bpaso\\s+a\\s+paso\\s+(?:wizard|asistente|mode|modo)\\b/i.test(c)\n        || /\\b(?:marca|activa)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b/i.test(c);",
+   "codigo": "Catálogo en español: la casilla de la barra se llama \"Paso a paso\"; se reconoce su casilla, su modo, un wizard con ese nombre o la indicación de marcarla",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'One-Shot'",
+   "motivo": "término técnico de prompts (one-shot)"
+  },
+  {
+   "en": "'Multi-turn'",
+   "motivo": "vocabulario del producto (Multi-Turn)"
+  },
+  {
+   "en": "'ACPX'",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": "'Exec-report'",
+   "motivo": "vocabulario del producto (Exec report)"
+  },
+  {
+   "en": "'HTTP Error: '",
+   "motivo": "texto de log (console.error)"
+  }
+ ]
+}

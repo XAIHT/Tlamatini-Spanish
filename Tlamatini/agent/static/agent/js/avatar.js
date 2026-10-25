@@ -1,0 +1,441 @@
+/* Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 */
+// Tlamatini chat-avatar engine - extracted from agent_page.html (2026-07-17).
+(function(){
+  "use strict";
+  function ready(fn){ if(document.readyState!=='loading'){setTimeout(fn,0);} else {document.addEventListener('DOMContentLoaded',fn);} }
+  const {speak, prime, stop:stopSpeaking, setSilent, femaleVoices, pickVoice, loadSettings, saveSettings} = window.TLM_VOICE;
+
+
+  ready(function(){
+    const dock=document.getElementById('tlm-avatar-dock');
+    const bubble=document.getElementById('tlm-avatar-bubble');
+    const submit=document.getElementById('chat-message-submit');
+    const input=document.getElementById('chat-message-input');
+    const chatLog=document.getElementById('chat-log');
+    let uname='there';
+    try{ const el=document.getElementById('user_username'); if(el){const raw=JSON.parse(el.textContent||'""'); if(raw){uname=String(raw).charAt(0).toUpperCase()+String(raw).slice(1);}} }catch(e){ /* Keep the generic greeting when account data cannot be parsed. */ }
+
+    function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+    function idlePhrase(){ return pick([
+      "Aquí Tlamatini"+(who?", "+who:"")+" — la que sabe, lista para aprender contigo.",
+      "Estoy despierta y atenta"+(who?", "+who:"")+". Ponme algo difícil.",
+      "Sistemas a tope"+(who?", "+who:"")+". ¿Qué construimos hoy?",
+      "Lista y escuchando"+(who?", "+who:"")+". Dame un reto de verdad.",
+      "Te tengo"+(who?", "+who:"")+". Tú di la palabra y me muevo.",
+      "Aquí en espera"+(who?", "+who:"")+". Hagamos algo que valga la pena recordar.",
+      "Todo en calma"+(who?", "+who:"")+". Pregúntame lo que sea.",
+      "Aquí y concentrada"+(who?", "+who:"")+". ¿Cuál es la misión?"
+    ]); }
+    function busyPhrase(){ return pick([
+      "En eso"+(who?", "+who:"")+" — los hilos girando, cada vez más cerca.",
+      "Metida en el trabajo"+(who?", "+who:"")+". Dame un segundo.",
+      "Procesando esto para ti"+(who?", "+who:"")+". Ya casi.",
+      "Aguanta tantito"+(who?", "+who:"")+" — lo estoy armando ahora mismo.",
+      "Trabajando duro"+(who?", "+who:"")+". Lo bueno se hace esperar.",
+      "Casi lista"+(who?", "+who:"")+" — puliendo la última pieza.",
+      "En la zona"+(who?", "+who:"")+". No parpadees.",
+      "Procesando"+(who?", "+who:"")+" — ya casi lo tengo."
+    ]); }
+    // Fixed completion notice - one exact line, never randomised.
+    // First person, to the user by name (Angela, 2026-10-09); `who` is empty
+    // when the page carries no username, so no line ever says "there".
+    const who=(uname&&uname!=='there')?uname:'';
+    const COMPLETE_PHRASE="Ya terminé tu solicitud"+(who?", "+who:"")+".";
+    const CANCEL_PHRASE="Listo"+(who?", "+who:"")+" — detuve esa tarea. Estoy lista para tu siguiente instrucción.";
+    // The FIXED messages are spoken EXACTLY AS WRITTEN - never paraphrased.
+    // This only strips what must not be read aloud: markup, the username header
+    // and the timestamp, and the END-RESPONSE sentinel.
+    function plainText(m){
+      let s=String(m==null?'':m);
+      if(s.indexOf('<')>=0){
+        try{
+          const d=document.createElement('div'); d.innerHTML=s;
+          d.querySelectorAll('script,style,button,.copy-button,.username,.message-timestamp,'
+            +'.automated-message-execreport,.exec-report-table,.create-flow').forEach(function(n){try{n.remove();}catch(e){ /* The detached speech-text clone may already have removed this node. */ }});
+          s=d.textContent||'';
+        }catch(e){ /* Keep the original text if optional HTML-to-speech cleanup fails. */ }
+      }
+      s=s.replace(/END-RESPONSE/g,'');
+      s=s.replace(/^\s*Tlamatini\s*\([^)]*\)\s*/i,'');                 // "Tlamatini (2026/07/18 01:04:16.194)"
+      s=s.replace(/\(\s*\d{4}[/\-.]\d{1,2}[/\-.]\d{1,2}[^)]*\)/g,' '); // any leftover timestamp
+      s=s.replace(/\s+/g,' ').trim();
+      return s.length>900?s.slice(0,900):s;
+    }
+
+    // Voice is ON for every fixed phrase unless the user picked "Silent".
+    function voiceOn(){ try{ return loadSettings().mode!=='silent'; }catch(e){ return true; } }
+
+    // Every PRE-ESTABLISHED phrase goes through here: it always shows the balloon
+    // and always SPEAKS it aloud - the only exception is Silent mode.
+    // `key` + `gapMs` stop the same state from repeating itself back-to-back
+    // (e.g. our own "on it" and the server's "being processed" placeholder).
+    let _said={};
+    function announce(key,text,gapMs){
+      if(!text)return false;
+      const now=Date.now();
+      if(key){ if(now-(_said[key]||0)<(gapMs==null?8000:gapMs))return false; _said[key]=now; }
+      showBubble(text);
+      if(!voiceOn())return true;
+      // QUEUE it: a second message must never cut the first one short.
+      prime(); speak(text,{queue:true});
+      return true;
+    }
+
+    // What KIND of message is this? Every non-'answer' kind is a fixed/system
+    // message that Tlamatini must speak with her own matching phrase.
+    function classify(txt){
+      const t=(txt||'').trim(); if(!t)return 'skip';
+      const tl=t.toLowerCase();
+      try{ if(window.isSelfHealingStatusMessage&&window.isSelfHealingStatusMessage(t))return 'retry'; }catch(e){ /* Use the literal status checks below when the shared matcher is unavailable. */ }
+      try{ if(window.isSessionRestoredInfoMessage&&window.isSessionRestoredInfoMessage(t))return 'restored'; }catch(e){ /* Use the literal status checks below when the shared matcher is unavailable. */ }
+      // Her fixed lines are first person since 2026-10-09 ("I'm ready, Angela!
+      // You can start chatting with me now."); the old wording is still known.
+      if(tl.indexOf('empezar a platicar conmigo')>=0||tl.indexOf("ya volví y estoy lista")>=0
+         ||tl.indexOf('your agent is ready')>=0||tl.indexOf('you can now start chatting')>=0)return 'ready';
+      if(tl.indexOf('lo cancelaste')>=0||tl.indexOf('you canceled')>=0)return 'cancel';
+      if(tl.indexOf('ejecución interrumpida')>=0)return 'interrupted';
+      if(tl.indexOf('referenced rephrase')>=0||tl.indexOf('reformula tu')>=0)return 'rephrase';
+      // "I can't process your requests right now" is an ERROR, never the answer:
+      // as an 'answer' she would have said "I've finished your request" over it.
+      if(tl.indexOf("no puedo procesar tus solicitudes")>=0||tl.indexOf('cannot process your requests')>=0)return 'error';
+      if(tl.indexOf("todavía no estoy lista")>=0||(tl.indexOf('not ready')>=0&&tl.indexOf('agent')>=0))return 'notready';
+      try{ if(window.isBusyMessageRequest&&window.isBusyMessageRequest(t))return 'busy'; }catch(e){ /* Use the literal status checks below when the shared matcher is unavailable. */ }
+      try{ if(window.isBusyMessageContext&&window.isBusyMessageContext(t))return 'busy'; }catch(e){ /* Use the literal status checks below when the shared matcher is unavailable. */ }
+      if(tl.indexOf("estoy trabajando en tu solicitud")>=0||tl.indexOf("me estoy preparando")>=0
+         ||tl.indexOf("todavía me estoy preparando")>=0||tl.indexOf("me estoy reconstruyendo")>=0
+         ||tl.indexOf('your request is being processed')>=0||tl.indexOf('being processed by tlamatini')>=0
+         ||tl.indexOf('espera un momento')>=0||tl.indexOf('cargando el contexto')>=0)return 'busy';
+      if(/^(please wait|loading|thinking|working on it|one moment|processing)/i.test(t))return 'busy';
+      if(tl.indexOf('out of the root directory')>=0||tl.indexOf('outside the application root')>=0
+         ||tl.indexOf('fuera del path raíz de mi aplicación')>=0
+         ||tl.indexOf('no es un directorio válido')>=0||(tl.indexOf('directory')>=0&&tl.indexOf('does not exist')>=0))return 'error';
+      return 'answer';
+    }
+
+    function isWorking(){
+      try{
+        if(input&&input.disabled)return true;
+        if(submit){const t=(submit.textContent||'').trim().toLowerCase(); if(t.indexOf('cancel')>=0||t.indexOf('stop')>=0)return true;}
+        if(window.inLongOperation===true)return true;
+      }catch(e){ /* Detached chat controls fall back to the idle state. */ }
+      return false;
+    }
+    function isCancelButton(){ try{ const t=(submit&&submit.textContent||'').trim().toLowerCase(); return t.indexOf('cancel')>=0||t.indexOf('stop')>=0; }catch(e){return false;} }
+    function showBubble(t){ if(!bubble)return; bubble.textContent=t;
+      try{ if(dock){ const r=dock.getBoundingClientRect(); bubble.style.position='fixed'; bubble.style.left='auto'; bubble.style.top='auto';
+        bubble.style.right=Math.max(8,(window.innerWidth-r.right))+'px'; bubble.style.bottom=(window.innerHeight-r.top+10)+'px'; } }catch(e){ /* Keep the CSS bubble position if dock geometry is unavailable. */ }
+      bubble.classList.add('tlm-show'); clearTimeout(bubble._t); bubble._t=setTimeout(function(){bubble.classList.remove('tlm-show');},4600); }
+
+    // ---- run lifecycle: pending -> saw-work -> completed / cancelled ----
+    let _pending=false, _seenWork=false, _spoken=false;
+    let _voiceAckText='';
+    function markSend(){
+      if(window.TLM_DICTATION && window.TLM_DICTATION.isActive())return;
+      _voiceAckText='';
+      _pending=true; _seenWork=false; _spoken=false;
+      _said={};        // new run -> every fixed message may be announced again
+      // NOTE: nothing is invented here. The server's own fixed message
+      // ("Your request is being processed by Tlamatini. Please wait a moment.")
+      // arrives a moment later and is spoken VERBATIM by onTlamatiniMessage.
+    }
+    function lastBotAnswer(){ try{ const arr=chatLog?chatLog.querySelectorAll('.bot-message'):[]; return arr.length?arr[arr.length-1]:null; }catch(e){return null;} }
+    function extractAnswer(node){
+      try{
+        const body=node.querySelector('.automated-message-body')||node.querySelector('.automated-message');
+        if(!body)return '';
+        const clone=body.cloneNode(true);
+        clone.querySelectorAll('.automated-message-execreport,.exec-report-table,.exec-denied-banner,button,.create-flow,.username,.message-timestamp,.copy-button').forEach(function(n){try{n.remove();}catch(e){ /* The detached speech-text clone may already have removed this node. */ }});
+        return (clone.textContent||'').replace(/END-RESPONSE/g,'').trim();
+      }catch(e){return '';}
+    }
+    // A "status" message is anything that is NOT the real final answer.
+    function isStatusMsg(txt){ const k=classify(txt); return k!=='answer'; }
+
+    function doComplete(){
+      if(_spoken)return; _spoken=true; _pending=false;
+      const s=loadSettings();
+      showBubble(COMPLETE_PHRASE);              // balloon always
+      if(s.mode==='silent')return;              // Silent: the ONLY mute case
+      setTimeout(function(){
+        let text=COMPLETE_PHRASE;               // exact fixed line
+        if(s.mode==='speak'){
+          const last=lastBotAnswer(); const a=last?extractAnswer(last):'';
+          if(a && !isStatusMsg(a)) text=a;      // read the ANSWER itself, verbatim
+        }
+        prime(); speak(text);
+      }, 220);
+    }
+    function doCancelSpeak(){
+      _pending=false; _spoken=true;
+      stopSpeaking();
+      _said['cancel']=0;                        // a cancel always gets announced
+      announce('cancel',CANCEL_PHRASE,0);
+    }
+
+    if(submit)submit.addEventListener('click',function(){ if(isCancelButton()){ doCancelSpeak(); } else { markSend(); } });
+    if(input)input.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!e.shiftKey && !isCancelButton()){ markSend(); } });
+    const _cf=document.getElementById('chat-form'); if(_cf)_cf.addEventListener('submit',function(){ if(!isCancelButton()){ markSend(); } });
+
+    document.addEventListener('tlm-chat-submitted',function(e){
+      if(!e.detail || !e.detail.voice)return;
+      // Wait until the form's existing listeners have marked the same run.
+      setTimeout(function(){
+        // Mirrors the server's MSG_PROCESSING_REQUEST (agent/constants.py).
+        _voiceAckText="I'm working on your request"+(who?", "+who:"")+". Please wait a moment.";
+        announce('t:'+_voiceAckText.slice(0,80),_voiceAckText,0);
+      },0);
+    });
+
+    // (completion is handled below by hooking the app's own appendChatMessage)
+
+    if(dock){
+      const faceOuter=document.getElementById('tlm-face-outer');
+      // ⚠️ `prefers-reduced-motion` IS DELIBERATELY NOT CONSULTED ANY MORE.
+      // Angela, 2026-09-11, verbatim: "Make the avatar to be animated even if
+      // the accessibility setting for animation were disabled, 'cause this is
+      // not an accessibility feature this is a normal broad behavior!"
+      // She blinks, breathes and speaks on every machine. A talking head that
+      // does not move is not a talking head. Do not restore the gate.
+      const IMGS={ eo_mc:document.getElementById('tlm-s-eo-mc'), ec_mc:document.getElementById('tlm-s-ec-mc'),
+                 eo_mo:document.getElementById('tlm-s-eo-mo'), ec_mo:document.getElementById('tlm-s-ec-mo') };
+      const stt={eyesOpen:true, mouthOpen:false};
+      const decodedFrames=Object.create(null); let activeFrame=null;
+      function render(){
+        const key=(stt.eyesOpen?'eo':'ec')+'_'+(stt.mouthOpen?'mo':'mc');
+        // Leave the last good portrait on screen until the requested frame is
+        // decoded. Neither an empty HTTP response nor a pending JPEG decode
+        // may hide the current frame. All class changes paint in one JS task.
+        if(!decodedFrames[key] || activeFrame===key)return;
+        for(const k in IMGS){ if(IMGS[k]) IMGS[k].classList.toggle('tlm-on', k===key); }
+        activeFrame=key;
+      }
+      Object.keys(IMGS).forEach(function(key){
+        const img=IMGS[key]; if(!img)return;
+        let loading=false, failed=false;
+        function unavailable(){
+          if(failed)return; failed=true;
+          // Preserve the last ready frame; do not replace it with a broken image.
+          try{console.warn('Tlamatini avatar frame unavailable:',key);}catch(e){ /* A missing console must not replace the last valid avatar frame. */ }
+        }
+        function loaded(){
+          if(loading || failed || !img.complete || !img.naturalWidth)return;
+          loading=true;
+          let decoded;
+          try{decoded=typeof img.decode==='function'?img.decode():Promise.resolve();}
+          catch(e){unavailable();return;}
+          Promise.resolve(decoded).then(function(){
+            decodedFrames[key]=true;
+            render();
+          },unavailable);
+        }
+        img.addEventListener('load',loaded,{once:true});
+        img.addEventListener('error',unavailable,{once:true});
+        if(img.complete){if(img.naturalWidth)loaded();else unavailable();}
+      });
+      function layoutFace(){
+        if(!faceOuter)return;
+        const pad=5, pw=dock.clientWidth-2*pad, ph=dock.clientHeight-2*pad;
+        if(pw<=0||ph<=0)return;
+        const ar=1; let iw,ih;
+        if(pw/ph>ar){ih=ph;iw=ph*ar;}else{iw=pw;ih=pw/ar;}
+        faceOuter.style.left=(pad+(pw-iw)/2)+'px';faceOuter.style.top=(pad+(ph-ih)/2)+'px';
+        faceOuter.style.width=iw+'px';faceOuter.style.height=ih+'px';
+        // The presence engine pre-scales her portraits to the display size, so
+        // every geometry change has to tell it to re-scale. Skipping this is
+        // how a resized avatar ends up soft or letterboxed.
+        try{ if(window.TlamatiniPresence&&window.TlamatiniPresence.isReady())window.TlamatiniPresence.resize(); }catch(e){ /* The legacy face remains usable if presence resizing is unavailable. */ }
+      }
+      layoutFace();
+      if(window.ResizeObserver){try{new ResizeObserver(layoutFace).observe(dock);}catch(e){ /* The window resize listener below remains the fallback. */ }}
+      window.addEventListener('resize',layoutFace);
+      function blink(done){ stt.eyesOpen=false; render(); setTimeout(function(){ stt.eyesOpen=true; render(); if(done)done(); }, 190); }
+      function scheduleBlink(){
+        if(_presenceLive())return;   // the canvas engine owns the blink now
+        setTimeout(function(){
+          if(document.hidden){scheduleBlink();return;}
+          blink(function(){ if(Math.random()<0.12){ setTimeout(function(){blink(scheduleBlink);},170); } else scheduleBlink(); });
+        },2800+Math.random()*3800);
+      }
+      // ── THE FACE IS DRIVEN BY THE PRESENCE ENGINE ─────────────────────────
+      // What used to run the face here was two booleans and a metronome:
+      //     setInterval(function(){ if(speaking) mouthOpen=!mouthOpen; },150);
+      // Six-and-two-thirds flaps a second, never once listening to the speech.
+      // `avatar_presence.js` replaces it with a 2D-canvas compositor: the eyes
+      // and the mouth become CONTINUOUS values, every frame is a convex blend
+      // of the same four portraits (NO new artwork — her face never changes),
+      // and the mouth follows the speech engine's own `boundary` events
+      // through the sentence instead of a timer.
+      //
+      // The <img> stack and the blink/metronome below stay ON PURPOSE: they
+      // are the FALLBACK. `_presenceLive()` is checked live on every tick, so
+      // the moment the canvas takes over they stand down by themselves, and if
+      // the canvas never starts the user still sees a blinking, talking face.
+      function _presenceLive(){
+        try{ return !!(window.TlamatiniPresence&&window.TlamatiniPresence.isReady()); }
+        catch(e){ return false; }
+      }
+      function _startPresence(){
+        try{
+          if(!window.TlamatiniPresence)return false;
+          const ok=window.TlamatiniPresence.start({
+            onTierChange:function(fps,why,ms){
+              try{console.info('Tlamatini presence: '+why+' to '+fps+' fps (median frame '+
+                Number(ms).toFixed(2)+' ms)');}catch(e){ /* Frame-rate logging must not interrupt avatar rendering. */ }
+            }
+          });
+          if(ok){ layoutFace(); }
+          return ok;
+        }catch(e){ return false; }
+      }
+      // The engine pre-scales her portraits, so it needs all four DECODED
+      // before it can start. Poll briefly rather than race a cold cache.
+      (function waitForPortraits(tries){
+        if(_presenceLive())return;
+        if(_startPresence())return;
+        if(tries>0){ setTimeout(function(){ waitForPortraits(tries-1); },200); }
+        else { try{console.warn('Tlamatini presence engine unavailable - legacy face in use.');}catch(e){ /* The legacy face remains active even if logging is unavailable. */ } }
+      })(40);
+      scheduleBlink();
+      setInterval(function(){
+        let sp=false;
+        try{ sp=!_presenceLive()&&!document.hidden&&window.speechSynthesis&&window.speechSynthesis.speaking&&!window.speechSynthesis.paused; }catch(e){ /* Keep the mouth closed when speech state cannot be read. */ }
+        if(sp){ stt.mouthOpen=!stt.mouthOpen; render(); }
+        else if(stt.mouthOpen){ stt.mouthOpen=false; render(); }
+      }, 150);
+      // CLICK HER WHILE SHE IS TALKING = STOP IMMEDIATELY (never talk more).
+      // Click when she is quiet = she greets you. DOUBLE-CLICK = mute for good.
+      function onClick(){
+        prime();
+        let busy=false;
+        try{ busy=window.speechSynthesis.speaking||window.speechSynthesis.pending; }catch(e){ /* Treat an unavailable speech engine as idle. */ }
+        if(busy){ stopSpeaking(); showBubble("Listo, dejo de hablar."); return; }
+        announce(null,(isWorking()?busyPhrase():idlePhrase()),0);
+      }
+      dock.addEventListener('click',onClick);
+      dock.addEventListener('dblclick',function(e){
+        e.preventDefault();
+        const m=setSilent(loadSettings().mode!=='silent');
+        stopSpeaking();
+        showBubble(m==='silent'?"Voice OFF - I'll stay quiet (double-click me to hear me again).":"Voice ON - I'll talk to you again!");
+      });
+      dock.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();onClick();} });
+      dock.title='Clic = dejar de hablar / saludar  ·  Doble clic = silenciar  ·  Esc = detener  ·  Ctrl+Shift+M = silenciar';
+    }
+
+    // ---- completion: hook the app's OWN renderer (bulletproof, content-based).
+    // appendChatMessage(username, message, ...) runs for EVERY message. A Tlamatini
+    // message that is NOT a busy / loading / self-healing / status line IS the real
+    // final answer (the app's own catch-all `else` branch that re-enables controls).
+    // Speak ONLY then - never on the "Please wait a moment" placeholder or a status frame.
+    // EVERY Tlamatini message is spoken: a real answer -> the completion phrase
+    // (plus the answer itself in "speak" mode); any FIXED/system message -> its own
+    // matching pre-established phrase. Silent mode is the only thing that mutes her.
+    // Swallow only the burst of OLD messages replayed at page load; after this
+    // the avatar speaks everything Tlamatini says.
+    let _armed=false; setTimeout(function(){ _armed=true; },1500);
+
+    function onTlamatiniMessage(message){
+      if(!_armed)return;                       // history replay, not live speech
+      const text=plainText(message);
+      if(!text)return;
+      const kind=classify(message);
+      // The server's own "I'm working on your request" after a voice send: she
+      // already said it. Matched by MEANING, not by exact text - the server may
+      // name the user by first name while the page only knows the username.
+      if(kind==='busy' && _voiceAckText && (text===_voiceAckText
+         || (window.isBusyMessageRequest && window.isBusyMessageRequest(text)))){ _voiceAckText=''; return; }
+      // The REAL answer to a request WE sent: "speak" mode reads it aloud,
+      // "notify" mode says the fixed completion line instead.
+      if(kind==='answer'&&_pending&&!_spoken){ doComplete(); return; }
+      // EVERYTHING ELSE Tlamatini says - every fixed/system message, and any
+      // message arriving with no request pending - is spoken WORD FOR WORD.
+      if(kind==='cancel'||kind==='interrupted'||kind==='rephrase'||kind==='error'){
+        _pending=false; _spoken=true;          // the run is over
+      }
+      // dedupe on the TEXT itself, so two DIFFERENT messages BOTH get spoken
+      announce('t:'+text.slice(0,80),text,2500);
+    }
+    let _hooked=false;
+    try{
+      if(typeof window.appendChatMessage==='function'){
+        const _origAppend=window.appendChatMessage;
+        window.appendChatMessage=function(username,message){
+          const r=_origAppend.apply(this,arguments);
+          try{ if(username==='Tlamatini'){ const msg=message; setTimeout(function(){ onTlamatiniMessage(msg); },120); } }catch(e){ /* Optional avatar notification must not affect chat message rendering. */ }
+          return r;
+        };
+        _hooked=true;
+      }
+    }catch(e){ /* Use the DOM observer below if the renderer hook is unavailable. */ }
+    // fallback DOM observer (only if the renderer could not be hooked)
+    if(!_hooked && chatLog && ('MutationObserver' in window)){
+      try{chatLog.querySelectorAll('.bot-message').forEach(function(b){b.setAttribute('data-tlm-spoken','1');});}catch(e){ /* The observer can still handle newly inserted messages. */ }
+      let _deb=null;
+      const obs=new MutationObserver(function(muts){
+        if(!_pending||_spoken)return;
+        let target=null;
+        muts.forEach(function(mu){ Array.prototype.forEach.call(mu.addedNodes||[],function(n){
+          if(n.nodeType!==1)return;
+          const bm=(n.classList&&n.classList.contains('bot-message'))?n:(n.querySelector?n.querySelector('.bot-message'):null);
+          if(bm&&!bm.getAttribute('data-tlm-spoken')) target=bm;
+        }); });
+        if(!target)return;
+        clearTimeout(_deb);
+        _deb=setTimeout(function(){
+          if(_spoken||!_pending)return;
+          const ans=extractAnswer(target); if(!ans||isStatusMsg(ans))return;
+          target.setAttribute('data-tlm-spoken','1'); doComplete();
+        },350);
+      });
+      try{obs.observe(chatLog,{childList:true,subtree:true});}catch(e){ /* Text chat remains usable if optional speech observation is unavailable. */ }
+    }
+
+    const overlay=document.getElementById('tlm-voice-overlay');
+    function fillVoices(){
+      const sel=document.getElementById('tlm-voice-select'); if(!sel)return;
+      const fem=femaleVoices(); sel.innerHTML='';
+      // Show the preferred-language (e.g. es-MX) voices first.
+      const want=(document.documentElement.lang||navigator.language||'').toLowerCase().split('-')[0];
+      if(want)fem.sort(function(a,b){return ((a.lang||'').toLowerCase().startsWith(want)?0:1)-((b.lang||'').toLowerCase().startsWith(want)?0:1);});
+      fem.forEach(function(v){const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o);});
+      const s=loadSettings(); if(s.voiceURI)sel.value=s.voiceURI; else { const pv=pickVoice(); if(pv)sel.value=pv.voiceURI; }
+    }
+    function syncDialog(){
+      const s=loadSettings();
+      const vol=document.getElementById('tlm-voice-volume'),rate=document.getElementById('tlm-voice-rate'),pitch=document.getElementById('tlm-voice-pitch');
+      if(vol){vol.value=s.volume;document.getElementById('tlm-voice-vol-val').textContent=s.volume+'%';}
+      if(rate){rate.value=s.rate;document.getElementById('tlm-voice-rate-val').textContent=(s.rate).toFixed(2)+'x';}
+      if(pitch){pitch.value=s.pitch;document.getElementById('tlm-voice-pitch-val').textContent=(s.pitch).toFixed(2);}
+      const r=document.querySelector('input[name="tlm-voice-mode"][value="'+s.mode+'"]'); if(r)r.checked=true;
+      fillVoices();
+    }
+    function readDialog(){
+      const s=loadSettings();
+      const vol=document.getElementById('tlm-voice-volume'),rate=document.getElementById('tlm-voice-rate'),pitch=document.getElementById('tlm-voice-pitch'),sel=document.getElementById('tlm-voice-select');
+      if(vol)s.volume=parseInt(vol.value,10);
+      if(rate)s.rate=parseFloat(rate.value);
+      if(pitch)s.pitch=parseFloat(pitch.value);
+      if(sel&&sel.value)s.voiceURI=sel.value;
+      const r=document.querySelector('input[name="tlm-voice-mode"]:checked'); if(r)s.mode=r.value;
+      return s;
+    }
+    window.OpenVoiceDialog=function(ev){ if(ev&&ev.preventDefault)ev.preventDefault(); prime(); if(!overlay)return; syncDialog(); overlay.style.display='flex'; };
+    function closeDialog(){ if(overlay)overlay.style.display='none'; }
+    if(overlay){
+      const x=document.getElementById('tlm-voice-close'); if(x)x.addEventListener('click',closeDialog);
+      // Outside-click dismissal removed (Angela, 2026-08-13): a dialog closes
+      // ONLY by its X, Cancel or Continue. See static/agent/js/dialog_policy.js.
+      const save=document.getElementById('tlm-voice-save'); if(save)save.addEventListener('click',function(){ saveSettings(readDialog()); closeDialog(); });
+      const test=document.getElementById('tlm-voice-test'); if(test)test.addEventListener('click',function(){ saveSettings(readDialog()); prime(); speak("¡Hola"+(who?", "+who:"")+"! Esta es mi voz."); });
+      if(window.speechSynthesis)window.speechSynthesis.addEventListener('voiceschanged',function(){ try{ if(overlay&&overlay.style.display!=='none')fillVoices(); }catch(e){ /* voice-list refresh is best-effort */ } });
+      ['tlm-voice-volume','tlm-voice-rate','tlm-voice-pitch'].forEach(function(id){
+        const elx=document.getElementById(id); if(!elx)return;
+        elx.addEventListener('input',function(){
+          if(id==='tlm-voice-volume')document.getElementById('tlm-voice-vol-val').textContent=elx.value+'%';
+          if(id==='tlm-voice-rate')document.getElementById('tlm-voice-rate-val').textContent=parseFloat(elx.value).toFixed(2)+'x';
+          if(id==='tlm-voice-pitch')document.getElementById('tlm-voice-pitch-val').textContent=parseFloat(elx.value).toFixed(2);
+        });
+      });
+    }
+  });
+})();

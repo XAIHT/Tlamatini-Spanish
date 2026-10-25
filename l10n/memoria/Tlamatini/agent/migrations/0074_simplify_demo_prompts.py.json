@@ -1,0 +1,863 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0074_simplify_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the ACPX Health and Roster Parade demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo Desfile de salud y roster de ACPX, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call acp_doctor and capture its details array. \"",
+   "es": "\"Paso 1: llama a acp_doctor y captura su array details. \"",
+   "n": 2
+  },
+  {
+   "en": "\"Step 2: call list_acp_agents and capture every entry, paying \"",
+   "es": "\"Paso 2: llama a list_acp_agents y captura cada entrada, poniendo \"",
+   "n": 1
+  },
+  {
+   "en": "\"special attention to the resolvable flag. \"",
+   "es": "\"especial atención al flag resolvable. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: render an HTML table titled 'Tlamatini ACPX Roster vs \"",
+   "es": "\"Paso 3: muestra una tabla HTML titulada 'Roster ACPX de Tlamatini vs. \"",
+   "n": 1
+  },
+  {
+   "en": "\"OpenClaw acp-router' with columns agent_id, command, description, \"",
+   "es": "\"acp-router de OpenClaw' con las columnas agent_id, command, description, \"",
+   "n": 1
+  },
+  {
+   "en": "\"resolvable_on_this_machine, openclaw_compatible. Every row is \"",
+   "es": "\"resolvable_on_this_machine, openclaw_compatible. Todas las filas llevan \"",
+   "n": 1
+  },
+  {
+   "en": "\"openclaw_compatible YES because the agent_id keys are identical \"",
+   "es": "\"openclaw_compatible YES porque las llaves agent_id son idénticas \"",
+   "n": 1
+  },
+  {
+   "en": "\"in both projects. \"",
+   "es": "\"en ambos proyectos. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: call invoke_skill with skill_name 'hello-world' and \"",
+   "es": "\"Paso 4: llama a invoke_skill con skill_name 'hello-world' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"args_json '{\\\"who\\\":\\\"angel\\\"}' to prove the in-process Skill \"",
+   "es": "\"args_json '{\\\"who\\\":\\\"angel\\\"}' para comprobar que el harness de Skills \"",
+   "n": 1
+  },
+  {
+   "en": "\"harness is alive. \"",
+   "es": "\"en proceso está vivo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: close with a short verdict line saying either \"",
+   "es": "\"Paso 5: cierra con una línea breve de veredicto que diga \"",
+   "n": 1
+  },
+  {
+   "en": "\"'ACPX FULLY OPERATIONAL' if acp_doctor.ok is true, or \"",
+   "es": "\"'ACPX TOTALMENTE OPERATIVO' si acp_doctor.ok es true, o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'ACPX RUNTIME UP, PROBE AGENT NOT INSTALLED' otherwise. \"",
+   "es": "\"'RUNTIME DE ACPX ACTIVO, AGENT DE PRUEBA NO INSTALADO' en caso contrario. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 4
+  },
+  {
+   "en": "\"Tlamatini, run the Skill Catalog Carnival demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo Carnaval del catálogo de Skills, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call list_skills with no filter and capture every entry. \"",
+   "es": "\"Paso 1: llama a list_skills sin filtro y captura cada entrada. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: render an HTML table titled 'Tlamatini Skill Catalog \"",
+   "es": "\"Paso 2: muestra una tabla HTML titulada 'Catálogo de Skills de Tlamatini \"",
+   "n": 1
+  },
+  {
+   "en": "\"(Phase 3 Seed)' with columns name, description, runtime, \"",
+   "es": "\"(semilla de la fase 3)' con las columnas name, description, runtime, \"",
+   "n": 1
+  },
+  {
+   "en": "\"acpx_agent_or_in_process, openclaw_droppable. Every row is \"",
+   "es": "\"acpx_agent_or_in_process, openclaw_droppable. Todas las filas llevan \"",
+   "n": 1
+  },
+  {
+   "en": "\"openclaw_droppable YES because the SKILL.md frontmatter contract \"",
+   "es": "\"openclaw_droppable YES porque el contrato del frontmatter de SKILL.md \"",
+   "n": 1
+  },
+  {
+   "en": "\"is OpenClaw-compatible verbatim. \"",
+   "es": "\"es compatible con OpenClaw tal cual. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: call invoke_skill with skill_name 'summarize' and \"",
+   "es": "\"Paso 3: llama a invoke_skill con skill_name 'summarize' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"the other.\\\",\\\"target_words\\\":40}'. Quote the resulting summary. \"",
+   "es": "\"the other.\\\",\\\"target_words\\\":40}'. Cita el resumen que resulte. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: call invoke_skill with skill_name 'acp-router' and \"",
+   "es": "\"Paso 4: llama a invoke_skill con skill_name 'acp-router' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"prefer\\\":\\\"gemini\\\"}' and capture which agent_id it picks. \"",
+   "es": "\"\\\"prefer\\\":\\\"gemini\\\"}' y captura qué agent_id elige. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: close with a one-line verdict naming the chosen agent_id. \"",
+   "es": "\"Paso 5: cierra con un veredicto de una línea que nombre el agent_id elegido. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the End-to-End ACPX Pipeline demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo Pipeline ACPX de principio a fin, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call acp_doctor. If ok is false, fall back to invoke_skill \"",
+   "es": "\"Paso 1: llama a acp_doctor. Si ok es false, recurre a invoke_skill \"",
+   "n": 1
+  },
+  {
+   "en": "\"summarize for every reasoning step instead of acp_spawn / acp_send, \"",
+   "es": "\"summarize para cada paso de razonamiento en lugar de acp_spawn / acp_send, \"",
+   "n": 1
+  },
+  {
+   "en": "\"and announce the fallback in one short line. \"",
+   "es": "\"y anuncia el fallback en una línea breve. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: call acp_spawn with agent_id 'gemini' and task 'Read the \"",
+   "es": "\"Paso 2: llama a acp_spawn con agent_id 'gemini' y task 'Lee el \"",
+   "n": 1
+  },
+  {
+   "en": "\"directory tree at C:/Development/Tlamatini/agent/ as a senior \"",
+   "es": "\"árbol de directorios de C:/Development/Tlamatini/agent/ como un ingeniero \"",
+   "n": 1
+  },
+  {
+   "en": "\"engineer reviewing a multi-agent framework. In 6 sentences, \"",
+   "es": "\"senior que revisa un framework multi-agent. En 6 oraciones, \"",
+   "n": 1
+  },
+  {
+   "en": "\"identify which subdirectory is the most architecturally important \"",
+   "es": "\"identifica qué subdirectorio es el más importante en la arquitectura \"",
+   "n": 1
+  },
+  {
+   "en": "\"and explain why concretely.' and cwd 'C:/Development/Tlamatini'. \"",
+   "es": "\"y explica por qué de forma concreta.' y cwd 'C:/Development/Tlamatini'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Capture session_id and transcript_path. \"",
+   "es": "\"Captura session_id y transcript_path. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: call acp_send on that session_id with text 'Now propose a \"",
+   "es": "\"Paso 3: llama a acp_send sobre ese session_id con text 'Ahora propón una \"",
+   "n": 1
+  },
+  {
+   "en": "\"concrete improvement to that subdirectory in 4 sentences, \"",
+   "es": "\"mejora concreta para ese subdirectorio en 4 oraciones, \"",
+   "n": 1
+  },
+  {
+   "en": "\"prioritizing changes that help a new contributor.' Capture events. \"",
+   "es": "\"priorizando cambios que ayuden a alguien que recién empieza a contribuir.' Captura los events. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: call acp_kill on the session_id and confirm killed=true. \"",
+   "es": "\"Paso 4: llama a acp_kill sobre el session_id y confirma killed=true. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: call invoke_skill skill_name 'summarize' with args_json \"",
+   "es": "\"Paso 5: llama a invoke_skill con skill_name 'summarize' y args_json \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"target_words\\\":80}' to compress the transcript. \"",
+   "es": "\"\\\"target_words\\\":80}' para comprimir la transcripción. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: call chat_agent_file_creator with filepath \"",
+   "es": "\"Paso 6: llama a chat_agent_file_creator con filepath \"",
+   "n": 1
+  },
+  {
+   "en": "\"'C:/Development/Tlamatini/_acpx_pipeline_demo_report.md' and \"",
+   "es": "\"'C:/Development/Tlamatini/_acpx_pipeline_demo_report.md' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"content set to the summarized markdown plus a footer line \"",
+   "es": "\"content con el markdown resumido más una línea de pie \"",
+   "n": 1
+  },
+  {
+   "en": "\"stating the report was generated by Tlamatini ACPX. \"",
+   "es": "\"que diga que Tlamatini ACPX generó el reporte. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: call chat_agent_notifier with title 'ACPX Pipeline Demo' \"",
+   "es": "\"Paso 7: llama a chat_agent_notifier con title 'Demo del pipeline ACPX' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and a one-line completion message. \"",
+   "es": "\"y un mensaje de cierre de una línea. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: render an HTML table titled 'ACPX vs OpenClaw - this run' \"",
+   "es": "\"Paso 8: muestra una tabla HTML titulada 'ACPX vs. OpenClaw - esta ejecución' \"",
+   "n": 1
+  },
+  {
+   "en": "\"with columns behavior, covered_by_tlamatini, evidence and rows: \"",
+   "es": "\"con las columnas behavior, covered_by_tlamatini, evidence y estas filas: \"",
+   "n": 1
+  },
+  {
+   "en": "\"spawn external CLI child; multi-turn conversation; graceful kill; \"",
+   "es": "\"lanzar un proceso hijo de un CLI externo; conversación de varios turnos; kill ordenado; \"",
+   "n": 1
+  },
+  {
+   "en": "\"transcript harvested to disk; downstream skill chained. Every row \"",
+   "es": "\"transcripción guardada en disco; skill encadenado después. Todas las filas \"",
+   "n": 1
+  },
+  {
+   "en": "\"is YES; evidence cites session_id, transcript path, or audit_id. \"",
+   "es": "\"llevan YES; evidence cita session_id, el path de la transcripción o audit_id. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the Permission Gate and Audit Tour demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo Recorrido por la compuerta de permisos y la auditoría, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call acp_doctor and report the active permissionMode and \"",
+   "es": "\"Paso 1: llama a acp_doctor y reporta el permissionMode activo y \"",
+   "n": 1
+  },
+  {
+   "en": "\"nonInteractivePermissions from its details. \"",
+   "es": "\"nonInteractivePermissions de sus details. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: render an HTML table titled 'ACPX Permission Modes - \"",
+   "es": "\"Paso 2: muestra una tabla HTML titulada 'Modos de permiso de ACPX - \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini implements the OpenClaw matrix verbatim' with three \"",
+   "es": "\"Tlamatini implementa la matriz de OpenClaw tal cual' con tres \"",
+   "n": 1
+  },
+  {
+   "en": "\"rows (approve-reads, approve-all, deny-all) and four columns \"",
+   "es": "\"filas (approve-reads, approve-all, deny-all) y cuatro columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"(mode, what_it_does, when_to_use, openclaw_equivalent). The \"",
+   "es": "\"(mode, what_it_does, when_to_use, openclaw_equivalent). La \"",
+   "n": 1
+  },
+  {
+   "en": "\"openclaw_equivalent column equals the mode column on every row. \"",
+   "es": "\"columna openclaw_equivalent es igual a la columna mode en todas las filas. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: call invoke_skill with skill_name 'hello-world' and \"",
+   "es": "\"Paso 3: llama a invoke_skill con skill_name 'hello-world' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"args_json '{\\\"who\\\":\\\"audit-tour\\\"}'. This will succeed and return \"",
+   "es": "\"args_json '{\\\"who\\\":\\\"audit-tour\\\"}'. Esto va a funcionar y va a devolver \"",
+   "n": 1
+  },
+  {
+   "en": "\"an audit_id; capture and report it verbatim. \"",
+   "es": "\"un audit_id; captúralo y repórtalo tal cual. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: call invoke_skill with skill_name \"",
+   "es": "\"Paso 4: llama a invoke_skill con skill_name \"",
+   "n": 1
+  },
+  {
+   "en": "\"'__definitely_does_not_exist__' and args_json '{}'. This must \"",
+   "es": "\"'__definitely_does_not_exist__' y args_json '{}'. Esto debe \"",
+   "n": 1
+  },
+  {
+   "en": "\"fail with code UNKNOWN_SKILL; quote code and reason verbatim. \"",
+   "es": "\"dar error con code UNKNOWN_SKILL; cita code y reason tal cual. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: call list_skills with filter_keywords 'kyber' to \"",
+   "es": "\"Paso 5: llama a list_skills con filter_keywords 'kyber' para \"",
+   "n": 1
+  },
+  {
+   "en": "\"demonstrate keyword filtering on the registry. \"",
+   "es": "\"demostrar el filtrado por palabras clave en el registro. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: close with a one-line verdict naming the audit_id from \"",
+   "es": "\"Paso 6: cierra con un veredicto de una línea que nombre el audit_id del \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 so the user can locate the per-invocation NDJSON file under \"",
+   "es": "\"Paso 3 para que yo pueda ubicar el archivo NDJSON de esa invocación en \"",
+   "n": 1
+  },
+  {
+   "en": "\"~/.tlamatini/skill-audit/. End with END-RESPONSE.\"",
+   "es": "\"~/.tlamatini/skill-audit/. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the Multi-CLI ACPX Relay demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo Relevo ACPX entre varios CLIs, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: call list_acp_agents. Pin leg A to agent_id 'gemini'. For \"",
+   "es": "\"Paso 2: llama a list_acp_agents. Fija el tramo A en agent_id 'gemini'. Para \"",
+   "n": 1
+  },
+  {
+   "en": "\"leg B, pick the first resolvable agent_id from the list that is \"",
+   "es": "\"el tramo B, elige el primer agent_id resolvable de la lista que no \"",
+   "n": 1
+  },
+  {
+   "en": "\"not gemini. If only gemini is resolvable, simulate leg B with \"",
+   "es": "\"sea gemini. Si sólo gemini es resolvable, simula el tramo B con \"",
+   "n": 1
+  },
+  {
+   "en": "\"invoke_skill skill_name 'summarize' and announce the fallback in \"",
+   "es": "\"invoke_skill con skill_name 'summarize' y anuncia el fallback en \"",
+   "n": 1
+  },
+  {
+   "en": "\"one short line. \"",
+   "es": "\"una línea breve. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (LEG A - gemini): call acp_spawn with agent_id 'gemini' \"",
+   "es": "\"Paso 3 (TRAMO A - gemini): llama a acp_spawn con agent_id 'gemini' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and task 'You are a senior systems architect. In one paragraph \"",
+   "es": "\"y task 'Eres un arquitecto de sistemas senior. En un párrafo \"",
+   "n": 1
+  },
+  {
+   "en": "\"(max 6 sentences), describe the trade-offs of an HTTP-based \"",
+   "es": "\"(máximo 6 oraciones), describe los trade-offs de un gateway de webhooks \"",
+   "n": 1
+  },
+  {
+   "en": "\"webhook gateway vs a WebSocket-based chat gateway for triggering \"",
+   "es": "\"basado en HTTP vs. un gateway de chat basado en WebSocket para disparar \"",
+   "n": 1
+  },
+  {
+   "en": "\"automation pipelines. Be concrete and opinionated.' Capture \"",
+   "es": "\"pipelines de automatización. Sé concreto y opina con firmeza.' Captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"session_id_A and the events. Then call acp_kill on session_id_A. \"",
+   "es": "\"session_id_A y los events. Luego llama a acp_kill sobre session_id_A. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (LEG B - peer): call acp_spawn with the second agent_id \"",
+   "es": "\"Paso 4 (TRAMO B - par): llama a acp_spawn con el segundo agent_id \"",
+   "n": 1
+  },
+  {
+   "en": "\"(or simulate via invoke_skill summarize per Step 2) and task \"",
+   "es": "\"(o simúlalo con invoke_skill summarize según el Paso 2) y task \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Read the following analysis from a peer ACP agent and produce a \"",
+   "es": "\"'Lee el siguiente análisis de un agent ACP par y produce un \"",
+   "n": 1
+  },
+  {
+   "en": "\"4-bullet verdict that either AGREES, REFUTES, or EXTENDS each \"",
+   "es": "\"veredicto de 4 viñetas que diga si CONCUERDA, REFUTA o AMPLÍA cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"point. Be specific. Analysis: <paste leg A text here>'. Capture \"",
+   "es": "\"punto. Sé específico. Análisis: <paste leg A text here>'. Captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"session_id_B and events; then call acp_kill on session_id_B. \"",
+   "es": "\"session_id_B y los events; luego llama a acp_kill sobre session_id_B. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: render an HTML table titled 'Multi-CLI Relay - covered \"",
+   "es": "\"Paso 5: muestra una tabla HTML titulada 'Relevo entre varios CLIs - comportamientos \"",
+   "n": 1
+  },
+  {
+   "en": "\"behaviors' with columns behavior, leg_a_agent, leg_b_agent, \"",
+   "es": "\"cubiertos' con las columnas behavior, leg_a_agent, leg_b_agent, \"",
+   "n": 1
+  },
+  {
+   "en": "\"openclaw_pattern_match and rows (spawn first child, harvest \"",
+   "es": "\"openclaw_pattern_match y estas filas (lanzar el primer proceso hijo, recolectar la \"",
+   "n": 1
+  },
+  {
+   "en": "\"transcript, hand-off content, spawn second child with first \"",
+   "es": "\"transcripción, pasar el contenido, lanzar el segundo proceso hijo con la primera \"",
+   "n": 1
+  },
+  {
+   "en": "\"transcript as input, dual graceful kill). openclaw_pattern_match \"",
+   "es": "\"transcripción como input, doble kill ordenado). openclaw_pattern_match \"",
+   "n": 1
+  },
+  {
+   "en": "\"is YES on every row. \"",
+   "es": "\"es YES en todas las filas. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: close with a one-line verdict naming the two agent_ids \"",
+   "es": "\"Paso 6: cierra con un veredicto de una línea que nombre los dos agent_ids \"",
+   "n": 1
+  },
+  {
+   "en": "\"actually used. End with END-RESPONSE.\"",
+   "es": "\"que realmente se usaron. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the ACPX Auditor's Replay demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo Repetición del auditor de ACPX, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call invoke_skill with skill_name 'hello-world' and \"",
+   "es": "\"Paso 1: llama a invoke_skill con skill_name 'hello-world' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"args_json '{\\\"who\\\":\\\"auditor\\\"}' to guarantee a fresh audit \"",
+   "es": "\"args_json '{\\\"who\\\":\\\"auditor\\\"}' para garantizar un registro de auditoría \"",
+   "n": 1
+  },
+  {
+   "en": "\"record on disk. Capture the returned audit_id. \"",
+   "es": "\"nuevo en disco. Captura el audit_id que devuelva. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: call acp_doctor and report the active stateDir from its \"",
+   "es": "\"Paso 2: llama a acp_doctor y reporta el stateDir activo de sus \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: call execute_command with command 'dir /b /o:-d \"",
+   "es": "\"Paso 3: llama a execute_command con command 'dir /b /o:-d \"",
+   "n": 1
+  },
+  {
+   "en": "\"~/.tlamatini/skill-audit/ 2>/dev/null' to list audit-month \"",
+   "es": "\"~/.tlamatini/skill-audit/ 2>/dev/null' para listar, por mes de auditoría, los \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: call execute_command with command 'dir /b /s /o:-d \"",
+   "es": "\"Paso 4: llama a execute_command con command 'dir /b /s /o:-d \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"*hello_world*auditor*\\\" 2>/dev/null | head -1 || true' to \"",
+   "es": "\"\\\"*hello_world*auditor*\\\" 2>/dev/null | head -1 || true' para \"",
+   "n": 1
+  },
+  {
+   "en": "\"locate the NDJSON file matching the audit_id from Step 1. \"",
+   "es": "\"ubicar el archivo NDJSON que coincide con el audit_id del Paso 1. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: call chat_agent_file_extractor with filepath set to the \"",
+   "es": "\"Paso 5: llama a chat_agent_file_extractor con filepath igual al \"",
+   "n": 1
+  },
+  {
+   "en": "\"located NDJSON path so we can read the structured event stream. \"",
+   "es": "\"path del NDJSON que ubicaste, para que podamos leer el stream estructurado de events. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: call invoke_skill with skill_name 'summarize' and \"",
+   "es": "\"Paso 6: llama a invoke_skill con skill_name 'summarize' y \"",
+   "n": 2
+  },
+  {
+   "en": "\"\\\"target_words\\\":60}' to produce a human-readable replay narrative. \"",
+   "es": "\"\\\"target_words\\\":60}' para producir una narración legible de la repetición. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: render an HTML table titled 'Audit Trail - what is on \"",
+   "es": "\"Paso 7: muestra una tabla HTML titulada 'Rastro de auditoría - lo que hay \"",
+   "n": 1
+  },
+  {
+   "en": "\"disk' with columns artifact, location, format, \"",
+   "es": "\"en disco' con las columnas artifact, location, format, \"",
+   "n": 1
+  },
+  {
+   "en": "\"openclaw_equivalent_present and three rows for \"",
+   "es": "\"openclaw_equivalent_present y tres filas para \"",
+   "n": 1
+  },
+  {
+   "en": "\"acp_session_record (all NDJSON or JSON, all YES). \"",
+   "es": "\"acp_session_record (todas NDJSON o JSON, todas YES). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: close with a one-line verdict naming the audit_id from \"",
+   "es": "\"Paso 8: cierra con un veredicto de una línea que nombre el audit_id del \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 and the absolute NDJSON path located in Step 4. End with \"",
+   "es": "\"Paso 1 y el path absoluto del NDJSON que ubicaste en el Paso 4. Termina con \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the Gemini Live Reasoning Showcase demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo Muestra de razonamiento en vivo con Gemini, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call acp_doctor and confirm the probe agent is gemini. \"",
+   "es": "\"Paso 1: llama a acp_doctor y confirma que el agent de prueba es gemini. \"",
+   "n": 1
+  },
+  {
+   "en": "\"If ok is false, report 'Gemini is not on PATH - install \"",
+   "es": "\"Si ok es false, reporta 'Gemini no está en el PATH - instala \"",
+   "n": 1
+  },
+  {
+   "en": "\"@google/gemini-cli, then retry.' and END-RESPONSE immediately. \"",
+   "es": "\"@google/gemini-cli y vuelve a intentarlo.' y pon END-RESPONSE de inmediato. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Otherwise proceed. \"",
+   "es": "\"Si no, continúa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (TURN 1): call acp_spawn with agent_id 'gemini', cwd \"",
+   "es": "\"Paso 2 (TURNO 1): llama a acp_spawn con agent_id 'gemini', cwd \"",
+   "n": 1
+  },
+  {
+   "en": "\"'C:/Development/Tlamatini', and task 'You are advising a solo \"",
+   "es": "\"'C:/Development/Tlamatini' y task 'Estás asesorando a una persona que desarrolla \"",
+   "n": 1
+  },
+  {
+   "en": "\"developer building a self-hosted AI developer assistant. List, \"",
+   "es": "\"sola un asistente de IA autoalojado para desarrolladores. Enumera, \"",
+   "n": 1
+  },
+  {
+   "en": "\"in one short paragraph, the three most underrated architectural \"",
+   "es": "\"en un párrafo breve, los tres pilares de arquitectura más subestimados \"",
+   "n": 1
+  },
+  {
+   "en": "\"pillars of such a system - pillars whose importance only becomes \"",
+   "es": "\"de un sistema así - pilares cuya importancia sólo se vuelve \"",
+   "n": 1
+  },
+  {
+   "en": "\"obvious after 12+ months of usage. Be concrete; cite specific \"",
+   "es": "\"evidente después de más de 12 meses de uso. Sé concreto; cita modos de \"",
+   "n": 1
+  },
+  {
+   "en": "\"failure modes that show up if a pillar is absent.' Capture \"",
+   "es": "\"falla específicos que aparecen si falta un pilar.' Captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"session_id and the events; quote them under heading 'Turn 1 - \"",
+   "es": "\"session_id y los events; cítalos bajo el encabezado 'Turno 1 - \"",
+   "n": 1
+  },
+  {
+   "en": "\"Gemini speaks'. \"",
+   "es": "\"Gemini habla'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (TURN 2): call acp_send on the same session_id with text \"",
+   "es": "\"Paso 3 (TURNO 2): llama a acp_send sobre el mismo session_id con text \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Of those three pillars, pick the ONE you would prioritize for \"",
+   "es": "\"'De esos tres pilares, elige el ÚNICO que priorizarías para \"",
+   "n": 1
+  },
+  {
+   "en": "\"the next 30 days of work, and write a 4-line action plan \"",
+   "es": "\"los próximos 30 días de trabajo y escribe un plan de acción de 4 líneas \"",
+   "n": 1
+  },
+  {
+   "en": "\"describing what to ship, in what order, with what success \"",
+   "es": "\"que describa qué entregar, en qué orden y con qué métrica de \"",
+   "n": 1
+  },
+  {
+   "en": "\"metric.' Quote the events under heading 'Turn 2 - the plan'. \"",
+   "es": "\"éxito.' Cita los events bajo el encabezado 'Turno 2 - el plan'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (TURN 3): call acp_send on the same session_id with text \"",
+   "es": "\"Paso 4 (TURNO 3): llama a acp_send sobre el mismo session_id con text \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Now anticipate the most likely way that 30-day plan will fail. \"",
+   "es": "\"'Ahora anticipa la forma más probable en que ese plan de 30 días va a fracasar. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Write a 3-line risk register: each line names the failure mode, \"",
+   "es": "\"Escribe un registro de riesgos de 3 líneas: cada línea nombra el modo de falla, \"",
+   "n": 1
+  },
+  {
+   "en": "\"the early-warning signal, and the cheapest mitigation.' Quote \"",
+   "es": "\"la señal de alerta temprana y la mitigación más barata.' Cita \"",
+   "n": 1
+  },
+  {
+   "en": "\"the events under heading 'Turn 3 - the risk register'. \"",
+   "es": "\"los events bajo el encabezado 'Turno 3 - el registro de riesgos'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: call acp_kill on session_id and confirm killed=true. \"",
+   "es": "\"Paso 5: llama a acp_kill sobre session_id y confirma killed=true. \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"target_words\\\":120}'. Quote the digest under heading \"",
+   "es": "\"\\\"target_words\\\":120}'. Cita el resumen bajo el encabezado \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Executive Digest'. \"",
+   "es": "\"'Resumen ejecutivo'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: call chat_agent_file_creator with filepath \"",
+   "es": "\"Paso 7: llama a chat_agent_file_creator con filepath \"",
+   "n": 1
+  },
+  {
+   "en": "\"'C:/Development/Tlamatini/_gemini_live_reasoning.md' and content \"",
+   "es": "\"'C:/Development/Tlamatini/_gemini_live_reasoning.md' y content \"",
+   "n": 1
+  },
+  {
+   "en": "\"set to a markdown report containing all three turns and the \"",
+   "es": "\"igual a un reporte en markdown con los tres turnos y el \"",
+   "n": 1
+  },
+  {
+   "en": "\"executive digest, with a footer noting the report was generated \"",
+   "es": "\"resumen ejecutivo, con un pie que indique que el reporte lo generó \"",
+   "n": 1
+  },
+  {
+   "en": "\"by Tlamatini ACPX through a real Gemini child. \"",
+   "es": "\"Tlamatini ACPX a través de un proceso hijo real de Gemini. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: call chat_agent_notifier with title 'Gemini Live \"",
+   "es": "\"Paso 8: llama a chat_agent_notifier con title 'Razonamiento en vivo \"",
+   "n": 1
+  },
+  {
+   "en": "\"Reasoning' and a one-line completion message. \"",
+   "es": "\"con Gemini' y un mensaje de cierre de una línea. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 9: render an HTML table titled 'Gemini Live Reasoning - \"",
+   "es": "\"Paso 9: muestra una tabla HTML titulada 'Razonamiento en vivo con Gemini - \"",
+   "n": 1
+  },
+  {
+   "en": "\"Capability Scoreboard' with columns capability, \"",
+   "es": "\"Marcador de capacidades' con las columnas capability, \"",
+   "n": 1
+  },
+  {
+   "en": "\"demonstrated_this_run, evidence and rows: real_external_LLM_spawned; \"",
+   "es": "\"demonstrated_this_run, evidence y estas filas: real_external_LLM_spawned; \"",
+   "n": 1
+  },
+  {
+   "en": "\"demonstrated_this_run is YES on every row; evidence cites \"",
+   "es": "\"demonstrated_this_run es YES en todas las filas; evidence cita \"",
+   "n": 1
+  },
+  {
+   "en": "\"session_id, transcript path, audit_id, or output filepath. \"",
+   "es": "\"session_id, el path de la transcripción, audit_id o el filepath del output. \"",
+   "n": 1
+  },
+  {
+   "en": "\"subdirectories. \"",
+   "es": "\"subdirectorios. \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"args_json '{\\\"text\\\":\\\"Tlamatini ACPX implements the same agent_id \"",
+   "motivo": "payload JSON de args_json (valor de máquina)"
+  },
+  {
+   "en": "\"mapping and the same permissionMode vocabulary as OpenClaw, so \"",
+   "motivo": "payload JSON de args_json (valor de máquina)"
+  },
+  {
+   "en": "\"any acp-router skill written for one project runs unmodified on \"",
+   "motivo": "payload JSON de args_json (valor de máquina)"
+  },
+  {
+   "en": "\"args_json '{\\\"intent\\\":\\\"reason about a complex codebase\\\",\"",
+   "motivo": "payload JSON de args_json (valor de máquina)"
+  },
+  {
+   "en": "\"'{\\\"text\\\":\\\"<paste joined text from spawn + send events>\\\",\"",
+   "motivo": "payload JSON de args_json con un slot <...> (valor de máquina)"
+  },
+  {
+   "en": "\"%USERPROFILE%\\\\.tlamatini\\\\skill-audit 2>NUL || ls -1t \"",
+   "motivo": "comando (valor de máquina)"
+  },
+  {
+   "en": "\"2>NUL || find ~/.tlamatini/skill-audit -name \"",
+   "motivo": "comando (valor de máquina)"
+  },
+  {
+   "en": "\"args_json '{\\\"text\\\":\\\"<paste joined NDJSON event lines here>\\\",\"",
+   "motivo": "payload JSON de args_json con un slot <...> (valor de máquina)"
+  },
+  {
+   "en": "\"skill_invocation_audit, acp_session_transcript, \"",
+   "motivo": "identificadores (valores de máquina)"
+  },
+  {
+   "en": "\"args_json '{\\\"text\\\":\\\"<paste joined text from turns 1+2+3>\\\",\"",
+   "motivo": "payload JSON de args_json con un slot <...> (valor de máquina)"
+  },
+  {
+   "en": "\"api_key_injected_via_acpx_env; multi_turn_conversation_3_turns; \"",
+   "motivo": "identificadores (valores de máquina)"
+  },
+  {
+   "en": "\"transcript_persisted_NDJSON; downstream_skill_chained; \"",
+   "motivo": "identificadores (valores de máquina)"
+  },
+  {
+   "en": "\"audit_trail_written; openclaw_protocol_compatible. \"",
+   "motivo": "identificadores (valores de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

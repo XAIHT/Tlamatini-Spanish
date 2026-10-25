@@ -1,0 +1,14 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+.login-error-panel { margin-bottom: 1rem; padding: .85rem 1rem; border-radius: .75rem; background-color: rgba(220, 53, 69, 0.18); border: 1px solid rgba(220, 53, 69, 0.45); color: #ffd7dc; }
+.login-error-line + .login-error-line { margin-top: .35rem; }

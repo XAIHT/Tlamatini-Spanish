@@ -1,0 +1,384 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0178_add_stm32_stepwise_blink_camera_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, walk me through programming the **classic LED blink onto a Blue Pill \"",
+   "es": "\"Tlamatini, guíame para programar el **clásico blink de LED en una Blue Pill \"",
+   "n": 1
+  },
+  {
+   "en": "\"(STM32F103C8), flashed over an external ST-LINK V2**, ONE step at a time, and prove the \"",
+   "es": "\"(STM32F103C8), flasheada sobre un ST-LINK V2 externo**, UN paso a la vez, y comprueba que el \"",
+   "n": 1
+  },
+  {
+   "en": "\"LED actually blinks with my default camera at the end. Before you start, tick **Multi-Turn**, \"",
+   "es": "\"LED de verdad parpadea con mi cámara predeterminada al final. Antes de empezar, marca **Multi-Turn**, \"",
+   "n": 1
+  },
+  {
+   "en": "\"**Exec report**, and the **Step-by-Step** checkbox.\\n\"",
+   "es": "\"**Exec report** y la **Step-by-Step** checkbox.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Because Step-by-Step mode is on, do EXACTLY ONE step per turn, then STOP and WAIT for me to \"",
+   "es": "\"Como el Step-by-Step mode está activado, haz EXACTAMENTE UN paso por turno, luego DETENTE y ESPERA a que yo \"",
+   "n": 2
+  },
+  {
+   "en": "\"reply `READY` (with whatever output/photo you asked for) before the next step. VERIFY each step \"",
+   "es": "\"responda `READY` (con el output/foto que me hayas pedido) antes del siguiente paso. VERIFICA cada paso \"",
+   "n": 2
+  },
+  {
+   "en": "\"yourself before moving on — if a check fails, tell me exactly what to fix and re-check; never \"",
+   "es": "\"tú misma antes de avanzar — si una comprobación falla, dime exactamente qué arreglar y vuelve a revisar; nunca \"",
+   "n": 2
+  },
+  {
+   "en": "\"skip ahead. Use ONLY your own agents: chat_agent_stm32er (PlatformIO backend) for build/flash \"",
+   "es": "\"te saltes pasos. Usa SÓLO tus propios agents: chat_agent_stm32er (backend de PlatformIO) para build/flash \"",
+   "n": 2
+  },
+  {
+   "en": "\"and chat_agent_camcorder for the camera. The Blue Pill's user LED is on PC13; with \"",
+   "es": "\"y chat_agent_camcorder para la cámara. El LED de usuario de la Blue Pill está en PC13; con \"",
+   "n": 1
+  },
+  {
+   "en": "\"framework 'arduino' that is LED_BUILTIN.\\n\"",
+   "es": "\"el framework 'arduino' ese es LED_BUILTIN.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 1 — Install the ST-LINK V2 USB driver. Tell me to install the ST-Link driver (STSW-LINK009, \"",
+   "es": "\"STEP 1 — Instala el driver USB del ST-LINK V2. Dime que instale el driver del ST-Link (STSW-LINK009, \"",
+   "n": 1
+  },
+  {
+   "en": "\"or just install STM32CubeProgrammer — it bundles the driver), plug the ST-LINK V2 dongle into a \"",
+   "es": "\"o que simplemente instale STM32CubeProgrammer — trae el driver), que conecte el dongle ST-LINK V2 en un \"",
+   "n": 1
+  },
+  {
+   "en": "\"USB port, and reply READY. THEN verify: run chat_agent_stm32er with action='validate', \"",
+   "es": "\"puerto USB y que responda READY. LUEGO verifica: corre chat_agent_stm32er con action='validate', \"",
+   "n": 1
+  },
+  {
+   "en": "\"stm32_backend='platformio', board='bluepill_f103c8', and confirm STM32_Programmer_CLI is \"",
+   "es": "\"stm32_backend='platformio', board='bluepill_f103c8', y confirma que STM32_Programmer_CLI es \"",
+   "n": 1
+  },
+  {
+   "en": "\"RESOLVABLE. (The board is not wired yet, so the ST-LINK probe may read absent here — that is \"",
+   "es": "\"RESOLVABLE. (La placa aún no está conectada, así que la probe del ST-LINK puede leerse ausente aquí — eso es \"",
+   "n": 1
+  },
+  {
+   "en": "\"expected; we only need the CLI/driver present at this step.) Report the check and wait.\\n\"",
+   "es": "\"esperado; en este paso sólo necesitamos que el CLI/driver estén presentes.) Reporta la comprobación y espera.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 2 — Wire the Blue Pill to the ST-LINK V2 (SWD, 4 wires) and confirm the probe is seen. Tell \"",
+   "es": "\"STEP 2 — Conecta la Blue Pill al ST-LINK V2 (SWD, 4 cables) y confirma que se ve la probe. Dime \"",
+   "n": 1
+  },
+  {
+   "en": "\"me to connect ST-LINK 3.3V→Blue Pill 3V3, GND→GND, SWDIO→DIO, SWCLK→CLK, then reply READY. THEN \"",
+   "es": "\"que conecte ST-LINK 3.3V→Blue Pill 3V3, GND→GND, SWDIO→DIO, SWCLK→CLK, y luego responda READY. LUEGO \"",
+   "n": 1
+  },
+  {
+   "en": "\"verify: re-run action='validate' (same params) and confirm the ST-LINK probe now shows PRESENT. \"",
+   "es": "\"verifica: vuelve a correr action='validate' (mismos params) y confirma que la probe del ST-LINK ahora muestra PRESENT. \"",
+   "n": 1
+  },
+  {
+   "en": "\"If it still reads absent, help me troubleshoot (cable, the BOOT0 jumper back to 0, the driver) \"",
+   "es": "\"Si sigue leyéndose ausente, ayúdame a resolverlo (cable, el jumper BOOT0 de regreso a 0, el driver) \"",
+   "n": 1
+  },
+  {
+   "en": "\"and re-check. Wait.\\n\"",
+   "es": "\"y vuelve a revisar. Espera.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 3 — Bootstrap PlatformIO (zero-config). Run chat_agent_stm32er with action='bootstrap', \"",
+   "es": "\"STEP 3 — Haz bootstrap de PlatformIO (zero-config). Corre chat_agent_stm32er con action='bootstrap', \"",
+   "n": 1
+  },
+  {
+   "en": "\"stm32_backend='platformio'. Confirm PlatformIO Core is ready (it auto-installs on first use — \"",
+   "es": "\"stm32_backend='platformio'. Confirma que PlatformIO Core está listo (se instala solo en el primer uso — \"",
+   "n": 1
+  },
+  {
+   "en": "\"this can take a few minutes). Report and wait.\\n\"",
+   "es": "\"esto puede tardar unos minutos). Reporta y espera.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 4 — Create the project and BUILD the blink (no board access needed to compile). Run \"",
+   "es": "\"STEP 4 — Crea el proyecto y COMPILA el blink (no se necesita acceso a la placa para compilar). Corre \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_stm32er with action='create_project', stm32_backend='platformio', \"",
+   "es": "\"chat_agent_stm32er con action='create_project', stm32_backend='platformio', \"",
+   "n": 1
+  },
+  {
+   "en": "\"board='bluepill_f103c8', framework='arduino', project_dir='<your Templates directory>/\"",
+   "es": "\"board='bluepill_f103c8', framework='arduino', project_dir='<your Templates directory>/\""
+  },
+  {
+   "en": "\"bluepill_blink'. Then action='write_source', project_dir=<same>, rel_path='src/main.cpp', \"",
+   "es": "\"bluepill_blink'. Luego action='write_source', project_dir=<same>, rel_path='src/main.cpp', \"",
+   "n": 1
+  },
+  {
+   "en": "\"content= this sketch VERBATIM:\\n\"",
+   "es": "\"content= este sketch VERBATIM:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Then action='build', project_dir=<same>. Confirm the build SUCCEEDED in the Exec report (the \"",
+   "es": "\"Luego action='build', project_dir=<same>. Confirma que el build SUCCEEDED en el Exec report (el \"",
+   "n": 2
+  },
+  {
+   "en": "\"first build downloads the STM32 Arduino toolchain — let it finish). Report and wait.\\n\"",
+   "es": "\"primer build descarga el toolchain de STM32 Arduino — déjalo terminar). Reporta y espera.\\n\"",
+   "n": 2
+  },
+  {
+   "en": "\"STEP 5 — FLASH it over the ST-LINK. Run chat_agent_stm32er with action='flash', \"",
+   "es": "\"STEP 5 — FLASHÉALO sobre el ST-LINK. Corre chat_agent_stm32er con action='flash', \"",
+   "n": 1
+  },
+  {
+   "en": "\"stm32_backend='platformio', board='bluepill_f103c8', project_dir=<same>. Confirm the flash \"",
+   "es": "\"stm32_backend='platformio', board='bluepill_f103c8', project_dir=<same>. Confirma que el flash \"",
+   "n": 1
+  },
+  {
+   "en": "\"SUCCEEDED. (If it fails with a USB/OpenOCD error, the ST-LINK may need the WinUSB driver via \"",
+   "es": "\"SUCCEEDED. (Si falla con un error de USB/OpenOCD, el ST-LINK puede necesitar el driver WinUSB vía \"",
+   "n": 1
+  },
+  {
+   "en": "\"Zadig — tell me and re-check.) The PC13 LED should now be blinking ~1 Hz. Report and wait.\\n\"",
+   "es": "\"Zadig — dime y vuelve a revisar.) El LED PC13 ahora debería parpadear ~1 Hz. Reporta y espera.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 6 — VERIFY the blink with my default camera. Tell me to point the Blue Pill's PC13 LED at \"",
+   "es": "\"STEP 6 — VERIFICA el parpadeo con mi cámara predeterminada. Dime que apunte el LED PC13 de la Blue Pill a \"",
+   "n": 1
+  },
+  {
+   "en": "\"my webcam, then reply READY. THEN run chat_agent_camcorder with capture_mode='video', \"",
+   "es": "\"mi webcam, luego responde READY. LUEGO corre chat_agent_camcorder con capture_mode='video', \"",
+   "n": 2
+  },
+  {
+   "en": "\"camera_index=0, video_duration_seconds=6 to record the board. Inspect the saved clip (you MAY \"",
+   "es": "\"camera_index=0, video_duration_seconds=6 para grabar la placa. Inspecciona el clip guardado (PUEDES \"",
+   "n": 1
+  },
+  {
+   "en": "\"pass it to chat_agent_video_analyzer or chat_agent_image_interpreter) and tell me PASS (the LED \"",
+   "es": "\"pasarlo a chat_agent_video_analyzer o chat_agent_image_interpreter) y dime PASS (el LED \"",
+   "n": 1
+  },
+  {
+   "en": "\"is blinking) or FAIL (steady/off), with the file path.\\n\"",
+   "es": "\"está parpadeando) o FAIL (fijo/apagado), con el path del archivo.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Finish with a short, tidy HTML summary of all six steps and the final PASS/FAIL. End with \"",
+   "es": "\"Termina con un resumen HTML corto y ordenado de los seis pasos y el PASS/FAIL final. Termina con \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, walk me through programming the **classic LED blink onto an STM32F407G-DISC1 \"",
+   "es": "\"Tlamatini, guíame para programar el **clásico blink de LED en una placa STM32F407G-DISC1 \"",
+   "n": 1
+  },
+  {
+   "en": "\"Discovery board, flashed over its ON-BOARD (embedded) ST-Link/V2**, ONE step at a time, and \"",
+   "es": "\"Discovery, flasheada sobre su ST-Link/V2 EMBEBIDO (on-board)**, UN paso a la vez, y \"",
+   "n": 1
+  },
+  {
+   "en": "\"prove the LED actually blinks with my default camera at the end. Before you start, tick \"",
+   "es": "\"comprueba que el LED de verdad parpadea con mi cámara predeterminada al final. Antes de empezar, marca \"",
+   "n": 1
+  },
+  {
+   "en": "\"**Multi-Turn**, **Exec report**, and the **Step-by-Step** checkbox.\\n\"",
+   "es": "\"**Multi-Turn**, **Exec report** y la **Step-by-Step** checkbox.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"and chat_agent_camcorder for the camera. The F407-DISC1 has four user LEDs on PD12–PD15 \"",
+   "es": "\"y chat_agent_camcorder para la cámara. La F407-DISC1 tiene cuatro LEDs de usuario en PD12–PD15 \"",
+   "n": 1
+  },
+  {
+   "en": "\"(green/orange/red/blue); with framework 'arduino' the green LED (PD12) is LED_BUILTIN. No \"",
+   "es": "\"(verde/naranja/rojo/azul); con el framework 'arduino' el LED verde (PD12) es LED_BUILTIN. No \"",
+   "n": 1
+  },
+  {
+   "en": "\"external dongle or wiring is needed — the ST-Link is built into the board.\\n\"",
+   "es": "\"hace falta dongle externo ni cableado — el ST-Link está integrado en la placa.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 1 — Install the ST-Link driver AND connect the board. Tell me to install the ST-Link/V2 USB \"",
+   "es": "\"STEP 1 — Instala el driver del ST-Link AND conecta la placa. Dime que instale el driver USB del ST-Link/V2 \"",
+   "n": 1
+  },
+  {
+   "en": "\"driver (STSW-LINK009, or just install STM32CubeProgrammer — it bundles the driver), then plug \"",
+   "es": "\"(STSW-LINK009, o que simplemente instale STM32CubeProgrammer — trae el driver), y luego conecte \"",
+   "n": 1
+  },
+  {
+   "en": "\"the board into my PC using its ST-LINK USB port (the mini-USB connector CN1, labelled \"",
+   "es": "\"la placa a mi PC usando su puerto USB de ST-LINK (el conector mini-USB CN1, rotulado \"",
+   "n": 1
+  },
+  {
+   "en": "\"'ST-LINK' — NOT the micro-USB OTG port), and reply READY. THEN verify: run chat_agent_stm32er \"",
+   "es": "\"'ST-LINK' — NO el puerto micro-USB OTG), y responda READY. LUEGO verifica: corre chat_agent_stm32er \"",
+   "n": 1
+  },
+  {
+   "en": "\"with action='validate', stm32_backend='platformio', board='disco_f407vg', and confirm BOTH that \"",
+   "es": "\"con action='validate', stm32_backend='platformio', board='disco_f407vg', y confirma TANTO que \"",
+   "n": 1
+  },
+  {
+   "en": "\"STM32_Programmer_CLI is resolvable AND that the embedded ST-Link probe shows PRESENT (the board \"",
+   "es": "\"STM32_Programmer_CLI es resolvable AND que la probe del ST-Link embebido muestra PRESENT (la placa \"",
+   "n": 1
+  },
+  {
+   "en": "\"powers its ST-Link from that USB port). If the probe reads absent, help me fix it (correct USB \"",
+   "es": "\"alimenta su ST-Link desde ese puerto USB). Si la probe se lee ausente, ayúdame a arreglarlo (puerto USB \"",
+   "n": 1
+  },
+  {
+   "en": "\"port, cable, driver) and re-check. Wait.\\n\"",
+   "es": "\"correcto, cable, driver) y vuelve a revisar. Espera.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 2 — Bootstrap PlatformIO (zero-config). Run chat_agent_stm32er with action='bootstrap', \"",
+   "es": "\"STEP 2 — Haz bootstrap de PlatformIO (zero-config). Corre chat_agent_stm32er con action='bootstrap', \"",
+   "n": 1
+  },
+  {
+   "en": "\"stm32_backend='platformio'. Confirm PlatformIO Core is ready (it auto-installs on first use — a \"",
+   "es": "\"stm32_backend='platformio'. Confirma que PlatformIO Core está listo (se instala solo en el primer uso — unos \"",
+   "n": 1
+  },
+  {
+   "en": "\"few minutes). Report and wait.\\n\"",
+   "es": "\"minutos). Reporta y espera.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 3 — Create the project and BUILD the blink. Run chat_agent_stm32er with \"",
+   "es": "\"STEP 3 — Crea el proyecto y COMPILA el blink. Corre chat_agent_stm32er con \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='create_project', stm32_backend='platformio', board='disco_f407vg', framework='arduino', \"",
+   "es": "\"action='create_project', stm32_backend='platformio', board='disco_f407vg', framework='arduino', \""
+  },
+  {
+   "en": "\"project_dir='<your Templates directory>/disc1_blink'. Then action='write_source', \"",
+   "es": "\"project_dir='<your Templates directory>/disc1_blink'. Luego action='write_source', \"",
+   "n": 1
+  },
+  {
+   "en": "\"project_dir=<same>, rel_path='src/main.cpp', content= this sketch VERBATIM:\\n\"",
+   "es": "\"project_dir=<same>, rel_path='src/main.cpp', content= este sketch VERBATIM:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 4 — FLASH it over the embedded ST-Link. Run chat_agent_stm32er with action='flash', \"",
+   "es": "\"STEP 4 — FLASHÉALO sobre el ST-Link embebido. Corre chat_agent_stm32er con action='flash', \"",
+   "n": 1
+  },
+  {
+   "en": "\"stm32_backend='platformio', board='disco_f407vg', project_dir=<same>. Confirm the flash \"",
+   "es": "\"stm32_backend='platformio', board='disco_f407vg', project_dir=<same>. Confirma que el flash \"",
+   "n": 1
+  },
+  {
+   "en": "\"SUCCEEDED. The green LED (PD12) should now blink ~1 Hz. Report and wait.\\n\"",
+   "es": "\"SUCCEEDED. El LED verde (PD12) ahora debería parpadear ~1 Hz. Reporta y espera.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"STEP 5 — VERIFY the blink with my default camera. Tell me to point the board's green PD12 LED at \"",
+   "es": "\"STEP 5 — VERIFICA el parpadeo con mi cámara predeterminada. Dime que apunte el LED verde PD12 de la placa a \"",
+   "n": 1
+  },
+  {
+   "en": "\"camera_index=0, video_duration_seconds=6. Inspect the clip (optionally via \"",
+   "es": "\"camera_index=0, video_duration_seconds=6. Inspecciona el clip (opcionalmente vía \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_video_analyzer or chat_agent_image_interpreter) and tell me PASS (blinking) or FAIL \"",
+   "es": "\"chat_agent_video_analyzer o chat_agent_image_interpreter) y dime PASS (parpadeando) o FAIL \"",
+   "n": 1
+  },
+  {
+   "en": "\"(steady/off), with the file path.\\n\"",
+   "es": "\"(fijo/apagado), con el path del archivo.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Finish with a short, tidy HTML summary of all five steps and the final PASS/FAIL. End with \"",
+   "es": "\"Termina con un resumen HTML corto y ordenado de los cinco pasos y el PASS/FAIL final. Termina con \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"    #include <Arduino.h>\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"    void setup() { pinMode(LED_BUILTIN, OUTPUT); }\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"    void loop() {\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"      digitalWrite(LED_BUILTIN, HIGH); delay(500);\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"      digitalWrite(LED_BUILTIN, LOW);  delay(500);\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

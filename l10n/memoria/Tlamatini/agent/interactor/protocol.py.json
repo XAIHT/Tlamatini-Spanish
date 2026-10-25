@@ -1,0 +1,34 @@
+{
+ "archivo": "Tlamatini/agent/interactor/protocol.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Use the UTF-16 start/end offsets returned by read.\"",
+   "motivo": "mensaje para el LLM (resultado del tool Interactor)"
+  },
+  {
+   "en": "\"An edit cannot split a Unicode character.\"",
+   "motivo": "mensaje para el LLM (resultado del tool Interactor)"
+  },
+  {
+   "en": "\"The editor did not return a document snapshot.\"",
+   "motivo": "mensaje para el LLM (resultado del tool Interactor)"
+  },
+  {
+   "en": "\"Live tutoring supports up to 256 Ki UTF-16 characters; no content was truncated.\"",
+   "motivo": "mensaje para el LLM (resultado del tool Interactor)"
+  },
+  {
+   "en": "\"Invalid editor revision.\"",
+   "motivo": "mensaje para el LLM (resultado del tool Interactor)"
+  },
+  {
+   "en": "\"Invalid editor selection.\"",
+   "motivo": "mensaje para el LLM (resultado del tool Interactor)"
+  },
+  {
+   "en": "\"The document ID or revision does not match. Read the live editor again and review its current text before proposing another edit; omit IDs to use that fresh read.\"",
+   "motivo": "instrucción para el LLM (resultado del tool Interactor)"
+  }
+ ]
+}

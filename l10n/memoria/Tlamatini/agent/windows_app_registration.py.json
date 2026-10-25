@@ -1,0 +1,18 @@
+{
+ "archivo": "Tlamatini/agent/windows_app_registration.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Tlamatini\"",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": "\"Publisher\"",
+   "motivo": "nombre de valor del registro de Windows"
+  },
+  {
+   "en": "\"Version\"",
+   "motivo": "nombre de valor del registro de Windows"
+  }
+ ]
+}

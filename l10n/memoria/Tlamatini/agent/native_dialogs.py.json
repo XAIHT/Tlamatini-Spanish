@@ -1,0 +1,62 @@
+{
+ "archivo": "Tlamatini/agent/native_dialogs.py",
+ "segmentos": [
+  {
+   "en": "\"All files (*.*)\"",
+   "es": "\"Todos los archivos (*.*)\"",
+   "n": 1
+  },
+  {
+   "en": "f\"GetOpenFileName failed (CommDlgExtendedError=0x{ext_err:04X})\"",
+   "es": "f\"Error en GetOpenFileName (CommDlgExtendedError=0x{ext_err:04X})\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{extension.upper()} files (*.{extension})\\0*.{extension}\\0All files (*.*)\\0*.*\\0\\0\"",
+   "es": "f\"{extension.upper()} (*.{extension})\\0*.{extension}\\0Todos los archivos (*.*)\\0*.*\\0\\0\"",
+   "n": 1
+  },
+  {
+   "en": "\"All files (*.*)\\0*.*\\0\\0\"",
+   "es": "\"Todos los archivos (*.*)\\0*.*\\0\\0\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Save As could not open (Windows dialog error 0x{error:04X}).\"",
+   "es": "f\"No se pudo abrir Guardar como (error del cuadro de diálogo de Windows 0x{error:04X}).\"",
+   "n": 1
+  },
+  {
+   "en": "\"SHGetPathFromIDList could not resolve the selection to a \"",
+   "es": "\"SHGetPathFromIDList no pudo convertir la selección en un \"",
+   "n": 1
+  },
+  {
+   "en": "\"filesystem path (a virtual/special folder was chosen).\"",
+   "es": "\"path del sistema de archivos (se eligió una carpeta virtual o especial).\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Flags\"",
+   "motivo": "nombre de campo de la estructura Win32 (ctypes)"
+  },
+  {
+   "en": "\"Win32 structs are Windows-only\"",
+   "motivo": "mensaje interno de excepción; no llega a la pantalla"
+  },
+  {
+   "en": "\"native file dialog requires Windows\"",
+   "motivo": "marcador que views.py busca en el texto del error (_PICKER_UNAVAILABLE_MARKERS)"
+  },
+  {
+   "en": "\"native save dialog requires Windows\"",
+   "motivo": "marcador que views.py busca en el texto del error (_PICKER_UNAVAILABLE_MARKERS)"
+  },
+  {
+   "en": "\"native folder dialog requires Windows\"",
+   "motivo": "marcador que views.py busca en el texto del error (_PICKER_UNAVAILABLE_MARKERS)"
+  }
+ ]
+}

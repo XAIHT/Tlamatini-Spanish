@@ -1,0 +1,42 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/voice_runtime.js",
+ "segmentos": [
+  {
+   "en": "    const FEMALE = /female|zira|jenny|aria|michelle|clara|nanami|sara|hazel|heera|catherine|hedda|elsa|paulina|helena|laura|isabel|sabina|woman|girl|monica|google us english|google uk english female|samantha|victoria|karen|tessa|fiona|moira|serena|allison|ava|susan|zoe|nora|mia|jess|tara|leah/i;\n    const MALE = /\\bmale\\b|david|mark|guy|ryan|george|james|richard|paul\\b|thomas|daniel|alex\\b|fred|diego|jorge|pablo|\\bman\\b|\\bboy\\b/i;\n    const defaults = { mode: 'notify', voiceURI: '', volume: 100, rate: 1, pitch: 1.05 };",
+   "es": "    const FEMALE = /female|zira|jenny|aria|michelle|clara|nanami|sara|hazel|heera|catherine|hedda|elsa|paulina|helena|laura|isabel|sabina|dalia|renata|ximena|google espa[nñ]ol|woman|girl|monica|google us english|google uk english female|samantha|victoria|karen|tessa|fiona|moira|serena|allison|ava|susan|zoe|nora|mia|jess|tara|leah/i;\n    const MALE = /\\bmale\\b|david|mark|guy|ryan|george|james|richard|paul\\b|thomas|daniel|alex\\b|fred|diego|jorge|pablo|javi|sergio|raul|miguel|andres|\\bman\\b|\\bboy\\b/i;\n    const defaults = { mode: 'notify', voiceURI: '', volume: 100, rate: 1, pitch: 1.05, lang: '' };",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "    function femaleVoices() {",
+   "es": "    // Preferred speech language: an explicit setting, else the page's own <html lang>\n    // (es-MX in the Spanish edition, en-US in the English edition), else the browser locale.\n    // Keeps this logic language-NEUTRAL — the edition's own page tag drives it.\n    function preferredLang(settings) {\n        const s = settings || memory;\n        return String((s && s.lang) || document.documentElement.lang || navigator.language || '').trim().toLowerCase().replace('_', '-');\n    }\n    function langBase(tag) { return String(tag || '').toLowerCase().split('-')[0]; }\n    function voiceLang(voice) { return String(voice && voice.lang || '').toLowerCase().replace('_', '-'); }\n    // Latin-American Spanish regions, most-preferred first; es-ES (Castilian) sorts last.\n    const LATAM_ES = ['es-mx', 'es-us', 'es-419', 'es-ar', 'es-co', 'es-cl', 'es-pe', 'es-ve', 'es-ec', 'es-gt', 'es-cr', 'es-pa', 'es-do', 'es-uy', 'es-py', 'es-bo', 'es-hn', 'es-ni', 'es-sv', 'es-pr'];\n    function femaleVoices() {",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "        return (window.speechSynthesis?.getVoices() || []).filter(voice => FEMALE.test(voice.name) && !MALE.test(voice.name));",
+   "es": "        // STRICTLY female: a voice is offered ONLY when its name is a verified-female\n        // name (FEMALE above — which includes the Latin-American es voices Sabina/Dalia\n        // and Google's Spanish voices) AND not a male name. Tlamatini must NEVER speak\n        // with a male voice — better an English female voice, or silence, than risk male.\n        // A gender-neutral/unknown voice is deliberately NOT accepted.\n        return (window.speechSynthesis?.getVoices() || []).filter(voice => FEMALE.test(voice.name) && !MALE.test(voice.name));",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "        return voices.find(voice => voice.voiceURI === settings.voiceURI)\n            || voices.find(voice => /zira|jenny|aria|samantha|google us english|hazel/i.test(voice.name)) || voices[0] || null;",
+   "es": "        if (!voices.length) return null;\n        const saved = voices.find(voice => voice.voiceURI === settings.voiceURI);\n        if (saved) return saved;\n        const want = preferredLang(settings), base = langBase(want);\n        if (base) {\n            const exact = voices.find(voice => voiceLang(voice) === want);   // es-MX beats es-US/es-ES\n            if (exact) return exact;\n            const sameBase = voices.filter(voice => langBase(voice.lang) === base);\n            if (sameBase.length) {\n                if (base === 'es') {   // prefer a Latin-American region; Castilian (es-ES) last\n                    const rank = v => { const i = LATAM_ES.indexOf(voiceLang(v)); return i < 0 ? 99 : i; };\n                    sameBase.sort((a, b) => rank(a) - rank(b));\n                }\n                return sameBase[0];\n            }\n        }\n        return voices.find(voice => /zira|jenny|aria|samantha|google us english|hazel/i.test(voice.name)) || voices[0] || null;",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "            utterance.voice = voice; utterance.lang = voice.lang;",
+   "es": "            utterance.voice = voice;\n            // Tag the utterance with the preferred regional locale when the voice's base\n            // language matches, so a generic 'es' voice is rendered as es-MX.\n            const want = preferredLang(settings);\n            utterance.lang = (want && langBase(voice.lang) === langBase(want)) ? want : (voice.lang || want || '');",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "        notify: () => speak(\"I've finished your request.\"),",
+   "es": "        notify: () => speak('Ya terminé tu solicitud.'),",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

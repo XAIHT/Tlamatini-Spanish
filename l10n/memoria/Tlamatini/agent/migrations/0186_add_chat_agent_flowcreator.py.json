@@ -1,0 +1,115 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0186_add_chat_agent_flowcreator.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, use <b>FlowCreator</b> to CREATE A FLOW for me, please - I want a real \"",
+   "es": "\"Tlamatini, usa <b>FlowCreator</b> para CREARME UN FLOW, por favor - quiero un archivo \"",
+   "n": 1
+  },
+  {
+   "en": "\"<code>.flw</code> file I can open in the Agentic Control Panel.<br><br>\"",
+   "es": "\"<code>.flw</code> real que pueda abrir en el Agentic Control Panel.<br><br>\"",
+   "n": 1
+  },
+  {
+   "en": "\"FILL THIS IN - replace the text inside the [[ ]] brackets:<br>\"",
+   "es": "\"LLENA ESTO - reemplaza el texto dentro de los corchetes [[ ]]:<br>\"",
+   "n": 1
+  },
+  {
+   "en": "\"- WHAT THE FLOW SHOULD DO: [[ DESCRIBE THE OBJECTIVE IN PLAIN WORDS - include the real \"",
+   "es": "\"- QUÉ DEBE HACER EL FLOW: [[ DESCRIBE EL OBJETIVO EN PALABRAS SENCILLAS - incluye los \"",
+   "n": 1
+  },
+  {
+   "en": "\"paths, patterns, recipients and thresholds. OPTIONAL, default: monitor the GlassFish \"",
+   "es": "\"paths, patterns, destinatarios y umbrales reales. OPCIONAL, predeterminado: monitorear el log del \"",
+   "n": 1
+  },
+  {
+   "en": "\"server log at C:/glassfish/domains/domain1/logs/server.log and, when an ERROR line \"",
+   "es": "\"servidor GlassFish en C:/glassfish/domains/domain1/logs/server.log y, cuando aparezca una línea ERROR, \"",
+   "n": 1
+  },
+  {
+   "en": "\"appears, summarize it and send me that summary on Telegram ]]<br>\"",
+   "es": "\"resumirla y enviarme ese resumen por Telegram ]]<br>\"",
+   "n": 1
+  },
+  {
+   "en": "\"- FILE NAME: [[ THE .flw FILE NAME - OPTIONAL, default: my_flow.flw ]]<br><br>\"",
+   "es": "\"- NOMBRE DE ARCHIVO: [[ EL NOMBRE DEL ARCHIVO .flw - OPCIONAL, predeterminado: my_flow.flw ]]<br><br>\"",
+   "n": 1
+  },
+  {
+   "en": "\"If I left the brackets untouched, just use the defaults above - do NOT ask me, go ahead.<br><br>\"",
+   "es": "\"Si dejé los corchetes sin tocar, sólo usa los valores predeterminados de arriba - NO me preguntes, adelante.<br><br>\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tick ONLY the <b>Multi-Turn</b> checkbox. Use ONLY the <code>chat_agent_flowcreator</code> \"",
+   "es": "\"Marca SÓLO la casilla <b>Multi-Turn</b>. Usa SÓLO el tool <code>chat_agent_flowcreator</code> \"",
+   "n": 1
+  },
+  {
+   "en": "\"tool: call it with <code>prompt='&lt;the objective above, in full&gt;'</code> and \"",
+   "es": "\": llámalo con <code>prompt='&lt;el objetivo de arriba, completo&gt;'</code> y \"",
+   "n": 1
+  },
+  {
+   "en": "\"<code>flow_filename='&lt;the file name above&gt;'</code>. Pass my WHOLE objective in \"",
+   "es": "\"<code>flow_filename='&lt;el nombre de archivo de arriba&gt;'</code>. Pasa TODO mi objetivo en \"",
+   "n": 1
+  },
+  {
+   "en": "\"<code>prompt</code> - the flow designer only sees that text, so any path or recipient you \"",
+   "es": "\"<code>prompt</code> - el diseñador de flows sólo ve ese texto, así que cualquier path o destinatario que \"",
+   "n": 1
+  },
+  {
+   "en": "\"leave out will be missing from the flow.<br><br>\"",
+   "es": "\"dejes fuera faltará en el flow.<br><br>\"",
+   "n": 1
+  },
+  {
+   "en": "\"When it finishes, read the <code>INI_SECTION_FLOWCREATOR</code> block and tell me: the \"",
+   "es": "\"Cuando termine, lee el bloque <code>INI_SECTION_FLOWCREATOR</code> y dime: el \"",
+   "n": 1
+  },
+  {
+   "en": "\"<code>status</code>, the <b>full <code>flw_path</code></b> (so I can open the file), the \"",
+   "es": "\"<code>status</code>, el <b><code>flw_path</code> completo</b> (para que pueda abrir el archivo), el \"",
+   "n": 1
+  },
+  {
+   "en": "\"<code>agent_count</code> and <code>connection_count</code>, and then list the agents it \"",
+   "es": "\"<code>agent_count</code> y <code>connection_count</code>, y luego lista los agents que \"",
+   "n": 1
+  },
+  {
+   "en": "\"chose in execution order with one line each explaining why that agent is there. If \"",
+   "es": "\"eligió en orden de ejecución, con una línea para cada uno explicando por qué está ahí. Si \"",
+   "n": 1
+  },
+  {
+   "en": "\"<code>status</code> is <code>error</code>, say so plainly and quote the message - do NOT \"",
+   "es": "\"<code>status</code> es <code>error</code>, dilo con claridad y cita el mensaje - NO \"",
+   "n": 1
+  },
+  {
+   "en": "\"claim a flow was created. End with END-RESPONSE.\"",
+   "es": "\"afirmes que se creó un flow. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Tool'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

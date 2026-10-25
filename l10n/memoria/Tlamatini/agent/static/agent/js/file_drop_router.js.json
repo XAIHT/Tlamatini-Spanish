@@ -1,0 +1,471 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/file_drop_router.js",
+ "segmentos": [
+  {
+   "en": "'Your session expired. Sign in, then drop the file again.'",
+   "es": "'Tu sesión expiró. Inicia sesión y vuelve a soltar el archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'No MCP servers were found in '",
+   "es": "'No se encontraron servidores MCP en '",
+   "n": 1
+  },
+  {
+   "en": "'Add '",
+   "es": "'¿Agregar al catálogo '",
+   "n": 1
+  },
+  {
+   "en": "' MCP server'",
+   "es": "' servidor'",
+   "n": 1
+  },
+  {
+   "en": "' to the catalog'",
+   "es": "' MCP'",
+   "n": 1
+  },
+  {
+   "en": "'  —  these entries can launch programs on this computer; import only '",
+   "es": "'  —  estas entradas pueden ejecutar programas en esta computadora; importa sólo '",
+   "n": 1
+  },
+  {
+   "en": "'configurations you trust.'",
+   "es": "'configuraciones de confianza.'",
+   "n": 1
+  },
+  {
+   "en": "'Import MCP servers'",
+   "es": "'Importar servidores MCP'",
+   "n": 1
+  },
+  {
+   "en": "'Nothing was imported.'",
+   "es": "'No se importó nada.'",
+   "n": 1
+  },
+  {
+   "en": "'Import failed: '",
+   "es": "'Error al importar: '",
+   "n": 1
+  },
+  {
+   "en": "'Import failed'",
+   "es": "'Error al importar'",
+   "n": 1
+  },
+  {
+   "en": "'Nothing was imported: none of the '",
+   "es": "'No se importó nada: de '",
+   "n": 1
+  },
+  {
+   "en": "'y has'",
+   "es": "'ada, ninguna tiene'",
+   "n": 1
+  },
+  {
+   "en": "'ies has'",
+   "es": "'adas, ninguna tiene'",
+   "n": 1
+  },
+  {
+   "en": "' a command or a url.'",
+   "es": "' un comando o una URL.'",
+   "n": 1
+  },
+  {
+   "en": "'Nothing to import'",
+   "es": "'Nada que importar'",
+   "n": 1
+  },
+  {
+   "en": "'Catalog updated — '",
+   "es": "'Catálogo actualizado — '",
+   "n": 1
+  },
+  {
+   "en": "' skipped (no command or url).'",
+   "es": "' omitido(s) (sin comando ni URL).'",
+   "n": 1
+  },
+  {
+   "en": "'Open External ▸ MCPs now to activate them?'",
+   "es": "'¿Abrir Externos ▸ MCPs ahora para activarlos?'",
+   "n": 1
+  },
+  {
+   "en": "'Import complete'",
+   "es": "'Importación completa'",
+   "n": 2
+  },
+  {
+   "en": "'Open External ▸ MCPs'",
+   "es": "'Abrir Externos ▸ MCPs'",
+   "n": 1
+  },
+  {
+   "en": "'Later'",
+   "es": "'Más tarde'",
+   "n": 1
+  },
+  {
+   "en": "'  Open External ▸ MCPs in the Tlamatini chat page to activate them.'",
+   "es": "'  Abre Externos ▸ MCPs en la página del chat de Tlamatini para activarlos.'",
+   "n": 1
+  },
+  {
+   "en": "'Opening flow · Tlamatini'",
+   "es": "'Abriendo el flow · Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'Opening '",
+   "es": "'Abriendo '",
+   "n": 1
+  },
+  {
+   "en": "'Allow pop-ups for Tlamatini, then drop '",
+   "es": "'Permite las ventanas emergentes de Tlamatini y luego suelta '",
+   "n": 1
+  },
+  {
+   "en": "'The flow file must be no larger than 5 MiB.'",
+   "es": "'El archivo del flow no puede pesar más de 5 MiB.'",
+   "n": 1
+  },
+  {
+   "en": "'Your session expired. Sign in, then open the file again.'",
+   "es": "'Tu sesión expiró. Inicia sesión y vuelve a abrir el archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'The file could not be opened.'",
+   "es": "'No se pudo abrir el archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not open '",
+   "es": "'No se pudo abrir '",
+   "n": 1
+  },
+  {
+   "en": "'Open flow'",
+   "es": "'Abrir flow'",
+   "n": 1
+  },
+  {
+   "en": "'MCP server config → added to the External MCP catalog'",
+   "es": "'Configuración de servidor MCP → se agrega al catálogo de External MCPs'",
+   "n": 1
+  },
+  {
+   "en": "'Agent flow (.flw) → opens in the Agentic Control Panel'",
+   "es": "'Flow de agents (.flw) → se abre en Agentic Control Panel'",
+   "n": 1
+  },
+  {
+   "en": "'Prompt flow (.fpmt) → opens in the Prompt Flow Panel'",
+   "es": "'Prompt flow (.fpmt) → se abre en Prompt Flow Panel'",
+   "n": 1
+  },
+  {
+   "en": "'Images are not used on this page — drop them on the Tlamatini chat'",
+   "es": "'Las imágenes no se usan en esta página — suéltalas en el chat de Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'PDFs are not used on this page — drop them on the Tlamatini chat'",
+   "es": "'Los PDF no se usan en esta página — suéltalos en el chat de Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'Markdown is not used on this page — drop it on the Tlamatini chat'",
+   "es": "'Markdown no se usa en esta página — suéltalo en el chat de Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'Text and code files are not used on this page — drop them on the Tlamatini chat'",
+   "es": "'Los archivos de texto y de código no se usan en esta página — suéltalos en el chat de Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'Any other JSON → '",
+   "es": "'Cualquier otro JSON → '",
+   "n": 1
+  },
+  {
+   "en": "'Flows, documents, images and MCP configs are recognised when you drop them'",
+   "es": "'Los flows, documentos, imágenes y configuraciones MCP se reconocen al soltarlos'",
+   "n": 1
+  },
+  {
+   "en": "'Release to let Tlamatini decide what to do with it'",
+   "es": "'Suelta para que Tlamatini decida qué hacer con esto'",
+   "n": 1
+  },
+  {
+   "en": "'Drop '",
+   "es": "'Suelta '",
+   "n": 1
+  },
+  {
+   "en": "'Drop the file'",
+   "es": "'Suelta el archivo'",
+   "n": 1
+  },
+  {
+   "en": "'Use Context ▸ Set directory as context to load a folder.'",
+   "es": "'Usa Contexto ▸ Usar un directorio como contexto para cargar una carpeta.'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini loads folders from the chat page: Context ▸ Set directory as context.'",
+   "es": "'Tlamatini carga carpetas desde la página del chat: Contexto ▸ Usar un directorio como contexto.'",
+   "n": 1
+  },
+  {
+   "en": "'Folders cannot be dropped ('",
+   "es": "'No se pueden soltar carpetas ('",
+   "n": 1
+  },
+  {
+   "en": "') — the browser does not hand Tlamatini a folder path. '",
+   "es": "') — el browser no le da a Tlamatini el path de una carpeta. '",
+   "n": 1
+  },
+  {
+   "en": "'text file'",
+   "es": "'archivo de texto'",
+   "n": 1
+  },
+  {
+   "en": "'binary file'",
+   "es": "'archivo binario'",
+   "n": 1
+  },
+  {
+   "en": "'images attach to a message on the Tlamatini chat page'",
+   "es": "'las imágenes se adjuntan a un mensaje en la página del chat de Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'documents open in the chat canvas'",
+   "es": "'los documentos se abren en el canvas del chat'",
+   "n": 1
+  },
+  {
+   "en": "'archives and binary files are not read'",
+   "es": "'los archivos comprimidos y binarios no se leen'",
+   "n": 1
+  },
+  {
+   "en": "'Skipped: '",
+   "es": "'Omitidos: '",
+   "n": 1
+  },
+  {
+   "en": "'\\nThis page accepts: '",
+   "es": "'\\nEsta página acepta: '",
+   "n": 1
+  },
+  {
+   "en": "'Not used: '",
+   "es": "'No se usan: '",
+   "n": 1
+  },
+  {
+   "en": "'Could not handle '",
+   "es": "'No se pudo procesar '",
+   "n": 1
+  },
+  {
+   "en": "'File drop'",
+   "es": "'Soltar archivos'",
+   "n": 1
+  },
+  {
+   "en": "'Only the first '",
+   "es": "'Sólo se tomaron en cuenta los primeros '",
+   "n": 1
+  },
+  {
+   "en": "' dropped items were considered.'",
+   "es": "' elementos soltados.'",
+   "n": 1
+  },
+  {
+   "en": "' is not valid JSON ('",
+   "es": "' no es un JSON válido ('",
+   "n": 1
+  },
+  {
+   "en": "') — treated as plain text.'",
+   "es": "') — se trata como texto plano.'",
+   "n": 1
+  },
+  {
+   "en": "'Sign in first, then drop the file on the Tlamatini chat page.'",
+   "es": "'Primero inicia sesión y luego suelta el archivo en la página del chat de Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "'Still working on the previous drop — try again in a moment.'",
+   "es": "'Todavía se está procesando lo que soltaste antes — vuelve a intentarlo en un momento.'",
+   "n": 1
+  },
+  {
+   "en": "'That drop could not be processed: '",
+   "es": "'No se pudo procesar lo que soltaste: '",
+   "n": 1
+  },
+  {
+   "en": "' from '",
+   "es": "' desde '",
+   "n": 1
+  },
+  {
+   "en": "' added, '",
+   "es": "' agregado(s), '",
+   "n": 1
+  },
+  {
+   "en": "' updated.'",
+   "es": "' actualizado(s).'",
+   "n": 1
+  },
+  {
+   "en": "' again.'",
+   "es": "' otra vez.'",
+   "n": 1
+  },
+  {
+   "en": "image: 'image'",
+   "es": "image: 'imagen'",
+   "n": 1
+  },
+  {
+   "en": "archive: 'archive'",
+   "es": "archive: 'archivo comprimido'",
+   "n": 1
+  },
+  {
+   "en": "' of '",
+   "es": "' de '",
+   "n": 1
+  },
+  {
+   "en": "'folder'",
+   "es": "'carpeta'",
+   "n": 1
+  },
+  {
+   "en": "'' : 's'",
+   "es": "'' : 'es'",
+   "n": 1
+  },
+  {
+   "en": "files.length + ' files'",
+   "es": "files.length + ' archivos'",
+   "n": 1
+  },
+  {
+   "en": "guess.count + ' files'",
+   "es": "guess.count + ' archivos'",
+   "n": 1
+  },
+  {
+   "en": "f.name : 'file'",
+   "es": "f.name : 'archivo'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'txt text log rst adoc asciidoc org tex c h cc cpp cxx c++ hh hpp hxx h++ ino cu cuh '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'cs java kt kts scala groovy gradle go rs swift m mm py pyw pyi rb rake php phtml pl pm lua tcl r jl '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'dart nim cr zig d v sv svh vhd vhdl js mjs cjs jsx ts mts cts tsx vue svelte astro coffee html htm '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'xhtml xml xsl xslt svg css scss sass less styl json5 jsonc yaml yml toml ini cfg conf config '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'properties env editorconfig csv tsv sql graphql gql proto prisma sh bash zsh fish bat cmd ps1 psm1 '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'psd1 awk sed vim asm s f f90 f95 f03 for pas pp ada adb ads cob cbl clj cljs cljc edn ex exs erl hrl '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'hs lhs ml mli fs fsx fsi elm lisp lsp scm rkt cmake mk mak make dockerfile bazel bzl sln csproj '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'vbproj vcxproj fsproj pom sbt gitignore gitattributes dockerignore jinja jinja2 j2 twig erb ejs hbs '",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'handlebars mustache pug haml liquid pmt'",
+   "motivo": "lista de extensiones de archivo (valor de máquina)"
+  },
+  {
+   "en": "'.tlm-fd-card{max-width:min(660px,92vw);padding:22px 30px;border:2px dashed #55BBAA;'",
+   "motivo": "reglas CSS"
+  },
+  {
+   "en": "'.tlm-fd-lines li{margin:5px 0}.tlm-fd-lines li.off{opacity:.62}'",
+   "motivo": "reglas CSS"
+  },
+  {
+   "en": "'z-index:2147483000;display:none;max-width:min(700px,92vw);padding:12px 18px;border-radius:12px;'",
+   "motivo": "reglas CSS"
+  },
+  {
+   "en": "'background:#1f2937;color:#f9fafb;border:1px solid #55BBAA;white-space:pre-line;'",
+   "motivo": "reglas CSS"
+  },
+  {
+   "en": "\"font:600 .9rem/1.45 'Nunito',system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45)}\"",
+   "motivo": "reglas CSS"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor de atributo ARIA"
+  },
+  {
+   "en": "'status'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "'polite'",
+   "motivo": "valor de aria-live"
+  },
+  {
+   "en": "'Markdown'",
+   "motivo": "nombre de formato"
+  },
+  {
+   "en": "names.length === 1 ? '' : 's'",
+   "motivo": "sustituido por el segmento más corto '' : 's' (mismo literal)"
+  },
+  {
+   "en": "' files'",
+   "motivo": "a secas no se toca: \"files\" es también una llave de datos (grepper.py); se traduce con contexto en sus dos frases"
+  },
+  {
+   "en": "f && f.name ? f.name : 'file'",
+   "motivo": "sustituido por el segmento más corto f.name : 'file' (mismo literal)"
+  }
+ ]
+}

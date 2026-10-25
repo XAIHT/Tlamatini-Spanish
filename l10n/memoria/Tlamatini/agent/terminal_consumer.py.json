@@ -1,0 +1,21 @@
+{
+ "archivo": "Tlamatini/agent/terminal_consumer.py",
+ "segmentos": [
+  {
+   "en": "f\"Terminals are unavailable: {exc}\"",
+   "es": "f\"El área Terminals no está disponible: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Request failed.\"",
+   "es": "\"Error en la solicitud.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"asyncio.Queue[Dict[str, Any]]\"",
+   "motivo": "anotación de tipos"
+  }
+ ]
+}

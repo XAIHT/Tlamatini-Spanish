@@ -1,0 +1,265 @@
+{
+ "archivo": "Tlamatini/agent/agents/model_settings.py",
+ "segmentos": [
+  {
+   "en": "'Embedding / memory'",
+   "es": "'Embedding / memoria'",
+   "n": 1
+  },
+  {
+   "en": "'Chained reasoning'",
+   "es": "'Razonamiento encadenado'",
+   "n": 1
+  },
+  {
+   "en": "'Access aimed prompts'",
+   "es": "'Prompts orientados al acceso'",
+   "n": 1
+  },
+  {
+   "en": "'MCP file search'",
+   "es": "'Búsqueda de archivos de MCP'",
+   "n": 1
+  },
+  {
+   "en": "'Internet classifier'",
+   "es": "'Clasificador de internet'",
+   "n": 1
+  },
+  {
+   "en": "'Web search summaries'",
+   "es": "'Resúmenes de búsquedas web'",
+   "n": 1
+  },
+  {
+   "en": "'Core'",
+   "es": "'Principales'",
+   "n": 1
+  },
+  {
+   "en": "'interpreter 1'",
+   "es": "'· intérprete 1'",
+   "n": 1
+  },
+  {
+   "en": "'interpreter 2'",
+   "es": "'· intérprete 2'",
+   "n": 1
+  },
+  {
+   "en": "'Vision'",
+   "es": "'Visión'",
+   "n": 2
+  },
+  {
+   "en": "'Vision-capable model required.'",
+   "es": "'Se requiere un modelo con visión.'",
+   "n": 1
+  },
+  {
+   "en": "'Text model that combines both interpretations.'",
+   "es": "'Modelo de texto que combina las dos interpretaciones.'",
+   "n": 1
+  },
+  {
+   "en": "'Claude image analysis'",
+   "es": "'Análisis de imágenes con Claude'",
+   "n": 1
+  },
+  {
+   "en": "'Anthropic model ID; requires your existing Claude API credentials.'",
+   "es": "'ID del modelo de Anthropic; requiere tus credenciales actuales de la API de Claude.'",
+   "n": 1
+  },
+  {
+   "en": "'Talker · speech generation'",
+   "es": "'Talker · generación de voz'",
+   "n": 1
+  },
+  {
+   "en": "'Speech'",
+   "es": "'Voz'",
+   "n": 7
+  },
+  {
+   "en": "'Orpheus-compatible audio-token model; ordinary chat models cannot speak.'",
+   "es": "'Modelo de tokens de audio compatible con Orpheus; los modelos de chat comunes no pueden hablar.'",
+   "n": 1
+  },
+  {
+   "en": "'Talker · voice'",
+   "es": "'Talker · voz'",
+   "n": 1
+  },
+  {
+   "en": "'Use a supported female Orpheus voice.'",
+   "es": "'Usa una voz femenina de Orpheus compatible.'",
+   "n": 1
+  },
+  {
+   "en": "'Whisperer · recognition engine'",
+   "es": "'Whisperer · motor de reconocimiento'",
+   "n": 1
+  },
+  {
+   "en": "'Whisperer · local speech model'",
+   "es": "'Whisperer · modelo de voz local'",
+   "n": 1
+  },
+  {
+   "en": "'Whisper size, Hugging Face model ID or local model directory.'",
+   "es": "'Tamaño de Whisper, ID de modelo de Hugging Face o directorio de un modelo local.'",
+   "n": 1
+  },
+  {
+   "en": "'Whisperer · cloud speech model'",
+   "es": "'Whisperer · modelo de voz en la nube'",
+   "n": 1
+  },
+  {
+   "en": "'Optional. Empty uses the selected speech provider’s default; credentials stay in the agent.'",
+   "es": "'Opcional. Vacío usa el modelo predeterminado del proveedor de voz elegido; las credenciales se quedan en el agent.'",
+   "n": 1
+  },
+  {
+   "en": "'Whisperer · transcript cleanup'",
+   "es": "'Whisperer · limpieza de la transcripción'",
+   "n": 1
+  },
+  {
+   "en": "'Ollama post-processing only; this does not enable cleanup or send microphone audio to Ollama.'",
+   "es": "'Sólo para el posprocesamiento en Ollama; esto no activa la limpieza ni envía el audio del micrófono a Ollama.'",
+   "n": 1
+  },
+  {
+   "en": "'Video-Analyzer · audio tracks'",
+   "es": "'Video-Analyzer · pistas de audio'",
+   "n": 1
+  },
+  {
+   "en": "'Local faster-whisper model for video audio tracks.'",
+   "es": "'Modelo local de faster-whisper para las pistas de audio de los videos.'",
+   "n": 1
+  },
+  {
+   "en": "'Workflows'",
+   "es": "'Flujos de trabajo'",
+   "n": 6
+  },
+  {
+   "en": "'Documents'",
+   "es": "'Documentos'",
+   "n": 5
+  },
+  {
+   "en": "'PDFer · design and polish'",
+   "es": "'PDFer · diseño y pulido'",
+   "n": 1
+  },
+  {
+   "en": "'PPTXer · design and polish'",
+   "es": "'PPTXer · diseño y pulido'",
+   "n": 1
+  },
+  {
+   "en": "'LaTeXer · repair'",
+   "es": "'LaTeXer · reparación'",
+   "n": 1
+  },
+  {
+   "en": "'Monitoring & messaging'",
+   "es": "'Monitoreo y mensajería'",
+   "n": 6
+  },
+  {
+   "en": "'TeleTlamatini · completeness check'",
+   "es": "'TeleTlamatini · revisión de completitud'",
+   "n": 1
+  },
+  {
+   "en": "'Optional. Empty disables model repair.'",
+   "es": "'Opcional. Vacío desactiva la reparación con el modelo.'",
+   "n": 1
+  },
+  {
+   "en": "'must be a string'",
+   "es": "'debe ser una cadena de texto'",
+   "n": 1
+  },
+  {
+   "en": "'must not be empty'",
+   "es": "'no puede quedar en blanco'",
+   "n": 1
+  },
+  {
+   "en": "'select a model here; @config is only for per-agent overrides'",
+   "es": "'elige un modelo aquí; @config sólo sirve para los ajustes por agent'",
+   "n": 1
+  },
+  {
+   "en": "'choose one of: '",
+   "es": "'elige uno de estos: '",
+   "n": 1
+  },
+  {
+   "en": "'must be a single value of at most 512 characters'",
+   "es": "'debe ser un solo valor de 512 caracteres como máximo'",
+   "n": 1
+  },
+  {
+   "en": "'merger'",
+   "es": "'· combinador'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Unified / Multi-Turn'",
+   "motivo": "nombres del producto (Unified, Multi-Turn)"
+  },
+  {
+   "en": "'Crawler'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Prompter'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Reviewer'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'File-Interpreter'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Summarizer'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Monitor-Log'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Monitor-Netstat'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Notifier'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Instant-Messaging-Doctor'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'expected a JSON object'",
+   "motivo": "mensaje interno de excepción; sólo se registra su tipo en el log"
+  },
+  {
+   "en": "'missing'",
+   "motivo": "valor que también se compara como estado de máquina en otros archivos; mensaje de validación casi inalcanzable"
+  }
+ ]
+}

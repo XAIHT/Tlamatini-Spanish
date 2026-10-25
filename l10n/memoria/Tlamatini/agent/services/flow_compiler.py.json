@@ -1,0 +1,11 @@
+{
+ "archivo": "Tlamatini/agent/services/flow_compiler.py",
+ "segmentos": [
+  {
+   "en": "f\"Source agent not found: {node.agent_type}\"",
+   "es": "f\"No se encontró el agent de origen: {node.agent_type}\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -1,0 +1,153 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-editor-tools.js",
+ "segmentos": [
+  {
+   "en": "'All Starters run together'",
+   "es": "'Todos los Starters se ejecutan juntos'",
+   "n": 1
+  },
+  {
+   "en": "'Add a Starter'",
+   "es": "'Agregar un Starter'",
+   "n": 1
+  },
+  {
+   "en": "'The edit could not be completed.'",
+   "es": "'No se pudo completar la edición.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not read configuration for '",
+   "es": "'No se pudo leer la configuración de '",
+   "n": 1
+  },
+  {
+   "en": "'Could not deploy '",
+   "es": "'No se pudo hacer deploy de '",
+   "n": 1
+  },
+  {
+   "en": "'Could not save configuration for '",
+   "es": "'No se pudo guardar la configuración de '",
+   "n": 1
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'Agentic Control Panel — Help'",
+   "es": "'Agentic Control Panel — Ayuda'",
+   "n": 1
+  },
+  {
+   "en": "'Build a .flw diagram from the Agents bar. Search by name, then drag an agent onto the dotted canvas.'",
+   "es": "'Arma un diagrama .flw desde la barra de Agents. Busca por nombre y luego arrastra un agent al canvas punteado.'",
+   "n": 1
+  },
+  {
+   "en": "'Connect an output triangle to an input triangle. Starter agents define entry points; Start runs all Starters together.'",
+   "es": "'Conecta un triángulo de output a un triángulo de input. Los agents Starter definen los puntos de entrada; Iniciar ejecuta todos los Starters juntos.'",
+   "n": 1
+  },
+  {
+   "en": "'Click an agent to select it. Ctrl+click adds agents to the selection; drag the canvas background to select an area.'",
+   "es": "'Haz clic en un agent para seleccionarlo. Ctrl+clic agrega agents a la selección; arrastra sobre el fondo del canvas para seleccionar un área.'",
+   "n": 1
+  },
+  {
+   "en": "'Configure opens the selected agent’s existing settings. You can also double-click an agent or use its context menu.'",
+   "es": "'Configurar abre la configuración actual del agent seleccionado. También puedes hacer doble clic en un agent o usar su menú contextual.'",
+   "n": 1
+  },
+  {
+   "en": "'Duplicate copies selected agents, their settings, and connections within the selection. FlowCreator and FlowHypervisor are limited to one per flow.'",
+   "es": "'Duplicar copia los agents seleccionados, su configuración y las conexiones dentro de la selección. FlowCreator y FlowHypervisor se limitan a uno por flow.'",
+   "n": 1
+  },
+  {
+   "en": "'Undo: Ctrl+Z. Redo: Ctrl+Y or Ctrl+Shift+Z. Delete removes the selected agents or connections.'",
+   "es": "'Deshacer: Ctrl+Z. Rehacer: Ctrl+Y o Ctrl+Shift+Z. Eliminar quita los agents o las conexiones seleccionados.'",
+   "n": 1
+  },
+  {
+   "en": "'Use −, +, and Fit to view the flow. Zoom and the dot grid do not change saved agent coordinates.'",
+   "es": "'Usa −, + y Ajustar para ver el flow. El zoom y la cuadrícula de puntos no cambian las coordenadas guardadas de los agents.'",
+   "n": 1
+  },
+  {
+   "en": "'Editing controls are locked while a flow is running or paused. Stop the flow to edit it.'",
+   "es": "'Los controles de edición se bloquean mientras un flow está en ejecución o en pausa. Detén el flow para editarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Use File → Open or Save as for .flw files. A leading • in the browser title means unsaved changes.'",
+   "es": "'Usa Archivo → Abrir o Guardar como para los archivos .flw. Un • al inicio del título del browser indica que hay cambios sin guardar.'",
+   "n": 1
+  },
+  {
+   "en": "'Start runs all Starter agents. Configure each Starter’s targets on the canvas. FlowCreator and FlowHypervisor keep their existing per-agent settings.'",
+   "es": "'Iniciar ejecuta todos los agents Starter. Configura en el canvas los destinos de cada Starter. FlowCreator y FlowHypervisor conservan la configuración que ya tiene cada uno.'",
+   "n": 1
+  },
+  {
+   "en": "' Show canvas dots'",
+   "es": "' Mostrar los puntos del canvas'",
+   "n": 1
+  },
+  {
+   "en": "'Canvas zoom'",
+   "es": "'Zoom del canvas'",
+   "n": 1
+  },
+  {
+   "en": "'Canvas preferences apply to this browser. Agent settings are saved in the .flw file.'",
+   "es": "'Las preferencias del canvas aplican sólo a este browser. La configuración de los agents se guarda en el archivo .flw.'",
+   "n": 1
+  },
+  {
+   "en": "'Configure '",
+   "es": "'Configurar '",
+   "n": 1
+  },
+  {
+   "en": "'Apply'",
+   "es": "'Aplicar'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 1
+  },
+  {
+   "en": "'Flow settings'",
+   "es": "'Configuración del flow'",
+   "n": 1
+  },
+  {
+   "en": "' connections'",
+   "es": "' conexiones'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "' agents · '",
+   "motivo": "término del producto (agents) y separador"
+  },
+  {
+   "en": "'Starter'",
+   "motivo": "nombre de agent (diagrama de ejemplo)"
+  },
+  {
+   "en": "'Sleeper'",
+   "motivo": "nombre de agent (diagrama de ejemplo)"
+  },
+  {
+   "en": "'Ender'",
+   "motivo": "nombre de agent (diagrama de ejemplo)"
+  }
+ ]
+}

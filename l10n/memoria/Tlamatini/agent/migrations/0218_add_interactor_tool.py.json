@@ -1,0 +1,59 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0218_add_interactor_tool.py",
+ "segmentos": [
+  {
+   "en": "\"INTERACTOR — Build a Dockerfile together\"",
+   "es": "\"INTERACTOR — Crear un Dockerfile juntos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, help me create a Dockerfile for a Java application with a servlet and a landing page, \"",
+   "es": "\"Tlamatini, ayúdame a crear un Dockerfile para una aplicación Java con un servlet y una página de inicio, \"",
+   "n": 1
+  },
+  {
+   "en": "\"using your text editor. Use the Interactor module and Multi-Turn. No path is provided: create \"",
+   "es": "\"con tu editor de texto. Usa el módulo Interactor y Multi-Turn. No te doy ningún path: crea el \"",
+   "n": 1
+  },
+  {
+   "en": "\"Dockerfile in Tlamatini Temp. Read the current canvas first and preserve any unsaved work. \"",
+   "es": "\"Dockerfile en la Temp de Tlamatini. Lee primero el canvas actual y conserva cualquier trabajo sin guardar. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Type only the first small known segment, then stop at the first field I must choose. Explain \"",
+   "es": "\"Escribe sólo el primer segmento pequeño que ya se conozca y luego detente en el primer campo que yo deba elegir. Explica \"",
+   "n": 1
+  },
+  {
+   "en": "\"the choice in chat, with recommendations and optional local completions for that field. \"",
+   "es": "\"la elección en el chat, con recomendaciones y opciones de completado local para ese campo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Let me type my answer and click Continue in chat. Read my fresh unsaved text before each \"",
+   "es": "\"Déjame escribir mi respuesta y hacer clic en Continuar en el chat. Lee mi texto nuevo sin guardar antes de cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"next step. Do not finish the file or run Docker for me. End each teaching turn with END-RESPONSE.\"",
+   "es": "\"paso siguiente. No termines el archivo ni ejecutes Docker por mí. Termina cada turno de enseñanza con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Tool\"",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "\"Interactor\"",
+   "motivo": "nombre de tool (valor de máquina)"
+  },
+  {
+   "en": "\"Prompt\"",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

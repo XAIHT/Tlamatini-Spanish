@@ -1,0 +1,46 @@
+{
+ "archivo": "Tlamatini/agent/prompt_flow_panel_consumer.py",
+ "segmentos": [
+  {
+   "en": "\"Send a .fpmt document smaller than 5 MiB.\"",
+   "es": "\"Envía un documento .fpmt de menos de 5 MiB.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Expected a flow command.\"",
+   "es": "\"Se esperaba un comando del flow.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The current run is still active. Stop it before starting another.\"",
+   "es": "\"La ejecución actual sigue activa. Detenla antes de iniciar otra.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This flow run is no longer active.\"",
+   "es": "\"Esta ejecución del flow ya no está activa.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The flow is stopping.\"",
+   "es": "\"El flow se está deteniendo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unknown flow command.\"",
+   "es": "\"Comando del flow desconocido.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Flow completed.\"",
+   "es": "\"Flow completado.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Flow stopped. No further operations will run.\"",
+   "es": "\"Flow detenido. No se ejecutarán más operaciones.\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

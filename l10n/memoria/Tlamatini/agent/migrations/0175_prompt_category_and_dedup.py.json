@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0175_prompt_category_and_dedup.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Prompt\"",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

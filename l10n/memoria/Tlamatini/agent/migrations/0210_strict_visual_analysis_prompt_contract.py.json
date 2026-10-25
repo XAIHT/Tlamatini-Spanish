@@ -1,0 +1,36 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0210_strict_visual_analysis_prompt_contract.py",
+ "segmentos": [
+  {
+   "en": "'merged / error; failed configured models accumulate a visible fatal error; '\n        'preserve Tlamatini retries and configured recovery routes with the same models; '\n        'never accept partial observers or raw concatenation as success'",
+   "es": "'merged / error; los modelos configurados que fallan acumulan un error fatal visible; conserva '\n        'los reintentos de Tlamatini y los caminos de recuperación configurados con los mismos modelos; '\n        'nunca aceptes observadores parciales ni concatenación cruda como éxito'",
+   "maquina": "0210 busca/inserta este texto en las tarjetas 26/101/126, traducidas a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "'Report missing audio or partial results honestly; link the saved report.'",
+   "es": "'Reporta con honestidad si falta audio o hay resultados parciales; enlaza el reporte guardado.'",
+   "maquina": "0210 busca/inserta este texto en las tarjetas 26/101/126, traducidas a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "'Report legitimate missing audio honestly; link a completed report. '\n        'Any failed configured observer or merger rejects that attempt and accumulates '\n        'a visible fatal error. Preserve Tlamatini retries and flow recovery with the '\n        'configured models; never substitute a model or incomplete summary.'",
+   "es": "'Reporta con honestidad el audio que de verdad falte; enlaza un reporte completo. '\n        'Cualquier observador o fusionador configurado que falle rechaza ese intento y acumula un '\n        'error fatal visible. Conserva los reintentos de Tlamatini y la recuperación del flow con los '\n        'modelos configurados; nunca sustituyas un modelo ni un resumen incompleto.'",
+   "maquina": "0210 busca/inserta este texto en las tarjetas 26/101/126, traducidas a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'merged / partial_interpreter_1_only / partial_interpreter_2_only / merge_fallback_concat'",
+   "motivo": "contrato de análisis visual que el patch compara (__contains); conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "contrato de análisis visual que el patch compara (__contains); conservar"
+  }
+ ]
+}

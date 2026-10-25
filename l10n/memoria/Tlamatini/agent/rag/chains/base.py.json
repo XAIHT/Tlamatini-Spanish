@@ -1,0 +1,11 @@
+{
+ "archivo": "Tlamatini/agent/rag/chains/base.py",
+ "segmentos": [
+  {
+   "en": "'answering'",
+   "es": "'respondiendo'",
+   "n": 2
+  }
+ ],
+ "conservar": []
+}

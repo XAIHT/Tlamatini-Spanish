@@ -1,0 +1,83 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/shared-runtime-dialogs.js",
+ "segmentos": [
+  {
+   "en": "'Image/video analysis failures. Tlamatini remains active; its retry and recovery tactics continue.'",
+   "es": "'Errores en el análisis de imágenes o video. Tlamatini sigue activa; sus tácticas de reintento y recuperación continúan.'",
+   "n": 1
+  },
+  {
+   "en": "'Dismiss'",
+   "es": "'Descartar'",
+   "n": 4
+  },
+  {
+   "en": "'Image/video analysis'",
+   "es": "'Análisis de imágenes o video'",
+   "n": 1
+  },
+  {
+   "en": "'The configured analysis failed.'",
+   "es": "'Error en el análisis configurado.'",
+   "n": 1
+  },
+  {
+   "en": "`Fatal analysis errors (${fatalErrors.size})`",
+   "es": "`Errores fatales de análisis (${fatalErrors.size})`",
+   "n": 1
+  },
+  {
+   "en": "'Pattern Detected'",
+   "es": "'Pattern detectado'",
+   "n": 1
+  },
+  {
+   "en": "'Error Detected'",
+   "es": "'Error detectado'",
+   "n": 1
+  },
+  {
+   "en": "'Warning Detected'",
+   "es": "'Advertencia detectada'",
+   "n": 1
+  },
+  {
+   "en": "'User Input Needed'",
+   "es": "'Se necesita tu respuesta'",
+   "n": 1
+  },
+  {
+   "en": "'Sending...'",
+   "es": "'Enviando...'",
+   "n": 2
+  },
+  {
+   "en": "`\n            <p style=\"text-align: center; color: ${severityColor}; font-weight: bold; font-size: 1.1em;\">\n                ${dialogTitle}!\n            </p>\n            <p><strong>Agent:</strong> ${escapeHtmlShared(sourceAgent)}</p>\n            <p><strong>Found:</strong> <span style=\"background-color: ${severityBgColor}; padding: 2px 5px; border-radius: 3px; color: ${severityTextColor};\">${escapeHtmlShared(matches)}</span></p>\n            ${outcomeDetailHtml}\n            <p style=\"font-size: 0.8em; color: var(--tlm-dlg-muted);\">${escapeHtmlShared(timestamp)}</p>\n        `",
+   "es": "`\n            <p style=\"text-align: center; color: ${severityColor}; font-weight: bold; font-size: 1.1em;\">\n                ¡${dialogTitle}!\n            </p>\n            <p><strong>Agent:</strong> ${escapeHtmlShared(sourceAgent)}</p>\n            <p><strong>Encontrado:</strong> <span style=\"background-color: ${severityBgColor}; padding: 2px 5px; border-radius: 3px; color: ${severityTextColor};\">${escapeHtmlShared(matches)}</span></p>\n            ${outcomeDetailHtml}\n            <p style=\"font-size: 0.8em; color: var(--tlm-dlg-muted);\">${escapeHtmlShared(timestamp)}</p>\n        `",
+   "n": 1
+  },
+  {
+   "en": "`\n            <p style=\"text-align: center; font-size: 1.1em;\">\n                <strong>${escapeHtmlShared(identifier)}</strong> needs your input!\n            </p>\n            <p style=\"text-align: center;\">Choose a path to continue:</p>\n            <div style=\"display: flex; justify-content: space-around; margin-top: 15px; gap: 16px;\">\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-a-${identifier}\" class=\"asker-choice-btn\" style=\"background: #EF4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path A</button>\n                    ${safeA ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeA}</p>` : ''}\n                </div>\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-b-${identifier}\" class=\"asker-choice-btn\" style=\"background: #3B82F6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path B</button>\n                    ${safeB ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeB}</p>` : ''}\n                </div>\n            </div>\n        `",
+   "es": "`\n            <p style=\"text-align: center; font-size: 1.1em;\">\n                ¡<strong>${escapeHtmlShared(identifier)}</strong> necesita tu respuesta!\n            </p>\n            <p style=\"text-align: center;\">Elige un path para continuar:</p>\n            <div style=\"display: flex; justify-content: space-around; margin-top: 15px; gap: 16px;\">\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-a-${identifier}\" class=\"asker-choice-btn\" style=\"background: #EF4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path A</button>\n                    ${safeA ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeA}</p>` : ''}\n                </div>\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-b-${identifier}\" class=\"asker-choice-btn\" style=\"background: #3B82F6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path B</button>\n                    ${safeB ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeB}</p>` : ''}\n                </div>\n            </div>\n        `",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'assertive'",
+   "motivo": "valor del atributo aria-live"
+  },
+  {
+   "en": "`FATAL — ${error.source_agent || error.runtime_name || 'Image/video analysis'}`",
+   "motivo": "igual en español («FATAL —»); la cadena anidada se traduce aparte (id 6)"
+  },
+  {
+   "en": "`\r\n            <p style=\"text-align: center; color: ${severityColor}; font-weight: bold; font-size: 1.1em;\">\r\n                ${dialogTitle}!\r\n            </p>\r\n            <p><strong>Agent:</strong> ${escapeHtmlShared(sourceAgent)}</p>\r\n            <p><strong>Found:</strong> <span style=\"background-color: ${severityBgColor}; padding: 2px 5px; border-radius: 3px; color: ${severityTextColor};\">${escapeHtmlShared(matches)}</span></p>\r\n            ${outcomeDetailHtml}\r\n            <p style=\"font-size: 0.8em; color: var(--tlm-dlg-muted);\">${escapeHtmlShared(timestamp)}</p>\r\n        `",
+   "motivo": "se traduce en shared-runtime-dialogs.templates.json (template literal multilínea, crudo exacto)"
+  },
+  {
+   "en": "`\r\n            <p style=\"text-align: center; font-size: 1.1em;\">\r\n                <strong>${escapeHtmlShared(identifier)}</strong> needs your input!\r\n            </p>\r\n            <p style=\"text-align: center;\">Choose a path to continue:</p>\r\n            <div style=\"display: flex; justify-content: space-around; margin-top: 15px; gap: 16px;\">\r\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\r\n                    <button id=\"btn-choice-a-${identifier}\" class=\"asker-choice-btn\" style=\"background: #EF4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path A</button>\r\n                    ${safeA ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeA}</p>` : ''}\r\n                </div>\r\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\r\n                    <button id=\"btn-choice-b-${identifier}\" class=\"asker-choice-btn\" style=\"background: #3B82F6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path B</button>\r\n                    ${safeB ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeB}</p>` : ''}\r\n                </div>\r\n            </div>\r\n        `",
+   "motivo": "se traduce en shared-runtime-dialogs.templates.json (template literal con template literals anidados, crudo exacto)"
+  }
+ ]
+}

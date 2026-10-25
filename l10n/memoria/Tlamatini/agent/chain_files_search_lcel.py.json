@@ -1,0 +1,394 @@
+{
+ "archivo": "Tlamatini/agent/chain_files_search_lcel.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"ERROR: Could not find 'filesearch_pb2.py' or 'filesearch_pb2_grpc.py'.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Please ensure they are in the same directory as this script.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"You are an MCP-File-Manager named **FileSearchRAGChain**. Follow this tool-use policy **strictly**.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"When to call the tool:\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- Call remote_file_search when the user asks to find files or folders by name, glob/pattern, size, or modified time.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- Call list_allowed_directories when the user asks to list available directories or allowed paths.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"When NOT to call the tool:\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- Do not call tools for purely conceptual questions (e.g., 'what is a glob?'); answer directly.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- Do not call tools if required arguments are missing; first ask a concise clarifying question.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"Pre-call checklist (enforce before calling):\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- file_pattern is present and looks like a pattern or filename (e.g., '*.py', 'report.*', 'notes.txt').\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- If base_path_key is provided, it must be one of: docs, downloads, desktop, pictures, videos, music.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- If NO base_path_key is provided, you should generally default to searching ALL allowed locations (send null/None for base_path_key) rather than asking for clarification, unless the request is ambiguous.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"Output rules after any tool call:\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- Summarize results succinctly. If many items are returned, show only the top results and note the total.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- For empty results, say 'No files found for that criteria.'\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"Examples (for routing intuition):\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- User: 'Explain glob patterns' -> No tool call; provide explanation.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- User: 'Find all *.py in docs' -> Call remote_file_search with file_pattern='*.py', base_path_key='docs'.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- User: 'Search for report.*' (no location) -> Call remote_file_search with file_pattern='report.*', base_path_key=null (search all).\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- User: 'show README.md' -> Use show action with file_name='README.md', base_path_key=null.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "\"- User: 'list available dirs' -> Use list_dirs action.\\n\"",
+   "motivo": "instrucciones para el LLM (system policy)"
+  },
+  {
+   "en": "'project home'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'project root'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'repo root'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'repo home'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'repository root'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'repository home'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'application root'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'application home'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'app root'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "'codebase root'",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "\"\\n... [truncated]\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"Full content of the file:\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"[INFO] The requested file appears to be binary (e.g., image/video/pdf). \"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"Content is not embedded in context to avoid corruption.\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Suggested action: use tools like 'qwen_analyze_image', 'opus_analyze_image' or \"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"'launch_view_image' with path '{resolved_path}'.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Warning: config.json not found at {config_path}. Using defaults.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Bearer {ollama_token}\"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "\"\"\"Does this question ask to find, search for, list, or show files/folders on the local file system?\r\n\r\nIMPORTANT: Answer YES only when the user wants to LOCATE, OPEN, or LIST files on disk.\r\nAnswer NO when file names appear as part of code examples, inline content, or refactoring/implementation requests.\r\n\r\nExamples:\r\nQ: \"how does the system work?\" → NO\r\nQ: \"find all python files\" → YES\r\nQ: \"list all *.txt files in docs\" → YES\r\nQ: \"what is a glob pattern?\" → NO\r\nQ: \"where is the 'report.pdf' file?\" → YES\r\nQ: \"show me the 'README.md' file\" → YES\r\nQ: \"list available dirs\" → YES\r\nQ: \"find all *.py in all allowed locations\" → YES\r\nQ: \"Describe the image Kosana.jpg\" → YES\r\nQ: \"Analyze the log file error.log\" → YES\r\nQ: \"Process the data in data.csv\" → YES\r\nQ: \"Implement a refactoring of the provided source code to replace NTLM with Kerberos\" → NO\r\nQ: \"Here is my krb5.conf content: [libdefaults]...\" → NO (file content provided inline, not a search)\r\nQ: \"Refactor this Java code that references login.conf\" → NO (code discussion, not file search)\r\nQ: \"Create an implementation based on KerberosClientAuthenticator.java\" → NO (code generation request)\r\nQ: \"The config.yaml file contains these settings...\" → NO (describing content, not searching)\r\n\r\nQuestion: {question}\r\n\r\nAnswer ONLY with YES or NO:\"\"\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"\"\"\r\n\r\nYou must decide one action: \"search\", \"show\", \"list_dirs\", \"answer\", or \"clarify\".\r\n- action=\"search\": Use when the user wants to find files/folders. Provide search inputs.\r\n- action=\"show\": Use only when the user provided the exact name of a single file (no wildcards, no paths). You must return the file_name and optionally base_path_key/include_hidden so the client can search for that exact file and display its full content.\r\n- action=\"list_dirs\": Use when the user asks to list available directories or allowed paths.\r\n- action=\"answer\": Use when the user asks a conceptual/explanatory question; provide a textual answer.\r\n- action=\"clarify\": Use when the user likely wants a search but didn't provide enough info; ask exactly one short clarifying question.\r\n\r\nOutput STRICT JSON only (no prose), following this schema:\r\n{{\r\n    \"action\": \"search\" | \"show\" | \"list_dirs\" | \"answer\" | \"clarify\",\r\n    \"search\": {{\r\n        \"file_pattern\": \"string\",\r\n        \"base_path_key\": \"one of {ALLOWED_KEYS_STR} or null\",\r\n        \"include_hidden\": true | false\r\n    }},\r\n    \"show\": {{\r\n        \"file_name\": \"string\",  // exact filename only, e.g., \"README.md\"; no wildcards/paths\r\n        \"base_path_key\": \"one of {ALLOWED_KEYS_STR} or null\",\r\n        \"include_hidden\": true | false\r\n    }},\r\n    \"list_dirs\": {{}},\r\n    \"answer\": \"string\",\r\n    \"clarify\": \"string\"\r\n}}\r\n\r\nFill only the relevant field(s) matching the action. Return JSON only.\r\n\r\nUser Query: {query}\r\n\"\"\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"ERROR: gRPC modules not loaded. Cannot perform file search.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- [FileSearchRAGChain]: Attempting to connect to gRPC server at '{self.grpc_target}' ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [FileSearchRAGChain]: gRPC connection successful. Sending request: {{pattern: '{file_pattern}', key: '{base_key}'}} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [FileSearchRAGChain]: gRPC server responded. ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"❌ Server Error: {response.error_message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"\\n✅ Server responded: No files found for that criteria.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n✅ Server found {total} files.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n❌ [FileSearchRAGChain]: gRPC connection FAILED: {e.details()}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"   Is the 'mcp_files_search_server.py' script running?\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n❌ [FileSearchRAGChain]: An unexpected error occurred in gRPC call: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- [FileSearchRAGChain]: Attempting to connect to gRPC server at '{self.grpc_target}' for ListAllowedDirs ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [FileSearchRAGChain]: gRPC connection successful. Sending ListAllowedDirs request ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Files-Search routing\"",
+   "motivo": "etiqueta interna de la llamada (log y excepción)"
+  },
+  {
+   "en": "f\"Error in file search routing: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Files-Search planning\"",
+   "motivo": "etiqueta interna de la llamada (log y excepción)"
+  },
+  {
+   "en": "f\"--- [FileSearchRAGChain]: Failed to parse LLM JSON plan. Raw output: {ai_raw}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in file search planning: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"I had trouble understanding that file request.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"File resolved directly from user-specified path:\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"[WARNING] Failed to read file directly from '{candidate_path}': {e}\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"No allowed directories found or failed to retrieve them.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"Allowed Directories:\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"File search plan was missing a file_pattern or file_name.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"File search plan had an invalid base_path_key: {base_key}.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"File resolved directly from the application root:\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"No files found matching '{file_pattern}'.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Requested file resolved:\\n{target_path}\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Additional matches with the same name in the selected scope: {total - 1}.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Found {total} files matching '{file_pattern}':\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"\\n... and {total - max_files_in_context} more.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"\\n… [truncated]\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"\\n\\nFull content of the file:\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"\\n\\n[WARNING] Failed to read text content for '{target_path}': {e}\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"\\n\\n[INFO] The requested file appears to be binary (e.g., image/video). \"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "\"Content is not embedded in context to avoid corruption or token bloat.\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Suggested action: use the tool 'launch_view_image' with path '{target_path}'.\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"\\n\\n[WARNING] Failed to process target file '{target_path}': {e}\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Multiple files matched '{file_pattern}' and the intended file could not be resolved:\\n\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"File search was not needed. LLM Answer: {plan.get('answer', 'N/A')}\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"File search was not possible. LLM Clarification: {plan.get('clarify', 'N/A')}\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Unknown file search action: {action}\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"Error executing file search plan: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"An error occurred during the file search: {e}\"",
+   "motivo": "contexto de archivos para el LLM (no se muestra)"
+  },
+  {
+   "en": "f\"[INFO] Using deterministic file plan for question: {question}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[INFO] No file search context needed for question: {question}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[INFO] Fetching file search context for question: {question}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"File Search Context:\\n{files_context}\\n\\nSystem Context:\\n(Not provided)\\n\\nLocal RAG Context:\\n(Not provided)\\n\\nQuestion: {question}\\n\\nAnswer based on all available context:\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"what is a python file?\"",
+   "motivo": "pregunta de prueba del main independiente"
+  },
+  {
+   "en": "\"find all *.py files in docs\"",
+   "motivo": "pregunta de prueba del main independiente"
+  },
+  {
+   "en": "\"show me the 'README.md' file\"",
+   "motivo": "pregunta de prueba del main independiente"
+  },
+  {
+   "en": "\"list all files\"",
+   "motivo": "pregunta de prueba del main independiente"
+  },
+  {
+   "en": "\"\\n--- Running Test Question ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Question: {question}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Answer: {answer}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error: {e}\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

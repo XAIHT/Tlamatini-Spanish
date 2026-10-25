@@ -1,0 +1,467 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0087_add_unrealer_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **Unreal MCP End-to-End Editor Drive** demo, please. \"",
+   "es": "\"Tlamatini, ejecuta la demo **Recorrido completo por el Editor con Unreal MCP**, por favor. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Preconditions you can assume are TRUE for this run (do NOT verify them — \"",
+   "es": "\"Precondiciones que puedes dar por CIERTAS en esta ejecución (NO las verifiques — \"",
+   "n": 1
+  },
+  {
+   "en": "\"trust them and proceed straight to Step 1): \"",
+   "es": "\"confía en ellas y ve directo al Paso 1): \"",
+   "n": 1
+  },
+  {
+   "en": "\"(a) Unreal Engine 5 is open in dev mode with a project loaded; \"",
+   "es": "\"(a) Unreal Engine 5 está abierto en modo dev con un proyecto cargado; \"",
+   "n": 1
+  },
+  {
+   "en": "\"(b) the Unreal MCP plugin is installed and its in-engine TCP listener is \"",
+   "es": "\"(b) el plugin Unreal MCP está instalado y su listener TCP dentro del engine está \"",
+   "n": 1
+  },
+  {
+   "en": "\"bound to **127.0.0.1:55557**; \"",
+   "es": "\"escuchando en **127.0.0.1:55557**; \"",
+   "n": 1
+  },
+  {
+   "en": "\"(c) the Tlamatini **chat_agent_unrealer** wrapped tool is enabled \"",
+   "es": "\"(c) el tool wrapper **chat_agent_unrealer** de Tlamatini está activado \"",
+   "n": 1
+  },
+  {
+   "en": "\"(it is, by default) and is the ONLY tool you may use to talk to Unreal — \"",
+   "es": "\"(lo está de forma predeterminada) y es el ÚNICO tool que puedes usar para hablar con Unreal — \"",
+   "n": 1
+  },
+  {
+   "en": "\"do NOT spin up chat_agent_pythonxer or execute_command with raw socket code, \"",
+   "es": "\"NO levantes chat_agent_pythonxer ni execute_command con código de sockets crudo, \"",
+   "n": 1
+  },
+  {
+   "en": "\"and do NOT use acp_spawn (that's for external coding-agent CLIs, not for \"",
+   "es": "\"y NO hagas spawn con ACPX (eso es para CLIs externos de coding agents, no para \"",
+   "n": 1
+  },
+  {
+   "en": "\"Unreal's editor plugin). \"",
+   "es": "\"el plugin del editor de Unreal). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Every step below MUST be exactly ONE chat_agent_unrealer call whose \"",
+   "es": "\"Cada paso de abajo DEBE ser exactamente UNA llamada a chat_agent_unrealer cuyo \"",
+   "n": 1
+  },
+  {
+   "en": "\"request string is shaped \"",
+   "es": "\"request tenga esta forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"After each call, read the wrapped tool's JSON return — the Unreal response \"",
+   "es": "\"Después de cada llamada, lee el JSON que devuelve el tool wrapper — la respuesta de Unreal \"",
+   "n": 1
+  },
+  {
+   "en": "\"is embedded under the run's `log_excerpt` as an INI_SECTION_UNREALER block — \"",
+   "es": "\"viene dentro del `log_excerpt` de la ejecución como un bloque INI_SECTION_UNREALER — \"",
+   "n": 1
+  },
+  {
+   "en": "\"and capture host/port/command/status/error plus the assistant-visible \"",
+   "es": "\"y captura host/port/command/status/error, además del \"",
+   "n": 1
+  },
+  {
+   "en": "\"`response_body` so you can render the per-step row in Step 9. \"",
+   "es": "\"`response_body` visible para el asistente, para que puedas armar la fila de cada paso en el Paso 9. \"",
+   "n": 1
+  },
+  {
+   "en": "\"If any step returns status='error', record the error verbatim, DO NOT abort, \"",
+   "es": "\"Si algún paso devuelve status='error', registra el error tal cual, NO canceles \"",
+   "n": 1
+  },
+  {
+   "en": "\"and continue to the next step so the final table shows the full run shape. \"",
+   "es": "\"y sigue con el siguiente paso para que la tabla final muestre la ejecución completa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: emit one HTML opening banner: \"",
+   "es": "\"Paso 0: muestra un banner HTML de apertura: \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127918; UNREAL MCP END-TO-END EDITOR DRIVE &#127918;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127918; RECORRIDO COMPLETO POR EL EDITOR CON UNREAL MCP &#127918;</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; chat_agent_unrealer over 127.0.0.1:55557</div></div>. \"",
+   "es": "\"<div style='opacity:.9;margin-top:4px;'>Tlamatini Unrealer &mdash; chat_agent_unrealer sobre 127.0.0.1:55557</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (editor &mdash; sanity-probe the connection): call \"",
+   "es": "\"Paso 1 (editor &mdash; prueba rápida de la conexión): llama a \"",
+   "n": 1
+  },
+  {
+   "en": "\"**chat_agent_unrealer** with request \"",
+   "es": "\"**chat_agent_unrealer** con el request \"",
+   "n": 7
+  },
+  {
+   "en": "\"This is your ground-truth that the TCP socket is alive; the response_body \"",
+   "es": "\"Esta es tu prueba definitiva de que el socket TCP está vivo; el response_body \"",
+   "n": 1
+  },
+  {
+   "en": "\"is a JSON dict whose `actors` (or `result.actors`) array lists every actor \"",
+   "es": "\"es un dict JSON cuyo array `actors` (o `result.actors`) lista cada actor \"",
+   "n": 1
+  },
+  {
+   "en": "\"currently in the active level. Capture the count for the final table. \"",
+   "es": "\"que hay en el nivel activo. Captura el conteo para la tabla final. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (editor &mdash; spawn a primitive directly into the level): call \"",
+   "es": "\"Paso 2 (editor &mdash; haz spawn de una primitiva directo en el nivel): llama a \"",
+   "n": 1
+  },
+  {
+   "en": "\"This places a bare StaticMeshActor named TlamatiniProbe_Cube 150 units above the world origin. \"",
+   "es": "\"Esto coloca un StaticMeshActor vacío llamado TlamatiniProbe_Cube 150 unidades arriba del origen del mundo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"It has no mesh assigned yet &mdash; that's expected for this command. \"",
+   "es": "\"Todavía no tiene mesh asignado &mdash; es lo esperado con este comando. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (editor &mdash; verify the spawn took): call \"",
+   "es": "\"Paso 3 (editor &mdash; verifica que el spawn funcionó): llama a \"",
+   "n": 1
+  },
+  {
+   "en": "\"The response should list at least one match; if zero matches, log the discrepancy \"",
+   "es": "\"La respuesta debe listar al menos una coincidencia; si no hay ninguna, registra la discrepancia \"",
+   "n": 1
+  },
+  {
+   "en": "\"but do not abort. \"",
+   "es": "\"pero no canceles. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (blueprint &mdash; scaffold a new Blueprint class): call \"",
+   "es": "\"Paso 4 (blueprint &mdash; crea la estructura de una nueva clase Blueprint): llama a \"",
+   "n": 1
+  },
+  {
+   "en": "\"This creates a brand-new BP_TlamatiniProbe Blueprint Actor at the Unreal MCP plugin's \"",
+   "es": "\"Esto crea un Blueprint Actor BP_TlamatiniProbe totalmente nuevo en el path de contenido \"",
+   "n": 1
+  },
+  {
+   "en": "\"default content path. \"",
+   "es": "\"predeterminado del plugin Unreal MCP. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (blueprint &mdash; give it a static-mesh component): call \"",
+   "es": "\"Paso 5 (blueprint &mdash; agrégale un componente static-mesh): llama a \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (blueprint &mdash; compile so the editor accepts the new BP): call \"",
+   "es": "\"Paso 6 (blueprint &mdash; compila para que el editor acepte el nuevo BP): llama a \"",
+   "n": 1
+  },
+  {
+   "en": "\"Capture the response's compile status; some plugin builds return \"",
+   "es": "\"Captura el status de compilación de la respuesta; algunos builds del plugin devuelven \"",
+   "n": 1
+  },
+  {
+   "en": "\"`{\\\"success\\\": true}`, others return `{\\\"status\\\": \\\"ok\\\"}`. Either shape means OK. \"",
+   "es": "\"`{\\\"success\\\": true}` y otros devuelven `{\\\"status\\\": \\\"ok\\\"}`. Cualquiera de las dos formas significa OK. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7 (editor &mdash; spawn an instance of the freshly compiled BP): call \"",
+   "es": "\"Paso 7 (editor &mdash; haz spawn de una instancia del BP recién compilado): llama a \"",
+   "n": 1
+  },
+  {
+   "en": "\"This drops one BP_TlamatiniProbe instance into the level next to the bare cube from Step 2. \"",
+   "es": "\"Esto pone una instancia de BP_TlamatiniProbe en el nivel, junto al cubo vacío del Paso 2. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8 (umg &mdash; build a simple HUD widget and show it): emit FOUR chat_agent_unrealer \"",
+   "es": "\"Paso 8 (umg &mdash; arma un widget de HUD sencillo y muéstralo): haz CUATRO llamadas a chat_agent_unrealer \"",
+   "n": 1
+  },
+  {
+   "en": "\"calls in order, capturing the JSON response of each: \"",
+   "es": "\"en orden y captura la respuesta JSON de cada una: \"",
+   "n": 1
+  },
+  {
+   "en": "\"After 8d the widget is on the game viewport &mdash; visible if the user pressed Play, otherwise queued \"",
+   "es": "\"Después de 8d el widget queda en el viewport del juego &mdash; visible si el usuario presionó Play; si no, queda en cola \"",
+   "n": 1
+  },
+  {
+   "en": "\"for the next PIE session. Don't treat absence-of-PIE as failure. \"",
+   "es": "\"para la siguiente sesión PIE. No trates la ausencia de PIE como un error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 9 (render the run report): emit one HTML table with class='exec-report-table' \"",
+   "es": "\"Paso 9 (muestra el reporte de la ejecución): muestra una tabla HTML con class='exec-report-table' \"",
+   "n": 1
+  },
+  {
+   "en": "\"titled '<strong>Unreal MCP Run Report &mdash; chat_agent_unrealer over 127.0.0.1:55557</strong>' \"",
+   "es": "\"titulada '<strong>Reporte de ejecución de Unreal MCP &mdash; chat_agent_unrealer sobre 127.0.0.1:55557</strong>' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and columns \"",
+   "es": "\"y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>step</em>, <em>category</em>, <em>unreal_command</em>, <em>params (compact JSON)</em>, \"",
+   "es": "\"<em>paso</em>, <em>categoría</em>, <em>unreal_command</em>, <em>params (JSON compacto)</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>status</em> (ok|error), <em>headline</em> (one-line summary from response_body or error). \"",
+   "es": "\"<em>status</em> (ok|error), <em>resumen</em> (resumen de una línea del response_body o del error). \"",
+   "n": 1
+  },
+  {
+   "en": "\"One row per Unreal call (so 12 rows total: 1 for Step 1, 1 for Step 2, 1 for Step 3, \"",
+   "es": "\"Una fila por cada llamada a Unreal (o sea, 12 filas en total: 1 del Paso 1, 1 del Paso 2, 1 del Paso 3, \"",
+   "n": 1
+  },
+  {
+   "en": "\"1 for Step 4, 1 for Step 5, 1 for Step 6, 1 for Step 7, and 4 for Steps 8a-d). \"",
+   "es": "\"1 del Paso 4, 1 del Paso 5, 1 del Paso 6, 1 del Paso 7 y 4 de los Pasos 8a-d). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Sort rows in execution order. Use the **status** column verbatim from the INI_SECTION_UNREALER \"",
+   "es": "\"Ordena las filas según el orden de ejecución. Usa tal cual la columna **status** del bloque INI_SECTION_UNREALER \"",
+   "n": 1
+  },
+  {
+   "en": "\"block's status field; do NOT re-classify. Suggested tint: green cell background for ok, \"",
+   "es": "\"(su campo status); NO la reclasifiques. Tono sugerido: fondo de celda verde para ok, \"",
+   "n": 1
+  },
+  {
+   "en": "\"subtle red for error, no row hidden either way &mdash; the goal of this demo is to show the \"",
+   "es": "\"rojo suave para error, sin ocultar ninguna fila &mdash; el objetivo de esta demo es mostrar la \"",
+   "n": 1
+  },
+  {
+   "en": "\"FULL command surface in one shot. \"",
+   "es": "\"superficie COMPLETA de comandos de una sola vez. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 10: close with one HTML banner that prints, in big letters, \"",
+   "es": "\"Paso 10: cierra con un banner HTML que muestre, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"either '&#9989; UNREAL MCP FULLY OPERATIONAL' (if every step returned status='ok'), \"",
+   "es": "\"'&#9989; UNREAL MCP TOTALMENTE OPERATIVO' (si todos los pasos devolvieron status='ok'), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9888;&#65039; UNREAL MCP PARTIALLY OPERATIONAL' (if at least one step succeeded but \"",
+   "es": "\"'&#9888;&#65039; UNREAL MCP PARCIALMENTE OPERATIVO' (si al menos un paso funcionó pero \"",
+   "n": 1
+  },
+  {
+   "en": "\"any step returned error), or '&#10060; UNREAL MCP UNREACHABLE' (if Step 1 itself errored \"",
+   "es": "\"algún paso devolvió error) o '&#10060; UNREAL MCP INACCESIBLE' (si el propio Paso 1 dio error \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; in that case the most common cause is that the in-engine plugin's TCP listener \"",
+   "es": "\"&mdash; en ese caso la causa más común es que el listener TCP del plugin dentro del engine \"",
+   "n": 1
+  },
+  {
+   "en": "\"isn't bound yet; suggest checking the Unreal Output Log for 'UnrealMCP listening on 127.0.0.1:55557'). \"",
+   "es": "\"todavía no está escuchando; sugiere revisar en el Output Log de Unreal la línea 'UnrealMCP listening on 127.0.0.1:55557'). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Underneath the banner, print a one-line metric: \"",
+   "es": "\"Debajo del banner, muestra una métrica de una línea: \"",
+   "n": 1
+  },
+  {
+   "en": "\"'Total Unreal calls: <N>, ok: <K>, error: <N-K>, level-actor count delta: \"",
+   "es": "\"'Total de llamadas a Unreal: <N>, ok: <K>, error: <N-K>, delta del conteo de actores del nivel: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Cleanup note (informational, NOT a step): the demo leaves three new artifacts in the project \"",
+   "es": "\"Nota de limpieza (informativa, NO es un paso): la demo deja tres artefactos nuevos en el proyecto \"",
+   "n": 1
+  },
+  {
+   "en": "\"(actor TlamatiniProbe_Cube, blueprint BP_TlamatiniProbe with one spawned instance \"",
+   "es": "\"(el actor TlamatiniProbe_Cube, el blueprint BP_TlamatiniProbe con una instancia generada \"",
+   "n": 1
+  },
+  {
+   "en": "\"TlamatiniProbe_Spawned, and widget /Game/UI/WBP_TlamatiniProbeHUD). They are intentionally \"",
+   "es": "\"TlamatiniProbe_Spawned y el widget /Game/UI/WBP_TlamatiniProbeHUD). Se conservan a propósito \"",
+   "n": 1
+  },
+  {
+   "en": "\"kept so the user can inspect them in the editor. To clean them up later, run a follow-up \"",
+   "es": "\"para que el usuario pueda revisarlos en el editor. Para limpiarlos después, abre un chat \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat with chat_agent_unrealer calls for delete_actor on each, plus a normal editor \"",
+   "es": "\"de seguimiento con llamadas de chat_agent_unrealer a delete_actor para cada uno, más un \"",
+   "n": 1
+  },
+  {
+   "en": "\"right-click-Delete on BP_TlamatiniProbe and WBP_TlamatiniProbeHUD in the Content Browser. \"",
+   "es": "\"clic derecho > Delete normal en el editor sobre BP_TlamatiniProbe y WBP_TlamatiniProbeHUD en el Content Browser. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"\\\"Run Unreal command with command='<verb>' and params.<k1>='<v1>' and params.<k2>=<v2> ...\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer (el parser separa por ' and KEY=')"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='get_actors_in_level'\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='spawn_actor' and params.name='TlamatiniProbe_Cube' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.type='StaticMeshActor' and params.location=[0,0,150] and params.rotation=[0,0,0]\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='find_actors_by_name' and params.pattern='TlamatiniProbe_Cube'\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='create_blueprint' and params.name='BP_TlamatiniProbe' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.parent_class='Actor'\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='add_component_to_blueprint' and params.blueprint_name='BP_TlamatiniProbe' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.component_type='StaticMeshComponent' and params.component_name='ProbeMesh' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.location=[0,0,0] and params.rotation=[0,0,0] and params.scale=[1,1,1]\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='compile_blueprint' and params.blueprint_name='BP_TlamatiniProbe'\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"\\\"Run Unreal command with command='spawn_blueprint_actor' and params.blueprint_name='BP_TlamatiniProbe' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.actor_name='TlamatiniProbe_Spawned' and params.location=[200,0,150] and params.rotation=[0,0,0]\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"(8a) \\\"Run Unreal command with command='create_umg_widget_blueprint' and params.widget_name='WBP_TlamatiniProbeHUD' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.parent_class='UserWidget' and params.path='/Game/UI'\\\"; \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"(8b) \\\"Run Unreal command with command='add_text_block_to_widget' and params.widget_name='WBP_TlamatiniProbeHUD' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.text_block_name='ProbeLabel' and params.text='Tlamatini Probe Active' and params.position=[40,40] \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.size=[320,48] and params.font_size=24 and params.color=[1,1,1,1]\\\"; \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"(8c) \\\"Run Unreal command with command='add_button_to_widget' and params.widget_name='WBP_TlamatiniProbeHUD' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.button_name='ProbeDismiss' and params.text='Dismiss' and params.position=[40,108] \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.size=[160,40] and params.font_size=16 and params.color=[1,1,1,1] \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.background_color=[0.1,0.1,0.1,1]\\\"; \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"(8d) \\\"Run Unreal command with command='add_widget_to_viewport' and params.widget_name='WBP_TlamatiniProbeHUD' \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "\"and params.z_order=10\\\". \"",
+   "motivo": "request literal para chat_agent_unrealer"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

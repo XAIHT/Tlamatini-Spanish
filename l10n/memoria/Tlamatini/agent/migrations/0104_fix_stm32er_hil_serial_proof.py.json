@@ -1,0 +1,494 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0104_fix_stm32er_hil_serial_proof.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **STM32 HIL OBSERVATORY** demo, please &mdash; an advanced \"",
+   "es": "\"Tlamatini, ejecuta la demo **STM32 HIL OBSERVATORY**, por favor &mdash; una muestra avanzada \"",
+   "n": 1
+  },
+  {
+   "en": "\"**hardware-in-the-loop** showcase that USES A REAL BOARD end-to-end, driven entirely from \"",
+   "es": "\"**hardware-in-the-loop** que USA UNA PLACA REAL de principio a fin, controlada por completo desde el \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat through the wrapped **chat_agent_stm32er** tool: it preflight-validates that an ST-LINK \"",
+   "es": "\"chat a través del tool wrapper **chat_agent_stm32er**: valida en preflight que haya un ST-LINK \"",
+   "n": 1
+  },
+  {
+   "en": "\"is connected, scaffolds and AUTHORS firmware that increments a global counter (and also \"",
+   "es": "\"conectado, arma y ESCRIBE un firmware que incrementa un contador global (y también \"",
+   "n": 1
+  },
+  {
+   "en": "\"streams it over UART), builds + flashes it to the board, then PROVES it is running on real \"",
+   "es": "\"lo transmite por UART), lo construye + flashea en la placa y luego PRUEBA que está corriendo en silicio \"",
+   "n": 1
+  },
+  {
+   "en": "\"silicon &mdash; PRIMARILY by sampling a live global variable from the RUNNING MCU's RAM over \"",
+   "es": "\"real &mdash; PRINCIPALMENTE muestreando una variable global en vivo de la RAM del MCU EN EJECUCIÓN por \"",
+   "n": 1
+  },
+  {
+   "en": "\"SWD (this works on EVERY ST-LINK board), and as a best-effort BONUS by reading the ST-LINK \"",
+   "es": "\"SWD (esto funciona en TODA placa con ST-LINK), y como BONUS de mejor esfuerzo leyendo el Virtual COM Port \"",
+   "n": 1
+  },
+  {
+   "en": "\"Virtual COM Port &mdash; before hardware-resetting the board. \"",
+   "es": "\"del ST-LINK &mdash; antes de hacer un reset por hardware de la placa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify; go straight to Step 1): (a) the user \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques; ve directo al Paso 1): (a) el usuario \"",
+   "n": 1
+  },
+  {
+   "en": "\"installed ONLY STM32CubeIDE (STM32er auto-provisions the MCP itself); (b) **an STM32F407 \"",
+   "es": "\"instaló SÓLO STM32CubeIDE (STM32er auto-aprovisiona el MCP por su cuenta); (b) **hay una placa STM32F407 \"",
+   "n": 1
+  },
+  {
+   "en": "\"board (e.g. STM32F407G-DISC1) IS connected** via ST-LINK &mdash; this demo REQUIRES hardware; \"",
+   "es": "\"(p. ej. STM32F407G-DISC1) CONECTADA** por ST-LINK &mdash; esta demo REQUIERE hardware; \"",
+   "n": 1
+  },
+  {
+   "en": "\"(c) **IMPORTANT BOARD FACT &mdash; READ THIS:** on the STM32F4-Discovery family (including the \"",
+   "es": "\"(c) **DATO IMPORTANTE DE LA PLACA &mdash; LÉELO:** en la familia STM32F4-Discovery (incluida la \"",
+   "n": 1
+  },
+  {
+   "en": "\"STM32F407G-DISC1) the on-board ST-LINK does **NOT** bridge its Virtual COM Port to the MCU's \"",
+   "es": "\"STM32F407G-DISC1) el ST-LINK on-board **NO** puentea su Virtual COM Port a los pines USART del MCU \"",
+   "n": 1
+  },
+  {
+   "en": "\"USART pins the way ST **Nucleo** boards do (Nucleo routes VCP&harr;USART2 on PA2/PA3). So even \"",
+   "es": "\"como lo hacen las placas ST **Nucleo** (Nucleo enruta VCP&harr;USART2 en PA2/PA3). Así que, aunque \"",
+   "n": 1
+  },
+  {
+   "en": "\"though the firmware runs and transmits on USART2, reading the VCP on a Discovery board returns \"",
+   "es": "\"el firmware corra y transmita en USART2, leer el VCP en una placa Discovery devuelve \"",
+   "n": 1
+  },
+  {
+   "en": "\"**EMPTY (bytes=0)** &mdash; this is EXPECTED, NOT a failure. The AUTHORITATIVE on-silicon proof \"",
+   "es": "\"**EMPTY (bytes=0)** &mdash; esto es ESPERADO, NO un error. Por lo tanto, la prueba sobre silicio AUTORITATIVA \"",
+   "n": 1
+  },
+  {
+   "en": "\"in this demo is therefore the **live SWD memory read of the counter**, NOT the serial line. \"",
+   "es": "\"en esta demo es la **lectura en vivo del contador en memoria por SWD**, NO la línea serial. \"",
+   "n": 1
+  },
+  {
+   "en": "\"(Capturing real UART on a Discovery would require wiring an external USB-TTL adapter to PA2/PA3 \"",
+   "es": "\"(Capturar UART real en una Discovery requeriría cablear un adaptador USB-TTL externo a PA2/PA3 \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; out of scope for this ST-LINK-only demo.) (d) tick ONLY the **Multi-Turn** checkbox \"",
+   "es": "\"&mdash; fuera de alcance para esta demo de sólo ST-LINK.) (d) marca SÓLO la casilla **Multi-Turn** \"",
+   "n": 1
+  },
+  {
+   "en": "\"(ACPX is NOT required). Use ONLY chat_agent_stm32er, ONE call per step shaped \\\"Run STM32er with \"",
+   "es": "\"(NO se necesita ACPX). Usa SÓLO chat_agent_stm32er, UNA llamada por paso con la forma \\\"Run STM32er with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='<action>' and <k>='<v>' ...\\\". Read each JSON return (INI_SECTION_STM32ER block under \"",
+   "es": "\"action='<action>' and <k>='<v>' ...\\\". Lee cada JSON que devuelve (bloque INI_SECTION_STM32ER bajo \"",
+   "n": 1
+  },
+  {
+   "en": "\"log_excerpt), capture action/ok/returncode/success/project_dir/session_id/stage, and on \"",
+   "es": "\"log_excerpt), captura action/ok/returncode/success/project_dir/session_id/stage, y con \"",
+   "n": 1
+  },
+  {
+   "en": "\"ok=false record verbatim and CONTINUE. \"",
+   "es": "\"ok=false regístralo tal cual y CONTINÚA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128300; STM32 HIL OBSERVATORY &#9889;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128300; STM32 HIL OBSERVATORY &#9889;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; validate &middot; flash &middot; live SWD memory &middot; VCP serial (bonus)</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; validate &middot; flash &middot; memoria SWD en vivo &middot; VCP serial (bonus)</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (safety preflight &mdash; CONFIRM THE BOARD): \\\"Run STM32er with action='validate' and \"",
+   "es": "\"Paso 1 (preflight de seguridad &mdash; CONFIRMA LA PLACA): \\\"Run STM32er with action='validate' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"device='STM32F407VG'\\\". This auto-provisions the MCP if needed and validates the environment \"",
+   "es": "\"device='STM32F407VG'\\\". Esto auto-aprovisiona el MCP si hace falta y valida el entorno \"",
+   "n": 1
+  },
+  {
+   "en": "\"INCLUDING the ST-LINK. From the report capture stlink_connected and device_family_supported. \"",
+   "es": "\"INCLUIDO el ST-LINK. Del reporte captura stlink_connected y device_family_supported. \"",
+   "n": 1
+  },
+  {
+   "en": "\"**If stlink_connected is False, STOP**: skip to the closing banner with a 'NO BOARD' verdict \"",
+   "es": "\"**Si stlink_connected es False, DETENTE**: salta al banner de cierre con un veredicto 'SIN PLACA' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and tell the user to connect the STM32F407G-DISC1 (this is a hardware demo). Only proceed to \"",
+   "es": "\"y dile al usuario que conecte la STM32F407G-DISC1 (esto es una demo de hardware). Sólo pasa al \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 when stlink_connected is True. \"",
+   "es": "\"Paso 2 cuando stlink_connected sea True. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (scaffold): \\\"Run STM32er with action='create_project' and name='tlamatini_hil' and \"",
+   "es": "\"Paso 2 (scaffold): \\\"Run STM32er with action='create_project' and name='tlamatini_hil' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"dest_parent='C:/Temp/stm32' and overwrite='true'\\\". CAPTURE the **project_dir**. \"",
+   "es": "\"dest_parent='C:/Temp/stm32' and overwrite='true'\\\". CAPTURA el **project_dir**. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (author the firmware &mdash; write main.c): \\\"Run STM32er with action='write_source' \"",
+   "es": "\"Paso 3 (escribe el firmware &mdash; escribe main.c): \\\"Run STM32er with action='write_source' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and project_dir='<project_dir>' and rel_path='Core/Src/main.c' and content='''<CODE>'''\\\". \"",
+   "es": "\"and project_dir='<project_dir>' and rel_path='Core/Src/main.c' and content='''<CODE>'''\\\". \""
+  },
+  {
+   "en": "\"For <CODE> author a MINIMAL, COMPILABLE STM32F4 HAL program that declares a file-scope \"",
+   "es": "\"Para <CODE> escribe un programa STM32F4 HAL MÍNIMO y COMPILABLE que declare, a nivel de archivo, un \"",
+   "n": 1
+  },
+  {
+   "en": "\"`volatile uint32_t g_blink_count = 0;`, initialises HAL + the system clock + the on-board LED \"",
+   "es": "\"`volatile uint32_t g_blink_count = 0;`, inicialice HAL + el system clock + el GPIO del LED on-board \"",
+   "n": 1
+  },
+  {
+   "en": "\"GPIO + USART2 (115200 8N1, on PA2/PA3), and in the while(1) loop: increments g_blink_count, \"",
+   "es": "\"+ USART2 (115200 8N1, en PA2/PA3), y en el loop while(1): incremente g_blink_count, \"",
+   "n": 1
+  },
+  {
+   "en": "\"toggles the LED, transmits a single newline-terminated status line of the form \"",
+   "es": "\"conmute el LED, transmita una sola línea de status terminada en newline con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"'BOOT tlamatini hil count=<n>' over USART2 with HAL_UART_Transmit, and HAL_Delay(500). \"",
+   "es": "\"'BOOT tlamatini hil count=<n>' por USART2 con HAL_UART_Transmit, y HAL_Delay(500). \"",
+   "n": 1
+  },
+  {
+   "en": "\"**The counter `g_blink_count` is the proof that matters (read live over SWD in Step 6); the \"",
+   "es": "\"**El contador `g_blink_count` es la prueba que importa (leída en vivo por SWD en el Paso 6); la \"",
+   "n": 1
+  },
+  {
+   "en": "\"UART line is best-effort &mdash; it is harmless on a Discovery board and is what a Nucleo board \"",
+   "es": "\"línea UART es de mejor esfuerzo &mdash; es inofensiva en una placa Discovery y es lo que una placa Nucleo \"",
+   "n": 1
+  },
+  {
+   "en": "\"WOULD echo on its VCP.** Pass it as a TRIPLE-QUOTED content literal (content='''...''') so \"",
+   "es": "\"ECHARÍA en su VCP.** Pásalo como un literal content con comillas triples (content='''...''') para que \"",
+   "n": 1
+  },
+  {
+   "en": "\"newlines and braces survive the parser. Keep it self-contained and buildable against the \"",
+   "es": "\"los newlines y las llaves sobrevivan al parser. Mantenlo autocontenido y construible contra la \"",
+   "n": 1
+  },
+  {
+   "en": "\"scaffold's HAL. \"",
+   "es": "\"HAL del scaffold. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (compile + LINK): \\\"Run STM32er with action='build' and project_dir='<project_dir>' and \"",
+   "es": "\"Paso 4 (compila + ENLAZA): \\\"Run STM32er with action='build' and project_dir='<project_dir>' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"system='make' and clean_first='true'\\\". Require returncode=0 (the .elf carries the \"",
+   "es": "\"system='make' and clean_first='true'\\\". Exige returncode=0 (el .elf lleva el \"",
+   "n": 1
+  },
+  {
+   "en": "\"g_blink_count symbol the live-memory step reads). If the build fails, capture the diagnostic \"",
+   "es": "\"símbolo g_blink_count que lee el paso de memoria en vivo). Si el build falla, captura el diagnóstico \"",
+   "n": 1
+  },
+  {
+   "en": "\"and you may stop after the report with 'BUILD FAILED'. \"",
+   "es": "\"y puedes detenerte después del reporte con 'ERROR DE BUILD'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (flash &mdash; REAL upload over ST-LINK): \\\"Run STM32er with action='build_and_flash' \"",
+   "es": "\"Paso 5 (flash &mdash; upload REAL por ST-LINK): \\\"Run STM32er with action='build_and_flash' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and project_dir='<project_dir>'\\\". The preflight already confirmed the board in Step 1; the \"",
+   "es": "\"and project_dir='<project_dir>'\\\". El preflight ya confirmó la placa en el Paso 1; el \"",
+   "n": 1
+  },
+  {
+   "en": "\"body should show the programmer reporting 'File download complete' / 'Verifying...'. Capture \"",
+   "es": "\"body debería mostrar al programmer reportando 'File download complete' / 'Verifying...'. Captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"the verify result. \"",
+   "es": "\"el resultado del verify. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (HIL #1 &mdash; PRIMARY PROOF: live SWD memory): \\\"Run STM32er with action='live_monitor' \"",
+   "es": "\"Paso 6 (HIL #1 &mdash; PRUEBA PRINCIPAL: memoria SWD en vivo): \\\"Run STM32er with action='live_monitor' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and variables='[\\\\\\\"g_blink_count\\\\\\\"]' and project_dir='<project_dir>' and monitor_seconds='4' \"",
+   "es": "\"and variables='[\\\"g_blink_count\\\"]' and project_dir='<project_dir>' and monitor_seconds='4' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and last_n='8'\\\". This starts an OpenOCD stream of the RUNNING MCU's RAM, samples the global for \"",
+   "es": "\"and last_n='8'\\\". Esto inicia un stream de OpenOCD de la RAM del MCU EN EJECUCIÓN, muestrea el global por \"",
+   "n": 1
+  },
+  {
+   "en": "\"4 seconds, returns the most-recent 8 samples, and stops. Capture the FIRST and LAST g_blink_count \"",
+   "es": "\"4 segundos, devuelve las 8 muestras más recientes y se detiene. Captura la PRIMERA y la ÚLTIMA muestra de g_blink_count \"",
+   "n": 1
+  },
+  {
+   "en": "\"samples and confirm the value is INCREASING &mdash; this is the direct, board-agnostic, \"",
+   "es": "\"y confirma que el valor va AUMENTANDO &mdash; esta es la prueba directa, agnóstica de la placa, \"",
+   "n": 1
+  },
+  {
+   "en": "\"on-silicon proof the while(1) loop is executing (not just that the .hex flashed). THIS is the \"",
+   "es": "\"sobre silicio de que el loop while(1) se está ejecutando (no sólo que el .hex se flasheó). ESTA es la \"",
+   "n": 1
+  },
+  {
+   "en": "\"authoritative HIL proof for this demo. \"",
+   "es": "\"prueba HIL autoritativa de esta demo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7 (HIL #2 &mdash; BEST-EFFORT serial VCP, AT MOST ONCE, DO NOT RETRY): optionally read the \"",
+   "es": "\"Paso 7 (HIL #2 &mdash; VCP serial de mejor esfuerzo, A LO MÁS UNA VEZ, NO REINTENTES): opcionalmente lee el \"",
+   "n": 1
+  },
+  {
+   "en": "\"ST-LINK VCP a SINGLE time: \\\"Run STM32er with action='serial_session' and port='<the ST-LINK VCP \"",
+   "es": "\"VCP del ST-LINK UNA sola vez: \\\"Run STM32er with action='serial_session' and port='<the ST-LINK VCP \"",
+   "n": 1
+  },
+  {
+   "en": "\"port>' and baud='115200' and serial_timeout='5'\\\" (you MAY first call action='serial_list_ports' \"",
+   "es": "\"port>' and baud='115200' and serial_timeout='5'\\\" (PUEDES primero llamar action='serial_list_ports' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and pick the port flagged stlink_vcp=true). With no `data` set, serial_session connects, READS, \"",
+   "es": "\"y elegir el puerto marcado stlink_vcp=true). Sin `data` puesto, serial_session conecta, LEE, \"",
+   "n": 1
+  },
+  {
+   "en": "\"then disconnects. **If the read returns data, capture the 'BOOT tlamatini hil count=' line as a \"",
+   "es": "\"y luego desconecta. **Si la lectura devuelve data, captura la línea 'BOOT tlamatini hil count=' como un \"",
+   "n": 1
+  },
+  {
+   "en": "\"BONUS. If it returns EMPTY (bytes=0) &mdash; which is the EXPECTED result on the STM32F407G-DISC1, \"",
+   "es": "\"BONUS. Si devuelve EMPTY (bytes=0) &mdash; que es el resultado ESPERADO en la STM32F407G-DISC1, \"",
+   "n": 1
+  },
+  {
+   "en": "\"whose ST-LINK does not route the VCP to the MCU USART &mdash; record 'no VCP route on this board \"",
+   "es": "\"cuyo ST-LINK no enruta el VCP al USART del MCU &mdash; registra 'no VCP route on this board \"",
+   "n": 1
+  },
+  {
+   "en": "\"(Discovery)' and MOVE ON. Call serial_session AT MOST ONCE: DO NOT retry it with longer timeouts, \"",
+   "es": "\"(Discovery)' y SIGUE. Llama a serial_session A LO MÁS UNA VEZ: NO lo reintentes con timeouts más largos, \"",
+   "n": 1
+  },
+  {
+   "en": "\"DO NOT inject newlines, DO NOT fall back to serial_connect/serial_read loops. An empty VCP here \"",
+   "es": "\"NO inyectes newlines, NO caigas en bucles de serial_connect/serial_read. Un VCP vacío aquí \"",
+   "n": 1
+  },
+  {
+   "en": "\"is normal, not a fault, and the live SWD read in Step 6 has already proven the firmware is \"",
+   "es": "\"es normal, no una falla, y la lectura SWD en vivo del Paso 6 ya probó que el firmware está \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8 (HIL #3 &mdash; reset): \\\"Run STM32er with action='reset' and project_dir='<project_dir>'\\\" \"",
+   "es": "\"Paso 8 (HIL #3 &mdash; reset): \\\"Run STM32er with action='reset' and project_dir='<project_dir>'\\\" \"",
+   "n": 1
+  },
+  {
+   "en": "\"to hardware-reset the MCU and leave the board in a clean state. \"",
+   "es": "\"para hacer un reset por hardware del MCU y dejar la placa en un estado limpio. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 9: render a STATUS SCOREBOARD &mdash; a row of HTML chips of the form \"",
+   "es": "\"Paso 9: muestra un MARCADOR DE STATUS &mdash; una fila de chips HTML con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: a 'validate: <ok|err>' chip, \"",
+   "es": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: un chip 'validate: <ok|err>', \"",
+   "n": 1
+  },
+  {
+   "en": "\"a 'build: <ok|err>' chip, a 'flash: <ok|err>' chip, a 'live_mem: <ok|err>' chip (THE key proof), \"",
+   "es": "\"un chip 'build: <ok|err>', un chip 'flash: <ok|err>', un chip 'live_mem: <ok|err>' (LA prueba clave), \"",
+   "n": 1
+  },
+  {
+   "en": "\"a 'serial: <ok|n/a>' chip, a 'reset: <ok|err>' chip, and a 'count: <first>&rarr;<last>' chip. \"",
+   "es": "\"un chip 'serial: <ok|n/a>', un chip 'reset: <ok|err>' y un chip 'count: <first>&rarr;<last>'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"CHIP_BG is #16a34a (green) when ok; #dc2626 (red) on a real error; for the 'serial' chip use \"",
+   "es": "\"CHIP_BG es #16a34a (verde) cuando es ok; #dc2626 (rojo) ante un error real; para el chip 'serial' usa \"",
+   "n": 1
+  },
+  {
+   "en": "\"#d97706 (amber) with label 'serial: n/a (no VCP route)' when the read was EXPECTED-empty on this \"",
+   "es": "\"#d97706 (ámbar) con label 'serial: n/a (no VCP route)' cuando la lectura fue EXPECTED-empty en esta \"",
+   "n": 1
+  },
+  {
+   "en": "\"board (amber is NOT a failure); the 'count' chip is #2563EB (blue). \"",
+   "es": "\"placa (ámbar NO es un error); el chip 'count' es #2563EB (azul). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 10: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 10: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>STM32 HIL Observatory &mdash; Run Report</strong>' and columns <em>step</em>, \"",
+   "es": "\"'<strong>STM32 HIL Observatory &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>stage</em> (validate|project|build|flash|live_memory|serial|reset), <em>stm32_action</em>, \"",
+   "es": "\"<em>stage</em> (validate|project|build|flash|live_memory|serial|reset), <em>stm32_action</em>, \""
+  },
+  {
+   "en": "\"<em>status</em> (ok|error), <em>headline</em> (stlink_connected; project_dir; build returncode; \"",
+   "es": "\"<em>status</em> (ok|error), <em>resumen</em> (stlink_connected; project_dir; build returncode; \"",
+   "n": 1
+  },
+  {
+   "en": "\"flash verify; g_blink_count first&rarr;last; the captured VCP line OR 'no VCP route on this board'; \"",
+   "es": "\"flash verify; g_blink_count first&rarr;last; la línea VCP capturada OR 'no VCP route on this board'; \"",
+   "n": 1
+  },
+  {
+   "en": "\"reset ok) &mdash; one row per call in execution order, status verbatim from the INI_SECTION_STM32ER \"",
+   "es": "\"reset ok) &mdash; una fila por cada llamada en orden de ejecución, status tal cual del bloque INI_SECTION_STM32ER \"",
+   "n": 1
+  },
+  {
+   "en": "\"block (do NOT re-classify). Light body cells (background:#ffffff;color:#0f172a; or striped #f1f5f9). \"",
+   "es": "\"(NO lo reclasifiques). Celdas del cuerpo claras (background:#ffffff;color:#0f172a; o rayado #f1f5f9). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 11: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 11: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; SILICON VERIFIED' (build returncode=0 AND flash verified AND live_memory showed \"",
+   "es": "\"'&#9989; SILICIO VERIFICADO' (build returncode=0 AND flash verified AND live_memory mostró \"",
+   "n": 1
+  },
+  {
+   "en": "\"g_blink_count RISING over SWD &mdash; the serial VCP line is a BONUS and is NOT required for this \"",
+   "es": "\"g_blink_count SUBIENDO por SWD &mdash; la línea VCP serial es un BONUS y NO se requiere para este \"",
+   "n": 1
+  },
+  {
+   "en": "\"verdict), '&#9888;&#65039; NO BOARD' (Step 1 found no ST-LINK connected), or '&#10060; BUILD FAILED' \"",
+   "es": "\"veredicto), '&#9888;&#65039; SIN PLACA' (el Paso 1 no encontró ST-LINK conectado) o '&#10060; ERROR DE BUILD' \"",
+   "n": 1
+  },
+  {
+   "en": "\"(build returncode &ne; 0), and underneath a one-line metric 'project: <project_dir> &middot; \"",
+   "es": "\"(build returncode &ne; 0), y debajo una métrica de una línea 'project: <project_dir> &middot; \"",
+   "n": 1
+  },
+  {
+   "en": "\"build rc: <0> &middot; flash: <verified> &middot; g_blink_count over SWD: <first>&rarr;<last> \"",
+   "es": "\"build rc: <0> &middot; flash: <verified> &middot; g_blink_count por SWD: <first>&rarr;<last> \"",
+   "n": 1
+  },
+  {
+   "en": "\"&middot; VCP: <\\\"<boot line>\\\" | n/a (no VCP route on F4-Discovery)>'. End with END-RESPONSE.\"",
+   "es": "\"&middot; VCP: <\\\"<boot line>\\\" | n/a (no VCP route on F4-Discovery)>'. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#061029 0%,#0B3A8F 40%,#1E63FF 72%,#22D3EE 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.45);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"<span style='display:inline-block;padding:8px 16px;margin:3px;border-radius:10px;\"",
+   "motivo": "CSS del chip (valor de máquina)"
+  },
+  {
+   "en": "\"Prompt\"",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

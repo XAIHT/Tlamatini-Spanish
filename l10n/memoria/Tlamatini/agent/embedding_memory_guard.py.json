@@ -1,0 +1,95 @@
+{
+ "archivo": "Tlamatini/agent/embedding_memory_guard.py",
+ "segmentos": [
+  {
+   "en": "\"currently resident in VRAM\"",
+   "es": "\"medido con el modelo ya cargado\"",
+   "n": 1
+  },
+  {
+   "en": "\"estimated from model parameters\"",
+   "es": "\"estimado a partir de los parámetros del modelo\"",
+   "n": 1
+  },
+  {
+   "en": "\"&#9888;&#65039; <b>Embedding-memory warning</b>\"",
+   "es": "\"&#9888;&#65039; <b>Advertencia de memoria de embeddings</b>\"",
+   "n": 1
+  },
+  {
+   "en": "f\"My embedding model <code>{warning['model']}</code> needs \"",
+   "es": "f\"Mi modelo de embeddings <code>{warning['model']}</code> necesita \"",
+   "n": 1
+  },
+  {
+   "en": "f\"~{mb:,.0f} MiB of VRAM ({source}), which is \"",
+   "es": "f\"~{mb:,.0f} MiB de VRAM ({source}), es decir, \"",
+   "n": 1
+  },
+  {
+   "en": "f\"<b>{warning['percent']:.1f}%</b> of the smallest GPU's \"",
+   "es": "f\"el <b>{warning['percent']:.1f}%</b> del total de la GPU más pequeña \"",
+   "n": 1
+  },
+  {
+   "en": "f\"total ({total_mb:,.0f} MiB) &mdash; above my safety \"",
+   "es": "f\"({total_mb:,.0f} MiB) &mdash; arriba de mi umbral de \"",
+   "n": 1
+  },
+  {
+   "en": "f\"threshold of {warning['threshold_percent']:.0f}%.\"",
+   "es": "f\"seguridad del {warning['threshold_percent']:.0f}%.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Projected FAISS vector store (RAM, not VRAM): \"",
+   "es": "f\"Tamaño estimado del vector store de FAISS (RAM, no VRAM): \"",
+   "n": 1
+  },
+  {
+   "en": "f\"~{faiss_mb:,.0f} MiB across {chunks:,} chunks at \"",
+   "es": "f\"~{faiss_mb:,.0f} MiB en {chunks:,} chunks de \"",
+   "n": 1
+  },
+  {
+   "en": "f\"dim {embedding_dim}.\"",
+   "es": "f\"dimensión {embedding_dim}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'll keep loading your context, but expect slow embedding \"",
+   "es": "\"Voy a seguir cargando tu contexto, pero espera que el throughput de los embeddings sea lento \"",
+   "n": 1
+  },
+  {
+   "en": "\"throughput or RAM&harr;VRAM swap. To take that pressure off me, \"",
+   "es": "\"o que haya swap entre RAM&harr;VRAM. Para quitarme esa presión, \"",
+   "n": 1
+  },
+  {
+   "en": "\"switch <code>embeding-model</code> in my <code>config.json</code> \"",
+   "es": "\"cambia <code>embeding-model</code> en mi <code>config.json</code> \"",
+   "n": 1
+  },
+  {
+   "en": "\"to a smaller model (e.g. <code>nomic-embed-text:v1.5</code>) \"",
+   "es": "\"a un modelo más pequeño (p. ej. <code>nomic-embed-text:v1.5</code>) \"",
+   "n": 1
+  },
+  {
+   "en": "\"and restart me.\"",
+   "es": "\"y reiníciame.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"{cmd[0]}: not found on PATH\"",
+   "motivo": "output de un comando (uso interno, no se muestra)"
+  },
+  {
+   "en": "f\"{cmd[0]}: timed out after {timeout}s\"",
+   "motivo": "output de un comando (uso interno, no se muestra)"
+  }
+ ]
+}

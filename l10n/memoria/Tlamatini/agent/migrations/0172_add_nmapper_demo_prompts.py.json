@@ -1,0 +1,90 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0172_add_nmapper_demo_prompts.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Tlamatini, run the **NMAPPER CTF RECON** demo, please — tick ONLY the Multi-Turn \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"checkbox. Do a quick LOCAL nmap scan of scanme.nmap.org (the Nmap project's OWN \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"officially-authorized test host) with chat_agent_nmapper using action='quick', \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"target='scanme.nmap.org'. This is an UNPRIVILEGED TCP connect scan \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"(-sT -sV -sC -Pn -T4 --top-ports 1000) that needs NO admin and NO Npcap, so it works \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"the moment nmap is installed. Report the open ports, the detected services + versions, \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"and any default-script (-sC) findings a CTF player could act on. If nmap is not \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"installed, tell me exactly how to get it (the `install` action fetches the official \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"free installer). Use ONLY chat_agent_nmapper. AUTHORIZED TARGETS ONLY. End with END-RESPONSE.\"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"Tlamatini, run the **NMAPPER FULL SWEEP** — tick ONLY the Multi-Turn checkbox. Use \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"chat_agent_nmapper with action='full', target='scanme.nmap.org' (the Nmap project's \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"authorized test host), timing='T4' to connect-scan ALL 65535 TCP ports with version \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"detection, catching any service on an odd high port that a top-1000 scan would miss. \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"Summarize which ports are open and what is listening on each. Multi-Turn ONLY, \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"chat_agent_nmapper ONLY, AUTHORIZED TARGETS ONLY. End with END-RESPONSE.\"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"Tlamatini, run the **NMAPPER SERVICE ENUM** — tick ONLY the Multi-Turn checkbox. Use \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"chat_agent_nmapper with action='scripts', target='scanme.nmap.org' (the Nmap project's \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"authorized test host), ports='22,80', nse_scripts='banner,http-title,ssh2-enum-algos' \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"for focused CONNECT-based NSE enumeration (no raw packets, no admin). Extract the \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "\"banners / page titles / SSH algorithms into a short findings list. Multi-Turn ONLY, \"",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "demo de recon de seguridad (Nmapper): conservar en inglés"
+  }
+ ]
+}

@@ -1,0 +1,141 @@
+{
+ "archivo": "Tlamatini/agent/self_update.py",
+ "segmentos": [
+  {
+   "en": "f\"Could not reach GitHub: {exc}\"",
+   "es": "f\"No se pudo conectar con GitHub: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "\"A newer release exists but it has no downloadable .zip asset.\"",
+   "es": "\"Hay un release más reciente, pero no tiene un archivo .zip para descargar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Self-update is only available in the installed (frozen) build.\"",
+   "es": "\"La actualización automática sólo está disponible en el build instalado (frozen).\"",
+   "n": 1
+  },
+  {
+   "en": "\"An update is already in progress.\"",
+   "es": "\"Ya hay una actualización en curso.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Checking latest release…\"",
+   "es": "\"Buscando el release más reciente…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Update check failed.\"",
+   "es": "\"Error al buscar actualizaciones.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Already on the latest version ({info.get('current')}).\"",
+   "es": "f\"Ya tienes la versión más reciente ({info.get('current')}).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Latest release has no downloadable asset.\"",
+   "es": "\"El release más reciente no tiene ningún archivo para descargar.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Downloading {info.get('latest')}…\"",
+   "es": "f\"Descargando {info.get('latest')}…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Extracting release bundle…\"",
+   "es": "\"Extrayendo el paquete del release…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Release bundle did not contain pkg.zip (the install payload).\"",
+   "es": "\"El paquete del release no contenía pkg.zip (el payload de instalación).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Verifying the new release's file integrity…\"",
+   "es": "\"Verificando la integridad de los archivos del release nuevo…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Preparing the new version…\"",
+   "es": "\"Preparando la versión nueva…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Staged build is invalid — Tlamatini.exe missing after extraction.\"",
+   "es": "\"El build preparado no es válido: falta Tlamatini.exe después de la extracción.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Update staged. Tlamatini will now close and reopen on the new version.\"",
+   "es": "\"La actualización quedó preparada. Tlamatini se va a cerrar y se volverá a abrir en la versión nueva.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Update failed.\"",
+   "es": "\"Error al actualizar.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{_UPDATER_SCRIPT} not found (looked in: {candidates})\"",
+   "es": "f\"{_UPDATER_SCRIPT} no se encontró (se buscó en: {candidates})\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Downloading… {_human(done)} / {_human(total)}\"",
+   "es": "f\"Descargando… {_human(done)} / {_human(total)}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Refusing to clear a path outside the owned update scratch area\"",
+   "es": "\"No se puede limpiar un path que está fuera del área temporal de la actualización\"",
+   "n": 1
+  },
+  {
+   "en": "\"Update scratch path traverses a filesystem link\"",
+   "es": "\"El path temporal de la actualización pasa por un link del sistema de archivos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Update scratch path escapes the installation\"",
+   "es": "\"El path temporal de la actualización sale de la carpeta de instalación\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Warning: low free disk space ({_human(free)}). The update may fail.\"",
+   "es": "f\"Advertencia: queda poco espacio libre en el disco ({_human(free)}). Es posible que la actualización no se complete.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Tlamatini\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "\"Tlamatini-Updater\"",
+   "motivo": "User-Agent HTTP"
+  },
+  {
+   "en": "\"Temp\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "\"Bypass\"",
+   "motivo": "argumento de línea de comandos"
+  },
+  {
+   "en": "\"Content-Length\"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "f\"{value:.1f} TB\"",
+   "motivo": "unidad"
+  }
+ ]
+}

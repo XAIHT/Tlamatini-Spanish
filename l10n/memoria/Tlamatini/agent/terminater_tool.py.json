@@ -1,0 +1,286 @@
+{
+ "archivo": "Tlamatini/agent/terminater_tool.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"What to do: run (default when `text` is given), open, type, send_key, wait, read, \"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"commands, abort, kill, force_kill, kill_all, list, status, focus, rename, layout, \"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"clear, resize, watch_user, warn_user, handover.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Which terminal: its id exactly as open/list returned it (like 't2'), or its exact \"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"title. Empty = the active one. A terminal that is not there is REFUSED.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"cmd | powershell | pwsh - only used when a terminal is opened.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Title for a terminal being opened (or the new title for rename).\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Working folder for a terminal being opened.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"The command, EXACTLY as it must be typed (backslashes and quotes verbatim, no escaping). \"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"<<USER:hint>> hands the keyboard to the user at that point.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Same as text, base64 of UTF-8 (byte-exact).\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"true = press Enter so the command RUNS. false = only TYPE the line and leave it \"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"waiting for the USER to press Enter. A real true/false - never a sentence.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Wait for the command to finish.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Stop waiting after this many seconds.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Flag the command as hung after this long without output.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"How long to wait for the user's part of a <<USER:...>> hand-over.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Typing speed, 20-160 words per minute. Never instant.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"true = the typed text is a secret: never logged or returned.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"send_key: key names, e.g. 'ctrl+c', 'enter', 'up up enter'.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"read: 'last', a command number, 'screen' (what is visible now) or 'all'.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"read: maximum characters to return.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"read: start at this character of a long output.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"wait: prompt | pattern | idle.  watch_user: idle | submit | key.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"wait with until='pattern': a regular expression to wait for.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"wait/watch_user: seconds of silence that count as idle.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"watch_user: the cursor value from the previous reply.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"warn_user: the warning shown in the user's terminal.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"warn_user: info | hint | warning | danger.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"warn_user: a suggested replacement line.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"handover: what the user should type.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"layout: tabs | tile | tile-h | tile-v | grid.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"layout: dock | full (full = the whole canvas area).\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Show the Terminals area when the action runs.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"run: close the terminal when the command completed.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"PowerShell: load the user's profile.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Warn the user about dangerous or mistyped commands.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"run: allow raising a NEW terminal named `terminal` when none has that \"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"name. A name that is not there is a mistake, not a request.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"type/run: replace a line already waiting on the prompt instead of refusing.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Read the prompt back before and after typing. Leave it on.\"",
+   "motivo": "descripción del argumento para el LLM (schema del tool)"
+  },
+  {
+   "en": "\"Pass `action` (for example action='run' with text='...', action='open', action='list' or \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"action='read'). Each setting is its own argument - do not describe the call in a sentence.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "f\"Unknown action {str(value)[:60]!r}. Valid actions: {', '.join(ACTIONS)}.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"This tool takes typed arguments, not a sentence. Call it again with separate fields, e.g. \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"action='run', terminal='t2', text='cargo build', submit=false.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "f\"`kind` must be one of {', '.join(KINDS)} (got {value[:40]!r}).\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"Unknown argument(s): \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\". Valid arguments: \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "f\"`severity` must be one of {', '.join(SEVERITIES)}.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "f\"`terminal` {str(ref)[:70]!r} cannot be a terminal id or title: {problem}. Pass the exact \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"terminal_id returned by action='open' or action='list' (like 't2'), as its own argument.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"both text and text_b64 were given; text_b64 was used and text ignored\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "f\"action='{action}' needs `text` - the command to type, exactly as it must be typed.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"action='send_key' needs `keys`, for example keys='ctrl+c' or keys='up up enter'.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"LIVE-TUTORIAL MODE: the user runs the commands, and every line break in `text` would press Enter \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"and run the lines before the last one. Send ONE line per call (join steps with ';' when they belong \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"together), with submit=false.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"LIVE-TUTORIAL MODE: the user runs the commands, so Enter was NOT pressed - \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"the line is only typed and the USER presses Enter\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"LIVE-TUTORIAL MODE: the user runs the commands, so you must not press Enter for them. Type the line \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"with action='run' (submit=false) and let the user press Enter.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"Terminater \"",
+   "motivo": "registro técnico para el log"
+  },
+  {
+   "en": "\"LIVE-TUTORIAL MODE\"",
+   "motivo": "marcador que se compara (startswith)"
+  },
+  {
+   "en": "f\"{spec.purpose}\\n\\nPass each setting as its own argument (never a sentence). \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "f\"Example: {spec.example_request}\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "f\"The arguments could not be read: {exc}\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"These arguments are not valid - \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\". Pass each setting as its own \"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  },
+  {
+   "en": "\"argument; yes/no settings must be real true or false, numbers must be numbers.\"",
+   "motivo": "mensaje de rechazo para el LLM (resultado del tool)"
+  }
+ ]
+}

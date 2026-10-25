@@ -1,0 +1,29 @@
+# Ender Agent Configuration
+# This is a deterministic agent (no LLM) that terminates all agents in its connected graph.
+#
+# DEPLOYMENT NOTES:
+# When deployed via agentic_control_panel, this agent is copied to the pool
+# directory with a cardinal suffix (e.g., ender_1, ender_2).
+#
+# CANVAS AUTO-CONFIGURATION:
+# When you draw connections on the canvas:
+#   - Connect an agent's OUTPUT to this Ender's INPUT -> adds to source_agents (graphical only)
+#     and auto-populates target_agents with ALL upstream agents (the kill list)
+#   - Connect this Ender's OUTPUT to a Cleaner's INPUT -> adds to output_agents
+#
+# BEHAVIOR:
+# When executed (via Stop button), this agent will immediately:
+# 1. Terminate all agents listed in target_agents (using SIGTERM/SIGKILL)
+# 2. Launch all agents listed in output_agents (typically Cleaners)
+# 3. Exit after completing
+
+# Agents to KILL (auto-populated via upstream traversal of canvas connections)
+# These are ALL agents upstream of the Ender that should be terminated.
+target_agents: []
+
+# Agents graphically connected to Ender's input (canvas wiring metadata only).
+# These are NEVER killed or started by the Ender — they are purely visual connections.
+source_agents: []
+
+# Agents to LAUNCH after termination (typically Cleaner agents)
+output_agents: []

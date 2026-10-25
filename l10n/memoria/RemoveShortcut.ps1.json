@@ -1,0 +1,74 @@
+{
+ "archivo": "RemoveShortcut.ps1",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini Shortcut Remover\"",
+   "es": "\"Eliminador de accesos directos de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"[OK] Removed desktop shortcut: $desktopShortcut\"",
+   "es": "\"[OK] Acceso directo del escritorio eliminado: $desktopShortcut\"",
+   "n": 1
+  },
+  {
+   "en": "'[--] Kept desktop shortcut belonging to another installation.'",
+   "es": "'[--] Se deja el acceso directo del escritorio: es de otra copia de Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "\"[--] Desktop shortcut not found: $desktopShortcut\"",
+   "es": "\"[--] No hay acceso directo en el escritorio: $desktopShortcut\"",
+   "n": 1
+  },
+  {
+   "en": "\"[OK] Removed local shortcut: $localShortcut\"",
+   "es": "\"[OK] Acceso directo local eliminado: $localShortcut\"",
+   "n": 1
+  },
+  {
+   "en": "\"[--] Local shortcut not found: $localShortcut\"",
+   "es": "\"[--] No hay acceso directo local: $localShortcut\"",
+   "n": 1
+  },
+  {
+   "en": "\"Refreshing Windows Shell...\"",
+   "es": "\"Actualizando el Shell de Windows...\"",
+   "n": 1
+  },
+  {
+   "en": "\"  [OK] Notified Windows Shell (SHChangeNotify)\"",
+   "es": "\"  [OK] Shell de Windows avisado (SHChangeNotify)\"",
+   "n": 1
+  },
+  {
+   "en": "\"  [WARN] Add-Type unavailable (Constrained Language Mode) - using fallback\"",
+   "es": "\"  [AVISO] Add-Type no disponible (Constrained Language Mode) - se usa el fallback\"",
+   "n": 1
+  },
+  {
+   "en": "\"  [OK] Notified shell via rundll32 fallback\"",
+   "es": "\"  [OK] Shell avisado con el fallback de rundll32\"",
+   "n": 1
+  },
+  {
+   "en": "\"SUCCESS: Shortcuts have been removed.\"",
+   "es": "\"SUCCESS: se eliminaron los accesos directos.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Stop'",
+   "motivo": "valor de PowerShell"
+  },
+  {
+   "en": "'using System; using System.Runtime.InteropServices; public class ShellNotify { [DllImport(\"shell32.dll\", CharSet = CharSet.Auto, SetLastError = true)] public static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2); }'",
+   "motivo": "código C#"
+  },
+  {
+   "en": "\"Desktop\"",
+   "motivo": "argumento de la API de Windows"
+  }
+ ]
+}

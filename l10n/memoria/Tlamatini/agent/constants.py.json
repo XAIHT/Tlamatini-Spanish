@@ -1,0 +1,250 @@
+{
+ "archivo": "Tlamatini/agent/constants.py",
+ "segmentos": [
+  {
+   "en": "\"I'm sorry, {name}, I can't process your requests right now. <br> Please check that you didn't give me a context outside of the root directory. <br> And please make sure your request can be fitted in my CONTEXT WINDOW: watch the CONTEXT-WINDOW gauge above the message box - when it is red or past 100%, untick agents or tools in Config > Configure Agents / Configure MCPs, or turn on Compact mode. <br> If everything looks right, please check that Ollama is running and that my config.json file is correct.\"",
+   "es": "\"Lo siento, {name}, ahorita no puedo procesar tus solicitudes. <br> Revisa que no me hayas dado un contexto fuera del directorio raíz. <br> Y asegúrate de que tu solicitud quepa en mi CONTEXT-WINDOW: mira el medidor CONTEXT-WINDOW arriba del cuadro de mensaje; si está en rojo o pasa del 100%, desmarca agents o tools en Config > Configurar Agents / Configurar MCPs, o activa Compact mode. <br> Si todo se ve bien, revisa que Ollama esté corriendo y que mi archivo config.json esté correcto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm sorry, but you're not authenticated, so I can't help you yet. Please sign in again.\"",
+   "es": "\"Lo siento, pero no has iniciado sesión, así que todavía no puedo ayudarte. Vuelve a iniciar sesión.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm not ready yet, {name}. Please give me a moment and try again.\"",
+   "es": "\"Todavía no estoy lista, {name}. Dame un momento y vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm sorry, {name}, that directory is outside my application root path, so I'm not allowed to use it.\"",
+   "es": "\"Lo siento, {name}, ese directorio está fuera del path raíz de mi aplicación, así que no tengo permitido usarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm sorry, {name}, that file is outside my application root path, so I'm not allowed to use it.\"",
+   "es": "\"Lo siento, {name}, ese archivo está fuera del path raíz de mi aplicación, así que no tengo permitido usarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm sorry, {name}, what you picked is not a valid directory.\"",
+   "es": "\"Lo siento, {name}, lo que elegiste no es un directorio válido.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm sorry, {name}, I received an invalid canvas filename, so I couldn't use it.\"",
+   "es": "\"Lo siento, {name}, recibí un nombre de archivo de canvas inválido, así que no pude usarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This is the error I ran into: \"",
+   "es": "\"Este es el error que encontré: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Please wait a moment, {name} - I'm getting myself ready.\"",
+   "es": "\"Espera un momento, {name}: me estoy preparando.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Please wait a moment, {name} - I'm loading the context you gave me.\"",
+   "es": "\"Espera un momento, {name}: estoy cargando el contexto que me diste.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm still getting ready, {name}. Please wait a moment and try again.\"",
+   "es": "\"Todavía me estoy preparando, {name}. Espera un momento y vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm ready, {name}! You can start chatting with me now.\"",
+   "es": "\"¡Estoy lista, {name}! Ya puedes empezar a platicar conmigo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I ran into a problem, {name}, so I switched to my Basic Prompt Only Chain - I'll answer without any context for now.\"",
+   "es": "\"Tuve un problema, {name}, así que cambié a mi Basic Prompt Only Chain: por ahora voy a responder sin contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm ready, {name}! But some of your documents are too large, so I might not be able to load them completely.\"",
+   "es": "\"¡Estoy lista, {name}! Pero algunos de tus documentos son demasiado grandes, así que quizá no pueda cargarlos completos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm working on your request, {name}. Please wait a moment.\"",
+   "es": "\"Estoy trabajando en tu solicitud, {name}. Espera un momento.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Okay, {name}, you cancelled it, so I stopped generating. I won't send that answer, and I've erased the context.\"",
+   "es": "\"Está bien, {name}: lo cancelaste, así que dejé de generar. No voy a enviar esa respuesta y ya borré el contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"✓ I've closed my connection to Ollama, so Ollama is free now.\"",
+   "es": "\"✓ Cerré mi conexión con Ollama, así que Ollama ya está libre.\"",
+   "n": 1
+  },
+  {
+   "en": "\"⏳ I'm rebuilding myself with a fresh connection...\"",
+   "es": "\"⏳ Me estoy reconstruyendo con una conexión nueva...\"",
+   "n": 1
+  },
+  {
+   "en": "\"✓ I'm back and ready, {name}. We can keep chatting now.\"",
+   "es": "\"✓ Ya volví y estoy lista, {name}. Podemos seguir platicando.\"",
+   "n": 1
+  },
+  {
+   "en": "\"⚠ I finished cancelling, {name}, but with a warning: \"",
+   "es": "\"⚠ Terminé de cancelar, {name}, pero con una advertencia: \"",
+   "n": 1
+  },
+  {
+   "en": "\"I've completed the reconnection you asked for, {name}. I erased the context and I'm connected again.\"",
+   "es": "\"Ya hice la reconexión que me pediste, {name}. Borré el contexto y estoy conectada otra vez.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I've cleared the context as you asked, {name}, and I'm connected again.\"",
+   "es": "\"Ya limpié el contexto como me pediste, {name}, y estoy conectada otra vez.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I've cleared our chat history, {name}, and I'm connected again. We have a fresh start!\"",
+   "es": "\"Ya borré nuestro historial del chat, {name}, y estoy conectada otra vez. ¡Empezamos de cero!\"",
+   "n": 1
+  },
+  {
+   "en": "\"Welcome back, {name}! I restored our session.\"",
+   "es": "\"¡Qué gusto verte de nuevo, {name}! Restauré nuestra sesión.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Welcome back, {name}! I restored our session and your context.\"",
+   "es": "\"¡Qué gusto verte de nuevo, {name}! Restauré nuestra sesión y tu contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"It's a pleasure, {name}! I'm here to help you.\"",
+   "es": "\"¡Es un gusto, {name}! Aquí estoy para ayudarte.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I need at least one file extension, {name}. Please give them to me in this format: jpg,bmp,etc.\"",
+   "es": "\"Necesito al menos una extensión de archivo, {name}. Dámelas en este formato: jpg,bmp,etc.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I've saved the file extensions I'll skip when I load context: {omissions}.\\n\\nPlease reconnect me so I can apply the changes, {name}.\"",
+   "es": "\"Ya guardé las extensiones de archivo que voy a omitir al cargar el contexto: {omissions}.\\n\\nReconéctame para que pueda aplicar los cambios, {name}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I've updated your skills, {name} ({touched} skill(s)). I'll use the change from your next request.\"",
+   "es": "\"Ya actualicé tus skills, {name} ({touched} skill(s)). Voy a usar el cambio desde tu siguiente solicitud.\"",
+   "n": 1
+  },
+  {
+   "en": "\"\\n\\nI also switched these to match: \"",
+   "es": "\"\\n\\nTambién cambié estos para que coincidan: \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\n\\nI'll use it from your next message, {name} - no restart needed.\"",
+   "es": "\"\\n\\nLo voy a usar desde tu siguiente mensaje, {name}; no hace falta reiniciar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I didn't change Compact mode, {name}: I'm still answering. Please try again when I finish.\"",
+   "es": "\"No cambié Compact mode, {name}: todavía estoy respondiendo. Vuelve a intentarlo cuando termine.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I couldn't change Compact mode, {name}: \"",
+   "es": "\"No pude cambiar Compact mode, {name}: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Done, {name}! Compact mode is ON: I unticked every MCP, tool, agent and skill except \"",
+   "es": "\"¡Listo, {name}! Compact mode está ACTIVADO: desmarqué todos los MCPs, tools, agents y skills excepto \"",
+   "n": 1
+  },
+  {
+   "en": "\"System-Metrics, Files-Search and Current-Time. Tick what you need in \"",
+   "es": "\"System-Metrics, Files-Search y Current-Time. Marca lo que necesites en \"",
+   "n": 1
+  },
+  {
+   "en": "\"Config > Configure MCPs / Configure Agents - the CONTEXT-WINDOW gauge shows \"",
+   "es": "\"Config > Configurar MCPs / Configurar Agents; el medidor CONTEXT-WINDOW muestra \"",
+   "n": 1
+  },
+  {
+   "en": "\"what it costs.\"",
+   "es": "\"cuánto cuesta.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Done, {name}! Compact mode is OFF: I ticked every MCP, tool, agent and skill again, \"",
+   "es": "\"¡Listo, {name}! Compact mode está DESACTIVADO: volví a marcar todos los MCPs, tools, agents y skills, \"",
+   "n": 1
+  },
+  {
+   "en": "\"and your External MCPs are back.\"",
+   "es": "\"y tus External MCPs regresaron.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I didn't change Self-modify, {name}: I'm still answering. Please try again when I finish.\"",
+   "es": "\"No cambié Self-modify, {name}: todavía estoy respondiendo. Vuelve a intentarlo cuando termine.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I couldn't change Self-modify, {name}: \"",
+   "es": "\"No pude cambiar Self-modify, {name}: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Done, {name}! Self-modify is ON: my self-knowledge now goes with every request my model \"",
+   "es": "\"¡Listo, {name}! Self-modify está ACTIVADO: ahora mi autoconocimiento va con cada solicitud que mi modelo \"",
+   "n": 1
+  },
+  {
+   "en": "\"can hold, so I can read, change and rebuild my own source.\"",
+   "es": "\"pueda contener, así que puedo leer, cambiar y reconstruir mi propio código fuente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Done, {name}! Self-modify is OFF: I no longer receive my self-knowledge, and I won't \"",
+   "es": "\"¡Listo, {name}! Self-modify está DESACTIVADO: ya no recibo mi autoconocimiento y no voy a \"",
+   "n": 1
+  },
+  {
+   "en": "\"read, edit or rebuild my own source code.\"",
+   "es": "\"leer, editar ni reconstruir mi propio código fuente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I never saved this message in our history, {name}, so there's nothing for me to drop.\"",
+   "es": "\"Nunca guardé este mensaje en nuestro historial, {name}, así que no hay nada que descartar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm still answering, {name}. Please drop the message again when I've finished.\"",
+   "es": "\"Todavía estoy respondiendo, {name}. Vuelve a descartar el mensaje cuando termine.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "r'\\r?\\n[ \\t]*(python|bash|javascript|java|c|c\\+\\+|c#|php|ruby|go|lisp|fortran|basic|assembler|html|css|sql|yaml|typescript|cuda|xml|json)\\r?\\n'",
+   "motivo": "expresión regular"
+  },
+  {
+   "en": "r\"^\\s*(hello|hi|hey|thanks|thank you|you are awesome|awesome)\\b.*$\"",
+   "motivo": "expresión regular del atajo de saludo; extenderla a \"hola\" se tragaría solicitudes como \"hola, haz…\""
+  }
+ ]
+}

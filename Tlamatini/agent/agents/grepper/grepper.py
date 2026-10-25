@@ -1,0 +1,894 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+# Grepper Agent - Read-only regex content search across a file or directory tree
+# Action: Triggered by upstream -> search -> emit INI_SECTION_GREPPER -> Trigger downstream (always) -> Exit
+
+import os
+import sys
+
+# FIX: Disable Intel Fortran runtime Ctrl+C handler
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
+
+import time
+import yaml
+import logging
+import subprocess
+
+# -- conhost.exe orphan guard ------------------------------------------
+if os.name == 'nt' and not getattr(subprocess, '_conhost_guard_applied', False):
+    _CHG_NO_WINDOW = subprocess.CREATE_NO_WINDOW
+    _CHG_RESPECT = (
+        _CHG_NO_WINDOW
+        | getattr(subprocess, 'CREATE_NEW_CONSOLE', 0)
+        | getattr(subprocess, 'DETACHED_PROCESS', 0)
+    )
+    _chg_orig_init = subprocess.Popen.__init__
+    def _chg_guarded_init(self, *args, **kwargs):
+        cf = kwargs.get('creationflags', 0) or 0
+        if not (cf & _CHG_RESPECT):
+            kwargs['creationflags'] = cf | _CHG_NO_WINDOW
+        return _chg_orig_init(self, *args, **kwargs)
+    subprocess.Popen.__init__ = _chg_guarded_init
+    subprocess._conhost_guard_applied = True
+
+# Set working directory to script location
+try:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+except Exception as e:
+    sys.stderr.write(f"Critical Error: Failed to set working directory: {e}\n")
+
+# Use directory name for log file
+CURRENT_DIR_NAME = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+LOG_FILE_PATH = f"{CURRENT_DIR_NAME}.log"
+
+# Reanimation detection: AGENT_REANIMATED=1 means resume from pause
+_IS_REANIMATED = os.environ.get('AGENT_REANIMATED') == '1'
+if not _IS_REANIMATED:
+    open(LOG_FILE_PATH, 'w').close()
+logging.basicConfig(
+    filename=LOG_FILE_PATH,
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    encoding='utf-8'
+)
+
+
+def load_config(path="config.yaml") -> dict:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        logging.error(f"Error: {path} not found.")
+        sys.exit(1)
+    except Exception as e:
+        logging.error(f"Error parsing {path}: {e}")
+        sys.exit(1)
+
+
+def get_python_command() -> list:
+    if not getattr(sys, 'frozen', False):
+        return [sys.executable]
+    python_home = get_user_python_home()
+    if python_home:
+        python_exe = os.path.join(python_home, 'python.exe' if sys.platform.startswith('win') else 'python3')
+        if os.path.exists(python_exe):
+            return [python_exe]
+    if sys.platform.startswith('win'):
+        bundled_python = os.path.join(os.path.dirname(sys.executable), 'python.exe')
+        if os.path.exists(bundled_python):
+            return [bundled_python]
+        return ['python']
+    return ['python3']
+
+
+def get_user_python_home() -> str:
+    if getattr(sys, 'frozen', False):
+        _carried = os.path.join(os.path.dirname(sys.executable), 'python')
+        if sys.platform.startswith('win'):
+            _exe = os.path.join(_carried, 'python.exe')
+        else:
+            _exe = os.path.join(_carried, 'bin', 'python3')
+        if os.path.isfile(_exe):
+            return _carried
+    if not sys.platform.startswith('win'):
+        return os.environ.get('PYTHON_HOME', '')
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Environment') as key:
+            value, _ = winreg.QueryValueEx(key, 'PYTHON_HOME')
+            return str(value) if value else ''
+    except (FileNotFoundError, OSError):
+        return ''
+
+
+def get_agent_env() -> dict:
+    env = os.environ.copy()
+    if sys.platform.startswith('win'):
+        try:
+            import ctypes
+            if hasattr(ctypes.windll.kernel32, 'SetDllDirectoryW'):
+                ctypes.windll.kernel32.SetDllDirectoryW(None)
+        except Exception:
+            pass
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        meipass = getattr(sys, '_MEIPASS')
+        if meipass:
+            path_parts = env.get('PATH', '').split(os.pathsep)
+            path_parts = [p for p in path_parts if os.path.normpath(p) != os.path.normpath(meipass)]
+            env['PATH'] = os.pathsep.join(path_parts)
+    python_home = get_user_python_home()
+    if not python_home:
+        return env
+    env['PYTHON_HOME'] = python_home
+    scripts_dir = os.path.join(python_home, 'Scripts')
+    current_path = env.get('PATH', '')
+    env['PATH'] = f"{python_home};{scripts_dir};{current_path}"
+    return env
+
+
+def get_pool_path() -> str:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parent = os.path.dirname(current_dir)
+    grandparent = os.path.dirname(parent)
+    if os.path.basename(grandparent) == 'pools':
+        return parent
+    if os.path.basename(parent) == 'pools':
+        return parent
+    return os.path.join(os.path.dirname(current_dir), 'pools')
+
+
+def get_agent_directory(agent_name: str) -> str:
+    return os.path.join(get_pool_path(), agent_name)
+
+
+def get_agent_script_path(agent_name: str) -> str:
+    agent_dir = get_agent_directory(agent_name)
+    if os.path.exists(os.path.join(agent_dir, f"{agent_name}.py")):
+        return os.path.join(agent_dir, f"{agent_name}.py")
+    parts = agent_name.rsplit('_', 1)
+    if len(parts) == 2 and parts[1].isdigit():
+        base = parts[0]
+        if os.path.exists(os.path.join(agent_dir, f"{base}.py")):
+            return os.path.join(agent_dir, f"{base}.py")
+    return os.path.join(agent_dir, f"{agent_name}.py")
+
+
+def is_agent_running(agent_name: str) -> bool:
+    agent_dir = get_agent_directory(agent_name)
+    pid_path = os.path.join(agent_dir, "agent.pid")
+    if not os.path.exists(pid_path):
+        return False
+    try:
+        with open(pid_path, "r") as f:
+            pid = int(f.read().strip())
+    except (ValueError, OSError):
+        return False
+    try:
+        import psutil
+        if not psutil.pid_exists(pid):
+            return False
+        proc = psutil.Process(pid)
+        if proc.status() == psutil.STATUS_ZOMBIE:
+            return False
+        return True
+    except Exception:
+        try:
+            os.kill(pid, 0)
+            return True
+        except OSError:
+            return False
+
+
+def wait_for_agents_to_stop(agent_names: list):
+    if not agent_names:
+        return
+    waited = 0.0
+    poll_interval = 0.5
+    while True:
+        still_running = [name for name in agent_names if is_agent_running(name)]
+        if not still_running:
+            return
+        if waited >= 10.0:
+            logging.error(
+                f"WAITING FOR AGENTS TO STOP: {still_running} still running "
+                f"after {int(waited)}s. Will keep waiting..."
+            )
+            waited = 0.0
+        time.sleep(poll_interval)
+        waited += poll_interval
+
+
+def start_agent(agent_name: str) -> bool:
+    agent_dir = get_agent_directory(agent_name)
+    script_path = get_agent_script_path(agent_name)
+    if not os.path.exists(script_path):
+        logging.error(f"Agent script not found: {script_path}")
+        return False
+    try:
+        cmd = get_python_command() + [script_path]
+        logging.info(f"   Command: {cmd}")
+        process = subprocess.Popen(
+            cmd,
+            cwd=agent_dir,
+            env=get_agent_env(),
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+        )
+        try:
+            pid_path = os.path.join(agent_dir, "agent.pid")
+            with open(pid_path, "w") as f:
+                f.write(str(process.pid))
+        except Exception as pid_err:
+            logging.error(f"Failed to write PID file for target {agent_name}: {pid_err}")
+        logging.info(f"Started agent '{agent_name}' with PID: {process.pid}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to start agent '{agent_name}': {e}")
+        return False
+
+
+# PID Management
+PID_FILE = "agent.pid"
+
+
+def write_pid_file():
+    try:
+        with open(PID_FILE, "w") as f:
+            f.write(str(os.getpid()))
+    except Exception as e:
+        logging.error(f"Failed to write PID file: {e}")
+
+
+def remove_pid_file():
+    for attempt in range(5):
+        try:
+            if os.path.exists(PID_FILE):
+                os.remove(PID_FILE)
+            return
+        except PermissionError:
+            time.sleep(0.1)
+        except Exception as e:
+            logging.error(f"Failed to remove PID file: {e}")
+            return
+
+
+def _coerce_int(value, default):
+    """Robustly coerce a yaml int OR a wrapped-parser string to int (never raises)."""
+    try:
+        return int(str(value).strip().split()[0])
+    except (ValueError, IndexError, AttributeError, TypeError):
+        return default
+
+
+def _coerce_bool(value, default=False):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+    s = str(value).strip().lower()
+    if s in ('true', '1', 'yes', 'y', 'on'):
+        return True
+    if s in ('false', '0', 'no', 'n', 'off', ''):
+        return False
+    return default
+
+
+# Directories that are pruned from a recursive walk (noise / huge / VCS).
+_PRUNE_DIRS = {'.git', 'node_modules', 'venv', '.venv', '__pycache__',
+               'staticfiles', 'dist', 'build', '.mypy_cache', '.ruff_cache'}
+
+
+# >>> SHARED GLOB HELPERS (keep byte-identical in grepper.py and globber.py) >>>
+# fnmatch/glob only know * ? and [..], so before 2026-10-18 a brace set like
+# "*.{js,py}" matched NOTHING (the "{" was read literally), and so did a list
+# such as "*.py,*.js". Every expansion below is ADDITIVE: the pattern exactly as
+# written is always tried first, so nothing that matched before stops matching
+# (a '|' list excepted: '|' cannot be part of a Windows file name).
+# agent/test_glob_patterns.py checks that both agents carry the same block.
+_GLOB_MAX_PATTERNS = 256
+_GLOB_WILDCARDS = '*?[{'
+
+
+def _glob_class_end(text, i):
+    """Index of the ']' closing the [character class] opening at text[i], or -1."""
+    j = i + 1
+    if j < len(text) and text[j] in '!^':
+        j += 1
+    if j < len(text) and text[j] == ']':
+        j += 1
+    while j < len(text) and text[j] != ']':
+        j += 1
+    return j if j < len(text) else -1
+
+
+def _glob_first_brace_set(text):
+    """(start, end, options) of the first expandable {a,b} set, else None.
+
+    A set with no top-level comma ("{x}"), an unbalanced brace and anything
+    inside a [character class] stay literal, exactly as in a POSIX shell.
+    """
+    i = 0
+    n = len(text)
+    while i < n:
+        char = text[i]
+        if char == '[':
+            end = _glob_class_end(text, i)
+            i = end + 1 if end >= 0 else i + 1
+            continue
+        if char != '{':
+            i += 1
+            continue
+        depth = 0
+        cuts = []
+        j = i
+        close = -1
+        while j < n:
+            c = text[j]
+            if c == '[':
+                end = _glob_class_end(text, j)
+                if end >= 0:
+                    j = end + 1
+                    continue
+            elif c == '{':
+                depth += 1
+            elif c == '}':
+                depth -= 1
+                if depth == 0:
+                    close = j
+                    break
+            elif c == ',' and depth == 1:
+                cuts.append(j)
+            j += 1
+        if close >= 0 and cuts:
+            bounds = [i] + cuts + [close]
+            options = [text[bounds[k] + 1:bounds[k + 1]] for k in range(len(bounds) - 1)]
+            return i, close, options
+        i += 1
+    return None
+
+
+def _glob_brace_expand(pattern, limit=_GLOB_MAX_PATTERNS):
+    """'src/{a,b}/*.{js,py}' -> the four plain patterns (nested sets too)."""
+    out = []
+    pending = [pattern]
+    while pending and len(out) < limit:
+        current = pending.pop(0)
+        found = _glob_first_brace_set(current)
+        if found is None:
+            if current not in out:
+                out.append(current)
+            continue
+        start, end, options = found
+        for option in options:
+            pending.append(current[:start] + option + current[end + 1:])
+        del pending[limit * 4:]
+    return out
+
+
+def _glob_split_top_level(text, separators):
+    """Split on separators that sit outside {braces} and [classes]."""
+    parts = []
+    current = []
+    depth = 0
+    i = 0
+    while i < len(text):
+        char = text[i]
+        if char == '[':
+            end = _glob_class_end(text, i)
+            if end >= 0:
+                current.append(text[i:end + 1])
+                i = end + 1
+                continue
+        if char == '{':
+            depth += 1
+        elif char == '}' and depth:
+            depth -= 1
+        elif char in separators and depth == 0:
+            parts.append(''.join(current))
+            current = []
+            i += 1
+            continue
+        current.append(char)
+        i += 1
+    parts.append(''.join(current))
+    return parts
+
+
+def _glob_pattern_list(pattern):
+    """'*.py,*.js' / '*.py;*.js' / '*.py|*.js' -> ['*.py', '*.js'].
+
+    '|' can never be part of a Windows file name, so it always separates.
+    ',' and ';' CAN be, so they separate only when at least one piece is a
+    wildcard pattern ('test*.py,tests.py'); 'a,b.txt' stays one literal name.
+    """
+    pieces = []
+    for chunk in _glob_split_top_level(pattern, '|'):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        subs = [s.strip() for s in _glob_split_top_level(chunk, ',;')]
+        if (len(subs) > 1 and all(subs)
+                and any(w in s for s in subs for w in _GLOB_WILDCARDS)):
+            pieces.extend(subs)
+        else:
+            pieces.append(chunk)
+    return pieces
+
+
+def _glob_variants(pattern, limit=_GLOB_MAX_PATTERNS):
+    """Every plain glob a pattern stands for, the pattern as written FIRST.
+
+    A '|' list is the one exception: '|' can never be part of a Windows
+    file name, so the list as written could never match - only its pieces.
+    """
+    pattern = str(pattern or '').strip()
+    if not pattern:
+        return []
+    out = [] if len(_glob_split_top_level(pattern, '|')) > 1 else [pattern]
+    for piece in _glob_pattern_list(pattern):
+        for plain in _glob_brace_expand(piece, limit):
+            if plain and plain not in out:
+                out.append(plain)
+            if len(out) >= limit:
+                return out
+    return out
+
+
+def _glob_spec(variant):
+    """A variant with '/' separators and no leading './'."""
+    spec = variant.replace('\\', '/')
+    while spec.startswith('./'):
+        spec = spec[2:]
+    return spec
+
+
+def _path_glob_regex(pattern):
+    """Regex for a '/'-separated glob, matched against a relative path.
+
+    Same rules as glob.glob(recursive=True, include_hidden=True): '*' and '?'
+    stay inside one folder name, a whole '**' segment spans zero or more
+    folders, and braces are literal (variants are already expanded).
+    """
+    import re
+    parts = []
+    i = 0
+    n = len(pattern)
+    while i < n:
+        char = pattern[i]
+        if char == '*':
+            j = i
+            while j < n and pattern[j] == '*':
+                j += 1
+            whole = (j - i >= 2 and (i == 0 or pattern[i - 1] == '/')
+                     and (j == n or pattern[j] == '/'))
+            if whole and j < n:
+                parts.append('(?:.*/)?')
+                j += 1
+            elif whole:
+                parts.append('.*')
+            else:
+                parts.append('[^/]*')
+            i = j
+        elif char == '?':
+            parts.append('[^/]')
+            i += 1
+        elif char == '[':
+            end = _glob_class_end(pattern, i)
+            if end < 0:
+                parts.append('\\[')
+                i += 1
+                continue
+            body = pattern[i + 1:end]
+            if body[:1] == '!':
+                body = '^' + body[1:]
+            elif body[:1] == '^':
+                body = '\\' + body
+            parts.append('[' + body.replace('\\', '\\\\') + ']')
+            i = end + 1
+        else:
+            parts.append(re.escape(char))
+            i += 1
+    return '(?s:' + ''.join(parts) + r')\Z'
+
+
+def _glob_dir_prefixes(glob_pat, names_anywhere=True):
+    """Fixed leading folders of the patterns, so a walk can skip the rest.
+
+    'Tlamatini/agent/test_*.py' -> ['Tlamatini/agent']. None means "walk
+    everything, exactly as before": a leading wildcard ('**/x.py'), an
+    absolute path, or - when ``names_anywhere`` (Grepper: a bare name matches
+    in every folder) - a plain file-name pattern. For Globber a bare name
+    only means the top folder, so it adds no prefix at all ([] = no subfolder
+    is needed). Measured 2026-10-18 on this repository: a folder glob that
+    walked every release copy under Temp in 34 s came back in 0.13 s.
+    """
+    prefixes = []
+    for variant in _glob_variants(glob_pat):
+        spec = _glob_spec(variant)
+        if spec.startswith('/') or (len(spec) > 1 and spec[1] == ':'):
+            return None
+        if '/' not in spec:
+            if names_anywhere:
+                return None
+            continue
+        fixed = []
+        for segment in spec.split('/')[:-1]:
+            if not segment or segment in ('.', '..') or any(ch in segment for ch in '*?['):
+                break
+            fixed.append(segment)
+        if not fixed:
+            return None
+        prefixes.append('/'.join(fixed))
+    if os.name == 'nt':
+        prefixes = [p.lower() for p in prefixes]
+    return prefixes
+
+
+def _dir_may_match(rel_dir, prefixes):
+    """True when a folder (relative, '/'-separated) can still hold a match."""
+    if os.name == 'nt':
+        rel_dir = rel_dir.lower()
+    for prefix in prefixes:
+        if rel_dir == prefix or prefix.startswith(rel_dir + '/') or rel_dir.startswith(prefix + '/'):
+            return True
+    return False
+# <<< SHARED GLOB HELPERS <<<
+
+
+def _glob_matcher(glob_pat):
+    """Predicate(full_path, search_root) for Grepper's ``glob`` filter, or None.
+
+    A pattern without a folder separator is matched against the FILE NAME
+    with fnmatch, exactly as before. A pattern WITH one ('src/*.py',
+    '**/*.py') is matched against the path relative to the search root and
+    against the absolute path - it used to be compared with the bare file
+    name, which never contains a slash, so it silently searched 0 files.
+    """
+    import fnmatch
+    import re
+    variants = _glob_variants(glob_pat)
+    if not variants:
+        return None
+    flags = re.IGNORECASE if os.name == 'nt' else 0
+    names = []
+    paths = []
+    for variant in variants:
+        if '/' in variant or '\\' in variant:
+            try:
+                paths.append(re.compile(_path_glob_regex(_glob_spec(variant)), flags))
+            except re.error:
+                continue
+        else:
+            names.append(variant)
+
+    def _match(full_path, root):
+        name = os.path.basename(full_path)
+        for pat in names:
+            if fnmatch.fnmatch(name, pat):
+                return True
+        if paths:
+            absolute = os.path.abspath(full_path).replace('\\', '/')
+            try:
+                relative = os.path.relpath(full_path, root).replace('\\', '/')
+            except ValueError:
+                relative = absolute
+            for rx in paths:
+                if rx.match(relative) or rx.match(absolute):
+                    return True
+        return False
+
+    return _match
+
+
+def _iter_files(path, glob_pat):
+    matcher = _glob_matcher(glob_pat)
+    if os.path.isfile(path):
+        if matcher is None or matcher(path, os.path.dirname(os.path.abspath(path))):
+            yield path
+        return
+    prefixes = _glob_dir_prefixes(glob_pat) if matcher is not None else None
+    for root, dirs, files in os.walk(path):
+        dirs[:] = [d for d in dirs if d not in _PRUNE_DIRS]
+        if prefixes is not None:
+            rel_root = os.path.relpath(root, path).replace('\\', '/')
+            rel_root = '' if rel_root == '.' else rel_root + '/'
+            dirs[:] = [d for d in dirs if _dir_may_match(rel_root + d, prefixes)]
+        for name in files:
+            full = os.path.join(root, name)
+            if matcher is None or matcher(full, path):
+                yield full
+
+
+# --- Text decoding -----------------------------------------------------------
+# BOM table, LONGEST PREFIX FIRST: the UTF-32-LE BOM (ff fe 00 00) STARTS WITH
+# the UTF-16-LE BOM (ff fe), so testing utf-16 first would mis-decode every
+# UTF-32-LE file. Same ordering contract as agent/rag/binary_guard.py.
+_BOM_CODECS = (
+    (b"\x00\x00\xfe\xff", "utf-32"),
+    (b"\xff\xfe\x00\x00", "utf-32"),
+    (b"\xef\xbb\xbf", "utf-8-sig"),
+    (b"\xfe\xff", "utf-16"),
+    (b"\xff\xfe", "utf-16"),
+)
+
+_NUL_SAMPLE_BYTES = 8192
+
+
+def _read_text_lines(fpath):
+    """Return the file's lines, or None when the file is genuinely BINARY.
+
+    THE BUG (Angela, 2026-08-16): this used to be a bare
+    ``open(fpath, "r", encoding="utf-8", errors="strict")`` whose
+    ``UnicodeDecodeError`` was swallowed by ``continue  # skip binary``. So EVERY
+    file that was not valid UTF-8 got silently dropped from the search, and
+    ``files_searched`` stayed 0 - Grepper then reported a confident
+    ``no_matches`` over a file it never actually opened. A search tool that
+    answers "nothing there" about a file it refused to read is WORSE than one
+    that errors. Two real classes of TEXT disappeared that way:
+      * UTF-16 text - what Windows PowerShell writes by default, so every
+        captured test/build log was invisible; and
+      * legacy cp1252 / latin-1 files - i.e. Angela's accented Spanish sources.
+
+    Order below is deliberate and must NOT be swapped: the BOM test comes BEFORE
+    the NUL test, because UTF-16/UTF-32 text is legitimately full of 0x00 bytes
+    and would otherwise be condemned as binary. Decoding never fails - after
+    UTF-8 it falls back to cp1252 then latin-1 (which maps every byte), because
+    losing a real file is far worse than a few mojibake characters on one line.
+    """
+    try:
+        with open(fpath, "rb") as fh:
+            raw = fh.read()
+    except (OSError, PermissionError):
+        return None
+
+    # 1. A BOM proves it is text - decided BEFORE any NUL test.
+    for bom, codec in _BOM_CODECS:
+        if raw.startswith(bom):
+            return raw.decode(codec, errors="replace").splitlines(keepends=True)
+
+    # 2. No BOM and a NUL byte in the head => genuinely binary, skip it.
+    if b"\x00" in raw[:_NUL_SAMPLE_BYTES]:
+        return None
+
+    # 3. Text. UTF-8 first, then the legacy Windows codecs. latin-1 cannot fail.
+    for codec in ("utf-8", "cp1252", "latin-1"):
+        try:
+            return raw.decode(codec).splitlines(keepends=True)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    return raw.decode("latin-1", errors="replace").splitlines(keepends=True)
+
+
+def _read_lines_mode(path, start_line, end_line, line_numbers, max_results):
+    """Return a VERBATIM slice of ONE text file (output_mode: "lines").
+
+    This is the raw-read capability the agent pool did not have. Every other
+    reader either interprets the file through an LLM (File-Interpreter),
+    extracts from a binary container (File-Extractor), or needs a regex
+    (Grepper's own search modes). Authoring an Editor ``old_string`` needs the
+    EXACT bytes of a region, so without this the only way to get them was a
+    shell ``type``/``sed`` - i.e. falling back to a non-Tlamatini tool.
+
+    Reuses ``_read_text_lines`` deliberately, so a UTF-16 / cp1252 / latin-1
+    file reads correctly here exactly as it does in the search modes (its BOM
+    stage runs BEFORE the NUL stage - do NOT reorder it).
+
+    With ``line_numbers`` False the slice is BYTE-EXACT: original line endings
+    are preserved and nothing is stripped, so the result can be pasted
+    straight into an Editor ``old_string``. With it True each line is
+    prefixed ``N: `` for navigation, which is NOT byte-exact by design.
+    """
+    if not path or not os.path.exists(path):
+        return "not_found", f"Path not found: {path}", 0, 0, False, 0, 0, ""
+    if os.path.isdir(path):
+        return ("refused",
+                f"output_mode 'lines' reads ONE file; {path} is a directory. "
+                "Use Globber to choose a file first.", 0, 0, False, 0, 0, "")
+    lines = _read_text_lines(path)
+    if lines is None:
+        return "refused", f"Not a readable text file (binary): {path}", 0, 0, False, 0, 0, ""
+
+    total = len(lines)
+    if total == 0:
+        return "listed", "", 0, 1, False, 0, 0, ""
+
+    start = start_line if start_line > 0 else 1
+    end = end_line if end_line > 0 else total
+    start = max(1, min(start, total))
+    end = max(start, min(end, total))
+
+    sliced = lines[start - 1:end]
+    truncated = False
+    if len(sliced) > max_results:
+        sliced = sliced[:max_results]
+        truncated = True
+
+    exact = "".join(sliced)
+    content_b64 = ""
+    if line_numbers:
+        body = "\n".join(
+            f"{start + i}: {ln.rstrip(chr(13) + chr(10))}" for i, ln in enumerate(sliced)
+        )
+    else:
+        # ⚠️ THE LOG IS NOT A BYTE-EXACT CHANNEL. logging's FileHandler opens the
+        # file in text mode, so on Windows every "\n" it writes becomes "\r\n" -
+        # which turns a CRLF source line into CR-CR-LF. Measured: a source of
+        # b"alpha\r\nbeta\r\n" came back as b"alpha\r\r\nbeta\r\r\n". An Editor
+        # ``old_string`` built from that would carry a stray \r per line and fail
+        # to match - silent, plausible and WRONG.
+        # So the readable body stays readable, and the EXACT bytes ride the
+        # base64 side-channel (`content_b64`), the same *_b64 verbatim channel
+        # Editor and LaTeXer already use. Base64 is pure ASCII, so nothing in
+        # the logging path can alter it. Decode it to build an Editor old_string.
+        import base64
+        body = exact
+        content_b64 = base64.b64encode(exact.encode("utf-8")).decode("ascii")
+    if truncated:
+        body += f"\n... (truncated at max_results={max_results} lines)"
+    return "listed", body, len(sliced), 1, truncated, len(sliced), total, content_b64
+
+
+def emit_grepper_section(pattern, path, glob_pat, matches, files_searched, truncated, status, body,
+                         start_line=0, end_line=0, lines_returned=0, total_lines=0,
+                         content_b64=""):
+    logging.info(
+        "INI_SECTION_GREPPER<<<\n"
+        f"pattern: {pattern}\n"
+        f"path: {path}\n"
+        f"glob: {glob_pat}\n"
+        f"matches: {matches}\n"
+        f"files_searched: {files_searched}\n"
+        f"truncated: {truncated}\n"
+        f"start_line: {start_line}\n"
+        f"end_line: {end_line}\n"
+        f"lines_returned: {lines_returned}\n"
+        f"total_lines: {total_lines}\n"
+        f"content_b64: {content_b64}\n"
+        f"status: {status}\n"
+        "\n"
+        f"{body}\n"
+        ">>>END_SECTION_GREPPER"
+    )
+
+
+def main():
+    import re
+    config = load_config()
+    write_pid_file()
+    if _IS_REANIMATED:
+        logging.info(f"\U0001f504 {CURRENT_DIR_NAME} REANIMATED (resuming from pause)")
+        logging.info("=" * 60)
+    try:
+        pattern = config.get('pattern', '')
+        pattern = pattern if isinstance(pattern, str) else str(pattern)
+        path = str(config.get('path', '') or '').strip()
+        glob_pat = str(config.get('glob', '') or '').strip()
+        case_insensitive = _coerce_bool(config.get('case_insensitive', False))
+        output_mode = str(config.get('output_mode', 'content') or 'content').strip().lower()
+        max_results = _coerce_int(config.get('max_results', 200), 200)
+        # output_mode "lines" only - a VERBATIM read of one file.
+        start_line = _coerce_int(config.get('start_line', 0), 0)
+        end_line = _coerce_int(config.get('end_line', 0), 0)
+        line_numbers = _coerce_bool(config.get('line_numbers', True), True)
+        lines_returned = 0
+        total_lines = 0
+        content_b64 = ""
+        target_agents = config.get('target_agents', []) or []
+
+        logging.info("\U0001f50d GREPPER AGENT STARTED")
+        logging.info(f"\U0001f9ea pattern={pattern!r} path={path!r} glob={glob_pat!r} mode={output_mode}")
+        _glob_list = _glob_variants(glob_pat)
+        if len(_glob_list) > 1:
+            logging.info(f"\U0001f9e9 glob understood as {len(_glob_list)} pattern(s): {_glob_list}")
+        logging.info(f"\U0001f3af Targets: {target_agents}")
+
+        status = "error"
+        matches = 0
+        files_searched = 0
+        truncated = False
+        body = ""
+        try:
+            if output_mode == "lines":
+                # VERBATIM read - no pattern required, and none is used.
+                (status, body, matches, files_searched, truncated,
+                 lines_returned, total_lines, content_b64) = _read_lines_mode(
+                    path, start_line, end_line, line_numbers, max_results)
+                if status == "listed":
+                    logging.info(
+                        f"📖 read {lines_returned} line(s) of {total_lines} from {path}"
+                        f" (line_numbers={line_numbers})"
+                    )
+                else:
+                    logging.error(f"❌ {body}")
+            elif not pattern:
+                body = "No pattern configured."
+                logging.error(f"❌ {body}")
+            elif not path or not os.path.exists(path):
+                status = "not_found"
+                body = f"Path not found: {path}"
+                logging.error(f"❌ {body}")
+            else:
+                try:
+                    rx = re.compile(pattern, re.IGNORECASE if case_insensitive else 0)
+                except re.error as rex:
+                    body = f"Invalid regex: {rex}"
+                    logging.error(f"❌ {body}")
+                    rx = None
+                if rx is not None:
+                    content_lines = []
+                    file_match_counts = {}
+                    for fpath in _iter_files(path, glob_pat):
+                        lines = _read_text_lines(fpath)
+                        if lines is None:
+                            continue  # genuinely binary / unreadable
+                        files_searched += 1
+                        # max_results caps the OUTPUT UNIT of the requested mode:
+                        # content -> lines, files/count -> FILES. It used to cap
+                        # on the total match count in every mode and abort the
+                        # whole walk, which made `files` silently OMIT matching
+                        # files (one noisy file ate the budget) and left the last
+                        # file's `count` PARTIAL - a wrong number reported as
+                        # fact. A file is always counted to completion before the
+                        # cap is applied, so every number emitted is truthful.
+                        file_hits = 0
+                        for i, line in enumerate(lines):
+                            if rx.search(line):
+                                matches += 1
+                                file_hits += 1
+                                if output_mode == "content":
+                                    content_lines.append(f"{fpath}:{i + 1}:{line.rstrip()}")
+                                    if len(content_lines) >= max_results:
+                                        truncated = True
+                                        break
+                        if file_hits:
+                            file_match_counts[fpath] = file_hits
+                            if (output_mode in ("files", "count")
+                                    and len(file_match_counts) >= max_results):
+                                truncated = True
+                        if truncated:
+                            break
+                    if output_mode == "files":
+                        body = "\n".join(sorted(file_match_counts.keys()))
+                    elif output_mode == "count":
+                        body = "\n".join(f"{c}\t{fp}" for fp, c in sorted(file_match_counts.items()))
+                    else:
+                        body = "\n".join(content_lines)
+                    status = "matches" if matches else "no_matches"
+                    if truncated:
+                        unit = "lines" if output_mode == "content" else "files"
+                        body += f"\n... (truncated at max_results={max_results} {unit})"
+                    logging.info(f"✅ {matches} match(es) across {files_searched} file(s); status={status}")
+        except Exception as e:
+            status = "error"
+            body = f"Search failed: {e}"
+            logging.error(f"❌ {body}")
+
+        emit_grepper_section(pattern, path, glob_pat, matches, files_searched, truncated, status, body,
+                             start_line, end_line, lines_returned, total_lines, content_b64)
+
+        total_triggered = 0
+        if target_agents:
+            wait_for_agents_to_stop(target_agents)
+            for target in target_agents:
+                if start_agent(target):
+                    total_triggered += 1
+
+        logging.info(
+            f"\U0001f3c1 Grepper agent finished. Status: {status}. "
+            f"Triggered {total_triggered}/{len(target_agents)} agents."
+        )
+    finally:
+        time.sleep(0.4)
+        remove_pid_file()
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

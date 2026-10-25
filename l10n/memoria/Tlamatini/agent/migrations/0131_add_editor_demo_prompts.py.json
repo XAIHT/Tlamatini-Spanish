@@ -1,0 +1,157 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0131_add_editor_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **SURGICAL EDIT** demo, please &mdash; a basic showcase of your own \"",
+   "es": "\"Tlamatini, ejecuta la demo **SURGICAL EDIT**, por favor &mdash; una muestra básica de tu propio \"",
+   "n": 1
+  },
+  {
+   "en": "\"surgical file editor, driven from chat through the wrapped **chat_agent_editor** tool: the \"",
+   "es": "\"editor de archivos quirúrgico, controlado desde el chat a través del tool wrapper **chat_agent_editor**: el \"",
+   "n": 1
+  },
+  {
+   "en": "\"find-and-replace operator that changes a file by swapping an EXACT string WITHOUT rewriting \"",
+   "es": "\"operador de buscar y reemplazar que cambia un archivo intercambiando una cadena EXACTA SIN reescribir \"",
+   "n": 1
+  },
+  {
+   "en": "\"the whole file. Tick ONLY the **Multi-Turn** checkbox before sending. Use ONLY \"",
+   "es": "\"todo el archivo. Marca SÓLO la casilla **Multi-Turn** antes de enviar. Usa SÓLO \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_file_creator (to seed the scratch file) and chat_agent_editor (to edit it). \"",
+   "es": "\"chat_agent_file_creator (para sembrar el archivo de prueba) y chat_agent_editor (para editarlo). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#9999;&#65039; SURGICAL EDIT</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#9999;&#65039; EDICIÓN QUIRÚRGICA</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Editor &mdash; find, replace, byte-exact</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Editor &mdash; buscar, reemplazar, byte-exacto</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (seed): call **chat_agent_file_creator** with request \\\\\\\"Run File Creator with \"",
+   "es": "\"Paso 1 (semilla): llama a **chat_agent_file_creator** con el request \\\"Run File Creator with \"",
+   "n": 1
+  },
+  {
+   "en": "\"file_path='<TEMP>/editor_demo.txt' and content='editor demo file -- status: draft'\\\\\\\", where \"",
+   "es": "\"file_path='<TEMP>/editor_demo.txt' and content='editor demo file -- status: draft'\\\", donde \"",
+   "n": 1
+  },
+  {
+   "en": "\"<TEMP> is your app Temp directory (the absolute path the system prompt gives you). \"",
+   "es": "\"<TEMP> es tu directorio Temp de la app (el path absoluto que te da el system prompt). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (edit): call **chat_agent_editor** with request \\\\\\\"Run Editor with \"",
+   "es": "\"Paso 2 (edita): llama a **chat_agent_editor** con el request \\\"Run Editor with \"",
+   "n": 1
+  },
+  {
+   "en": "\"file_path='<TEMP>/editor_demo.txt', old_string='status: draft', new_string='status: final', \"",
+   "es": "\"file_path='<TEMP>/editor_demo.txt', old_string='status: draft', new_string='status: final', \""
+  },
+  {
+   "en": "\"replace_all=false\\\\\\\". From the INI_SECTION_EDITOR block in the run's log_excerpt capture the \"",
+   "es": "\"replace_all=false\\\". Del bloque INI_SECTION_EDITOR del log_excerpt de la ejecución captura el \"",
+   "n": 1
+  },
+  {
+   "en": "\"status (edited | not_found | not_unique | noop | error) and the replacements count. \"",
+   "es": "\"status (edited | not_found | not_unique | noop | error) y el conteo replacements. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (prove no-op): call **chat_agent_editor** AGAIN with request \\\\\\\"Run Editor with \"",
+   "es": "\"Paso 3 (demuestra el no-op): llama a **chat_agent_editor** OTRA VEZ con el request \\\"Run Editor with \"",
+   "n": 1
+  },
+  {
+   "en": "\"replace_all=false\\\\\\\" and confirm it now reports status 'not_found' (the draft line is gone &mdash; \"",
+   "es": "\"replace_all=false\\\" y confirma que ahora reporta status 'not_found' (la línea draft ya no está &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"proof the first edit really applied). \"",
+   "es": "\"prueba de que la primera edición sí se aplicó). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 4: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Surgical Edit &mdash; Report</strong>' and columns <em>step</em>, <em>old_string</em>, \"",
+   "es": "\"'<strong>Surgical Edit &mdash; Reporte</strong>' y con las columnas <em>paso</em>, <em>old_string</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>new_string</em>, <em>status</em>, <em>replacements</em> &mdash; one row per chat_agent_editor \"",
+   "es": "\"<em>new_string</em>, <em>status</em>, <em>replacements</em> &mdash; una fila por cada llamada a chat_agent_editor \"",
+   "n": 1
+  },
+  {
+   "en": "\"call you made, every value verbatim from its INI_SECTION_EDITOR block (do NOT re-classify). Light \"",
+   "es": "\"que hiciste, cada valor tal cual de su bloque INI_SECTION_EDITOR (NO lo reclasifiques). Celdas del \"",
+   "n": 1
+  },
+  {
+   "en": "\"body cells (background:#ffffff;color:#0f172a), green tint for status edited, grey for not_found. \"",
+   "es": "\"cuerpo claras (background:#ffffff;color:#0f172a), tono verde para status edited, gris para not_found. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 5: cierra con un banner HTML que reutilice el estilo del Paso 0 y muestre, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; EDITED' (Step 2 returned status edited) or '&#10060; EDIT FAILED' (quote the status and \"",
+   "es": "\"'&#9989; EDITADO' (el Paso 2 devolvió status edited) o '&#10060; NO SE PUDO EDITAR' (cita el status y el \"",
+   "n": 1
+  },
+  {
+   "en": "\"message), and underneath a one-line metric 'file: <TEMP>/editor_demo.txt &middot; replacements: <n>'. \"",
+   "es": "\"mensaje), y debajo una métrica de una línea 'archivo: <TEMP>/editor_demo.txt &middot; replacements: <n>'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#022c22 0%,#064e3b 33%,#10b981 66%,#6ee7b7 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

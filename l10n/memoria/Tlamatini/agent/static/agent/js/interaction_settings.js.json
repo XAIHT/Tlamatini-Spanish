@@ -1,0 +1,125 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/interaction_settings.js",
+ "segmentos": [
+  {
+   "en": "'Settings could not be loaded. Reload this page and try again.'",
+   "es": "'No se pudo cargar la configuración. Recarga esta página e inténtalo de nuevo.'",
+   "n": 1
+  },
+  {
+   "en": "'The settings response was incomplete.'",
+   "es": "'La respuesta de la configuración estaba incompleta.'",
+   "n": 1
+  },
+  {
+   "en": "'Waiting and handoff'",
+   "es": "'Espera y traspaso'",
+   "n": 1
+  },
+  {
+   "en": "' (unavailable)'",
+   "es": "' (no disponible)'",
+   "n": 1
+  },
+  {
+   "en": "'Voice is currently muted. Narration will stay silent until you unmute it.'",
+   "es": "'La voz está silenciada ahora mismo. La narración se mantendrá en silencio hasta que la actives.'",
+   "n": 1
+  },
+  {
+   "en": "% volume · ",
+   "es": "% de volumen · ",
+   "n": 1
+  },
+  {
+   "en": "× speech speed",
+   "es": "× de velocidad de voz",
+   "n": 1
+  },
+  {
+   "en": "'No supported female voice is currently available. Preview can check again.'",
+   "es": "'No hay ninguna voz femenina compatible disponible ahora mismo. La vista previa puede volver a comprobarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Unmute voice'",
+   "es": "'Activar la voz'",
+   "n": 1
+  },
+  {
+   "en": "'Mute voice'",
+   "es": "'Silenciar la voz'",
+   "n": 1
+  },
+  {
+   "en": "'Loading your settings…'",
+   "es": "'Cargando tu configuración…'",
+   "n": 1
+  },
+  {
+   "en": "'Changes apply to the next action. Stop and mute are always immediate.'",
+   "es": "'Los cambios se aplican a la siguiente acción. Detener y silenciar siempre son inmediatos.'",
+   "n": 1
+  },
+  {
+   "en": "'Settings could not be saved.'",
+   "es": "'No se pudo guardar la configuración.'",
+   "n": 1
+  },
+  {
+   "en": "'Account settings saved. Appearance applies in this tab; browser storage is unavailable.'",
+   "es": "'La configuración de la cuenta se guardó. La apariencia se aplica en esta pestaña; el almacenamiento del browser no está disponible.'",
+   "n": 1
+  },
+  {
+   "en": "'I’ll prepare a command that prints Hello.'",
+   "es": "'Voy a preparar un comando que imprime Hello.'",
+   "n": 1
+  },
+  {
+   "en": "'I’ll begin a Dockerfile. You will choose the base image.'",
+   "es": "'Voy a empezar un Dockerfile. Tú vas a elegir la imagen base.'",
+   "n": 1
+  },
+  {
+   "en": "Preview complete at ",
+   "es": "Vista previa completa a ",
+   "n": 1
+  },
+  {
+   "en": " WPM. Nothing was executed or saved.",
+   "es": " WPM. No se ejecutó ni se guardó nada.",
+   "n": 1
+  },
+  {
+   "en": "'This tab’s defaults are restored in the draft. Save to apply.'",
+   "es": "'Se restauraron los valores predeterminados de esta pestaña en el borrador. Guarda para aplicar.'",
+   "n": 1
+  },
+  {
+   "en": "'Preset loaded into the draft. Save to apply.'",
+   "es": "'Se cargó el preajuste en el borrador. Guarda para aplicar.'",
+   "n": 1
+  },
+  {
+   "en": "'Settings changed in another tab. Close and reopen to load them before saving.'",
+   "es": "'La configuración cambió en otra pestaña. Ciérrala y vuelve a abrirla para cargarla antes de guardar.'",
+   "n": 1
+  },
+  {
+   "en": "'Voice could not play. Check Config → Voice or try Preview again.'",
+   "es": "'No se pudo reproducir la voz. Revisa Config → Voz o intenta la vista previa otra vez.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'echo Hello'",
+   "motivo": "muestra literal de comando (no se traduce)"
+  },
+  {
+   "en": "'FROM '",
+   "motivo": "token literal de Dockerfile (no se traduce)"
+  }
+ ]
+}

@@ -1,0 +1,136 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_editing.js",
+ "segmentos": [
+  {
+   "en": "'Saving…'",
+   "es": "'Guardando…'",
+   "n": 1
+  },
+  {
+   "en": "'Save'",
+   "es": "'Guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Saving file…'",
+   "es": "'Guardando el archivo…'",
+   "n": 1
+  },
+  {
+   "en": "'● Unsaved changes'",
+   "es": "'● Cambios sin guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Saved content'",
+   "es": "'Contenido guardado'",
+   "n": 1
+  },
+  {
+   "en": "'PDF · original document (read only)'",
+   "es": "'PDF · documento original (sólo lectura)'",
+   "n": 1
+  },
+  {
+   "en": "'Open a file to edit.'",
+   "es": "'Abre un archivo para editarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Text editing supports files up to 64 MiB.'",
+   "es": "'La edición de texto admite archivos de hasta 64 MiB.'",
+   "n": 1
+  },
+  {
+   "en": "'UTF-32 is not editable here. Convert a copy to UTF-8 or UTF-16 first.'",
+   "es": "'Aquí no se puede editar UTF-32. Primero convierte una copia a UTF-8 o UTF-16.'",
+   "n": 1
+  },
+  {
+   "en": "'This file is not valid UTF-8 or BOM-marked UTF-16. Convert a copy before editing so no characters are lost.'",
+   "es": "'Este archivo no es UTF-8 válido ni UTF-16 con BOM. Convierte una copia antes de editarlo para no perder caracteres.'",
+   "n": 1
+  },
+  {
+   "en": "'This is a binary file. Open it in its dedicated application.'",
+   "es": "'Es un archivo binario. Ábrelo en su aplicación correspondiente.'",
+   "n": 1
+  },
+  {
+   "en": "'Wait for the current save to finish before replacing this document.'",
+   "es": "'Espera a que termine el guardado en curso antes de reemplazar este documento.'",
+   "n": 1
+  },
+  {
+   "en": "'Saving file'",
+   "es": "'Guardando el archivo'",
+   "n": 1
+  },
+  {
+   "en": "`Discard unsaved changes to ${state.name}?`",
+   "es": "`¿Quieres descartar los cambios sin guardar de ${state.name}?`",
+   "n": 1
+  },
+  {
+   "en": "'Save first to keep your edits. Continue discards them; Cancel keeps the editor open.'",
+   "es": "'Primero guarda para conservar tus cambios. Continuar los descarta; Cancelar deja el editor abierto.'",
+   "n": 1
+  },
+  {
+   "en": "'Unsaved changes'",
+   "es": "'Cambios sin guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Your session expired. Sign in again before saving.'",
+   "es": "'Tu sesión expiró. Vuelve a iniciar sesión antes de guardar.'",
+   "n": 1
+  },
+  {
+   "en": "`The file operation failed (${response.status}).`",
+   "es": "`Error en la operación con el archivo (${response.status}).`",
+   "n": 1
+  },
+  {
+   "en": "'Write access was not granted. Your edits are kept; use Save as… to choose a destination.'",
+   "es": "'No se concedió el permiso de escritura. Tus cambios se conservan; usa Guardar como… para elegir un destino.'",
+   "n": 1
+  },
+  {
+   "en": "'The file changed outside this editor. Use Save as… to keep your edits separately, or Refresh to review the disk version.'",
+   "es": "'El archivo cambió fuera de este editor. Usa Guardar como… para conservar tus cambios por separado, o Actualizar para revisar la versión del disco.'",
+   "n": 1
+  },
+  {
+   "en": "'Save cancelled. Your content is kept.'",
+   "es": "'Se canceló el guardado. Tu contenido se conserva.'",
+   "n": 2
+  },
+  {
+   "en": "`Saved PDF copy · ${savedName}`",
+   "es": "`Copia del PDF guardada · ${savedName}`",
+   "n": 1
+  },
+  {
+   "en": "'Saved the previous revision · newer edits are unsaved.'",
+   "es": "'Se guardó la revisión anterior · los cambios más recientes no están guardados.'",
+   "n": 1
+  },
+  {
+   "en": "`Saved · ${savedName}`",
+   "es": "`Guardado · ${savedName}`",
+   "n": 1
+  },
+  {
+   "en": "`Not saved · ${error.message}`",
+   "es": "`No se guardó · ${error.message}`",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'UTF-8'",
+   "motivo": "nombre de codificación"
+  }
+ ]
+}

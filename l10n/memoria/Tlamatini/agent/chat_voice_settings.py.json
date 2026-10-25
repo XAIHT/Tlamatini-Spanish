@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/chat_voice_settings.py",
+ "segmentos": [
+  {
+   "en": "    \"sample_rate\": 0, \"channels\": 1, \"language\": \"\", \"task\": \"transcribe\",",
+   "es": "    \"sample_rate\": 0, \"channels\": 1, \"language\": \"es\", \"task\": \"transcribe\",",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

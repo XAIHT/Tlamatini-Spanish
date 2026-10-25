@@ -1,0 +1,31 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/avatar_size.js",
+ "segmentos": [
+  {
+   "en": "'Docked'",
+   "es": "'Acoplado'",
+   "n": 1
+  },
+  {
+   "en": "'Resize Tlamatini. Drag, or use the arrow keys. Double-click to cycle sizes.'",
+   "es": "'Cambiar el tamaño de Tlamatini. Arrastra o usa las flechas del teclado. Haz doble clic para alternar entre tamaños.'",
+   "n": 1
+  },
+  {
+   "en": "'Drag to resize  ·  Double-click to cycle sizes  ·  Arrow keys'",
+   "es": "'Arrastra para cambiar el tamaño  ·  Doble clic para alternar entre tamaños  ·  Flechas del teclado'",
+   "n": 1
+  },
+  {
+   "en": "' pixels'",
+   "es": "' píxeles'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'slider'",
+   "motivo": "valor de role ARIA"
+  }
+ ]
+}

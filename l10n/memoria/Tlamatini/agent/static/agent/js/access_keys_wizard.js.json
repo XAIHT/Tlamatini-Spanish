@@ -1,0 +1,247 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/access_keys_wizard.js",
+ "segmentos": [
+  {
+   "en": "'<span class=\"akw-pill warn\">Weak</span>'",
+   "es": "'<span class=\"akw-pill warn\">Débil</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<span class=\"akw-pill ok\">Ready</span>'",
+   "es": "'<span class=\"akw-pill ok\">Listo</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<span class=\"akw-pill missing\">Missing</span>'",
+   "es": "'<span class=\"akw-pill missing\">Falta</span>'",
+   "n": 2
+  },
+  {
+   "en": "'<span class=\"akw-pill ok\">Found</span>'",
+   "es": "'<span class=\"akw-pill ok\">Encontrado</span>'",
+   "n": 1
+  },
+  {
+   "en": "'Configured - paste a new value only to replace it'",
+   "es": "'Configurado: pega un valor nuevo sólo si quieres reemplazarlo'",
+   "n": 1
+  },
+  {
+   "en": "'Configured - type a new value only to replace it'",
+   "es": "'Configurado: escribe un valor nuevo sólo si quieres reemplazarlo'",
+   "n": 1
+  },
+  {
+   "en": "'Paste key or password'",
+   "es": "'Pega la key o la contraseña'",
+   "n": 1
+  },
+  {
+   "en": "'Type value'",
+   "es": "'Escribe el valor'",
+   "n": 1
+  },
+  {
+   "en": "'ACPX Commands'",
+   "es": "'Comandos de ACPX'",
+   "n": 1
+  },
+  {
+   "en": "'Review'",
+   "es": "'Revisión'",
+   "n": 1
+  },
+  {
+   "en": "'<span>Use the Gemini key as GOOGLE_API_KEY when GOOGLE_API_KEY is left blank.</span>'",
+   "es": "'<span>Usar la key de Gemini como GOOGLE_API_KEY cuando GOOGLE_API_KEY se deja en blanco.</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<p class=\"akw-section-help\">Blank fields keep the existing local value. Typed values replace that one setting.</p>'",
+   "es": "'<p class=\"akw-section-help\">Los campos en blanco conservan el valor local actual. Lo que escribas reemplaza sólo ese ajuste.</p>'",
+   "n": 1
+  },
+  {
+   "en": "'<h6 class=\"akw-section-title\">ACPX Commands</h6>'",
+   "es": "'<h6 class=\"akw-section-title\">Comandos de ACPX</h6>'",
+   "n": 1
+  },
+  {
+   "en": "'<p class=\"akw-section-help\">Set a full CLI path only when a command is not found on PATH.</p>'",
+   "es": "'<p class=\"akw-section-help\">Escribe el path completo del CLI sólo cuando un comando no está en el PATH.</p>'",
+   "n": 1
+  },
+  {
+   "en": "'<thead><tr><th>Agent</th><th>Status</th><th>Command or path</th></tr></thead>'",
+   "es": "'<thead><tr><th>Agent</th><th>Status</th><th>Comando o path</th></tr></thead>'",
+   "n": 1
+  },
+  {
+   "en": "'None'",
+   "es": "'Ninguno'",
+   "n": 2
+  },
+  {
+   "en": "'<h6 class=\"akw-section-title\">Review</h6>'",
+   "es": "'<h6 class=\"akw-section-title\">Revisión</h6>'",
+   "n": 1
+  },
+  {
+   "en": "'<li><strong>Configured fields</strong><span>'",
+   "es": "'<li><strong>Campos configurados</strong><span>'",
+   "n": 1
+  },
+  {
+   "en": "'<li><strong>Missing values</strong><span>'",
+   "es": "'<li><strong>Valores faltantes</strong><span>'",
+   "n": 1
+  },
+  {
+   "en": "'<li><strong>Missing ACPX commands</strong><span>'",
+   "es": "'<li><strong>Comandos de ACPX faltantes</strong><span>'",
+   "n": 1
+  },
+  {
+   "en": "'<li><strong>Runtime config</strong><span>'",
+   "es": "'<li><strong>Configuración del runtime</strong><span>'",
+   "n": 1
+  },
+  {
+   "en": "'No new values were entered. Existing secrets were left untouched.'",
+   "es": "'No escribiste valores nuevos. Los secretos existentes no se tocaron.'",
+   "n": 1
+  },
+  {
+   "en": "' Restart Tlamatini so every runtime reloads the new values.'",
+   "es": "' Reinicia Tlamatini para que cada runtime vuelva a cargar los valores nuevos.'",
+   "n": 1
+  },
+  {
+   "en": "'Saved '",
+   "es": "'Se guardaron '",
+   "n": 1
+  },
+  {
+   "en": "' value(s) and '",
+   "es": "' valor(es) y '",
+   "n": 1
+  },
+  {
+   "en": "' command override(s) across '",
+   "es": "' reemplazo(s) de comando en '",
+   "n": 1
+  },
+  {
+   "en": "'Save'",
+   "es": "'Guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Saving...'",
+   "es": "'Guardando...'",
+   "n": 1
+  },
+  {
+   "en": "'Save failed: '",
+   "es": "'Error al guardar: '",
+   "n": 1
+  },
+  {
+   "en": "'unknown error'",
+   "es": "'error desconocido'",
+   "n": 2
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'<div class=\"akw-notice ok\">Loading...</div>'",
+   "es": "'<div class=\"akw-notice ok\">Cargando...</div>'",
+   "n": 1
+  },
+  {
+   "en": "'Paste only the values you want to add or replace. Blank fields keep what is already configured.'",
+   "es": "'Pega sólo los valores que quieras agregar o reemplazar. Los campos en blanco conservan lo que ya está configurado.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not load Access Keys Wizard: '",
+   "es": "'No se pudo cargar Access Keys Wizard: '",
+   "n": 1
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Save\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Guardar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 2
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Close\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Cerrar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'<br><span>configured</span>'",
+   "es": "'<br><span>configurados</span>'",
+   "n": 1
+  },
+  {
+   "en": "' file(s).'",
+   "es": "' archivo(s).'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'<div class=\"akw-notice '",
+   "motivo": "HTML y clase CSS"
+  },
+  {
+   "en": "'<button type=\"button\" class=\"akw-nav-button\" data-target=\"'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'<label class=\"akw-field-label\" for=\"akw-field-'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'<input class=\"akw-field-input\" id=\"akw-field-'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'\" type=\"'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'autocomplete=\"off\" spellcheck=\"false\" placeholder=\"'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'<section id=\"akw-section-'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'\" class=\"akw-section\">'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'<td><input class=\"akw-command-input\" data-agent-id=\"'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'\" value=\"'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'autocomplete=\"off\" spellcheck=\"false\"></td>'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "'<li><strong>Vault</strong><span>'",
+   "motivo": "término técnico (vault de secretos)"
+  }
+ ]
+}

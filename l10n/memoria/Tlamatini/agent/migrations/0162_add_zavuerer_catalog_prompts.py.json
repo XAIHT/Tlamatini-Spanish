@@ -1,0 +1,106 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0162_add_zavuerer_catalog_prompts.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Tlamatini, please set up **Zavuerer** with me ONE step at a time so I can send a text / \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"WhatsApp / email from a single key - I'm not technical, so go slowly and wait for me after \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"each step. Tick the **Multi-Turn**, **Exec report**, and **step-by-step** checkboxes for this.\\n\\n\"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Step 1: run chat_agent_zavuerer with action='health' to check whether my Zavu key is already \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"configured, and tell me the result in plain words. Then STOP and WAIT for me to reply 'READY'.\\n\\n\"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Step 2: if the health check said my key is missing, tell me to open **Config -> Access Keys \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Wizard**, find the **\\\"Unified Messaging (Zavu)\\\"** section, paste my Zavu key (I can get one \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"at https://www.zavu.dev), click Save, and restart Tlamatini. Then STOP and WAIT for me to reply \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Step 3: once a key is configured, send a tiny test with chat_agent_zavuerer (action='send', \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"channel='auto', to the phone number I give you, text='Zavuerer test from Tlamatini') and tell me \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"in plain words whether it was queued / sent.\\n\\n\"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Use ONLY chat_agent_zavuerer. Do ONE step, then stop and wait for my 'READY' each time. \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Tlamatini, use chat_agent_zavuerer to send a quick **SMS**: set action='send', channel='sms', \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"to='+15555550100' (replace this with your own +country-code mobile number), and \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"text='Hello from Tlamatini - Zavuerer is working!'. Tick Multi-Turn and Exec report. Tell me the \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"channel and delivery status it returns. (If my Zavu key isn't set yet, the agent safely REFUSES \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"and reminds me to add it via Config -> Access Keys Wizard - that's expected.) Use ONLY \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"chat_agent_zavuerer. End with END-RESPONSE.\"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Tlamatini, reach me the smart way with **Zavuerer**: use chat_agent_zavuerer with action='send', \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"channel='auto' (let Zavu's routing pick the best / cheapest channel and fall back automatically), \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"to='+15555550100' (replace with your own number), and text='Your Tlamatini build finished'. Tick \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Multi-Turn and Exec report. Report which channel Zavu actually used and the delivery status. If no \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "\"Zavu key is configured it will safely refuse - that's fine. Use ONLY chat_agent_zavuerer. \"",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "prompts de Zavuerer: 0214 los borra por marcadores en inglés; conservar"
+  }
+ ]
+}

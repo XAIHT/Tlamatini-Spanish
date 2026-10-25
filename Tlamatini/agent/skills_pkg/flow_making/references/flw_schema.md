@@ -1,0 +1,89 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# `.flw` schema (schemaVersion 2) — the shape the canvas loader consumes
+
+> Current release: **[v1.90.0](../../../../../docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+
+Source of truth: `agent/static/agent/js/acp-file-io.js::loadDiagram(data)` and
+`agent/services/flow_spec.py::flow_spec_to_legacy_json`. The `flow-making` skill's
+`scripts/result_to_flw.py` emits exactly this shape.
+
+```json
+{
+  "schemaVersion": 2,
+  "nodes": [
+    {
+      "id": "starter-1",
+      "text": "Starter",
+      "left": "50px",
+      "top": "50px",
+      "agentPurpose": "",
+      "configData": { "target_agents": ["monitor_log_1"] }
+    },
+    {
+      "id": "monitor-log-1",
+      "text": "Monitor-Log",
+      "left": "210px",
+      "top": "50px",
+      "agentPurpose": "",
+      "configData": { "target.logfile_path": "app.log", "target_agents": ["ender_1"] }
+    }
+  ],
+  "connections": [
+    {
+      "sourceIndex": 0,
+      "targetIndex": 1,
+      "sourceId": "starter-1",
+      "targetId": "monitor-log-1",
+      "inputSlot": 0,
+      "outputSlot": 0
+    }
+  ],
+  "artifacts": { "parametrizerMappings": {} }
+}
+```
+
+## Hard rules the loader enforces
+
+- **`nodes[].text` is REQUIRED** — `loadDiagram` calls `nodeData.text.toLowerCase()`
+  unconditionally. It is the visible label AND, lowercased, selects the CSS class
+  and the connection-restoration `switch`. Emit a hyphen-preserving display name
+  (`monitor_log → Monitor-Log`): lowercased it matches both the `monitor-log`
+  classMap key and the `'monitor-log'` switch case. Single-word agents → `Starter`,
+  `Executer`, `Ender`, etc.
+- **`connections[]` are keyed by INTEGER `sourceIndex` / `targetIndex`** (indices
+  into `nodes`). `sourceId` / `targetId` are written for clean round-tripping but
+  the loader ignores them. `inputSlot` / `outputSlot` default to 0; A/B branch
+  outputs (Asker/Forker/Counter) use slots 1/2, OR/AND inputs use slots 1/2.
+- `left` / `top` are CSS pixel strings (`"210px"`). `agentPurpose` is optional
+  (falls back to `getAgentPurposeForName`). `configData` is the agent's
+  `config.yaml` overrides, or `null` to deploy the template defaults.
+- `artifacts.parametrizerMappings` (keyed by node id) carries Parametrizer
+  mapping artifacts; omit/`{}` when unused.
+
+## Connection-field semantics inside `configData`
+
+- `target_agents: []` — downstream agents to START after this one finishes.
+- `source_agents: []` — upstream agents whose logs this one MONITORS.
+- `output_agents: []` — Stopper/Ender/Cleaner canvas wiring (not "start").
+- Special slots: Asker/Forker → `target_agents_a` / `target_agents_b`; Counter →
+  `target_agents_l` / `target_agents_g`; OR/AND → `source_agent_1` / `source_agent_2`.
+- Pool names are cardinal-suffixed with underscores (`executer_1`, `monitor_log_2`).
+
+FlowCreator already produces correct wiring; the converter only re-shapes its
+`flow_result.json` into the above without altering the topology.
+
+## Current installed-agent contract — 2026-09-15
+
+Use `agent/agents/flowcreator/flow_catalog.json` for canonical names, current config schemas, output/input slots, lifecycle flags and structured fields for all 89 installed types. GUI-Manager is design only. After changing a template/contract/reference, run `python scripts/update_flow_catalog.py` and its `--check` mode in the repository. Deployment refreshes runtime snapshots.
+
+FlowCreator selects capabilities before detailed design, validates the generated plan, and uses bounded repair. Declare Ender input connections explicitly; Ender `target_agents` is a kill list. Counter uses L/G slots; source dependencies do not choose a conditional output branch. Generated Parametrizers require valid `_parametrizer_mappings`, one source and one target. Do not maintain a separate hardcoded Parametrizer producer list.
+
+For desktop flows, use explicit physical/screenshot geometry and verified target windows. `input_sent` is input delivery only; errors may be partial and must not be blindly replayed. Read `docs/desktop-input-and-flow-contracts.md` and `docs/agent-coverage.md` for the full contract and verification scope.

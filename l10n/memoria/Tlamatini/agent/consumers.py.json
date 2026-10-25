@@ -1,0 +1,878 @@
+{
+ "archivo": "Tlamatini/agent/consumers.py",
+ "segmentos": [
+  {
+   "en": "\"I'm sorry, Compact mode stays ON.\"",
+   "es": "\"Lo siento, Compact mode sigue ACTIVADO.\"",
+   "n": 1
+  },
+  {
+   "en": "'unknown error'",
+   "es": "'error desconocido'",
+   "n": 2
+  },
+  {
+   "en": "\"I'm sorry, I didn't change Self-modify.\"",
+   "es": "\"Lo siento, no cambié Self-modify.\"",
+   "n": 1
+  },
+  {
+   "en": "f\" and {len(names) - 15} more\"",
+   "es": "f\" y {len(names) - 15} más\"",
+   "n": 1
+  },
+  {
+   "en": "f\"I've saved your {label} activation: {len(names)} of {total} on\"",
+   "es": "f\"Guardé la activación de tus {label}: {len(names)} de {total} activados\"",
+   "n": 1
+  },
+  {
+   "en": "\"Error: Directory is outside the allowed paths.\"",
+   "es": "\"Error: el directorio está fuera de los paths permitidos.\"",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"session restored\")",
+   "es": "_context_gauge_refresh(\"sesión restaurada\")",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"context loaded\")",
+   "es": "_context_gauge_refresh(\"contexto cargado\")",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"Self-modify changed\")",
+   "es": "_context_gauge_refresh(\"cambió Self-modify\")",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"Configure rows changed\")",
+   "es": "_context_gauge_refresh(\"cambiaron las filas de Configurar\")",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"compact mode \" + (\"on\" if enabled else \"off\")",
+   "es": "_context_gauge_refresh(\"Compact mode \" + (\"activado\" if enabled else \"desactivado\")",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"self-modify \" + (\"on\" if enabled else \"off\")",
+   "es": "_context_gauge_refresh(\"Self-modify \" + (\"activado\" if enabled else \"desactivado\")",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(f\"{kind} rows changed\")",
+   "es": "_context_gauge_refresh(f\"cambiaron las filas de {kind}\")",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"answer finished\", after_answer=True)",
+   "es": "_context_gauge_refresh(\"respuesta terminada\", after_answer=True)",
+   "n": 1
+  },
+  {
+   "en": "_context_gauge_refresh(\"message dropped\")",
+   "es": "_context_gauge_refresh(\"mensaje descartado\")",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"--- WebSocket connect initiated.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"!!! Rejecting anonymous WebSocket connection.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Joining room: {self.room_group_name}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- WebSocket connection accepted and successful.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! CONNECTION FAILED: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Reusing existing RAG chain from global_state for user {user_id}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Tlamatini'",
+   "motivo": "nombre de usuario del bot (el JS compara data.username === 'Tlamatini')"
+  },
+  {
+   "en": "\"--- Session restored message broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- MCPs re-established on session restore\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Tools re-established on session restore\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Agents re-established on session restore\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Skills re-established on session restore\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"session restored\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "f\"--- Restoring session state: {session_state.context_type} - {session_state.context_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Session with context restored message broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Session restored notification sent to client (loading={bool(loading)}).\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error sending session restored notification: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Starting RAG chain setup in background thread.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- MCPs appended:\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\tMCP: {mcp['mcpName']}, {mcp['mcpDescription']}, {mcp['mcpContent']}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Tools appended:\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\tTool: {tool['toolName']}, {tool['toolDescription']}, {tool['toolContent']}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Agents appended:\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\tAgent: {agent['agentName']}, {agent['agentDescription']}, {agent['agentContent']}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Skills established: {len(skills)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Setup cancelled before starting ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Bot loading message broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Setup cancelled before LLM creation ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Setup cancelled after LLM creation - discarding result ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"!!! RAG chain setup failed. Please check the config.json file and Ollama is running.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Bot error message broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- RAG chain setup complete.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- RAG chain stored in global_state for user {user_id}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Bot ready message broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"agent ready\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "f\"!!! ERROR during RAG chain setup: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Starting Contextual RAG chain setup in background thread.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Contextual setup cancelled before starting ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Bot loading context broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [EMBED-MEM] Warning sent: model={_guard_warning['model']} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"predicted={_guard_warning['predicted_vram_bytes']/1024/1024:.0f} MiB \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [EMBED-MEM] Pre-flight check skipped (fail-open): {_guard_exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Contextual setup cancelled before LLM creation ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Contextual setup cancelled after LLM creation - discarding result ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"!!! Contextual RAG chain setup failed. Please check the config.json file and Ollama is running.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Bot error contextual_rag_chain message broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Contextual RAG chain stored in global_state for user {user_id}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"context loaded\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "f\"!!! ERROR during Contextual RAG chain setup: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in heartbeat: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Sending establishment of mcp: {mcp_name}...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in mcp_establishment: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Sending establishment of tool: {tool_name}...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in tool_establishment: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Sending establishment of agent: {agent_name}...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in agent_establishment: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in skill_establishment: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [COMPACT] this tab is not subscribed to the switch ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [COMPACT] switch state not sent ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [COMPACT] Configure rows not re-sent ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Self-modify changed\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "\"Configure rows changed\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "f\"--- [COMPACT] switch change not forwarded ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"user {getattr(user, 'username', '') or '?'}\"",
+   "motivo": "motivo interno (log)"
+  },
+  {
+   "en": "\"compact mode \"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "f\"--- [TOGGLES] saved rows not applied at once ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{kind} rows changed\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "\"--- WebSocket disconnected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [AskExecs] browser gone while a prompt was open — denying and freeing the worker ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [AskExecs] disconnect teardown skipped: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT] gauge sink teardown skipped: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"!!! ERROR: rag_chain is not initialized yet. Please wait for the agent to finish loading.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- The message is being procesed by the LLM\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT] failed to emit gauge frame: {_ge}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [SelfHealing] failed to emit status: {_se}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [AskExecs] failed to emit permission request: {emit_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [AskExecs] broker registered for user {broker_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] dropping the cancelled run's late answer — a NEWER \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"run is already in flight ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] this answer came from a CUT request ({_cut}) - \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"the CONTEXT-WINDOW warning is shown above it\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] cut warning skipped ({_cut_err})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [Tier-2 reaper] sweep raised (non-fatal): {sweep_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! ERROR in queue_llm_retrieval method: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [AskExecs] broker unregistered for user {broker_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"answer finished\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "f\"--- [CONTEXT] connection gauge sink not registered ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REST] refresh not scheduled ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in context_gauge: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Error in exec_permission_request: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [Tier-2 reaper] reap_orphans raised: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [Tier-2 reaper] killed={result.killed_count} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"tier1_survivors={len(tier1_survivors or [])} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [Tier-2 reaper] notified user about {len(survivors_list)} surviving orphan(s)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [Tier-2 reaper] failed to broadcast survivor list: {send_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\">>> [RECEIVE] Got message: {text_data[:100]}...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\">>> [RECEIVE] Message type: {type}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received heartbeat message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Referenced Rephrase:'",
+   "motivo": "centinela de protocolo"
+  },
+  {
+   "en": "\"--- Received rephrased-question message from client. It will be ignored...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- The message(rephrased question) is: {message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"!!! User not authenticated. Message rejected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- exec-permission-response: request_id={request_id} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"decision={decision} resolved={resolved}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'page request'",
+   "motivo": "motivo interno (log)"
+  },
+  {
+   "en": "f\"--- set-ask-execs-runtime: enabled={desired} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"auto_proceed={not desired} applied={applied}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [PDF-CONTEXT] refused for user {user.pk}: {error}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'!!! PDF context setup failed: {error}'",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received set-canvas-as-context message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- The message(filename) is: {message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- The context_files_path is: {context_files_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Rebuilding contextual RAG chain....\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Session state saved: file - {target_context_file}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received unset-canvas-as-context message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"context cleared\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "\"--- Received set-directory-as-context message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- The message(directory) is: {message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- The resolved context_path is: {context_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Bot message broadcast to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Session state saved: directory - {context_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received set-file-as-context message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received cancel-current message from client. AGGRESSIVELY cancelling LLM...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CANCEL] Run latched cancelled for {_cancel_key} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] self-healing status emitter revoked ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Bot message broadcast to room ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Using abort_connection for AGGRESSIVE teardown ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Falling back to graceful close ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Connection destruction confirmed to user ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Rebuilding notification sent ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Legacy boolean cleared (epoch latch KEPT) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Session state cleared ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CANCEL] Cleared global_state cache for user {user_id} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CANCEL] Scheduling RAG chain rebuild (awaiting completion) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"cancelled, agent rebuilt\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "\"--- [CANCEL] Agent rebuild completed, user notified ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! ERROR while requesting cancellation: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received reconnect-llm-agent message from client. Attempting to reconnect LLM...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Cleared global_state cache for user {user_id}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- LLM reconnected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- LLM reconnected message broadcasted to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! ERROR while requesting reconnection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received clean-history-and-reconnect message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- AgentMessage records deleted for user {user.id}.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"history cleared\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "\"--- LLM reconnected after history clean.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! ERROR while cleaning history: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received clear-context message from client. Attempting to reconnect LLM...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Session state cleared.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- LLM context cleaned and reconnected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- LLM context cleaned and reconnected message broadcasted to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! ERROR while requesting context clean and reconnection: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received cancel-all message from client. Attempting to cancel LLM...\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- LLM cancelled.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received save-files-from-db message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Wanted to save the following files:\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! ERROR while saving files from DB: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received enable-llm-internet-access message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received disable-llm-internet-access message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received view-context-dir-in-canvas message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Received set-file-omissions message from client.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Error omissions are empty. Message rejected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Received set-mcps message from client, message: {message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Error mcps are empty. Message rejected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Received set-tools message from client, message: {message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Error tools are empty. Message rejected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- End of tools list.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Skipping malformed tool toggle payload: {tool}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Skipping invalid tool name in payload: {descAndContent[0]}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Tools\"",
+   "motivo": "vocabulario del producto (Tools / Agents)"
+  },
+  {
+   "en": "f\"--- Received set-agents message from client, message: {message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Error agents are empty. Message rejected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- End of agents list.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Skipping malformed agent toggle payload: {agent}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Skipping invalid agent name in payload: {descAndContent[0]}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Agents\"",
+   "motivo": "vocabulario del producto (Tools / Agents)"
+  },
+  {
+   "en": "f\"--- Received set-skills message from client, message: {message}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Error skills are empty. Message rejected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Skipping malformed skill toggle payload: {raw}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Skipping empty skill name in payload: {raw}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Bot message broadcast to room. Touched {touched} skill rows.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- User message saved to DB.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- User question broadcasted to room.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"!!! RAG chain not ready. Message rejected.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Self-heal: triggered rag_chain rebuild after not-ready reject.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Self-heal rebuild trigger failed (non-fatal): {_heal_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Message parsed: '{message}' from user '{user.username}' **** to be sent to LLM\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- User message saved to DB (id={user_message_id}).\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- User question is now being processed by the LLM.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"!!! ERROR in receive method: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Sending message to WebSocket: '{message}' from '{username}'\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [DROP] message id={message_id} removed from user {user.id}'s \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"history (rows {deleted}); the next request will not see it.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"message dropped\"",
+   "motivo": "motivo del refresco del medidor (log; context_baseline.py lo envuelve en su etiqueta técnica)"
+  },
+  {
+   "en": "f\"--- [DROP] message id={message_id} was not in user {user.id}'s history.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'referenced rephrase:'",
+   "motivo": "centinela de protocolo"
+  },
+  {
+   "en": "f\"No LLMProgram named '{programName}'\"",
+   "motivo": "mensaje interno de excepción"
+  },
+  {
+   "en": "f\"--- save_skill: no Skill row named '{name}' (race with boot_skills?); ignoring\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- save_skill failed for '{name}': {e}\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

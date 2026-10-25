@@ -1,0 +1,25 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/checkbox_bulk_toggle.js",
+ "segmentos": [
+  {
+   "en": "'Tip: select several labels with the mouse and press '",
+   "es": "'Consejo: selecciona varias etiquetas con el mouse y presiona '",
+   "n": 1
+  },
+  {
+   "en": "'SPACE to check / uncheck all of them at once.'",
+   "es": "'la barra espaciadora para marcarlas o desmarcarlas todas a la vez.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'\"] input[type=\"checkbox\"]'",
+   "motivo": "selector CSS"
+  },
+  {
+   "en": "'--- [BULK-TOGGLE] '",
+   "motivo": "texto de log (console.log)"
+  }
+ ]
+}

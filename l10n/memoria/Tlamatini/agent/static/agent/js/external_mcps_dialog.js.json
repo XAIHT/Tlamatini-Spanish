@@ -1,0 +1,251 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/external_mcps_dialog.js",
+ "segmentos": [
+  {
+   "en": "'Select up to '",
+   "es": "'Selecciona hasta '",
+   "n": 1
+  },
+  {
+   "en": "' services — active ones stay pinned at the top. Search filters the'",
+   "es": "' servicios: los activos se quedan fijos arriba. La búsqueda filtra el'",
+   "n": 1
+  },
+  {
+   "en": "' catalog; inactive services stay catalog-only.'",
+   "es": "' catálogo; los servicios inactivos se quedan sólo en el catálogo.'",
+   "n": 1
+  },
+  {
+   "en": "'No match.'",
+   "es": "'No hay coincidencias.'",
+   "n": 1
+  },
+  {
+   "en": "'Active — sent with your prompt'",
+   "es": "'Activos: se envían con tu prompt'",
+   "n": 1
+  },
+  {
+   "en": "'Catalog — inactive'",
+   "es": "'Catálogo: inactivos'",
+   "n": 1
+  },
+  {
+   "en": "'configured server'",
+   "es": "'servidor configurado'",
+   "n": 1
+  },
+  {
+   "en": "'Remove '",
+   "es": "'Quitar '",
+   "n": 1
+  },
+  {
+   "en": "' from catalog'",
+   "es": "' del catálogo'",
+   "n": 1
+  },
+  {
+   "en": "'Showing '",
+   "es": "'Se muestran '",
+   "n": 1
+  },
+  {
+   "en": "' matches. Search to narrow the catalog.'",
+   "es": "' coincidencias. Busca para acotar el catálogo.'",
+   "n": 1
+  },
+  {
+   "en": "'No services active yet.</td></tr>'",
+   "es": "'Todavía no hay servicios activos.</td></tr>'",
+   "n": 1
+  },
+  {
+   "en": "'Missing: '",
+   "es": "'Faltan: '",
+   "n": 1
+  },
+  {
+   "en": "' — Tlamatini installs these herself, no admin needed.'",
+   "es": "' — Tlamatini los instala ella misma, sin permisos de administrador.'",
+   "n": 1
+  },
+  {
+   "en": "'Package managers ready — npx / uvx servers can be activated.'",
+   "es": "'Gestores de paquetes listos: ya se pueden activar los servidores npx / uvx.'",
+   "n": 1
+  },
+  {
+   "en": "' is not installed on this machine'",
+   "es": "' no está instalado en esta computadora'",
+   "n": 1
+  },
+  {
+   "en": "'Installing…'",
+   "es": "'Instalando…'",
+   "n": 1
+  },
+  {
+   "en": "'Install now'",
+   "es": "'Instalar ahora'",
+   "n": 1
+  },
+  {
+   "en": "'Reinstall'",
+   "es": "'Reinstalar'",
+   "n": 1
+  },
+  {
+   "en": "'Downloading Node / uv into Tlamatini’s private runtime…'",
+   "es": "'Descargando Node / uv en el runtime privado de Tlamatini…'",
+   "n": 1
+  },
+  {
+   "en": "'Still missing: '",
+   "es": "'Todavía faltan: '",
+   "n": 1
+  },
+  {
+   "en": "' — check the network.'",
+   "es": "' — revisa la red.'",
+   "n": 1
+  },
+  {
+   "en": "'Runtimes installed — npx / uvx servers can be activated now.'",
+   "es": "'Runtimes instalados: ya puedes activar los servidores npx / uvx.'",
+   "n": 1
+  },
+  {
+   "en": "'Runtime install failed: '",
+   "es": "'Error al instalar los runtimes: '",
+   "n": 1
+  },
+  {
+   "en": "'You can run '",
+   "es": "'Puedes ejecutar '",
+   "n": 1
+  },
+  {
+   "en": "' at once — switch one off first.'",
+   "es": "' a la vez — primero desactiva uno.'",
+   "n": 1
+  },
+  {
+   "en": "'Remove \"'",
+   "es": "'¿Quieres quitar \"'",
+   "n": 1
+  },
+  {
+   "en": "'\" from the catalog?'",
+   "es": "'\" del catálogo?'",
+   "n": 1
+  },
+  {
+   "en": "'This deletes the saved server config. You can add it back any time by '",
+   "es": "'Esto borra la configuración guardada del servidor. Puedes volver a agregarlo cuando quieras '",
+   "n": 1
+  },
+  {
+   "en": "'dropping its .json onto the page again.'",
+   "es": "'soltando otra vez su .json en la página.'",
+   "n": 1
+  },
+  {
+   "en": "'Remove MCP server'",
+   "es": "'Quitar servidor MCP'",
+   "n": 1
+  },
+  {
+   "en": "'Removed \"'",
+   "es": "'Se quitó \"'",
+   "n": 1
+  },
+  {
+   "en": "'\" from the catalog.'",
+   "es": "'\" del catálogo.'",
+   "n": 1
+  },
+  {
+   "en": "'Remove failed: '",
+   "es": "'Error al quitar: '",
+   "n": 2
+  },
+  {
+   "en": "'unknown error'",
+   "es": "'error desconocido'",
+   "n": 2
+  },
+  {
+   "en": "'Saving...'",
+   "es": "'Guardando...'",
+   "n": 1
+  },
+  {
+   "en": "'Continue'",
+   "es": "'Continuar'",
+   "n": 1
+  },
+  {
+   "en": "'Loading...'",
+   "es": "'Cargando...'",
+   "n": 1
+  },
+  {
+   "en": "'Load failed: '",
+   "es": "'Error al cargar: '",
+   "n": 1
+  },
+  {
+   "en": "'Save failed: '",
+   "es": "'Error al guardar: '",
+   "n": 2
+  },
+  {
+   "en": "'<button type=\"button\" class=\"emx-del\" title=\"Remove from catalog\">'",
+   "es": "'<button type=\"button\" class=\"emx-del\" title=\"Quitar del catálogo\">'",
+   "n": 1
+  },
+  {
+   "en": "' of '",
+   "es": "' de '",
+   "n": 1
+  },
+  {
+   "en": "' / ' + maxActive + ' active'",
+   "es": "' / ' + maxActive + ' activos'",
+   "n": 1
+  },
+  {
+   "en": "textContent = s.transport || 'unknown'",
+   "es": "textContent = s.transport || 'desconocido'",
+   "n": 2
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'0 tools'",
+   "motivo": "vocabulario del producto (tools)"
+  },
+  {
+   "en": "'emx-group emx-group-'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'checkbox'",
+   "motivo": "valor del atributo role"
+  },
+  {
+   "en": "'<input type=\"checkbox\" class=\"emx-cb\"'",
+   "motivo": "HTML (atributos)"
+  },
+  {
+   "en": "' active'",
+   "motivo": "no se traduce suelto: se traduce con su contexto en «' / ' + maxActive + ' active'» (la palabra suelta 'active' es valor de máquina en otros archivos)"
+  },
+  {
+   "en": "'unknown'",
+   "motivo": "no se traduce suelto: se traduce con su contexto en «textContent = s.transport || 'unknown'» (la palabra suelta 'unknown' es valor de máquina en otros archivos)"
+  }
+ ]
+}

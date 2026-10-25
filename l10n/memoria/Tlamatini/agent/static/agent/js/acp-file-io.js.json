@@ -1,0 +1,142 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-file-io.js",
+ "segmentos": [
+  {
+   "en": "\"Enter filename to save:\"",
+   "es": "\"Escribe el nombre del archivo para guardar:\"",
+   "n": 1
+  },
+  {
+   "en": "'The diagram could not be saved because credential protection is unavailable. Check your connection and sign-in, then try Save again.'",
+   "es": "'No se pudo guardar el diagrama porque la protección de credenciales no está disponible. Revisa tu conexión y tu inicio de sesión, y vuelve a intentar guardarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Choose a .flw agent flow.'",
+   "es": "'Elige un flow de agents .flw.'",
+   "n": 1
+  },
+  {
+   "en": "'The flow file must be no larger than 5 MiB.'",
+   "es": "'El archivo del flow no puede pesar más de 5 MiB.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not open diagram: '",
+   "es": "'No se pudo abrir el diagrama: '",
+   "n": 2
+  },
+  {
+   "en": "'Stop the running flow (or wait for the current edit to finish) before loading another one.'",
+   "es": "'Detén el flow en ejecución (o espera a que termine la edición actual) antes de cargar otro.'",
+   "n": 1
+  },
+  {
+   "en": "'Loaded '",
+   "es": "'Se cargó '",
+   "n": 1
+  },
+  {
+   "en": "'; the canvas holds one flow, so the others were not loaded.'",
+   "es": "'; el canvas admite un solo flow, así que los demás no se cargaron.'",
+   "n": 1
+  },
+  {
+   "en": "'Agent flow (.flw) \\u2192 loads into this canvas'",
+   "es": "'Flow de agents (.flw) \\u2192 se carga en este canvas'",
+   "n": 1
+  },
+  {
+   "en": "'Close this diagram?'",
+   "es": "'¿Quieres cerrar este diagrama?'",
+   "n": 1
+  },
+  {
+   "en": "'You have unsaved changes. Closing now discards them.'",
+   "es": "'Tienes cambios sin guardar. Si cierras ahora, se van a descartar.'",
+   "n": 1
+  },
+  {
+   "en": "'Unsaved changes'",
+   "es": "'Cambios sin guardar'",
+   "n": 2
+  },
+  {
+   "en": "'Failed to clear pool directory: '",
+   "es": "'Error al limpiar el directorio del pool: '",
+   "n": 1
+  },
+  {
+   "en": "'Error during close operation: '",
+   "es": "'Error al cerrar: '",
+   "n": 1
+  },
+  {
+   "en": "'Stop the flow and finish the current operation before opening a diagram.'",
+   "es": "'Detén el flow y termina la operación actual antes de abrir un diagrama.'",
+   "n": 1
+  },
+  {
+   "en": "'Your session expired. Sign in again before opening a diagram.'",
+   "es": "'Tu sesión expiró. Vuelve a iniciar sesión antes de abrir un diagrama.'",
+   "n": 1
+  },
+  {
+   "en": "'Invalid .flw file.'",
+   "es": "'El archivo .flw no es válido.'",
+   "n": 1
+  },
+  {
+   "en": "'Replace this diagram?'",
+   "es": "'¿Quieres reemplazar este diagrama?'",
+   "n": 1
+  },
+  {
+   "en": "'Unsaved changes will be replaced. Save the diagram first to keep them.'",
+   "es": "'Se van a reemplazar los cambios sin guardar. Guarda primero el diagrama para conservarlos.'",
+   "n": 1
+  },
+  {
+   "en": "'The flow is busy. Try opening the file again after it stops.'",
+   "es": "'El flow está ocupado. Vuelve a abrir el archivo cuando se detenga.'",
+   "n": 1
+  },
+  {
+   "en": "'The previous flow could not be closed. Your diagram was kept.'",
+   "es": "'No se pudo cerrar el flow anterior. Tu diagrama se conservó.'",
+   "n": 1
+  },
+  {
+   "en": "'Only one FlowCreator agent is allowed per flow. Extra instances have been removed from the loaded diagram.'",
+   "es": "'Sólo se permite un agent FlowCreator por flow. Se quitaron las instancias de más del diagrama cargado.'",
+   "n": 1
+  },
+  {
+   "en": "'Only one FlowHypervisor agent is allowed per flow. Extra instances have been removed from the loaded diagram.'",
+   "es": "'Sólo se permite un agent FlowHypervisor por flow. Se quitaron las instancias de más del diagrama cargado.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'FlowCreator'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'FlowHypervisor'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'target'",
+   "motivo": "valor de máquina (argumento de conexión)"
+  },
+  {
+   "en": "'add'",
+   "motivo": "valor de máquina (argumento de conexión)"
+  },
+  {
+   "en": "'source'",
+   "motivo": "valor de máquina (argumento de conexión)"
+  }
+ ]
+}

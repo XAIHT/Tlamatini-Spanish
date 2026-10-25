@@ -1,0 +1,21 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-connection-status.js",
+ "segmentos": [
+  {
+   "en": "'Backend connection lost. The Tlamatini server is not responding — '",
+   "es": "'Se perdió la conexión con el backend. El servidor de Tlamatini no responde — '",
+   "n": 1
+  },
+  {
+   "en": "'restart it and refresh this page before continuing.'",
+   "es": "'reinícialo y actualiza esta página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'The backend is back. You can keep working.'",
+   "es": "'El backend está de vuelta. Puedes seguir trabajando.'",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

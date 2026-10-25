@@ -1,0 +1,254 @@
+{
+ "archivo": "Tlamatini/agent/compact_mode.py",
+ "segmentos": [
+  {
+   "en": "f\"I'm sorry, Compact mode stays ON: {snap.get('model') or 'this model'} reads only \"",
+   "es": "f\"Lo siento, Compact mode sigue ACTIVADO: {snap.get('model') or 'this model'} lee sólo \"",
+   "n": 1
+  },
+  {
+   "en": "f\"{int(snap.get('window_tokens') or 0):,} tokens, and everything activated \"",
+   "es": "f\"{int(snap.get('window_tokens') or 0):,} tokens y todo lo activado \"",
+   "n": 1
+  },
+  {
+   "en": "f\"needs ~{int(snap.get('everything_tokens') or 0):,}. Choose a larger model \"",
+   "es": "f\"necesita ~{int(snap.get('everything_tokens') or 0):,}. Elige un modelo más grande \"",
+   "n": 1
+  },
+  {
+   "en": "\"for me in Config > Models and I can switch it off.\"",
+   "es": "\"para mí en Config > Modelos y podré desactivarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I'm sorry, Self-modify is not available: this build of me was made without \"",
+   "es": "\"Lo siento, Self-modify no está disponible: mi build se hizo sin \"",
+   "n": 1
+  },
+  {
+   "en": "\"--self-modify, so I carry neither my source code nor my self-knowledge.\"",
+   "es": "\"--self-modify, así que no traigo ni mi código fuente ni mi autoconocimiento.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"I'm sorry, Self-modify stays OFF: {snap.get('model') or 'this model'} reads only \"",
+   "es": "f\"Lo siento, Self-modify sigue DESACTIVADO: {snap.get('model') or 'this model'} lee sólo \"",
+   "n": 1
+  },
+  {
+   "en": "f\"{int(snap.get('window_tokens') or 0):,} tokens, and your request with \"",
+   "es": "f\"{int(snap.get('window_tokens') or 0):,} tokens, y tu solicitud con \"",
+   "n": 1
+  },
+  {
+   "en": "f\"my self-knowledge (~{int(snap.get('self_modify_tokens') or 0):,} \"",
+   "es": "f\"mi autoconocimiento (~{int(snap.get('self_modify_tokens') or 0):,} \"",
+   "n": 1
+  },
+  {
+   "en": "f\"tokens) needs ~{int(snap.get('self_modify_need_tokens') or 0):,}. Choose a \"",
+   "es": "f\"tokens) necesita ~{int(snap.get('self_modify_need_tokens') or 0):,}. Elige un \"",
+   "n": 1
+  },
+  {
+   "en": "\"larger model for me in Config > Models, or untick some agents.\"",
+   "es": "\"modelo más grande para mí en Config > Modelos o desmarca algunos agents.\"",
+   "n": 1
+  },
+  {
+   "en": "\"the model\"",
+   "es": "\"el modelo\"",
+   "n": 2
+  },
+  {
+   "en": "f\"companions {', '.join(COMPANION_TOOLS)} = true\"",
+   "es": "f\"tools de apoyo {', '.join(COMPANION_TOOLS)} = true\"",
+   "n": 1
+  },
+  {
+   "en": "f\" of the ~{sent:,} tokens you sent me\"",
+   "es": "f\" de los ~{sent:,} tokens que me enviaste\"",
+   "n": 1
+  },
+  {
+   "en": "'<div class=\"tlm-cut-warning\" role=\"alert\">&#9888;&#65039; <b>CONTEXT-WINDOW exceeded</b> - '",
+   "es": "'<div class=\"tlm-cut-warning\" role=\"alert\">&#9888;&#65039; <b>Se excedió mi CONTEXT-WINDOW</b> - '",
+   "n": 1
+  },
+  {
+   "en": "f\"with {model} I could read only {window:,} tokens{sent_text}, so part of your request was \"",
+   "es": "f\"con {model} pude leer sólo {window:,} tokens{sent_text}, así que se cortó parte de tu solicitud \"",
+   "n": 1
+  },
+  {
+   "en": "\"cut and my answer may be incomplete or wrong. Please untick some agents or tools in \"",
+   "es": "\"y mi respuesta puede estar incompleta o equivocada. Por favor, desmarca algunos agents o tools en \"",
+   "n": 1
+  },
+  {
+   "en": "\"Config &gt; Configure Agents / Configure MCPs, shorten your request, or choose a larger \"",
+   "es": "\"Config &gt; Configurar Agents / Configurar MCPs, acorta tu solicitud o elige un modelo \"",
+   "n": 1
+  },
+  {
+   "en": "\"model for me in Config &gt; Models.</div>\\n\"",
+   "es": "\"más grande para mí en Config &gt; Modelos.</div>\\n\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"System-Metrics\"",
+   "motivo": "nombre de MCP (valor que se compara)"
+  },
+  {
+   "en": "\"Files-Search\"",
+   "motivo": "nombre de MCP (valor que se compara)"
+  },
+  {
+   "en": "f\"--- [TOGGLES] Configure rows applied at once ({reason or 'saved'}) - version \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{version}; the next request uses them, no restart needed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [TOGGLES] rows not applied ({exc}) - they apply on the next reconnect\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [COMPACT] External MCP selection not changed ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Compact mode ON\"",
+   "motivo": "motivo interno (sólo log)"
+  },
+  {
+   "en": "f\"--- [COMPACT] Compact mode ON ({'automatic' if auto else 'by the user'}: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{reason or 'no reason given'}) - every MCP, tool, agent and skill row is unticked \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"except System-Metrics, Files-Search and Current-Time; External MCPs paused \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({len(saved_external)} saved: {saved_external})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [COMPACT] could not switch Compact mode ON ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Compact mode OFF\"",
+   "motivo": "motivo interno (sólo log)"
+  },
+  {
+   "en": "f\"--- [COMPACT] Compact mode OFF ({reason or 'by the user'}) - every MCP, tool, \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"agent and skill row is ticked again; External MCPs restored: {saved_external}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [COMPACT] could not switch Compact mode OFF ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [COMPACT] {model or 'the model'}: window {int(window_tokens or 0):,} tokens; \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"everything activated needs ~{int(everything_tokens or 0):,} -> \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"STRICT - Compact mode is locked ON\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"it fits - Compact mode can be ticked or unticked freely\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{model or 'this model'} reads only {int(window_tokens or 0):,} tokens and everything \"",
+   "motivo": "motivo interno (log y base de datos; la página no lo muestra)"
+  },
+  {
+   "en": "f\"activated needs ~{int(everything_tokens or 0):,}\"",
+   "motivo": "motivo interno (log y base de datos; la página no lo muestra)"
+  },
+  {
+   "en": "f\"--- [COMPACT] capacity not noted ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [SELF-MODIFY] Self-modify {'ON' if enabled else 'OFF'} ({reason or 'by the user'}) - \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Tlamatini's self-knowledge rides along with every request that can hold it\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Tlamatini's self-knowledge is no longer sent\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [SELF-MODIFY] could not switch Self-modify {'ON' if enabled else 'OFF'} ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [SELF-MODIFY] {model}: window {window:,} tokens; the self-knowledge adds \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"~{int(tokens or 0):,} (request with it ~{int(need_tokens or 0):,}) -> \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"it fits - Self-modify can be ticked or unticked freely\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"it does NOT fit - Self-modify is locked OFF\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [SELF-MODIFY] verdict not noted ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{descr} -> agent {by_tool[descr]} = {content}\"",
+   "motivo": "lectura técnica en el chat (nombre -> agent = valor)"
+  },
+  {
+   "en": "f\"{descr} -> agent {direct_by_tool[descr]} = true\"",
+   "motivo": "lectura técnica en el chat (nombre -> agent = valor)"
+  },
+  {
+   "en": "f\"--- [TOGGLES] chained rows: {'; '.join(linked)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [TOGGLES] rows not chained ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{kind} rows saved\"",
+   "motivo": "motivo interno (sólo log)"
+  },
+  {
+   "en": "f\"--- [COMPACT] tabs not notified ({exc})\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

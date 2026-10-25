@@ -1,0 +1,185 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/contacts_dialog.js",
+ "segmentos": [
+  {
+   "en": "'1 contact. Click one to edit, or press “New”.'",
+   "es": "'1 contacto. Haz clic en uno para editarlo o presiona “Nuevo”.'",
+   "n": 1
+  },
+  {
+   "en": "' contacts. Click one to edit, or press “New”.'",
+   "es": "' contactos. Haz clic en uno para editarlo o presiona “Nuevo”.'",
+   "n": 1
+  },
+  {
+   "en": "'No contacts yet. Press “New” to add one.'",
+   "es": "'Todavía no hay contactos. Presiona “Nuevo” para agregar uno.'",
+   "n": 1
+  },
+  {
+   "en": "'No match.'",
+   "es": "'No hay coincidencias.'",
+   "n": 1
+  },
+  {
+   "en": "'(no name)'",
+   "es": "'(sin nombre)'",
+   "n": 2
+  },
+  {
+   "en": "'no channels'",
+   "es": "'sin canales'",
+   "n": 1
+  },
+  {
+   "en": "'Delete '",
+   "es": "'Eliminar '",
+   "n": 1
+  },
+  {
+   "en": "'Editing: '",
+   "es": "'Editando: '",
+   "n": 2
+  },
+  {
+   "en": "'New contact'",
+   "es": "'Contacto nuevo'",
+   "n": 1
+  },
+  {
+   "en": "'A name is required.'",
+   "es": "'El nombre es obligatorio.'",
+   "n": 1
+  },
+  {
+   "en": "'Applied “'",
+   "es": "'Se aplicó “'",
+   "n": 1
+  },
+  {
+   "en": "'” — press Save to persist.'",
+   "es": "'” — presiona Guardar para conservar el cambio.'",
+   "n": 2
+  },
+  {
+   "en": "'this contact'",
+   "es": "'este contacto'",
+   "n": 1
+  },
+  {
+   "en": "'Delete “'",
+   "es": "'¿Quieres eliminar “'",
+   "n": 1
+  },
+  {
+   "en": "'” from the contacts book?'",
+   "es": "'” de la libreta de contactos?'",
+   "n": 1
+  },
+  {
+   "en": "'It is removed when you press Save.'",
+   "es": "'Se elimina cuando presionas Guardar.'",
+   "n": 1
+  },
+  {
+   "en": "'Delete contact'",
+   "es": "'Eliminar contacto'",
+   "n": 1
+  },
+  {
+   "en": "'Removed “'",
+   "es": "'Se quitó “'",
+   "n": 1
+  },
+  {
+   "en": "'Saving...'",
+   "es": "'Guardando...'",
+   "n": 1
+  },
+  {
+   "en": "'Save'",
+   "es": "'Guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Discard unsaved contact changes?'",
+   "es": "'¿Quieres descartar los cambios sin guardar de los contactos?'",
+   "n": 1
+  },
+  {
+   "en": "'The contacts you added or edited will not be saved.'",
+   "es": "'Los contactos que agregaste o editaste no se van a guardar.'",
+   "n": 1
+  },
+  {
+   "en": "'Unsaved changes'",
+   "es": "'Cambios sin guardar'",
+   "n": 1
+  },
+  {
+   "en": "'Saved '",
+   "es": "'Se guardó la libreta: '",
+   "n": 1
+  },
+  {
+   "en": "'Save failed: '",
+   "es": "'Error al guardar: '",
+   "n": 2
+  },
+  {
+   "en": "'unknown error'",
+   "es": "'error desconocido'",
+   "n": 2
+  },
+  {
+   "en": "'Pick a contact, or press “New”'",
+   "es": "'Elige un contacto o presiona “Nuevo”'",
+   "n": 1
+  },
+  {
+   "en": "'Loading...'",
+   "es": "'Cargando...'",
+   "n": 1
+  },
+  {
+   "en": "'Load failed: '",
+   "es": "'Error al cargar: '",
+   "n": 2
+  },
+  {
+   "en": "'<button type=\"button\" class=\"ctb-del\" title=\"Delete contact\">'",
+   "es": "'<button type=\"button\" class=\"ctb-del\" title=\"Eliminar contacto\">'",
+   "n": 1
+  },
+  {
+   "en": "'aka '",
+   "es": "'alias '",
+   "n": 1
+  },
+  {
+   "en": "'contact'",
+   "es": "'contacto'",
+   "n": 1
+  },
+  {
+   "en": "' contact.'",
+   "es": "' contacto.'",
+   "n": 1
+  },
+  {
+   "en": "' contacts.'",
+   "es": "' contactos.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'button'",
+   "motivo": "valor del atributo role"
+  },
+  {
+   "en": "'button:not([disabled]), input:not([disabled]), textarea:not([disabled]),'",
+   "motivo": "selector CSS"
+  }
+ ]
+}

@@ -1,0 +1,21 @@
+{
+ "archivo": "Tlamatini/agent/flow_file_views.py",
+ "segmentos": [
+  {
+   "en": "'Choose a flow file.'",
+   "es": "'Elige un archivo de flow.'",
+   "n": 1
+  },
+  {
+   "en": "'The flow file must be no larger than 5 MiB.'",
+   "es": "'El archivo del flow no puede pesar más de 5 MiB.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Local requests only.'",
+   "motivo": "respuesta para la sonda local de instancia (flow_file_open); nadie la muestra"
+  }
+ ]
+}

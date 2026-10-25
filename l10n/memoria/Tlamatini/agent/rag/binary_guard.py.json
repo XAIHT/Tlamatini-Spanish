@@ -1,0 +1,238 @@
+{
+ "archivo": "Tlamatini/agent/rag/binary_guard.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'DOS/PE executable'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'ELF executable'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Java class / Mach-O fat binary'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Mach-O 32-bit'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Mach-O 64-bit'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'ZIP container'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'ZIP container (empty)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'ZIP container (spanned)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'RAR archive'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'7-Zip archive'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'gzip stream'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'bzip2 stream'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'xz stream'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'zstd stream'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'PDF document'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'PNG image'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'JPEG image'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'GIF image'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'BMP image'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'TIFF image (LE)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'TIFF image (BE)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'RIFF container (WAV/AVI/WEBP)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Ogg container'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'FLAC audio'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Matroska/WebM container'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'MP3 with ID3 tag'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'SQLite database'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'MS Office (OLE2) document'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'WebAssembly module'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'NumPy array'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Python pickle (proto 2)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Python pickle (proto 3)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Python pickle (proto 4)'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'GGUF model'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'WOFF font'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'WOFF2 font'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'TrueType font'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'OpenType font'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'InstallShield cabinet'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'Microsoft cabinet'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'RPM package'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'ar/deb archive'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'pcap capture'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'pcapng capture'",
+   "motivo": "etiqueta interna de firma binaria (sólo log)"
+  },
+  {
+   "en": "'empty file'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "f'{label} BOM'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "'NUL byte in sampled block'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "f'{ratio:.0%} non-text control bytes (limit {control_ratio:.0%})'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "'undecodable as UTF-8 with elevated control-byte density'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "'passed all binary probes'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "f'known binary extension {extension}'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "f'probe skipped ({exc})'",
+   "motivo": "motivo interno del detector (sólo log)"
+  },
+  {
+   "en": "'--- [BINARY-GUARD] ══════════════════════════════════════════════'",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'--- [BINARY-GUARD] {len(entries)} binary file(s) OMITTED from the '",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'context / embedding chain'",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'--- [BINARY-GUARD] Detected by: {breakdown}'",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'--- [BINARY-GUARD]   ✗ OMITTED {path}  [{stage}: {reason}]'",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f'--- [BINARY-GUARD]   … and {remaining} more (listing capped at '",
+   "motivo": "log de consola"
+  }
+ ]
+}

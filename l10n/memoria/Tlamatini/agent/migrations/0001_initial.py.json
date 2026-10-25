@@ -1,0 +1,30 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0001_initial.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'Agent'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Asset'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Mcp'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Omission'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Tool'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

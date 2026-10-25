@@ -1,0 +1,954 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0103_add_stm32er_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **STM32 GENESIS** demo, please &mdash; a basic, end-to-end \"",
+   "es": "\"Tlamatini, ejecuta la demo **STM32 GENESIS**, por favor &mdash; una muestra básica, de principio a fin, \"",
+   "n": 1
+  },
+  {
+   "en": "\"showcase of STM32er's *zero-config self-provisioning* and *safety preflight*, \"",
+   "es": "\"del *autoaprovisionamiento zero-config* y del *preflight de seguridad* de STM32er, \"",
+   "n": 1
+  },
+  {
+   "en": "\"driven entirely from chat through the wrapped **chat_agent_stm32er** tool: from a \"",
+   "es": "\"controlada por completo desde el chat a través del tool wrapper **chat_agent_stm32er**: desde una \"",
+   "n": 1
+  },
+  {
+   "en": "\"clean machine it DOWNLOADS and installs the STM32 Template Project MCP itself, \"",
+   "es": "\"máquina limpia DESCARGA e instala el STM32 Template Project MCP ella misma, \"",
+   "n": 1
+  },
+  {
+   "en": "\"validates the whole build environment, scaffolds an STM32F4 project, then compiles \"",
+   "es": "\"valida todo el entorno de build, arma un proyecto STM32F4 y luego compila \"",
+   "n": 1
+  },
+  {
+   "en": "\"+ LINKS it to a .elf and lists the .elf/.hex/.bin &mdash; all WITHOUT a board \"",
+   "es": "\"+ ENLAZA a un .elf y lista el .elf/.hex/.bin &mdash; todo SIN una placa \"",
+   "n": 1
+  },
+  {
+   "en": "\"attached (this is a pure provision + build demo). \"",
+   "es": "\"conectada (esta es una demo pura de aprovisionar + construir). \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; trust them and go \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; confía en ellas y ve \"",
+   "n": 1
+  },
+  {
+   "en": "\"straight to Step 1): (a) **the user installed ONLY STM32CubeIDE** (it bundles the \"",
+   "es": "\"directo al Paso 1): (a) **el usuario instaló SÓLO STM32CubeIDE** (trae el \"",
+   "n": 1
+  },
+  {
+   "en": "\"GNU Arm toolchain + ST-LINK driver) &mdash; you do NOT need to install or configure \"",
+   "es": "\"toolchain GNU Arm + el driver ST-LINK) &mdash; NO necesitas instalar ni configurar \"",
+   "n": 1
+  },
+  {
+   "en": "\"the MCP server, STM32er downloads it automatically; (b) NO STM32 hardware is needed \"",
+   "es": "\"el servidor MCP, STM32er lo descarga automáticamente; (b) NO hace falta hardware STM32 \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; nothing is flashed; (c) tick ONLY the **Multi-Turn** checkbox before sending \"",
+   "es": "\"&mdash; no se flashea nada; (c) marca SÓLO la casilla **Multi-Turn** antes de enviar \"",
+   "n": 1
+  },
+  {
+   "en": "\"(ACPX is NOT required &mdash; chat_agent_stm32er is the ONLY tool you may use; do NOT \"",
+   "es": "\"(NO se necesita ACPX &mdash; chat_agent_stm32er es el ÚNICO tool que puedes usar; no \"",
+   "n": 1
+  },
+  {
+   "en": "\"use chat_agent_executer / chat_agent_pythonxer / acp_spawn). \"",
+   "es": "\"uses chat_agent_executer / chat_agent_pythonxer ni tools de ACPX). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Every step is exactly ONE chat_agent_stm32er call shaped \\\"Run STM32er with \"",
+   "es": "\"Cada paso es exactamente UNA llamada a chat_agent_stm32er con la forma \\\"Run STM32er with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='<action>' and <k>='<v>' ...\\\". After each call read the JSON return (an \"",
+   "es": "\"action='<action>' and <k>='<v>' ...\\\". Después de cada llamada lee el JSON que devuelve (un \"",
+   "n": 1
+  },
+  {
+   "en": "\"INI_SECTION_STM32ER block under the run's log_excerpt) and capture action / ok / \"",
+   "es": "\"bloque INI_SECTION_STM32ER bajo el log_excerpt de la ejecución) y captura action / ok / \"",
+   "n": 1
+  },
+  {
+   "en": "\"returncode / success / project_dir / stage plus the body. If a step returns \"",
+   "es": "\"returncode / success / project_dir / stage, además del body. Si un paso devuelve \"",
+   "n": 1
+  },
+  {
+   "en": "\"ok=false / success=false, record it verbatim, DO NOT abort, continue. \"",
+   "es": "\"ok=false / success=false, regístralo tal cual, NO canceles, continúa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 3
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#9881;&#65039; STM32 GENESIS &#128295;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#9881;&#65039; STM32 GÉNESIS &#128295;</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; provision &middot; validate &middot; compile &middot; link</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; aprovisionar &middot; validar &middot; compilar &middot; enlazar</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (ZERO-CONFIG provision): call **chat_agent_stm32er** with request \"",
+   "es": "\"Paso 1 (aprovisionamiento ZERO-CONFIG): llama a **chat_agent_stm32er** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run STM32er with action='bootstrap'\\\". This makes STM32er DOWNLOAD the STM32 \"",
+   "es": "\"\\\"Run STM32er with action='bootstrap'\\\". Esto hace que STM32er DESCARGUE el STM32 \"",
+   "n": 1
+  },
+  {
+   "en": "\"Template Project MCP from its git repo into a per-user cache, pip-install its deps \"",
+   "es": "\"Template Project MCP de su repo git a una caché por usuario, haga pip-install de sus deps \"",
+   "n": 1
+  },
+  {
+   "en": "\"(mcp, pyserial) if missing, and validate &mdash; with NO manual server setup. From \"",
+   "es": "\"(mcp, pyserial) si faltan, y valide &mdash; SIN configuración manual del servidor. Del \"",
+   "n": 1
+  },
+  {
+   "en": "\"the body capture the download action (cloned / present), deps (already-installed / \"",
+   "es": "\"body captura la acción de descarga (cloned / present), las deps (already-installed / \"",
+   "n": 1
+  },
+  {
+   "en": "\"pip-install), the install_dir, and 'overall : OK'. If overall is FAILED, the host \"",
+   "es": "\"pip-install), el install_dir y 'overall : OK'. Si overall es FAILED, lo más probable es que el host \"",
+   "n": 1
+  },
+  {
+   "en": "\"likely has no internet / git &mdash; skip to the closing banner with a 'PROVISION \"",
+   "es": "\"no tenga internet / git &mdash; salta al banner de cierre con un veredicto 'ERROR DE \"",
+   "n": 1
+  },
+  {
+   "en": "\"FAILED' verdict. \"",
+   "es": "\"APROVISIONAMIENTO'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (safety preflight): call **chat_agent_stm32er** with request \"",
+   "es": "\"Paso 2 (preflight de seguridad): llama a **chat_agent_stm32er** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run STM32er with action='validate'\\\". This validates the environment WITHOUT \"",
+   "es": "\"\\\"Run STM32er with action='validate'\\\". Esto valida el entorno SIN \"",
+   "n": 1
+  },
+  {
+   "en": "\"building: capture each check &mdash; arm_none_eabi_gcc, stm32cubeide, make, cmake, \"",
+   "es": "\"construir: captura cada comprobación &mdash; arm_none_eabi_gcc, stm32cubeide, make, cmake, \"",
+   "n": 1
+  },
+  {
+   "en": "\"programmer_cli, device_family_supported (and the discovered arm-none-eabi-gcc path). \"",
+   "es": "\"programmer_cli, device_family_supported (y el path descubierto de arm-none-eabi-gcc). \"",
+   "n": 1
+  },
+  {
+   "en": "\"If arm_none_eabi_gcc is False, STM32CubeIDE is not installed/discoverable &mdash; \"",
+   "es": "\"Si arm_none_eabi_gcc es False, STM32CubeIDE no está instalado/detectable &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"note it and continue to the report. \"",
+   "es": "\"anótalo y continúa al reporte. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (scaffold): call **chat_agent_stm32er** with request \\\"Run STM32er with \"",
+   "es": "\"Paso 3 (scaffold): llama a **chat_agent_stm32er** con el request \\\"Run STM32er with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='create_project' and name='tlamatini_genesis' and dest_parent='C:/Temp/stm32' \"",
+   "es": "\"action='create_project' and name='tlamatini_genesis' and dest_parent='C:/Temp/stm32' \""
+  },
+  {
+   "en": "\"and overwrite='true'\\\". CAPTURE the **project_dir** &mdash; pass it to every later step. \"",
+   "es": "\"and overwrite='true'\\\". CAPTURA el **project_dir** &mdash; pásalo a cada paso posterior. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (compile + LINK &rarr; .elf): call **chat_agent_stm32er** with request \"",
+   "es": "\"Paso 4 (compila + ENLAZA &rarr; .elf): llama a **chat_agent_stm32er** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run STM32er with action='build' and project_dir='<the project_dir from Step 3>' and \"",
+   "es": "\"\\\"Run STM32er with action='build' and project_dir='<the project_dir from Step 3>' and \""
+  },
+  {
+   "en": "\"system='make' and clean_first='true'\\\". Confirm returncode=0 and that the stdout shows \"",
+   "es": "\"system='make' and clean_first='true'\\\". Confirma returncode=0 y que el stdout muestre a \"",
+   "n": 1
+  },
+  {
+   "en": "\"arm-none-eabi-gcc compiling objects and linking firmware (the -T ...FLASH.ld linker \"",
+   "es": "\"arm-none-eabi-gcc compilando objetos y enlazando el firmware (la línea del linker script -T ...FLASH.ld \"",
+   "n": 1
+  },
+  {
+   "en": "\"script line is the proof of the link stage). \"",
+   "es": "\"es la prueba de la etapa de enlace). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (artifacts): call **chat_agent_stm32er** with request \\\"Run STM32er with \"",
+   "es": "\"Paso 5 (artefactos): llama a **chat_agent_stm32er** con el request \\\"Run STM32er with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='list_artifacts' and project_dir='<project_dir>'\\\". Capture the .elf / .hex / \"",
+   "es": "\"action='list_artifacts' and project_dir='<project_dir>'\\\". Captura los paths .elf / .hex / \"",
+   "n": 1
+  },
+  {
+   "en": "\".bin paths from the artifacts map. \"",
+   "es": "\".bin del mapa de artefactos. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 6: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>STM32 Genesis &mdash; Provision &amp; Build Report</strong>' and columns \"",
+   "es": "\"'<strong>STM32 Genesis &mdash; Reporte de aprovisionamiento y build</strong>' y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>step</em>, <em>stage</em> (bootstrap|validate|project|build), <em>stm32_action</em>, \"",
+   "es": "\"<em>paso</em>, <em>stage</em> (bootstrap|validate|project|build), <em>stm32_action</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>status</em> (ok|error), <em>headline</em> (install_dir for bootstrap; the gcc path \"",
+   "es": "\"<em>status</em> (ok|error), <em>resumen</em> (install_dir para bootstrap; el path de gcc \"",
+   "n": 1
+  },
+  {
+   "en": "\"for validate; project_dir for create; returncode for build; the artifact paths for \"",
+   "es": "\"para validate; project_dir para create; returncode para build; los paths de artefactos para \"",
+   "n": 1
+  },
+  {
+   "en": "\"list_artifacts) &mdash; one row per call in execution order, status verbatim from the \"",
+   "es": "\"list_artifacts) &mdash; una fila por cada llamada en orden de ejecución, status tal cual del \"",
+   "n": 1
+  },
+  {
+   "en": "\"INI_SECTION_STM32ER block (do NOT re-classify). Light body cells \"",
+   "es": "\"bloque INI_SECTION_STM32ER (NO lo reclasifiques). Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9), green tint ok, subtle red error. \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9), tono verde ok, rojo suave error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 7: cierra con un banner HTML que reutilice el estilo del Paso 0, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; TOOLCHAIN PROVISIONED &amp; FIRMWARE BUILT' (bootstrap OK, validate found the \"",
+   "es": "\"'&#9989; TOOLCHAIN APROVISIONADO &amp; FIRMWARE CONSTRUIDO' (bootstrap OK, validate encontró el \"",
+   "n": 1
+  },
+  {
+   "en": "\"compiler, build returncode=0 and artifacts listed), '&#9888;&#65039; GENESIS PARTIAL' \"",
+   "es": "\"compilador, build returncode=0 y artefactos listados), '&#9888;&#65039; GÉNESIS PARCIAL' \"",
+   "n": 1
+  },
+  {
+   "en": "\"(some steps ok, some error), or '&#10060; PROVISION FAILED' (bootstrap overall FAILED), \"",
+   "es": "\"(algunos pasos ok, algunos error) o '&#10060; ERROR DE APROVISIONAMIENTO' (overall de bootstrap FAILED), \"",
+   "n": 1
+  },
+  {
+   "en": "\"and underneath a one-line metric 'mcp: <download action> &middot; gcc: <...arm-none-eabi-gcc> \"",
+   "es": "\"y debajo una métrica de una línea 'mcp: <download action> &middot; gcc: <...arm-none-eabi-gcc> \"",
+   "n": 1
+  },
+  {
+   "en": "\"&middot; project: <project_dir> &middot; build rc: <0> &middot; artifacts: .elf/.hex/.bin'. \"",
+   "es": "\"&middot; project: <project_dir> &middot; build rc: <0> &middot; artefactos: .elf/.hex/.bin'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **STM32 BLINKY** demo, please &mdash; a medium-complexity take on the \"",
+   "es": "\"Tlamatini, ejecuta la demo **STM32 BLINKY**, por favor &mdash; una versión de complejidad media del \"",
+   "n": 1
+  },
+  {
+   "en": "\"classic embedded 'hello world', driven entirely from chat through the wrapped \"",
+   "es": "\"clásico 'hello world' embebido, controlada por completo desde el chat a través del tool wrapper \"",
+   "n": 1
+  },
+  {
+   "en": "\"**chat_agent_stm32er** tool: it preflight-validates the environment, scaffolds a project, \"",
+   "es": "\"**chat_agent_stm32er**: valida el entorno en preflight, arma un proyecto, \"",
+   "n": 1
+  },
+  {
+   "en": "\"AUTHORS a HAL GPIO blink main.c, compiles + links it, lists the artifacts, then attempts \"",
+   "es": "\"ESCRIBE un main.c de blink con HAL GPIO, lo compila + enlaza, lista los artefactos y luego intenta \"",
+   "n": 1
+  },
+  {
+   "en": "\"to upload it to an STM32F4 board over ST-LINK so the on-board LED blinks. \"",
+   "es": "\"subirlo a una placa STM32F4 por ST-LINK para que el LED on-board parpadee. \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify; go straight to Step 1): (a) the user \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques; ve directo al Paso 1): (a) el usuario \"",
+   "n": 2
+  },
+  {
+   "en": "\"installed ONLY STM32CubeIDE &mdash; STM32er auto-downloads/installs the MCP itself on first \"",
+   "es": "\"instaló SÓLO STM32CubeIDE &mdash; STM32er auto-descarga/instala el MCP ella misma en el primer \"",
+   "n": 1
+  },
+  {
+   "en": "\"use, so you NEVER configure server paths; (b) the build needs NO board; the FLASH step \"",
+   "es": "\"uso, así que NUNCA configuras paths del servidor; (b) el build NO necesita placa; el paso de FLASH \"",
+   "n": 1
+  },
+  {
+   "en": "\"needs an STM32F4 board (e.g. an STM32F407G-DISC1) on ST-LINK &mdash; BUT STM32er's safety \"",
+   "es": "\"necesita una placa STM32F4 (p. ej. una STM32F407G-DISC1) por ST-LINK &mdash; PERO el preflight de seguridad de STM32er \"",
+   "n": 1
+  },
+  {
+   "en": "\"preflight will REFUSE the flash with 'No ST-LINK probe detected' if no board is connected, \"",
+   "es": "\"RECHAZARÁ el flash con 'No ST-LINK probe detected' si no hay placa conectada, \"",
+   "n": 1
+  },
+  {
+   "en": "\"which is EXPECTED and routable, NOT a crash: record it verbatim and CONTINUE; (c) tick ONLY \"",
+   "es": "\"lo cual es ESPERADO y enrutable, NO un crash: regístralo tal cual y CONTINÚA; (c) marca SÓLO \"",
+   "n": 1
+  },
+  {
+   "en": "\"the **Multi-Turn** checkbox (ACPX is NOT required). Use ONLY chat_agent_stm32er, ONE call \"",
+   "es": "\"la casilla **Multi-Turn** (NO se necesita ACPX). Usa SÓLO chat_agent_stm32er, UNA llamada \"",
+   "n": 1
+  },
+  {
+   "en": "\"per step shaped \\\"Run STM32er with action='<action>' and <k>='<v>' ...\\\". Read each JSON \"",
+   "es": "\"por paso con la forma \\\"Run STM32er with action='<action>' and <k>='<v>' ...\\\". Lee cada JSON \"",
+   "n": 1
+  },
+  {
+   "en": "\"return (INI_SECTION_STM32ER block under log_excerpt), capture \"",
+   "es": "\"que devuelve (bloque INI_SECTION_STM32ER bajo log_excerpt), captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"action/ok/returncode/success/project_dir/stage, and on ok=false record verbatim and CONTINUE. \"",
+   "es": "\"action/ok/returncode/success/project_dir/stage, y con ok=false regístralo tal cual y CONTINÚA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128161; STM32 BLINKY &#128161;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128161; STM32 BLINKY &#128161;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; validate &middot; author &middot; build &middot; flash</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; validar &middot; escribir &middot; build &middot; flash</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (safety preflight): \\\"Run STM32er with action='validate'\\\" &mdash; capture \"",
+   "es": "\"Paso 1 (preflight de seguridad): \\\"Run STM32er with action='validate'\\\" &mdash; captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"arm_none_eabi_gcc / make / programmer_cli / device_family_supported and the discovered gcc \"",
+   "es": "\"arm_none_eabi_gcc / make / programmer_cli / device_family_supported y el path de gcc descubierto \"",
+   "n": 1
+  },
+  {
+   "en": "\"path as the 'before' baseline (STM32er auto-provisions the MCP as part of this if needed). \"",
+   "es": "\"como la base 'before' (STM32er auto-aprovisiona el MCP como parte de esto si hace falta). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (scaffold): \\\"Run STM32er with action='create_project' and name='tlamatini_blinky' \"",
+   "es": "\"Paso 2 (scaffold): \\\"Run STM32er with action='create_project' and name='tlamatini_blinky' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and dest_parent='C:/Temp/stm32' and overwrite='true'\\\". CAPTURE the **project_dir**. \"",
+   "es": "\"and dest_parent='C:/Temp/stm32' and overwrite='true'\\\". CAPTURA el **project_dir**. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (author the firmware &mdash; write main.c): \\\"Run STM32er with action='write_source' \"",
+   "es": "\"Paso 3 (escribe el firmware &mdash; escribe main.c): \\\"Run STM32er with action='write_source' \"",
+   "n": 2
+  },
+  {
+   "en": "\"and project_dir='<project_dir>' and rel_path='Core/Src/main.c' and content='''<CODE>'''\\\". \"",
+   "es": "\"and project_dir='<project_dir>' and rel_path='Core/Src/main.c' and content='''<CODE>'''\\\". \""
+  },
+  {
+   "en": "\"For <CODE> author a MINIMAL, COMPILABLE STM32F4 HAL blink main.c that includes the HAL \"",
+   "es": "\"Para <CODE> escribe un main.c de blink STM32F4 HAL MÍNIMO y COMPILABLE que incluya el header \"",
+   "n": 1
+  },
+  {
+   "en": "\"header, calls HAL_Init() + the project's SystemClock_Config(), enables the GPIO port clock, \"",
+   "es": "\"de HAL, llame a HAL_Init() + el SystemClock_Config() del proyecto, habilite el clock del puerto GPIO, \"",
+   "n": 1
+  },
+  {
+   "en": "\"configures the on-board LED pin(s) (e.g. PD12&ndash;PD15 on an F407 Discovery) as push-pull \"",
+   "es": "\"configure el/los pin(es) del LED on-board (p. ej. PD12&ndash;PD15 en una F407 Discovery) como salidas \"",
+   "n": 1
+  },
+  {
+   "en": "\"outputs, and in the while(1) loop toggles them and calls HAL_Delay(500). Pass it as a \"",
+   "es": "\"push-pull, y en el loop while(1) los conmute y llame a HAL_Delay(500). Pásalo como un literal \"",
+   "n": 1
+  },
+  {
+   "en": "\"TRIPLE-QUOTED content literal (content='''...''') so the newlines and braces survive the \"",
+   "es": "\"content con comillas triples (content='''...''') para que los newlines y las llaves sobrevivan al \"",
+   "n": 1
+  },
+  {
+   "en": "\"assignment parser. Keep it self-contained and buildable against the scaffold's HAL. \"",
+   "es": "\"parser de asignaciones. Mantenlo autocontenido y construible contra la HAL del scaffold. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (compile + LINK): \\\"Run STM32er with action='build' and project_dir='<project_dir>' \"",
+   "es": "\"Paso 4 (compila + ENLAZA): \\\"Run STM32er with action='build' and project_dir='<project_dir>' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and system='make' and clean_first='true'\\\". Confirm returncode=0 and the link of firmware.elf. \"",
+   "es": "\"and system='make' and clean_first='true'\\\". Confirma returncode=0 y el enlace de firmware.elf. \"",
+   "n": 1
+  },
+  {
+   "en": "\"If returncode is non-zero, capture the compiler diagnostic from stderr &mdash; routable \"",
+   "es": "\"Si returncode es distinto de cero, captura el diagnóstico del compilador del stderr &mdash; evidencia \"",
+   "n": 1
+  },
+  {
+   "en": "\"evidence; you may stop after the report with a 'BUILD FAILED' verdict. \"",
+   "es": "\"enrutable; puedes detenerte después del reporte con un veredicto 'ERROR DE BUILD'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (artifacts): \\\"Run STM32er with action='list_artifacts' and project_dir='<project_dir>'\\\". \"",
+   "es": "\"Paso 5 (artefactos): \\\"Run STM32er with action='list_artifacts' and project_dir='<project_dir>'\\\". \"",
+   "n": 1
+  },
+  {
+   "en": "\"Capture the .hex and .bin paths. \"",
+   "es": "\"Captura los paths .hex y .bin. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (flash &mdash; upload over ST-LINK): \\\"Run STM32er with action='build_and_flash' and \"",
+   "es": "\"Paso 6 (flash &mdash; upload por ST-LINK): \\\"Run STM32er with action='build_and_flash' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"project_dir='<project_dir>'\\\". If a board is connected, the body shows the programmer \"",
+   "es": "\"project_dir='<project_dir>'\\\". Si hay una placa conectada, el body muestra al programmer \"",
+   "n": 1
+  },
+  {
+   "en": "\"verifying the download; if not, STM32er's preflight returns ok=false with 'No ST-LINK probe \"",
+   "es": "\"verificando la descarga; si no, el preflight de STM32er devuelve ok=false con 'No ST-LINK probe \"",
+   "n": 1
+  },
+  {
+   "en": "\"detected (... compile-only actions do NOT need a board)' &mdash; record it verbatim and \"",
+   "es": "\"detected (... compile-only actions do NOT need a board)' &mdash; regístralo tal cual y \"",
+   "n": 1
+  },
+  {
+   "en": "\"CONTINUE (board-absent is the expected soft-fail for this demo). \"",
+   "es": "\"CONTINÚA (placa ausente es el soft-fail esperado de esta demo). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 7: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>STM32 Blinky &mdash; Run Report</strong>' and columns <em>step</em>, <em>stage</em> \"",
+   "es": "\"'<strong>STM32 Blinky &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, <em>stage</em> \"",
+   "n": 1
+  },
+  {
+   "en": "\"(validate|project|build|flash), <em>stm32_action</em>, <em>status</em> (ok|error), \"",
+   "es": "\"(validate|project|build|flash), <em>stm32_action</em>, <em>status</em> (ok|error), \""
+  },
+  {
+   "en": "\"<em>headline</em> (gcc found; project_dir; build returncode; hex path; flash verify or \"",
+   "es": "\"<em>resumen</em> (gcc encontrado; project_dir; build returncode; path del hex; flash verify o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'preflight refused: no board') &mdash; one row per call in execution order, status verbatim \"",
+   "es": "\"'preflight refused: no board') &mdash; una fila por cada llamada en orden de ejecución, status tal cual \"",
+   "n": 1
+  },
+  {
+   "en": "\"from the INI_SECTION_STM32ER block. Light body cells (background:#ffffff;color:#0f172a; or \"",
+   "es": "\"del bloque INI_SECTION_STM32ER. Celdas del cuerpo claras (background:#ffffff;color:#0f172a; o \"",
+   "n": 1
+  },
+  {
+   "en": "\"striped #f1f5f9); green tint ok, subtle red error. \"",
+   "es": "\"rayado #f1f5f9); tono verde ok, rojo suave error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 8: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; BLINKY LIVE' (build returncode=0 AND flash verified), \"",
+   "es": "\"'&#9989; BLINKY EN VIVO' (build returncode=0 AND flash verified), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9888;&#65039; BUILT, NO BOARD' (build ok but the preflight refused the flash / no board), \"",
+   "es": "\"'&#9888;&#65039; CONSTRUIDO, SIN PLACA' (build ok pero el preflight rechazó el flash / sin placa), \"",
+   "n": 1
+  },
+  {
+   "en": "\"or '&#10060; BUILD FAILED' (build returncode &ne; 0), and underneath a one-line metric \"",
+   "es": "\"o '&#10060; ERROR DE BUILD' (build returncode &ne; 0), y debajo una métrica de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"'project: <project_dir> &middot; build rc: <0> &middot; flash: <verified|no-board> &middot; \"",
+   "es": "\"'project: <project_dir> &middot; build rc: <0> &middot; flash: <verified|no-board> &middot; \""
+  },
+  {
+   "en": "\"led: PD12&ndash;PD15 @ 500&nbsp;ms'. End with END-RESPONSE.\"",
+   "es": "\"led: PD12&ndash;PD15 @ 500&nbsp;ms'. Termina con END-RESPONSE.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, run the **STM32 HIL OBSERVATORY** demo, please &mdash; an advanced \"",
+   "es": "\"Tlamatini, ejecuta la demo **STM32 HIL OBSERVATORY**, por favor &mdash; una muestra avanzada \"",
+   "n": 1
+  },
+  {
+   "en": "\"**hardware-in-the-loop** showcase that USES A REAL BOARD end-to-end, driven entirely from \"",
+   "es": "\"**hardware-in-the-loop** que USA UNA PLACA REAL de principio a fin, controlada por completo desde el \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat through the wrapped **chat_agent_stm32er** tool: it preflight-validates that an ST-LINK \"",
+   "es": "\"chat a través del tool wrapper **chat_agent_stm32er**: valida en preflight que haya un ST-LINK \"",
+   "n": 1
+  },
+  {
+   "en": "\"is connected, scaffolds and AUTHORS firmware that increments a global counter and streams it \"",
+   "es": "\"conectado, arma y ESCRIBE un firmware que incrementa un contador global y lo transmite \"",
+   "n": 1
+  },
+  {
+   "en": "\"over UART, builds + flashes it to the board, then PROVES it is running on real silicon two \"",
+   "es": "\"por UART, lo construye + flashea en la placa y luego PRUEBA que está corriendo en silicio real de dos \"",
+   "n": 1
+  },
+  {
+   "en": "\"independent ways &mdash; reads the boot banner over the ST-LINK Virtual COM Port (serial), \"",
+   "es": "\"formas independientes &mdash; lee el banner de arranque por el Virtual COM Port del ST-LINK (serial), \"",
+   "n": 1
+  },
+  {
+   "en": "\"AND samples a live global variable from the RUNNING MCU's RAM over SWD (live memory) &mdash; \"",
+   "es": "\"AND muestrea una variable global en vivo de la RAM del MCU EN EJECUCIÓN por SWD (memoria en vivo) &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"before hardware-resetting the board. \"",
+   "es": "\"antes de hacer un reset por hardware de la placa. \"",
+   "n": 1
+  },
+  {
+   "en": "\"installed ONLY STM32CubeIDE (STM32er auto-provisions the MCP itself); (b) **an STM32F407 \"",
+   "es": "\"instaló SÓLO STM32CubeIDE (STM32er auto-aprovisiona el MCP por su cuenta); (b) **hay una placa STM32F407 \"",
+   "n": 1
+  },
+  {
+   "en": "\"board (e.g. STM32F407G-DISC1) IS connected** via ST-LINK with its Virtual COM Port enabled \"",
+   "es": "\"(p. ej. STM32F407G-DISC1) CONECTADA** por ST-LINK con su Virtual COM Port habilitado \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; this demo REQUIRES hardware; (c) tick ONLY the **Multi-Turn** checkbox (ACPX is NOT \"",
+   "es": "\"&mdash; esta demo REQUIERE hardware; (c) marca SÓLO la casilla **Multi-Turn** (ACPX NO se \"",
+   "n": 1
+  },
+  {
+   "en": "\"required). Use ONLY chat_agent_stm32er, ONE call per step shaped \\\"Run STM32er with \"",
+   "es": "\"necesita). Usa SÓLO chat_agent_stm32er, UNA llamada por paso con la forma \\\"Run STM32er with \"",
+   "n": 1
+  },
+  {
+   "en": "\"action='<action>' and <k>='<v>' ...\\\". Read each JSON return (INI_SECTION_STM32ER block under \"",
+   "es": "\"action='<action>' and <k>='<v>' ...\\\". Lee cada JSON que devuelve (bloque INI_SECTION_STM32ER bajo \"",
+   "n": 1
+  },
+  {
+   "en": "\"log_excerpt), capture action/ok/returncode/success/project_dir/session_id/stage, and on \"",
+   "es": "\"log_excerpt), captura action/ok/returncode/success/project_dir/session_id/stage, y con \"",
+   "n": 1
+  },
+  {
+   "en": "\"ok=false record verbatim and CONTINUE. \"",
+   "es": "\"ok=false regístralo tal cual y CONTINÚA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128300; STM32 HIL OBSERVATORY &#9889;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128300; STM32 HIL OBSERVATORY &#9889;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; validate &middot; flash &middot; VCP serial &middot; live SWD memory</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini STM32er &mdash; validate &middot; flash &middot; VCP serial &middot; memoria SWD en vivo</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (safety preflight &mdash; CONFIRM THE BOARD): \\\"Run STM32er with action='validate' and \"",
+   "es": "\"Paso 1 (preflight de seguridad &mdash; CONFIRMA LA PLACA): \\\"Run STM32er with action='validate' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"device='STM32F407VG'\\\". This auto-provisions the MCP if needed and validates the environment \"",
+   "es": "\"device='STM32F407VG'\\\". Esto auto-aprovisiona el MCP si hace falta y valida el entorno \"",
+   "n": 1
+  },
+  {
+   "en": "\"INCLUDING the ST-LINK. From the report capture stlink_connected and device_family_supported. \"",
+   "es": "\"INCLUIDO el ST-LINK. Del reporte captura stlink_connected y device_family_supported. \"",
+   "n": 1
+  },
+  {
+   "en": "\"**If stlink_connected is False, STOP**: skip to the closing banner with a 'NO BOARD' verdict \"",
+   "es": "\"**Si stlink_connected es False, DETENTE**: salta al banner de cierre con un veredicto 'SIN PLACA' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and tell the user to connect the STM32F407G-DISC1 (this is a hardware demo). Only proceed to \"",
+   "es": "\"y dile al usuario que conecte la STM32F407G-DISC1 (esto es una demo de hardware). Sólo pasa al \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 when stlink_connected is True. \"",
+   "es": "\"Paso 2 cuando stlink_connected sea True. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (scaffold): \\\"Run STM32er with action='create_project' and name='tlamatini_hil' and \"",
+   "es": "\"Paso 2 (scaffold): \\\"Run STM32er with action='create_project' and name='tlamatini_hil' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"dest_parent='C:/Temp/stm32' and overwrite='true'\\\". CAPTURE the **project_dir**. \"",
+   "es": "\"dest_parent='C:/Temp/stm32' and overwrite='true'\\\". CAPTURA el **project_dir**. \"",
+   "n": 1
+  },
+  {
+   "en": "\"For <CODE> author a MINIMAL, COMPILABLE STM32F4 HAL program that declares a file-scope \"",
+   "es": "\"Para <CODE> escribe un programa STM32F4 HAL MÍNIMO y COMPILABLE que declare, a nivel de archivo, un \"",
+   "n": 1
+  },
+  {
+   "en": "\"`volatile uint32_t g_blink_count = 0;`, initialises HAL + the system clock + the on-board LED \"",
+   "es": "\"`volatile uint32_t g_blink_count = 0;`, inicialice HAL + el system clock + el GPIO del LED on-board \"",
+   "n": 1
+  },
+  {
+   "en": "\"GPIO + USART2 (the ST-LINK VCP, 115200 8N1), and in the while(1) loop: increments \"",
+   "es": "\"+ USART2 (el VCP del ST-LINK, 115200 8N1), y en el loop while(1): incremente \"",
+   "n": 1
+  },
+  {
+   "en": "\"g_blink_count, toggles the LED, transmits a single newline-terminated status line of the form \"",
+   "es": "\"g_blink_count, conmute el LED, transmita una sola línea de status terminada en newline con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"'BOOT tlamatini hil count=<n>' over USART2 with HAL_UART_Transmit, and HAL_Delay(500). Pass it \"",
+   "es": "\"'BOOT tlamatini hil count=<n>' por USART2 con HAL_UART_Transmit, y HAL_Delay(500). Pásalo \"",
+   "n": 1
+  },
+  {
+   "en": "\"as a TRIPLE-QUOTED content literal (content='''...''') so newlines and braces survive the \"",
+   "es": "\"como un literal content con comillas triples (content='''...''') para que los newlines y las llaves sobrevivan al \"",
+   "n": 1
+  },
+  {
+   "en": "\"parser. Keep it self-contained and buildable against the scaffold's HAL. \"",
+   "es": "\"parser. Mantenlo autocontenido y construible contra la HAL del scaffold. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (compile + LINK): \\\"Run STM32er with action='build' and project_dir='<project_dir>' and \"",
+   "es": "\"Paso 4 (compila + ENLAZA): \\\"Run STM32er with action='build' and project_dir='<project_dir>' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"system='make' and clean_first='true'\\\". Require returncode=0 (the .elf carries the \"",
+   "es": "\"system='make' and clean_first='true'\\\". Exige returncode=0 (el .elf lleva el \"",
+   "n": 1
+  },
+  {
+   "en": "\"g_blink_count symbol the live-memory step reads). If the build fails, capture the diagnostic \"",
+   "es": "\"símbolo g_blink_count que lee el paso de memoria en vivo). Si el build falla, captura el diagnóstico \"",
+   "n": 1
+  },
+  {
+   "en": "\"and you may stop after the report with 'BUILD FAILED'. \"",
+   "es": "\"y puedes detenerte después del reporte con 'ERROR DE BUILD'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5 (flash &mdash; REAL upload over ST-LINK): \\\"Run STM32er with action='build_and_flash' \"",
+   "es": "\"Paso 5 (flash &mdash; upload REAL por ST-LINK): \\\"Run STM32er with action='build_and_flash' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and project_dir='<project_dir>'\\\". The preflight already confirmed the board in Step 1; the \"",
+   "es": "\"and project_dir='<project_dir>'\\\". El preflight ya confirmó la placa en el Paso 1; el \"",
+   "n": 1
+  },
+  {
+   "en": "\"body should show the programmer reporting 'File download complete' / 'Verifying...'. Capture \"",
+   "es": "\"body debería mostrar al programmer reportando 'File download complete' / 'Verifying...'. Captura \"",
+   "n": 1
+  },
+  {
+   "en": "\"the verify result. \"",
+   "es": "\"el resultado del verify. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6 (HIL #1 &mdash; serial VCP boot banner): \\\"Run STM32er with action='serial_session' and \"",
+   "es": "\"Paso 6 (HIL #1 &mdash; banner de arranque por VCP serial): \\\"Run STM32er with action='serial_session' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"port='COM7' and baud='115200' and serial_timeout='3'\\\" (substitute the actual ST-LINK VCP port \"",
+   "es": "\"port='COM7' and baud='115200' and serial_timeout='3'\\\" (sustituye el puerto VCP real del ST-LINK \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; if unsure you MAY first call action='serial_list_ports' and pick the port flagged as an \"",
+   "es": "\"&mdash; si no estás segura PUEDES primero llamar action='serial_list_ports' y elegir el puerto marcado como \"",
+   "n": 1
+  },
+  {
+   "en": "\"ST-LINK VCP). With no `data` set, serial_session connects, READS the board's output, then \"",
+   "es": "\"VCP de ST-LINK). Sin `data` puesto, serial_session conecta, LEE el output de la placa, luego \"",
+   "n": 1
+  },
+  {
+   "en": "\"disconnects &mdash; capture the 'BOOT tlamatini hil count=<n>' line as proof the firmware is \"",
+   "es": "\"desconecta &mdash; captura la línea 'BOOT tlamatini hil count=<n>' como prueba de que el firmware está \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 7 (HIL #2 &mdash; live SWD memory): \\\"Run STM32er with action='live_monitor' and \"",
+   "es": "\"Paso 7 (HIL #2 &mdash; memoria SWD en vivo): \\\"Run STM32er with action='live_monitor' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"variables='[\\\\\\\"g_blink_count\\\\\\\"]' and project_dir='<project_dir>' and monitor_seconds='4' and \"",
+   "es": "\"variables='[\\\"g_blink_count\\\"]' and project_dir='<project_dir>' and monitor_seconds='4' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"last_n='8'\\\". This starts an OpenOCD stream of the RUNNING MCU's RAM, samples the global for 4 \"",
+   "es": "\"last_n='8'\\\". Esto inicia un stream de OpenOCD de la RAM del MCU EN EJECUCIÓN, muestrea el global por 4 \"",
+   "n": 1
+  },
+  {
+   "en": "\"seconds, returns the most-recent 8 samples, and stops. Capture the FIRST and LAST g_blink_count \"",
+   "es": "\"segundos, devuelve las 8 muestras más recientes y se detiene. Captura la PRIMERA y la ÚLTIMA muestra de g_blink_count \"",
+   "n": 1
+  },
+  {
+   "en": "\"samples and confirm the value is INCREASING &mdash; direct, on-silicon proof the while(1) loop \"",
+   "es": "\"y confirma que el valor va AUMENTANDO &mdash; prueba directa, sobre silicio, de que el loop while(1) \"",
+   "n": 1
+  },
+  {
+   "en": "\"is executing (not just that the .hex flashed). \"",
+   "es": "\"se está ejecutando (no sólo que el .hex se flasheó). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 8 (HIL #3 &mdash; reset): \\\"Run STM32er with action='reset' and project_dir='<project_dir>'\\\" \"",
+   "es": "\"Paso 8 (HIL #3 &mdash; reset): \\\"Run STM32er with action='reset' and project_dir='<project_dir>'\\\" \"",
+   "n": 1
+  },
+  {
+   "en": "\"to hardware-reset the MCU and leave the board in a clean state. \"",
+   "es": "\"para hacer un reset por hardware del MCU y dejar la placa en un estado limpio. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 9: render a STATUS SCOREBOARD &mdash; a row of HTML chips of the form \"",
+   "es": "\"Paso 9: muestra un MARCADOR DE STATUS &mdash; una fila de chips HTML con la forma \"",
+   "n": 1
+  },
+  {
+   "en": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: a 'validate: <ok|err>' chip, \"",
+   "es": "\"font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL</span>: un chip 'validate: <ok|err>', \"",
+   "n": 1
+  },
+  {
+   "en": "\"a 'build: <ok|err>' chip, a 'flash: <ok|err>' chip, a 'serial: <ok|err>' chip, a \"",
+   "es": "\"un chip 'build: <ok|err>', un chip 'flash: <ok|err>', un chip 'serial: <ok|err>', un \"",
+   "n": 1
+  },
+  {
+   "en": "\"'live_mem: <ok|err>' chip, a 'reset: <ok|err>' chip (CHIP_BG #16a34a when ok else #dc2626), and \"",
+   "es": "\"chip 'live_mem: <ok|err>', un chip 'reset: <ok|err>' (CHIP_BG #16a34a cuando es ok, si no #dc2626), y \"",
+   "n": 1
+  },
+  {
+   "en": "\"a 'count: <first>&rarr;<last>' chip (CHIP_BG #2563EB). \"",
+   "es": "\"un chip 'count: <first>&rarr;<last>' (CHIP_BG #2563EB). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 10: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 10: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>STM32 HIL Observatory &mdash; Run Report</strong>' and columns <em>step</em>, \"",
+   "es": "\"'<strong>STM32 HIL Observatory &mdash; Reporte de ejecución</strong>' y con las columnas <em>paso</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>stage</em> (validate|project|build|flash|serial|live_memory|reset), <em>stm32_action</em>, \"",
+   "es": "\"<em>stage</em> (validate|project|build|flash|serial|live_memory|reset), <em>stm32_action</em>, \""
+  },
+  {
+   "en": "\"<em>status</em> (ok|error), <em>headline</em> (stlink_connected; project_dir; build returncode; \"",
+   "es": "\"<em>status</em> (ok|error), <em>resumen</em> (stlink_connected; project_dir; build returncode; \"",
+   "n": 1
+  },
+  {
+   "en": "\"flash verify; the captured VCP boot line; g_blink_count first&rarr;last; reset ok) &mdash; one \"",
+   "es": "\"flash verify; la línea de arranque VCP capturada; g_blink_count first&rarr;last; reset ok) &mdash; una \"",
+   "n": 1
+  },
+  {
+   "en": "\"row per call in execution order, status verbatim from the INI_SECTION_STM32ER block (do NOT \"",
+   "es": "\"fila por cada llamada en orden de ejecución, status tal cual del bloque INI_SECTION_STM32ER (NO lo \"",
+   "n": 1
+  },
+  {
+   "en": "\"re-classify). Light body cells (background:#ffffff;color:#0f172a; or striped #f1f5f9). \"",
+   "es": "\"reclasifiques). Celdas del cuerpo claras (background:#ffffff;color:#0f172a; o rayado #f1f5f9). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 11: close with one HTML banner reusing the Step 0 style printing \"",
+   "es": "\"Paso 11: cierra con un banner HTML que reutilice el estilo del Paso 0 \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; SILICON VERIFIED' (build returncode=0 AND flash AND serial AND live_memory all ok \"",
+   "es": "\"'&#9989; SILICIO VERIFICADO' (build returncode=0 AND flash AND serial AND live_memory todos ok \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; the counter was observed RISING over SWD), '&#9888;&#65039; NO BOARD' (Step 1 found no \"",
+   "es": "\"&mdash; el contador se observó SUBIENDO por SWD), '&#9888;&#65039; SIN PLACA' (el Paso 1 no encontró \"",
+   "n": 1
+  },
+  {
+   "en": "\"ST-LINK connected), or '&#10060; BUILD FAILED' (build returncode &ne; 0), and underneath a \"",
+   "es": "\"ST-LINK conectado) o '&#10060; ERROR DE BUILD' (build returncode &ne; 0), y debajo una \"",
+   "n": 1
+  },
+  {
+   "en": "\"one-line metric 'project: <project_dir> &middot; build rc: <0> &middot; flash: <verified> \"",
+   "es": "\"métrica de una línea 'project: <project_dir> &middot; build rc: <0> &middot; flash: <verified> \"",
+   "n": 1
+  },
+  {
+   "en": "\"&middot; VCP: \\\"<boot line>\\\" &middot; g_blink_count over SWD: <first>&rarr;<last>'. End with \"",
+   "es": "\"&middot; VCP: \\\"<boot line>\\\" &middot; g_blink_count por SWD: <first>&rarr;<last>'. Termina con \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#061029 0%,#0B3A8F 40%,#1E63FF 72%,#22D3EE 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.45);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"<span style='display:inline-block;padding:8px 16px;margin:3px;border-radius:10px;\"",
+   "motivo": "CSS del chip (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

@@ -1,0 +1,472 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/prompt-flow-panel-model.js",
+ "segmentos": [
+  {
+   "en": "'Pink'",
+   "es": "'Rosa'",
+   "n": 1
+  },
+  {
+   "en": "'Yellow'",
+   "es": "'Amarillo'",
+   "n": 1
+  },
+  {
+   "en": "'Green'",
+   "es": "'Verde'",
+   "n": 2
+  },
+  {
+   "en": "'Blue'",
+   "es": "'Azul'",
+   "n": 2
+  },
+  {
+   "en": "'Purple'",
+   "es": "'Morado'",
+   "n": 2
+  },
+  {
+   "en": "'Orange'",
+   "es": "'Naranja'",
+   "n": 1
+  },
+  {
+   "en": "'White'",
+   "es": "'Blanco'",
+   "n": 2
+  },
+  {
+   "en": "'Grey'",
+   "es": "'Gris'",
+   "n": 1
+  },
+  {
+   "en": "'Ink'",
+   "es": "'Tinta'",
+   "n": 1
+  },
+  {
+   "en": "'Black'",
+   "es": "'Negro'",
+   "n": 1
+  },
+  {
+   "en": "'Red'",
+   "es": "'Rojo'",
+   "n": 1
+  },
+  {
+   "en": "'Brown'",
+   "es": "'Café'",
+   "n": 1
+  },
+  {
+   "en": "'Send a prompt to the configured Tlamatini model.'",
+   "es": "'Envía un prompt al modelo de Tlamatini configurado.'",
+   "n": 1
+  },
+  {
+   "en": "'Programmed Prompt'",
+   "es": "'Prompt programado'",
+   "n": 1
+  },
+  {
+   "en": "'Wait for a delay or scheduled time, then send a prompt.'",
+   "es": "'Espera un tiempo o una hora programada y luego envía un prompt.'",
+   "n": 1
+  },
+  {
+   "en": "'Decision'",
+   "es": "'Decisión'",
+   "n": 1
+  },
+  {
+   "en": "'Route through Yes or No using the last output, or ask the user.'",
+   "es": "'Sigue por Sí o por No según el último output, o le pregunta al usuario.'",
+   "n": 1
+  },
+  {
+   "en": "'Feed embeddings'",
+   "es": "'Agregar embeddings'",
+   "n": 1
+  },
+  {
+   "en": "'Add text to this run’s retrieval context.'",
+   "es": "'Agrega texto al contexto de recuperación de esta ejecución.'",
+   "n": 1
+  },
+  {
+   "en": "'Flush embeddings'",
+   "es": "'Vaciar embeddings'",
+   "n": 1
+  },
+  {
+   "en": "'Remove this run’s embeddings while retaining its conversation.'",
+   "es": "'Quita los embeddings de esta ejecución y conserva su conversación.'",
+   "n": 1
+  },
+  {
+   "en": "'Clean History'",
+   "es": "'Limpiar historial'",
+   "n": 1
+  },
+  {
+   "en": "'Clear this run’s conversation and last output; keep its embeddings.'",
+   "es": "'Borra la conversación y el último output de esta ejecución; conserva sus embeddings.'",
+   "n": 1
+  },
+  {
+   "en": "'User Input'",
+   "es": "'Input del usuario'",
+   "n": 2
+  },
+  {
+   "en": "'Pause for a user reply and add it to the conversation.'",
+   "es": "'Hace una pausa para pedir una respuesta al usuario y la agrega a la conversación.'",
+   "n": 1
+  },
+  {
+   "en": "'Run a command in a visible CMD or PowerShell terminal, typed at human speed. Use <<USER:hint>> to hand the keyboard to the user for part of the command.'",
+   "es": "'Ejecuta un comando en una terminal visible de CMD o PowerShell, escrito a velocidad humana. Usa <<USER:hint>> para darle el teclado al usuario durante una parte del comando.'",
+   "n": 1
+  },
+  {
+   "en": "'A static review note. Double-click to write. Use the floating toolbar to format; drag any edge or corner to resize. It never runs.'",
+   "es": "'Una nota estática de revisión. Haz doble clic para escribir. Usa la barra de herramientas flotante para darle formato; arrastra cualquier borde o esquina para cambiar el tamaño. Nunca se ejecuta.'",
+   "n": 1
+  },
+  {
+   "en": "'This is not a Prompt Flow Panel document. Legacy prompt.pmt text is not a diagram.'",
+   "es": "'Este no es un documento de Prompt Flow Panel. El texto antiguo de prompt.pmt no es un diagrama.'",
+   "n": 1
+  },
+  {
+   "en": "'Unsupported .fpmt version. This panel supports versions 1 and 2.'",
+   "es": "'Versión de .fpmt no compatible. Este panel admite las versiones 1 y 2.'",
+   "n": 1
+  },
+  {
+   "en": "`${label} must be text of at most ${max.toLocaleString()} characters.`",
+   "es": "`${label} debe ser un texto de ${max.toLocaleString()} caracteres como máximo.`",
+   "n": 1
+  },
+  {
+   "en": "`${label} must be between ${min} and ${max}.`",
+   "es": "`${label} debe estar entre ${min} y ${max}.`",
+   "n": 1
+  },
+  {
+   "en": "'Flow name'",
+   "es": "'Nombre del flow'",
+   "n": 1
+  },
+  {
+   "en": "'Step limit'",
+   "es": "'Límite de pasos'",
+   "n": 1
+  },
+  {
+   "en": "'The step limit must be a whole number.'",
+   "es": "'El límite de pasos debe ser un número entero.'",
+   "n": 1
+  },
+  {
+   "en": "'Use up to 500 operations and 1,000 connections.'",
+   "es": "'Usa hasta 500 operaciones y 1,000 conexiones.'",
+   "n": 1
+  },
+  {
+   "en": "'Operation IDs must be unique letters, digits, underscores or dashes.'",
+   "es": "'Los IDs de las operaciones deben ser únicos y usar sólo letras, dígitos, guiones bajos o guiones.'",
+   "n": 1
+  },
+  {
+   "en": "'Unknown operation type.'",
+   "es": "'Tipo de operación desconocido.'",
+   "n": 1
+  },
+  {
+   "en": "'Label'",
+   "es": "'Etiqueta'",
+   "n": 1
+  },
+  {
+   "en": "'Missing operation settings.'",
+   "es": "'Falta la configuración de la operación.'",
+   "n": 1
+  },
+  {
+   "en": "'Operation text'",
+   "es": "'Texto de la operación'",
+   "n": 1
+  },
+  {
+   "en": "`Comment ${key}`",
+   "es": "`${key} del comentario`",
+   "n": 1
+  },
+  {
+   "en": "'Choose a supported comment color, font and alignment.'",
+   "es": "'Elige un color, una fuente y una alineación compatibles para el comentario.'",
+   "n": 1
+  },
+  {
+   "en": "'Comment style switches must be true or false.'",
+   "es": "'Los interruptores de estilo del comentario deben ser true o false.'",
+   "n": 1
+  },
+  {
+   "en": "'Use at most 10,000 formatted text runs per comment.'",
+   "es": "'Usa como máximo 10,000 fragmentos de texto con formato por comentario.'",
+   "n": 1
+  },
+  {
+   "en": "'A formatted text run must be an object.'",
+   "es": "'Un fragmento de texto con formato debe ser un objeto.'",
+   "n": 1
+  },
+  {
+   "en": "'Comment run text'",
+   "es": "'Texto del fragmento del comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Comment run font size'",
+   "es": "'Tamaño de fuente del fragmento del comentario'",
+   "n": 1
+  },
+  {
+   "en": "'Choose a supported comment font and text color.'",
+   "es": "'Elige una fuente y un color de texto compatibles para el comentario.'",
+   "n": 1
+  },
+  {
+   "en": "'Comment run style switches must be true or false.'",
+   "es": "'Los interruptores de estilo de los fragmentos del comentario deben ser true o false.'",
+   "n": 1
+  },
+  {
+   "en": "'Comment runs must contain exactly the comment text.'",
+   "es": "'Los fragmentos deben contener exactamente el texto del comentario.'",
+   "n": 1
+  },
+  {
+   "en": "'Prompt switches must be true or false.'",
+   "es": "'Los interruptores del prompt deben ser true o false.'",
+   "n": 1
+  },
+  {
+   "en": "'ACPX requires Multi-Turn.'",
+   "es": "'ACPX requiere Multi-Turn.'",
+   "n": 1
+  },
+  {
+   "en": "`${n.label} needs text. Double-click to configure it.`",
+   "es": "`${n.label} necesita texto. Haz doble clic en la operación para configurarla.`",
+   "n": 1
+  },
+  {
+   "en": "'Delay'",
+   "es": "'Retraso'",
+   "n": 1
+  },
+  {
+   "en": "'Scheduled time'",
+   "es": "'Hora programada'",
+   "n": 1
+  },
+  {
+   "en": "'Scheduled time needs a valid date and timezone.'",
+   "es": "'La hora programada necesita una fecha y una zona horaria válidas.'",
+   "n": 1
+  },
+  {
+   "en": "'Unknown decision comparison.'",
+   "es": "'Comparación de decisión desconocida.'",
+   "n": 1
+  },
+  {
+   "en": "'Comparison value'",
+   "es": "'Valor de comparación'",
+   "n": 1
+  },
+  {
+   "en": "'Case sensitivity must be true or false.'",
+   "es": "'La distinción entre mayúsculas y minúsculas debe ser true o false.'",
+   "n": 1
+  },
+  {
+   "en": "`${n.label} needs a comparison value.`",
+   "es": "`${n.label} necesita un valor de comparación.`",
+   "n": 1
+  },
+  {
+   "en": "'Unknown Terminater action.'",
+   "es": "'Acción de Terminater desconocida.'",
+   "n": 1
+  },
+  {
+   "en": "'Choose CMD, PowerShell or PowerShell 7.'",
+   "es": "'Elige CMD, PowerShell o PowerShell 7.'",
+   "n": 1
+  },
+  {
+   "en": "'Unknown Terminater severity.'",
+   "es": "'Severidad de Terminater desconocida.'",
+   "n": 1
+  },
+  {
+   "en": "'Unknown Terminater layout or area.'",
+   "es": "'Distribución o área de Terminater desconocida.'",
+   "n": 1
+  },
+  {
+   "en": "`Terminater ${key} must be true or false.`",
+   "es": "`Terminater ${key} debe ser true o false.`",
+   "n": 1
+  },
+  {
+   "en": "`Terminater ${key} must be a whole number.`",
+   "es": "`Terminater ${key} debe ser un número entero.`",
+   "n": 1
+  },
+  {
+   "en": "`${n.label} needs a command to type.`",
+   "es": "`${n.label} necesita un comando para escribir.`",
+   "n": 1
+  },
+  {
+   "en": "`${n.label} needs the keys to press.`",
+   "es": "`${n.label} necesita las teclas que se van a presionar.`",
+   "n": 1
+  },
+  {
+   "en": "'Invalid or duplicate connection ID.'",
+   "es": "'El ID de la conexión no es válido o está duplicado.'",
+   "n": 1
+  },
+  {
+   "en": "'A connection points to a missing operation.'",
+   "es": "'Una conexión apunta a una operación que no existe.'",
+   "n": 1
+  },
+  {
+   "en": "'Static User Commentary assets cannot have connections.'",
+   "es": "'Los elementos estáticos de Comentario del usuario no pueden tener conexiones.'",
+   "n": 1
+  },
+  {
+   "en": "'Each output supports one connection; decisions use Yes and No.'",
+   "es": "'Cada output admite una sola conexión; las decisiones usan Sí y No.'",
+   "n": 1
+  },
+  {
+   "en": "'The Start operation is missing.'",
+   "es": "'Falta la operación de Inicio.'",
+   "n": 1
+  },
+  {
+   "en": "'A static User Commentary cannot be the Start operation.'",
+   "es": "'Un Comentario del usuario estático no puede ser la operación de Inicio.'",
+   "n": 1
+  },
+  {
+   "en": "'Add an operation and choose Start.'",
+   "es": "'Agrega una operación y elígela en Inicio.'",
+   "n": 1
+  },
+  {
+   "en": "'Some operations are unreachable from Start. Connect them or choose another Start.'",
+   "es": "'No se puede llegar a algunas operaciones desde el Inicio. Conéctalas o elige otra en Inicio.'",
+   "n": 1
+  },
+  {
+   "en": "'Connect both Yes and No outputs of every decision.'",
+   "es": "'Conecta los outputs Sí y No de cada decisión.'",
+   "n": 1
+  },
+  {
+   "en": "'Choose a subject'",
+   "es": "'Elige un tema'",
+   "n": 1
+  },
+  {
+   "en": "'What would you like to explore? Include the word “code” to take the coding branch.'",
+   "es": "'¿Qué te gustaría explorar? Incluye la palabra “code” para tomar el branch de programación.'",
+   "n": 1
+  },
+  {
+   "en": "'About code?'",
+   "es": "'¿Es sobre código?'",
+   "n": 1
+  },
+  {
+   "en": "'Explain the code'",
+   "es": "'Explicar el código'",
+   "n": 1
+  },
+  {
+   "en": "'Explain this coding subject and give one short example: {{last_output}}'",
+   "es": "'Explica este tema de programación y da un ejemplo breve: {{last_output}}'",
+   "n": 1
+  },
+  {
+   "en": "'Explore the subject'",
+   "es": "'Explorar el tema'",
+   "n": 1
+  },
+  {
+   "en": "'Explain this subject in three clear points: {{last_output}}'",
+   "es": "'Explica este tema en tres puntos claros: {{last_output}}'",
+   "n": 1
+  },
+  {
+   "en": "user_commentary: { label: 'User Commentary'",
+   "es": "user_commentary: { label: 'Comentario del usuario'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Nunito'",
+   "motivo": "nombre de fuente (valor de máquina)"
+  },
+  {
+   "en": "'Arial'",
+   "motivo": "nombre de fuente (valor de máquina: commentFonts.includes)"
+  },
+  {
+   "en": "'Verdana'",
+   "motivo": "nombre de fuente (valor de máquina: commentFonts.includes)"
+  },
+  {
+   "en": "'Georgia'",
+   "motivo": "nombre de fuente (valor de máquina: commentFonts.includes)"
+  },
+  {
+   "en": "'Times New Roman'",
+   "motivo": "nombre de fuente (valor de máquina: commentFonts.includes)"
+  },
+  {
+   "en": "'Courier New'",
+   "motivo": "nombre de fuente (valor de máquina: commentFonts.includes)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "término del producto (nombre de la operación Prompt)"
+  },
+  {
+   "en": "'Terminater'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'User Commentary'",
+   "motivo": "el mismo literal es la comparación de migración heredada (línea 100, igual que services/prompt_flow_panel.py); la etiqueta de la línea 34 se traduce con contexto en la decisión manual"
+  },
+  {
+   "en": "`Terminater ${key}`",
+   "motivo": "nombre de agent y llave de configuración"
+  }
+ ]
+}

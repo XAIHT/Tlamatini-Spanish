@@ -1,0 +1,194 @@
+{
+ "archivo": "Tlamatini/agent/context_baseline.py",
+ "segmentos": [
+  {
+   "en": "\"the next question's own text\"",
+   "es": "\"el texto de la siguiente pregunta\"",
+   "n": 1
+  },
+  {
+   "en": "\"the history summary written for that question \"",
+   "es": "\"el resumen del historial escrito para esa pregunta \"",
+   "n": 1
+  },
+  {
+   "en": "\"(the last one is used here)\"",
+   "es": "\"(aquí se usa el último)\"",
+   "n": 1
+  },
+  {
+   "en": "\"(none written yet)\"",
+   "es": "\"(todavía no hay ninguno)\"",
+   "n": 1
+  },
+  {
+   "en": "f\"up to {budget:,} chars\"",
+   "es": "f\"hasta {budget:,} caracteres\"",
+   "n": 1
+  },
+  {
+   "en": "f\"the last question retrieved {last:,}\"",
+   "es": "f\"la última pregunta recuperó {last:,}\"",
+   "n": 1
+  },
+  {
+   "en": "\"the context retrieved for that question\"",
+   "es": "\"el contexto recuperado para esa pregunta\"",
+   "n": 1
+  },
+  {
+   "en": "\"COMPACT mode: this model is too small for the complete request\"",
+   "es": "\"COMPACT mode: este modelo es demasiado pequeño para la solicitud completa\"",
+   "n": 1
+  },
+  {
+   "en": "f\" ({report.window_tokens:,}-token window)\"",
+   "es": "f\" (ventana de {report.window_tokens:,} tokens)\"",
+   "n": 1
+  },
+  {
+   "en": "f\"which tools that question keeps ({len(selected)} of \"",
+   "es": "f\"qué tools conserva esa pregunta ({len(selected)} de \"",
+   "n": 2
+  },
+  {
+   "en": "f\"{len(selected) + dropped} kept at rest)\"",
+   "es": "f\"{len(selected) + dropped} conservados en reposo)\"",
+   "n": 1
+  },
+  {
+   "en": "\"the planner hint\"",
+   "es": "\"la pista del planner\"",
+   "n": 2
+  },
+  {
+   "en": "f\"{len(request_tools)} kept at rest)\"",
+   "es": "f\"{len(request_tools)} conservados en reposo)\"",
+   "n": 1
+  },
+  {
+   "en": "\"web / system / file-search context, if that question needs it\"",
+   "es": "\"contexto web / del sistema / de búsqueda de archivos, si esa pregunta lo necesita\"",
+   "n": 1
+  },
+  {
+   "en": "\"not included yet: \"",
+   "es": "\"todavía no se incluye: \"",
+   "n": 1
+  },
+  {
+   "en": "f\"next message · at rest ({reason})\"",
+   "es": "f\"siguiente mensaje · en reposo ({reason})\"",
+   "n": 1
+  },
+  {
+   "en": "\"next message · at rest\"",
+   "es": "\"siguiente mensaje · en reposo\"",
+   "n": 2
+  },
+  {
+   "en": "f\"at-rest probe ({reason})\"",
+   "es": "f\"sondeo en reposo ({reason})\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{reason}, re-fitted\"",
+   "es": "f\"{reason}, reajustado\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"--- [CONTEXT-REST] refresh failed ({type(exc).__name__}: {exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REST] could not schedule a refresh ({exc})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CONTEXT-REST] the main chain is not the unified agent - the \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"at-rest rebuild covers the unified agent only; live requests are \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"still metered\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REST] skipped ({reason}): a request is in flight \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"and owns the gauge\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REST] ({reason}) measured {len(messages)} message(s), \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{built['tools']} tool(s); Ollama probe OFF - estimate only\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-PROBE] ({reason}) request is byte-identical to the one \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"already probed - reusing Ollama's count {prompt} (no new call)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"prompt_eval_count (probe, identical request)\"",
+   "motivo": "nombre técnico del campo medido"
+  },
+  {
+   "en": "f\"--- [CONTEXT-PROBE] ({reason}) skipped: a request started meanwhile\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-PROBE] ({reason}) Ollama returned no prompt_eval_count \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"- the frame stays an ESTIMATE\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-PROBE] ({reason}) {model}: prompt_eval_count={prompt} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"eval_count={completion} in {seconds:.2f} s - this probe cost \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{prompt} prompt + {completion or 0} output tokens\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"prompt_eval_count (probe, num_predict=1)\"",
+   "motivo": "nombre técnico del campo medido"
+  },
+  {
+   "en": "f\"--- [CONTEXT-PROBE] ({reason}) Ollama cut the probed request at \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{verdict.get('window')} tokens - re-fitting the next request\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-PROBE] cut check skipped ({cut_err})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REST] ({reason}) failed open: {type(exc).__name__}: {exc}\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

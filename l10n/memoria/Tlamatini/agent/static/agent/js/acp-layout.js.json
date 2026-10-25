@@ -1,0 +1,16 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-layout.js",
+ "segmentos": [
+  {
+   "en": "`Agents list ${Math.round(chatWidth)}%, canvas ${Math.round(canvasWidth)}%`",
+   "es": "`Lista de Agents ${Math.round(chatWidth)}%, canvas ${Math.round(canvasWidth)}%`",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\" Tlamatini (Agentic Control Panel)\"",
+   "motivo": "nombre del producto (título de la pestaña)"
+  }
+ ]
+}

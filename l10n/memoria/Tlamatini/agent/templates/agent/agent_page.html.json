@@ -1,0 +1,1354 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/agent_page.html",
+ "segmentos": [
+  {
+   "en": "lang=\"en\"",
+   "es": "lang=\"es-MX\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Toggle navigation\"",
+   "es": "aria-label=\"Mostrar u ocultar la navegación\"",
+   "n": 1
+  },
+  {
+   "en": ">Context:<",
+   "es": ">Contexto:<",
+   "n": 1
+  },
+  {
+   "en": ">\r\n            Open in...\r\n            <",
+   "es": ">\r\n            Abrir en...\r\n            <",
+   "n": 1
+  },
+  {
+   "en": ">Open<",
+   "es": ">Abrir<",
+   "n": 1
+  },
+  {
+   "en": ">Save<",
+   "es": ">Guardar<",
+   "n": 6
+  },
+  {
+   "en": ">Views<",
+   "es": ">Vistas<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Show or hide the canvas. Your document and chat context are kept.\"",
+   "es": "title=\"Muestra u oculta el canvas. Tu documento y el contexto del chat se conservan.\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Show or hide the Terminals area (Ctrl+`). Your terminals keep running.\"",
+   "es": "title=\"Muestra u oculta el área Terminals (Ctrl+`). Tus terminales siguen corriendo.\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Restore both panes, their initial sizes and the docked avatar. Keep your chat and document.\"",
+   "es": "title=\"Restaura los dos paneles, sus tamaños iniciales y el avatar acoplado. Tu chat y tu documento se conservan.\"",
+   "n": 1
+  },
+  {
+   "en": ">Reset layout<",
+   "es": ">Restablecer distribución<",
+   "n": 1
+  },
+  {
+   "en": ">Context<",
+   "es": ">Contexto<",
+   "n": 2
+  },
+  {
+   "en": ">Set directory as context<",
+   "es": ">Usar un directorio como contexto<",
+   "n": 1
+  },
+  {
+   "en": ">Set file as context<",
+   "es": ">Usar un archivo como contexto<",
+   "n": 1
+  },
+  {
+   "en": ">View context directory in\r\n                  canvas<",
+   "es": ">Ver el directorio de contexto en el canvas<",
+   "n": 1
+  },
+  {
+   "en": ">Clear context<",
+   "es": ">Limpiar el contexto<",
+   "n": 1
+  },
+  {
+   "en": ">Set file type omissions<",
+   "es": ">Definir los tipos de archivo omitidos<",
+   "n": 1
+  },
+  {
+   "en": ">Panels<",
+   "es": ">Paneles<",
+   "n": 1
+  },
+  {
+   "en": ">Browse Skills<",
+   "es": ">Explorar Skills<",
+   "n": 1
+  },
+  {
+   "en": ">Configure Skills<",
+   "es": ">Configurar Skills<",
+   "n": 1
+  },
+  {
+   "en": ">Diagnostics<",
+   "es": ">Diagnóstico<",
+   "n": 1
+  },
+  {
+   "en": ">Reload Registry<",
+   "es": ">Recargar el registro de Skills<",
+   "n": 1
+  },
+  {
+   "en": ">External<",
+   "es": ">Externos<",
+   "n": 1
+  },
+  {
+   "en": ">\r\n                  Configure MCPs<",
+   "es": ">\r\n                  Configurar MCPs<",
+   "n": 1
+  },
+  {
+   "en": ">\r\n                  Configure Agents<",
+   "es": ">\r\n                  Configurar Agents<",
+   "n": 1
+  },
+  {
+   "en": ">Models<",
+   "es": ">Modelos<",
+   "n": 1
+  },
+  {
+   "en": ">Contacts<",
+   "es": ">Contactos<",
+   "n": 1
+  },
+  {
+   "en": ">Voice<",
+   "es": ">Voz<",
+   "n": 3
+  },
+  {
+   "en": ">Backup database<",
+   "es": ">Hacer backup de la base de datos<",
+   "n": 1
+  },
+  {
+   "en": ">Set DB<",
+   "es": ">Elegir la DB<",
+   "n": 1
+  },
+  {
+   "en": ">Reconnect<",
+   "es": ">Reconectar<",
+   "n": 1
+  },
+  {
+   "en": ">About<",
+   "es": ">Acerca de<",
+   "n": 2
+  },
+  {
+   "en": ">Usage<",
+   "es": ">Uso<",
+   "n": 1
+  },
+  {
+   "en": ">Checking usage…<",
+   "es": ">Revisando el uso…<",
+   "n": 1
+  },
+  {
+   "en": ">Check for updates<",
+   "es": ">Buscar actualizaciones<",
+   "n": 2
+  },
+  {
+   "en": ">Logout<",
+   "es": ">Cerrar sesión<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Resize message composer\"",
+   "es": "aria-label=\"Cambiar el tamaño del área de mensaje\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Drag to resize composer · Up/Down to adjust · Shift for larger steps · Home or double-click to fit · End to expand\"",
+   "es": "title=\"Arrastra para cambiar el tamaño del área de mensaje · Arriba/Abajo para ajustar · Shift para pasos más grandes · Home o doble clic para ajustar al texto · End para expandir\"",
+   "n": 1
+  },
+  {
+   "en": ">Catalog of prompts<",
+   "es": ">Catálogo de prompts<",
+   "n": 1
+  },
+  {
+   "en": ">Clear history<",
+   "es": ">Borrar el historial<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Append per-agent execution tables to the answer. Enabled only when Multi-Turn is on.\"",
+   "es": "title=\"Agrega a la respuesta las tablas de ejecución de cada agent. Disponible sólo cuando Multi-Turn está activado.\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Ask permission before each Multi-Turn tool/agent execution. Enabled only when Multi-Turn is on.\"",
+   "es": "title=\"Pide permiso antes de cada ejecución de un tool o agent en Multi-Turn. Disponible sólo cuando Multi-Turn está activado.\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Guide setup and troubleshooting one user-confirmed step at a time.\"",
+   "es": "title=\"Guía la configuración y la solución de problemas paso a paso, y cada paso lo confirmas tú.\"",
+   "n": 1
+  },
+  {
+   "en": ">Step-by-Step<",
+   "es": ">Paso a paso<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Compact mode: send the model only what you tick in Config ▸ Configure MCPs / Configure Agents.\"",
+   "es": "title=\"Compact mode: envía al modelo sólo lo que marques en Config ▸ Configurar MCPs / Configurar Agents.\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Self-modify: send Tlamatini her own self-knowledge so she can read, change and rebuild herself.\"",
+   "es": "title=\"Self-modify: envía a Tlamatini su propio autoconocimiento para que pueda leerse, cambiarse y reconstruirse.\"",
+   "n": 1
+  },
+  {
+   "en": ">Add internet context<",
+   "es": ">Agregar contexto de internet<",
+   "n": 1
+  },
+  {
+   "en": ">Preparing voice input…<",
+   "es": ">Preparando el input de voz…<",
+   "n": 1
+  },
+  {
+   "en": ">The microphone is off.<",
+   "es": ">El micrófono está apagado.<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Send a message...\"",
+   "es": "placeholder=\"Escribe un mensaje...\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Speak and send a voice prompt\"",
+   "es": "aria-label=\"Habla y envía un prompt de voz\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Speak using the microphone on the Tlamatini computer. Stops on silence and sends automatically.\"",
+   "es": "title=\"Habla con el micrófono de la computadora donde corre Tlamatini. Se detiene al detectar silencio y envía automáticamente.\"",
+   "n": 1
+  },
+  {
+   "en": ">Send<",
+   "es": ">Enviar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Click me - I will tell you how it is going\"",
+   "es": "title=\"Haz clic y te cuento cómo va todo\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Tlamatini avatar - click to hear a status update\"",
+   "es": "aria-label=\"Avatar de Tlamatini: haz clic para escuchar cómo va todo\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Resize chat and canvas\"",
+   "es": "aria-label=\"Cambiar el tamaño del chat y del canvas\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Drag to resize chat and canvas · Left/Right to adjust · Shift for larger steps\"",
+   "es": "title=\"Arrastra para cambiar el tamaño del chat y del canvas · Izquierda/Derecha para ajustar · Shift para pasos más grandes\"",
+   "n": 1
+  },
+  {
+   "en": ">Open a file to edit.<",
+   "es": ">Abre un archivo para editarlo.<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Save this file (Ctrl+S)\"",
+   "es": "title=\"Guardar este archivo (Ctrl+S)\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Choose a folder and filename (Ctrl+Shift+S)\"",
+   "es": "title=\"Elegir carpeta y nombre de archivo (Ctrl+Shift+S)\"",
+   "n": 1
+  },
+  {
+   "en": ">Save as…<",
+   "es": ">Guardar como…<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Undo (Ctrl+Z)\"",
+   "es": "title=\"Deshacer (Ctrl+Z)\"",
+   "n": 1
+  },
+  {
+   "en": ">Undo<",
+   "es": ">Deshacer<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Redo (Ctrl+Y)\"",
+   "es": "title=\"Rehacer (Ctrl+Y)\"",
+   "n": 1
+  },
+  {
+   "en": ">Redo<",
+   "es": ">Rehacer<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Find and replace (Ctrl+F in the editor)\"",
+   "es": "title=\"Buscar y reemplazar (Ctrl+F en el editor)\"",
+   "n": 1
+  },
+  {
+   "en": ">Find<",
+   "es": ">Buscar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Wrap long lines\"",
+   "es": "title=\"Ajustar las líneas largas\"",
+   "n": 1
+  },
+  {
+   "en": ">Wrap<",
+   "es": ">Ajustar<",
+   "n": 1
+  },
+  {
+   "en": ">Copy<",
+   "es": ">Copiar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Open a file to refresh its content.\"",
+   "es": "title=\"Abre un archivo para actualizar su contenido.\"",
+   "n": 1
+  },
+  {
+   "en": ">Refresh<",
+   "es": ">Actualizar<",
+   "n": 1
+  },
+  {
+   "en": ">Clear canvas<",
+   "es": ">Limpiar el canvas<",
+   "n": 1
+  },
+  {
+   "en": ">Use as context<",
+   "es": ">Usar como contexto<",
+   "n": 1
+  },
+  {
+   "en": ">Open a file to refresh its content.<",
+   "es": ">Abre un archivo para actualizar su contenido.<",
+   "n": 1
+  },
+  {
+   "en": ">Cancel refresh<",
+   "es": ">Cancelar la actualización<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Markdown view\"",
+   "es": "aria-label=\"Vista de Markdown\"",
+   "n": 1
+  },
+  {
+   "en": ">Preview<",
+   "es": ">Vista previa<",
+   "n": 1
+  },
+  {
+   "en": ">Source<",
+   "es": ">Código<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Select the document folder to resolve local images and Markdown links. Files stay on this device.\"",
+   "es": "title=\"Selecciona la carpeta del documento para resolver las imágenes locales y los links de Markdown. Los archivos no salen de este dispositivo.\"",
+   "n": 1
+  },
+  {
+   "en": ">Choose folder…<",
+   "es": ">Elegir carpeta…<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Markdown preview\"",
+   "es": "aria-label=\"Vista previa de Markdown\"",
+   "n": 1
+  },
+  {
+   "en": ">Preparing PDF context<",
+   "es": ">Preparando el contexto del PDF<",
+   "n": 1
+  },
+  {
+   "en": ">Elapsed <",
+   "es": ">Transcurrido <",
+   "n": 1
+  },
+  {
+   "en": "> Process images<",
+   "es": "> Procesar imágenes<",
+   "n": 1
+  },
+  {
+   "en": ">Leave unchecked to extract selectable text only. Enable for scanned pages, charts and image analysis; this takes longer.<",
+   "es": ">Déjalo sin marcar para extraer sólo el texto seleccionable. Actívalo para páginas escaneadas, gráficas y análisis de imágenes; tarda más.<",
+   "n": 1
+  },
+  {
+   "en": ">Large PDFs and image analysis can take a while. Tlamatini will load the context after processing finishes.<",
+   "es": ">Los PDF grandes y el análisis de imágenes pueden tardar. Tlamatini cargará el contexto cuando termine el procesamiento.<",
+   "n": 1
+  },
+  {
+   "en": ">1. Upload PDF<",
+   "es": ">1. Subir el PDF<",
+   "n": 1
+  },
+  {
+   "en": ">Pending<",
+   "es": ">Pendiente<",
+   "n": 4
+  },
+  {
+   "en": "aria-label=\"PDF upload\"",
+   "es": "aria-label=\"Subida del PDF\"",
+   "n": 1
+  },
+  {
+   "en": ">2. Read document text<",
+   "es": ">2. Leer el texto del documento<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"PDF extraction\"",
+   "es": "aria-label=\"Extracción del PDF\"",
+   "n": 1
+  },
+  {
+   "en": ">3. Analyze images with Image-Interpreter<",
+   "es": ">3. Analizar las imágenes con Image-Interpreter<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Image analysis\"",
+   "es": "aria-label=\"Análisis de imágenes\"",
+   "n": 1
+  },
+  {
+   "en": ">4. Load Tlamatini context<",
+   "es": ">4. Cargar el contexto en Tlamatini<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Context loading\"",
+   "es": "aria-label=\"Carga del contexto\"",
+   "n": 1
+  },
+  {
+   "en": ">Cancel<",
+   "es": ">Cancelar<",
+   "n": 3
+  },
+  {
+   "en": ">Continue<",
+   "es": ">Continuar<",
+   "n": 2
+  },
+  {
+   "en": "title=\"Execution permission required\"",
+   "es": "title=\"Se requiere permiso de ejecución\"",
+   "n": 1
+  },
+  {
+   "en": ">Tlamatini wants to run the following before continuing the Multi-Turn chain.\r\n      Review what is about to execute and choose <",
+   "es": ">Tlamatini quiere ejecutar lo siguiente antes de continuar el chain de Multi-Turn.\n      Revisa lo que está por ejecutarse y elige <",
+   "n": 1
+  },
+  {
+   "en": ">Proceed<",
+   "es": ">Permitir<",
+   "n": 1
+  },
+  {
+   "en": "> or <",
+   "es": "> o <",
+   "n": 1
+  },
+  {
+   "en": ">Deny<",
+   "es": ">Denegar<",
+   "n": 1
+  },
+  {
+   "en": ">Tlamatini Tool / MCP / Agent<",
+   "es": ">Tool / MCP / Agent de Tlamatini<",
+   "n": 1
+  },
+  {
+   "en": ">Underlying tool<",
+   "es": ">Tool subyacente<",
+   "n": 1
+  },
+  {
+   "en": ">Parameters of execution<",
+   "es": ">Parámetros de ejecución<",
+   "n": 1
+  },
+  {
+   "en": ">Program to be executed<",
+   "es": ">Programa que se va a ejecutar<",
+   "n": 1
+  },
+  {
+   "en": ">Shell to be executed<",
+   "es": ">Shell que se va a ejecutar<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"File extensions separated by commas (,)\"",
+   "es": "placeholder=\"Extensiones de archivo separadas por comas (,)\"",
+   "n": 1
+  },
+  {
+   "en": ">Activate MCPs<",
+   "es": ">Activar MCPs<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Close\"",
+   "es": "aria-label=\"Cerrar\"",
+   "n": 4
+  },
+  {
+   "en": "aria-label=\"MCP catalog\"",
+   "es": "aria-label=\"Catálogo de MCPs\"",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Search services...\"",
+   "es": "placeholder=\"Buscar servicios...\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Active MCP services\"",
+   "es": "aria-label=\"Servicios MCP activos\"",
+   "n": 1
+  },
+  {
+   "en": ">Active - sent with your prompt<",
+   "es": ">Activos: se envían con tu prompt<",
+   "n": 1
+  },
+  {
+   "en": ">Service<",
+   "es": ">Servicio<",
+   "n": 1
+  },
+  {
+   "en": ">Drop an MCP <",
+   "es": ">Suelta el <",
+   "n": 1
+  },
+  {
+   "en": "> anywhere on the page to add it.<",
+   "es": "> de un MCP en cualquier parte de la página para agregarlo.<",
+   "n": 1
+  },
+  {
+   "en": ">Only active services connect; inactive ones stay in the catalog.<",
+   "es": ">Sólo se conectan los servicios activos; los inactivos se quedan en el catálogo.<",
+   "n": 1
+  },
+  {
+   "en": ">Contacts book<",
+   "es": ">Libreta de contactos<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Contacts list\"",
+   "es": "aria-label=\"Lista de contactos\"",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Search contacts...\"",
+   "es": "placeholder=\"Buscar contactos...\"",
+   "n": 1
+  },
+  {
+   "en": ">+ New<",
+   "es": ">+ Nuevo<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Contact editor\"",
+   "es": "aria-label=\"Editor de contactos\"",
+   "n": 1
+  },
+  {
+   "en": ">Pick a contact, or press “New”<",
+   "es": ">Elige un contacto o presiona “Nuevo”<",
+   "n": 1
+  },
+  {
+   "en": ">Name <",
+   "es": ">Nombre <",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Full name\"",
+   "es": "placeholder=\"Nombre completo\"",
+   "n": 1
+  },
+  {
+   "en": ">Aliases<",
+   "es": ">Alias<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Comma-separated, e.g. Ana, <REDACTED>\"",
+   "es": "placeholder=\"Separados por comas, p. ej. Ana, <REDACTED>\"",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"@username\"",
+   "es": "placeholder=\"@usuario\"",
+   "n": 1
+  },
+  {
+   "en": ">Email<",
+   "es": ">Correo<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"name@example.com\"",
+   "es": "placeholder=\"nombre@ejemplo.com\"",
+   "n": 1
+  },
+  {
+   "en": ">Note<",
+   "es": ">Nota<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Optional note\"",
+   "es": "placeholder=\"Nota opcional\"",
+   "n": 1
+  },
+  {
+   "en": ">Apply<",
+   "es": ">Aplicar<",
+   "n": 1
+  },
+  {
+   "en": ">Clear<",
+   "es": ">Limpiar<",
+   "n": 1
+  },
+  {
+   "en": ">Edits stay local until you press <",
+   "es": ">Los cambios se quedan aquí hasta que presiones <",
+   "n": 1
+  },
+  {
+   "en": "> below.<",
+   "es": "> abajo.<",
+   "n": 1
+  },
+  {
+   "en": ">Stored in <",
+   "es": ">Se guarda en <",
+   "n": 1
+  },
+  {
+   "en": "> next to config — preserved across updates.<",
+   "es": "> junto a config: se conserva en cada actualización.<",
+   "n": 1
+  },
+  {
+   "en": ">Close<",
+   "es": ">Cerrar<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Search by name or description...\"",
+   "es": "placeholder=\"Buscar por nombre o descripción...\"",
+   "n": 1
+  },
+  {
+   "en": ">Select a skill from the list to see its details.<",
+   "es": ">Selecciona un skill de la lista para ver sus detalles.<",
+   "n": 1
+  },
+  {
+   "en": ">Find an agent or model setting<",
+   "es": ">Buscar un agent o un ajuste del modelo<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Search Talker, video, repair…\"",
+   "es": "placeholder=\"Buscar Talker, video, reparación…\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Model categories\"",
+   "es": "aria-label=\"Categorías de modelos\"",
+   "n": 1
+  },
+  {
+   "en": ">No settings match your search.<",
+   "es": ">Ningún ajuste coincide con tu búsqueda.<",
+   "n": 1
+  },
+  {
+   "en": ">Ollama base<",
+   "es": ">Base de Ollama<",
+   "n": 1
+  },
+  {
+   "en": ">Unified base<",
+   "es": ">Base de Unified<",
+   "n": 1
+  },
+  {
+   "en": ">Image interpreter base<",
+   "es": ">Base de Image interpreter<",
+   "n": 1
+  },
+  {
+   "en": ">MCP System server IP<",
+   "es": ">IP del servidor MCP System<",
+   "n": 1
+  },
+  {
+   "en": ">MCP System Server port<",
+   "es": ">Puerto del servidor MCP System<",
+   "n": 1
+  },
+  {
+   "en": ">MCP System Client Uri<",
+   "es": ">URI del cliente MCP System<",
+   "n": 1
+  },
+  {
+   "en": ">MCP Files Server IP<",
+   "es": ">IP del servidor MCP Files<",
+   "n": 1
+  },
+  {
+   "en": ">MCP Files Server Port<",
+   "es": ">Puerto del servidor MCP Files<",
+   "n": 1
+  },
+  {
+   "en": ">MCP Files Client Uri<",
+   "es": ">URI del cliente MCP Files<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Base URL of the MCP-Kali-Server (server.py) running on your Kali box. The Kalier pentest tool targets this automatically. e.g. http://172.17.48.44:5000\"",
+   "es": "title=\"URL base del MCP-Kali-Server (server.py) que corre en tu máquina Kali. El tool de pentest Kalier lo usa automáticamente. Ej.: http://172.17.48.44:5000\"",
+   "n": 1
+  },
+  {
+   "en": ">Kali server (Kalier)<",
+   "es": ">Servidor Kali (Kalier)<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Access keys wizard sections\"",
+   "es": "aria-label=\"Secciones del Access Keys Wizard\"",
+   "n": 1
+  },
+  {
+   "en": ">Configure provider keys, bridge passwords, and ACPX commands in one place.<",
+   "es": ">Configura las API keys de los proveedores, las contraseñas de los bridges y los comandos de ACPX en un solo lugar.<",
+   "n": 1
+  },
+  {
+   "en": ">Target directory:<",
+   "es": ">Directorio de destino:<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"e.g. C:\\Backups\\Tlamatini\"",
+   "es": "placeholder=\"p. ej. C:\\Backups\\Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Browse for a folder\"",
+   "es": "title=\"Buscar una carpeta\"",
+   "n": 1
+  },
+  {
+   "en": ">Browse<",
+   "es": ">Examinar<",
+   "n": 2
+  },
+  {
+   "en": ">db.sqlite3 file:<",
+   "es": ">Archivo db.sqlite3:<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"e.g. C:\\Backups\\Tlamatini\\db.sqlite3\"",
+   "es": "placeholder=\"p. ej. C:\\Backups\\Tlamatini\\db.sqlite3\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Browse for a db.sqlite3 file\"",
+   "es": "title=\"Buscar un archivo db.sqlite3\"",
+   "n": 1
+  },
+  {
+   "en": ">Pre-established prompts...<",
+   "es": ">Prompts predefinidos...<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Search prompts by words, initials (imd) or a #number...\"",
+   "es": "placeholder=\"Buscar prompts por palabras, iniciales (imd) o un #número...\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Search the catalog of prompts\"",
+   "es": "aria-label=\"Buscar en el catálogo de prompts\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Clear search\"",
+   "es": "title=\"Limpiar la búsqueda\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Clear search\"",
+   "es": "aria-label=\"Limpiar la búsqueda\"",
+   "n": 1
+  },
+  {
+   "en": ">XAIHT: eXtended Artificial Intelligence Humanly Tempered (a Mexican company)<",
+   "es": ">XAIHT: eXtended Artificial Intelligence Humanly Tempered (una empresa mexicana)<",
+   "n": 1
+  },
+  {
+   "en": ">A&amp;A's company.<",
+   "es": ">La empresa de A&amp;A.<",
+   "n": 1
+  },
+  {
+   "en": ">CREATED BY ANGELA LÓPEZ MENDOZA<",
+   "es": ">CREADA POR ANGELA LÓPEZ MENDOZA<",
+   "n": 1
+  },
+  {
+   "en": ">Installed version: <",
+   "es": ">Versión instalada: <",
+   "n": 1
+  },
+  {
+   "en": ">Checking for updates…<",
+   "es": ">Buscando actualizaciones…<",
+   "n": 1
+  },
+  {
+   "en": ">View releases on GitHub<",
+   "es": ">Ver los releases en GitHub<",
+   "n": 1
+  },
+  {
+   "en": ">Update now<",
+   "es": ">Actualizar ahora<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Voice settings\"",
+   "es": "aria-label=\"Configuración de voz\"",
+   "n": 1
+  },
+  {
+   "en": ">Speech settings<",
+   "es": ">Configuración de la voz<",
+   "n": 1
+  },
+  {
+   "en": ">Tlamatini's voice is <",
+   "es": ">La voz de Tlamatini es <",
+   "n": 1
+  },
+  {
+   "en": ">always female<",
+   "es": ">siempre femenina<",
+   "n": 1
+  },
+  {
+   "en": ">, and works the same in Chrome &amp; Edge.<",
+   "es": "> y funciona igual en Chrome y Edge.<",
+   "n": 1
+  },
+  {
+   "en": ">Volume <",
+   "es": ">Volumen <",
+   "n": 1
+  },
+  {
+   "en": ">Speed <",
+   "es": ">Velocidad <",
+   "n": 1
+  },
+  {
+   "en": ">Pitch <",
+   "es": ">Tono <",
+   "n": 1
+  },
+  {
+   "en": ">Pan (stereo)<",
+   "es": ">Paneo (estéreo)<",
+   "n": 1
+  },
+  {
+   "en": ">Mono in the browser - available with the Orpheus voice.<",
+   "es": ">Mono en el browser; disponible con la voz Orpheus.<",
+   "n": 1
+  },
+  {
+   "en": ">When an answer arrives<",
+   "es": ">Cuando llega una respuesta<",
+   "n": 1
+  },
+  {
+   "en": "> Automatically speak answers<",
+   "es": "> Leer las respuestas en voz alta automáticamente<",
+   "n": 1
+  },
+  {
+   "en": "> Notify answer complete<",
+   "es": "> Avisar cuando la respuesta esté completa<",
+   "n": 1
+  },
+  {
+   "en": "> Silent<",
+   "es": "> En silencio<",
+   "n": 1
+  },
+  {
+   "en": ">Settings are saved in this browser.<",
+   "es": ">La configuración se guarda en este browser.<",
+   "n": 1
+  },
+  {
+   "en": ">Test voice<",
+   "es": ">Probar la voz<",
+   "n": 1
+  },
+  {
+   "en": ">Config · Mic<",
+   "es": ">Config · Micrófono<",
+   "n": 1
+  },
+  {
+   "en": ">Microphone settings<",
+   "es": ">Configuración del micrófono<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Close microphone settings\"",
+   "es": "aria-label=\"Cerrar la configuración del micrófono\"",
+   "n": 1
+  },
+  {
+   "en": ">Choose what happens after dictation. Uses the microphone on the computer running Tlamatini.<",
+   "es": ">Elige qué pasa después del dictado. Usa el micrófono de la computadora donde corre Tlamatini.<",
+   "n": 1
+  },
+  {
+   "en": ">After speech becomes text<",
+   "es": ">Cuando la voz se convierte en texto<",
+   "n": 1
+  },
+  {
+   "en": ">Send automatically<",
+   "es": ">Enviar automáticamente<",
+   "n": 1
+  },
+  {
+   "en": ">Start the request as soon as transcription finishes.<",
+   "es": ">Inicia la solicitud en cuanto termina la transcripción.<",
+   "n": 1
+  },
+  {
+   "en": ">Keep in the chat input<",
+   "es": ">Dejar en el input del chat<",
+   "n": 1
+  },
+  {
+   "en": ">Review, correct or add to the text, then press Send yourself.<",
+   "es": ">Revisa, corrige o completa el texto y luego presiona Enviar tú.<",
+   "n": 1
+  },
+  {
+   "en": ">Microphone<",
+   "es": ">Micrófono<",
+   "n": 1
+  },
+  {
+   "en": ">Use configured Whisperer microphone<",
+   "es": ">Usar el micrófono configurado en Whisperer<",
+   "n": 1
+  },
+  {
+   "en": ">System default input<",
+   "es": ">Input predeterminado del sistema<",
+   "n": 1
+  },
+  {
+   "en": ">Refresh inputs<",
+   "es": ">Actualizar inputs<",
+   "n": 1
+  },
+  {
+   "en": ">Loading input devices…<",
+   "es": ">Cargando los dispositivos de input…<",
+   "n": 1
+  },
+  {
+   "en": ">Input volume (gain) <",
+   "es": ">Volumen de input (ganancia) <",
+   "n": 1
+  },
+  {
+   "en": ">100% keeps the original level. Boost quiet speech carefully; high gain can distort it. This does not change the system volume.<",
+   "es": ">100% conserva el nivel original. Sube con cuidado una voz baja: una ganancia alta puede distorsionarla. Esto no cambia el volumen del sistema.<",
+   "n": 1
+  },
+  {
+   "en": ">Stop after silence (seconds)<",
+   "es": ">Detener tras un silencio (segundos)<",
+   "n": 1
+  },
+  {
+   "en": ">Recording limit (seconds)<",
+   "es": ">Límite de grabación (segundos)<",
+   "n": 1
+  },
+  {
+   "en": ">A longer silence window allows longer pauses. Recording always ends at the limit.<",
+   "es": ">Una ventana de silencio más larga permite pausas más largas. La grabación siempre termina al llegar al límite.<",
+   "n": 1
+  },
+  {
+   "en": ">Silence sensitivity<",
+   "es": ">Sensibilidad al silencio<",
+   "n": 1
+  },
+  {
+   "en": ">Automatic — adapt to the room<",
+   "es": ">Automática: se adapta al lugar<",
+   "n": 1
+  },
+  {
+   "en": ">Manual threshold<",
+   "es": ">Umbral manual<",
+   "n": 1
+  },
+  {
+   "en": ">Speech threshold (dBFS)<",
+   "es": ">Umbral de voz (dBFS)<",
+   "n": 1
+  },
+  {
+   "en": ">A lower manual threshold hears quieter speech; a higher one ignores more background noise.<",
+   "es": ">Un umbral manual más bajo capta voces más bajas; uno más alto ignora más ruido de fondo.<",
+   "n": 1
+  },
+  {
+   "en": ">Recognition &amp; advanced capture<",
+   "es": ">Reconocimiento y captura avanzada<",
+   "n": 1
+  },
+  {
+   "en": ">Spoken language<",
+   "es": ">Idioma hablado<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Automatic (or en, es, fr…)\"",
+   "es": "placeholder=\"Automático (o en, es, fr…)\"",
+   "n": 1
+  },
+  {
+   "en": ">Transcript language<",
+   "es": ">Idioma de la transcripción<",
+   "n": 1
+  },
+  {
+   "en": ">Keep the spoken language<",
+   "es": ">Conservar el idioma hablado<",
+   "n": 1
+  },
+  {
+   "en": ">Translate to English<",
+   "es": ">Traducir al inglés<",
+   "n": 1
+  },
+  {
+   "en": ">Capture sample rate<",
+   "es": ">Frecuencia de muestreo de la captura<",
+   "n": 1
+  },
+  {
+   "en": ">16 kHz — recommended<",
+   "es": ">16 kHz — recomendado<",
+   "n": 1
+  },
+  {
+   "en": ">Input channels<",
+   "es": ">Canales de input<",
+   "n": 1
+  },
+  {
+   "en": ">Mono — recommended<",
+   "es": ">Mono — recomendado<",
+   "n": 1
+  },
+  {
+   "en": ">Stereo — converted to mono<",
+   "es": ">Estéreo — convertido a mono<",
+   "n": 1
+  },
+  {
+   "en": ">Local decoding beam size<",
+   "es": ">Beam size de la decodificación local<",
+   "n": 1
+  },
+  {
+   "en": ">Filter silence during local recognition<",
+   "es": ">Filtrar el silencio durante el reconocimiento local<",
+   "n": 1
+  },
+  {
+   "en": ">Higher beam sizes can improve recognition and take longer. Translation support depends on the selected speech model. Configure the speech engine and model in Config → Models → Speech.<",
+   "es": ">Un beam size mayor puede mejorar el reconocimiento y tardar más. La traducción depende del modelo de voz elegido. Configura el motor y el modelo de voz en Config → Modelos → Voz.<",
+   "n": 1
+  },
+  {
+   "en": ">Saved in this browser. Changes apply to the next recording.<",
+   "es": ">Se guarda en este browser. Los cambios aplican a la siguiente grabación.<",
+   "n": 1
+  },
+  {
+   "en": ">Reset<",
+   "es": ">Restablecer<",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": ">Tlamatini<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Canvas<",
+   "motivo": "nombre de un área del producto"
+  },
+  {
+   "en": ">Terminals<",
+   "motivo": "nombre de un área del producto"
+  },
+  {
+   "en": ">Agentic Control Panel<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Prompt Flow Panel<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Admin Panel<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">ACPX-Skills<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">MCPs<",
+   "motivo": "vocabulario del producto"
+  },
+  {
+   "en": ">Config<",
+   "motivo": "vocabulario del producto"
+  },
+  {
+   "en": ">URLs<",
+   "motivo": "término técnico"
+  },
+  {
+   "en": ">Access Keys Wizard<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">DB<",
+   "motivo": "término técnico"
+  },
+  {
+   "en": ">Multi-Turn<",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": ">Exec report<",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": ">ACPX<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Ask Execs<",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": ">Compact mode<",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": ">Self-modify<",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": "alt=\"Tlamatini\"",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">&lt;&lt;...&gt;&gt;<",
+   "motivo": "símbolo"
+  },
+  {
+   "en": ">Markdown<",
+   "motivo": "nombre de un formato"
+  },
+  {
+   "en": ">System-Metrics<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Files-Search<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">External MCPs<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">&times;<",
+   "motivo": "símbolo"
+  },
+  {
+   "en": ">Tools<",
+   "motivo": "vocabulario del producto"
+  },
+  {
+   "en": ">Transport<",
+   "motivo": "término técnico de MCP"
+  },
+  {
+   "en": ">Status<",
+   "motivo": "término técnico"
+  },
+  {
+   "en": ">.json<",
+   "motivo": "extensión de archivo"
+  },
+  {
+   "en": ">Telegram<",
+   "motivo": "nombre de un servicio"
+  },
+  {
+   "en": ">WhatsApp<",
+   "motivo": "nombre de un servicio"
+  },
+  {
+   "en": ">contacts.json<",
+   "motivo": "nombre de archivo"
+  },
+  {
+   "en": "placeholder=\"http://127.0.0.1:5000\"",
+   "motivo": "URL de ejemplo"
+  },
+  {
+   "en": "title=\"Access Keys Wizard\"",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Tlamatini v{{ version }}<",
+   "motivo": "nombre y versión del producto"
+  },
+  {
+   "en": ">8 kHz<",
+   "motivo": "unidad"
+  },
+  {
+   "en": ">16 kHz<",
+   "motivo": "unidad"
+  },
+  {
+   "en": ">22.05 kHz<",
+   "motivo": "unidad"
+  },
+  {
+   "en": ">24 kHz<",
+   "motivo": "unidad"
+  },
+  {
+   "en": ">32 kHz<",
+   "motivo": "unidad"
+  },
+  {
+   "en": ">44.1 kHz<",
+   "motivo": "unidad"
+  },
+  {
+   "en": ">48 kHz<",
+   "motivo": "unidad"
+  },
+  {
+   "en": ">Mic<",
+   "motivo": "abreviatura breve para el botón"
+  }
+ ]
+}

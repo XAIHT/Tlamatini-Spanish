@@ -1,0 +1,20 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0063_add_agent_parametrizer_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Parametrize the template Telegrammer agent to set \"",
+   "es": "\"Parametriza el agent plantilla Telegrammer para establecer \"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "\"message='Telegrammer parametrized and launched'.\"",
+   "motivo": "valor de parámetro (message=...) que el agent envía tal cual"
+  }
+ ]
+}

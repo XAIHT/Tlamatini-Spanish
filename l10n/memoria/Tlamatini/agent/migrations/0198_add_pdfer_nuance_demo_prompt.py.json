@@ -1,0 +1,268 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0198_add_pdfer_nuance_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"border-radius:8px;font-weight:600;\\\">📕 PDFer — the same words, two \"",
+   "es": "\"border-radius:8px;font-weight:600;\\\">📕 PDFer — las mismas palabras, dos \"",
+   "n": 1
+  },
+  {
+   "en": "\"different documents</div>\\n\\n\"",
+   "es": "\"documentos distintos</div>\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"FILL IN (optional — leave them exactly as they are for a one-click \"",
+   "es": "\"LLENA LOS CAMPOS (opcional — déjalos exactamente como están para una demo de un \"",
+   "n": 1
+  },
+  {
+   "en": "\"  · A colour for the second document: \"",
+   "es": "\"  · Un color para el segundo documento: \"",
+   "n": 1
+  },
+  {
+   "en": "\"[[ predominant_color — OPTIONAL, default: #B4451F ]]\\n\"",
+   "es": "\"[[ predominant_color — OPCIONAL, predeterminado: #B4451F ]]\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  · A treatment to force on the second document: \"",
+   "es": "\"  · Un tratamiento para forzar en el segundo documento: \"",
+   "n": 1
+  },
+  {
+   "en": "\"[[ nuance — OPTIONAL, default: academic_paper ]]\\n\"",
+   "es": "\"[[ nuance — OPCIONAL, predeterminado: academic_paper ]]\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"If you left the blanks above untouched, use the stated defaults and run \"",
+   "es": "\"Si dejaste los espacios de arriba sin tocar, usa los valores predeterminados indicados y ejecútala \"",
+   "n": 1
+  },
+  {
+   "en": "\"anyway — do not ask me to fill them in.\\n\\n\"",
+   "es": "\"de todos modos — no me pidas que los llene.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, I want to see PDFer CHOOSE a design, and then see me overrule \"",
+   "es": "\"Tlamatini, quiero ver a PDFer ELEGIR un diseño y luego verme a mí anularlo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"it. Render the SAME content twice with chat_agent_pdfer, changing \"",
+   "es": "\"Renderiza el MISMO contenido dos veces con chat_agent_pdfer, cambiando \"",
+   "n": 1
+  },
+  {
+   "en": "\"nothing but the treatment.\\n\\n\"",
+   "es": "\"nada más que el tratamiento.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Use this content for BOTH documents, exactly as written:\\n\\n\"",
+   "es": "\"Usa este contenido para AMBOS documentos, exactamente como está escrito:\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"**DOCUMENT 1 — let PDFer decide.** Call chat_agent_pdfer with \"",
+   "es": "\"**DOCUMENTO 1 — deja que PDFer decida.** Llama a chat_agent_pdfer con \"",
+   "n": 1
+  },
+  {
+   "en": "\"mode='markdown', that content as input_text, \"",
+   "es": "\"mode='markdown', ese contenido como input_text, \"",
+   "n": 1
+  },
+  {
+   "en": "\"title='Confinement Physics of the Spherical Tokamak', \"",
+   "es": "\"title='Confinement Physics of the Spherical Tokamak', \""
+  },
+  {
+   "en": "\"filename='tokamak_auto.pdf', and NOTHING about the appearance. Do not \"",
+   "es": "\"filename='tokamak_auto.pdf', y NADA sobre la apariencia. No \"",
+   "n": 1
+  },
+  {
+   "en": "\"pass nuance and do not pass predominant_color: I want to see what it \"",
+   "es": "\"pases nuance y no pases predominant_color: quiero ver qué \"",
+   "n": 1
+  },
+  {
+   "en": "\"picks on its own.\\n\\n\"",
+   "es": "\"elige por su cuenta.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"**DOCUMENT 2 — overrule it.** Call chat_agent_pdfer again with the SAME \"",
+   "es": "\"**DOCUMENTO 2 — anúlalo.** Llama a chat_agent_pdfer otra vez con el MISMO \"",
+   "n": 1
+  },
+  {
+   "en": "\"content and title, filename='tokamak_forced.pdf', plus the nuance and \"",
+   "es": "\"contenido y título, filename='tokamak_forced.pdf', más el nuance y el \"",
+   "n": 1
+  },
+  {
+   "en": "\"predominant_color from the fill-in block above.\\n\\n\"",
+   "es": "\"predominant_color del bloque de llenado de arriba.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Then tell me, in plain language and in a small HTML table:\\n\"",
+   "es": "\"Luego dime, en lenguaje sencillo y en una tabla HTML pequeña:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  · what treatment PDFer chose by itself, and how sure it was → \"",
+   "es": "\"  · qué tratamiento eligió PDFer por sí mismo, y qué tan seguro estaba → \"",
+   "n": 1
+  },
+  {
+   "en": "\"  · what the two palettes came out as → <palette and predominant_color \"",
+   "es": "\"  · cómo salieron las dos paletas → <palette and predominant_color \"",
+   "n": 1
+  },
+  {
+   "en": "\"for each>\\n\"",
+   "es": "\"para cada uno>\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  · which typefaces each document was set in → <font_pairing for each>\\n\"",
+   "es": "\"  · con qué tipografías se compuso cada documento → <font_pairing for each>\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  · whether it decided decoration was safe here → <decorations>\\n\"",
+   "es": "\"  · si decidió que la decoración era segura aquí → <decorations>\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  · **whether the layout was verified clean** — PDFer re-opens each \"",
+   "es": "\"  · **si el layout se verificó limpio** — PDFer vuelve a abrir cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"finished PDF and measures the real letters on the page for overlapping \"",
+   "es": "\"PDF terminado y mide las letras reales en la página buscando texto que se encime \"",
+   "n": 1
+  },
+  {
+   "en": "\"text and anything running off the sheet → <layout_clean and overlaps for \"",
+   "es": "\"y cualquier cosa que se salga de la hoja → <layout_clean and overlaps for \"",
+   "n": 1
+  },
+  {
+   "en": "\"  · the two files it wrote → <output_path for each>\\n\\n\"",
+   "es": "\"  · los dos archivos que escribió → <output_path for each>\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Pay attention to that table in the content: it holds a Windows path and \"",
+   "es": "\"Pon atención a esa tabla del contenido: tiene un path de Windows y \"",
+   "n": 1
+  },
+  {
+   "en": "\"a long URL, which is exactly the shape that used to print across the \"",
+   "es": "\"una URL larga, que es exactamente la forma que antes se imprimía encimada en la \"",
+   "n": 1
+  },
+  {
+   "en": "\"next column. Confirm from the audit whether it did.\\n\\n\"",
+   "es": "\"siguiente columna. Confirma desde el audit si lo hizo.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"PRE-FLIGHT: tick ONLY the Multi-Turn and Exec report checkboxes. Use \"",
+   "es": "\"PRE-FLIGHT: marca SÓLO las casillas Multi-Turn y Exec report. Usa \"",
+   "n": 1
+  },
+  {
+   "en": "\"ONLY chat_agent_pdfer — no shell, no Python, no other agent. Nothing here \"",
+   "es": "\"SÓLO chat_agent_pdfer — sin shell, sin Python, sin ningún otro agent. Nada aquí \"",
+   "n": 1
+  },
+  {
+   "en": "\"needs the internet, a key or an installation. End with END-RESPONSE.\"",
+   "es": "\"necesita internet, una key ni una instalación. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style=\\\"background:linear-gradient(135deg,#07090F 0%,#1E3A8A 40%,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#38BDF8 70%,#22D3EE 100%);color:#ffffff;padding:10px 14px;\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"# Confinement Physics of the Spherical Tokamak\\n\\n\"",
+   "motivo": "contenido de ejemplo del documento (se renderiza tal cual; title= lo referencia en inglés); conservar"
+  },
+  {
+   "en": "\"A tokamak confines a deuterium-tritium plasma using a toroidal magnetic \"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"field of roughly 5 T combined with a poloidal field induced by a 15 MA \"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"plasma current. The superconducting magnets operate at 4 K, cooled by \"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"supercritical helium.\\n\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"## Measured parameters\\n\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"| Parameter | Symbol | Value | Unit | Notes |\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"| Toroidal field | B_t | 5.3 | T | at the magnetic axis |\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"| Plasma current | I_p | 15.0 | MA | flat-top |\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"| Confinement time | tau_E | 3.7 | s | H-mode, ELMy |\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"| Stored magnetic energy | W_mag | 40 | GJ | quench-relevant |\\n\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"## Diagnostics\\n\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"The quench detector is configured through \"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"quench_detector.yaml` and validated against \"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "\"**Warning:** a quench deposits 40 GJ in milliseconds.\\n\"",
+   "motivo": "contenido de ejemplo del documento; conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "archivo": "Tlamatini/agent/services/filesystem.py",
+ "segmentos": [
+  {
+   "en": "\"I've saved the file <code>\"",
+   "es": "\"¡Ya guardé el archivo <code>\"",
+   "n": 1
+  },
+  {
+   "en": "'</code> for you'",
+   "es": "'</code> para ti'",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

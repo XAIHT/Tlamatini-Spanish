@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/interactor/consumer.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Invalid editor frame\"",
+   "motivo": "mensaje interno de excepción: se atrapa ahí mismo y nunca se muestra"
+  }
+ ]
+}

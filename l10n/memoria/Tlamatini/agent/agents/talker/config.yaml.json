@@ -1,0 +1,24 @@
+{
+ "archivo": "Tlamatini/agent/agents/talker/config.yaml",
+ "segmentos": [
+  {
+   "en": "# Language of the speech. Passed through to the model so a multilingual model",
+   "es": "# ── TTS ENGINE ─────────────────────────────────────────────────────────────\n# \"orpheus\" = the Ollama/Orpheus + SNAC pipeline above (English). \"piper\" = a\n# LOCAL, offline Piper neural voice. The SPANISH edition uses \"piper\" for a\n# genuine Latin-American (Mexican) FEMALE voice, with no Ollama needed.\ntts_engine: \"piper\"\n# Download the Piper voice (.onnx/.onnx.json) from the official rhasspy/piper-voices\n# on first use when missing. false = fully offline/pinned (you place the files).\npiper_auto_download: true\n# Install piper-tts into the carried Python on first use when missing.\npiper_auto_install: true\n# Where Piper voices live; \"\" = <LOCALAPPDATA>/Tlamatini/piper/voices.\npiper_voices_dir: \"\"\n# Optional explicit piper command; \"\" = run Piper from the carried Python.\npiper_executable: \"\"\n\n# Language of the speech. Passed through to the model so a multilingual model",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "language: \"en\"",
+   "es": "# Spanish edition default: \"es\" (the Piper Mexican voice speaks Spanish natively).\nlanguage: \"es\"",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "voice: \"@config\"",
+   "es": "# SPANISH edition: the Piper Mexican-Spanish FEMALE voice (used when tts_engine is\n# \"piper\"). es_MX-claude-high is verified female; es_MX-ald is NOT permitted (its\n# gender is undocumented). For the Orpheus engine use tara/leah/jess/mia/zoe.\nvoice: \"es_MX-claude-high\"",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

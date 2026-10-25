@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0181_prompt_sort_rank.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

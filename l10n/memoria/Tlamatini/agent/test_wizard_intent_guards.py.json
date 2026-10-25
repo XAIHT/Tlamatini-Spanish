@@ -1,0 +1,60 @@
+{
+ "archivo": "Tlamatini/agent/test_wizard_intent_guards.py",
+ "segmentos": [
+  {
+   "en": "\"I will type it only into the console\"",
+   "es": "\"la escribiré solamente en la ventana de consola\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "\"I explicitly request local graphical Notifier alerts\"",
+   "es": "\"Pido explícitamente alertas gráficas locales del Notifier\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "\"Username needed\"",
+   "es": "\"Falta el nombre de usuario\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "\"Console input needed\"",
+   "es": "\"Escribe en la consola\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "\"Error creating user\"",
+   "es": "\"Error al crear el usuario\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 2
+  },
+  {
+   "en": "\"Warning: console not visible\"",
+   "es": "\"Aviso: la consola no se ve\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 2
+  },
+  {
+   "en": "\"User ready\"",
+   "es": "\"Usuario listo\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 3
+  },
+  {
+   "en": "\"not email, Telegram, WhatsApp or other external messages\"",
+   "es": "\"no correo, Telegram, WhatsApp ni otros mensajes externos\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 1
+  },
+  {
+   "en": "\"a launched window or a typed command is not success\"",
+   "es": "\"una ventana abierta o un comando escrito no es éxito\"",
+   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

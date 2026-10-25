@@ -1,0 +1,2367 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+# build.py — Tlamatini Build Script
+
+import json
+import os
+import re
+import stat
+import subprocess
+import sys
+import time
+from pathlib import Path
+import importlib.util
+import shutil
+import zipfile
+
+from build_runtime_assets import (
+    MAX_RELEASE_ZIP_BYTES,
+    capture_source_payload,
+    copy_root_sources,
+    ignore_runtime_state,
+    validate_source_assets,
+    verify_collected_static,
+    verify_package,
+    write_runtime_manifest,
+)
+
+# Versioning: SemVer 2.0.0 with git-tag-derived version.  See VERSIONING.md.
+from build_env import run_in_sealed_env
+from pyinstaller_guard import pyinstaller_command
+from versioning import (
+    emit_build_artifacts,
+    extract_cli_version,
+    resolve_build_version,
+)
+
+# ── pip's "A new release of pip is available" nag: OFF for the whole build ──
+# It is pure noise in a long build log, and it is NOT fixable the obvious way:
+# the build Python is normally the SYSTEM one under Program Files, whose pip
+# lives in a READ-ONLY prefix, so `python -m pip install --upgrade pip` cannot
+# write there without admin — and upgrading a DIFFERENT interpreter's pip (e.g.
+# the carried <repo>/python, which is writable) does nothing for it. Even a
+# successful upgrade only buys silence until pip's next release. So the CHECK
+# itself is disabled: set here in the environment so EVERY child pip inherits
+# it (including nested ones we do not spawn directly), while each pip command
+# below ALSO passes --disable-pip-version-check explicitly — belt-and-braces,
+# so the silence survives a refactor that rebuilds env from scratch.
+# Pinned by Tlamatini/agent/test_build_pip_quiet.py.
+os.environ["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
+
+
+def find_package_data_paths(pypi_name, import_name):
+    """Finds paths for a package's code and metadata."""
+    paths_to_add = []
+    try:
+        spec = importlib.util.find_spec(import_name)
+        if not spec or not spec.origin:
+            print(f"WARNING: Could not find code for '{import_name}'.")
+            return []
+
+        code_path = Path(os.path.dirname(spec.origin))
+        paths_to_add.append(f'--add-data={code_path};{import_name}')
+        print(f"Found '{import_name}' code at: {code_path}")
+
+        dist_info_name_base = pypi_name.replace('-', '_')
+        dist_info_path = None
+        for path in sys.path:
+            if Path(path).is_dir() and 'site-packages' in str(path):
+                for item in Path(path).iterdir():
+                    if item.is_dir() and item.name.startswith(dist_info_name_base) and item.name.endswith('.dist-info'):
+                        dist_info_path = item
+                        break
+            if dist_info_path:
+                break
+
+        if dist_info_path:
+            paths_to_add.append(f'--add-data={dist_info_path};{dist_info_path.name}')
+            print(f"Found '{pypi_name}' metadata at: {dist_info_path}")
+        else:
+            print(f"WARNING: Could not find .dist-info for '{pypi_name}'.")
+        return paths_to_add
+    except Exception as e:
+        print(f"Error finding package {pypi_name}/{import_name}: {e}")
+        return []
+
+
+def find_package_code_path(package_name):
+    """Finds the full path to an installed package's code directory."""
+    try:
+        spec = importlib.util.find_spec(package_name)
+        return Path(os.path.dirname(spec.origin)) if spec and spec.origin else None
+    except Exception:
+        return None
+
+
+def _gather_search_dirs():
+    """Build an ordered, deduplicated list of directories to search for DLLs.
+
+    Resolution order (first match wins):
+      1. sys.base_prefix / sys.prefix / executable dir  — the running Python
+      2. PYTHON_HOME env var entries
+      3. PATH env var entries that contain a python*.dll
+      4. DLLs sub-folders (standard + MS Store layout)
+      5. C:/Windows/System32  (VC runtime fallback)
+    """
+    dirs: list[Path] = []
+
+    # ── 1) The Python that is actually executing this script ──────────
+    dirs.append(Path(sys.base_prefix))
+    dirs.append(Path(sys.prefix))
+    dirs.append(Path(sys.executable).parent)
+
+    # ── 2) DLLs sub-folders (standard installer + MS Store on Win11) ──
+    dirs.append(Path(sys.base_prefix) / "DLLs")
+    dirs.append(Path(sys.executable).parent / "DLLs")
+
+    # ── 3) Windows 10/11 SDK UCRT Redistributables ─────────────────────
+    # This prevents PyInstaller from crashing on fresh Windows endpoints 
+    # without requiring contributors to have a specific hardcoded SDK path.
+    sdk_base = Path("C:/Program Files (x86)/Windows Kits/10/Redist")
+    if sdk_base.is_dir():
+        dirs.append(sdk_base / "ucrt/DLLs/x64")
+        for ver_dir in sdk_base.iterdir():
+            if ver_dir.is_dir():
+                dirs.append(ver_dir / "ucrt/DLLs/x64")
+
+    # ── 4) System32 as last-resort for VC runtimes ────────────────────
+    dirs.append(Path("C:/Windows/System32"))
+
+    # Deduplicate while preserving order
+    seen: set[Path] = set()
+    unique: list[Path] = []
+    for d in dirs:
+        try:
+            resolved = d.resolve()
+        except OSError:
+            continue
+        if resolved not in seen:
+            seen.add(resolved)
+            unique.append(resolved)
+    return unique
+
+
+def _find_first_dll(name: str, search_dirs: list[Path]) -> Path | None:
+    """Return the first existing path for *name* across *search_dirs*."""
+    for d in search_dirs:
+        candidate = d / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def collect_python_dll_binaries():
+    """Find **all** DLLs required by the embedded Python so the bootloader
+    can load ``python3XX.dll`` without errors.
+
+    In addition to the versioned DLL itself, the following are bundled:
+      - ``python3.dll``          – stable ABI DLL the bootloader may need
+      - ``vcruntime140.dll``     – VC runtime
+      - ``vcruntime140_1.dll``   – VC runtime (additional)
+      - ``ucrtbase.dll``         – Universal CRT base
+      - ``api-ms-win-crt-*.dll`` – Universal CRT API-set forwarders
+
+    Without these, Windows will report "The specified module could not be
+    found" even though the main DLL is present, because *its* transitive
+    dependencies are missing from the temporary extraction directory.
+
+    Returns a list of ``--add-binary=<src>;<dest>`` arguments.
+    """
+    binaries: list[str] = []
+    ver = sys.version_info
+    dll_name = f"python{ver.major}{ver.minor}.dll"
+
+    search_dirs = _gather_search_dirs()
+
+    print(f"Python executable : {sys.executable}")
+    print(f"Python version    : {ver.major}.{ver.minor}.{ver.micro}")
+    print(f"Looking for       : {dll_name}")
+    print(f"Search directories: {len(search_dirs)}")
+
+    # ── 1) python3XX.dll (versioned) ─────────────────────────────────
+    found = _find_first_dll(dll_name, search_dirs)
+    if found:
+        binaries.append(f"--add-binary={found};.")
+        print(f"Bundling Python DLL: {found}")
+    else:
+        print(f"WARNING: Could not locate {dll_name} — the exe may fail to start.")
+
+    # ── 2) python3.dll (stable ABI – bootloader may require it) ──────
+    found = _find_first_dll("python3.dll", search_dirs)
+    if found:
+        binaries.append(f"--add-binary={found};.")
+        print(f"Bundling stable ABI DLL: {found}")
+    else:
+        print("WARNING: Could not locate python3.dll")
+
+    # ── 3) VC runtime DLLs ───────────────────────────────────────────
+    for vc_name in ["vcruntime140.dll", "vcruntime140_1.dll"]:
+        found = _find_first_dll(vc_name, search_dirs)
+        if found:
+            binaries.append(f"--add-binary={found};.")
+            print(f"Bundling VC runtime: {found}")
+        else:
+            print(f"WARNING: Could not locate {vc_name}")
+
+    # ── 4) Universal CRT (ucrtbase + api-ms-win-crt forwarders) ──────
+    ucrt_found = _find_first_dll("ucrtbase.dll", search_dirs)
+    if ucrt_found:
+        binaries.append(f"--add-binary={ucrt_found};.")
+        print(f"Bundling UCRT base: {ucrt_found}")
+
+    ucrt_forwarders_bundled = 0
+    seen_names: set[str] = set()
+    for d in search_dirs:
+        if not d.is_dir():
+            continue
+        for f in d.iterdir():
+            lname = f.name.lower()
+            if lname.startswith("api-ms-win-crt-") and lname.endswith(".dll"):
+                if lname not in seen_names:
+                    seen_names.add(lname)
+                    binaries.append(f"--add-binary={f};.")
+                    ucrt_forwarders_bundled += 1
+    if ucrt_forwarders_bundled:
+        print(f"Bundling {ucrt_forwarders_bundled} UCRT forwarder DLLs")
+    else:
+        print("WARNING: Could not locate any api-ms-win-crt-*.dll forwarders")
+
+    return binaries
+
+
+_NUMPY_DIST_INFO_RE = re.compile(r'^numpy[-_].+\.(dist-info|egg-info)$', re.IGNORECASE)
+_NUMPY_WHEEL_RE = re.compile(r'^numpy-.+\.whl$', re.IGNORECASE)
+
+
+def _purge_numpy_environment(python_exe):
+    """Wipe every numpy trace from a target Python's site-packages.
+
+    Repeated or partial numpy installs leave multiple ``numpy-*.dist-info``
+    directories side-by-side. When that happens, ``importlib.metadata``
+    returns whichever dist-info sorts first (often the stale older one),
+    PyInstaller's numpy hook branches on that wrong version number, and
+    ``collect_dynamic_libs("numpy")`` walks a file list that no longer
+    matches what's on disk — returning zero binaries and letting PyInstaller
+    pick up ``numpy/core/`` duplicate ``.pyd`` files via the module graph
+    instead, which trips numpy 2.x's one-init-per-process guard at runtime.
+
+    To get a clean slate, uninstall numpy repeatedly (pip removes one
+    install at a time when duplicates are present) and then sweep away any
+    orphan ``numpy/`` tree, ``numpy.libs/`` tree, ``numpy-*.dist-info``
+    directory, or ``numpy-*.whl`` wheel file left behind across every
+    site-packages directory the target Python knows about. The subsequent
+    ``pip install -r requirements.txt`` reinstalls numpy fresh against the
+    pinned version.
+    """
+    print(f"\n--- Purging numpy environment for: {python_exe} ---")
+
+    # Enumerate every site-packages directory (system + user) for this Python.
+    probe = (
+        "import site, json, sys; "
+        "dirs = list(site.getsitepackages()); "
+        "u = site.getusersitepackages(); "
+        "dirs.append(u) if u else None; "
+        "print(json.dumps(dirs))"
+    )
+    try:
+        raw = subprocess.check_output([python_exe, "-c", probe], text=True).strip()
+        site_dirs = [Path(p) for p in json.loads(raw)]
+    except Exception as e:
+        print(f"WARNING: Could not enumerate site-packages for {python_exe}: {e}")
+        site_dirs = []
+
+    # Repeatedly ``pip uninstall`` — each call removes one dist-info, so we
+    # loop until pip reports nothing left.
+    for _ in range(5):
+        result = subprocess.run(
+            [python_exe, "-m", "pip", "--disable-pip-version-check",
+             "uninstall", "-y", "numpy"],
+            capture_output=True, text=True,
+        )
+        combined = (result.stdout or "") + (result.stderr or "")
+        if result.returncode != 0 or "not installed" in combined.lower():
+            break
+
+    # Sweep residual files. pip uninstall only removes what its manifest
+    # tracks; orphan ``.whl`` files and dist-info dirs from aborted installs
+    # must be removed manually.
+    removed = 0
+    for sp in site_dirs:
+        if not sp.is_dir():
+            continue
+        for item in sp.iterdir():
+            name = item.name
+            should_remove = False
+            if name.lower() in ('numpy', 'numpy.libs'):
+                should_remove = True
+            elif _NUMPY_DIST_INFO_RE.match(name):
+                should_remove = True
+            elif _NUMPY_WHEEL_RE.match(name):
+                should_remove = True
+            if not should_remove:
+                continue
+            try:
+                if item.is_dir():
+                    shutil.rmtree(item, onerror=_on_rmtree_error)
+                else:
+                    item.unlink()
+                print(f"Removed numpy residual: {item}")
+                removed += 1
+            except Exception as e:
+                print(f"WARNING: Could not remove {item}: {e}")
+
+    if removed == 0:
+        print("No numpy residuals found.")
+    else:
+        print(f"Cleared {removed} numpy residual entries.")
+
+
+def run_step(label, func, *args, **kwargs):
+    """Execute a build step with consistent logging and error handling."""
+    print(f"\n--- {label} ---")
+    try:
+        return func(*args, **kwargs)
+    except Exception as e:
+        print(f"ERROR during '{label}': {e}")
+        raise
+
+
+def _on_rmtree_error(func, path, exc_info):
+    """Handle Windows file-locking / read-only errors during shutil.rmtree."""
+    try:
+        os.chmod(path, stat.S_IWUSR | stat.S_IREAD)
+        func(path)
+    except Exception:
+        print(f"WARNING: Could not remove locked file: {path}")
+
+
+def clean_directory(path):
+    """Remove a directory tree if it exists (handles locked files on Windows)."""
+    p = Path(path)
+    if p.exists():
+        shutil.rmtree(p, onerror=_on_rmtree_error)
+        print(f"Removed: {p}")
+
+
+# The ONLY Python version Tlamatini ships to run its pool agents. The carried
+# interpreter MUST match this exactly — see _probe_carried_python below.
+CARRIED_PYTHON_VERSION = (3, 12, 10)
+# Release contract: pkg.zip and the final installer archive stay below 1.99 GB.
+# Use decimal bytes because release hosts and Windows file properties report the
+# user-facing "GB" size in decimal units.  The guard runs before build cleanup.
+MAX_PKG_ZIP_BYTES = MAX_RELEASE_ZIP_BYTES
+# A few representative third-party deps the pool agents import. The carried
+# interpreter must be able to import all of them, or the agents would fail at
+# runtime on a clean machine — exactly the bug this whole feature fixes.
+_CARRIED_PYTHON_REQUIRED_IMPORTS = ("yaml", "langgraph", "langchain", "requests", "numpy", "cv2")
+
+# The COMPLETE set of third-party modules the pool agents + the STM32 MCP server
+# import. The carried Python must import EVERY one of these IN ISOLATION (no build-
+# machine user-site, no PYTHON* env) or a frozen agent crashes at runtime. Single
+# source of truth: referenced by the per-interpreter pip-verify (step 1b) AND the
+# isolated carried-tree verify at the end of bundle_carried_python.
+_AGENT_RUNTIME_IMPORTS = (
+    "numpy", "cv2",                         # numeric core (all media agents) + OpenCV (Camcorder / VideoPlayer)
+    "mcp", "serial",                        # STM32 MCP server (STM32er)
+    "PyPDF2", "pypdf", "fitz", "odf",       # PDF / ODF file backends
+    "markdown", "xhtml2pdf", "reportlab", "PIL",  # PDFer document composer (md->html->pdf + images)
+    "ebooklib", "openpyxl", "xlrd", "striprtf", "docx", "pptx",  # file-format backends
+    "bs4", "requests", "py7zr", "yaml",     # crawler / http / archive / config
+    "psutil",                               # process/PID liveness in the SHARED pool-agent boilerplate (every pool agent) + OOB kill-tree
+    "pyautogui", "playwright", "telethon",  # desktop / browser / telegram agents
+    "pymongo", "pyodbc", "win32gui", "win32con",  # db / windows agents (pywin32)
+    "sounddevice",                          # microphone capture (Recorder) — native PortAudio
+    "soundfile",                            # audio playback (AudioPlayer) — native libsndfile
+    "ffpyplayer",                           # video+audio playback (VideoPlayer) — bundled ffmpeg+SDL
+    "torch", "snac",                        # text-to-speech (Talker) — Orpheus token -> 24 kHz audio vocoder
+    "faster_whisper", "ctranslate2", "av",  # Whisperer / Video-Analyzer audio tracks, GPU auto / CPU fallback
+    "yt_dlp",                               # Video-Analyzer web links (python -m yt_dlp); private self-updating copy as backup
+)
+
+# These packages execute only in pool/chat-voice subprocesses under the carried
+# Python. They must remain there; collecting them again in Django's interpreter
+# adds another browser driver and hundreds of MiB of unused media binaries.
+_FROZEN_POOL_ONLY_MODULES = (
+    "cv2", "ffpyplayer", "av", "playwright", "faster_whisper",
+    "ctranslate2", "onnxruntime",
+)
+
+# Jupyter never runs in Tlamatini. `thinc.tests.test_examples` imports nbconvert,
+# nbconvert imports notebook, and the contributed hook-notebook.py then bundles
+# every folder jupyter_core.paths.jupyter_path() names - including the builder's
+# live %APPDATA%\jupyter: a RUNNING server's files (locked), its tokens and
+# jupyter_cookie_secret. A public build died on one of those locked files after
+# 20 minutes (2026-10-21). Excluding the family removes the hook itself;
+# pyinstaller_guard.py also isolates the profile and survives locked clutter.
+_FROZEN_JUPYTER_MODULES = (
+    "notebook", "notebook_shim", "nbclassic", "nbconvert",
+    "jupyter_server", "jupyter_server_terminals", "jupyterlab", "jupyterlab_server",
+)
+
+
+def verify_frozen_pool_libraries_absent(dist_root):
+    """Prove that the frozen interpreter respects the pool runtime boundary."""
+    names = _read_pyz_module_names(dist_root)
+    if names is None:
+        raise RuntimeError("Cannot inspect frozen pool-library exclusions")
+    unexpected = sorted(name for name in names
+                        if name.split(".", 1)[0] in _FROZEN_POOL_ONLY_MODULES)
+    internal = Path(dist_root) / "_internal"
+    for path in internal.iterdir():
+        stem = path.name.split(".", 1)[0].split("-", 1)[0]
+        if stem in _FROZEN_POOL_ONLY_MODULES:
+            unexpected.append(path.name)
+    if unexpected:
+        raise RuntimeError("Pool-only libraries leaked into the frozen interpreter: "
+                           + ", ".join(unexpected[:20]))
+    print("  Frozen pool-library boundary passed; carried agent dependencies are retained.")
+
+
+def prune_regenerable_bytecode(dist_root):
+    """Remove build-created caches only when their Python source is present.
+
+    Never remove source-less bytecode, the frozen PYZ or standard-library ZIPs.
+    Run after all executable checks and before creating the final receipt.
+    """
+    root = Path(dist_root).resolve()
+    removed = size = 0
+    for tree in (root / "python", root / "_internal"):
+        if not tree.is_dir() or tree.is_symlink() or tree.is_junction():
+            continue
+        for directory, dirs, files in os.walk(tree, topdown=False, followlinks=False):
+            parent = Path(directory)
+            if not parent.resolve().is_relative_to(root):
+                continue
+            for name in files:
+                path = parent / name
+                if path.suffix not in {".pyc", ".pyo"} or path.is_symlink():
+                    continue
+                if parent.name == "__pycache__":
+                    try:
+                        source = Path(importlib.util.source_from_cache(str(path)))
+                    except ValueError:
+                        continue
+                else:
+                    source = path.with_suffix(".py")
+                if source.is_file():
+                    size += path.stat().st_size
+                    path.unlink()
+                    removed += 1
+            if parent.name == "__pycache__" and not any(parent.iterdir()):
+                parent.rmdir()
+    print(f"  Removed {removed} regenerable bytecode files ({size:,} bytes); source retained.")
+    return {"files": removed, "bytes": size}
+
+# ── FROZEN-BUNDLE CARRIAGE PROOF (Angela review, 2026-08-16) ─────────────────
+# _AGENT_RUNTIME_IMPORTS above covers the CARRIED Python (the pool agents).  It
+# says NOTHING about what landed inside the PyInstaller bundle, and these
+# modules run INSIDE the frozen Django app, not in the pool.
+#
+# WHY A PROOF AND NOT JUST A --hidden-import: every one of these is imported
+# fail-open (`try: from . import runtime_provisioner / except ImportError:
+# runtime_provisioner = None`).  A fail-open import cannot report its own
+# absence — the app boots perfectly and simply loses the capability.  So the
+# review question "confirm the frozen build REALLY ships it" cannot be answered
+# by reading build.py at all; it has to be answered by looking in the archive
+# the build just produced.  That is what verify_frozen_agent_modules() does.
+# PDF context runs in the frozen web process, independently of the carried
+# Python used by pool agents. Keep collection and archive checks in sync.
+_FROZEN_PDF_MODULES = (
+    "agent.pdf_context",
+    "agent.pdf_context_jobs",
+    "agent.pdf_context_views",
+    "agent.pdf_image_analysis",
+    "agent.agents.image_interpreter.image_interpreter",
+    "pymupdf",
+)
+
+# Prompt Flow Panel runs execute in the frozen web process, not in a pool agent.
+_FROZEN_PROMPT_FLOW_PANEL_MODULES = (
+    "agent.flow_file_open",
+    "agent.flow_file_views",
+    "agent.prompt_flow_panel_consumer",
+    "agent.prompt_flow_panel_runtime",
+    "agent.services.prompt_flow_panel",
+    "agent.management.commands.check_prompt_flow_panel",
+)
+
+# Terminater's hub, WebSocket consumer and loopback API run in the frozen web process. Its engine,
+# ConPTY and text modules are LOOSE files in the agents tree (loaded by path), not imports.
+_FROZEN_TERMINATER_MODULES = (
+    "agent.terminal_hub",
+    "agent.terminal_consumer",
+    "agent.terminal_views",
+    "agent.terminal_guard",        # live-tutorial mode, ledger and claim audit (mcp_agent imports it)
+    "agent.terminater_tool",       # the typed tool; tools.py imports it FAIL-OPEN, so name it
+    "agent.management.commands.check_terminater",
+)
+
+_FROZEN_REQUIRED_AGENT_MODULES = (
+    "agent.interactor", "agent.interactor.context", "agent.interactor.protocol",
+    "agent.interaction_settings", "agent.interaction_narration",
+    "agent.interactor.hub", "agent.interactor.consumer", "agent.interactor.files", "agent.interactor.tool",
+    "agent.canvas_file_views", "agent.native_dialogs",  # native canvas Save/Save As
+    "agent.usage_tracking", "agent.usage_provider", "agent.usage_views",
+    "agent.chat_voice_consumer",
+    "agent.chat_voice_runtime",
+    "agent.chat_voice_settings",
+    "agent.agents.model_settings",  # compiled registry, independent of data paths
+    "agent.services.flow_knowledge",  # new/existing pool helper refresh
+    "agent.management.commands.check_agent_runtimes",  # executed release gate
+    "build_runtime_assets",        # updater's frozen integrity checker (stdlib only)
+    "agent.runtime_provisioner",   # private node/npm/npx/pnpm/uv/uvx provisioning
+    "agent.external_mcp_defaults",  # ships + seeds `memory` / `sequential-thinking`
+    "agent.external_mcp_manager",  # the universal External-MCP client
+    "agent.agent_verdict",         # the deterministic Exec-Report verdict engine
+    "agent.context_governor",      # context measurement + the chat gauge sink
+    "agent.context_baseline",      # the gauge AT REST: next request + Ollama's real count
+    "agent.context_sidecar_timeout",  # time limit on the Files-Search/System-Metrics Ollama calls
+    "agent.model_brain",           # per-model settings from formal sources (fail-open import)
+    "agent.model_brain_chat",      # keeps/returns a thinking model's reasoning (fail-open import)
+    "agent.model_brain_views",     # the Auto-tuning dialog's endpoints
+    "agent.skills.validation",     # ONE skill validator; Diagnostics imports it fail-open
+    "agent.skills.redaction",      # secret redaction at the skill boundary (harness)
+    "agent.win_shim",              # Windows .cmd/.exe resolution (fail-open import)
+    "agent.path_guard",            # <app>/Temp + <app>/Templates policy
+    "agent.self_update",           # About ▸ Check for updates
+    "agent.sqlite_copy",           # WAL-safe DB backup + post-update restoration
+    "agent._version",              # SemVer resolver
+    *_FROZEN_PDF_MODULES,          # PDF extraction + optional Image-Interpreter
+    *_FROZEN_PROMPT_FLOW_PANEL_MODULES,
+    *_FROZEN_TERMINATER_MODULES,
+)
+
+
+def _read_pyz_module_names(dist_root):
+    """Return the set of module names inside the build's PYZ archive.
+
+    ⚠️ WHERE THE PYZ ACTUALLY LIVES (measured, not assumed): under PyInstaller
+    6 in onedir mode there is NO loose ``_internal/PYZ-00.pyz``.  The PYZ is an
+    entry named ``PYZ.pyz`` INSIDE the executable's CArchive — verified against
+    the shipped C:/Tlamatini/Tlamatini.exe, whose CArchive holds 21 entries and
+    whose PYZ holds 15,061 modules.  A glob for ``PYZ-*.pyz`` finds nothing and
+    would have reported "cannot verify" forever, i.e. a check that never fails
+    and never proves anything — the same silence this whole item is about.
+
+    Returns None when the archive cannot be read. The release gate then stops:
+    an uninspectable payload is not proof that required modules were packaged.
+    """
+    root = Path(dist_root)
+    names = set()
+
+    # 1) The normal path: the PYZ embedded in the frozen executable.
+    try:
+        from PyInstaller.archive.readers import CArchiveReader  # noqa: PLC0415
+        for exe in sorted(root.glob("*.exe")):
+            try:
+                carchive = CArchiveReader(str(exe))
+            except Exception:
+                continue                      # not a PyInstaller exe (installer stub, ...)
+            toc = getattr(carchive, "toc", None) or {}
+            for entry in toc:
+                if not str(entry).upper().startswith("PYZ"):
+                    continue
+                try:
+                    inner = carchive.open_embedded_archive(entry)
+                except Exception:
+                    continue
+                inner_toc = getattr(inner, "toc", None)
+                if inner_toc:
+                    names.update(
+                        inner_toc.keys() if hasattr(inner_toc, "keys") else inner_toc
+                    )
+    except Exception:
+        pass
+
+    # 2) Legacy / onefile layouts that DO write a loose PYZ next to the app.
+    if not names:
+        try:
+            from PyInstaller.archive.readers import ZlibArchiveReader  # noqa: PLC0415
+            for pyz in sorted(root.rglob("PYZ*.pyz")):
+                toc = getattr(ZlibArchiveReader(str(pyz)), "toc", None)
+                if toc:
+                    names.update(toc.keys() if hasattr(toc, "keys") else toc)
+        except Exception:
+            pass
+
+    return names or None
+
+
+def verify_frozen_agent_modules(dist_root):
+    """Assert every module in _FROZEN_REQUIRED_AGENT_MODULES is IN the bundle.
+
+    Aborts for both absent modules and an unreadable archive. Update the reader
+    for incompatible PyInstaller versions instead of publishing unproven output.
+    """
+    print("\n--- Post-build: verifying frozen agent modules ---")
+    names = _read_pyz_module_names(dist_root)
+    if names is None:
+        raise RuntimeError("Cannot inspect the frozen PYZ archive; runtime carriage is not proven")
+    missing = [m for m in _FROZEN_REQUIRED_AGENT_MODULES if m not in names]
+    if missing:
+        print("ERROR: the frozen bundle is MISSING required runtime modules: "
+              + ", ".join(missing))
+        print("       Missing modules can break startup or disable a runtime capability. "
+              "Check dependency installation and hidden imports, then rebuild. "
+              "Aborting build.")
+        sys.exit(1)
+    print(f"  OK - all {len(_FROZEN_REQUIRED_AGENT_MODULES)} required runtime "
+          f"module(s) present in the PYZ ({len(names)} modules total).")
+    return True
+
+
+def verify_frozen_torch_absent(dist_root):
+    """Fail the build if PyInstaller emitted Torch into the frozen web app.
+
+    Pool agents run under ``<install>/python`` and Talker legitimately needs the
+    CPU-only Torch carried there.  The frozen Django process has no Torch import
+    and must not inherit a build user's multi-gigabyte CUDA installation.
+    """
+    internal_dir = Path(dist_root) / "_internal"
+    torch_dir = internal_dir / "torch"
+    cuda_dll_prefixes = (
+        "torch", "c10", "cudart", "cudnn", "cublas", "cufft", "cusparse",
+        "cusolver", "curand", "nvjitlink", "nvrtc",
+    )
+    orphaned_dlls = []
+    if internal_dir.exists():
+        orphaned_dlls = [
+            path for path in internal_dir.rglob("*.dll")
+            if path.name.lower().startswith(cuda_dll_prefixes)
+        ]
+    print("\n--- Post-build: verifying frozen Torch is absent ---")
+    if torch_dir.exists() or orphaned_dlls:
+        offending_files = {
+            path for path in orphaned_dlls if path.is_file()
+        }
+        if torch_dir.exists():
+            offending_files.update(
+                path for path in torch_dir.rglob("*") if path.is_file()
+            )
+        size_bytes = sum(path.stat().st_size for path in offending_files)
+        samples = "\n".join(f"         - {path}" for path in sorted(offending_files)[:8])
+        print(
+            "ERROR: PyInstaller bundled Torch/CUDA binaries into the frozen Django process:\n"
+            f"       Size: {size_bytes / 1_000_000_000:.3f} GB\n"
+            f"       Files:\n{samples}\n"
+            "       Torch belongs only in <install>/python for the Talker pool agent.\n"
+            "       Keep the no-op pyinstaller_hooks/hook-torch.py and frozen ML\n"
+            "       exclusions enabled. Aborting build."
+        )
+        sys.exit(1)
+    print("  OK - frozen Torch/CUDA binaries are absent; carried CPU Torch remains separate.")
+    return True
+
+
+def enforce_pkg_zip_size(pkg_zip_path, max_bytes=MAX_PKG_ZIP_BYTES):
+    """Fail when ``pkg.zip`` exceeds the public-release size budget."""
+    path = Path(pkg_zip_path)
+    actual_bytes = path.stat().st_size
+    if actual_bytes > max_bytes:
+        print(
+            "ERROR: pkg.zip exceeds the release-size budget:\n"
+            f"       File: {path}\n"
+            f"       Actual: {actual_bytes / 1_000_000_000:.3f} GB "
+            f"({actual_bytes:,} bytes)\n"
+            f"       Limit : {max_bytes / 1_000_000_000:.3f} GB "
+            f"({max_bytes:,} bytes)\n"
+            "       The build output is being retained for inspection. Aborting build."
+        )
+        sys.exit(1)
+    print(
+        f"  Size guard passed: {actual_bytes / 1_000_000_000:.3f} GB "
+        f"<= {max_bytes / 1_000_000_000:.3f} GB."
+    )
+    return actual_bytes
+
+
+def _probe_carried_python(python_exe):
+    """Run *python_exe* and return (version_tuple, prefix, is_venv, import_error).
+
+    ``import_error`` is None when all required imports succeed, else a message.
+    Returns None if the interpreter could not be probed at all.
+    """
+    code = (
+        "import sys, json\n"
+        "info = {'v': list(sys.version_info[:3]), 'prefix': sys.prefix, "
+        "'venv': sys.prefix != sys.base_prefix}\n"
+        "missing = []\n"
+        "for m in %r:\n"
+        "    try: __import__(m)\n"
+        "    except Exception as e: missing.append(m + ': ' + str(e)[:80])\n"
+        "info['missing'] = missing\n"
+        "print(json.dumps(info))\n"
+    ) % (list(_CARRIED_PYTHON_REQUIRED_IMPORTS),)
+    try:
+        out = subprocess.check_output([python_exe, "-c", code], text=True, timeout=120)
+        info = json.loads(out.strip().splitlines()[-1])
+    except Exception as e:
+        print(f"ERROR: could not probe carried Python '{python_exe}': {e}")
+        return None
+    ver = tuple(info.get("v", []))
+    import_error = "; ".join(info.get("missing", [])) or None
+    return ver, info.get("prefix", ""), bool(info.get("venv", False)), import_error
+
+
+def bundle_carried_python(dist_manage, frozen_python, build_python):
+    """Copy a self-contained, deps-complete Python 3.12.10 into ``<dist>/python``.
+
+    This is the interpreter that the FROZEN pool agents resolve via
+    ``get_user_python_home`` / ``get_python_command`` / ``_resolve_python_executable``
+    (they ALWAYS prefer ``<install_dir>/python``). Without it, agents cannot run
+    on a machine that has no system Python.
+
+    The build ABORTS LOUDLY unless the source interpreter is EXACTLY
+    Python %s, is a full standalone install (NOT a venv, so it is portable),
+    and can import the pool agents' third-party dependencies.
+    """ % ".".join(map(str, CARRIED_PYTHON_VERSION))
+    source_exe = frozen_python or build_python
+    print(f"\n--- Bundling carried Python (for pool agents) from: {source_exe} ---")
+
+    probe = _probe_carried_python(source_exe)
+    if probe is None:
+        raise RuntimeError(f"Carried-Python source '{source_exe}' is not runnable.")
+    ver, prefix, is_venv, import_error = probe
+
+    if ver != CARRIED_PYTHON_VERSION:
+        raise RuntimeError(
+            f"Carried Python MUST be exactly {'.'.join(map(str, CARRIED_PYTHON_VERSION))}, "
+            f"but '{source_exe}' is {'.'.join(map(str, ver)) or '?'}. "
+            "Set PYTHON_HOME to a full Python "
+            f"{'.'.join(map(str, CARRIED_PYTHON_VERSION))} install (with requirements.txt "
+            "installed into it) before building."
+        )
+    if is_venv:
+        raise RuntimeError(
+            f"Carried Python '{source_exe}' is a VIRTUALENV (sys.prefix != base_prefix). "
+            "A venv is not portable — point PYTHON_HOME at a FULL standalone Python "
+            f"{'.'.join(map(str, CARRIED_PYTHON_VERSION))} installation (with deps) so the "
+            "shipped interpreter runs on a machine with no Python."
+        )
+    if import_error:
+        raise RuntimeError(
+            f"Carried Python '{source_exe}' is missing pool-agent dependencies: {import_error}. "
+            "Run `pip install -r requirements.txt` into it (or set PYTHON_HOME to one that has them)."
+        )
+
+    src_prefix = Path(prefix)
+    if not (src_prefix / ("python.exe" if os.name == "nt" else "bin/python3")).exists():
+        raise RuntimeError(f"Carried Python prefix '{src_prefix}' has no python executable at its root.")
+
+    dst = Path(dist_manage) / "python"
+    if dst.exists():
+        shutil.rmtree(dst)
+
+    # ── SIZE LOCK: prune ML libs the POOL AGENTS never load ──────────────
+    # The carried interpreter exists ONLY for the pool agents (executer,
+    # gitter, stm32er, playwrighter, camcorder, ...). A developer's PYTHON_HOME
+    # accumulates the *CUDA* build of torch (~4 GB on its own), and the old
+    # wholesale copytree dragged all of it in, ballooning the release to ~4 GB.
+    # The Talker pool agent (agent/agents/talker/talker.py) DOES import torch +
+    # snac to decode Orpheus audio tokens into a 24 kHz waveform, so the carried
+    # Python MUST keep torch (the CPU wheel from requirements.txt, ~250 MB — well
+    # under GitHub's 2 GB release-asset limit). We still drop the heavy stuff
+    # Talker does NOT need: the CUDA runtime (nvidia* prefix), torchvision /
+    # torchaudio, triton, transformers, mxnet. KEEP: torch (Talker/snac), cv2,
+    # ffpyplayer, numpy, pillow, yaml, langchain, langgraph, requests, scipy.
+    # Override with TLAMATINI_BUNDLE_FULL_PYTHON=1 to carry the interpreter
+    # verbatim (no ML prune at all).
+    prune_full = os.environ.get("TLAMATINI_BUNDLE_FULL_PYTHON", "").strip() in ("1", "true", "True")
+    # Exact site-packages directory names (and their <stem>-<ver>.dist-info /
+    # .egg-info / <stem>.libs siblings) to drop.
+    _PRUNE_PKG_STEMS = (
+        "torchvision", "torchaudio",
+        "triton", "transformers", "mxnet",
+    )
+    # Namespace-package prefixes to drop wholesale (NVIDIA CUDA runtime wheels).
+    _PRUNE_PKG_PREFIXES = ("nvidia",)
+    _pruned = []
+
+    def _is_pruned_sp_entry(name):
+        low = name.lower()
+        if low.startswith(_PRUNE_PKG_PREFIXES):
+            return True
+        # exact package dir
+        if low in _PRUNE_PKG_STEMS:
+            return True
+        # <stem>-<ver>.dist-info / .egg-info  and  <stem>.libs
+        for stem in _PRUNE_PKG_STEMS:
+            if low == f"{stem}.libs":
+                return True
+            if (low.startswith(stem + "-") or low.startswith(stem + "_")) and \
+               (low.endswith(".dist-info") or low.endswith(".egg-info")):
+                return True
+        return False
+
+    src_norm = os.path.normpath(str(src_prefix))
+    doc_html = os.path.normpath(os.path.join(src_norm, "Doc", "html"))
+
+    def _ignore(directory, names):
+        # Skip caches and pip's own download/temp caches to keep the payload lean.
+        skipped = {n for n in names if n in ("__pycache__", ".cache") or n.endswith((".pyc", ".pyo"))}
+        if prune_full:
+            return list(skipped)
+        # CPython's bundled HTML docs (~55 MB) — never needed at runtime.
+        if os.path.normpath(directory) == doc_html:
+            skipped.update(names)
+            return list(skipped)
+        # Drop the heavy unused packages only at a site-packages level.
+        if os.path.basename(os.path.normpath(directory)).lower() == "site-packages":
+            for n in names:
+                if _is_pruned_sp_entry(n):
+                    skipped.add(n)
+                    _pruned.append(n)
+        return list(skipped)
+
+    print(f"  Copying {src_prefix} -> {dst} (this is large; please wait)...")
+    if prune_full:
+        print("  TLAMATINI_BUNDLE_FULL_PYTHON=1 — carrying the interpreter verbatim (no ML prune).")
+    shutil.copytree(src_prefix, dst, ignore=_ignore, dirs_exist_ok=False)
+    file_total = sum(1 for p in dst.rglob("*") if p.is_file())
+    size_mb = sum(p.stat().st_size for p in dst.rglob("*") if p.is_file()) / (1024 * 1024)
+    carried_exe = dst / ("python.exe" if os.name == "nt" else "bin/python3")
+    if _pruned:
+        print(f"  Pruned {len(_pruned)} unused ML entries from site-packages: "
+              f"{', '.join(sorted(set(_pruned)))}")
+    print(f"  Carried Python {'.'.join(map(str, ver))} bundled: {file_total} files, {size_mb:.0f} MB.")
+    print(f"  Pool agents will run via: {carried_exe}")
+
+    # ── HARDEN: verify the carried tree imports every agent lib IN ISOLATION ──
+    # The carried tree is copytreed from the source-tree build Python (<repo>/python),
+    # whose own prefix has all deps installed (ensure_local_build_python). Re-verify
+    # against the COPIED python in ISOLATED mode (`-I` == ignore PYTHON* env, no
+    # user-site, no cwd on sys.path) — an exact dry-run of a clean target machine, so
+    # ONLY the carried tree's own site-packages are visible. Abort LOUDLY if any agent
+    # lib is missing — far better than silently shipping pool agents that crash on
+    # import at runtime.
+    verify_src = "\n".join([
+        "import importlib",
+        "mods = " + repr(list(_AGENT_RUNTIME_IMPORTS)),
+        "miss = []",
+        "for _m in mods:",
+        "    try:",
+        "        importlib.import_module(_m)",
+        "    except Exception as _e:",
+        "        miss.append(_m + ' (' + type(_e).__name__ + ': ' + str(_e)[:90] + ')')",
+        "try:",
+        "    import torch as _torch",
+        "    _cuda = getattr(getattr(_torch, 'version', None), 'cuda', None)",
+        "    if _cuda is not None:",
+        "        miss.append('torch (expected CPU-only build, found CUDA ' + str(_cuda) + ')')",
+        "except Exception:",
+        "    pass",  # the import loop above already records a broken/missing torch
+        "print('MISSING: ' + '; '.join(miss) if miss else 'CARRIED_LIBS_OK')",
+        "raise SystemExit(3 if miss else 0)",
+    ])
+    print(f"  -> Verifying agent libs import in the CARRIED tree (isolated): {carried_exe} ...")
+    try:
+        chk = subprocess.run(
+            [str(carried_exe), "-I", "-B", "-c", verify_src],
+            capture_output=True, text=True, timeout=300,
+        )
+    except Exception as e:
+        raise RuntimeError(f"Could not run the isolated carried-Python import verify: {e}")
+    print("     " + ((chk.stdout or "") + (chk.stderr or "")).strip())
+    if chk.returncode != 0:
+        raise RuntimeError(
+            "Carried Python is INCOMPLETE — one or more agent libraries do NOT import "
+            "in isolation (-I), so frozen pool agents would crash at runtime.\n"
+            "  The carried tree is copied from <repo>/python, whose deps are installed by "
+            "ensure_local_build_python(). A failure here means that install did not fully "
+            "succeed (or a native wheel is broken). Fix: check the pip output above, delete "
+            "<repo>/python to force a clean re-provision, correct requirements.txt if needed, "
+            "then rebuild. Aborting build."
+        )
+
+
+def _probe_cpu_torch(python_exe):
+    """Return ``(is_cpu_only, detail)`` for an isolated interpreter."""
+    code = (
+        "import torch\n"
+        "cuda = getattr(torch.version, 'cuda', None)\n"
+        "print(str(torch.__version__) + '|cuda=' + str(cuda))\n"
+        "raise SystemExit(0 if cuda is None else 3)\n"
+    )
+    env = dict(os.environ)
+    env["PYTHONNOUSERSITE"] = "1"
+    try:
+        result = subprocess.run(
+            [str(python_exe), "-I", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            env=env,
+        )
+    except Exception as exc:
+        return False, str(exc)
+    detail = ((result.stdout or "") + (result.stderr or "")).strip()
+    return result.returncode == 0, detail
+
+
+def ensure_local_build_python():
+    """Provision a standalone, WRITABLE Python kept UNDER the source tree at
+    ``<repo>/python`` and install the agent deps into its OWN prefix (``--no-user``),
+    returning its ``python.exe``.
+
+    This is the CARRIED-Python SOURCE: ``bundle_carried_python`` copytrees it into
+    ``<dist>/python``, so the carried interpreter ships COMPLETE — without the build
+    ever WRITING to a read-only system Python (e.g. ``C:\\Program Files\\Python312``;
+    that one is only READ, once, to seed the copy). Reused across builds (deps are
+    re-checked, not re-downloaded). Gitignored + excluded from the self-modify
+    snapshot. Raises (aborts the build) on any failure — never returns an incomplete
+    interpreter.
+    """
+    local_dir = Path(__file__).resolve().parent / "python"
+    local_exe = local_dir / ("python.exe" if os.name == "nt" else "bin/python3")
+
+    # 1) Seed it ONCE from the current interpreter's standalone install.
+    if not local_exe.exists():
+        # Seed from the REAL interpreter, also when build.py runs in the sealed venv.
+        seed_python = getattr(sys, "_base_executable", "") or sys.executable
+        probe = _probe_carried_python(seed_python)
+        if probe is None:
+            raise RuntimeError(
+                f"Cannot probe the build Python '{sys.executable}' to seed <repo>/python.")
+        ver, prefix, is_venv, _imp = probe
+        want = ".".join(map(str, CARRIED_PYTHON_VERSION))
+        if ver != CARRIED_PYTHON_VERSION:
+            raise RuntimeError(
+                f"<repo>/python must be Python {want}, but the build interpreter "
+                f"'{sys.executable}' is {'.'.join(map(str, ver)) or '?'}. Run build.py with a "
+                f"Python {want}, or place a standalone {want} at <repo>/python yourself.")
+        if is_venv:
+            raise RuntimeError(
+                f"The build interpreter '{sys.executable}' is a VIRTUALENV — not portable. "
+                f"Seed <repo>/python from a FULL standalone Python {want} (run build.py with one).")
+        src_prefix = Path(prefix)
+        print(f"\n--- Provisioning source-tree build Python (one-time): {src_prefix} -> {local_dir} ---")
+
+        def _seed_ignore(directory, names):
+            return {n for n in names
+                    if n in ("__pycache__", ".cache") or n.endswith((".pyc", ".pyo"))}
+
+        if local_dir.exists():
+            shutil.rmtree(local_dir)  # remove a partial/corrupt prior seed first
+        shutil.copytree(src_prefix, local_dir, ignore=_seed_ignore, dirs_exist_ok=False)
+
+    # 2) Install the agent deps into <repo>/python's OWN prefix (it is writable).
+    #    PYTHONNOUSERSITE=1 → pip ignores the build user's user-site and targets THIS
+    #    prefix, so the tree is self-contained.  Force a CPU wheel whenever this
+    #    isolated tree is missing Torch or contains CUDA Torch; a plain `pip install
+    #    torch` incorrectly treats an existing +cu build as already satisfied.
+    req_file = Path(__file__).with_name("requirements.txt")
+    env = dict(os.environ)
+    env["PYTHONNOUSERSITE"] = "1"
+    print(f"--- Installing agent deps into the source-tree build Python: {local_exe} ---")
+    cpu_torch_ok, cpu_torch_detail = _probe_cpu_torch(local_exe)
+    if not cpu_torch_ok:
+        print(f"  -> Replacing missing/CUDA Torch with CPU-only Torch ({cpu_torch_detail or 'not importable'}) ...")
+        torch_result = subprocess.run(
+            [str(local_exe), "-m", "pip", "--disable-pip-version-check",
+             "install", "--no-warn-script-location", "--upgrade", "--force-reinstall",
+             "--no-deps", "torch", "--index-url", "https://download.pytorch.org/whl/cpu"],
+            env=env, check=False,
+        )
+        if torch_result.returncode != 0:
+            raise RuntimeError(
+                f"Failed to install CPU-only Torch into carried Python ({local_exe}).")
+    if req_file.exists():
+        rc = subprocess.run(
+            [str(local_exe), "-m", "pip", "--disable-pip-version-check",
+             "install", "--no-warn-script-location",
+             "-r", str(req_file)],
+            env=env, check=False,
+        )
+        if rc.returncode != 0:
+            raise RuntimeError(
+                f"Failed to install requirements into the source-tree build Python "
+                f"({local_exe}). Delete <repo>/python and rebuild. Aborting build.")
+    cpu_torch_ok, cpu_torch_detail = _probe_cpu_torch(local_exe)
+    if not cpu_torch_ok:
+        raise RuntimeError(
+            "Carried Python must contain CPU-only Torch for Talker, but the isolated "
+            f"post-install probe failed: {cpu_torch_detail or 'unknown error'}"
+        )
+    print(f"  -> Verified carried CPU-only Torch: {cpu_torch_detail}")
+    return str(local_exe)
+
+
+def _active_playwright_revisions(manifest_path=None):
+    """Directory-name tokens for the Chromium builds the INSTALLED Playwright
+    actually pins — read from ``playwright/driver/package/browsers.json``.
+
+    Used to drop STALE chromium revisions that earlier Playwright upgrades leave
+    behind in the ``%LOCALAPPDATA%/ms-playwright`` cache (e.g. a ``chromium-1228``
+    sitting next to the ``chromium-1169`` the current Playwright pins). Copying
+    them verbatim bloats the release by ~0.7 GB and pushed the zip past GitHub's
+    2 GiB asset limit. Returns a set like
+    ``{'chromium-1169', 'chromium_headless_shell-1169', 'ffmpeg-1011'}``; a
+    failure aborts packaging rather than accepting arbitrary cached revisions."""
+    keep: set[str] = set()
+    try:
+        import json as _json
+        if manifest_path is None:
+            import playwright as _pw
+            bj = Path(_pw.__file__).parent / "driver" / "package" / "browsers.json"
+        else:
+            bj = Path(manifest_path)
+        data = _json.loads(bj.read_text(encoding="utf-8"))
+        for b in data.get("browsers", []):
+            if not b.get("installByDefault"):
+                continue
+            name, rev = b.get("name", ""), str(b.get("revision", ""))
+            if not rev:
+                continue
+            if name == "chromium":
+                keep.add(f"chromium-{rev}")
+            elif name == "chromium-headless-shell":
+                keep.add(f"chromium_headless_shell-{rev}")  # cache dir uses underscores
+            elif name == "ffmpeg":
+                keep.add(f"ffmpeg-{rev}")
+    except Exception as exc:
+        raise RuntimeError("Cannot resolve the required Playwright browser revisions") from exc
+    if not any(name.startswith("chromium-") for name in keep):
+        raise RuntimeError("Playwright browser manifest contains no default Chromium revision")
+    return keep
+
+
+def bundle_playwright_browsers(dist_manage):
+    """Carry the Playwright browser binaries into ``<dist>/ms-playwright``.
+
+    Playwright stores its browsers OUTSIDE site-packages (in
+    ``%LOCALAPPDATA%/ms-playwright``), so bundle_carried_python does NOT pick
+    them up. Without this, Playwrighter and the Googler tool fail on a clean
+    machine ("browser not found"). At runtime manage.py points
+    ``PLAYWRIGHT_BROWSERS_PATH`` at ``<install_dir>/ms-playwright`` — inherited
+    by every spawned pool agent via ``os.environ.copy()``. Googler,
+    Playwrighter and Whatsapper use the carried Python's browser driver.
+
+    Mandatory: missing browser binaries abort the release instead of disabling
+    Playwrighter/Googler on the user's clean computer.
+
+    DETERMINISTIC PAYLOAD (size lock): Playwrighter and the Googler tool only
+    ever drive **Chromium**, but a developer who runs the bare ``playwright
+    install`` (default = ALL engines) ends up with Firefox (~257 MB) and WebKit
+    (~160 MB) sitting in the SAME cache. The old code copied the cache verbatim,
+    so the release size silently tracked whatever happened to be installed on
+    the build machine — that is exactly how the lean ~1.3 GB v1.17.0 zip grew by
+    ~0.4 GB on a later "patch-only" build. We now copy ONLY the engines Tlamatini
+    actually uses (chromium + its headless shell + ffmpeg + the tiny resolution
+    metadata) and SKIP firefox/webkit, so every future build is byte-stable
+    regardless of the dev's browser cache. Override with
+    ``TLAMATINI_BUNDLE_ALL_BROWSERS=1`` to carry the full set.
+    """
+    src = os.path.join(os.environ.get("LOCALAPPDATA", ""), "ms-playwright")
+    dst = Path(dist_manage) / "ms-playwright"
+    if not os.path.isdir(src):
+        raise RuntimeError(
+            f"Playwright browsers not found at '{src}'. "
+            "Run `python -m playwright install chromium` and rebuild."
+        )
+    if dst.exists():
+        shutil.rmtree(dst)
+
+    bundle_all = os.environ.get("TLAMATINI_BUNDLE_ALL_BROWSERS", "").strip() in ("1", "true", "True")
+    # Engines Tlamatini never launches — excluded by default to keep the payload
+    # deterministic and ~0.4 GB smaller. Matched as a case-insensitive prefix on
+    # the top-level cache entry name (e.g. ``firefox-1482``, ``webkit-2158``).
+    _UNUSED_ENGINE_PREFIXES = ("firefox", "webkit")
+
+    # Keep ONLY the chromium / headless-shell revisions the installed Playwright
+    # pins (see _active_playwright_revisions); every stale revision left in the
+    # cache by an earlier upgrade is skipped. Even --all requires active builds.
+    active_revs = _active_playwright_revisions(
+        Path(dist_manage) / "python" / "Lib" / "site-packages" /
+        "playwright" / "driver" / "package" / "browsers.json"
+    )
+    for revision in active_revs:
+        if not (Path(src) / revision).is_dir():
+            raise RuntimeError(f"Missing required Playwright browser revision: {revision}")
+    if active_revs:
+        print(f"  Size lock: keeping only active Playwright revisions "
+              f"{', '.join(sorted(active_revs))} (stale chromium builds skipped).")
+
+    def _ignore(directory, names):
+        skipped = {n for n in names if n == "__pycache__"}
+        if not bundle_all and os.path.normpath(directory) == os.path.normpath(src):
+            for n in names:
+                ln = n.lower()
+                if ln.startswith(_UNUSED_ENGINE_PREFIXES):
+                    skipped.add(n)
+                elif active_revs and (ln.startswith("chromium-")
+                                      or ln.startswith("chromium_headless_shell-")
+                                      or ln.startswith("ffmpeg-")):
+                    if n not in active_revs:
+                        skipped.add(n)
+        return list(skipped)
+
+    print(f"\n--- Bundling Playwright browsers: {src} -> {dst} ---")
+    if bundle_all:
+        print("  TLAMATINI_BUNDLE_ALL_BROWSERS=1 — carrying ALL engines (firefox/webkit included).")
+    else:
+        print("  Carrying Chromium-only (firefox/webkit skipped). "
+              "Set TLAMATINI_BUNDLE_ALL_BROWSERS=1 to include them.")
+    shutil.copytree(src, dst, ignore=_ignore)
+    size_mb = sum(p.stat().st_size for p in dst.rglob("*") if p.is_file()) / (1024 * 1024)
+    print(f"  Playwright browsers bundled ({size_mb:.0f} MB). Runtime path: "
+          "<install_dir>/ms-playwright (PLAYWRIGHT_BROWSERS_PATH).")
+
+
+def _java_home_for_bundle():
+    """Resolve a JDK/JRE root to carry: $JAVA_HOME first, else `which java`."""
+    jh = os.environ.get("JAVA_HOME", "").strip()
+    leaf = "java.exe" if os.name == "nt" else "java"
+    if jh and (Path(jh) / "bin" / leaf).exists():
+        return Path(jh)
+    exe = shutil.which("java")
+    if exe:
+        return Path(exe).resolve().parent.parent
+    return None
+
+
+def _git_install_root_for_bundle():
+    """Resolve the Git-for-Windows install root to carry."""
+    exe = shutil.which("git")
+    if not exe:
+        return None
+    p = Path(exe).resolve()
+    # C:\Program Files\Git\cmd\git.exe  or  ...\mingw64\bin\git.exe -> the root
+    # holds both `cmd` and `mingw64`.
+    for cand in (p.parent.parent, p.parent.parent.parent, p.parent):
+        if (cand / "cmd").is_dir() and (cand / "mingw64").is_dir():
+            return cand
+    return p.parent.parent
+
+
+def bundle_java_runtime(dist_manage):
+    """Carry a Java runtime into ``<dist>/jre`` so J-Decompiler works offline.
+
+    jd-cli (the J-Decompiler payload) needs Java. Without a carried runtime it
+    depends on a system JDK — which a clean machine will not have. At runtime
+    manage.py sets ``JAVA_HOME=<install_dir>/jre`` and prepends ``jre/bin`` to
+    PATH (inherited by every agent), and ``jd-cli.bat`` also resolves the
+    bundled JRE relative to itself. Missing Java aborts packaging.
+    """
+    src = _java_home_for_bundle()
+    dst = Path(dist_manage) / "jre"
+    if src is None or not src.exists():
+        raise RuntimeError("No Java (JAVA_HOME / `java` on PATH) found on the build "
+              "machine — J-Decompiler will NOT work on the target. Install a JDK "
+              "and rebuild to carry it.")
+    if dst.exists():
+        shutil.rmtree(dst)
+    print(f"\n--- Bundling Java runtime: {src} -> {dst} ---")
+    # SIZE LOCK (2026-07-15): jd-cli only needs bin/ (java + runtime DLLs) and
+    # lib/ (the modules image). ``jmods/`` (~80 MB, jlink source modules),
+    # ``lib/src.zip`` (~43 MB, JDK source), and demo/sample/man are NEVER used at
+    # runtime — dropping them trims ~125 MB from the release with zero functional
+    # impact on the J-Decompiler.
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+        "__pycache__", "jmods", "src.zip", "demo", "sample", "man"))
+    size_mb = sum(p.stat().st_size for p in dst.rglob("*") if p.is_file()) / (1024 * 1024)
+    print(f"  Java bundled ({size_mb:.0f} MB). Runtime: JAVA_HOME=<install_dir>/jre.")
+
+
+def bundle_git(dist_manage):
+    """Carry portable Git into ``<dist>/git`` so Gitter + the STM32er MCP clone
+    work on a machine with no system Git.
+
+    Gitter shells out to a bare ``git`` and the STM32er zero-config bootstrap
+    does a ``git clone``. At runtime manage.py prepends ``git/cmd`` (+ the
+    mingw64/usr bin dirs) to PATH, inherited by every agent. Missing Git aborts
+    packaging instead of disabling the agents on a clean target machine.
+    """
+    src = _git_install_root_for_bundle()
+    dst = Path(dist_manage) / "git"
+    if src is None or not src.exists():
+        raise RuntimeError("No Git found on the build machine — Gitter and the STM32er "
+              "MCP git-clone bootstrap will NOT work on the target. Install "
+              "Git for Windows and rebuild to carry it.")
+    if dst.exists():
+        shutil.rmtree(dst)
+    print(f"\n--- Bundling Git: {src} -> {dst} ---")
+    def ignore_git_installer_state(directory, names):
+        skipped = {name for name in names if name == "__pycache__"}
+        if Path(directory).resolve() == src.resolve():
+            # These describe the build machine's Git installation. The carried
+            # runtime is owned by Tlamatini's installer, not Git's old uninstaller.
+            skipped.update(name for name in names
+                           if re.fullmatch(r"unins\d+\.(exe|dat|msg)", name, re.IGNORECASE))
+        return skipped
+
+    shutil.copytree(src, dst, ignore=ignore_git_installer_state)
+    size_mb = sum(p.stat().st_size for p in dst.rglob("*") if p.is_file()) / (1024 * 1024)
+    print(f"  Git bundled ({size_mb:.0f} MB). Runtime: <install_dir>/git/cmd on PATH.")
+
+
+def main():
+    """Runs the PyInstaller command with correctly resolved paths."""
+    build_start = time.time()
+    print("=" * 60)
+    print("  Tlamatini Build Script")
+    print("=" * 60)
+
+    # Resolve inputs relative to this script even when invoked from elsewhere.
+    repo_root = Path(__file__).resolve().parent
+    os.chdir(repo_root)
+    run_step("Checking required runtime source assets", validate_source_assets, repo_root)
+
+    # ── Resolve and emit version artefacts FIRST ─────────────────────
+    # Precedence: --version CLI flag > $TLAMATINI_VERSION > git describe.
+    # See VERSIONING.md for the full contract.
+    cli_version = extract_cli_version(sys.argv)
+    tlamatini_version = resolve_build_version(cli_version)
+    version_file_path = emit_build_artifacts(
+        tlamatini_version,
+        product_name="Tlamatini",
+        original_filename="Tlamatini.exe",
+    )
+    print(f"Tlamatini version : {tlamatini_version}")
+    print(f"VERSIONINFO file  : {version_file_path}")
+
+    # ── Self-modify packaging flag ───────────────────────────────────
+    # When --self-modify is passed, the build ships Tlamatini's own source tree
+    # (Tlamatini/agent/TlamatiniSourceCode) next to the executable, making the
+    # running app a "self-able-modify" version that can read and modify its own
+    # code. WITHOUT the flag the directory is omitted from the package entirely
+    # (a "not-self-able-modify" build), AND so is Tlamatini.md — her source and
+    # her self-knowledge ship together, or not at all. See Tlamatini.md §9 /
+    # prompt.pmt. `--no-self-modify` is the EXPLICIT form of the default and
+    # always WINS over --self-modify, so a wrapper script can force it off.
+    self_modify = "--self-modify" in sys.argv and "--no-self-modify" not in sys.argv
+    print(
+        "Self-modify build : "
+        + ("YES — bundling TlamatiniSourceCode" if self_modify
+           else "no — source tree omitted")
+    )
+
+    separator = ';'
+    dist_manage = Path("dist") / "manage"
+
+    # ── 0) Clean previous build artifacts ────────────────────────────
+    run_step("Cleaning previous build artifacts", lambda: [
+        clean_directory("build"),
+        clean_directory("dist"),
+    ])
+
+    # Remove old pkg.zip
+    old_zip = Path("pkg.zip")
+    if old_zip.exists():
+        old_zip.unlink()
+        print(f"Removed old: {old_zip}")
+
+    # ── 1) Install dependencies ──────────────────────────────────────
+    build_python = sys.executable
+
+    # GUARD: build.py must NOT be launched WITH the carried Python (<repo>/python).
+    # build_python (= the interpreter running this script) gets a numpy-purge +
+    # `--user` reinstall + import-verify (step 1b). The carried Python is a SEPARATE
+    # interpreter, provisioned cleanly into its OWN prefix by ensure_local_build_python().
+    # If they are the same, the purge wipes the carried prefix's numpy and the verify
+    # then fails with the misleading "Successfully installed numpy ... MISSING: numpy".
+    # Abort EARLY with a clear fix instead of failing ~14 min later.
+    _carried_dir = (Path(__file__).resolve().parent / "python").resolve()
+    try:
+        _build_py_under_carried = (
+            _carried_dir == Path(build_python).resolve().parent
+            or _carried_dir in Path(build_python).resolve().parents
+        )
+    except Exception:
+        _build_py_under_carried = False
+    if _build_py_under_carried:
+        print(
+            "ERROR: build.py was launched WITH the carried Python "
+            f"({build_python}).\n"
+            "       Run it with a SEPARATE system Python 3.12.10 instead, e.g.:\n"
+            '         & "C:\\Program Files\\Python312\\python.exe" .\\build.py --self-modify\n'
+            "       (The carried interpreter under <repo>\\python is provisioned by the\n"
+            "        build itself and must not be the one running build.py.) Aborting build."
+        )
+        sys.exit(1)
+
+    # The CARRIED Python (the interpreter EVERY frozen pool agent runs on) is sourced
+    # from a standalone, WRITABLE Python kept UNDER the source tree at <repo>/python,
+    # auto-provisioned by ensure_local_build_python(). Its deps install into its OWN
+    # prefix (--no-user) so the carried copy is COMPLETE — and the build NEVER writes
+    # to a read-only system Python (e.g. C:\Program Files\Python312). bundle_carried_python
+    # copytrees it into <dist>/python. (PYTHON_HOME is no longer used for this — the
+    # source-tree Python is the single, predictable carried source.)
+    if os.environ.get("PYTHON_HOME", "").strip():
+        print("NOTE: PYTHON_HOME is set but is IGNORED for the carried Python — it now always "
+              "comes from <repo>/python (auto-provisioned, writable).")
+    frozen_python = ensure_local_build_python()
+
+    # PyInstaller (run by build_python) bundles the FROZEN _internal (the Django side);
+    # its deps go in with --user so a read-only build Python (Program Files) still works.
+    # The carried Python is handled above (its own writable prefix), so it is NOT in
+    # this install loop.
+    install_pythons = [build_python]
+    # Inside the sealed build Python (build_env.py) pip installs into that venv,
+    # which `--user` would refuse; it is also fresh, so the numpy purge and the
+    # unpinned Torch step only serve the old everyday-Python fallback.
+    in_sealed_env = sys.prefix != sys.base_prefix
+    pip_scope = [] if in_sealed_env else ["--user"]
+
+    req_file = Path(__file__).with_name('requirements.txt')
+
+    for target_python in install_pythons:
+        print(f"\n--- Installing dependencies into: {target_python} ---")
+
+        # 1a-pre) Clean numpy residuals so pip reinstalls numpy fresh.
+        # Prevents stale dist-info/wheel fragments from tripping PyInstaller's
+        # numpy hook (wrong version branch, empty collect_dynamic_libs, and the
+        # downstream "cannot load module more than once per process" crash).
+        if not in_sealed_env:
+            run_step(
+                f"Purging numpy residuals in {target_python}",
+                _purge_numpy_environment,
+                target_python,
+            )
+
+        # 1a) Install torch CPU-only FIRST to avoid CUDA DLL issues (WinError 1114).
+        # Use --user so this works even when the build Python lives in a READ-ONLY
+        # location (e.g. C:\Program Files\Python312): its deps go to the per-user site
+        # so PyInstaller (run by THIS Python) can still bundle them into the frozen
+        # _internal. NOTHING is written to the build Python's prefix / Program Files.
+        # The CARRIED Python (the one frozen pool agents run on) is populated SEPARATELY
+        # and DIRECTLY inside dist/ — see bundle_carried_python — so its completeness
+        # does NOT depend on this Python's prefix being writable or pre-populated.
+        if not in_sealed_env:
+            print(f"  -> Installing torch (CPU-only) for {target_python} ...")
+            torch_cmd = [
+                target_python, "-m", "pip", "--disable-pip-version-check",
+                "install", "--user", "torch",
+                "--index-url", "https://download.pytorch.org/whl/cpu",
+            ]
+            torch_result = subprocess.run(torch_cmd)
+            if torch_result.returncode != 0:
+                print(f"WARNING: torch CPU install failed for {target_python}. Continuing anyway.")
+
+        # 1b) Install remaining dependencies from requirements.txt
+        if req_file.exists():
+            pip_cmd = [target_python, "-m", "pip", "--disable-pip-version-check",
+                       "install", *pip_scope, "-r", str(req_file)]
+            pip_result = subprocess.run(pip_cmd)
+            if pip_result.returncode != 0:
+                print(f"ERROR: pip install -r requirements.txt failed for {target_python}. Aborting build.")
+                sys.exit(1)
+        else:
+            raise FileNotFoundError("requirements.txt is required for a complete frozen release")
+
+        # 1b-post) VERIFY the agent / MCP-server third-party libs actually IMPORT in
+        # this target Python — fail the build loudly if any is missing.
+        # Frozen-mode pool agents (shoter/playwrighter/windower/sqler/...) AND the
+        # STM32 Template Project MCP server that STM32er spawns run UNDER this
+        # interpreter (via get_python_command / PYTHON_HOME), NOT inside the
+        # PyInstaller bundle — so every library they import must be present HERE or
+        # the frozen assets are incomplete and the agents crash at runtime. Pinning
+        # them in requirements.txt is not enough on its own; this asserts the install
+        # truly took (catches a broken wheel / missing native dep too).
+        _agent_libs = list(_AGENT_RUNTIME_IMPORTS)
+        verify_src = "\n".join([
+            "import importlib",
+            "mods = " + repr(_agent_libs),
+            "miss = []",
+            "for _m in mods:",
+            "    try:",
+            "        importlib.import_module(_m)",
+            "    except Exception as _e:",
+            "        miss.append(_m + ' (' + type(_e).__name__ + ')')",
+            "print('MISSING:' + '; '.join(miss) if miss else 'ALL_AGENT_LIBS_OK')",
+            "raise SystemExit(3 if miss else 0)",
+        ])
+        print(f"  -> Verifying agent/MCP libs import in {target_python} ...")
+        verify = subprocess.run([target_python, "-c", verify_src], capture_output=True, text=True)
+        print("     " + ((verify.stdout or "") + (verify.stderr or "")).strip())
+        if verify.returncode != 0:
+            print(f"ERROR: required agent/MCP libraries are missing/broken in {target_python}. "
+                  f"Add them to requirements.txt so the frozen assets are complete. Aborting build.")
+            sys.exit(1)
+
+        # 1b-post-2) VERIFY Ruff is runnable via `-m ruff` in this target Python.
+        # Pythonxer's STRICT correctness gate shells out to
+        # `<get_python_command()> -m ruff check <script>` before it runs ANY script;
+        # if Ruff is absent the gate silently fails OPEN (degrades to the compile()
+        # syntax floor only). Ruff is pinned in requirements.txt, but a broken/partial
+        # wheel can still pass an `import` check yet fail `-m ruff`, so assert the
+        # EXACT invocation the agent uses. This loop runs for BOTH the build Python
+        # AND the PYTHON_HOME (frozen-mode agent) Python, so a green build guarantees
+        # Ruff is present in frozen AND non-frozen modes. Abort loudly if it isn't.
+        print(f"  -> Verifying Ruff (`-m ruff --version`) in {target_python} ...")
+        ruff_check = subprocess.run(
+            [target_python, "-m", "ruff", "--version"],
+            capture_output=True, text=True,
+        )
+        print("     " + ((ruff_check.stdout or "") + (ruff_check.stderr or "")).strip())
+        if ruff_check.returncode != 0:
+            print(f"ERROR: Ruff is NOT runnable via `-m ruff` in {target_python}. "
+                  "Pythonxer's strict syntax/lint gate REQUIRES it. Confirm "
+                  "'ruff==0.14.5' in requirements.txt installed correctly into this "
+                  "Python. Aborting build.")
+            sys.exit(1)
+
+    # Browser agents run under carried Python, so install exactly that driver's
+    # revisions. The build interpreter's Playwright version is not authoritative.
+    print(f"  -> Installing Playwright browsers for carried Python: {frozen_python} ...")
+    browser_command = [frozen_python, "-I", "-m", "playwright", "install"]
+    if os.environ.get("TLAMATINI_BUNDLE_ALL_BROWSERS", "").strip() not in ("1", "true", "True"):
+        browser_command.append("chromium")
+    pw_result = subprocess.run(browser_command)
+    if pw_result.returncode != 0:
+        raise RuntimeError(f"Playwright browser installation failed for {frozen_python}")
+
+    # Ensure PyInstaller is available
+    try:
+        import PyInstaller  # noqa: F401
+    except Exception:
+        print("\n--- Installing PyInstaller ---")
+        ensure_pyinstaller = subprocess.run(
+            [sys.executable, "-m", "pip", "--disable-pip-version-check",
+             "install", *pip_scope, "pyinstaller"])
+        if ensure_pyinstaller.returncode != 0:
+            print("ERROR: Failed to install PyInstaller. Aborting build.")
+            sys.exit(1)
+
+    # ── 2) Erase database before building ────────────────────────────
+    print("\n--- Erasing database before building ---")
+    try:
+        db_path = Path("Tlamatini") / "db.sqlite3"
+        if db_path.exists():
+            db_path.unlink()
+            print(f"Removed old database file: {db_path}")
+        else:
+            print(f"No database file found at {db_path}, skipping removal.")
+    except Exception as e:
+        print(f"WARNING: Could not remove database file: {e}")
+
+    # ── 3) Collect static files before packaging ─────────────────────
+    print("\n--- Running collectstatic ---")
+    collectstatic_result = subprocess.run([sys.executable, 'Tlamatini/manage.py', 'collectstatic', '--noinput', '--clear'])
+    if collectstatic_result.returncode != 0:
+        print("ERROR: collectstatic failed. Aborting build.")
+        sys.exit(1)
+
+    # ── 4) Build PyInstaller command ─────────────────────────────────
+    verify_collected_static(repo_root)
+    expected_runtime_assets = capture_source_payload(repo_root, self_modify=self_modify)
+
+    dll_args = run_step("Collecting Python DLL binaries",
+                        collect_python_dll_binaries)
+
+    # NOTE: the server has NO tkinter/Tcl-Tk dependency. The Set-DB /
+    # Backup-DB "Browse" buttons use the Win32 common dialogs directly via
+    # ctypes (agent/native_dialogs.py -> comdlg32/shell32), so there is no
+    # Tcl/Tk data tree to bundle and the old "Can't find a usable init.tcl"
+    # failure cannot occur. tkinter is explicitly excluded below so a
+    # transitive importer can never drag the fragile Tcl/Tk runtime back in.
+    # (The Installer/Uninstaller GUIs are SEPARATE executables built by
+    # build_installer.py / build_uninstaller.py — those still use tkinter
+    # and bundle their own Tcl/Tk; this build script does not.)
+
+    # Point PyInstaller at our local hooks directory so our custom
+    # hook-numpy.py (priority 2) shadows PyInstaller's stock one (priority 1).
+    # See pyinstaller_hooks/hook-numpy.py for the numpy/core/ duplicate-pyd
+    # filter rationale.
+    hooks_dir = Path(__file__).with_name('pyinstaller_hooks')
+
+    icon_path = Path(__file__).with_name('Tlamatini.ico')
+    icon_args: list[str] = []
+    if icon_path.exists():
+        icon_args.append(f'--icon={icon_path}')
+        print(f"Embedding application icon: {icon_path}")
+    else:
+        print(f"WARNING: {icon_path} not found — Tlamatini.exe will have no embedded icon.")
+
+    # Self-knowledge (Tlamatini.md) ships ONLY under --self-modify, in lockstep
+    # with TlamatiniSourceCode/: a not-self-able-modify build carries neither her
+    # own source NOR her own self-description, and rag/config.py then replaces
+    # prompt.pmt's {self_knowledge} with a short "not bundled" notice.
+    self_knowledge_args = (
+        [f'--add-data=Tlamatini/agent/Tlamatini.md{separator}agent']
+        if self_modify else []
+    )
+    print(
+        "Self-knowledge    : "
+        + ("YES — bundling Tlamatini.md" if self_modify
+           else "no — Tlamatini.md omitted (no self-knowledge injected)")
+    )
+
+    command = [
+        *pyinstaller_command(), '--name', 'manage', '--console', '--noconfirm',
+        f'--additional-hooks-dir={hooks_dir}',
+        f'--version-file={version_file_path}',
+        *icon_args,
+        *dll_args,
+        f'--add-data=Tlamatini/agent/templates{separator}agent/templates',
+        f'--add-data=Tlamatini/agent/static{separator}agent/static',
+        f'--add-data=Tlamatini/staticfiles{separator}staticfiles',
+        f'--add-data=Tlamatini/agent/config.json{separator}agent',
+        f'--add-data=Tlamatini/agent/prompt.pmt{separator}agent',
+        # The MODEL BRAIN's knowledge base: each vendor's published settings, with
+        # sources (agent/model_brain.py reads it beside the module when frozen).
+        f'--add-data=Tlamatini/agent/model_profiles.json{separator}agent',
+        *self_knowledge_args,
+        # ACPX skill catalog — every SKILL.md package + its scripts/ + _meta/.
+        # The skill registry (agent/skills/registry.py) discovers SKILL.md
+        # under this tree at runtime; without this --add-data line, frozen
+        # builds would have an empty skill catalog.
+        f'--add-data=Tlamatini/agent/skills_pkg{separator}agent/skills_pkg',
+        '--hidden-import=agent._version',
+        f'--paths={repo_root}',
+        '--hidden-import=build_runtime_assets',
+        # These execute inside the frozen web process. Copying agents/ and
+        # bundling the separate carried Python does not make them importable here.
+        *(f'--hidden-import={module}' for module in _FROZEN_PDF_MODULES),
+        *(f'--hidden-import={module}' for module in _FROZEN_PROMPT_FLOW_PANEL_MODULES),
+        *(f'--hidden-import={module}' for module in _FROZEN_TERMINATER_MODULES),
+        # ── The agent.* modules NOTHING ELSE NAMES (Angela review, 2026-08-16) ──
+        # Every one of these is reached only through a FAIL-OPEN import:
+        #   external_mcp_manager.py  `try: from . import runtime_provisioner
+        #                             except ImportError: runtime_provisioner = None`
+        #   apps.py / views.py       lazy `from . import runtime_provisioner`
+        # A fail-open import is exactly what makes a missing module INVISIBLE:
+        # drop runtime_provisioner from the bundle and Tlamatini does not crash,
+        # she simply stops provisioning node/npx/uv/uvx forever, and every
+        # `npx -y <pkg>` MCP server dies with [WinError 2] on a machine that
+        # was supposed to self-heal. Naming them here means the graph can never
+        # quietly decide they are unreachable; `verify_frozen_agent_modules()`
+        # below then PROVES they landed in the PYZ.
+        '--hidden-import=agent.runtime_provisioner',
+        '--hidden-import=agent.external_mcp_defaults',
+        '--hidden-import=agent.external_mcp_manager',
+        '--hidden-import=agent.agent_verdict',
+        '--hidden-import=agent.usage_tracking',
+        '--hidden-import=agent.usage_provider',
+        '--hidden-import=agent.usage_views',
+        '--hidden-import=agent.canvas_file_views',
+        '--hidden-import=agent.native_dialogs',
+        '--hidden-import=agent.context_governor',
+        '--hidden-import=agent.context_baseline',
+        # The Files-Search / System-Metrics chains reach the app through a
+        # fail-open import in rag/factory.py; without their time-limit module
+        # they would vanish silently instead of failing the build.
+        '--hidden-import=agent.context_sidecar_timeout',
+        # The MODEL BRAIN reaches the chat through fail-open imports in
+        # mcp_agent.py and rag/factory.py: without these modules every model would
+        # silently fall back to the legacy fixed parameters.
+        '--hidden-import=agent.model_brain',
+        '--hidden-import=agent.model_brain_chat',
+        '--hidden-import=agent.model_brain_views',
+        # Skills Diagnostics imports the shared validator inside a try/except
+        # that swallows everything, so a missing module would silently report
+        # "no invalid skills". Name it (and the harness's redaction module) here.
+        '--hidden-import=agent.skills.validation',
+        '--hidden-import=agent.skills.redaction',
+        '--hidden-import=agent.win_shim',
+        '--hidden-import=agent.self_update',
+        '--hidden-import=agent.sqlite_copy',
+        '--hidden-import=daphne.server', '--hidden-import=channels',
+        '--hidden-import=whitenoise.middleware', '--hidden-import=whitenoise.storage',
+        '--hidden-import=django_bootstrap5',
+        '--hidden-import=django.contrib.admin.apps',
+        '--hidden-import=django.db.models.sql.compiler',
+        '--hidden-import=django.contrib.auth',
+        '--hidden-import=django.contrib.sessions',
+        '--hidden-import=django.contrib.messages',
+        '--hidden-import=django.db.backends.sqlite3',
+        '--hidden-import=tlamatini.asgi',
+        '--hidden-import=tlamatini.middleware',
+        '--hidden-import=tlamatini.context_processors',
+        '--hidden-import=tlamatini.logging_filters',
+        '--hidden-import=unstructured',
+        '--hidden-import=filesearch_pb2',
+        '--hidden-import=filesearch_pb2_grpc',
+        # Server uses Win32 ctypes dialogs, NOT tkinter — exclude Tcl/Tk so it
+        # can never be dragged in transitively (no init.tcl bundling headaches).
+        '--exclude-module=tkinter',
+        '--exclude-module=_tkinter',
+        # python-magic (libmagic) hangs the freeze. unstructured pulls in `magic`
+        # transitively; during PyInstaller's "Looking for dynamic libraries" phase
+        # the isolated child imports it, and python-magic's compat layer runs a
+        # NATIVE libmagic database load at import time (magic/compat.py:241 ->
+        # Magic(_open(MAGIC_MIME))) which SPINS on this host (observed: a build
+        # pegged one core for hours, log frozen at "Looking for dynamic libraries").
+        # unstructured guards the import (try importlib.import_module("magic") ->
+        # LIBMAGIC_AVAILABLE, else it falls back to the `filetype` package), and no
+        # frozen-process code imports unstructured eagerly, so excluding `magic`
+        # is safe AND also prevents the same hang at runtime.
+        '--exclude-module=magic',
+        # transformers drags the ENTIRE torch stack into the frozen Django
+        # process for NOTHING Tlamatini uses. Measured on 2026-08-29 by booting
+        # the real app with an import tracer:
+        #     agent/mcp_agent.py -> langchain_ollama -> langchain_core
+        #     .language_models.base:44 -> `from transformers import
+        #     GPT2TokenizerFast` -> transformers/modeling_gguf_pytorch_utils.py
+        #     -> `import torch`
+        # …which loaded 248 transformers + 663 torch submodules and cost 9.47 s
+        # of import time. langchain_core wraps that import in try/except
+        # ImportError and simply sets _HAS_TRANSFORMERS = False (it is only a
+        # GPT-2 token-counter FALLBACK; every Tlamatini model is an Ollama /
+        # Anthropic model that counts its own tokens). Nothing in agent/**
+        # imports transformers, sentence_transformers or HuggingFace embeddings
+        # — and the CARRIED Python has pruned `transformers` since the size-lock
+        # (see _PRUNE_PKG_STEMS) while Talker keeps working, which is live proof
+        # the dependency is unused. Excluding it here measured 0 transformers +
+        # 0 torch submodules and 3.62 s import time (2.6x faster boot), and it
+        # is what STOPS the twelve frozen-only warnings Angela reported:
+        #   "Unable to retrieve source for @torch.jit._overload function: …"
+        # (PyInstaller keeps torch's .py sources — 40.7 MB — inside the PYZ, so
+        # inspect.getsource() cannot find them and torch warns once per
+        # overload). Root cause removed, nothing muted.
+        # Torch is excluded from the frozen process separately below. Talker
+        # imports torch + snac under the CARRIED Python, which is a different
+        # interpreter and is unaffected by either frozen-process exclusion.
+        '--exclude-module=transformers',
+        # Torch is required only by Talker, which runs as a pool subprocess under
+        # the separate carried <install>/python interpreter.  No frozen web-process
+        # module imports Torch (pinned by test_web_process_stays_lean.py).  Exclude
+        # it explicitly so a build user's CUDA-enabled user-site can never add
+        # multiple gigabytes of NVIDIA DLLs to _internal again.
+        '--exclude-module=torch',
+        # Optional-import chains (notably datasets/torchvision) can cause
+        # PyInstaller to execute their hooks even when torch itself is excluded.
+        # None of this ML family is used by the frozen web process; all Talker /
+        # Whisperer execution happens under carried <install>/python.
+        '--exclude-module=torchvision',
+        '--exclude-module=torchaudio',
+        '--exclude-module=torchtext',
+        '--exclude-module=torchao',
+        '--exclude-module=snac',
+        '--exclude-module=whisper',
+        *(f'--exclude-module={module}' for module in _FROZEN_POOL_ONLY_MODULES),
+        *(f'--exclude-module={module}' for module in _FROZEN_JUPYTER_MODULES),
+        '--collect-all', 'django_bootstrap5',
+        '--collect-all', 'autobahn',
+        '--collect-all', 'filesearch_pb2',
+        '--collect-all', 'filesearch_pb2_grpc',
+        # Media/browser agents retain their complete native wheels in carried
+        # Python. They never execute inside this frozen Django interpreter.
+        # External MCPs network transports: external_mcp_manager.py (which runs in
+        # THIS frozen Django process, not the carried Python) reaches remote MCP
+        # servers over Streamable HTTP / SSE (httpx) and WebSocket (websockets).
+        # httpx arrives transitively via anthropic, but websockets has no other
+        # importer in the frozen graph, so without these collect-alls a frozen build
+        # would catalogue an http/ws MCP yet fail to connect it. The lazy in-function
+        # imports are made bullet-proof here.
+        '--collect-all', 'httpx',
+        '--collect-all', 'websockets',
+        '--hidden-import=websockets.sync.client',
+        'Tlamatini/manage.py'
+    ]
+
+    # Ensure django_bootstrap5 code and its dist-info metadata are bundled
+    command.extend(find_package_data_paths(pypi_name='django-bootstrap5', import_name='django_bootstrap5'))
+    command.extend(find_package_data_paths(pypi_name='django', import_name='django'))
+
+    # Bundle unstructured NLP data
+    unstructured_path = find_package_code_path('unstructured')
+    if unstructured_path:
+        unstructured_data_file = unstructured_path / "nlp" / "english-words.txt"
+        if unstructured_data_file.exists():
+            print(f"Found unstructured data file: {unstructured_data_file}")
+            command.append(f'--add-data={unstructured_data_file};unstructured/nlp')
+        else:
+            print("WARNING: Could not find 'english-words.txt' in unstructured package.")
+    else:
+        print("WARNING: Could not find unstructured package path.")
+
+    # Ensure Autobahn CFFI sources are available at runtime
+    try:
+        autobahn_path = find_package_code_path('autobahn')
+        if autobahn_path is not None:
+            nvx_dir = autobahn_path / 'nvx'
+            for c_name in ['_utf8validator.c', '_xormasker.c']:
+                c_file = nvx_dir / c_name
+                if c_file.exists():
+                    command.append(f'--add-data={c_file};autobahn/nvx')
+                else:
+                    print(f"WARNING: Autobahn NVX source not found: {c_file}")
+        else:
+            print("WARNING: Could not resolve Autobahn package path to include NVX sources.")
+    except Exception as e:
+        print(f"WARNING: Failed to add Autobahn NVX sources: {e}")
+
+    # ── 5) Run PyInstaller ───────────────────────────────────────────
+    print("\n--- Starting PyInstaller build ---")
+    result = subprocess.run(command)
+
+    if result.returncode != 0:
+        elapsed = time.time() - build_start
+        print(f"\n--- PyInstaller build FAILED after {elapsed:.0f}s ---")
+        sys.exit(1)
+
+    # ══════════════════════════════════════════════════════════════════
+    # Post-build steps (only reached on successful PyInstaller build)
+    # ══════════════════════════════════════════════════════════════════
+
+    # ── 5b) PROVE the frozen/carried interpreter boundary ─────────────
+    verify_frozen_torch_absent(dist_manage)
+    verify_frozen_pool_libraries_absent(dist_manage)
+    verify_frozen_agent_modules(dist_manage)
+
+    # ── 6) Copy application files & create directories ───────────────
+    print("\n--- Post-build: copying files and directories ---")
+    try:
+        dist_manage.mkdir(parents=True, exist_ok=True)
+
+        # Required runtime files copied to the installed application root.
+        # Keep the historical variable name for existing build tooling.
+        optional_file_copies = {
+            Path("Tlamatini") / "agent" / "config.json": dist_manage / "config.json",
+            Path("Tlamatini") / "agent" / "prompt.pmt": dist_manage / "prompt.pmt",
+            # NOTE: Tlamatini.md (self-knowledge) is INTENTIONALLY NOT copied
+            # here — it is added just below, GATED on --self-modify, so that a
+            # not-self-able-modify build carries neither her source tree nor her
+            # own self-description.
+            # NOTE: external_mcps.json is INTENTIONALLY NOT copied here any more
+            # (2026-08-12). It used to be, and the dev tree's copy holds the
+            # maintainer's REAL provider secrets — a GitHub PAT and a Snyk API
+            # key sat in `env` blocks — so every release built from a working
+            # tree shipped those keys inside pkg.zip. Exactly the leak
+            # contacts.json was already excluded for; the MCP catalog simply
+            # never got the same treatment.
+            #
+            # It is also the wrong CONTENT for a user: it carried the build
+            # machine's own servers and its `"active": []`, so a reinstall
+            # replaced the user's catalog with a stranger's and deactivated
+            # everything. A sanitized EMPTY catalog is written below instead
+            # (see "Ship a sanitized empty external_mcps.json").
+            # NOTE: contacts.json is INTENTIONALLY NOT copied here. The dev tree's
+            # contacts.json holds the maintainer's PRIVATE data (real phone numbers /
+            # Telegram handles / emails). Shipping it would leak that PII into every
+            # release. Instead we write a sanitized EMPTY placeholder below
+            # (see "Ship a sanitized empty contacts.json"), so a fresh install gets a
+            # valid, empty contacts book that the user fills in themselves.
+        }
+
+        # Tlamatini.md is the LLM's self-knowledge file (prompt.pmt's
+        # {self_knowledge}). It is read from the application directory (next to
+        # the executable in frozen mode) exactly like prompt.pmt / config.json,
+        # so it must land at the install root — but ONLY for a self-modify
+        # build: her source tree and her self-description ship together, or not
+        # at all. Without it, rag/config.py injects a short "not bundled" notice.
+        if self_modify:
+            optional_file_copies[Path("Tlamatini") / "agent" / "Tlamatini.md"] = (
+                dist_manage / "Tlamatini.md"
+            )
+        else:
+            print("Self-knowledge file omitted (not-self-able-modify build): Tlamatini.md")
+
+        for src, dst in optional_file_copies.items():
+            if src.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+                print(f"Copied {src} -> {dst}")
+            else:
+                raise FileNotFoundError(f"Required runtime file not found: {src}")
+
+        # ── Ship contacts.json ──────────────────────────────────────────────────
+        # DEFAULT: a sanitized EMPTY book (never the dev's private data). A PRIVATE /
+        # keyed build OPTS IN to bundling a real contacts book by setting the env var
+        # TLAMATINI_BUNDLE_CONTACTS to a JSON file (the gitignored contacts.private.json)
+        # -- build_complete_private_release.py sets it. The public builder CLEARS that
+        # env var, so a public release ALWAYS ships the empty book; a bare `build.py`
+        # ships empty too. (contacts.json is USER STATE: resolved next to config.json
+        # and preserved across self-update, so the user's own entries survive updates.)
+        contacts_doc = None
+        _bundle_contacts = (os.environ.get("TLAMATINI_BUNDLE_CONTACTS") or "").strip()
+        if _bundle_contacts and os.path.isfile(_bundle_contacts):
+            try:
+                with open(_bundle_contacts, "r", encoding="utf-8-sig") as _cf:
+                    _loaded = json.load(_cf)
+                if isinstance(_loaded, dict) and isinstance(_loaded.get("contacts"), list):
+                    contacts_doc = _loaded
+                    print(f"Bundling PRIVATE contacts book from {_bundle_contacts} "
+                          f"({len(_loaded['contacts'])} contact(s)) -- KEYED build.")
+                else:
+                    print(f"WARNING: {_bundle_contacts} is not a valid contacts doc; "
+                          f"shipping EMPTY book instead.")
+            except Exception as _e:
+                print(f"WARNING: could not read {_bundle_contacts} ({_e}); "
+                      f"shipping EMPTY book instead.")
+        if contacts_doc is None:
+            contacts_doc = {
+                "_README": (
+                    "Tlamatini Contacts book. Add the people you message here, then you "
+                    "can just say 'send a WhatsApp / Telegram to <name> ...' and Tlamatini "
+                    "resolves the handle for you. Fields: name (required), aliases (other "
+                    "names that should resolve to this person), telegram (@username only "
+                    "for people), whatsapp (phone with country code, e.g. +5215555555555), "
+                    "email (optional). This file is USER STATE: it lives next to config.json "
+                    "and is preserved across updates. Do NOT commit real phone numbers to a "
+                    "public repo."
+                ),
+                "contacts": [],
+            }
+        contacts_dst = dist_manage / "contacts.json"
+        contacts_dst.parent.mkdir(parents=True, exist_ok=True)
+        with open(contacts_dst, "w", encoding="utf-8") as _cf:
+            json.dump(contacts_doc, _cf, ensure_ascii=False, indent=2)
+        print(f"Wrote contacts.json -> {contacts_dst} "
+              f"({len(contacts_doc.get('contacts', []))} contact(s))")
+
+        # ── Ship external_mcps.json (the External ▸ MCPs catalog) ───────────────
+        # TWO FLAVOURS, and the difference is deliberate (Angela, 2026-08-15):
+        #
+        #   PUBLIC  (the default, and what a bare `python build.py` produces):
+        #     ONLY the servers Tlamatini herself implements — `memory` and
+        #     `sequential-thinking` — taken from the SAME module the running app
+        #     seeds from (Tlamatini/agent/external_mcp_defaults.py), so the file
+        #     we ship and the boot-time seeder can never drift. No maintainer
+        #     server, no maintainer secret, ever.
+        #
+        #   PRIVATE / KEYED:
+        #     build_complete_private_release.py sets TLAMATINI_BUNDLE_EXTERNAL_MCPS
+        #     to the dev catalog (Tlamatini/agent/external_mcps.json, with real
+        #     values restored by `regen_secrets.py --mode keyed`). We ship EVERY
+        #     server in it PLUS the two defaults merged in. The public builder
+        #     CLEARS that variable, so a public build cannot pick it up by accident.
+        #
+        # History: until 2026-08-12 the build copied the dev catalog verbatim and
+        # shipped a live GitHub PAT + Snyk key inside every pkg.zip. The seatbelt
+        # at the bottom of this block exists so that can never happen again.
+        external_mcps_doc = None
+        _mcp_defaults_mod = None
+        try:
+            import importlib.util as _ilu
+            _mcp_defaults_src = Path("Tlamatini") / "agent" / "external_mcp_defaults.py"
+            _mcp_spec = _ilu.spec_from_file_location("_tlm_mcp_defaults", _mcp_defaults_src)
+            _mcp_defaults_mod = _ilu.module_from_spec(_mcp_spec)
+            _mcp_spec.loader.exec_module(_mcp_defaults_mod)
+            external_mcps_doc = _mcp_defaults_mod.shipped_catalog_document()
+        except Exception as _mcp_exc:
+            print(f"WARNING: could not load external_mcp_defaults ({_mcp_exc}); shipping an "
+                  f"EMPTY catalog (the app still seeds the defaults on first launch).")
+
+        _mcps_flavor = "PUBLIC"
+        _bundle_mcps = (os.environ.get("TLAMATINI_BUNDLE_EXTERNAL_MCPS") or "").strip()
+        if _bundle_mcps and os.path.isfile(_bundle_mcps) and _mcp_defaults_mod is not None:
+            try:
+                with open(_bundle_mcps, "r", encoding="utf-8-sig") as _xf:
+                    _dev_doc = json.load(_xf)
+                if isinstance(_dev_doc, dict) and isinstance(_dev_doc.get("mcpServers"), dict):
+                    # A private build ships every default too, even one the dev
+                    # deleted locally — so drop the tombstones before merging.
+                    _dev_doc.pop(_mcp_defaults_mod.TOMBSTONE_KEY, None)
+                    _merged, _seeded = _mcp_defaults_mod.seed_defaults(_dev_doc)
+                    if external_mcps_doc:
+                        _merged.setdefault("_README", external_mcps_doc.get("_README", ""))
+                    external_mcps_doc = _merged
+                    _mcps_flavor = "PRIVATE/KEYED"
+                    print(f"Bundling PRIVATE MCP catalog from {_bundle_mcps} "
+                          f"({len(_merged.get('mcpServers', {}))} server(s); defaults merged: "
+                          f"{', '.join(_seeded) or 'already present'}) -- KEYED build.")
+                else:
+                    print(f"WARNING: {_bundle_mcps} is not a valid mcpServers doc; "
+                          f"shipping the PUBLIC default catalog instead.")
+            except Exception as _xe:
+                print(f"WARNING: could not read {_bundle_mcps} ({_xe}); shipping the "
+                      f"PUBLIC default catalog instead.")
+
+        if external_mcps_doc is None:
+            external_mcps_doc = {
+                "_README": (
+                    "Tlamatini External MCP catalog. Add servers in the standard "
+                    "`mcpServers` shape (the same JSON a Claude Code .mcp.json uses), "
+                    "then tick up to 5 of them in External > MCPs to activate. This "
+                    "file is USER STATE: it lives next to config.json and is preserved "
+                    "across updates AND reinstalls."
+                ),
+                "mcpServers": {},
+                "active": [],
+            }
+
+        # ── SEATBELT: a PUBLIC build must never carry a live-looking secret ─────
+        # Structurally impossible today (the public doc is generated from code),
+        # but this is the exact leak that shipped in every pkg.zip before
+        # 2026-08-12, so it gets a hard, build-breaking assertion rather than a
+        # comment. SystemExit is a BaseException, so no `except Exception:`
+        # further up can swallow it.
+        if _mcps_flavor == "PUBLIC":
+            _mcp_leaks = []
+            for _sk, _sv in (external_mcps_doc.get("mcpServers") or {}).items():
+                for _ek, _ev in ((_sv or {}).get("env") or {}).items():
+                    _t = str(_ev or "").strip()
+                    if not _t or (_t.startswith("<") and _t.endswith(">")):
+                        continue
+                    if any(_p in str(_ek).lower() for _p in
+                           ("token", "key", "secret", "password", "auth", "bearer")):
+                        _mcp_leaks.append(f"{_sk}.env.{_ek}")
+            if _mcp_leaks:
+                raise SystemExit(
+                    "ABORT: a PUBLIC build would ship live MCP secret(s): "
+                    + ", ".join(_mcp_leaks)
+                    + "\nRun `python regen_secrets.py --mode push-able` first, or build the "
+                      "private release if these are meant to be bundled."
+                )
+
+        external_mcps_dst = dist_manage / "external_mcps.json"
+        external_mcps_dst.parent.mkdir(parents=True, exist_ok=True)
+        with open(external_mcps_dst, "w", encoding="utf-8") as _mf:
+            json.dump(external_mcps_doc, _mf, ensure_ascii=False, indent=2)
+        print(f"Wrote external_mcps.json -> {external_mcps_dst} "
+              f"[{_mcps_flavor}] servers: "
+              + (", ".join(sorted(external_mcps_doc.get("mcpServers", {}))) or "(none)")
+              + f"  active: {external_mcps_doc.get('active') or '[]'}")
+
+        # ── Ship data.keys (the secrets vault) — PRIVATE / KEYED builds ONLY ────
+        # build_complete_private_release.py sets TLAMATINI_BUNDLE_DATA_KEYS so the
+        # keyed release carries EVERY entry of the maintainer's vault as
+        # <install>/data.keys -- the place the Access Keys Wizard reads it. Entries
+        # that regen_secrets.py also projects into config files arrive there too;
+        # the rest (keys no config file consumes) would otherwise be lost.
+        # The public builder CLEARS the variable, and a bare build never sets it.
+        # Only the entry COUNT is printed, never a name or a value.
+        _bundle_keys = (os.environ.get("TLAMATINI_BUNDLE_DATA_KEYS") or "").strip()
+        if _bundle_keys:
+            if _mcps_flavor == "PUBLIC":
+                raise SystemExit(
+                    "ABORT: TLAMATINI_BUNDLE_DATA_KEYS is set but the External-MCP catalog is the "
+                    "PUBLIC one. The secrets vault ships ONLY in a complete private (keyed) build "
+                    "-- run build_complete_private_release.py, or unset the variable."
+                )
+            if os.path.isfile(_bundle_keys):
+                _keys_dst = dist_manage / "data.keys"
+                shutil.copy2(_bundle_keys, _keys_dst)
+                _keys_entries = [
+                    _ln for _ln in _keys_dst.read_text(encoding="utf-8-sig", errors="replace").splitlines()
+                    if "=" in _ln and not _ln.lstrip().startswith("#")
+                ]
+                print(f"Bundling PRIVATE secrets vault -> {_keys_dst} "
+                      f"({len(_keys_entries)} entr(ies); values never printed) -- KEYED build.")
+            else:
+                print(f"WARNING: TLAMATINI_BUNDLE_DATA_KEYS points at a missing file ({_bundle_keys}); "
+                      f"data.keys NOT bundled.")
+
+        # Copy from the verifier inventory so newly required helpers always ship.
+        copy_root_sources(repo_root, dist_manage)
+
+        # Runtime directory trees. Only the decorative images gallery is optional.
+        optional_dir_copies = {
+            Path("Tlamatini") / "agent" / "images": dist_manage / "images",
+            Path("Tlamatini") / "agent" / "agents": dist_manage / "agents",
+            # ACPX skill catalog also copied next to the executable, so users
+            # opening the install dir can browse/author skills without
+            # needing to peek inside the PyInstaller bundle. The registry
+            # prefers this directory when present.
+            Path("Tlamatini") / "agent" / "skills_pkg": dist_manage / "agent" / "skills_pkg",
+        }
+        for src_dir, dst_dir in optional_dir_copies.items():
+            if src_dir.exists():
+                if dst_dir.exists():
+                    shutil.rmtree(dst_dir)
+                shutil.copytree(src_dir, dst_dir, ignore=ignore_runtime_state)
+                print(f"Copied directory: {src_dir} -> {dst_dir}")
+            else:
+                if src_dir.name != "images":
+                    raise FileNotFoundError(f"Required runtime directory not found: {src_dir}")
+                print(f"Optional images gallery not found: {src_dir}")
+
+        # ---- Security assets - Angela's hacker-combat arsenal ----------------
+        # Ship <install>/security/ (defender + whitelist v2 + UAC launchers +
+        # the persistent automated test) next to the executable, so every
+        # install can harden itself and detect/fight intrusions - for a CTF or a
+        # real ransomware / attacker scenario. Runtime alert logs are NOT shipped.
+        _sec_src = Path("security")
+        _sec_dst = dist_manage / "security"
+        if _sec_src.exists():
+            if _sec_dst.exists():
+                shutil.rmtree(_sec_dst)
+            shutil.copytree(
+                _sec_src,
+                _sec_dst,
+                ignore=shutil.ignore_patterns("security_logs", "*.log", "__pycache__"),
+            )
+            print(f"Copied security assets: {_sec_src} -> {_sec_dst}")
+        else:
+            raise FileNotFoundError("Required security/ toolkit is missing")
+
+        # ── Companion-app agents manifest (Tlamatini-FlowPills PROP-002) ──────
+        # Ship <install>/agents/_tlamatini_agents_manifest.json so a companion app
+        # (Tlamatini-FlowPills) can validate the agent catalog immediately after
+        # install, before Tlamatini's first launch. Loaded straight from the source
+        # file via importlib so we do NOT import the Django ``agent`` package here.
+        # Fail-open: the running app regenerates it on first launch regardless.
+        try:
+            import importlib.util as _ilu
+            _am_src = Path("Tlamatini") / "agent" / "agent_manifest.py"
+            _spec = _ilu.spec_from_file_location("_tlm_agent_manifest", str(_am_src))
+            _am = _ilu.module_from_spec(_spec)
+            _spec.loader.exec_module(_am)
+            _mpath = _am.write_manifest(
+                str((dist_manage / "agents").resolve()),
+                kind="installed",
+                version=tlamatini_version,
+            )
+            print(f"Companion-app agents manifest: {_mpath}")
+        except Exception as _mexc:
+            print(f"WARNING: could not generate agents manifest (non-fatal): {_mexc}")
+
+        # Optional: Tlamatini's own source tree — included recursively ONLY when
+        # the build was invoked with --self-modify. It lands at the install root
+        # (the frozen-mode application_path, next to the executable), so the
+        # running app resolves it exactly like prompt.pmt / config.json /
+        # Tlamatini.md, and it flows into pkg.zip via the os.walk(dist_manage)
+        # archive step. Omitting it produces a "not-self-able-modify" build.
+        if self_modify:
+            self_dst = dist_manage / "TlamatiniSourceCode"
+            try:
+                # Generate the snapshot FRESH from the live repo via the
+                # auxiliary copy_source_assets.py (full source surface; media,
+                # secrets and install-duplicated binaries omitted; restore
+                # manifest + rebuild instructions written into the snapshot).
+                import copy_source_assets
+                stats = copy_source_assets.copy_source_assets(
+                    Path(__file__).resolve().parent, self_dst)
+                if stats['errors']:
+                    raise RuntimeError('Source snapshot copy errors:\n' + '\n'.join(stats['errors']))
+                print(
+                    f"Generated self-modify source tree: {self_dst} "
+                    f"({stats['files_copied']} files, "
+                    f"{stats['megabytes_copied']} MB, "
+                    f"{stats['files_redacted']} secret-redacted files)"
+                )
+            except Exception as exc:
+                # Never substitute a stale/unredacted tree or silently omit
+                # self-modification after the user explicitly requested it.
+                raise RuntimeError(f'Cannot package a complete self-modify snapshot: {exc}') from exc
+        else:
+            print("Self-modify source tree omitted (not-self-able-modify build).")
+
+        # Required directory trees
+        required_dir_copies = {
+            Path("Tlamatini") / "jd-cli": dist_manage / "jd-cli",
+        }
+        for src_dir, dst_dir in required_dir_copies.items():
+            if not src_dir.exists():
+                raise FileNotFoundError(f"Required directory not found: {src_dir}")
+            if dst_dir.exists():
+                shutil.rmtree(dst_dir)
+            shutil.copytree(src_dir, dst_dir)
+            print(f"Copied required directory: {src_dir} -> {dst_dir}")
+
+        jd_cli_bat = dist_manage / "jd-cli" / "jd-cli.bat"
+        if not jd_cli_bat.exists():
+            raise FileNotFoundError(
+                f"Required jd-cli payload is incomplete. Missing launcher: {jd_cli_bat}"
+            )
+        print(f"Verified jd-cli payload at: {jd_cli_bat.parent}")
+
+        # Carried Python — the interpreter the FROZEN pool agents ALWAYS use
+        # (<install_dir>/python). Mandatory: a Tlamatini install with no carried
+        # Python cannot run any agent on a machine without a system Python.
+        # Aborts the build if the source interpreter isn't exactly
+        # Python 3.12.10 (full install, deps present). See bundle_carried_python.
+        bundle_carried_python(dist_manage, frozen_python, build_python)
+
+        # Playwright browser binaries live OUTSIDE site-packages, so the carried
+        # Python alone is not enough for Playwrighter / Googler — carry them too.
+        bundle_playwright_browsers(dist_manage)
+
+        # Carry the external (non-Python) runtimes the pool agents shell out to,
+        # so a clean machine with NO Java and NO Git can still run J-Decompiler,
+        # Gitter, and the STM32er MCP git-clone bootstrap. manage.py wires both
+        # onto JAVA_HOME / PATH at startup (inherited by every spawned agent).
+        bundle_java_runtime(dist_manage)
+        bundle_git(dist_manage)
+
+        # Required empty directories (must survive in pkg.zip)
+        # ``DB/ToLoad`` and ``DB/Older`` back the "Set DB" mechanic in
+        # manage.py::_apply_pending_db_swap: at start-up Tlamatini moves any
+        # ``DB/ToLoad/db.sqlite3`` into place after archiving the current one
+        # under ``DB/Older/<timestamp>/``. Ship both directories empty so the
+        # swap-in can write to them on first run without raising an OSError.
+        #
+        # ``Temp`` is Tlamatini's SOLE temporary directory: manage.py /
+        # settings.py pin TEMP/TMP/TMPDIR + Python's tempfile to <app>/Temp and
+        # every pool agent honors TLAMATINI_TEMP (see agent/path_guard.py
+        # ::enforce_app_temp_dir and prompt.pmt Rule 15). It MUST exist next to
+        # the executable, empty, on first run — get_app_temp_root() self-creates
+        # it, but shipping it empty makes the install layout explicit and avoids
+        # a first-write race before the directory is created.
+        # ``Templates`` is the DEFAULT parent for the template-projects the
+        # firmware/engine/document agents (STM32er/ESP32er/Arduiner/Unrealer,
+        # plus LaTeXer, whose scaffolded .tex projects default to
+        # Templates/LaTeXer) scaffold
+        # when the user gives no path (exported as TLAMATINI_TEMPLATES; see
+        # agent/path_guard.py::enforce_app_templates_dir + prompt.pmt Rule 16).
+        # Ship it empty next to the executable so the first create_project lands
+        # in a predictable place inside Tlamatini.
+        empty_dirs = (
+            "application", "applications", "documentation",
+            "context_files", "content_generated", "doc_generated",
+            "DB/ToLoad", "DB/Older",
+            "Temp", "Templates",
+        )
+        for d in empty_dirs:
+            target_dir = dist_manage / d
+            target_dir.mkdir(parents=True, exist_ok=True)
+            print(f"Ensured empty directory: {target_dir}")
+
+    except Exception as e:
+        print(f"Post-build step error: {e}")
+        sys.exit(1)
+
+    # ── 7) Remove PyInstaller spec file ──────────────────────────────
+    try:
+        spec_file = Path("manage.spec")
+        if spec_file.exists():
+            spec_file.unlink()
+            print(f"Removed spec file: {spec_file}")
+    except Exception as e:
+        print(f"WARNING: Could not remove spec file: {e}")
+
+    # ── 8) Run Django setup commands via built executable ─────────────
+    try:
+        print("\n--- Running post-build Django setup (dist/manage/manage.exe) ---")
+        manage_exe = dist_manage / ("manage.exe" if os.name == "nt" else "manage")
+        if not manage_exe.exists():
+            raise FileNotFoundError(f"Frozen executable not found: {manage_exe}")
+        else:
+            def run_cmd(args, **kwargs):
+                cmd_display = " ".join(args)
+                print(f"-> Running: {manage_exe.name} {cmd_display}")
+                return subprocess.run([str(manage_exe), *args], **kwargs)
+
+            # 8a) migrate
+            res = run_cmd(["migrate"])
+            if res.returncode != 0:
+                raise RuntimeError("Frozen Django migrate failed; refusing to package an incomplete DB")
+
+            # 8b) createsuperuser (non-interactive)
+            env = os.environ.copy()
+            env.setdefault('DJANGO_SUPERUSER_USERNAME', 'user')
+            env.setdefault('DJANGO_SUPERUSER_EMAIL', 'user@xaiht.com')
+            env.setdefault('DJANGO_SUPERUSER_PASSWORD', 'changeme')
+            res = run_cmd(["createsuperuser", "--noinput"], env=env)
+            if res.returncode != 0:
+                raise RuntimeError("Frozen default-user creation failed; refusing to publish the release")
+
+            # 8c) collectstatic
+            res = run_cmd(["collectstatic", "--noinput", "--clear"])
+            if res.returncode != 0:
+                raise RuntimeError("Frozen collectstatic failed; refusing to package missing frontend assets")
+
+            # Exercise real runtime copies with the frozen module/data layout.
+            # Archive membership alone cannot catch __file__-based path bugs.
+            res = run_cmd(["check_agent_runtimes"], timeout=180)
+            if res.returncode != 0:
+                raise RuntimeError("Frozen agent runtime preparation failed; refusing to package broken agents")
+
+            # Use the compiled consumer and shipped page/assets, without a model call.
+            res = run_cmd(["check_prompt_flow_panel"], timeout=60)
+            if res.returncode != 0:
+                raise RuntimeError("Frozen prompt-flow-panel check failed; refusing to package the panel")
+
+            # Real PowerShell / cmd.exe terminals, the shipped pool agent under the carried Python and the
+            # browser WebSocket, all in the frozen layout: the engine is a LOOSE file loaded by path, so
+            # archive membership alone cannot prove it works.
+            res = run_cmd(["check_terminater"], timeout=300)
+            if res.returncode != 0:
+                raise RuntimeError("Frozen terminater check failed; refusing to package the terminals")
+
+            # 8d) Rename executable manage -> Tlamatini
+            try:
+                target_name = manage_exe.with_name("Tlamatini.exe" if os.name == "nt" else "Tlamatini")
+                if target_name.exists():
+                    target_name.unlink()
+                manage_exe.rename(target_name)
+                print(f"Renamed {manage_exe.name} -> {target_name.name}")
+            except Exception as e:
+                raise RuntimeError(f"Could not rename frozen executable: {e}") from e
+
+            # 8e) Copy support scripts, samples and icon
+            support_files = [
+                "flow_file_associations.ps1",
+                "register_fpmt.ps1",
+                "unregister_fpmt.ps1",
+                "register_flw.ps1",
+                "unregister_flw.ps1",
+                "Tlamatini.ps1",
+                "Tlamatini.ico",
+                "CreateShortcut.ps1",
+                "RemoveShortcut.ps1",
+                "CreateShortcut.json",
+                # Port-unblock helper. When Windows/Hyper-V has RESERVED the
+                # configured web port, Daphne dies with WinError 10013 and the
+                # app never starts — so this recovery tool must sit next to
+                # Tlamatini.exe (it reads django_port from the config.json
+                # beside it and logs into the install's Temp).
+                "freeingport8000.ps1",
+                "Tlamatini/cat_art.py"
+            ]
+            for fname in support_files:
+                try:
+                    src = Path(fname)
+                    dst = dist_manage / src.name
+                    if src.exists():
+                        dst.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(src, dst)
+                        print(f"Copied {src} -> {dst}")
+                    else:
+                        raise FileNotFoundError(f"Required support file not found: {src}")
+                except Exception as e:
+                    raise RuntimeError(f"Could not copy required support file {fname}: {e}") from e
+
+            # ── 9) Generate pkg.zip from dist/manage ─────────────────
+            try:
+                pkg_zip_path = Path("pkg.zip")
+                pending_zip = pkg_zip_path.with_suffix(".zip.part")
+                prune_regenerable_bytecode(dist_manage)
+                write_runtime_manifest(
+                    dist_manage, expected_runtime_assets,
+                    version=tlamatini_version, self_modify=self_modify,
+                )
+
+                print(f"\n--- Creating {pkg_zip_path} from {dist_manage} ---")
+                with zipfile.ZipFile(pending_zip, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+                    file_count = 0
+                    packaged_bytes = 0
+                    last_progress = time.monotonic()
+                    for root, dirs, files in os.walk(dist_manage):
+                        # Add empty directories as explicit entries so they survive extraction
+                        if not files and not dirs:
+                            dir_arcname = str(Path(root).relative_to(dist_manage)) + '/'
+                            zf.write(root, dir_arcname)
+                        for file in files:
+                            full_path = Path(root) / file
+                            arcname = full_path.relative_to(dist_manage)
+                            zf.write(full_path, arcname)
+                            file_count += 1
+                            packaged_bytes += full_path.stat().st_size
+                            if time.monotonic() - last_progress >= 10:
+                                print(f"  Packaged {file_count:,} files, "
+                                      f"{packaged_bytes / (1024 ** 2):.1f} MiB of input", flush=True)
+                                last_progress = time.monotonic()
+                    print(f"Added {file_count} files to {pkg_zip_path}")
+                enforce_pkg_zip_size(pending_zip)
+                verify_package(pending_zip, expected_version=tlamatini_version)
+                # Publish only after every archived byte matches the receipt.
+                os.replace(pending_zip, pkg_zip_path)
+                size_mb = pkg_zip_path.stat().st_size / (1024 * 1024)
+                print(f"pkg.zip created successfully ({size_mb:.1f} MB)")
+
+                # ── 10) Clean up build and dist directories ──────────
+                for cleanup_dir in ("build", "dist"):
+                    clean_directory(cleanup_dir)
+
+            except Exception as e:
+                raise RuntimeError(f"Could not create a verified pkg.zip: {e}") from e
+    except Exception as e:
+        raise SystemExit(f"ERROR: release assembly failed: {e}") from e
+
+    # Clean up the transient VERSIONINFO .txt file once PyInstaller has
+    # finished embedding it.  Keep ``Tlamatini/agent/_version.py`` so the
+    # frozen application can import it.
+    try:
+        if version_file_path.exists():
+            version_file_path.unlink()
+            print(f"Removed transient: {version_file_path}")
+    except Exception as e:
+        print(f"WARNING: Could not remove {version_file_path}: {e}")
+
+    elapsed = time.time() - build_start
+    print(f"\n{'=' * 60}")
+    print(f"  Build completed successfully in {elapsed:.0f}s")
+    print(f"  Version : {tlamatini_version}")
+    print(f"{'=' * 60}")
+
+
+# ── Concurrency guard ────────────────────────────────────────────────────
+# Two builds in this directory at once is fatal: they share the PyInstaller
+# work dir (build/manage) and the dist/ tree, and whichever finishes first runs
+# the "Cleaning previous build artifacts" rmtree (and the end-of-run cleanup),
+# deleting the OTHER build's work dir mid-flight — the loser then dies with
+# `FileNotFoundError: build/manage/warn-manage.txt`. This lock makes a second
+# build refuse to start instead of silently clobbering the first.
+_BUILD_LOCK = Path(".build.lock")
+
+
+def _pid_alive(pid):
+    """True if `pid` is a currently-running process. Errs on the side of
+    'alive' on unknown so we never clobber a possibly-running build."""
+    if not pid or pid <= 0:
+        return False
+    try:
+        import psutil
+        return psutil.pid_exists(pid)
+    except Exception:
+        pass
+    if os.name == "nt":
+        try:
+            import ctypes
+            PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+            h = ctypes.windll.kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, int(pid))
+            if not h:
+                return False
+            code = ctypes.c_ulong()
+            ok = ctypes.windll.kernel32.GetExitCodeProcess(h, ctypes.byref(code))
+            ctypes.windll.kernel32.CloseHandle(h)
+            return bool(ok) and code.value == 259  # STILL_ACTIVE
+        except Exception:
+            return True
+    try:
+        os.kill(int(pid), 0)
+        return True
+    except OSError:
+        return False
+    except Exception:
+        return True
+
+
+def _acquire_build_lock():
+    """Refuse to start if another build is genuinely running; otherwise (no lock
+    or a stale lock from a crashed build) take ownership. Fail-open on any I/O
+    error so it never blocks a legitimate single build."""
+    if _BUILD_LOCK.exists():
+        try:
+            other = int((_BUILD_LOCK.read_text(encoding="utf-8").strip() or "0"))
+        except Exception:
+            other = 0
+        if other and other != os.getpid() and _pid_alive(other):
+            print("=" * 60)
+            print(f"  ABORT: another Tlamatini build is already running (PID {other}).")
+            print("  Concurrent builds share the build/ and dist/ work dirs and")
+            print("  clobber each other (the loser dies writing")
+            print("  build/manage/warn-manage.txt). Let it finish, or kill that")
+            print(f"  process and delete {_BUILD_LOCK} if the lock is stale.")
+            print("=" * 60)
+            sys.exit(2)
+        print(f"Reclaiming stale build lock (PID {other} not running).")
+    try:
+        _BUILD_LOCK.write_text(str(os.getpid()), encoding="utf-8")
+    except Exception as e:
+        print(f"WARNING: could not write build lock ({e}); proceeding without it.")
+
+
+def _release_build_lock():
+    """Remove the lock, but only if it is still ours (never delete another
+    run's lock). Best-effort — runs even when main() exits via sys.exit()."""
+    try:
+        if _BUILD_LOCK.exists():
+            try:
+                owner = int((_BUILD_LOCK.read_text(encoding="utf-8").strip() or "0"))
+            except Exception:
+                owner = os.getpid()
+            if owner == os.getpid():
+                _BUILD_LOCK.unlink()
+    except Exception:
+        pass
+
+
+if __name__ == "__main__":
+    # Freeze with the SEALED build Python, never this machine's everyday one
+    # (build_env.py): installing or removing a library here cannot change a release.
+    run_in_sealed_env(__file__)
+    _acquire_build_lock()
+    try:
+        main()
+    finally:
+        _release_build_lock()

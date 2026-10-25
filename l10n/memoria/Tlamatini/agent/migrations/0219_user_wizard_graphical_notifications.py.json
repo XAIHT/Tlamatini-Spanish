@@ -1,0 +1,127 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0219_user_wizard_graphical_notifications.py",
+ "segmentos": [
+  {
+   "en": "\"\"\"Graphical checkpoints: I explicitly request local graphical Notifier alerts during this wizard. Use chat_agent_notifier for the checkpoint alerts below, in addition to chat_agent_executer for commands. Each alert must be a real tool call with target.mode='oneshot', target.search_strings set to the checkpoint label, target.outcome_detail set to its short non-secret instruction, and target.sound_enabled=true. These are local in-browser dialogs, not email, Telegram, WhatsApp or other external messages. Never substitute an HTML chat panel for the graphical Notifier. The optional account email field authorizes no external message. Report an actual Notifier tool error in chat without claiming delivery or repeating the account-creation command. Only one alert per checkpoint occurrence; a new Continue or unrelated reply does not repeat it. The wizard is incomplete while waiting for my input, and no success alert is permitted before the success confirmation described in Step 3.\n\n\"\"\"",
+   "es": "\"\"\"Avisos gráficos: Pido explícitamente alertas gráficas locales del Notifier durante este wizard. Usa chat_agent_notifier para las alertas de los puntos de control de abajo, además de chat_agent_executer para los comandos. Cada alerta debe ser una llamada real al tool con target.mode='oneshot', target.search_strings con la etiqueta del punto de control, target.outcome_detail con su instrucción corta y sin secretos, y target.sound_enabled=true. Son diálogos locales dentro del browser, no correo, Telegram, WhatsApp ni otros mensajes externos. Nunca sustituyas el Notifier gráfico con un panel HTML en el chat. El campo opcional de correo de la cuenta no autoriza ningún mensaje externo. Si el tool del Notifier da un error real, repórtalo en el chat sin decir que se entregó y sin repetir el comando que crea la cuenta. Sólo una alerta cada vez que ocurra un punto de control; un nuevo Continuar o una respuesta que no tenga que ver no la repite. El wizard está incompleto mientras espera mi respuesta, y no se permite ninguna alerta de éxito antes de la confirmación de éxito descrita en el Paso 3.\n\n\"\"\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0 (banner and the username):\"",
+   "es": "\"Paso 0 (banner y el nombre de usuario):\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 2
+  },
+  {
+   "en": "\"if it STILL shows the [[ ]] brackets, reply asking me for the username I want and STOP\"",
+   "es": "\"si TODAVÍA muestra los corchetes [[ ]], respóndeme pidiéndome el nombre de usuario que quiero y DETENTE\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"if it STILL shows the [[ ]] brackets, call chat_agent_notifier with \"\n    \"target.mode='oneshot' and target.search_strings='Username needed' and \"\n    \"target.outcome_detail='Choose the username for the new Tlamatini account in chat. \"\n    \"Keep passwords in the console only.' and target.sound_enabled=true, \"\n    \"then reply asking me for the username I want and STOP\"",
+   "es": "\"si TODAVÍA muestra los corchetes [[ ]], llama a chat_agent_notifier con \"\n    \"target.mode='oneshot' y target.search_strings='Falta el nombre de usuario' y \"\n    \"target.outcome_detail='Elige en el chat el nombre de usuario de la nueva cuenta de Tlamatini. Las \"\n    \"contraseñas van sólo en la consola.' y target.sound_enabled=true, luego \"\n    \"respóndeme pidiéndome el nombre de usuario que quiero y DETENTE\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"After you launch it, tell me — in one short, friendly block — exactly this:\"",
+   "es": "\"Cuando lo abras, dime — en un solo bloque corto y amable — exactamente esto:\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"If the launch tool reports an error, follow the ERROR branch below and do not \"\n    \"announce that a console opened. After a successful launch result, call \"\n    \"chat_agent_notifier with target.mode='oneshot' and \"\n    \"target.search_strings='Console input needed' and \"\n    \"target.outcome_detail='Complete the account prompts in the console. Keep your \"\n    \"password there. Reply DONE in chat only after the console reports success; \"\n    \"reply ERROR for a failure or NOWINDOW if the console did not appear.' and \"\n    \"target.sound_enabled=true. Then tell me — in one short, friendly block — this:\"",
+   "es": "\"Si el tool de lanzamiento reporta un error, sigue el branch ERROR de abajo y no \"\n    \"anuncies que se abrió una consola. Después de un resultado de lanzamiento exitoso, \"\n    \"llama a chat_agent_notifier con target.mode='oneshot' \"\n    \"y target.search_strings='Escribe en la consola' \"\n    \"y target.outcome_detail='Completa los prompts de la cuenta en la consola. Tu contraseña \"\n    \"se queda ahí. Responde DONE en el chat sólo después de que la consola reporte \"\n    \"éxito; responde ERROR si algo falla o NOWINDOW si la consola no apareció.' \"\n    \"y target.sound_enabled=true. Luego dime — en un solo bloque corto y amable — esto:\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"A console window just opened on your desktop. In that window: (1) it shows a \"\n    \"username prompt — press Enter to accept {{ the username }} (or type it if it is blank)\"",
+   "es": "\"Se acaba de abrir una ventana de consola en tu escritorio. En esa ventana: (1) aparece el prompt \"\n    \"del nombre de usuario — presiona Enter para aceptar {{ el nombre de usuario }} (o escríbelo si está vacío)\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"The console launch was requested. In that window: (1) read the username \"\n    \"prompt and type {{ the username }} if its shown default differs; press Enter \"\n    \"only when the intended username is selected\"",
+   "es": "\"Se pidió abrir la consola. En esa ventana: (1) lee el prompt del nombre de usuario y escribe \"\n    \"{{ el nombre de usuario }} si el valor predeterminado que muestra es otro; presiona Enter sólo \"\n    \"cuando esté seleccionado el nombre de usuario correcto\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\" - If I reply DONE → go to Step 4.\"",
+   "es": "\" - Si respondo DONE → ve al Paso 4.\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\" - If I reply DONE after seeing the actual console message 'Superuser created \"\n    \"successfully' → call chat_agent_notifier with target.mode='oneshot' and \"\n    \"target.search_strings='User ready' and target.outcome_detail='You confirmed \"\n    \"that the console created the account successfully. Follow the restart and \"\n    \"login instructions in chat.' and target.sound_enabled=true, then go to Step 4. \"\n    \"If DONE is ambiguous or I did not see that success message, ask for that \"\n    \"confirmation and WAIT; a launched window or a typed command is not success.\"",
+   "es": "\" - Si respondo DONE después de ver el mensaje real de la consola 'Superuser \"\n    \"created successfully' → llama a chat_agent_notifier con target.mode='oneshot' \"\n    \"y target.search_strings='Usuario listo' y target.outcome_detail='Confirmaste \"\n    \"que la consola creó la cuenta con éxito. Sigue en el chat las \"\n    \"instrucciones para reiniciar e iniciar sesión.' y target.sound_enabled=true, luego ve \"\n    \"al Paso 4. Si DONE es ambiguo o no vi ese mensaje de éxito, pide esa \"\n    \"confirmación y ESPERA; una ventana abierta o un comando escrito no es éxito.\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\" - If I reply ERROR and paste the message → tell me the one-line fix\"",
+   "es": "\" - Si respondo ERROR y pego el mensaje → dime la corrección en una línea\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\" - If I reply ERROR and paste the non-secret message, or the launch tool \"\n    \"reports an error → call chat_agent_notifier with target.mode='oneshot' and \"\n    \"target.search_strings='Error creating user' and \"\n    \"target.outcome_detail='Account setup needs attention. Read the non-secret \"\n    \"error and the next step in chat; account creation is not confirmed.' and \"\n    \"target.sound_enabled=true. Then tell me the one-line fix\"",
+   "es": "\" - Si respondo ERROR y pego el mensaje sin secretos, o el tool de lanzamiento reporta \"\n    \"un error → llama a chat_agent_notifier con target.mode='oneshot' y \"\n    \"target.search_strings='Error al crear el usuario' y target.outcome_detail='La \"\n    \"configuración de la cuenta necesita atención. Lee en el chat el error sin \"\n    \"secretos y el siguiente paso; la creación de la cuenta no está confirmada.' y \"\n    \"target.sound_enabled=true. Luego dime la corrección en una línea\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"then RE-OPEN the console exactly as in Step 2 and WAIT again.\"",
+   "es": "\"luego VUELVE A ABRIR la consola exactamente como en el Paso 2 y ESPERA otra vez.\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"then check whether the existing console is still accepting input. If it is, \"\n    \"guide me there and WAIT. Otherwise offer one retry of Step 2 after my \"\n    \"confirmation; do not repeatedly open consoles or recreate an account.\"",
+   "es": "\"luego revisa si la consola que ya está abierta sigue aceptando lo que escribo. Si es así, \"\n    \"guíame ahí y ESPERA. Si no, ofrece un solo reintento del Paso 2 después de que \"\n    \"yo lo confirme; no abras consolas una y otra vez ni vuelvas a crear la cuenta.\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\" - If I reply NOWINDOW → give me this manual fallback and WAIT:\"",
+   "es": "\" - Si respondo NOWINDOW → dame esta alternativa manual y ESPERA:\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\" - If I reply NOWINDOW → call chat_agent_notifier with target.mode='oneshot' \"\n    \"and target.search_strings='Warning: console not visible' and \"\n    \"target.outcome_detail='The account console did not appear. Follow the manual \"\n    \"console instructions in chat; account creation is not confirmed.' and \"\n    \"target.sound_enabled=true. Then give me this manual fallback and WAIT:\"",
+   "es": "\" - Si respondo NOWINDOW → llama a chat_agent_notifier con target.mode='oneshot' y \"\n    \"target.search_strings='Aviso: la consola no se ve' y \"\n    \"target.outcome_detail='La consola de la cuenta no apareció. Sigue en el chat las instrucciones \"\n    \"manuales de la consola; la creación de la cuenta no está confirmada.' \"\n    \"y target.sound_enabled=true. Luego dame esta alternativa manual y ESPERA:\"",
+   "maquina": "parche del wizard de cuenta: _replace_once busca estas frases en el texto de la tarjeta 1 de 0185, que se tradujo a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"The shipped user-wizard checkpoint no longer matches its migration baseline\"",
+   "motivo": "patch del wizard: _replace_once exige frases en inglés; contrato de notificaciones/consentimiento"
+  },
+  {
+   "en": "\"Prompt\"",
+   "motivo": "patch del wizard: _replace_once exige frases en inglés; contrato de notificaciones/consentimiento"
+  }
+ ]
+}

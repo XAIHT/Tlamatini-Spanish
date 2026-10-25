@@ -1,0 +1,30 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/release_notes_renderer.js",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'<video class=\"rn-media\" controls preload=\"metadata\" src=\"'",
+   "motivo": "fragmento HTML (etiqueta y atributos)"
+  },
+  {
+   "en": "'<img class=\"rn-media\" src=\"'",
+   "motivo": "fragmento HTML (etiqueta y atributos)"
+  },
+  {
+   "en": "'\" alt=\"'",
+   "motivo": "fragmento HTML (atributo)"
+  },
+  {
+   "en": "'<a href=\"'",
+   "motivo": "fragmento HTML (etiqueta)"
+  },
+  {
+   "en": "'_blank'",
+   "motivo": "valor de atributo (target)"
+  },
+  {
+   "en": "'noopener noreferrer'",
+   "motivo": "valor de atributo (rel)"
+  }
+ ]
+}

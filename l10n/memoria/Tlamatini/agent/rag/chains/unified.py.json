@@ -1,0 +1,485 @@
+{
+ "archivo": "Tlamatini/agent/rag/chains/unified.py",
+ "segmentos": [
+  {
+   "en": "\"🛑 You cancelled this request. I stopped the run — no further \"",
+   "es": "\"🛑 Cancelaste esta solicitud. Detuve la ejecución y no ejecuté más \"",
+   "n": 2
+  },
+  {
+   "en": "\"tools were executed.\"",
+   "es": "\"tools.\"",
+   "n": 2
+  },
+  {
+   "en": "\"No files are currently loaded in the knowledge base. Please load documents to enable file listing.\"",
+   "es": "\"Todavía no tengo archivos cargados en mi base de conocimiento. Carga documentos para que pueda listarlos.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Files with extension .{ext} in knowledge base ({len(filtered_files)} total):\\n\"",
+   "es": "f\"Archivos con extensión .{ext} en la base de conocimiento ({len(filtered_files)} en total):\\n\"",
+   "n": 1
+  },
+  {
+   "en": "f\"No files with extension .{ext} found in the knowledge base.\"",
+   "es": "f\"No encontré archivos con extensión .{ext} en la base de conocimiento.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Available files in knowledge base ({len(files)} total):\\n\"",
+   "es": "f\"Archivos disponibles en la base de conocimiento ({len(files)} en total):\\n\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "r\"(^FILE MANIFEST\\b|^Allowed Directories:\\b|^Found \\d+ files matching\\b|^No files found matching\\b)\"",
+   "motivo": "expresión regular"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] {model}: tool-less answer fitted to {window.tokens:,} tokens \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({window.source}) - prompt {len(base):,} -> {len(prompt):,} chars \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({info.get('prompt_profile')}), context {len(ctx):,} -> \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{len(str(fitted.get('context') or '')):,} chars, history \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] tool-less fit failed open ({fit_err}) - complete prompt sent\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"status code: 500\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"status code: 502\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"status code: 503\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"status code: 504\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"forcibly closed\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"connection reset\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"read tcp\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"EOF occurred in violation of protocol\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"Read timed out\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"None\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "f\"--- [{where}] REAL fallback cause: {etype}: {emsg}\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"request body too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"body too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"request entity too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"payload too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"context length\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"maximum context\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"too many tokens\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"string too long\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"timed out\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"rate limit\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"bad gateway\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"service unavailable\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"the request grew too large for the model in a single step. I now trim \"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"my running context automatically, so please RESEND and I will shrink \"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"the context and carry the task through WITH my tools\"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"the model backend had a transient network problem. Please RESEND and I \"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"will run the tools\"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"an internal error interrupted my tool run (\"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"). No \"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"tools were executed — please RESEND so I can try again WITH my tools\"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\" and the provided context\"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"SYSTEM NOTICE: Multi-Turn tool execution was requested but \"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"Answer the following request using only the model's own knowledge\"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\", and clearly state at the END that TOOLS WERE NOT EXECUTED (reason: \"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\") so the user can retry.\\n\\nUser request: \"",
+   "motivo": "aviso para el LLM (SYSTEM NOTICE dentro del prompt)"
+  },
+  {
+   "en": "\"--- [UnifiedAgent] user cancelled — not starting another executor run ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [UnifiedAgent] Recovered on attempt {attempt}/{max_attempts} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [UnifiedAgent] user cancelled — abandoning retries ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [UnifiedAgent] Transient error persisted after \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{max_attempts} attempts: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [UnifiedAgent] Transient error on attempt {attempt}/{max_attempts} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({exc}); retrying in {backoff:.1f}s ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"IMPORTANT: The loaded context above is the USER'S OWN project/files (NOT Tlamatini's own \"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"source code or self-knowledge), already provided even though vector retrieval is unavailable. \"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"Use it directly to answer the user's question; for any request to summarize, explain, or analyze \"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"\\\"the project\\\", \\\"the source code\\\", or \\\"the provided context\\\", answer from THIS content — never \"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"with a description of Tlamatini herself.\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "f\"User Question: {question}\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "f\"System Context: {system_context}\\n\\n{text}\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "f\"CHAT HISTORY SUMMARY:\\n{summary}\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"--- UnifiedAgentChain: Tool-enabled agent initialized successfully ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: Failed to initialize agent ({e}), falling back to basic LLM ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Forcibly closing httpx transport ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Transport closed ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [ABORT] Transport close error (expected): {te}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Client closed ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [ABORT] Client close error (expected): {ce}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [ABORT] Error during abort (connection may already be closed): {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Connection reference cleared ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"You are a conversation summarizer. Create **JUST ONCE** concise, factual summary of the dialogue that captures information relevant to answering the user's current question.\\n\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"STRICT GUIDELINES:\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"a. Focus on: key facts, decisions made, technical details, entity names, constraints, and ongoing context\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"b. Exclude: pleasantries, acknowledgments, clarifying questions, and redundant information\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"c. Format: Single paragraph, factual statements only, no conversational markers\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"d. Length: Maximum 120 words\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"e. Style: Neutral, technical documentation tone\\n\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"f. Return ONLY the summary content - no prefixes, role indicators, or meta-commentary.\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"Current user question: {q}\\n\\nGenerate summary focusing on information relevant to this question:\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "\"--- UnifiedAgentChain: Processing request with tool-enabled agent ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\"\"Files Context (file system search results):\r\n{payload['files_context']}\r\n\r\nUser Question: {enhanced_input}\"\"\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "f\"Web Context: {ext}{sources_str}\\n\\n{enhanced_input}\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: Invoking unified agent with input length: {len(enhanced_input)} chars\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: Agent returned result type: {type(result)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: Result keys: {list(result.keys())}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: output value: '{result.get('output', '<NOT PRESENT>')}' (length: {len(result.get('output', ''))})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: WARNING - Empty answer received! Full result: {result}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- UnifiedAgentChain: user cancelled — no fallback answer ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: Agent invocation failed ({agent_exception!r}), \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"falling back to basic LLM ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentChain: returning result_dict with exec_report_enabled=\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- UnifiedAgentRAGChain: Tool-enabled agent initialized successfully ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentRAGChain: Failed to initialize agent ({e}), will fall back to basic LLM ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"You are a conversation summarizer. Create **JUST ONCE** a concise, factual summary of the dialogue that captures information relevant to answering the user's current question.\\n\\n\"",
+   "motivo": "prompt para el LLM"
+  },
+  {
+   "en": "f\"\\n--- UnifiedAgentRAGChain::invoke(): >>>>>>>>>>{payload}<<<<<<<<<<\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- UnifiedAgentRAGChain: Processing request with document retrieval and tool support ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Conversation context available, proceeding with added history ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- No conversation context available, proceeding with original query ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Expanded query: {q_rewritten}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: Query expansion failed: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"provided context\"",
+   "motivo": "frase que se busca en la pregunta del usuario"
+  },
+  {
+   "en": "\"--- User explicitly requested 'provided context', ignoring FileSearchRAGChain results ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Multi-Turn mode: file-listing detection triggered but BYPASSED → request goes to LLM ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: Context budget allocation failed: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: Cross-reference addition failed: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"WEB CONTEXT (summarized from live search):\\n\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "f\"{ext_header}{ext}{sources_str}\\n\\nLOCAL CONTEXT:\\n{context_blob}\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"FILE MANIFEST (all loaded files in knowledge base):\\n\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"FILE MANIFEST\"",
+   "motivo": "marcador que se compara (in)"
+  },
+  {
+   "en": "f\"\\n--- Original input: {original_input}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- Rewritten input: {q_rewritten}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- History: {hist}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\"\"Files Context (file system search results):\r\n{files_ctx}\r\n\r\nUser Question: {enhanced_input}\"\"\"",
+   "motivo": "contexto o encabezado para el LLM"
+  },
+  {
+   "en": "\"--- Context blob saved with hash: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- UnifiedAgentRAGChain: user cancelled — no fallback answer ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- UnifiedAgentRAGChain: Agent invocation failed ({agent_exception!r}), \"",
+   "motivo": "log de consola"
+  }
+ ]
+}

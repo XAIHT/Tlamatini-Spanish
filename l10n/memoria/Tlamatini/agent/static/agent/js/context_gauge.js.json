@@ -1,0 +1,312 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/context_gauge.js",
+ "segmentos": [
+  {
+   "en": "'Context fill'",
+   "es": "'Ocupación del contexto'",
+   "n": 1
+  },
+  {
+   "en": "'Context size over the last model steps'",
+   "es": "'Tamaño del contexto en los últimos pasos del modelo'",
+   "n": 1
+  },
+  {
+   "en": "'sent to the model'",
+   "es": "'enviado al modelo'",
+   "n": 2
+  },
+  {
+   "en": "'How much of the model\\'s CONTEXT WINDOW one request fills: '",
+   "es": "'Qué parte de la ventana de contexto (CONTEXT-WINDOW) del modelo llena una solicitud: '",
+   "n": 1
+  },
+  {
+   "en": "'the system prompt, the bound tools, your loaded context, the chat history '",
+   "es": "'el system prompt, los tools vinculados, el contexto que cargaste, el historial del chat '",
+   "n": 1
+  },
+  {
+   "en": "'and the tool loop. It can pass 100% - then the model cannot read it all and '",
+   "es": "'y el loop de tools. Puede pasar del 100%: entonces el modelo no puede leerlo todo y '",
+   "n": 1
+  },
+  {
+   "en": "'not everything will work. Bytes are measured. Tokens say REAL when they are '",
+   "es": "'no todo va a funcionar. Los bytes son medidos. Los tokens dicen REAL cuando son '",
+   "n": 1
+  },
+  {
+   "en": "'Ollama\\'s own prompt_eval_count for that exact request, and est. until Ollama '",
+   "es": "'el prompt_eval_count del propio Ollama para esa misma solicitud, y aprox. hasta que Ollama '",
+   "n": 1
+  },
+  {
+   "en": "'has answered.'",
+   "es": "'responda.'",
+   "n": 1
+  },
+  {
+   "en": "' bytes exactly — measured, '",
+   "es": "' bytes exactos — medidos, '",
+   "n": 1
+  },
+  {
+   "en": "'the literal size of the request on the wire'",
+   "es": "'el tamaño literal de la solicitud en la red'",
+   "n": 1
+  },
+  {
+   "en": "' This answer so far: '",
+   "es": "' Esta respuesta hasta ahora: '",
+   "n": 1
+  },
+  {
+   "en": "' main-model call(s), '",
+   "es": "' llamada(s) al modelo principal, '",
+   "n": 1
+  },
+  {
+   "en": "' prompt + '",
+   "es": "' tokens de prompt + '",
+   "n": 1
+  },
+  {
+   "en": "' output tokens (REAL, from Ollama).'",
+   "es": "' tokens de output (REAL, de Ollama).'",
+   "n": 1
+  },
+  {
+   "en": "'CUT · read '",
+   "es": "'CUT · leyó '",
+   "n": 1
+  },
+  {
+   "en": "' of ≈'",
+   "es": "' de ≈'",
+   "n": 1
+  },
+  {
+   "en": "'Ollama could not read the whole request.'",
+   "es": "'Ollama no pudo leer toda la solicitud.'",
+   "n": 1
+  },
+  {
+   "en": "' REAL: Ollama\\'s own prompt_eval_count. Untick agents or tools in Config ▸ '",
+   "es": "' REAL: el prompt_eval_count del propio Ollama. Desmarca agents o tools en Config ▸ '",
+   "n": 1
+  },
+  {
+   "en": "'Configure Agents / Configure MCPs, or shorten the request, so it fits.'",
+   "es": "'Configurar Agents / Configurar MCPs, o acorta la solicitud, para que quepa.'",
+   "n": 1
+  },
+  {
+   "en": "'REAL: Ollama\\'s own prompt_eval_count for this exact '",
+   "es": "'REAL: el prompt_eval_count del propio Ollama para esta misma '",
+   "n": 1
+  },
+  {
+   "en": "'request ('",
+   "es": "'solicitud ('",
+   "n": 1
+  },
+  {
+   "en": "'), of a '",
+   "es": "'), de una ventana de contexto de '",
+   "n": 1
+  },
+  {
+   "en": "'. The chars/4 estimate was '",
+   "es": "'. La estimación chars/4 fue de '",
+   "n": 1
+  },
+  {
+   "en": "' tokens est. · '",
+   "es": "' tokens aprox. · '",
+   "n": 1
+  },
+  {
+   "en": "'% est.'",
+   "es": "'% aprox.'",
+   "n": 1
+  },
+  {
+   "en": "'ESTIMATE (~4 characters per token) of a '",
+   "es": "'ESTIMACIÓN (~4 caracteres por token) de una ventana de contexto de '",
+   "n": 1
+  },
+  {
+   "en": "', shown until Ollama answers this request with its own count.'",
+   "es": "', que se muestra hasta que Ollama responda esta solicitud con su propio conteo.'",
+   "n": 1
+  },
+  {
+   "en": "' Last REAL count: '",
+   "es": "' Último conteo REAL: '",
+   "n": 1
+  },
+  {
+   "en": "'previous request'",
+   "es": "'solicitud anterior'",
+   "n": 1
+  },
+  {
+   "en": "'What your NEXT message will send, rebuilt with the main chain\\'s own '",
+   "es": "'Lo que enviará tu SIGUIENTE mensaje, reconstruido con el propio código '",
+   "n": 1
+  },
+  {
+   "en": "'code while nothing is running'",
+   "es": "'del chain principal mientras no se ejecuta nada'",
+   "n": 1
+  },
+  {
+   "en": "'Measured on the '",
+   "es": "'Medido en la llamada '",
+   "n": 1
+  },
+  {
+   "en": "' main-model call'",
+   "es": "' al modelo principal'",
+   "n": 1
+  },
+  {
+   "en": "'prefix (system prompt + tools) '",
+   "es": "'prefijo (system prompt + tools) '",
+   "n": 1
+  },
+  {
+   "en": "' B · your context '",
+   "es": "' B · tu contexto '",
+   "n": 1
+  },
+  {
+   "en": "' B · chat history '",
+   "es": "' B · historial del chat '",
+   "n": 1
+  },
+  {
+   "en": "' B · tool loop '",
+   "es": "' B · loop de tools '",
+   "n": 1
+  },
+  {
+   "en": "'Nothing has been measured yet on this page.'",
+   "es": "'Todavía no se ha medido nada en esta página.'",
+   "n": 1
+  },
+  {
+   "en": "'measuring your next request…'",
+   "es": "'midiendo tu siguiente solicitud…'",
+   "n": 1
+  },
+  {
+   "en": "'As soon as the agent is ready, Tlamatini rebuilds the '",
+   "es": "'En cuanto el agent esté listo, Tlamatini reconstruye la '",
+   "n": 1
+  },
+  {
+   "en": "'request your next message will send and asks Ollama how many tokens '",
+   "es": "'solicitud que enviará tu siguiente mensaje y le pregunta a Ollama cuántos tokens '",
+   "n": 1
+  },
+  {
+   "en": "'it really is.'",
+   "es": "'mide en realidad.'",
+   "n": 1
+  },
+  {
+   "en": "'prefix · context · history · loop'",
+   "es": "'prefijo · contexto · historial · loop'",
+   "n": 1
+  },
+  {
+   "en": "'-token context ('",
+   "es": "' tokens ('",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'GREEN'",
+   "motivo": "palabra de zona: el render la pone con zone.toUpperCase() del valor de máquina (green/amber/red), así que se queda en inglés como GREEN/AMBER/RED/CUT/OVER"
+  },
+  {
+   "en": "'ctxg-seg ctxg-seg-prefix'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'ctxg-seg ctxg-seg-context'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'ctxg-seg ctxg-seg-history'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'ctxg-seg ctxg-seg-loop'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'CONTEXT-WINDOW'",
+   "motivo": "nombre del medidor (CONTEXT-WINDOW)"
+  },
+  {
+   "en": "' tokens · '",
+   "motivo": "igual en español"
+  },
+  {
+   "en": "' tokens REAL · '",
+   "motivo": "igual en español"
+  },
+  {
+   "en": "' tokens ('",
+   "motivo": "igual en español"
+  },
+  {
+   "en": "'% · hist '",
+   "motivo": "abreviaturas del medidor (hist, loop)"
+  },
+  {
+   "en": "'% · loop '",
+   "motivo": "abreviaturas del medidor (hist, loop)"
+  },
+  {
+   "en": "'idle'",
+   "motivo": "valor de máquina (data-zone)"
+  },
+  {
+   "en": "'IDLE'",
+   "motivo": "palabra de zona (igual que GREEN/AMBER/RED/CUT/OVER, que pone el render en inglés)"
+  },
+  {
+   "en": "'[context-gauge] idle boot skipped:'",
+   "motivo": "texto de log (console.warn)"
+  },
+  {
+   "en": "'[context-gauge] render skipped:'",
+   "motivo": "texto de log (console.warn)"
+  },
+  {
+   "en": "'Multi-Turn'",
+   "motivo": "nombre de una función del producto (también va como motivo al servidor)"
+  },
+  {
+   "en": "'context-gauge-refresh'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "'[context-gauge] refresh request skipped:'",
+   "motivo": "texto de log (console.warn)"
+  },
+  {
+   "en": "'page opened'",
+   "motivo": "motivo que se envía al servidor (reason)"
+  },
+  {
+   "en": "'model'",
+   "motivo": "valor de respaldo poco visible; «model» también es valor de máquina comparado en otros archivos (latexer.py)"
+  }
+ ]
+}

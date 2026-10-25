@@ -1,0 +1,81 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_layout.js",
+ "segmentos": [
+  {
+   "en": "'Message composer '",
+   "es": "'Área de mensaje: '",
+   "n": 1
+  },
+  {
+   "en": "' pixels high'",
+   "es": "' píxeles de alto'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "`Chat ${Math.round(chatWidth)}%, canvas ${Math.round(canvasWidth)}%`",
+   "motivo": "igual en español (chat y canvas se quedan en inglés)"
+  },
+  {
+   "en": "'position: absolute !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'left: -99999px !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'top: 0 !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'visibility: hidden !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'display: inline-flex !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'align-items: center !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'flex: none !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'flex-wrap: nowrap !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'gap: 4px !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'padding: 1px 2px !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'width: max-content !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'max-width: none !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'min-width: 0 !important;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "`Chat ${Math.round(chatWidthPct)}%, canvas ${Math.round(canvasWidthPct)}%`",
+   "motivo": "igual en español (chat y canvas se quedan en inglés)"
+  },
+  {
+   "en": "\" Tlamatini\"",
+   "motivo": "nombre del producto"
+  }
+ ]
+}

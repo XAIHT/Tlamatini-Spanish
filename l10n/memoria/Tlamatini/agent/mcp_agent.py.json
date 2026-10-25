@@ -1,0 +1,1391 @@
+{
+ "archivo": "Tlamatini/agent/mcp_agent.py",
+ "segmentos": [
+  {
+   "en": "\"answering\"",
+   "es": "\"respondiendo\"",
+   "n": 1
+  },
+  {
+   "en": "f\"working on step {iteration + 1}\"",
+   "es": "f\"trabajando en el paso {iteration + 1}\"",
+   "n": 1
+  },
+  {
+   "en": "\"summarizing the results\"",
+   "es": "\"resumiendo los resultados\"",
+   "n": 1
+  },
+  {
+   "en": "\"wrapping up\"",
+   "es": "\"terminando\"",
+   "n": 1
+  },
+  {
+   "en": "f\"⛔ Execution interrupted. You denied the {denied_kind} \"",
+   "es": "f\"⛔ Ejecución interrumpida. Denegaste que el {denied_kind} \"",
+   "n": 1
+  },
+  {
+   "en": "f\"\\\"{denied_name}\\\" from running\"",
+   "es": "f\"\\\"{denied_name}\\\" se ejecutara\"",
+   "n": 1
+  },
+  {
+   "en": "\". The Multi-Turn chain was halted at this step and no \"",
+   "es": "\". El chain de Multi-Turn se detuvo en este paso y no se \"",
+   "n": 1
+  },
+  {
+   "en": "\"further tools were executed.\"",
+   "es": "\"ejecutaron más tools.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Python interpreter\"",
+   "es": "\"Intérprete de Python\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Remote SSH shell{(' @ ' + str(host)) if host else ''}\"",
+   "es": "f\"Shell remota por SSH{(' @ ' + str(host)) if host else ''}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{label} in a visible Terminater terminal (typed key by key)\"",
+   "es": "f\"{label} en una terminal visible de Terminater (se escribe tecla por tecla)\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Docker CLI via {os_shell}\"",
+   "es": "f\"CLI de Docker mediante {os_shell}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"kubectl CLI via {os_shell}\"",
+   "es": "f\"CLI de kubectl mediante {os_shell}\"",
+   "n": 1
+  },
+  {
+   "en": "\"I could not complete that with the tools I have available right \"",
+   "es": "\"No pude completar eso con los tools que tengo disponibles en este \"",
+   "n": 1
+  },
+  {
+   "en": "\"now, so I don't want to guess at an answer. The local model I am \"",
+   "es": "\"momento, y no quiero adivinar una respuesta. El modelo local con el que \"",
+   "n": 1
+  },
+  {
+   "en": "\"running on kept asking for a tool that does not exist. Please try \"",
+   "es": "\"estoy corriendo siguió pidiendo un tool que no existe. Intenta \"",
+   "n": 1
+  },
+  {
+   "en": "\"rephrasing, or switch to a stronger model in Config ▸ Models.\"",
+   "es": "\"reformular tu solicitud o cambia a un modelo más potente en Config ▸ Modelos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"🛑 You cancelled this request. I stopped the run — nothing had been \"",
+   "es": "\"🛑 Cancelaste esta solicitud. Detuve la ejecución; todavía no se había \"",
+   "n": 1
+  },
+  {
+   "en": "\"executed yet, so nothing was left half-done.\"",
+   "es": "\"ejecutado nada, así que nada quedó a medias.\"",
+   "n": 1
+  },
+  {
+   "en": "\"you cancelled\"",
+   "es": "\"lo cancelaste\"",
+   "n": 1
+  },
+  {
+   "en": "\"the model became unreachable and every recovery tactic was exhausted\"",
+   "es": "\"el modelo dejó de responder y se agotaron todas las tácticas de recuperación\"",
+   "n": 1
+  },
+  {
+   "en": "f\"⚠️ I stopped the model step because {why}, but your Multi-Turn run had \"",
+   "es": "f\"⚠️ Detuve el paso del modelo porque {why}, pero tu ejecución de Multi-Turn \"",
+   "n": 1
+  },
+  {
+   "en": "\"ALREADY executed its agents — nothing was lost and the run was NOT discarded. \"",
+   "es": "\"YA había ejecutado sus agents: no se perdió nada y la ejecución NO se descartó. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Here is what actually ran this turn:\"",
+   "es": "\"Esto es lo que de verdad se ejecutó en este turno:\"",
+   "n": 1
+  },
+  {
+   "en": "\"Most recent tool results:\"",
+   "es": "\"Resultados más recientes de los tools:\"",
+   "n": 1
+  },
+  {
+   "en": "f\"({len(ok)} of {len(ran)} tool call(s) succeeded — you can click \"",
+   "es": "f\"({len(ok)} de {len(ran)} llamadas a tools terminaron bien; puedes hacer clic en \"",
+   "n": 1
+  },
+  {
+   "en": "\"**Create Flow** to build a workflow from the successful agents.)\"",
+   "es": "\"**Crear flow** para armar un workflow con los agents que funcionaron.)\"",
+   "n": 1
+  },
+  {
+   "en": "\"⚠️ I could not reach the model for this request after trying every \"",
+   "es": "\"⚠️ No pude comunicarme con el modelo para esta solicitud después de probar todas \"",
+   "n": 1
+  },
+  {
+   "en": "f\"recovery tactic ({_step.reason}). No tools were selected for this \"",
+   "es": "f\"las tácticas de recuperación ({_step.reason}). No se eligió ningún tool para esta \"",
+   "n": 1
+  },
+  {
+   "en": "\"request, so nothing was executed — please try again.\"",
+   "es": "\"solicitud, así que no se ejecutó nada. Vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The planner selected no tools for this request, and the model returned an empty response.\"",
+   "es": "\"El planner no eligió ningún tool para esta solicitud y el modelo devolvió una respuesta vacía.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Here are the results from the executed tool calls:\\n\\n\"",
+   "es": "\"Estos son los resultados de las llamadas a tools que se ejecutaron:\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"The tool-calling model returned an empty final response.\"",
+   "es": "\"El modelo de tool calling devolvió una respuesta final vacía.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I could not finish this request. A tool kept failing with the \"",
+   "es": "\"No pude terminar esta solicitud. Un tool siguió dando el \"",
+   "n": 1
+  },
+  {
+   "en": "\"same error and repeating it would not help, so I stopped instead \"",
+   "es": "\"mismo error y repetirlo no iba a servir, así que me detuve en lugar \"",
+   "n": 1
+  },
+  {
+   "en": "\"of looping. The error was:\\n\\n\"",
+   "es": "\"de quedarme en un ciclo. El error fue:\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"What you can try: rephrase the request, adjust the values \"",
+   "es": "\"Lo que puedes intentar: reformular la solicitud, ajustar los valores \"",
+   "n": 1
+  },
+  {
+   "en": "\"involved, or check the target tool/app is set up correctly. \"",
+   "es": "\"involucrados o revisar la configuración del tool o de la app de destino. \"",
+   "n": 1
+  },
+  {
+   "en": "\"The last raw tool results, for reference:\\n\\n\"",
+   "es": "\"Los últimos resultados en bruto de los tools, como referencia:\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"I stopped because the model kept repeating the same tool call \"",
+   "es": "\"Me detuve porque el modelo siguió repitiendo la misma llamada a un tool \"",
+   "n": 1
+  },
+  {
+   "en": "\"without making progress. Here are the last tool results:\\n\\n\"",
+   "es": "\"sin avanzar. Estos son los últimos resultados de los tools:\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"The tool-calling loop hit its iteration limit before producing a final answer. \"",
+   "es": "\"El loop de tool calling llegó a su límite de iteraciones antes de dar una respuesta final. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Summarize the latest observed tool state or refine the request.\"",
+   "es": "\"Pide un resumen del último estado de los tools o afina la solicitud.\"",
+   "n": 1
+  },
+  {
+   "en": "\"⚠️ This conversation has grown very large, so I could not bind my \"",
+   "es": "\"⚠️ Esta conversación creció mucho, así que no pude conectar todos mis \"",
+   "n": 1
+  },
+  {
+   "en": "f\"full tool surface this turn — I kept only {len(selected_tools)} \"",
+   "es": "f\"tools en este turno: sólo conservé {len(selected_tools)} \"",
+   "n": 1
+  },
+  {
+   "en": "\"core tool(s). If a step needs an agent I no longer have, clear the \"",
+   "es": "\"tools básicos. Si un paso necesita un agent que ya no tengo, borra el \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat history or start a new chat and my full surface comes back. \"",
+   "es": "\"historial del chat o empieza un chat nuevo y vuelvo a tener todos mis tools. \"",
+   "n": 1
+  },
+  {
+   "en": "\"I am telling you now rather than reporting work I cannot do.\"",
+   "es": "\"Te lo digo ahora en lugar de reportarte un trabajo que no puedo hacer.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Executer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Pythonxer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Monitor Netstat\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Googler\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Parametrizer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Starter\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Stopper\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Image-Interpreter\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "r\"\\b(when|once|after|as soon as|upon|by the time)\\b[^.?!]{0,80}?\\b\"",
+   "motivo": "expresión regular"
+  },
+  {
+   "en": "r\"end|ends|ended|ready|over|wrap(?:s|ped)? up)\\b\"",
+   "motivo": "expresión regular"
+  },
+  {
+   "en": "r\"\\b(at the end|on completion|upon completion|when you(?:'?re| are)? done|\"",
+   "motivo": "expresión regular"
+  },
+  {
+   "en": "r\"when you finish|after finishing|once finished|after it'?s? done)\\b\"",
+   "motivo": "expresión regular"
+  },
+  {
+   "en": "r\"\\b(?:do not|don't)\\s+forget\\s+to\\s*$\"",
+   "motivo": "expresión regular"
+  },
+  {
+   "en": "\"Unzip\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Dockerer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Kuberneter\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Mongoxer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Jenkinser\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Gitter\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Instant Messaging Doctor\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"File-Creator\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Mover\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Deleter\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Apirer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Unrealer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Blenderer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Globber\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Grepper\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Editor\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Video-Analyzer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Playwrighter\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Emailer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Telegrammer\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Whatsapper\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Notifier\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"De-Compresser\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Kyber Keygen\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Kyber Cipher\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Kyber Deciph\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Keyboarder\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Mouser\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Windower\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Kalier\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Terminater\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Arduiner\"",
+   "motivo": "nombre de agent (valor de máquina para el .flw y el Exec Report)"
+  },
+  {
+   "en": "\"Skill\"",
+   "motivo": "tipo de ejecución (vocabulario del producto: Skill, Agent, Tool)"
+  },
+  {
+   "en": "\"MCP / ACPX agent\"",
+   "motivo": "vocabulario del producto (agent, MCP y ACPX se quedan en inglés); lo compara tests.py"
+  },
+  {
+   "en": "\"Agent\"",
+   "motivo": "tipo de ejecución (vocabulario del producto: Skill, Agent, Tool)"
+  },
+  {
+   "en": "\"Tool\"",
+   "motivo": "tipo de ejecución (vocabulario del producto: Skill, Agent, Tool)"
+  },
+  {
+   "en": "\"Windows\"",
+   "motivo": "valor que se compara (platform.system())"
+  },
+  {
+   "en": "\"cmd.exe / PowerShell (Windows)\"",
+   "motivo": "nombre técnico del shell"
+  },
+  {
+   "en": "\"/bin/sh (POSIX)\"",
+   "motivo": "nombre técnico del shell"
+  },
+  {
+   "en": "\"Windows PowerShell\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "\"PowerShell 7\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "\"Kali Linux (MCP-Kali-Server)\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "\"STM32 Template Project MCP\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "\"PlatformIO Core (pio CLI)\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "\"ESPHome (esphome CLI)\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "\"Arduino CLI (arduino-cli)\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "\"Tlamatini SkillHarness\"",
+   "motivo": "nombre de producto o herramienta"
+  },
+  {
+   "en": "f\"--- Using unified_agent_model from config.json: {model} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Using model from LLM instance: {model} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Using default model: {model} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Bearer {token}\"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "\"--- [LLM-TIMEOUT] one Ollama call may take up to %.0fs \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"(llm_client_timeout_seconds) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [MODEL-BRAIN] the installed ollama client cannot send \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"think={_brain.think!r}; {model} keeps its own default ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [MODEL-BRAIN] not applied ({_brain_exc}); legacy parameters kept ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Warning: Some parameters not supported by ChatOllama, retrying with basic config: {e} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Converted OllamaLLM to ChatOllama for tool calling (model={model}, base_url={base_url}) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [LLM-PARAMS] model=%s | %s | (a param shown as None is NOT sent to Ollama)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"The live editor receipt exceeds this request's tool-result budget. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"No partial document was delivered. An earlier action may have completed; \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"do not replay it. End this turn and ask the user to use a smaller document \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"or a model/configuration with enough context.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\" characters so the request stays within \"",
+   "motivo": "nota de recorte para el LLM (dentro del resultado del tool)"
+  },
+  {
+   "en": "\"the model's size limit — the FULL output was captured for the Exec Report; \"",
+   "motivo": "nota de recorte para el LLM (dentro del resultado del tool)"
+  },
+  {
+   "en": "\"ask for a specific part if you need more of it]…\\n\\n\"",
+   "motivo": "nota de recorte para el LLM (dentro del resultado del tool)"
+  },
+  {
+   "en": "\"internal system correction\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"there is no tool named\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"no tool named\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"proper tool-calling mechanism\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"did you mean to call one of the available tools\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"--- [LOCAL-TOOLCALL] Final answer echoed the INTERNAL correction \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"- replacing it with a human-readable message.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [TERMINAL-GUARD] unsupported claim ({problem.code}): {problem.claim[:160]!r} -> {problem.detail}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"kill {session_id}\"",
+   "motivo": "texto técnico de la columna Command del Exec Report"
+  },
+  {
+   "en": "f\"relay [{src}] → [{dst}] ({transform})\"",
+   "motivo": "texto técnico de la columna Command del Exec Report"
+  },
+  {
+   "en": "\"The editor has been handed to the learner. End this turn with guidance; do not continue through another tool.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"Tool '{tool_name}' is not available in this session.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"Tool '{tool_name}' raised an exception: {exc}\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"false |\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"traceback (most recent\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"unable to \"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"could not \"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"permission denied\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"tool reported failure\"",
+   "motivo": "motivo interno de error del tool"
+  },
+  {
+   "en": "\"failed with return code\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "\"You have already launched Pythonxer several times in this request. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"If the remaining work is file creation, prefer chat_agent_file_creator \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"(one call per file) — it is more reliable for multi-line content with \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"embedded quotes than embedding Python ``open(..., 'w')`` scripts. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"For file deletion use chat_agent_deleter; for moves, chat_agent_move_file. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"Keep using Pythonxer only if the remaining step is genuine computation.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"You have already executed several shell commands in this request. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"If you are verifying files you just created, a single ``dir /s`` or \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"``ls -R`` is enough — further execute_command calls with similar \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"intent are probably redundant. Consider summarizing and finalizing.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"--- MultiTurnToolAgentExecutor: USER CANCELLED — stopping the run now; \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"keeping the {len(self._tool_calls_log)} tool call(s) already done ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"[REPETITION BREAKER]\"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "f\"--- [CONTEXT] measurement skipped ({_cg_err}) — nothing changed\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REAL] report skipped ({_cg_err})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"live: {label or 'model step'}\"",
+   "motivo": "etiqueta técnica del origen de la medición (log)"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] ⚠️ {model}: the request was CUT again (window {window} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"tokens) - the selection the user ticked still does not fit; answering from \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"what the model could read, with a CONTEXT-WINDOW warning in the chat\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] {model}: the FIRST step of this turn was cut by \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Ollama (window {window}) - discarding that answer and re-fitting\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] ⚠️ {model}: step '{label}' was CUT by Ollama (window \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{window} tokens) after tools already ran - the run continues on what \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"the model could read\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] cut check skipped ({_cut_err})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REAL] [{label}] Ollama returned no prompt_eval_count \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"for this step - the ring keeps the ESTIMATE, labelled as one\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-REAL] [{label}] tactic '{tactic}' sent a CHANGED request: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"prompt_eval_count={usage.get('prompt_tokens')} belongs to that \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"request, not to the one measured - not paired with the ring\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"main chain: {label}\"",
+   "motivo": "etiqueta técnica del origen de la medición (log)"
+  },
+  {
+   "en": "\"REQUEST-SCOPED GLOBAL EXECUTION PLAN:\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"Follow this planner output. Prefetch stages have already been applied before this executor runs. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"Use only the planned tool and monitor stages unless the plan is empty.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"User Question: \"",
+   "motivo": "marcador que se busca o se compara"
+  },
+  {
+   "en": "f\"--- [TERMINAL-GUARD] live-tutorial mode ON ({self._tutorial_mode.phrase!r}): command \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"runners are blocked and Terminater only types - the user presses Enter\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- MultiTurnToolAgentExecutor: model step unreachable \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({_step.reason}) after {_step.attempts} tactic(s); finishing \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"gracefully from {len(self._tool_calls_log)} tool call(s) already \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"done (run NOT discarded) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [LOCAL-TOOLCALL] Recovered \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{len(_recovered)} tool call(s) the model emitted as TEXT: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"(structured tool_calls was empty)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- MultiTurnToolAgentExecutor iteration {iteration + 1}/{self.max_iterations}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [TOOLCALL-SHAPE] {describe_toolcall_shape(response, _recovered)}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Tool calls requested: {[call.get('name') for call in tool_calls]}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [LOCAL-TOOLCALL] Model invented tool '{_attempted}' \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"(not bound). Correcting instead of showing the JSON. \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Suggesting: {_suggest[:5]}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"[INTERNAL SYSTEM CORRECTION — never repeat or quote this \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"message to the user.] The tool '{_attempted}' does not exist.\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"Real tools that may fit: {', '.join(_suggest[:8])}.\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"Silently call ONE of the REAL tools using the proper \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"tool-calling mechanism (do NOT type JSON in your message). \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"If no tool fits, ANSWER THE USER'S ORIGINAL QUESTION directly \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"in plain language. Never mention tools, tool names, JSON, or \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"this correction in your reply.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"asked for a completion notification but no notification tool was \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"called — nudging the model to send it now.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"You are about to give your FINAL answer, but this request asked you \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"to NOTIFY the user on completion (e.g. send a Telegram / email / \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"WhatsApp message / notification) and you have NOT yet called any \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"notification tool. Send it NOW: call the appropriate tool \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"(chat_agent_telegrammer / chat_agent_send_email / \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"chat_agent_whatsapper / chat_agent_notifier) with a concise \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"completion message. The tools ARE available right now — you have \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"been calling them this turn — so do NOT claim the backend is \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"'unavailable', do NOT claim a 'transient network error', and do NOT \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"tell the user to re-enable Multi-Turn. If, and ONLY if, the tool \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"call itself returns an error, report the EXACT tool name and the \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"verbatim error it returned.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"--- MultiTurnToolAgentExecutor: empty final response, nudging model to summarize ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"You have finished executing tools but returned an empty response. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"Please now provide your final answer summarizing what you did and \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"the results you obtained. Do NOT call any more tools.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"--- MultiTurnToolAgentExecutor: nudge failed, collecting tool results as fallback ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Repetition breaker activated: '{tool_names}' \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"called {repeat_count} times with identical args. \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Injecting stop nudge.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"[REPETITION BREAKER] This exact tool call with identical \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"parameters has already been executed and its output was \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"returned in a previous iteration. Repeating it will not \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"produce new information. You MUST now produce your final \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"answer based on the results you already have. Do NOT call \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"any more tools.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"--- Repetition breaker: model still requesting tools after nudge. Force-stopping.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [TERMINAL-GUARD] '{tool_name}' NOT run: live-tutorial mode\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"NOT run - live-tutorial mode\"",
+   "motivo": "nota de la columna Command del Exec Report (la compara test_terminater_reliability.py)"
+  },
+  {
+   "en": "f\"{tool_name}:{json.dumps(tool_call.get('args', {}), sort_keys=True, ensure_ascii=False)}\"",
+   "motivo": "firma interna para deduplicar"
+  },
+  {
+   "en": "f\"This exact '{tool_name}' call with identical parameters \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"was already executed earlier in this session. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"Use the results from the previous execution.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"[QUOTA HARD-STOP] You have invoked '{tool_name}' \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"{prior_count} times in this request — the per-tool cap \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"is {self._TOOL_QUOTA_HARD_STOP}. No further calls to \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"'{tool_name}' will be executed this turn. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"Produce your FINAL answer summarizing what has been \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"accomplished so far. Do NOT call any more tools.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"You have invoked '{tool_name}' {self._TOOL_QUOTA_SOFT_WARN} times \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"in this request. If the task is complete, produce your final answer; \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"otherwise consider whether a specialized tool would finish faster.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"[BLOCKED] '\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"' with these exact arguments has \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"already FAILED \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\" times (last error: \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"see above\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"). It is now blocked. Do NOT call it again with the same \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"arguments - CHANGE the arguments to fix the error, use a DIFFERENT \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"tool, or STOP and tell the user plainly what failed and what to try.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"[REPEATED FAILURE - attempt \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"] This exact '\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"' call has now FAILED \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\" times with the \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"same error. Repeating identical arguments will keep failing. You MUST \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"change your approach: (1) FIX the arguments (read the error carefully \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- a type/cast/shape mismatch means the value you passed is the wrong \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"type or form), (2) or use a DIFFERENT tool, (3) or STOP and tell the \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"user plainly what failed and suggest a next step. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"This call is now BLOCKED. \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"\\n\\n--- tool error ---\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"\\n\\n[PLANNER HINT] \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"\"\"\n**STEP-BY-STEP MODE**:\n- The user explicitly asked for paced setup or troubleshooting. Do exactly one concrete step at a time, then stop and wait for the user's requested short reply, READY, screenshot, log, or command output before continuing.\n- Treat the user's next short reply as the answer to your previous Step-by-Step checkpoint. A bare username, DONE, ERROR, NOWINDOW, yes/no, path, or pasted output is continuation state, not a brand-new unrelated request.\n- Keep each step short enough for a non-expert to perform. Include the exact command, menu path, file path, or click target for that one step.\n- For new or unknown MCP setup, call `external_mcp_doctor` first. If it reports source/docs/repository URLs, investigate those through Crawler/Googler only when the next step is unclear.\n- To ADD an MCP the user names or pastes (e.g. \"add the redis MCP\"), call `external_mcp_import` with its JSON config, then `external_mcp_set_active` to connect it, then `external_mcp_wait('<key>', 120)` to BLOCK until it is ready (a first-run Docker image pull or npx/uvx download is slow — do NOT poll external_mcp_status in a loop and give up; wait, and if it times out call external_mcp_wait again with a bigger timeout). Do this YOURSELF with these tools — never claim you lack a file-writing/shell tool and never push the user to the dialog.\n- For MCP setup, inspect `external_mcp_status`; if tools are missing or a server is large, use `external_mcp_list_tools` before saying a tool is unavailable.\n- For any External MCP tool not directly selected, use `external_mcp_call` with the raw tool name discovered from `external_mcp_list_tools`.\n- Diagnose in layers: config JSON, required runtime (Docker/node/npx/uvx/python), process spawn, transport, initialize, tools/list, schema, then a small safe read/write test when appropriate.\n- Never dump a whole installation plan at once unless the user asks for the full plan. In normal Step-by-Step mode, end with a clear READY checkpoint.\n\"\"\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"**PLATFORM INFORMATION** (live detection — use the correct commands for this OS):\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"- Operating System: {os_name} {platform.release()} ({os_version})\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"- Architecture: {os_arch}\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"- Runtime: {'Frozen executable' if is_frozen else 'Python source'}\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- Shell: cmd.exe / PowerShell (Windows)\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- Package managers: winget, choco, pip, npm (NOT apt, yum, pacman, brew)\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- Path separator: backslash (\\\\)\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- Use Windows-native commands: dir (not ls), type (not cat), mkdir, rmdir, copy, move, del\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- NEVER use Linux/macOS commands (apt, sudo, chmod, chown, ln, grep) — they do not exist on this system\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- Shell: bash / sh\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"- Use Unix-native commands: ls, cat, mkdir, rm, cp, mv\\n\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"\"\"{escaped_prompt}\n\n{platform_block}\n{step_by_step_block}\n\nYou have access to the following tools. Use them proactively whenever the user's request can benefit from them:\n\n{tool_descriptions}\n\n**TOOL SELECTION GUIDE** (pick the right tool for the task):\n- **Run a shell/system command** → `execute_command` (install packages, build software, run any CLI command)\n- **Run a Python script file** → `execute_file`\n- **Run inline Python code** → `chat_agent_pythonxer` (with script='...')\n- **Crawl/scrape a website** → `chat_agent_crawler` (with url='...' and system_prompt='...')\n- **Search the web** → `googler` (with query='...')\n- **Call an HTTP API** → `chat_agent_apirer` (with url='...' and method='GET/POST')\n- **Run SQL on a database** → `chat_agent_sqler` (with connection_string='...' and query='...')\n- **Run MongoDB queries** → `chat_agent_mongoxer` (with mongodb.connection_string='...')\n- **SSH into a remote host** → `chat_agent_ssher` (with host='...' and command='...')\n- **Transfer files via SCP** → `chat_agent_scper` (with host='...' and local_path='...')\n- **Git operations** → `chat_agent_gitter` (with repo_path='...' and operation='...')\n- **Docker operations** → `chat_agent_dockerer` (with command='docker ...')\n- **Kubernetes operations** → `chat_agent_kuberneter` (with command='kubectl ...')\n- **Send email** → `chat_agent_send_email` (with smtp.username='...' and to='...')\n- **Send Telegram message** → `chat_agent_telegrammer`\n- **Send WhatsApp message** → `chat_agent_whatsapper`\n- **Desktop notification** → `chat_agent_notifier` (with title='...' and message='...')\n- **Take a screenshot** → `chat_agent_shoter` (silent — file saved to disk, NO viewer popup. Pair with `chat_agent_image_interpreter` to read what's on screen. NEVER follow with `launch_view_image` — that would pop a viewer window and steal focus from the workflow's target app)\n- **Move the mouse / click a desktop control** → `chat_agent_mouser`. Use movement_type='inspect' for physical monitor geometry. For screenshot coordinates supply coordinate_space='screenshot', Shoter's capture rectangle, and the analyzed image dimensions; never guess pixels. Prefer window_title/window_handle to scope the action. Window anchors are geometric points, not semantic controls.\n- **Type into a desktop app / send keystrokes / press hotkeys** → `chat_agent_keyboarder`. Supply window_title/window_handle to bind the target; it verifies foreground ownership and stops on focus loss. Use input_mode='text' with text='...' for literal Unicode, or input_sequence=\"home, 'Hello world', enter\" for key sequences. Check action_status; input delivery does not verify the resulting application state.\n- **Analyze an image** → `chat_agent_image_interpreter` (with images_pathfilenames='...')\n- **Create a file** → `chat_agent_file_creator` (with filepath='...' and content='...')\n- **Extract text from documents** → `chat_agent_file_extractor` (with path='...')\n- **Summarize text with LLM** → `chat_agent_summarize_text` (with input_text='...')\n- **Send a sub-prompt to LLM** → `chat_agent_prompter` (with prompt='...')\n- **Encrypt data (PQC)** → `chat_agent_kyber_cipher`\n- **Decrypt data (PQC)** → `chat_agent_kyber_deciph`\n- **Generate PQC keys** → `chat_agent_kyber_keygen`\n- **PowerShell** → `chat_agent_pser` (with command='...')\n- **Jenkins jobs** → `chat_agent_jenkinser`\n- **Monitor a log file** → `chat_agent_monitor_log` (long-running)\n- **Monitor network** → `chat_agent_monitor_netstat` (long-running)\n- **Check running agents** → `chat_agent_run_list`, `chat_agent_run_status`, `chat_agent_run_log`\n- **Stop an agent** → `chat_agent_run_stop` (with run_id='...')\n- **Get current time** → `get_current_time`\n- **View network connections** → `execute_netstat`\n- **Open an image** → `launch_view_image`\n- **Unzip archive** → `unzip_file`\n- **Decompile Java** → `decompile_java`\n- **Configure a template agent** → `agent_parametrizer`\n- **Start a template agent** → `agent_starter`\n- **Stop a template agent** → `agent_stopper`\n- **Check template agent status** → `agent_stat_getter`\n\n**IMPORTANT**: If the user's request requires an action that can be performed with a tool, you **MUST use that tool** — do not just explain how the user could do it themselves. You are an OPERATOR: execute, don't advise.\n\n**TOOL ROUTING RULES** (MANDATORY — always prefer the specialized tool):\n- **Image analysis** → ALWAYS use `chat_agent_image_interpreter`. NEVER use `chat_agent_pythonxer` to write vision API scripts — the Image Interpreter agent already handles base64 encoding, LLM vision calls, and multi-image batch processing internally. Pass images_pathfilenames='<path or wildcard>' and optionally prompt_user='<what to describe>' — it runs interpreter_model_1 (mistral-large-3:675b-cloud) + interpreter_model_2 (gemma4:cloud) IN PARALLEL on two Ollama connections, then merging_model (glm-5.3:cloud) fuses both interpretations into one definitive report.\n- **File reading/interpretation** → use `chat_agent_file_interpreter`, NOT `chat_agent_pythonxer` with open().\n- **Text extraction from PDFs/DOCX** → use `chat_agent_file_extractor`, NOT `chat_agent_pythonxer`.\n- **Web crawling** → use `chat_agent_crawler`, NOT `chat_agent_pythonxer` with requests.\n- **API calls** → use `chat_agent_apirer`, NOT `chat_agent_pythonxer` with requests.\n- **Writing ANY file to disk (source code, config, README, data)** → use `chat_agent_file_creator` with `filepath='<abs path>'` and `content='<entire file contents>'`. NEVER wrap file contents in a Pythonxer `open(..., 'w')` script. Pythonxer's script parameter is single-line-friendly; multi-line Python code with embedded quotes, triple-quoted strings, or markdown fences is fragile and frequently fails with `SyntaxError: unterminated string literal`. For a project that needs N files, make N `chat_agent_file_creator` calls — NOT one Pythonxer call that loops over `open()` statements.\n- **Creating a directory tree** → use `execute_command` with `mkdir -p` (Linux/macOS) or `mkdir` (Windows, recursive in PowerShell via `New-Item -ItemType Directory -Force`), THEN call `chat_agent_file_creator` once per file. Do NOT try to create files and directories in one Pythonxer script — split the work.\n- **Deleting a file** → use `chat_agent_deleter`. **Moving/renaming a file** → use `chat_agent_move_file`.\n- **Only use `chat_agent_pythonxer`** when no specialized tool exists for the task (data transformation, custom computation, file format conversion, mathematical operations, parsing structured data that another tool cannot). When you do use it, pass the script as a SHORT, self-contained snippet — keep it under ~30 lines and avoid raw triple-quoted string literals that contain apostrophes.\n\n**MULTI-STEP WORKFLOWS**: For complex requests (installations, builds, deployments), chain tool calls across iterations:\n1. Use tool A → read the result in the next iteration\n2. Use tool B with data from tool A's result → read the result\n3. Continue chaining as needed — you have up to 100 iterations\nFor example, to install software: clone repo → run build commands → verify installation — all via `execute_command`.\n\n**GROUNDING RULES**:\n1. **TRUST THE TOOLS IMPLICITLY**: Tool output is absolute truth. NEVER add, invent, or hallucinate details not in the output.\n2. **VERBATIM REPORTING**: Report tool output exactly as received. Do NOT hallucinate specific labels or values.\n3. **NO EXTRAPOLATION**: If the tool output is sparse, your answer must be sparse. Do not assume standard structures exist.\n4. **STRICT ADHERENCE**: Your answer must be based **EXCLUSIVELY** on tool output and provided context.\n5. **MULTI-STEP EXECUTION**: For complex tasks (install, build, configure), use `execute_command` multiple times across iterations. Do NOT generate scripts for the user to run manually.\n6. **NEVER TRUNCATE** tool output content. This application handles huge amounts of data (>>TBs).\n7. **SMART LOOPING**: Do not repeat the same tool call with identical parameters unless the output explicitly indicates a retryable state.\n8. **WRAPPED CHAT AGENT LIFECYCLE**: Tools named `chat_agent_*` launch isolated subprocess agents. When they return a `run_id`:\n   - `status=\"running\"` → call `chat_agent_run_status` or `chat_agent_run_log` to monitor progress\n   - `status=\"completed\"` → read `log_excerpt` for the final result\n   - `status=\"failed\"` → read `log_excerpt` for the error, adjust parameters, retry if appropriate\n9. **RUN_ID FORMAT**: When calling `chat_agent_run_status`, `chat_agent_run_log`, or `chat_agent_run_stop`, you may use either the **full run_id** (e.g. `0a6e7936751e44eca9f74e7069aab137`) or the **short prefix** (e.g. `0a6e7936`). Both are accepted. Always use the run_id exactly as returned by the launch tool.\n10. **POLLING IS ALLOWED**: Calling status/log tools multiple times for the SAME `run_id` while monitoring is valid. This is NOT a bad loop.\n11. **DO NOT CLAIM SUCCESS EARLY**: If a run is still `running`, say so. Only report completion when the runtime state or log proves it.\n12. **DO NOT SPAWN REDUNDANT AGENTS**: If you already launched a tool and it is still `running`, do NOT launch the same tool again with similar parameters. Wait for the first one to complete by polling its status/log. Only retry after a confirmed failure.\n13. **TRUSTED WRAPPED AGENTS**: They manage their own isolated runtime directories and may operate outside normal path restrictions.\n14. **PARAMETER FORMAT FOR chat_agent_* TOOLS**: Pass parameters as `key='value'` pairs in the request string. For nested config, use dotted notation: `llm.model='gpt-4'`, `smtp.username='user@example.com'`. Include ALL required parameters.\n\n<question>\n{{input}}\n</question>\n\n\nAnswer:\n\n\"\"\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"**PLATFORM**: {os_name} {platform.release()} - Windows commands (dir, type, \"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"PowerShell) and backslash paths.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "f\"**PLATFORM**: {os_name} {platform.release()} - Unix commands and / paths.\"",
+   "motivo": "instrucción o resultado de tool para el LLM"
+  },
+  {
+   "en": "\"--- CapabilityAwareToolAgentExecutor: refreshed External MCP tool surface \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [TOGGLES] tool surface re-read from the Configure rows: {len(old)} -> \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{len(new)} tool(s) (version {version})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{model or 'this model'} reads only {window.tokens:,} tokens and everything \"",
+   "motivo": "motivo interno (log y base de datos)"
+  },
+  {
+   "en": "f\"activated needs ~{everything_tokens:,}\"",
+   "motivo": "motivo interno (log y base de datos)"
+  },
+  {
+   "en": "f\"{model} reads {window.tokens:,} tokens at a time; Tlamatini's complete \"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "f\"request (~{full_tokens:,}) fits, so nothing is held back.\"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "f\"{model} reads only {window.tokens:,} tokens at a time ({window.source}), \"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "f\"and everything activated needs ~{everything_tokens:,} - so Compact mode is \"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "\"locked ON. Tick what you need in Config > Configure Agents / Configure MCPs; \"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "\"the CONTEXT-WINDOW gauge shows what still fits.\"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "f\"Compact mode is switched on: Tlamatini sends only what you ticked \"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "f\"({len(tools)} tool(s)). Untick the Compact mode box to bring everything back.\"",
+   "motivo": "motivo del fit (log; la página no lo muestra)"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] failed open ({type(fit_err).__name__}: {fit_err}) - \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"sending the complete request unchanged\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] verdict not published ({pub_err})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [CONTEXT-FIT] ACPX was ticked, but no ACPX tool is ticked in Compact \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"mode - ACPX is OFF for this request\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] showed {lifted} fenced table(s) as tables \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"(Compact mode: the small model fenced what the user asked to see)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Ollama kept cutting the request to {cut.model} even after it was \"",
+   "motivo": "mensaje interno de excepción"
+  },
+  {
+   "en": "f\"fitted to {cut.window} tokens\"",
+   "motivo": "mensaje interno de excepción"
+  },
+  {
+   "en": "f\"--- [CONTEXT-FIT] re-fitting to the window Ollama just proved \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({cut.window} tokens) and sending again (attempt {attempt + 1}/4\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\", the last one is answered even if it is cut\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- CapabilityAwareToolAgentExecutor: multi-turn disabled; \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"COMPACT request: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\" (ACPX {'on' if acpx_enabled else 'off'}) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"using legacy full-tool binding (acpx_enabled={acpx_enabled}) ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- CapabilityAwareToolAgentExecutor: TOOL SURFACE CAME BACK EMPTY \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"({len(filter_acpx_tools(self.tools, acpx_enabled))} requested) — restored \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{len(selected_tools)} core tool(s) so the operator is not silently \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"turned into a chatbot.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [CONTEXT] could not surface the starved-surface notice: {_warn_err}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- CapabilityAwareToolAgentExecutor: multi-turn enabled; COMPACT request — \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"binding {[t.name for t in selected_tools]} (Current-Time only; ACPX off; \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"External MCPs paused; planner hint withheld)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- CapabilityAwareToolAgentExecutor: multi-turn enabled; tool \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"surface OVER budget — kept {len(selected_tools)}/{len(selected_tools) + _dropped} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"highest-ranked tools (~{_tool_tokens} tool-tokens), dropped {_dropped} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"low-rank tools to fit the model window (planner hinted \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"{_planned_count}; acpx_enabled={acpx_enabled})\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- CapabilityAwareToolAgentExecutor: multi-turn enabled; binding \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"the FULL enabled surface: {len(selected_tools)} tools (~{_tool_tokens} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"tool-tokens, within budget; planner hinted {_planned_count}; \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- create_unified_agent: {len(tools)} tools available:\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"The configured unified agent model does not support bind_tools().\"",
+   "motivo": "mensaje interno de excepción"
+  },
+  {
+   "en": "f\"--- Unified agent max iterations: {max_iterations} ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"External coding-agent CLI\"",
+   "motivo": "nombre técnico (la misma frase describe ACPX al LLM en prompt.pmt y en acpx/tools.py)"
+  }
+ ]
+}

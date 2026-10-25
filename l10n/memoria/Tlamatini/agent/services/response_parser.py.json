@@ -1,0 +1,162 @@
+{
+ "archivo": "Tlamatini/agent/services/response_parser.py",
+ "segmentos": [
+  {
+   "en": "'<span class=\"exec-report-header-title\">Last Executions</span>'",
+   "es": "'<span class=\"exec-report-header-title\">Últimas ejecuciones</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<span class=\"exec-report-header-sub\">A standalone card of the tools that '",
+   "es": "'<span class=\"exec-report-header-sub\">Una tarjeta aparte con los tools que '",
+   "n": 1
+  },
+  {
+   "en": "'actually ran &mdash; kept completely separate from the answer above.</span>'",
+   "es": "'de verdad se ejecutaron &mdash; totalmente separada de la respuesta de arriba.</span>'",
+   "n": 1
+  },
+  {
+   "en": "f'List of {_html_escape(display)} Operations</caption>'",
+   "es": "f'Lista de operaciones de {_html_escape(display)}</caption>'",
+   "n": 1
+  },
+  {
+   "en": "'<div class=\"exec-denied-title\">Execution interrupted</div>'",
+   "es": "'<div class=\"exec-denied-title\">Ejecución interrumpida</div>'",
+   "n": 1
+  },
+  {
+   "en": "'<div class=\"exec-denied-sub\">You denied the '",
+   "es": "'<div class=\"exec-denied-sub\">Denegaste que el '",
+   "n": 1
+  },
+  {
+   "en": "f'{kind} <strong>{agent}</strong>, so I stopped right there. I halted '",
+   "es": "f'{kind} <strong>{agent}</strong> se ejecutara, así que me detuve ahí mismo. Detuve '",
+   "n": 1
+  },
+  {
+   "en": "'my Multi-Turn chain at this step and didn\\'t run any more tools.</div>'",
+   "es": "'mi chain de Multi-Turn en este paso y no ejecuté más tools.</div>'",
+   "n": 1
+  },
+  {
+   "en": "'<span class=\"exec-denied-label\">Denied program / command</span>'",
+   "es": "'<span class=\"exec-denied-label\">Programa / comando denegado</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<span class=\"exec-denied-label\">Parameters</span>'",
+   "es": "'<span class=\"exec-denied-label\">Parámetros</span>'",
+   "n": 1
+  },
+  {
+   "en": "\");'>---Load in canvas: \"",
+   "es": "\");'>---Cargar en el canvas: \"",
+   "n": 4
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"--- [NAME-GUARD] could not uniquify '{name}': {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [NAME-GUARD] program '{programName}' already exists - saved as '{finalName}'\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [NAME-GUARD] snippet '{snippetName}' already exists - saved as '{finalName}'\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "'Tlamatini'",
+   "motivo": "usuario de la base de datos"
+  },
+  {
+   "en": "'<th class=\"exec-report-col-cmd\">Command</th>'",
+   "motivo": "etiqueta del Exec Report (regla de Angela: se queda en inglés)"
+  },
+  {
+   "en": "'<th class=\"exec-report-col-status\">Status</th>'",
+   "motivo": "etiqueta del Exec Report (regla de Angela: se queda en inglés)"
+  },
+  {
+   "en": "\"Tool\"",
+   "motivo": "valor de máquina"
+  },
+  {
+   "en": "'<span class=\"exec-denied-label\">Shell</span>'",
+   "motivo": "término técnico"
+  },
+  {
+   "en": "\"\\n--- The Original LLM response is: <<<<<\\n\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- Original LLM response received ({len(llm_response)} chars; \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"set TLAMATINI_LOG_FULL_ANSWERS=1 for full dumps)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"\\n--- Saved snippet: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- {snippetLanguage} snippet re-rendered as text for visibility\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Skipped an EMPTY code block named '%s' (nothing to save)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"\\n--- Saved program: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"<a href='#' style='font-weight: 600; color: white !important;' onclick='loadCanvas(\"",
+   "motivo": "fragmento de código"
+  },
+  {
+   "en": "\"\\n--- The LLM response after cleaning is: <<<<<\\n\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"\\n--- The final parsed/cleaned LLM response is: \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- LLM response cleaned; final length {len(llm_response)} chars\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- process_llm_response: exec_report_enabled={exec_report_enabled} \"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- process_llm_response: appended exec_report HTML ({len(exec_report_html)} chars)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- process_llm_response: exec_report HTML empty (no state-changing tool rows captured)\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- process_llm_response: appended Ask-Execs denial banner\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"\\n--- We take the parsed/processed response by the LLM and save it to the DB\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Bot message broadcast to room.\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

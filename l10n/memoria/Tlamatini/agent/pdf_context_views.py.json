@@ -1,0 +1,21 @@
+{
+ "archivo": "Tlamatini/agent/pdf_context_views.py",
+ "segmentos": [
+  {
+   "en": "\"Select a PDF before using it as context.\"",
+   "es": "\"Selecciona un PDF antes de usarlo como contexto.\"",
+   "n": 1
+  },
+  {
+   "en": "'Invalid image-processing option.'",
+   "es": "'La opción de procesamiento de imágenes no es válida.'",
+   "n": 1
+  },
+  {
+   "en": "\"Could not prepare PDF context. Check the PDF and available disk space, then try again.\"",
+   "es": "\"No se pudo preparar el contexto del PDF. Revisa el PDF y el espacio libre en el disco, y vuelve a intentarlo.\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -1,0 +1,171 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/self_modify_switch.js",
+ "segmentos": [
+  {
+   "en": "'This model'",
+   "es": "'Este modelo'",
+   "n": 1
+  },
+  {
+   "en": "' reads only '",
+   "es": "' lee sólo '",
+   "n": 1
+  },
+  {
+   "en": "' tokens at a time, and your request '",
+   "es": "' tokens a la vez, y tu solicitud '",
+   "n": 1
+  },
+  {
+   "en": "'with Tlamatini\\'s self-knowledge needs about '",
+   "es": "'con el autoconocimiento de Tlamatini necesita unos '",
+   "n": 1
+  },
+  {
+   "en": "' (the self-knowledge '",
+   "es": "' (sólo el autoconocimiento '",
+   "n": 1
+  },
+  {
+   "en": "'alone is about '",
+   "es": "'ocupa unos '",
+   "n": 1
+  },
+  {
+   "en": "'). Sending it would make Ollama silently throw part '",
+   "es": "'). Enviarlo haría que Ollama descartara en silencio parte '",
+   "n": 1
+  },
+  {
+   "en": "'of the request away, so Self-modify is locked OFF.\\n\\nChoose a larger model in '",
+   "es": "'de la solicitud, así que Self-modify está DESACTIVADO y bloqueado.\\n\\nElige un modelo más grande en '",
+   "n": 1
+  },
+  {
+   "en": "'Config ▸ Models (or untick some agents in Config ▸ Configure Agents) and the box '",
+   "es": "'Config ▸ Modelos (o desmarca algunos agents en Config ▸ Configurar Agents) y la casilla '",
+   "n": 1
+  },
+  {
+   "en": "'unlocks by itself.'",
+   "es": "'se desbloquea sola.'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify is locked OFF: '",
+   "es": "'Self-modify está DESACTIVADO y bloqueado: '",
+   "n": 1
+  },
+  {
+   "en": "' cannot hold Tlamatini\\'s self-knowledge '",
+   "es": "' no puede contener el autoconocimiento de Tlamatini '",
+   "n": 1
+  },
+  {
+   "en": "' tokens) on top of your request. Click for details.'",
+   "es": "' tokens) además de tu solicitud. Haz clic para ver los detalles.'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify is ON: Tlamatini\\'s self-knowledge'",
+   "es": "'Self-modify está ACTIVADO: el autoconocimiento de Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "' goes with every request, so she can read, change and rebuild herself. '",
+   "es": "' va con cada solicitud, así que puede leerse, cambiarse y reconstruirse. '",
+   "n": 1
+  },
+  {
+   "en": "'Untick to save those tokens.'",
+   "es": "'Desmárcalo para ahorrar esos tokens.'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify is OFF: Tlamatini\\'s self-knowledge is not sent, and she will not touch '",
+   "es": "'Self-modify está DESACTIVADO: el autoconocimiento de Tlamatini no se envía, y ella no tocará '",
+   "n": 1
+  },
+  {
+   "en": "'her own source code. Tick to switch it on.'",
+   "es": "'su propio código fuente. Márcalo para activarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify — locked OFF for this model'",
+   "es": "'Self-modify — DESACTIVADO y bloqueado para este modelo'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify was not changed: the connection is not open. Use Reconnect and try again.'",
+   "es": "'Self-modify no cambió: la conexión no está abierta. Usa Reconectar y vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify is ON - Tlamatini\\'s self-knowledge goes with every request.'",
+   "es": "'Self-modify está ACTIVADO: el autoconocimiento de Tlamatini va con cada solicitud.'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify is locked OFF - '",
+   "es": "'Self-modify está DESACTIVADO y bloqueado: '",
+   "n": 1
+  },
+  {
+   "en": "' cannot hold Tlamatini\\'s self-knowledge.'",
+   "es": "' no puede contener el autoconocimiento de Tlamatini.'",
+   "n": 1
+  },
+  {
+   "en": "'Self-modify is OFF - Tlamatini\\'s self-knowledge is no longer sent.'",
+   "es": "'Self-modify está DESACTIVADO: el autoconocimiento de Tlamatini ya no se envía.'",
+   "n": 1
+  },
+  {
+   "en": "'en-US'",
+   "es": "'es-MX'",
+   "maquina": "formato es-MX",
+   "n": 1
+  },
+  {
+   "en": "'(about '",
+   "es": "'(unos '",
+   "n": 1
+  },
+  {
+   "en": "' (about '",
+   "es": "' (unos '",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Self-modify 🔒'",
+   "motivo": "nombre de una función del producto (con emoji)"
+  },
+  {
+   "en": "'status'",
+   "motivo": "valor de atributo (role)"
+  },
+  {
+   "en": "'warn'",
+   "motivo": "valor de máquina (tono del aviso)"
+  },
+  {
+   "en": "'set-self-modify'",
+   "motivo": "valor de protocolo (WebSocket)"
+  },
+  {
+   "en": "'ok'",
+   "motivo": "valor de máquina (tono del aviso)"
+  },
+  {
+   "en": "'[self-modify] state skipped:'",
+   "motivo": "texto de log (console.warn)"
+  },
+  {
+   "en": "'[self-modify] frame skipped:'",
+   "motivo": "texto de log (console.warn)"
+  }
+ ]
+}

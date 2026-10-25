@@ -1,0 +1,268 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_dialogs.js",
+ "segmentos": [
+  {
+   "en": "\"Continue\"",
+   "es": "\"Continuar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Cancel\"",
+   "es": "\"Cancelar\"",
+   "n": 4
+  },
+  {
+   "en": "\"Proceed\"",
+   "es": "\"Permitir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Deny\"",
+   "es": "\"Denegar\"",
+   "n": 2
+  },
+  {
+   "en": "\"Save\"",
+   "es": "\"Guardar\"",
+   "n": 2
+  },
+  {
+   "en": "\"OK\"",
+   "es": "\"Aceptar\"",
+   "n": 2
+  },
+  {
+   "en": "\"Backup\"",
+   "es": "\"Hacer backup\"",
+   "n": 1
+  },
+  {
+   "en": "\"Set\"",
+   "es": "\"Establecer\"",
+   "n": 1
+  },
+  {
+   "en": "'Checking for updates…'",
+   "es": "'Buscando actualizaciones…'",
+   "n": 1
+  },
+  {
+   "en": "'Could not check for updates.'",
+   "es": "'No se pudo buscar actualizaciones.'",
+   "n": 1
+  },
+  {
+   "en": "'✅ You are on the latest version (<strong>v'",
+   "es": "'✅ Ya tienes la versión más reciente (<strong>v'",
+   "n": 1
+  },
+  {
+   "en": "'🎉 A new version is available: <strong>v'",
+   "es": "'🎉 Hay una versión nueva disponible: <strong>v'",
+   "n": 1
+  },
+  {
+   "en": "' (you have v'",
+   "es": "' (tienes la v'",
+   "n": 1
+  },
+  {
+   "en": "'<br><span class=\"update-size\">Download size: '",
+   "es": "'<br><span class=\"update-size\">Tamaño de la descarga: '",
+   "n": 1
+  },
+  {
+   "en": "'Update now'",
+   "es": "'Actualizar ahora'",
+   "n": 1
+  },
+  {
+   "en": "'<br><span class=\"update-size\">Auto-update runs only in the installed build — '",
+   "es": "'<br><span class=\"update-size\">La actualización automática sólo funciona en el build instalado: '",
+   "n": 1
+  },
+  {
+   "en": "'download the new version from GitHub.</span>'",
+   "es": "'descarga la versión nueva desde GitHub.</span>'",
+   "n": 1
+  },
+  {
+   "en": "'⚠️ Could not check for updates: '",
+   "es": "'⚠️ No se pudo buscar actualizaciones: '",
+   "n": 1
+  },
+  {
+   "en": "'Download and install the new version now?\\n\\n'",
+   "es": "'¿Quieres descargar e instalar la versión nueva ahora?\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini will close and reopen automatically when the update finishes. '",
+   "es": "'Tlamatini se cerrará y volverá a abrirse automáticamente cuando termine la actualización. '",
+   "n": 1
+  },
+  {
+   "en": "'Your current \"agents\" folder is renamed to \"agents_backup\" first.'",
+   "es": "'Primero, tu carpeta \"agents\" actual pasa a llamarse \"agents_backup\".'",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini is updating itself and CANNOT be interrupted.\\n\\n'",
+   "es": "'Tlamatini se está actualizando y NO se puede interrumpir.\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'Closing now can leave the installation half-updated. Wait for it '",
+   "es": "'Si cierras ahora, la instalación puede quedar a medio actualizar. Espera a que '",
+   "n": 1
+  },
+  {
+   "en": "'to finish - Tlamatini closes and reopens on the new version by '",
+   "es": "'termine: Tlamatini se cierra y se vuelve a abrir en la versión nueva '",
+   "n": 1
+  },
+  {
+   "en": "'itself.\\n\\nOnly an explicit Windows kill, or closing Tlamatini\\'s '",
+   "es": "'por sí sola.\\n\\nA Tlamatini sólo la detiene terminar su proceso desde Windows o cerrar su '",
+   "n": 1
+  },
+  {
+   "en": "'own console window, stops it.'",
+   "es": "'propia ventana de consola.'",
+   "n": 1
+  },
+  {
+   "en": "'Starting update…'",
+   "es": "'Iniciando la actualización…'",
+   "n": 1
+  },
+  {
+   "en": "'Could not start the update.'",
+   "es": "'No se pudo iniciar la actualización.'",
+   "n": 1
+  },
+  {
+   "en": "'⚠️ Could not start the update: '",
+   "es": "'⚠️ No se pudo iniciar la actualización: '",
+   "n": 1
+  },
+  {
+   "en": "'Update failed.'",
+   "es": "'Error al actualizar.'",
+   "n": 1
+  },
+  {
+   "en": "'🔄 Update staged. <strong>Tlamatini is now closing</strong> and will '",
+   "es": "'🔄 La actualización quedó preparada. <strong>Tlamatini se está cerrando</strong> y se '",
+   "n": 1
+  },
+  {
+   "en": "'reopen on the new version in about a minute. You can close this window.'",
+   "es": "'volverá a abrir en la versión nueva en más o menos un minuto. Ya puedes cerrar esta ventana.'",
+   "n": 1
+  },
+  {
+   "en": "'Nothing to update.'",
+   "es": "'No hay nada que actualizar.'",
+   "n": 1
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Continue\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Continuar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 5
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Proceed\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Permitir\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 2
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Deny\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Denegar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 2
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Save\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Guardar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 4
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Cancel\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Cancelar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 3
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"OK\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Aceptar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 6
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Backup\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Hacer backup\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 3
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Set\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Establecer\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 3
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'exec-permission-response'",
+   "motivo": "valor de protocolo del socket"
+  },
+  {
+   "en": "'--- Exec-permission prompt dismissed silently ('",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "') — the backend already decided it.'",
+   "motivo": "texto de log (console.log)"
+  },
+  {
+   "en": "'404 Error: Omission not found - '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'HTTP Error: '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'Omission not found in database: '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'404 Error: Mcp not found - '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'Mcp not found in database: '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'404 Error: Tool not found - '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'Tool not found in database: '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'404 Error: Agent not found - '",
+   "motivo": "texto de log (console.error)"
+  },
+  {
+   "en": "'Agent not found in database: '",
+   "motivo": "texto de log (console.error)"
+  }
+ ]
+}

@@ -1,0 +1,521 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+// Shared classic-script bindings, consumed by sibling page scripts.
+/* exported applyContextUiState, detectInstalledApps, isBusyMessageRequest, isBusyMessageContext, isSessionRestoredInfoMessage, isSelfHealingStatusMessage, debounce, genericTokenCounting, updateLineNumbers, disableControlsDuringOperation, enableControlsAfterOperation, enableCanvasButtons, disableCanvasButtons */
+
+
+// ============================================================
+// agent_page_ui.js  –  UI state helpers (enable/disable, busy, spinner)
+// ============================================================
+
+function setContextText(txt) {
+    const full = txt || "";
+
+    if (contextDataSpan) {
+        contextDataSpan.textContent = full;
+        contextDataSpan.title = full;
+    }
+    if (contextMobile) {
+        contextMobile.title = full;
+        if (window.bootstrap) {
+            const tip = bootstrap.Tooltip.getInstance(contextMobile);
+            if (tip) tip.dispose();
+            new bootstrap.Tooltip(contextMobile);
+        }
+    }
+}
+
+function updateViewContextDirMenuState() {
+    if (viewContextDirInCanvasMenu) {
+        if (actualContextDir !== null && actualContextDir !== '') {
+            viewContextDirInCanvasMenu.parentElement.style.display = 'block';
+        } else {
+            viewContextDirInCanvasMenu.parentElement.style.display = 'none';
+        }
+    }
+    updateOpenInMenuState();
+}
+
+function syncClearContextMenuState() {
+    if (!clearContextButton) {
+        return;
+    }
+
+    if (clearContextEnabled) {
+        clearContextButton.removeAttribute('style');
+    } else {
+        clearContextButton.setAttribute('style', 'display: none !important;');
+    }
+}
+
+function resolveContextDirectory(contextPath, contextType, contextFilename) {
+    if (!contextPath) {
+        return null;
+    }
+
+    if (contextType === 'directory') {
+        return contextPath;
+    }
+
+    if (contextType === 'file') {
+        const fullPath = String(contextPath);
+        const safeFilename = contextFilename ? String(contextFilename) : '';
+
+        if (safeFilename) {
+            const fullPathLower = fullPath.toLowerCase();
+            const safeFilenameLower = safeFilename.toLowerCase();
+            if (fullPathLower.endsWith(`\\${safeFilenameLower}`) || fullPathLower.endsWith(`/${safeFilenameLower}`)) {
+                const lastSlash = Math.max(fullPath.lastIndexOf('\\'), fullPath.lastIndexOf('/'));
+                return lastSlash >= 0 ? fullPath.slice(0, lastSlash) : null;
+            }
+        }
+
+        return fullPath;
+    }
+
+    return null;
+}
+
+function applyContextUiState(contextPath, contextType, contextFilename = null) {
+    if (!contextPath) {
+        return;
+    }
+
+    setContextText(`<<< ${contextPath} >>>`);
+    if (contextInfoDiv) {
+        contextInfoDiv.classList.remove('context-info-invisible');
+        contextInfoDiv.classList.add('context-info-visible');
+    }
+
+    clearContextEnabled = true;
+    actualContextDir = resolveContextDirectory(contextPath, contextType, contextFilename);
+    syncClearContextMenuState();
+    updateViewContextDirMenuState();
+}
+
+// --- SVG icon data for "Open in..." menu items ---
+const openInAppIcons = {
+    explorer: '<svg viewBox="0 0 16 16" class="open-in-app-icon" fill="#FFD75E"><path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h3.879a1.5 1.5 0 0 1 1.06.44l.44.439a.5.5 0 0 0 .354.146H13.5A1.5 1.5 0 0 1 15 4.5v1H1V3.5zM1 6h14v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5V6z"/></svg>',
+    vscode: '<svg viewBox="0 0 100 100" class="open-in-app-icon"><path d="M74.9 97.3l20.1-9.7V12.4L74.9 2.7 34.8 38.8 14.3 23.5 5 27v46l9.3 3.5 20.5-15.3 40.1 36.1zm-4.7-73.9L45.6 44.2l24.6 20.8V23.4zM24.3 50l-8.4 6.3V43.7L24.3 50z" fill="#007ACC"/></svg>',
+    antigravity: '<svg viewBox="0 0 16 16" class="open-in-app-icon"><circle cx="8" cy="8" r="7" fill="none" stroke="#A78BFA" stroke-width="1.2"/><path d="M8 2C5 5 4 8 5 11c1 3 5 3 6 0 1-3 0-6-3-9z" fill="#A78BFA" opacity="0.85"/><circle cx="8" cy="7" r="1.5" fill="#E0D4FC"/></svg>'
+};
+
+/**
+ * Update the "Open in..." dropdown visibility.
+ * Only visible when a directory is loaded as context and apps have been detected.
+ */
+function updateOpenInMenuState() {
+    if (!openInDropdownItem) return;
+
+    if (!inLongOperation && !lapseLoadingContext && installedApps.length > 0 && actualContextDir !== null && actualContextDir !== '') {
+        openInDropdownItem.style.display = '';
+    } else {
+        openInDropdownItem.style.display = 'none';
+    }
+}
+
+/**
+ * Fetch installed apps from the server and populate the "Open in..." dropdown.
+ */
+function detectInstalledApps() {
+    fetch('/agent/detect_installed_apps/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && Array.isArray(data.apps)) {
+                installedApps = data.apps.filter(app => app.available);
+                renderOpenInMenu();
+                updateOpenInMenuState();
+            }
+        })
+        .catch(err => {
+            console.error('Failed to detect installed apps:', err);
+        });
+}
+
+/**
+ * Render the "Open in..." dropdown menu items based on detected apps.
+ */
+function renderOpenInMenu() {
+    if (!openInMenuList) return;
+    openInMenuList.innerHTML = '';
+
+    installedApps.forEach(app => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.className = 'dropdown-item menu-entry open-in-menu-item';
+        a.href = '#';
+
+        const iconHtml = openInAppIcons[app.id] || '';
+        a.innerHTML = iconHtml + '<span>' + app.name + '</span>';
+
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!actualContextDir) return;
+            openDirectoryInApp(app.id);
+        });
+
+        li.appendChild(a);
+        openInMenuList.appendChild(li);
+    });
+}
+
+/**
+ * Send POST request to open the context directory in the given app.
+ */
+function openDirectoryInApp(appId) {
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', getCsrfToken());
+    formData.append('app_id', appId);
+    formData.append('directory', actualContextDir);
+
+    fetch('/agent/open_in_app/', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error opening in app:', data.error);
+            } else {
+                console.log('--- Opened directory in ' + appId);
+            }
+        })
+        .catch(err => {
+            console.error('Failed to open in app:', err);
+        });
+}
+
+// Independent work must not clear another operation's title indicator.
+const titleBusySources = new Set();
+function setTitleBusy(isBusy, source = 'chat') {
+    if (isBusy) titleBusySources.add(source);
+    else titleBusySources.delete(source);
+    titleBusyPrefix = titleBusySources.size ? "⏳ " : "";
+}
+
+// Tlamatini speaks her fixed lines in the FIRST PERSON (Angela, 2026-10-09):
+// "I'm working on your request, Angela. Please wait a moment." The old
+// third-person wording is still matched, so a saved history or an older
+// server keeps working. Keep these in step with agent/constants.py.
+function isBusyMessageRequest(message) {
+    if (!message) return false;
+    const m = String(message);
+    return (
+        m.includes("Estoy trabajando en tu solicitud")
+        || m.includes("Your request is being processed by Tlamatini.")
+    );
+}
+
+function isBusyMessageContext(message) {
+    if (!message) return false;
+    const m = String(message);
+    return (
+        m.includes("estoy cargando el contexto que me diste")
+        || m.includes("Your agent is loading the context.")
+    );
+}
+
+// Matches the two welcome-back banners the consumer sends right after a
+// browser refresh restores a saved session (with or without a custom
+// context). They are purely informational — the loading lifecycle is
+// driven by MSG_AGENT_LOADING_CONTEXT / MSG_AGENT_READY, so callers use
+// this check to keep the input disabled while ``lapseLoadingContext`` is
+// true and skip re-enabling for a banner that does not change state.
+function isSessionRestoredInfoMessage(message) {
+    if (!message) return false;
+    const m = String(message).toLowerCase();
+    return (
+        (m.includes("qué gusto verte de nuevo") && m.includes("restauré nuestra sesión"))
+        || m.includes("welcome back, session and context restored")
+        || m.includes("welcome back, session restored")
+    );
+}
+
+// Matches the LIVE self-healing recovery status lines that SelfHealingInvoker
+// (agent/self_healing.py) streams to the chat WHILE a multi-turn run is still
+// executing (the "Tactic #2 ... only you can stop me (with Cancel button)." retry line,
+// the "Tactic '...' hit a transient network error - switching to a different
+// tactic." notice, and the "Tactic '...' worked - continuing the run right
+// where I left off." success line). They arrive as ordinary agent_message
+// frames -- identical in shape to the final answer -- so without this the
+// catch-all branch in appendChatMessage would re-enable the controls (flip the
+// button back to 'Enviar') on EVERY status line while Tlamatini is STILL working.
+// The run is NOT finished, so callers use this to KEEP the controls disabled
+// (button stays 'Cancelar') until the real final answer arrives.
+//
+// The test is ANCHORED to the start of the message on purpose: the final
+// answer prepends a "SELF-HEALING NOTE -" banner that quotes these same tactic
+// lines (as "- <line>" list items), so a naive substring match would wrongly
+// hold the button on 'Cancelar' forever. Anchoring to a leading "Tactic #" /
+// "Táctica '" (after stripping the leading emoji/symbol) matches only a
+// standalone status frame, never the final answer. The "You cancelled" line is
+// deliberately NOT matched -- after a cancel the controls SHOULD return.
+function isSelfHealingStatusMessage(message) {
+    if (!message) return false;
+    const stripped = String(message).trimStart().replace(/^[^A-Za-z]+/, '');
+    return stripped.startsWith('Táctica #') || stripped.startsWith("Táctica '");
+}
+
+function debounce(func, wait = 250) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => { func.apply(this, args); }, wait);
+    };
+}
+
+function genericTokenCounting(text) {
+    return text.length / 4;
+}
+
+function updateLineNumbers() {
+    const lines = textEditorCode.textContent.split('\n');
+    lineNumbers.value = lines.map((_, i) => i + 1).join('\n');
+}
+
+// Navbar entries disabled WHOLE during a long operation - both functionally
+// (a dropdown cannot open without data-bs-toggle, a link cannot be clicked
+// without pointer-events) and visually (the same greying "External" and "DB"
+// have always had). Plain links (Open / Save / Reconnect) carry no
+// data-bs-toggle, so the disable pass REMEMBERS which buttons had one and the
+// enable pass restores it ONLY for those - otherwise Bootstrap would turn a
+// plain link into a dropdown toggle and swallow its click forever.
+const LONG_OPERATION_DISABLED_MENU_BUTTONS = [
+    'open-button',
+    'save-as-button',
+    'context-menu-button',
+    'skills-menu-button',
+    'external-menu-button',
+    'config-menu-button',
+    'db-menu-button',
+    're-connect-button'
+];
+
+/**
+ * Disable all interactive controls during a long operation.
+ */
+function disableControlsDuringOperation() {
+    chatInput.readOnly = true;
+    chatInput.style.backgroundColor = 'gray';
+    if (!document.getElementById(spinnerId)) {
+        const waitWidget = document.createElement('img');
+        waitWidget.id = spinnerId;
+        waitWidget.src = '/static/agent/img/spinner.svg';
+        waitWidget.style.width = '100px';
+        waitWidget.style.height = '100px';
+        waitWidget.style.position = 'absolute';
+        waitWidget.style.top = '50%';
+        waitWidget.style.left = '50%';
+        waitWidget.style.transform = 'translate(-50%, -50%)';
+        waitWidget.style.zIndex = '1000';
+        chatLog.appendChild(waitWidget);
+    }
+    contextButton.disabled = true;
+    openEnabled = false;
+    contextEnabled = false;
+    cleanCanvasEnabled = false;
+    reConnectEnabled = false;
+    reConnectButton.disabled = true;
+    cleanHistoryButton.disabled = true;
+    cleanHistoryButton.style.backgroundColor = "#808080";
+    cleanHistoryEnabled = false;
+    // Context / Config are disabled by LONG_OPERATION_DISABLED_MENU_BUTTONS
+    // below (single source of truth) - do NOT re-add per-button code here.
+    if (openInDropdownItem) {
+        openInDropdownItem.style.display = 'none';
+    }
+    // Keep Panels accessible; Config and its configuration entries are locked below.
+    // The "External" and "DB" navbar dropdowns are disabled WHOLE during a long
+    // operation - both functionally (Bootstrap cannot open them without
+    // data-bs-toggle) and visually (same greying "Configure Agents" gets).
+    LONG_OPERATION_DISABLED_MENU_BUTTONS.forEach(function (menuButtonId) {
+        const menuButton = document.getElementById(menuButtonId);
+        if (menuButton) {
+            // Close an open dropdown before disabling its toggle. Otherwise its
+            // entries stay reachable while the operation locks the parent.
+            if (window.bootstrap && window.bootstrap.Dropdown) {
+                const dropdown = window.bootstrap.Dropdown.getInstance(menuButton);
+                if (dropdown) dropdown.hide();
+            }
+            if (menuButton.hasAttribute('data-bs-toggle')) {
+                menuButton.dataset.longOpBsToggle = menuButton.getAttribute('data-bs-toggle');
+                menuButton.removeAttribute('data-bs-toggle');
+            }
+            menuButton.setAttribute('disabled', 'disabled');
+            menuButton.classList.add('disabled');
+            menuButton.style.pointerEvents = 'none';
+            menuButton.style.opacity = '0.5';
+        }
+    });
+
+    // Only the "Check for updates" ENTRY of the About menu is disabled (the
+    // rest of that dropdown stays usable).
+    const checkUpdatesItem = document.getElementById('check-updates-button');
+    if (checkUpdatesItem) {
+        checkUpdatesItem.classList.add('disabled');
+        checkUpdatesItem.style.pointerEvents = 'none';
+        checkUpdatesItem.style.opacity = '0.5';
+    }
+
+    const configureAgentsItem = document.getElementById('enable-agents');
+    if (configureAgentsItem) {
+        configureAgentsItem.classList.add('disabled');
+        configureAgentsItem.style.pointerEvents = 'none';
+        configureAgentsItem.style.opacity = '0.5';
+    }
+    chatSubmitButton.textContent = 'Cancelar';
+    cleanCanvasButton.style.backgroundColor = "#808080";
+    cleanCanvasButton.disabled = true;
+    reopenOpenCanvasButton.style.backgroundColor = "#808080";
+    reopenOpenCanvasButton.disabled = true;
+    copyCanvasButton.style.backgroundColor = "#808080";
+    copyCanvasButton.disabled = true;
+    contextButton.style.backgroundColor = "#808080";
+    contextButton.disabled = true;
+    inLongOperation = true;
+    window.TlamatiniCanvasRefresh?.cancel();
+    window.TlamatiniCanvasRefresh?.sync();
+}
+
+// Shared by completion and explicit reconnect, history-clear and cancel resets.
+function restoreMenuControlsAfterOperation() {
+    // Re-enable the "Configure Agents" entry
+    // Re-arm the "External" and "DB" navbar dropdowns (mirror of the disable
+    // pass above: restore data-bs-toggle AND clear the greying).
+    LONG_OPERATION_DISABLED_MENU_BUTTONS.forEach(function (menuButtonId) {
+        const menuButton = document.getElementById(menuButtonId);
+        if (menuButton) {
+            if (menuButton.dataset.longOpBsToggle) {
+                menuButton.setAttribute('data-bs-toggle', menuButton.dataset.longOpBsToggle);
+                delete menuButton.dataset.longOpBsToggle;
+            }
+            menuButton.removeAttribute('disabled');
+            menuButton.classList.remove('disabled');
+            menuButton.style.pointerEvents = '';
+            menuButton.style.opacity = '';
+        }
+    });
+
+    const checkUpdatesItem = document.getElementById('check-updates-button');
+    if (checkUpdatesItem) {
+        checkUpdatesItem.classList.remove('disabled');
+        checkUpdatesItem.style.pointerEvents = '';
+        checkUpdatesItem.style.opacity = '';
+    }
+
+    const configureAgentsItem = document.getElementById('enable-agents');
+    if (configureAgentsItem) {
+        configureAgentsItem.classList.remove('disabled');
+        configureAgentsItem.style.pointerEvents = '';
+        configureAgentsItem.style.opacity = '';
+    }
+}
+
+/**
+ * Re-enable all controls after an operation completes.
+ */
+function enableControlsAfterOperation() {
+    setTitleBusy(false);
+    contextEnabled = true;
+    contextButton.style.backgroundColor = "darkgreen";
+    contextButton.disabled = false;
+    contextButtonClicked = false;
+    contextButton.textContent = "Usar como contexto";
+    chatInput.readOnly = false;
+    chatInput.style.backgroundColor = '#40414F';
+    const existingSpinner = document.getElementById(spinnerId);
+    if (existingSpinner && existingSpinner.parentNode) {
+        existingSpinner.parentNode.removeChild(existingSpinner);
+    }
+
+    if (canvasSettedAsContext) {
+        contextButton.textContent = "Usado como contexto";
+        contextButton.style.backgroundColor = "#808080";
+    } else {
+        if (canvasLoaded) {
+            contextButton.textContent = "Usar como contexto";
+            contextButton.style.backgroundColor = "darkgreen";
+        } else {
+            contextButton.textContent = "Usar como contexto";
+            contextButton.style.backgroundColor = "#808080";
+        }
+    }
+
+    openEnabled = true;
+    reConnectEnabled = true;
+    contextEnabled = true;
+    cleanCanvasEnabled = true;
+    reConnectButton.disabled = false;
+    cleanHistoryButton.disabled = false;
+    cleanHistoryButton.style.backgroundColor = "darkgreen";
+    cleanHistoryEnabled = true;
+    // Context / Config are re-armed by LONG_OPERATION_DISABLED_MENU_BUTTONS
+    // below (single source of truth) - do NOT re-add per-button code here.
+    updateOpenInMenuState();
+    restoreMenuControlsAfterOperation();
+
+    if (canvasLoaded === true) {
+        cleanCanvasButton.style.backgroundColor = "darkgreen";
+        cleanCanvasButton.disabled = false;
+        reopenOpenCanvasButton.style.backgroundColor = "darkgreen";
+        reopenOpenCanvasButton.disabled = false;
+        copyCanvasButton.style.backgroundColor = "darkgreen";
+        copyCanvasButton.disabled = false;
+        contextButton.disabled = false;
+    } else {
+        cleanCanvasButton.style.backgroundColor = "#808080";
+        cleanCanvasButton.disabled = true;
+        reopenOpenCanvasButton.style.backgroundColor = "#808080";
+        reopenOpenCanvasButton.disabled = true;
+        copyCanvasButton.style.backgroundColor = "#808080";
+        copyCanvasButton.disabled = true;
+        contextButton.disabled = true;
+    }
+
+    chatSubmitButton.textContent = 'Enviar';
+    inLongOperation = false;
+    lapseLoadingContext = false;
+    updateOpenInMenuState();
+    window.TlamatiniPdfCanvas?.syncButtons();
+    window.TlamatiniCanvasRefresh?.sync();
+}
+
+/**
+ * Enable canvas-related buttons (after canvas load).
+ */
+function enableCanvasButtons() {
+    cleanCanvasButton.style.backgroundColor = "darkgreen";
+    cleanCanvasButton.disabled = false;
+    reopenOpenCanvasButton.style.backgroundColor = "darkgreen";
+    reopenOpenCanvasButton.disabled = false;
+    copyCanvasButton.style.backgroundColor = "darkgreen";
+    copyCanvasButton.disabled = false;
+    contextButton.style.backgroundColor = "darkgreen";
+    contextButton.disabled = false;
+    window.TlamatiniPdfCanvas?.syncButtons();
+    window.TlamatiniCanvasRefresh?.sync();
+}
+
+/**
+ * Disable canvas-related buttons (after canvas clean).
+ */
+function disableCanvasButtons() {
+    cleanCanvasButton.style.backgroundColor = "#808080";
+    cleanCanvasButton.disabled = true;
+    reopenOpenCanvasButton.style.backgroundColor = "#808080";
+    reopenOpenCanvasButton.disabled = true;
+    copyCanvasButton.style.backgroundColor = "#808080";
+    copyCanvasButton.disabled = true;
+    contextButton.style.backgroundColor = "#808080";
+    contextButton.disabled = true;
+    window.TlamatiniCanvasRefresh?.sync();
+}

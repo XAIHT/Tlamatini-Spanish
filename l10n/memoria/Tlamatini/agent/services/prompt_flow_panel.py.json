@@ -1,0 +1,402 @@
+{
+ "archivo": "Tlamatini/agent/services/prompt_flow_panel.py",
+ "segmentos": [
+  {
+   "en": "f\"{label} must be text of at most {maximum:,} characters.\"",
+   "es": "f\"{label} debe ser un texto de {maximum:,} caracteres como máximo.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{label} must be a number.\"",
+   "es": "f\"{label} debe ser un número.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{label} must be between {minimum} and {maximum}.\"",
+   "es": "f\"{label} debe estar entre {minimum} y {maximum}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Scheduled time must be an ISO date with a timezone.\"",
+   "es": "\"La hora programada debe ser una fecha ISO con zona horaria.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unknown Terminater action.\"",
+   "es": "\"Acción de Terminater desconocida.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose CMD, PowerShell or PowerShell 7.\"",
+   "es": "\"Elige CMD, PowerShell o PowerShell 7.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unknown Terminater severity.\"",
+   "es": "\"Severidad de Terminater desconocida.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unknown Terminater layout or area.\"",
+   "es": "\"Distribución o área de Terminater desconocida.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Terminater {key} must be true or false.\"",
+   "es": "f\"Terminater {key} debe ser true o false.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{label} needs a command to type.\"",
+   "es": "f\"{label} necesita un comando para escribir.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{label} needs the keys to press.\"",
+   "es": "f\"{label} necesita las teclas que se van a presionar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Open a Prompt Flow Panel .fpmt document (legacy prompt.pmt text is not a diagram).\"",
+   "es": "\"Abre un documento .fpmt de Prompt Flow Panel (el texto antiguo de prompt.pmt no es un diagrama).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unsupported .fpmt version. This panel supports versions 1 and 2.\"",
+   "es": "\"Versión de .fpmt no compatible. Este panel admite las versiones 1 y 2.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A flow may contain up to 500 operations and 1,000 connections.\"",
+   "es": "\"Un flow puede tener hasta 500 operaciones y 1,000 conexiones.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Flow name\"",
+   "es": "\"Nombre del flow\"",
+   "n": 1
+  },
+  {
+   "en": "\"Step limit\"",
+   "es": "\"Límite de pasos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Every operation must be an object.\"",
+   "es": "\"Cada operación debe ser un objeto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Operation ID\"",
+   "es": "\"ID de la operación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Operation IDs must be unique letters, digits, underscores or dashes.\"",
+   "es": "\"Los IDs de las operaciones deben ser únicos y usar sólo letras, dígitos, guiones bajos o guiones.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Unknown operation: {kind!r}.\"",
+   "es": "f\"Operación desconocida: {kind!r}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Operation settings must be an object.\"",
+   "es": "\"La configuración de la operación debe ser un objeto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Operation text\"",
+   "es": "\"Texto de la operación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment width\"",
+   "es": "\"Ancho del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment height\"",
+   "es": "\"Altura del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment font size\"",
+   "es": "\"Tamaño de fuente del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment color\"",
+   "es": "\"Color del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment text color\"",
+   "es": "\"Color del texto del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment font\"",
+   "es": "\"Fuente del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment alignment\"",
+   "es": "\"Alineación del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose a supported comment color, font and alignment.\"",
+   "es": "\"Elige un color, una fuente y una alineación compatibles para el comentario.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Comment {key} must be true or false.\"",
+   "es": "f\"El estilo {key} del comentario debe ser true o false.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Use at most 10,000 formatted text runs per comment.\"",
+   "es": "\"Usa como máximo 10,000 fragmentos de texto con formato por comentario.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A formatted text run must be an object.\"",
+   "es": "\"Un fragmento de texto con formato debe ser un objeto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment run text\"",
+   "es": "\"Texto del fragmento del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment run font size\"",
+   "es": "\"Tamaño de fuente del fragmento del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment run font\"",
+   "es": "\"Fuente del fragmento del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment run color\"",
+   "es": "\"Color del fragmento del comentario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose a supported comment font and text color.\"",
+   "es": "\"Elige una fuente y un color de texto compatibles para el comentario.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment run style switches must be true or false.\"",
+   "es": "\"Los interruptores de estilo de los fragmentos del comentario deben ser true o false.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comment runs must contain exactly the comment text.\"",
+   "es": "\"Los fragmentos deben contener exactamente el texto del comentario.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{key} must be true or false.\"",
+   "es": "f\"{key} debe ser true o false.\"",
+   "n": 1
+  },
+  {
+   "en": "\"ACPX requires Multi-Turn.\"",
+   "es": "\"ACPX requiere Multi-Turn.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{node.get('label', kind)} needs prompt text.\"",
+   "es": "f\"{node.get('label', kind)} necesita el texto del prompt.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Delay\"",
+   "es": "\"Retraso\"",
+   "n": 1
+  },
+  {
+   "en": "\"Scheduled time\"",
+   "es": "\"Hora programada\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unknown decision comparison.\"",
+   "es": "\"Comparación de decisión desconocida.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Comparison value\"",
+   "es": "\"Valor de comparación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Case sensitivity must be true or false.\"",
+   "es": "\"La distinción entre mayúsculas y minúsculas debe ser true o false.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Set a decision comparison value, or choose 'Output is empty'.\"",
+   "es": "\"Define un valor de comparación para la decisión o elige 'El último output está vacío'.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Feed embeddings needs text or {{last_output}}.\"",
+   "es": "\"La operación Agregar embeddings necesita texto o {{last_output}}.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Operation label\"",
+   "es": "\"Etiqueta de la operación\"",
+   "n": 1
+  },
+  {
+   "en": "\"X position\"",
+   "es": "\"Posición X\"",
+   "n": 1
+  },
+  {
+   "en": "\"Y position\"",
+   "es": "\"Posición Y\"",
+   "n": 1
+  },
+  {
+   "en": "\"User Input\"",
+   "es": "\"Input del usuario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Every connection must be an object.\"",
+   "es": "\"Cada conexión debe ser un objeto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Connection ID\"",
+   "es": "\"ID de la conexión\"",
+   "n": 1
+  },
+  {
+   "en": "\"Connection IDs must be unique letters, digits, underscores or dashes.\"",
+   "es": "\"Los IDs de las conexiones deben ser únicos y usar sólo letras, dígitos, guiones bajos o guiones.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Every connection must join existing operations.\"",
+   "es": "\"Cada conexión debe unir operaciones existentes.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Static User Commentary assets cannot have connections.\"",
+   "es": "\"Los elementos estáticos de Comentario del usuario no pueden tener conexiones.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Each output accepts one connection. Decisions have separate Yes and No outputs.\"",
+   "es": "\"Cada output acepta una sola conexión. Las decisiones tienen outputs Sí y No separados.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The start operation does not exist.\"",
+   "es": "\"La operación de Inicio no existe.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A static User Commentary cannot be the Start operation.\"",
+   "es": "\"Un Comentario del usuario estático no puede ser la operación de Inicio.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Add an operation and choose where the flow starts.\"",
+   "es": "\"Agrega una operación y elige dónde empieza el flow.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Some operations are unreachable from Start. Connect them or choose another Start.\"",
+   "es": "\"No se puede llegar a algunas operaciones desde el Inicio. Conéctalas o elige otra en Inicio.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Connect both Yes and No outputs of every decision.\"",
+   "es": "\"Conecta los outputs Sí y No de cada decisión.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This input request is no longer active.\"",
+   "es": "\"Esta solicitud de input ya no está activa.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Reply\"",
+   "es": "\"Respuesta\"",
+   "n": 1
+  },
+  {
+   "en": "\"Step limit reached. Inspect the loop or raise the flow's step limit.\"",
+   "es": "\"Se alcanzó el límite de pasos. Revisa el ciclo o sube el límite de pasos del flow.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Scheduled for {scheduled.isoformat()}\"",
+   "es": "f\"Programado para {scheduled.isoformat()}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Waiting {config['delay_seconds']:g} active seconds\"",
+   "es": "f\"Esperando {config['delay_seconds']:g} segundos activos\"",
+   "n": 1
+  },
+  {
+   "en": "\"A decision reply must be Yes or No.\"",
+   "es": "\"La respuesta de una decisión debe ser Sí o No.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Nunito\"",
+   "motivo": "nombre de fuente (valor de máquina)"
+  },
+  {
+   "en": "\"Arial\"",
+   "motivo": "nombre de fuente (valor de máquina)"
+  },
+  {
+   "en": "\"Verdana\"",
+   "motivo": "nombre de fuente (valor de máquina)"
+  },
+  {
+   "en": "\"Georgia\"",
+   "motivo": "nombre de fuente (valor de máquina)"
+  },
+  {
+   "en": "\"Times New Roman\"",
+   "motivo": "nombre de fuente (valor de máquina)"
+  },
+  {
+   "en": "\"Courier New\"",
+   "motivo": "nombre de fuente (valor de máquina)"
+  },
+  {
+   "en": "\"timezone missing\"",
+   "motivo": "mensaje interno de excepción (se atrapa ahí mismo)"
+  },
+  {
+   "en": "f\"Terminater {key}\"",
+   "motivo": "nombre de agent y llave de configuración (igual que en prompt-flow-panel-model.js)"
+  },
+  {
+   "en": "\"Untitled\"",
+   "motivo": "nombre predeterminado del flow (el JS usa el mismo valor)"
+  },
+  {
+   "en": "\"User Commentary\"",
+   "motivo": "valor que se compara (migración de documentos v1, igual que en prompt-flow-panel-model.js)"
+  }
+ ]
+}

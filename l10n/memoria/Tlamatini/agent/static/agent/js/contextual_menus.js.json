@@ -1,0 +1,61 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/contextual_menus.js",
+ "segmentos": [
+  {
+   "en": "`Failed to open ${canvasItem.id}`",
+   "es": "`No se pudo abrir ${canvasItem.id}`",
+   "n": 1
+  },
+  {
+   "en": "`Error opening ${canvasItem.id}: ${err.message}`",
+   "es": "`Error al abrir ${canvasItem.id}: ${err.message}`",
+   "n": 1
+  },
+  {
+   "en": "`Failed to restart agent: ${result.message}`",
+   "es": "`Error al reiniciar el agent: ${result.message}`",
+   "n": 1
+  },
+  {
+   "en": "`Error restarting agent: ${err.message}`",
+   "es": "`Error al reiniciar el agent: ${err.message}`",
+   "n": 1
+  },
+  {
+   "en": "'No description was found for this agent in agents_descriptions.md.'",
+   "es": "'No se encontró una descripción para este agent en agents_descriptions.md.'",
+   "n": 1
+  },
+  {
+   "en": "'Loading log...'",
+   "es": "'Cargando el log...'",
+   "n": 1
+  },
+  {
+   "en": "'Live'",
+   "es": "'En vivo'",
+   "n": 1
+  },
+  {
+   "en": "'Stopped'",
+   "es": "'Detenido'",
+   "n": 1
+  },
+  {
+   "en": "'(Log file is empty)'",
+   "es": "'(El archivo de log está vacío)'",
+   "n": 1
+  },
+  {
+   "en": "'No log file found yet.\\n\\nThe log file will be created when the agent starts running.'",
+   "es": "'Todavía no hay un archivo de log.\\n\\nEl archivo de log se creará cuando el agent empiece a ejecutarse.'",
+   "n": 1
+  },
+  {
+   "en": "'Error loading log: '",
+   "es": "'Error al cargar el log: '",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

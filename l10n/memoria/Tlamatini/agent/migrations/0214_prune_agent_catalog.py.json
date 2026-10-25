@@ -1,0 +1,66 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0214_prune_agent_catalog.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Gatewayer\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Gateway Relayer\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Gateway-Relayer\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Node Manager\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Node-Manager\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Zavuerer\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"run the **ZAVUERER** demo\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"please set up **Zavuerer** with me ONE step at a time\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"use chat_agent_zavuerer to send a quick **SMS**\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"reach me the smart way with **Zavuerer**\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"hold my hand and set up **Zavuerer** with me from zero\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Agent\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Tool\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Prompt\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  },
+  {
+   "en": "\"Chat-Agent-Zavuerer\"",
+   "motivo": "prune: marcadores __icontains y nombres de agent en inglés; conservar"
+  }
+ ]
+}

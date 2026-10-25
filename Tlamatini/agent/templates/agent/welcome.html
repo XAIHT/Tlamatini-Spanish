@@ -1,0 +1,42 @@
+{% load static %}  
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <title>Bienvenida - Tlamatini</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="{% static 'agent/img/Tlamatini.ico' %}?v={{ STATIC_VERSION }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'agent/img/Tlamatini.ico' %}?v={{ STATIC_VERSION }}">
+    <link rel="apple-touch-icon" href="{% static 'agent/img/Tlamatini.ico' %}?v={{ STATIC_VERSION }}">
+    <link rel="stylesheet" href="{% static 'agent/vendor/frontend/bootstrap/dist/css/bootstrap.min.css' %}?v={{ STATIC_VERSION }}_offline1">
+    <script src="{% static 'agent/vendor/frontend/bootstrap/dist/js/bootstrap.bundle.min.js' %}?v={{ STATIC_VERSION }}_offline1"></script>
+    <link rel="stylesheet" href="{% static 'agent/vendor/frontend/highlightjs/styles/atom-one-dark.min.css' %}?v={{ STATIC_VERSION }}_offline1">
+    <link rel="stylesheet" href="{% static 'agent/vendor/frontend/nunito/400.css' %}?v={{ STATIC_VERSION }}">
+    <link rel="stylesheet" href="{% static 'agent/vendor/frontend/nunito/700.css' %}?v={{ STATIC_VERSION }}">
+    <link rel="stylesheet" href="{% static 'agent/css/ui_tokens.css' %}?v={{ STATIC_VERSION }}">
+    <link rel="stylesheet" href="{% static 'agent/css/ui_shell.css' %}?v={{ STATIC_VERSION }}">
+    <link rel="stylesheet" href="{% static 'agent/css/entry_pages.css' %}?v={{ STATIC_VERSION }}">
+    <link rel="stylesheet" href="{% static 'agent/css/welcome.css' %}?v={{ STATIC_VERSION }}">
+    <link rel="stylesheet" href="{% static 'agent/css/dialog_theme.css' %}?v={{ STATIC_VERSION }}">
+    <script src="{% static 'agent/js/dialog_policy.js' %}?v={{ STATIC_VERSION }}"></script>
+    <script src="{% static 'agent/js/file_drop_router.js' %}?v={{ STATIC_VERSION }}"></script>
+</head>
+<body class="entry-page">
+    <main class="container">
+        <div class="row welcome-container">
+            <div class="col-md-8 col-lg-6">
+                <div class="card welcome-card">
+                    <div class="card-body">
+                        <img class="entry-mark" src="{% static 'agent/img/Tlamatini.ico' %}" alt="" width="48" height="48">
+                        <h1 class="card-title mb-4 big-white-text">¡Te damos la bienvenida, {{ user.username }}!</h1>
+                        <p class="card-text white-text">Iniciaste sesión correctamente.</p>
+                        <div class="entry-actions"><a href="{% url 'agent_page' %}" id="go-to-chat" class="btn btn-primary big-white-text-button">Ir al chat</a>
+                        <a href="{% url 'logout' %}" class="btn btn-secondary big-white-text-button">Cerrar sesión</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="{% static 'agent/js/welcome_enter_default.js' %}?v={{ STATIC_VERSION }}"></script>
+</body>
+</html>

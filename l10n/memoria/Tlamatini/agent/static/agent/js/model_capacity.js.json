@@ -1,0 +1,447 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/model_capacity.js",
+ "segmentos": [
+  {
+   "en": "'Compact mode is locked ON: '",
+   "es": "'Compact mode está ACTIVADO y bloqueado: '",
+   "n": 1
+  },
+  {
+   "en": "'this model'",
+   "es": "'este modelo'",
+   "n": 2
+  },
+  {
+   "en": "' reads only '",
+   "es": "' sólo lee '",
+   "n": 1
+  },
+  {
+   "en": "' tokens, and everything activated needs about '",
+   "es": "' tokens, y todo lo activado necesita unos '",
+   "n": 1
+  },
+  {
+   "en": "'. Tick what you need in Config ▸ Configure MCPs / '",
+   "es": "'. Marca lo que necesites en Config ▸ Configurar MCPs / '",
+   "n": 1
+  },
+  {
+   "en": "'Configure Agents - the CONTEXT-WINDOW gauge shows what it costs. Click for details.'",
+   "es": "'Configurar Agents; el medidor CONTEXT-WINDOW muestra cuánto cuesta. Haz clic para ver los detalles.'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode is ON: only what you ticked in Config ▸ Configure MCPs / '",
+   "es": "'Compact mode está ACTIVADO: sólo se envía lo que marcaste en Config ▸ Configurar MCPs / '",
+   "n": 1
+  },
+  {
+   "en": "'Configure Agents is sent. Untick this box to switch EVERYTHING back on.'",
+   "es": "'Configurar Agents. Desmarca esta casilla para volver a activar TODO.'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode: unticks every MCP, tool, agent and skill except System-Metrics, '",
+   "es": "'Compact mode: desmarca todos los MCPs, tools, agents y skills excepto System-Metrics, '",
+   "n": 1
+  },
+  {
+   "en": "'Files-Search and Current-Time, so you send the model only what you pick. Untick it '",
+   "es": "'Files-Search y Current-Time, para que le envíes al modelo sólo lo que elijas. Desmárcalo '",
+   "n": 1
+  },
+  {
+   "en": "'later to switch everything back on.'",
+   "es": "'después para volver a activar todo.'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode was not changed: the connection is not open. Use Reconnect and try again.'",
+   "es": "'No se cambió Compact mode: la conexión no está abierta. Usa Reconectar y vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'This model'",
+   "es": "'Este modelo'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode — locked ON for this model'",
+   "es": "'Compact mode — ACTIVADO y bloqueado para este modelo'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode is ON'",
+   "es": "'Compact mode está ACTIVADO'",
+   "n": 1
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'Everything activated ≈ '",
+   "es": "'Todo lo activado ≈ '",
+   "n": 1
+  },
+  {
+   "en": "' can read about '",
+   "es": "' puede leer unos '",
+   "n": 1
+  },
+  {
+   "en": "' tokens at a time, and '",
+   "es": "' tokens a la vez, y '",
+   "n": 1
+  },
+  {
+   "en": "'Tlamatini with everything activated needs about '",
+   "es": "'Tlamatini con todo activado necesita unos '",
+   "n": 1
+  },
+  {
+   "en": "'. Sending it all '",
+   "es": "'. Si se lo enviara todo, '",
+   "n": 1
+  },
+  {
+   "en": "'would make Ollama silently throw most of it away, so Compact mode is locked ON: '",
+   "es": "'Ollama descartaría en silencio la mayor parte, así que Compact mode está ACTIVADO y bloqueado: '",
+   "n": 1
+  },
+  {
+   "en": "'every MCP, tool, agent and skill was unticked except System-Metrics, Files-Search '",
+   "es": "'se desmarcaron todos los MCPs, tools, agents y skills excepto System-Metrics, Files-Search '",
+   "n": 1
+  },
+  {
+   "en": "'and Current-Time - and you add back only what you need.'",
+   "es": "'y Current-Time, y tú vuelves a agregar sólo lo que necesitas.'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode is ON: Tlamatini sends '",
+   "es": "'Compact mode está ACTIVADO: Tlamatini le envía a '",
+   "n": 1
+  },
+  {
+   "en": "' only what you '",
+   "es": "' sólo lo que '",
+   "n": 1
+  },
+  {
+   "en": "'ticked. Untick the Compact mode box to switch every MCP, tool, agent and skill '",
+   "es": "'marcaste. Desmarca la casilla Compact mode para activar todos los MCPs, tools, agents y skills '",
+   "n": 1
+  },
+  {
+   "en": "'back on.'",
+   "es": "'de nuevo.'",
+   "n": 1
+  },
+  {
+   "en": "'Sent with your next message'",
+   "es": "'Se envía con tu siguiente mensaje'",
+   "n": 1
+  },
+  {
+   "en": "'as ticked in Config ▸ Configure MCPs'",
+   "es": "'según lo marcado en Config ▸ Configurar MCPs'",
+   "n": 1
+  },
+  {
+   "en": "' tool(s) you ticked'",
+   "es": "' tool(s) que marcaste'",
+   "n": 1
+  },
+  {
+   "en": "'No tools'",
+   "es": "'Ningún tool'",
+   "n": 1
+  },
+  {
+   "en": "'tick Current-Time or an agent to add one'",
+   "es": "'marca Current-Time o un agent para agregar uno'",
+   "n": 1
+  },
+  {
+   "en": "'Your loaded context and recent chat'",
+   "es": "'Tu contexto cargado y el chat reciente'",
+   "n": 1
+  },
+  {
+   "en": "'fitted to the window ('",
+   "es": "'ajustados a la ventana ('",
+   "n": 1
+  },
+  {
+   "en": "' recent messages)'",
+   "es": "' mensajes recientes)'",
+   "n": 1
+  },
+  {
+   "en": "'Add what you need'",
+   "es": "'Agrega lo que necesites'",
+   "n": 1
+  },
+  {
+   "en": "'Config ▸ Configure Agents'",
+   "es": "'Config ▸ Configurar Agents'",
+   "n": 1
+  },
+  {
+   "en": "'tick an agent (for example PDFer or ESPHomer) - its tool is ticked with it'",
+   "es": "'marca un agent (por ejemplo PDFer o ESPHomer) y su tool se marca con él'",
+   "n": 1
+  },
+  {
+   "en": "'Config ▸ Configure MCPs'",
+   "es": "'Config ▸ Configurar MCPs'",
+   "n": 1
+  },
+  {
+   "en": "'tick or untick tools, System-Metrics and Files-Search'",
+   "es": "'marca o desmarca tools, System-Metrics y Files-Search'",
+   "n": 1
+  },
+  {
+   "en": "'Watch the CONTEXT-WINDOW gauge'",
+   "es": "'Observa el medidor CONTEXT-WINDOW'",
+   "n": 1
+  },
+  {
+   "en": "'green fits; red or past 100% means not everything will work'",
+   "es": "'verde: cabe; rojo o más de 100%: no todo va a funcionar'",
+   "n": 1
+  },
+  {
+   "en": "' - restored when Compact mode is switched off'",
+   "es": "' - se restauran cuando se desactiva Compact mode'",
+   "n": 1
+  },
+  {
+   "en": "'none were active'",
+   "es": "'no había ninguno activo'",
+   "n": 1
+  },
+  {
+   "en": "'The lock lifts on its own when you choose a model that can hold everything (for example a :cloud model) in Config ▸ Models.'",
+   "es": "'El bloqueo se quita solo cuando eliges en Config ▸ Modelos un modelo que pueda con todo (por ejemplo, un modelo :cloud).'",
+   "n": 1
+  },
+  {
+   "en": "'Your choices are kept exactly as you leave them until you untick Compact mode.'",
+   "es": "'Tus elecciones se conservan tal como las dejes hasta que desmarques Compact mode.'",
+   "n": 1
+  },
+  {
+   "en": "'Window source: '",
+   "es": "'Origen de la ventana: '",
+   "n": 1
+  },
+  {
+   "en": "'. Reserved for the answer: '",
+   "es": "'. Reservado para la respuesta: '",
+   "n": 1
+  },
+  {
+   "en": "' Don\\'t open this automatically again for '",
+   "es": "' No volver a abrir esto automáticamente para '",
+   "n": 1
+  },
+  {
+   "en": "'Open Configure Agents'",
+   "es": "'Abrir Configurar Agents'",
+   "n": 1
+  },
+  {
+   "en": "'Open Config ▸ Models'",
+   "es": "'Abrir Config ▸ Modelos'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode is ON - only what you tick in Config ▸ Configure MCPs / '",
+   "es": "'Compact mode está ACTIVADO: sólo se envía lo que marques en Config ▸ Configurar MCPs / '",
+   "n": 1
+  },
+  {
+   "en": "'Configure Agents is sent.'",
+   "es": "'Configurar Agents.'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode is OFF - every MCP, tool, agent and skill is back.'",
+   "es": "'Compact mode está DESACTIVADO: volvieron todos los MCPs, tools, agents y skills.'",
+   "n": 1
+  },
+  {
+   "en": "'Compact mode stays ON: '",
+   "es": "'Compact mode sigue ACTIVADO: '",
+   "n": 1
+  },
+  {
+   "en": "' cannot hold everything activated.'",
+   "es": "' no puede con todo lo activado.'",
+   "n": 1
+  },
+  {
+   "en": "'CONTEXT-WINDOW exceeded: '",
+   "es": "'Se excedió CONTEXT-WINDOW: '",
+   "n": 1
+  },
+  {
+   "en": "'the model'",
+   "es": "'el modelo'",
+   "n": 1
+  },
+  {
+   "en": "' read only '",
+   "es": "' sólo leyó '",
+   "n": 1
+  },
+  {
+   "en": "' of about '",
+   "es": "' de unos '",
+   "n": 1
+  },
+  {
+   "en": "' tokens sent. Untick agents or tools so the request fits.'",
+   "es": "' tokens enviados. Desmarca agents o tools para que la solicitud quepa.'",
+   "n": 1
+  },
+  {
+   "en": "'en-US'",
+   "es": "'es-MX'",
+   "maquina": "formato es-MX",
+   "n": 1
+  },
+  {
+   "en": "' reads '",
+   "es": "' lee '",
+   "n": 1
+  },
+  {
+   "en": "' of '",
+   "es": "' de '",
+   "n": 1
+  },
+  {
+   "en": "' paused)'",
+   "es": "' en pausa)'",
+   "n": 1
+  },
+  {
+   "en": "'OK'",
+   "es": "'Aceptar'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Compact mode 🔒'",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": "'Compact mode'",
+   "motivo": "nombre de una función del producto"
+  },
+  {
+   "en": "'set-compact-mode'",
+   "motivo": "valor de máquina (mensaje del WebSocket)"
+  },
+  {
+   "en": "'warn'",
+   "motivo": "valor de máquina (tono del aviso)"
+  },
+  {
+   "en": "'status'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "'tlmcap-row tlmcap-'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-overlay tlmcap-overlay'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'dialog'",
+   "motivo": "valor de role ARIA"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor de atributo ARIA"
+  },
+  {
+   "en": "'tlmcap-title'",
+   "motivo": "id del título"
+  },
+  {
+   "en": "'tlmpop-card tlmcap-card'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-body tlmcap-body'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-msg tlmcap-lead'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmcap-col-title tlmcap-on'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'System-Metrics · Files-Search'",
+   "motivo": "nombres de tools del producto"
+  },
+  {
+   "en": "'tlmcap-col-title tlmcap-off'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'External MCPs ('",
+   "motivo": "nombre del producto (External MCPs)"
+  },
+  {
+   "en": "'tlmpop-sub tlmcap-back'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-btn tlmcap-agents'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-btn tlmcap-models'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'tlmpop-btn tlmpop-btn-primary tlmcap-ok'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'[compact-mode] dialog shown for'",
+   "motivo": "texto de log (console)"
+  },
+  {
+   "en": "'ok'",
+   "motivo": "valor de máquina (tono del aviso)"
+  },
+  {
+   "en": "'[compact-mode] state skipped:'",
+   "motivo": "texto de log (console)"
+  },
+  {
+   "en": "'compact-mode-sync'",
+   "motivo": "valor de máquina (mensaje del WebSocket)"
+  },
+  {
+   "en": "'[compact-mode] frame skipped:'",
+   "motivo": "texto de log (console)"
+  }
+ ]
+}

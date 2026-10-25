@@ -1,0 +1,219 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0128_add_blenderer_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **BLENDER FORGE** demo, please &mdash; a basic showcase of your own \"",
+   "es": "\"Tlamatini, ejecuta la demo **BLENDER FORGE**, por favor &mdash; una muestra básica de tu propio \"",
+   "n": 1
+  },
+  {
+   "en": "\"3D-modelling bridge, driven entirely from chat through the wrapped **chat_agent_blenderer** \"",
+   "es": "\"puente de modelado 3D, controlado por completo desde el chat a través del tool wrapper **chat_agent_blenderer**, \"",
+   "n": 1
+  },
+  {
+   "en": "\"tool, which speaks the OFFICIAL Blender MCP add-on's socket protocol (you ARE the client &mdash; \"",
+   "es": "\"que habla el protocolo de socket del add-on OFICIAL de Blender MCP (TÚ ERES el cliente &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"no external LLM client needed). \"",
+   "es": "\"no hace falta un cliente LLM externo). \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; go straight to Step 1): \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; ve directo al Paso 1): \"",
+   "n": 1
+  },
+  {
+   "en": "\"(a) tick ONLY the **Multi-Turn** checkbox before sending (ACPX is NOT required &mdash; \"",
+   "es": "\"(a) marca SÓLO la casilla **Multi-Turn** antes de enviar (NO se necesita ACPX &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_blenderer is the ONLY tool you may use; do NOT use chat_agent_executer / \"",
+   "es": "\"chat_agent_blenderer es el ÚNICO tool que puedes usar; no uses chat_agent_executer / \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_pythonxer / acp_spawn); (b) Blender is expected to be running with the Blender MCP \"",
+   "es": "\"chat_agent_pythonxer ni tools de ACPX); (b) se espera que Blender esté corriendo con el add-on Blender MCP \"",
+   "n": 1
+  },
+  {
+   "en": "\"add-on enabled, 'Online access' on, and the server started &mdash; but if it is NOT reachable, \"",
+   "es": "\"activado, con 'Online access' encendido y el servidor iniciado &mdash; pero si NO está accesible, \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_blenderer returns status `error` with a clear connection message (a documented \"",
+   "es": "\"chat_agent_blenderer devuelve status `error` con un mensaje de conexión claro (un modo degradado \"",
+   "n": 1
+  },
+  {
+   "en": "\"degraded mode, NOT a failure): record it verbatim, SKIP the remaining Blender steps, and go \"",
+   "es": "\"documentado, NO un error): regístralo tal cual, OMITE los pasos restantes de Blender y ve \"",
+   "n": 1
+  },
+  {
+   "en": "\"straight to the closing banner. \"",
+   "es": "\"directo al banner de cierre. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127912; BLENDER FORGE &#129412;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127912; BLENDER FORGE &#129412;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Blenderer &mdash; chat in, 3D out</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Blenderer &mdash; chat de entrada, 3D de salida</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (probe): call **chat_agent_blenderer** with request \\\"Run Blender command with \"",
+   "es": "\"Paso 1 (prueba): llama a **chat_agent_blenderer** con el request \\\"Run Blender command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='ping'\\\". From the INI_SECTION_BLENDERER block in the run's log_excerpt capture status \"",
+   "es": "\"command='ping'\\\". Del bloque INI_SECTION_BLENDERER del log_excerpt de la ejecución captura status \"",
+   "n": 1
+  },
+  {
+   "en": "\"(ok | error) and, on ok, the blender_version_string and scene. If status is error, note the \"",
+   "es": "\"(ok | error) y, si es ok, el blender_version_string y la scene. Si status es error, anota el \"",
+   "n": 1
+  },
+  {
+   "en": "\"message and JUMP to Step 5. \"",
+   "es": "\"mensaje y SALTA al Paso 5. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (model): call **chat_agent_blenderer** with request \\\"Run Blender command with \"",
+   "es": "\"Paso 2 (modela): llama a **chat_agent_blenderer** con el request \\\"Run Blender command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='create_object' and params.type='monkey' and params.name='ForgeSuzanne' and \"",
+   "es": "\"command='create_object' and params.type='monkey' and params.name='ForgeSuzanne' and \""
+  },
+  {
+   "en": "\"params.location=[0,0,2]\\\". Capture the created object name from the response. \"",
+   "es": "\"params.location=[0,0,2]\\\". Captura el nombre del objeto creado de la respuesta. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (colour): call **chat_agent_blenderer** with request \\\"Run Blender command with \"",
+   "es": "\"Paso 3 (color): llama a **chat_agent_blenderer** con el request \\\"Run Blender command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='set_material' and params.object_name='ForgeSuzanne' and params.color=[0.92,0.46,0.0] \"",
+   "es": "\"command='set_material' and params.object_name='ForgeSuzanne' and params.color=[0.92,0.46,0.0] \""
+  },
+  {
+   "en": "\"and params.material='ForgeOrange'\\\". Capture the material name. \"",
+   "es": "\"and params.material='ForgeOrange'\\\". Captura el nombre del material. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4 (render): call **chat_agent_blenderer** with request \\\"Run Blender command with \"",
+   "es": "\"Paso 4 (render): llama a **chat_agent_blenderer** con el request \\\"Run Blender command with \"",
+   "n": 1
+  },
+  {
+   "en": "\"command='render'\\\" (no output_path &mdash; Blenderer defaults the .png under the app Temp dir). \"",
+   "es": "\"command='render'\\\" (sin output_path &mdash; Blenderer pone el .png de forma predeterminada en la Temp de la app). \"",
+   "n": 1
+  },
+  {
+   "en": "\"From the INI_SECTION_BLENDERER block capture the rendered file path and whether it exists. \"",
+   "es": "\"Del bloque INI_SECTION_BLENDERER captura el path del archivo renderizado y si existe. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 5: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Blender Forge &mdash; Build Report</strong>' and columns <em>step</em>, <em>command</em>, \"",
+   "es": "\"'<strong>Blender Forge &mdash; Reporte de construcción</strong>' y con las columnas <em>paso</em>, <em>command</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>status</em>, <em>detail</em> &mdash; one row per chat_agent_blenderer call you made, every \"",
+   "es": "\"<em>status</em>, <em>detalle</em> &mdash; una fila por cada llamada a chat_agent_blenderer que hiciste, cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"value verbatim from its INI_SECTION_BLENDERER block (do NOT re-classify). Light body cells \"",
+   "es": "\"valor tal cual de su bloque INI_SECTION_BLENDERER (NO lo reclasifiques). Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a), green tint for status ok, red tint for status error. \"",
+   "es": "\"(background:#ffffff;color:#0f172a), tono verde para status ok, tono rojo para status error. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 6: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 6: cierra con un banner HTML que reutilice el estilo del Paso 0 y muestre, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; FORGED' (every Blender step returned ok &mdash; show the rendered path) or \"",
+   "es": "\"'&#9989; FORJADO' (todos los pasos de Blender devolvieron ok &mdash; muestra el path renderizado) o \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9881;&#65039; BLENDER UNREACHABLE' (Step 1 errored &mdash; quote the connection message and \"",
+   "es": "\"'&#9881;&#65039; BLENDER INACCESIBLE' (el Paso 1 dio error &mdash; cita el mensaje de conexión y \"",
+   "n": 1
+  },
+  {
+   "en": "\"the one-line fix 'enable the Blender MCP add-on, turn on Online access, and start the server'), \"",
+   "es": "\"el arreglo de una línea 'activa el add-on Blender MCP, enciende Online access e inicia el servidor'), \"",
+   "n": 1
+  },
+  {
+   "en": "\"and underneath a one-line metric 'version: <blender_version_string> &middot; object: \"",
+   "es": "\"y debajo una métrica de una línea 'versión: <blender_version_string> &middot; objeto: \"",
+   "n": 1
+  },
+  {
+   "en": "\"<created> &middot; render: <rendered path>'. \"",
+   "es": "\"<created> &middot; render: <rendered path>'. \""
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#15334f 0%,#2a6fb3 33%,#ea7600 66%,#f7b733 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

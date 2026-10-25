@@ -1,0 +1,84 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0168_add_video_analyzer_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **VIDEO-ANALYZER ROBOTIC-LOOP DEMO**, please — tick ONLY the \"",
+   "es": "\"Tlamatini, ejecuta la **VIDEO-ANALYZER ROBOTIC-LOOP DEMO**, por favor — marca SÓLO la \"",
+   "n": 1
+  },
+  {
+   "en": "\"Multi-Turn checkbox. STEP 1: record a short 6-second clip of whatever the webcam sees with \"",
+   "es": "\"casilla Multi-Turn. PASO 1: graba un clip corto de 6 segundos de lo que vea la webcam con \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_camcorder (capture_mode='video', video_duration_seconds=6) — wave your hand or \"",
+   "es": "\"chat_agent_camcorder (capture_mode='video', video_duration_seconds=6) — mueve la mano o \"",
+   "n": 1
+  },
+  {
+   "en": "\"move an object in front of the camera while it records; the result carries a top-level \"",
+   "es": "\"un objeto frente a la cámara mientras graba; el resultado trae un output_path de nivel \"",
+   "n": 1
+  },
+  {
+   "en": "\"output_path. STEP 2: judge that clip with chat_agent_video_analyzer with \"",
+   "es": "\"superior. PASO 2: evalúa ese clip con chat_agent_video_analyzer con \"",
+   "n": 1
+  },
+  {
+   "en": "\"video_pathfilenames='<the output_path from STEP 1>' and expected_motion='a hand or object \"",
+   "es": "\"video_pathfilenames='<the output_path from STEP 1>' y expected_motion='a hand or object \"",
+   "n": 1
+  },
+  {
+   "en": "\"visibly moves across the frame' and num_frames=10 — it runs a DETERMINISTIC OpenCV motion \"",
+   "es": "\"visibly moves across the frame' y num_frames=10 — primero corre una compuerta de movimiento \"",
+   "n": 1
+  },
+  {
+   "en": "\"gate first (no motion -> FAIL_NO_MOTION with no model call), then interpreter_model_1 \"",
+   "es": "\"DETERMINISTA con OpenCV (sin movimiento -> FAIL_NO_MOTION sin llamar a ningún modelo), luego interpreter_model_1 \"",
+   "n": 1
+  },
+  {
+   "en": "\"verdict (PASS_OK / FAIL_NO_MOTION / FAIL_WRONG_MOTION / UNCLEAR), the confidence and the \"",
+   "es": "\"veredicto (PASS_OK / FAIL_NO_MOTION / FAIL_WRONG_MOTION / UNCLEAR), la confianza y el \"",
+   "n": 1
+  },
+  {
+   "en": "\"deterministic motion_score, then explain in ONE line how this exact loop verifies an \"",
+   "es": "\"motion_score determinista, y luego explica en UNA línea cómo este mismo loop verifica un \"",
+   "n": 1
+  },
+  {
+   "en": "\"STM32-driven servo (STM32er flashes firmware -> Camcorder records the board -> Video-Analyzer \"",
+   "es": "\"servo manejado por STM32 (STM32er flashea el firmware -> Camcorder graba la placa -> Video-Analyzer \"",
+   "n": 1
+  },
+  {
+   "en": "\"judges the motion -> a Forker branches on TLM_VERDICT:: to reprogram or finish). Use ONLY \"",
+   "es": "\"juzga el movimiento -> un Forker se ramifica según TLM_VERDICT:: para reprogramar o terminar). Usa SÓLO \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_camcorder and chat_agent_video_analyzer. End with END-RESPONSE.\"",
+   "es": "\"chat_agent_camcorder y chat_agent_video_analyzer. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"(qwen3-vl:235b-cloud) and interpreter_model_2 (jcyhsiao/qwen3.5cloud:latest) IN PARALLEL on two dedicated \"",
+   "motivo": "línea del pipeline de modelos que 0208 reescribe por __contains; conservar"
+  },
+  {
+   "en": "\"Ollama connections, then fuses them with merging_model (glm-5.3:cloud). STEP 3: report the \"",
+   "motivo": "línea del pipeline de modelos que 0208 reescribe por __contains; conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

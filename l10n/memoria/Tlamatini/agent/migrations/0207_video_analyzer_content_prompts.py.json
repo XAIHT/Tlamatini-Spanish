@@ -1,0 +1,66 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0207_video_analyzer_content_prompts.py",
+ "segmentos": [
+  {
+   "en": "'Transcribe every audio track of the selected video. Preserve timestamps and track indexes; '",
+   "es": "'Transcribe cada pista de audio del video seleccionado. Conserva los timestamps y los índices de pista; '",
+   "n": 1
+  },
+  {
+   "en": "'return the transcript, detected languages, audio_status and artifact paths. Do not capture a microphone.'",
+   "es": "'devuelve la transcripción, los idiomas detectados, audio_status y los paths de los artefactos. No captures ningún micrófono.'",
+   "n": 1
+  },
+  {
+   "en": "'[[ VIDEO FILE — REQUIRED: path to an existing video ]]\\n\\n'",
+   "es": "'[[ VIDEO FILE — REQUERIDO: path a un video existente ]]\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "'If VIDEO FILE is unfilled, ask for its path before running. Never invent a file.\\n\\n'",
+   "es": "'Si VIDEO FILE está sin llenar, pide su path antes de ejecutar. Nunca inventes un archivo.\\n\\n'",
+   "n": 1
+  },
+  {
+   "en": "f'{task}\\nUse chat_agent_video_analyzer with analysis_type=\"{mode}\", '",
+   "es": "f'{task}\\nUsa chat_agent_video_analyzer con analysis_type=\"{mode}\", '",
+   "n": 1
+  },
+  {
+   "en": "'video_pathfilenames set to VIDEO FILE and audio_tracks=\"all\". '",
+   "es": "'video_pathfilenames apuntando a VIDEO FILE y audio_tracks=\"all\". '",
+   "n": 1
+  },
+  {
+   "en": "'Use chat_agent_run_status/log to wait for completion and inspect the result. '",
+   "es": "'Usa chat_agent_run_status/log para esperar a que termine e inspeccionar el resultado. '",
+   "n": 1
+  },
+  {
+   "en": "'Do not use robotics verdict tokens for this task. '",
+   "es": "'No uses los tokens de veredicto de robótica para esta tarea. '",
+   "n": 1
+  },
+  {
+   "en": "'\\nPRE-FLIGHT: tick only Multi-Turn and Exec report. End with END-RESPONSE.'",
+   "es": "'\\nPRE-FLIGHT: marca sólo Multi-Turn y Exec report. Termina con END-RESPONSE.'",
+   "n": 1
+  },
+  {
+   "en": "'Summarize the selected video using speech and timestamped visual evidence. Include an overview, '\n     'chronology, readable on-screen text, key facts, demonstrated steps, decisions, action items and '\n     'coverage limitations. Report missing audio or partial results honestly; link the saved report.'",
+   "es": "'Resume el video seleccionado usando el habla y evidencia visual con timestamps. Incluye un resumen general, cronología, '\n     'texto legible en pantalla, datos clave, pasos demostrados, decisiones, action items y limitaciones de '\n     'cobertura. Reporta con honestidad si falta audio o hay resultados parciales; enlaza el reporte guardado.'",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "f'Video-Analyzer — {mode}\\n\\n'",
+   "motivo": "encabezado f-string: nombre de agent y {mode}; conservar"
+  }
+ ]
+}

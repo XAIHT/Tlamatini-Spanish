@@ -1,0 +1,39 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0205_silence_window_default_3_5_seconds.py",
+ "segmentos": [
+  {
+   "en": "\"should end the recording? &mdash; OPTIONAL, default: 10 ]]\"",
+   "es": "\"deben terminar la grabación? &mdash; OPCIONAL, predeterminado: 10 ]]\"",
+   "maquina": "0205 busca este texto exacto en las tarjetas 74/121/122, traducidas a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"should end the recording? &mdash; OPTIONAL, default: 3.5 ]]\"",
+   "es": "\"deben terminar la grabación? &mdash; OPCIONAL, predeterminado: 3.5 ]]\"",
+   "maquina": "0205 busca este texto exacto en las tarjetas 74/121/122, traducidas a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 1
+  },
+  {
+   "en": "\"[[ silence_timeout_seconds — OPTIONAL, default: 10 ]]\"",
+   "es": "\"[[ silence_timeout_seconds — OPCIONAL, predeterminado: 10 ]]\"",
+   "maquina": "0205 busca este texto exacto en las tarjetas 74/121/122, traducidas a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 2
+  },
+  {
+   "en": "\"[[ silence_timeout_seconds — OPTIONAL, default: 3.5 ]]\"",
+   "es": "\"[[ silence_timeout_seconds — OPCIONAL, predeterminado: 3.5 ]]\"",
+   "maquina": "0205 busca este texto exacto en las tarjetas 74/121/122, traducidas a la vez",
+   "llm": "texto del Catálogo de prompts: los {{ }} son marcadores que llena el LLM, no plantillas Django",
+   "n": 2
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "patch del silence-window: _SWAPS en inglés; sus productores 0200/0201 siguen en inglés; conservar"
+  }
+ ]
+}

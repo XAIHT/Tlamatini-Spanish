@@ -1,0 +1,16 @@
+{
+ "archivo": "Tlamatini/agent/agents/terminater/terminater_engine.py",
+ "segmentos": [
+  {
+   "en": "\"message\": \"You took over - Tlamatini stopped typing.\"",
+   "es": "\"message\": \"Tomaste el control - Tlamatini dejó de escribir.\"",
+   "n": 1
+  },
+  {
+   "en": "\"message\": \"Tlamatini is typing - press Esc to take over.\"",
+   "es": "\"message\": \"Tlamatini está escribiendo - presiona Esc para tomar el control.\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/management/commands/check_prompt_flow_panel.py",
+ "segmentos": [
+  {
+   "en": "Operations bar",
+   "es": "Barra de operaciones",
+   "codigo": "El gate del build (check_prompt_flow_panel) exige que el template del Prompt Flow Panel haya renderizado su barra de operaciones. El encabezado visible y el aria-label de esa barra ya se tradujeron a 'Barra de operaciones'; el verificador debe buscar la cadena en español que el template renderiza, no la inglesa. Adaptacion de codigo en lockstep con el template.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -1,0 +1,390 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0002_populate_db.py",
+ "segmentos": [
+  {
+   "en": "'List all of the files in the provided context, please.'",
+   "es": "'Lista todos los archivos del contexto que te di, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Summarize in very detail the project\\'s source code in the provided context, please.'",
+   "es": "'Resume con mucho detalle el código fuente del proyecto que está en el contexto que te di, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Explain what are the weak security issues you find in the source code of the provided context and how you may improve them focused in Cyber Security, **sort your findings from Critical severity to Low severity**, so, deeply analize the code, please.'",
+   "es": "'Explica qué debilidades de seguridad encuentras en el código fuente del contexto que te di y cómo podrías corregirlas, con enfoque en ciberseguridad; **ordena tus hallazgos de la severidad crítica a la baja**; así que analiza el código a fondo, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Explain the purpose of \\'-----.---\\', from the provided context, please.'",
+   "es": "'Explica el propósito de \\'-----.---\\' según el contexto que te di, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'What is the current time now?, please.'",
+   "es": "'¿Me dices qué hora es en este momento, por favor?'",
+   "n": 1
+  },
+  {
+   "en": "'What is te actual CPU usage, memory usage, and disk space?, please.'",
+   "es": "'¿Me dices el uso actual de CPU, el uso de memoria y el espacio libre en disco, por favor?'",
+   "n": 1
+  },
+  {
+   "en": "'List available directories, please.'",
+   "es": "'Lista los directorios disponibles, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Search the file with name -----.--- in all allowed locations, please.'",
+   "es": "'Busca el archivo llamado -----.--- en todas las ubicaciones permitidas, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Find all files with the extension *.py in all allowed locations, please.'",
+   "es": "'Encuentra todos los archivos con la extensión *.py en todas las ubicaciones permitidas, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Execute cat_art.py, located in the root of this application, please.'",
+   "es": "'Ejecuta cat_art.py, que está en la raíz de esta aplicación, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Run command ping x.x.x.x, and show its output as-is, please.'",
+   "es": "'Ejecuta el comando ping x.x.x.x y muestra su output tal cual, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Run command netstat -an, and tell me if port 50051 is opened and whats its state, please.'",
+   "es": "'Ejecuta el comando netstat -an y dime si el puerto 50051 está abierto y en qué estado está, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Create an implementation of ----- in ----- to --- --- ---, provide all the neccesary files, and **REMEMBER to follow the rule \"4) Code generation rule\"**, please.'",
+   "es": "'Crea una implementación de ----- en ----- para --- --- ---, dame todos los archivos necesarios y **RECUERDA seguir la regla \"4) Code generation rule\"**, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Create a web page using Bootstrap and jQuery **taking special attention to generate elements without overlapping each other**, with the exact same layout and elements that are described below:'",
+   "es": "'Crea una página web con Bootstrap y jQuery **poniendo especial atención en generar elementos que no se encimen entre sí**, con exactamente la misma distribución y los mismos elementos que se describen abajo:'",
+   "n": 1
+  },
+  {
+   "en": "'Create a new version of the file \"----.---\" in order to include all the neccesary Java-Doc-style comments, **don´t modify the code at all**, and **REMEMBER to follow the rule \"4) Code generation rule\"**, it\\'s original complete code is as follows: '",
+   "es": "'Crea una nueva versión del archivo \"----.---\" para incluir todos los comentarios necesarios estilo Java-Doc, **no modifiques el código en absoluto** y **RECUERDA seguir la regla \"4) Code generation rule\"**; su código original completo es el siguiente: '",
+   "n": 1
+  },
+  {
+   "en": "'Describe with Qwen the image \\'----.---\\' located in \\'----\\', please.'",
+   "es": "'Describe con Qwen la imagen \\'----.---\\' que está en \\'----\\', por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Describe with Opus the image \\'------.---\\' located in \\'------\\' which is a mockup of a web page: **create a table listing all of the elements including menu entries, links, buttons, header, menu bar, side bars, etc. in a table with the format: element name, element type, element position (xpos%, ypos%), element size (width%, height%), element color, element text, element font-type, element font-size**, **STRICTLY NEVER ADD MORE ELEMENTS THAN THE ONES IN THE MOCKUP**, please.'",
+   "es": "'Describe con Opus la imagen \\'------.---\\' que está en \\'------\\', que es un mockup de una página web: **crea una tabla que liste todos los elementos, incluidas las entradas del menú, links, botones, header, barra de menú, barras laterales, etc., en una tabla con el formato: nombre del elemento, tipo de elemento, posición del elemento (xpos%, ypos%), tamaño del elemento (width%, height%), color del elemento, texto del elemento, tipo de fuente del elemento, tamaño de fuente del elemento**, **ESTRICTAMENTE NUNCA AGREGUES MÁS ELEMENTOS QUE LOS QUE HAY EN EL MOCKUP**, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Describe with Qwen the image \\'------.---\\' located in \\'------\\' which is a mockup of a web page: **create a table listing all of the elements including menu entries, links, buttons, header, menu bar, side bars, etc. in a table with the format: element name, element type, element position (xpos%, ypos%), element size (width%, height%), element color, element text, element font-type, element font-size**, **STRICTLY NEVER ADD MORE ELEMENTS THAN THE ONES IN THE MOCKUP**, please.'",
+   "es": "'Describe con Qwen la imagen \\'------.---\\' que está en \\'------\\', que es un mockup de una página web: **crea una tabla que liste todos los elementos, incluidas las entradas del menú, links, botones, header, barra de menú, barras laterales, etc., en una tabla con el formato: nombre del elemento, tipo de elemento, posición del elemento (xpos%, ypos%), tamaño del elemento (width%, height%), color del elemento, texto del elemento, tipo de fuente del elemento, tamaño de fuente del elemento**, **ESTRICTAMENTE NUNCA AGREGUES MÁS ELEMENTOS QUE LOS QUE HAY EN EL MOCKUP**, por favor.'",
+   "n": 1
+  },
+  {
+   "en": "'Decompile file \"------\\\\------\", please.'",
+   "es": "'Decompila el archivo \"------\\\\------\", por favor.'",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, please for each of the .java files in the present project \"",
+   "es": "\"Tlamatini, por favor, para cada uno de los archivos .java del proyecto actual \"",
+   "n": 1
+  },
+  {
+   "en": "\"(project wich is originally located in the source directory '-----' \"",
+   "es": "\"(un proyecto que originalmente está en el directorio de origen '-----' \"",
+   "n": 1
+  },
+  {
+   "en": "\"and the general information of it is provided in the context)  \"",
+   "es": "\"y cuya información general está en el contexto)  \"",
+   "n": 1
+  },
+  {
+   "en": "\"**create a copy of it (with the same name and under the same location \"",
+   "es": "\"**crea una copia (con el mismo nombre y en la misma ubicación \"",
+   "n": 1
+  },
+  {
+   "en": "\"under the tree-directory structure but now starting from the directory located \"",
+   "es": "\"dentro de la estructura del árbol de directorios, pero ahora a partir del directorio que está \"",
+   "n": 1
+  },
+  {
+   "en": "\"in the target directory '-----') and now including the javadoc-style commentaries \"",
+   "es": "\"en el directorio de destino '-----') que ahora incluya los comentarios estilo javadoc \"",
+   "n": 1
+  },
+  {
+   "en": "\"for each of the functions, additionally all of the other file-types you must only \"",
+   "es": "\"para cada una de las funciones; además, todos los demás tipos de archivo sólo debes \"",
+   "n": 1
+  },
+  {
+   "en": "\"copy them from its location on the source directory to the corresponding location on \"",
+   "es": "\"copiarlos de su ubicación en el directorio de origen a la ubicación correspondiente en \"",
+   "n": 1
+  },
+  {
+   "en": "\"the target directory.** So the final complete content of the target directory must be \"",
+   "es": "\"el directorio de destino.** Así, el contenido final completo del directorio de destino debe tener \"",
+   "n": 1
+  },
+  {
+   "en": "\"exactly the same structure and content, but the only difference should be the content \"",
+   "es": "\"exactamente la misma estructura y el mismo contenido; la única diferencia debe ser el contenido \"",
+   "n": 1
+  },
+  {
+   "en": "\"of the .java files now in the target directory containing commentaries. \"",
+   "es": "\"de los archivos .java, que ahora en el directorio de destino tendrán comentarios. \"",
+   "n": 1
+  },
+  {
+   "en": "\"**It is way-too extremely important that you must not modify the content of the function's body \"",
+   "es": "\"**Es extremadamente importante que no modifiques el contenido del cuerpo de las funciones; \"",
+   "n": 1
+  },
+  {
+   "en": "\"you must just add it the corresponding javadoc-style commentaries.** go!.\"",
+   "es": "\"sólo debes agregarles los comentarios estilo javadoc correspondientes.** ¡Adelante!\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, Run an end-to-end multi-turn local document demo, please: use File Creator \"",
+   "es": "\"Tlamatini, ejecuta una demo Multi-Turn de documentos locales de principio a fin, por favor: usa File Creator \"",
+   "n": 1
+  },
+  {
+   "en": "\"to create the file '----\\\\tlamatini_multiturn_release_notes.txt' with a short \"",
+   "es": "\"para crear el archivo '----\\\\tlamatini_multiturn_release_notes.txt' con una nota de release \"",
+   "n": 1
+  },
+  {
+   "en": "\"fake release note for Tlamatini, then use File Extractor to read that same \"",
+   "es": "\"breve y ficticia de Tlamatini; luego usa File Extractor para leer ese mismo \"",
+   "n": 1
+  },
+  {
+   "en": "\"file, then use Summarize Text to convert it into a 5-bullet executive \"",
+   "es": "\"archivo; después usa Summarize Text para convertirlo en un resumen ejecutivo \"",
+   "n": 1
+  },
+  {
+   "en": "\"summary, and finally use Notifier to announce that the demo finished. If any \"",
+   "es": "\"de 5 viñetas y, por último, usa Notifier para anunciar que la demo terminó. Si algún \"",
+   "n": 1
+  },
+  {
+   "en": "\"wrapped agent returns a running run_id, keep using chat_agent_run_status and \"",
+   "es": "\"agent envuelto devuelve un run_id en ejecución, sigue usando chat_agent_run_status y \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_run_log until you have enough output to continue.\"",
+   "es": "\"chat_agent_run_log hasta que tengas suficiente output para continuar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, Run a multi-turn web research demo, please: use Apirer to call the URL \"",
+   "es": "\"Tlamatini, ejecuta una demo Multi-Turn de investigación web, por favor: usa Apirer para llamar a la URL \"",
+   "n": 1
+  },
+  {
+   "en": "\"'https://example.com' with GET, then use Crawler on that same URL to \"",
+   "es": "\"'https://example.com' con GET; luego usa Crawler sobre esa misma URL para \"",
+   "n": 1
+  },
+  {
+   "en": "\"capture the page text, then use Summarize Text to produce a short \"",
+   "es": "\"capturar el texto de la página; después usa Summarize Text para producir una breve \"",
+   "n": 1
+  },
+  {
+   "en": "\"comparison between the HTTP response and the crawled content, and finally \"",
+   "es": "\"comparación entre la respuesta HTTP y el contenido rastreado y, por último, \"",
+   "n": 1
+  },
+  {
+   "en": "\"use File Creator to save the final comparison into \"",
+   "es": "\"usa File Creator para guardar la comparación final en \"",
+   "n": 1
+  },
+  {
+   "en": "\"'-----\\\\tlamatini_example_comparison.md'. If any wrapped agent returns a \"",
+   "es": "\"'-----\\\\tlamatini_example_comparison.md'. Si algún agent envuelto devuelve un \"",
+   "n": 1
+  },
+  {
+   "en": "\"running run_id, keep using chat_agent_run_status and chat_agent_run_log \"",
+   "es": "\"run_id en ejecución, sigue usando chat_agent_run_status y chat_agent_run_log \"",
+   "n": 1
+  },
+  {
+   "en": "\"until you have enough output to continue.\"",
+   "es": "\"hasta que tengas suficiente output para continuar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, Run a multi-turn monitoring demo, please: first use File Creator to \"",
+   "es": "\"Tlamatini, ejecuta una demo Multi-Turn de monitoreo, por favor: primero usa File Creator para \"",
+   "n": 1
+  },
+  {
+   "en": "\"initialize '----\\\\tlamatini_monitor_demo.log' with a starting line, then \"",
+   "es": "\"inicializar '----\\\\tlamatini_monitor_demo.log' con una línea inicial; luego \"",
+   "n": 1
+  },
+  {
+   "en": "\"start Monitor Log on that file watching for the keywords 'ERROR,FATAL', \"",
+   "es": "\"inicia Monitor Log sobre ese archivo vigilando las palabras clave 'ERROR,FATAL'; \"",
+   "n": 1
+  },
+  {
+   "en": "\"then use Pythonxer to append several new log lines to the same file \"",
+   "es": "\"después usa Pythonxer para agregar varias líneas de log nuevas al mismo archivo, \"",
+   "n": 1
+  },
+  {
+   "en": "\"including one line that contains the word 'ERROR', keep polling the \"",
+   "es": "\"incluida una línea que contenga la palabra 'ERROR'; sigue consultando el \"",
+   "n": 1
+  },
+  {
+   "en": "\"monitor with chat_agent_run_status and chat_agent_run_log until the alert \"",
+   "es": "\"monitor con chat_agent_run_status y chat_agent_run_log hasta que la alerta \"",
+   "n": 1
+  },
+  {
+   "en": "\"is visible, then stop that monitor with chat_agent_run_stop and summarize \"",
+   "es": "\"sea visible; luego detén ese monitor con chat_agent_run_stop y resume \"",
+   "n": 1
+  },
+  {
+   "en": "\"what happened.\"",
+   "es": "\"lo que pasó.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Mcp'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'System-Metrics'",
+   "motivo": "nombre del producto (MCP)"
+  },
+  {
+   "en": "'Files-Search'",
+   "motivo": "nombre del producto (MCP)"
+  },
+  {
+   "en": "'Tool'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Current-Time'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'Execute-File'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'Execute-Command'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'View-Image'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'Opus-Analyze-Image'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'Monitor-Netstat'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Unzip-File'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'Decompile-Java'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'Qwen-Analyze-Image'",
+   "motivo": "nombre de tool"
+  },
+  {
+   "en": "'Agent'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'Monitor-Log'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Raiser'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Ender'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Starter'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Emailer'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Croner'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Mover'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Sleeper'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Cleaner'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Whatsapper'",
+   "motivo": "nombre de agent"
+  },
+  {
+   "en": "'Omission'",
+   "motivo": "nombre de modelo Django"
+  },
+  {
+   "en": "'*.dll, *.exe, *.pyc, *.pyd, *.bin, *.woff, *.woff2, *.o, *.obj, *.lib, *.a, *.jpg, *.bmp, *.svg, *.ico, *.tiff, *.png, *.webp, *.war, *.jar, *.class, *.pdf, *.docx, *.xlsx, *.pptx, *.log, *.db, *.tlog, *.obj, *.res, *.idb, *.pdb, .gitignore, .vscode, .idea, .git, .gitmodules, .gitattributes, .gitignore, .gitkeep'",
+   "motivo": "patrones de archivo omitidos (valor de máquina)"
+  }
+ ]
+}

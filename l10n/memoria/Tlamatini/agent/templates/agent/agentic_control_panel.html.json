@@ -1,0 +1,360 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/agentic_control_panel.html",
+ "segmentos": [
+  {
+   "en": "lang=\"en\"",
+   "es": "lang=\"es-MX\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Toggle navigation\"",
+   "es": "aria-label=\"Mostrar u ocultar la navegación\"",
+   "n": 1
+  },
+  {
+   "en": ">File<",
+   "es": ">Archivo<",
+   "n": 1
+  },
+  {
+   "en": ">Open<",
+   "es": ">Abrir<",
+   "n": 1
+  },
+  {
+   "en": ">Save as<",
+   "es": ">Guardar como<",
+   "n": 1
+  },
+  {
+   "en": ">Close<",
+   "es": ">Cerrar<",
+   "n": 2
+  },
+  {
+   "en": ">View<",
+   "es": ">Ver<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Show or hide the Terminals area (Ctrl+`). Your terminals keep running.\"",
+   "es": "title=\"Muestra u oculta el área Terminals (Ctrl+`). Tus terminales siguen corriendo.\"",
+   "n": 1
+  },
+  {
+   "en": ">Help<",
+   "es": ">Ayuda<",
+   "n": 1
+  },
+  {
+   "en": ">Search agents<",
+   "es": ">Buscar agents<",
+   "n": 1
+  },
+  {
+   "en": "placeholder=\"Search agents…\"",
+   "es": "placeholder=\"Buscar agents…\"",
+   "n": 1
+  },
+  {
+   "en": ">No agents match your search.<",
+   "es": ">Ningún agent coincide con tu búsqueda.<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Resize Agents list\"",
+   "es": "aria-label=\"Cambiar el tamaño de la lista de Agents\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Drag to resize the Agents list · Left/Right to adjust · Shift for larger steps\"",
+   "es": "title=\"Arrastra para cambiar el tamaño de la lista de Agents · Izquierda/Derecha para ajustar · Shift para pasos más grandes\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Validate\"",
+   "es": "title=\"Validar\"",
+   "n": 1
+  },
+  {
+   "en": ">\n                        Validate\n                    <",
+   "es": ">\n                        Validar\n                    <",
+   "n": 1
+  },
+  {
+   "en": "title=\"Start\"",
+   "es": "title=\"Iniciar\"",
+   "n": 1
+  },
+  {
+   "en": ">\n                        Start\n                    <",
+   "es": ">\n                        Iniciar\n                    <",
+   "n": 1
+  },
+  {
+   "en": "title=\"Stop\"",
+   "es": "title=\"Detener\"",
+   "n": 1
+  },
+  {
+   "en": ">\n                        Stop\n                    <",
+   "es": ">\n                        Detener\n                    <",
+   "n": 1
+  },
+  {
+   "en": "title=\"Pause\"",
+   "es": "title=\"Pausar\"",
+   "n": 1
+  },
+  {
+   "en": ">\n                        Pause\n                    <",
+   "es": ">\n                        Pausar\n                    <",
+   "n": 1
+  },
+  {
+   "en": "title=\"Clear\"",
+   "es": "title=\"Limpiar\"",
+   "n": 1
+  },
+  {
+   "en": ">\n                        Clear\n                    <",
+   "es": ">\n                        Limpiar\n                    <",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Flow editing controls\"",
+   "es": "aria-label=\"Controles de edición del flow\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Undo (Ctrl+Z)\"",
+   "es": "title=\"Deshacer (Ctrl+Z)\"",
+   "n": 1
+  },
+  {
+   "en": ">↶ Undo<",
+   "es": ">↶ Deshacer<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Redo (Ctrl+Y)\"",
+   "es": "title=\"Rehacer (Ctrl+Y)\"",
+   "n": 1
+  },
+  {
+   "en": ">↷ Redo<",
+   "es": ">↷ Rehacer<",
+   "n": 1
+  },
+  {
+   "en": ">⚙ Configure<",
+   "es": ">⚙ Configurar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Duplicate selected agents\"",
+   "es": "title=\"Duplicar los agents seleccionados\"",
+   "n": 1
+  },
+  {
+   "en": ">▣ Duplicate<",
+   "es": ">▣ Duplicar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Delete selected agents or connections\"",
+   "es": "title=\"Eliminar los agents o conexiones seleccionados\"",
+   "n": 1
+  },
+  {
+   "en": ">⌫ Delete<",
+   "es": ">⌫ Eliminar<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Locate a Starter. Start runs all Starter agents.\"",
+   "es": "title=\"Ubica un Starter. Iniciar ejecuta todos los agents Starter.\"",
+   "n": 1
+  },
+  {
+   "en": ">Add a Starter<",
+   "es": ">Agregar un Starter<",
+   "n": 1
+  },
+  {
+   "en": ">Flow settings<",
+   "es": ">Configuración del flow<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Zoom out\"",
+   "es": "aria-label=\"Alejar\"",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Zoom in\"",
+   "es": "aria-label=\"Acercar\"",
+   "n": 1
+  },
+  {
+   "en": "title=\"Fit the flow in the canvas\"",
+   "es": "title=\"Ajustar el flow al canvas\"",
+   "n": 1
+  },
+  {
+   "en": ">Fit<",
+   "es": ">Ajustar<",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Agent flow canvas\"",
+   "es": "aria-label=\"Canvas del flow de agents\"",
+   "n": 1
+  },
+  {
+   "en": ">Design your agent flow<",
+   "es": ">Diseña tu flow de agents<",
+   "n": 1
+  },
+  {
+   "en": ">Drag agents onto the canvas, connect their outputs, then press Start.<",
+   "es": ">Arrastra agents al canvas, conecta sus outputs y luego presiona Iniciar.<",
+   "n": 1
+  },
+  {
+   "en": ">Try an example<",
+   "es": ">Probar un ejemplo<",
+   "n": 1
+  },
+  {
+   "en": "alt=\"Loading...\"",
+   "es": "alt=\"Cargando...\"",
+   "n": 3
+  },
+  {
+   "en": "title=\"Cleaning In Progress\"",
+   "es": "title=\"Limpieza en curso\"",
+   "n": 1
+  },
+  {
+   "en": ">🧹 Cleaning Operations In Progress...<",
+   "es": ">🧹 Limpieza en curso...<",
+   "n": 1
+  },
+  {
+   "en": ">Clearing pool directory and resetting canvas. Please wait.<",
+   "es": ">Limpiando el directorio del pool y restableciendo el canvas. Espera un momento.<",
+   "n": 1
+  },
+  {
+   "en": ">Configure<",
+   "es": ">Configurar<",
+   "n": 1
+  },
+  {
+   "en": ">Description<",
+   "es": ">Descripción<",
+   "n": 2
+  },
+  {
+   "en": ">Duplicate<",
+   "es": ">Duplicar<",
+   "n": 1
+  },
+  {
+   "en": ">Delete<",
+   "es": ">Eliminar<",
+   "n": 1
+  },
+  {
+   "en": ">See log<",
+   "es": ">Ver log<",
+   "n": 1
+  },
+  {
+   "en": ">Explore dir...<",
+   "es": ">Explorar directorio...<",
+   "n": 1
+  },
+  {
+   "en": ">Open cmd...<",
+   "es": ">Abrir cmd...<",
+   "n": 1
+  },
+  {
+   "en": ">Restart<",
+   "es": ">Reiniciar<",
+   "n": 1
+  },
+  {
+   "en": ">Agent log<",
+   "es": ">Log del agent<",
+   "n": 1
+  },
+  {
+   "en": ">Log Viewer<",
+   "es": ">Visor de logs<",
+   "n": 1
+  },
+  {
+   "en": "title=\"Close\"",
+   "es": "title=\"Cerrar\"",
+   "n": 2
+  },
+  {
+   "en": "aria-label=\"Close\"",
+   "es": "aria-label=\"Cerrar\"",
+   "n": 2
+  },
+  {
+   "en": ">Last 100 lines<",
+   "es": ">Últimas 100 líneas<",
+   "n": 1
+  },
+  {
+   "en": ">Live<",
+   "es": ">En vivo<",
+   "n": 1
+  },
+  {
+   "en": ">Agent Description<",
+   "es": ">Descripción del agent<",
+   "n": 1
+  },
+  {
+   "en": ">From agents_descriptions.md<",
+   "es": ">De agents_descriptions.md<",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": ">Tlamatini (Agentic Control Panel)<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Prompt Flow Panel<",
+   "motivo": "nombre del producto"
+  },
+  {
+   "en": ">Terminals<",
+   "motivo": "nombre de un área del producto"
+  },
+  {
+   "en": ">Agents:<",
+   "motivo": "vocabulario del producto"
+  },
+  {
+   "en": ">Flow Control Panel:<",
+   "motivo": "nombre de una sección del producto"
+  },
+  {
+   "en": ">Starters<",
+   "motivo": "plural del nombre del agent Starter"
+  },
+  {
+   "en": ">&times;<",
+   "motivo": "símbolo"
+  }
+ ]
+}

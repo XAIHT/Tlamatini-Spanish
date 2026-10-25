@@ -1,0 +1,280 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_canvas.js",
+ "segmentos": [
+  {
+   "en": "'Open a file to refresh its content.'",
+   "es": "'Abre un archivo para actualizar su contenido.'",
+   "n": 2
+  },
+  {
+   "en": "'Refresh is available when the current operation finishes.'",
+   "es": "'Actualizar estará disponible cuando termine la operación en curso.'",
+   "n": 1
+  },
+  {
+   "en": "'Refreshing…'",
+   "es": "'Actualizando…'",
+   "n": 1
+  },
+  {
+   "en": "'Allow refresh'",
+   "es": "'Permitir actualizar'",
+   "n": 1
+  },
+  {
+   "en": "'Refresh'",
+   "es": "'Actualizar'",
+   "n": 1
+  },
+  {
+   "en": "'Canvas refreshed. Context update cancelled; Use as context to update chat context.'",
+   "es": "'Se actualizó el canvas. Se canceló la actualización del contexto; haz clic en Usar como contexto para actualizar el contexto del chat.'",
+   "n": 1
+  },
+  {
+   "en": "'Refresh cancelled. The displayed content was kept.'",
+   "es": "'Se canceló la actualización. Se conservó el contenido mostrado.'",
+   "n": 1
+  },
+  {
+   "en": "'Refresh reads the latest content of this file.'",
+   "es": "'Actualizar vuelve a leer el contenido más reciente de este archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'This browser supplied a copy without access to the original. Open the file in Chrome or Edge on localhost or HTTPS to enable Refresh.'",
+   "es": "'Este browser entregó una copia sin acceso al original. Abre el archivo en Chrome o Edge en localhost o HTTPS para activar Actualizar.'",
+   "n": 1
+  },
+  {
+   "en": "'Your session expired. Sign in again before refreshing.'",
+   "es": "'Tu sesión expiró. Vuelve a iniciar sesión antes de actualizar.'",
+   "n": 1
+  },
+  {
+   "en": "'The saved content is no longer available.'",
+   "es": "'El contenido guardado ya no está disponible.'",
+   "n": 1
+  },
+  {
+   "en": "`Could not read the saved content (${response.status}).`",
+   "es": "`No se pudo leer el contenido guardado (${response.status}).`",
+   "n": 1
+  },
+  {
+   "en": "'The canvas changed before the file could open. Its content was kept.'",
+   "es": "'El canvas cambió antes de que se pudiera abrir el archivo. Se conservó su contenido.'",
+   "n": 1
+  },
+  {
+   "en": "'Interactor opens text source files. Use the dedicated viewer for this file type.'",
+   "es": "'Interactor abre archivos de código fuente en texto. Usa el visor específico para este tipo de archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'The canvas changed while the file was being read. Its content was kept.'",
+   "es": "'El canvas cambió mientras se leía el archivo. Se conservó su contenido.'",
+   "n": 1
+  },
+  {
+   "en": "'This file is too large for live tutoring; its content was not truncated.'",
+   "es": "'Este archivo es demasiado grande para la tutoría en vivo; su contenido no se recortó.'",
+   "n": 1
+  },
+  {
+   "en": "`Could not open ${filename}: ${error.message}\\nThe existing canvas content was kept.`",
+   "es": "`No se pudo abrir ${filename}: ${error.message}\\nSe conservó el contenido actual del canvas.`",
+   "n": 1
+  },
+  {
+   "en": "'Open file'",
+   "es": "'Abrir archivo'",
+   "n": 2
+  },
+  {
+   "en": "\"Use as context\"",
+   "es": "\"Usar como contexto\"",
+   "n": 3
+  },
+  {
+   "en": "`Please select the file: ${filename}\\n\\nIt should be located in the 'content_generated' directory.`",
+   "es": "`Selecciona el archivo: ${filename}\\n\\nDebe estar en el directorio 'content_generated'.`",
+   "n": 1
+  },
+  {
+   "en": "'This canvas contains a context summary, not a refreshable file.'",
+   "es": "'Este canvas contiene un resumen del contexto, no un archivo que se pueda actualizar.'",
+   "n": 1
+  },
+  {
+   "en": "'Reading the latest file content…'",
+   "es": "'Leyendo el contenido más reciente del archivo…'",
+   "n": 1
+  },
+  {
+   "en": "'Read permission was not granted.'",
+   "es": "'No se concedió el permiso de lectura.'",
+   "n": 1
+  },
+  {
+   "en": "'The live connection is unavailable. Reconnect and try again.'",
+   "es": "'La conexión en vivo no está disponible. Reconecta y vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'The live connection is unavailable.'",
+   "es": "'La conexión en vivo no está disponible.'",
+   "n": 1
+  },
+  {
+   "en": "`${unchanged ? 'Up to date — no content changes found.' : 'Refreshed from the latest file content.'} Checked ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`",
+   "es": "`${unchanged ? 'Up to date — no content changes found.' : 'Refreshed from the latest file content.'} Última revisión: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`",
+   "n": 1
+  },
+  {
+   "en": "'Up to date — no content changes found.'",
+   "es": "'Está al día: no se encontraron cambios en el contenido.'",
+   "n": 1
+  },
+  {
+   "en": "'Refreshed from the latest file content.'",
+   "es": "'Se actualizó con el contenido más reciente del archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'Canvas refreshed; chat context still uses the previous version. Use as context to update it.'",
+   "es": "'Se actualizó el canvas; el contexto del chat todavía usa la versión anterior. Haz clic en Usar como contexto para actualizarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Read access is needed. Allow refresh grants access to this same file.'",
+   "es": "'Se necesita acceso de lectura. Permitir actualizar da acceso a este mismo archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'Read access was denied. Restore access or use Open to select the file again.'",
+   "es": "'Se denegó el acceso de lectura. Restablece el acceso o usa Abrir para volver a elegir el archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'The file was moved or deleted.'",
+   "es": "'El archivo se movió o se eliminó.'",
+   "n": 1
+  },
+  {
+   "en": "'The file is being written or is unreadable. Wait for the save to finish.'",
+   "es": "'El archivo se está escribiendo o no se puede leer. Espera a que termine de guardarse.'",
+   "n": 1
+  },
+  {
+   "en": "`${reason} Displayed content was kept. Refresh to retry, or use Open to select a file.`",
+   "es": "`${reason} Se conservó el contenido mostrado. Usa Actualizar para reintentar o Abrir para elegir un archivo.`",
+   "n": 1
+  },
+  {
+   "en": "\"Copy\"",
+   "es": "\"Copiar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Copied!\"",
+   "es": "\"¡Copiado!\"",
+   "n": 1
+  },
+  {
+   "en": "\"Failed to copy to clipboard\"",
+   "es": "\"Error al copiar al portapapeles\"",
+   "n": 1
+  },
+  {
+   "en": "'Documents and source files'",
+   "es": "'Documentos y archivos de código fuente'",
+   "n": 1
+  },
+  {
+   "en": "`Unable to open the file: ${error.message}`",
+   "es": "`No se puede abrir el archivo: ${error.message}`",
+   "n": 1
+  },
+  {
+   "en": "'Allow pop-ups for Tlamatini, then open the flow file again.'",
+   "es": "'Permite las ventanas emergentes para Tlamatini y vuelve a abrir el archivo del flow.'",
+   "n": 1
+  },
+  {
+   "en": "'Opening flow · Tlamatini'",
+   "es": "'Abriendo el flow · Tlamatini'",
+   "n": 1
+  },
+  {
+   "en": "'Opening '",
+   "es": "'Abriendo '",
+   "n": 1
+  },
+  {
+   "en": "'The flow file must be no larger than 5 MiB.'",
+   "es": "'El archivo del flow no puede pesar más de 5 MiB.'",
+   "n": 1
+  },
+  {
+   "en": "'Your session expired. Sign in, then open the file again.'",
+   "es": "'Tu sesión expiró. Inicia sesión y vuelve a abrir el archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'The file could not be opened.'",
+   "es": "'No se pudo abrir el archivo.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not open '",
+   "es": "'No se pudo abrir '",
+   "n": 1
+  },
+  {
+   "en": "`Unable to load ${file.name}: ${error.message}`",
+   "es": "`No se puede cargar ${file.name}: ${error.message}`",
+   "n": 1
+  },
+  {
+   "en": "'The canvas is busy right now \\u2014 drop the file again when Tlamatini has finished.'",
+   "es": "'El canvas está ocupado en este momento — vuelve a soltar el archivo cuando Tlamatini termine.'",
+   "n": 1
+  },
+  {
+   "en": "'The canvas changed while this drop was being read. Drop the file again.'",
+   "es": "'El canvas cambió mientras se leía el archivo que soltaste. Vuelve a soltarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Opened '",
+   "es": "'Se abrió '",
+   "n": 1
+  },
+  {
+   "en": "'; the canvas holds one document, so '",
+   "es": "'; el canvas contiene un solo documento, así que '",
+   "n": 1
+  },
+  {
+   "en": "' was not opened.'",
+   "es": "' no se abrió.'",
+   "n": 1
+  },
+  {
+   "en": "'Document (PDF, Markdown, code, JSON) \\u2192 opens in the canvas'",
+   "es": "'Documento (PDF, Markdown, código, JSON) → se abre en el canvas'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"display: none !important;\"",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "\"col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-invisible\"",
+   "motivo": "clases CSS"
+  }
+ ]
+}

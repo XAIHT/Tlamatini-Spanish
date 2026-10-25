@@ -1,0 +1,91 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_pdf.js",
+ "segmentos": [
+  {
+   "en": "'PDF upload failed. Please try again.'",
+   "es": "'Error al subir el PDF. Vuelve a intentarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'PDF upload failed. Check the connection.'",
+   "es": "'Error al subir el PDF. Revisa la conexión.'",
+   "n": 1
+  },
+  {
+   "en": "'PDF context preparation cancelled.'",
+   "es": "'Se canceló la preparación del contexto del PDF.'",
+   "n": 3
+  },
+  {
+   "en": "'Used as context'",
+   "es": "'Usado como contexto'",
+   "n": 1
+  },
+  {
+   "en": "'PDF was closed.'",
+   "es": "'Se cerró el PDF.'",
+   "n": 1
+  },
+  {
+   "en": "'The PDF is not ready to refresh.'",
+   "es": "'El PDF no está listo para actualizarse.'",
+   "n": 1
+  },
+  {
+   "en": "`Refreshing PDF: ${file.name}`",
+   "es": "`Actualizando el PDF: ${file.name}`",
+   "n": 1
+  },
+  {
+   "en": "'PDF refresh cancelled.'",
+   "es": "'Se canceló la actualización del PDF.'",
+   "n": 1
+  },
+  {
+   "en": "'The replacement PDF viewer could not load.'",
+   "es": "'No se pudo cargar el visor del PDF de reemplazo.'",
+   "n": 1
+  },
+  {
+   "en": "'The PDF is still loading or could not be opened.'",
+   "es": "'El PDF todavía se está cargando o no se pudo abrir.'",
+   "n": 1
+  },
+  {
+   "en": "'The PDF is not ready.'",
+   "es": "'El PDF no está listo.'",
+   "n": 1
+  },
+  {
+   "en": "'Preparing PDF context: extracting all pages, text and images…'",
+   "es": "'Preparando el contexto del PDF: extrayendo todas las páginas, el texto y las imágenes…'",
+   "n": 1
+  },
+  {
+   "en": "'Preparing PDF context: extracting selectable text…'",
+   "es": "'Preparando el contexto del PDF: extrayendo el texto seleccionable…'",
+   "n": 1
+  },
+  {
+   "en": "'PDF context preparation failed.'",
+   "es": "'Error al preparar el contexto del PDF.'",
+   "n": 1
+  },
+  {
+   "en": "'Preparing PDF context…'",
+   "es": "'Preparando el contexto del PDF…'",
+   "n": 1
+  },
+  {
+   "en": "`PDF context includes ${prepared.analysis_warnings} image analysis warnings. See the saved analysis reports.`",
+   "es": "`El contexto del PDF incluye ${prepared.analysis_warnings} advertencias del análisis de imágenes. Revisa los reportes de análisis guardados.`",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "`PDF: ${file.name}`",
+   "motivo": "igual en español"
+  }
+ ]
+}

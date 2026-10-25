@@ -1,0 +1,252 @@
+{
+ "archivo": "Tlamatini/agent/self_healing.py",
+ "segmentos": [
+  {
+   "en": "\"the request got too large — trimming to the essentials and retrying with tools\"",
+   "es": "\"la solicitud creció demasiado; la recorto a lo esencial y reintento con tools\"",
+   "n": 1
+  },
+  {
+   "en": "\"still too large — stripping to a MINIMAL request, tools still available\"",
+   "es": "\"sigue demasiado grande; la reduzco a una solicitud MÍNIMA, con los tools disponibles\"",
+   "n": 1
+  },
+  {
+   "en": "\"shrinking to the SMALLEST possible request, tools still available\"",
+   "es": "\"la reduzco a la solicitud MÁS PEQUEÑA posible, con los tools disponibles\"",
+   "n": 1
+  },
+  {
+   "en": "\"trying the full request again\"",
+   "es": "\"intento otra vez la solicitud completa\"",
+   "n": 1
+  },
+  {
+   "en": "\"retrying the same request — tools still available\"",
+   "es": "\"reintento la misma solicitud, con los tools disponibles\"",
+   "n": 1
+  },
+  {
+   "en": "\"waiting a moment, then retrying with more patience\"",
+   "es": "\"espero un momento y reintento con más paciencia\"",
+   "n": 1
+  },
+  {
+   "en": "\"trimming my context to the essentials and retrying — tools still available\"",
+   "es": "\"recorto mi contexto a lo esencial y reintento, con los tools disponibles\"",
+   "n": 1
+  },
+  {
+   "en": "\"stripping to a MINIMAL request — tools still available\"",
+   "es": "\"la reduzco a una solicitud MÍNIMA, con los tools disponibles\"",
+   "n": 1
+  },
+  {
+   "en": "\"as a LAST resort, dropping the tools and summarizing what I already gathered\"",
+   "es": "\"como ÚLTIMO recurso, dejo los tools y resumo lo que ya reuní\"",
+   "n": 1
+  },
+  {
+   "en": "\"retrying the full request\"",
+   "es": "\"reintento la solicitud completa\"",
+   "n": 1
+  },
+  {
+   "en": "\"🛑 You cancelled — stopping here and keeping everything I already did.\"",
+   "es": "\"🛑 Lo cancelaste: me detengo aquí y conservo todo lo que ya hice.\"",
+   "n": 3
+  },
+  {
+   "en": "f\"🔁 Tactic #{attempt} while {label} — {how}. \"",
+   "es": "f\"🔁 Táctica #{attempt} mientras estoy {label}: {how}. \"",
+   "n": 1
+  },
+  {
+   "en": "\"I will NOT hang; only you can stop me (with Cancel button).\"",
+   "es": "\"NO me voy a colgar; sólo tú puedes detenerme (con el botón Cancelar).\"",
+   "n": 1
+  },
+  {
+   "en": "f\"✅ Tactic '{name}' worked — continuing the run right where I left off.\"",
+   "es": "f\"✅ Táctica '{name}': funcionó; sigo la ejecución justo donde me quedé.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"⏱️ Tactic '{name}' was taking too long ({int(timeout)}s) — I'm ABANDONING that \"",
+   "es": "f\"⏱️ Táctica '{name}': estaba tardando demasiado ({int(timeout)}s); ABANDONO esa \"",
+   "n": 1
+  },
+  {
+   "en": "\"call so I never hang, and switching to a different tactic.\"",
+   "es": "\"llamada para no colgarme y cambio a otra táctica.\"",
+   "n": 1
+  },
+  {
+   "en": "\"📉 My request got too large for the model in one step — I'm \"",
+   "es": "\"📉 Mi solicitud creció demasiado para el modelo en un solo paso; \"",
+   "n": 1
+  },
+  {
+   "en": "\"trimming the running context down and continuing WITH my tools.\"",
+   "es": "\"recorto el contexto acumulado y sigo CON mis tools.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"⚠️ Tactic '{name}' hit a transient network error ({type(exc).__name__}) — \"",
+   "es": "f\"⚠️ Táctica '{name}': hubo un error de red pasajero ({type(exc).__name__}); \"",
+   "n": 1
+  },
+  {
+   "en": "\"switching to a different tactic.\"",
+   "es": "\"cambio a otra táctica.\"",
+   "n": 1
+  },
+  {
+   "en": "\"SELF-HEALING NOTE — I hit trouble during this run and worked through it:\\n\"",
+   "es": "\"NOTA DE AUTORREPARACIÓN: tuve problemas en esta ejecución y los resolví:\\n\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"timed out\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"read timed out\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"read timeout\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"eof occurred\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"max retries\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"connection aborted\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"connection refused\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"broken pipe\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"500 internal\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"rate limit\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"too many requests\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"service unavailable\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"bad gateway\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"gateway time\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"temporarily unavailable\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"connection error\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"502 bad\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"503 service\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"request body too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"body too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"request entity too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"payload too large\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"status code: 413\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"context length\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"maximum context\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"too many tokens\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"reduce the length\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"string too long\"",
+   "motivo": "marcador que se busca en el texto del error"
+  },
+  {
+   "en": "\"dict[Any, Callable[[str], None]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"Callable[[str], None] | None\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "\"queue.Queue[Tuple[str, Any]]\"",
+   "motivo": "anotación de tipos"
+  },
+  {
+   "en": "f\"{reason} after {attempts} attempt(s) {tactics_tried}: {last_exc}\"",
+   "motivo": "mensaje interno de excepción (log)"
+  },
+  {
+   "en": "\"INJECTED transient network fault (self-healing demo)\"",
+   "motivo": "mensaje interno de excepción (log)"
+  },
+  {
+   "en": "\"Summarize for the user, truthfully and concisely, what was accomplished \"",
+   "motivo": "instrucción para el LLM"
+  },
+  {
+   "en": "\"from the tool results above. Do NOT call any tools.\"",
+   "motivo": "instrucción para el LLM"
+  }
+ ]
+}

@@ -1,0 +1,1092 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+/* eslint-disable no-unused-vars */
+/* global setCanvasItemMetadata, getAgentPurposeForName */
+const canvasItemDialogMessage = document.getElementById('canvas-item-dialog-message');
+const canvasItemPrimaryDialogLegend = document.getElementById('canvas-item-primary-dialog-legend');
+const canvasItemList = document.getElementById('canvas-item-list');
+
+
+function preRenderCanvasItemDialog(itemInfo, callbackOnSave = null, callbackOnCancel = null) {
+    // Reset & Style Container
+    canvasItemList.innerHTML = '';
+    canvasItemList.style.textAlign = "left"; // Override dialog center alignment
+    // canvasItemList.style.maxHeight = "450px"; // REMOVED: Let dialog handle scroll
+    // canvasItemList.style.overflowY = "auto"; // REMOVED: Managed by ui-dialog-content
+    canvasItemList.style.paddingRight = "5px"; // Scrollbar spacing
+
+
+    canvasItemDialogMessage.title = "Propiedades: " + (itemInfo.id || "Desconocido");
+    canvasItemPrimaryDialogLegend.innerText = "Configuración: " + (itemInfo.id || "Desconocido");
+    const dataObj = itemInfo.data || {};
+
+    // Helper to recursively render form elements
+    function renderFields(container, data, prefix = '') {
+        Object.keys(data).forEach(key => {
+            const val = data[key];
+            const fieldKey = prefix ? `${prefix}.${key}` : key;
+
+            const listElement = document.createElement('div');
+            listElement.style.marginBottom = "12px";
+            listElement.style.display = "flex";
+            listElement.style.flexDirection = "column";
+
+            // Check if it's an array (including empty arrays)
+            if (Array.isArray(val)) {
+                // Render arrays as comma-separated text input
+                const label = document.createElement('label');
+                label.innerText = key + " (separados por comas): ";
+                label.classList.add('tlm-dlg-field-label');
+                label.style.marginBottom = "4px";
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = 'prop-' + fieldKey;
+                input.value = val.join(', '); // Join array to comma-separated string
+                // `tlm-dlg-input` (dialog_theme.css) is what keeps the field
+                // dark. Do NOT paint backgroundColor/color inline again -
+                // inline beats the stylesheet and brings back the white form.
+                input.classList.add('form-control', 'tlm-dlg-input');
+                input.dataset.key = fieldKey;
+                input.dataset.isArray = 'true'; // Mark as array for reconstruction
+                input.style.width = "100%";
+                input.placeholder = "Escribe los valores separados por comas";
+
+                listElement.appendChild(label);
+                listElement.appendChild(input);
+                container.appendChild(listElement);
+
+            } else if (typeof val === 'object' && val !== null) {
+                // Fieldset for nested objects (but not arrays)
+                const fieldset = document.createElement('fieldset');
+                fieldset.classList.add('tlm-dlg-fieldset');
+                fieldset.style.padding = "10px";
+                fieldset.style.marginBottom = "15px";
+
+                const legend = document.createElement('legend');
+                legend.innerText = key.toUpperCase();
+                legend.classList.add('tlm-dlg-legend');
+                legend.style.fontSize = "0.85em";
+                legend.style.padding = "0 5px";
+                legend.style.width = "auto"; // Fix for some browsers stretching legend
+                legend.style.float = "none"; // Fix for bootstrap reset
+
+                fieldset.appendChild(legend);
+                renderFields(fieldset, val, fieldKey);
+                container.appendChild(fieldset);
+            } else if (key === 'trigger_mode' || key === 'operation' || key === 'direction' || key === 'crawl_type' || key === 'movement_type' || key === 'reading_type' || key === 'kyber_variant' || key === 'button_click') {
+                // Custom rendering for trigger_mode, operation, direction, crawl_type, movement_type, reading_type - Radio Buttons
+                const label = document.createElement('label');
+                label.innerText = key + ": ";
+                label.classList.add('tlm-dlg-field-label');
+                label.style.marginBottom = "8px";
+                label.style.display = "block";
+
+                const radioContainer = document.createElement('div');
+                radioContainer.style.display = "flex";
+                radioContainer.style.gap = "20px";
+                radioContainer.style.marginBottom = "10px";
+
+                let options = [];
+                if (key === 'trigger_mode') {
+                    options = ['immediate', 'event'];
+                } else if (key === 'operation') {
+                    options = ['copy', 'move'];
+                } else if (key === 'direction') {
+                    options = ['send', 'receive'];
+                } else if (key === 'crawl_type') {
+                    options = ['small-range', 'medium-range', 'large-range'];
+                } else if (key === 'movement_type') {
+                    options = ['inspect', 'random', 'localized', 'click', 'drag', 'scroll', 'click_at_window', 'locate_image'];
+                } else if (key === 'reading_type') {
+                    options = ['fast', 'complete', 'summarized'];
+                } else if (key === 'kyber_variant') {
+                    options = ['kyber-512', 'kyber-768', 'kyber-1024'];
+                } else if (key === 'button_click') {
+                    options = ['none', 'left', 'right', 'middle', 'double-left', 'double-right', 'double-middle'];
+                }
+
+                options.forEach(opt => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.display = "flex";
+                    wrapper.style.alignItems = "center";
+                    wrapper.style.cursor = "pointer";
+
+                    const radioRes = document.createElement('input');
+                    radioRes.type = 'radio';
+                    radioRes.name = 'prop-' + fieldKey; // Group by field key
+                    radioRes.value = opt;
+                    radioRes.id = 'prop-' + fieldKey + '-' + opt;
+                    if (val === opt) radioRes.checked = true;
+                    radioRes.dataset.key = fieldKey; // Used for saving
+                    radioRes.dataset.isRadio = 'true'; // Marker for saving logic
+
+                    // Custom Radio Style
+                    radioRes.style.marginRight = "8px";
+                    radioRes.style.cursor = "pointer";
+                    radioRes.style.width = "18px";
+                    radioRes.style.height = "18px";
+                    radioRes.classList.add('tlm-dlg-check');
+
+                    const optLabel = document.createElement('label');
+                    optLabel.innerText = opt.charAt(0).toUpperCase() + opt.slice(1);
+                    if (opt.startsWith('double-')) {
+                        optLabel.innerText = opt.replace('-', ' ').replace(/^./, (char) => char.toUpperCase());
+                    }
+                    optLabel.htmlFor = radioRes.id;
+                    optLabel.style.cursor = "pointer";
+                    optLabel.style.color = "var(--tlm-dlg-title)";
+                    optLabel.style.fontSize = "0.95em";
+
+                    wrapper.appendChild(radioRes);
+                    wrapper.appendChild(optLabel);
+                    radioContainer.appendChild(wrapper);
+                });
+
+                listElement.appendChild(label);
+                listElement.appendChild(radioContainer);
+                container.appendChild(listElement);
+
+            } else if (typeof val === 'boolean') {
+                // Boolean handling - Render as Checkbox
+                const wrapper = document.createElement('div');
+                wrapper.style.display = "flex";
+                wrapper.style.alignItems = "center";
+                wrapper.style.marginBottom = "5px";
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = val;
+                input.id = 'prop-' + fieldKey;
+                input.dataset.key = fieldKey;
+                input.style.marginRight = "10px";
+                input.style.width = "18px";
+                input.style.height = "18px";
+                input.classList.add('tlm-dlg-check');
+                input.style.cursor = "pointer";
+
+                const label = document.createElement('label');
+                label.innerText = key; // Use key as label
+                label.htmlFor = 'prop-' + fieldKey;
+                label.style.cursor = "pointer";
+                label.style.color = "var(--tlm-dlg-title)";
+
+                wrapper.appendChild(input);
+                wrapper.appendChild(label);
+                container.appendChild(wrapper);
+
+            } else {
+                // Scalar value (string, number, boolean)
+                const label = document.createElement('label');
+                label.innerText = key + ": ";
+                label.classList.add('tlm-dlg-field-label');
+                label.style.marginBottom = "4px";
+
+                let input;
+                if (typeof val === 'string' && (val.includes('\n') || val.length > 50 || key === 'script' || key === 'prompt' || key === 'system_prompt' || key === 'user_instructions' || key === 'content' || key === 'public_key' || key === 'buffer' || key === 'private_key' || key === 'encapsulation' || key === 'initialization_vector' || key === 'cipher_text')) {
+                    input = document.createElement('textarea');
+                    input.rows = (key === 'content' || key === 'public_key' || key === 'buffer' || key === 'private_key' || key === 'encapsulation' || key === 'initialization_vector' || key === 'cipher_text') ? 6 : 4;
+                } else {
+                    input = document.createElement('input');
+                    input.type = typeof val === 'number' ? 'number' : 'text';
+                    if (typeof val === 'number') input.step = "any";
+                }
+
+                input.id = 'prop-' + fieldKey; // Not strictly needed for logic but good for debugging
+                input.value = val;
+                // See the array branch above: `tlm-dlg-input` owns the colours.
+                input.classList.add('form-control', 'tlm-dlg-input');
+                input.dataset.key = fieldKey;
+                input.style.width = "100%";
+
+                listElement.appendChild(label);
+                listElement.appendChild(input);
+                container.appendChild(listElement);
+            }
+        });
+    }
+
+    // Customize based on Agent Type
+    const agentName = (itemInfo.id || "").toLowerCase();
+
+    // Check if it is a Cleaner Agent
+    if (agentName.startsWith('cleaner')) {
+        canvasItemList.innerHTML = ''; // Clear default recursive render
+
+        const description = document.createElement('p');
+        description.innerText = "Selecciona los agents que se van a limpiar (se borran sus logs y PIDs) antes de reiniciar.";
+        description.style.color = "var(--tlm-dlg-body)";
+        description.style.marginBottom = "10px";
+        canvasItemList.appendChild(description);
+
+        const formGroup = document.createElement('div');
+        formGroup.style.display = 'flex';
+        formGroup.style.flexDirection = 'column';
+        formGroup.style.gap = '5px';
+        formGroup.style.maxHeight = '300px';
+        formGroup.style.overflowY = 'auto';
+        formGroup.classList.add('tlm-dlg-fieldset');
+        formGroup.style.padding = '10px';
+
+        // Get currently selected agents from config
+        const currentSelected = dataObj['agents_to_clean'] || [];
+
+        // We need the list of all agents on canvas to populate this.
+        // We can access the global 'canvasItems' map from agentic_control_panel.js if available, 
+        // OR iterate over DOM elements with .canvas-item class.
+        // Since this script is loaded in the same context, we can try querySelectorAll.
+        const allAgentItems = document.querySelectorAll('.canvas-item');
+
+        if (allAgentItems.length === 0) {
+            const noAgentsMsg = document.createElement('div');
+            noAgentsMsg.innerText = "No hay otros agents en el canvas.";
+            noAgentsMsg.style.color = "var(--tlm-dlg-muted)";
+            formGroup.appendChild(noAgentsMsg);
+        } else {
+            allAgentItems.forEach(item => {
+                const itemId = item.id;
+                // Don't show the cleaner itself
+                if (itemId === itemInfo.id) return;
+
+                const itemLabel = item.innerText; // e.g. "Monitor-Log (1)"
+
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `clean-select-${itemId}`;
+                checkbox.value = itemId; // Store agent ID (e.g. monitor-log-1)
+                checkbox.checked = currentSelected.includes(itemId);
+                checkbox.classList.add('cleaner-agent-checkbox'); // Class for saving logic
+                checkbox.style.marginRight = '8px';
+                checkbox.classList.add('tlm-dlg-check');
+
+                const label = document.createElement('label');
+                label.htmlFor = `clean-select-${itemId}`;
+                label.innerText = itemLabel;
+                label.style.color = 'var(--tlm-dlg-title)';
+                label.style.cursor = 'pointer';
+
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(label);
+                formGroup.appendChild(wrapper);
+            });
+        }
+
+        canvasItemList.appendChild(formGroup);
+
+        // Also show other props if any (Output agents are auto-managed, but maybe show them read-only?)
+        // Let's stick to agents_to_clean for now.
+
+    } else if (agentName.startsWith('scper')) {
+        // Show SCP/SSH key warning legend before standard fields
+        const scpLegend = document.createElement('p');
+        scpLegend.innerHTML = '<strong>&#9888; Importante:</strong> Antes de usar este agent, debes configurar las llaves SSH para autenticarte sin contraseña en el endpoint remoto.<br><em>Para <b>send</b>: escribe un path al estilo de Windows (p. ej. C:\\Users\\file.txt). Para <b>receive</b>: escribe un path al estilo de Linux (p. ej. /home/user/file.txt).</em>';
+        scpLegend.style.color = '#f0ad4e';
+        scpLegend.style.marginBottom = '12px';
+        scpLegend.style.padding = '8px';
+        scpLegend.style.border = '1px solid #f0ad4e';
+        scpLegend.style.borderRadius = '5px';
+        scpLegend.style.backgroundColor = 'rgba(240, 173, 78, 0.1)';
+        canvasItemList.appendChild(scpLegend);
+        renderFields(canvasItemList, dataObj);
+
+    } else if (agentName.startsWith('ssher')) {
+        // Show SSH key warning legend before standard fields
+        const sshLegend = document.createElement('p');
+        sshLegend.innerHTML = '<strong>&#9888; Importante:</strong> Antes de usar este agent, debes configurar las llaves SSH para autenticarte sin contraseña en el endpoint remoto.';
+        sshLegend.style.color = '#f0ad4e';
+        sshLegend.style.marginBottom = '12px';
+        sshLegend.style.padding = '8px';
+        sshLegend.style.border = '1px solid #f0ad4e';
+        sshLegend.style.borderRadius = '5px';
+        sshLegend.style.backgroundColor = 'rgba(240, 173, 78, 0.1)';
+        canvasItemList.appendChild(sshLegend);
+        renderFields(canvasItemList, dataObj);
+
+    } else if (agentName.startsWith('flowcreator')) {
+        // FlowCreator custom dialog
+        canvasItemList.innerHTML = '';
+
+        const legend = document.createElement('p');
+        legend.innerHTML = '<strong>&#9889; FlowCreator</strong> — Diseña un flow de agents con IA. Escribe un prompt que describa el objetivo de tu flow, configura Tlamatini y haz clic en <strong>¡Adelante!</strong> para generar el flow automáticamente.';
+        legend.style.color = '#4FC3F7';
+        legend.style.marginBottom = '12px';
+        legend.style.padding = '8px';
+        legend.style.border = '1px solid #4FC3F7';
+        legend.style.borderRadius = '5px';
+        legend.style.backgroundColor = 'rgba(79, 195, 247, 0.1)';
+        canvasItemList.appendChild(legend);
+
+        const warningNote = document.createElement('p');
+        warningNote.innerHTML = '<strong>&#9888; Nota:</strong> Cada vez que guardes, el canvas se va a <strong>limpiar por completo</strong> (excepto esta instancia de FlowCreator) y el flow se va a generar otra vez desde cero.';
+        warningNote.style.color = '#f0ad4e';
+        warningNote.style.marginBottom = '12px';
+        warningNote.style.padding = '8px';
+        warningNote.style.border = '1px solid #f0ad4e';
+        warningNote.style.borderRadius = '5px';
+        warningNote.style.backgroundColor = 'rgba(240, 173, 78, 0.1)';
+        canvasItemList.appendChild(warningNote);
+
+        renderFields(canvasItemList, dataObj);
+
+    } else if (agentName.startsWith('mouser')) {
+        // Mouser custom dialog with conditional field visibility
+        canvasItemList.innerHTML = '';
+
+        const mouserLegend = document.createElement('p');
+        mouserLegend.innerHTML = '<strong>&#128433; Mouser</strong> — Inspecciona la geometría del escritorio o mueve, haz clic, arrastra y desplázate. Elige el espacio de coordenadas de forma explícita; los puntos de un screenshot necesitan su geometría de captura y las dimensiones reales de la imagen. Los anclajes de ventana son posiciones geométricas, no nombres de botones. Un acuse de entrega todavía requiere que la aplicación lo verifique.';
+        mouserLegend.style.color = '#7C4DFF';
+        mouserLegend.style.marginBottom = '12px';
+        mouserLegend.style.padding = '8px';
+        mouserLegend.style.border = '1px solid #7C4DFF';
+        mouserLegend.style.borderRadius = '5px';
+        mouserLegend.style.backgroundColor = 'rgba(124, 77, 255, 0.1)';
+        canvasItemList.appendChild(mouserLegend);
+
+        renderFields(canvasItemList, dataObj);
+
+        // Wire up conditional enable/disable logic after fields are rendered
+        setTimeout(() => {
+            const movementInputs = Array.from(document.querySelectorAll('input[name="prop-movement_type"]'));
+            const checkActualPos = document.getElementById('prop-actual_position');
+            const inputIniX = document.getElementById('prop-ini_posx');
+            const inputIniY = document.getElementById('prop-ini_posy');
+            const inputEndX = document.getElementById('prop-end_posx');
+            const inputEndY = document.getElementById('prop-end_posy');
+            const buttonClickInputs = Array.from(document.querySelectorAll('input[name="prop-button_click"]'));
+            const inputTotalTime = document.getElementById('prop-total_time');
+
+            function applyMouserState() {
+                const mode = (movementInputs.find(input => input.checked) || {}).value || 'inspect';
+                const usesCoordinates = mode === 'localized' || mode === 'drag';
+                const usesButton = ['localized', 'click', 'drag', 'click_at_window', 'locate_image'].includes(mode);
+                const isActualPos = checkActualPos && checkActualPos.checked;
+
+                // Only random movement uses total_time.
+                if (inputTotalTime) {
+                    inputTotalTime.disabled = mode !== 'random';
+                    inputTotalTime.style.opacity = mode === 'random' ? '1' : '0.4';
+                }
+
+                // Localized movement and dragging both accept explicit endpoints.
+                if (inputEndX) { inputEndX.disabled = !usesCoordinates; inputEndX.style.opacity = usesCoordinates ? '1' : '0.4'; inputEndX.step = 'any'; }
+                if (inputEndY) { inputEndY.disabled = !usesCoordinates; inputEndY.style.opacity = usesCoordinates ? '1' : '0.4'; inputEndY.step = 'any'; }
+                if (checkActualPos) { checkActualPos.disabled = !usesCoordinates; checkActualPos.style.opacity = usesCoordinates ? '1' : '0.4'; }
+                buttonClickInputs.forEach((input) => {
+                    input.disabled = !usesButton;
+                    if (input.parentElement) {
+                        input.parentElement.style.opacity = usesButton ? '1' : '0.4';
+                    }
+                });
+
+                const disableIni = !usesCoordinates || isActualPos;
+                if (inputIniX) { inputIniX.disabled = disableIni; inputIniX.style.opacity = disableIni ? '0.4' : '1'; inputIniX.step = 'any'; }
+                if (inputIniY) { inputIniY.disabled = disableIni; inputIniY.style.opacity = disableIni ? '0.4' : '1'; inputIniY.step = 'any'; }
+            }
+
+            movementInputs.forEach(input => input.addEventListener('change', applyMouserState));
+            if (checkActualPos) checkActualPos.addEventListener('change', applyMouserState);
+
+            // Apply initial state
+            applyMouserState();
+        }, 50);
+
+    } else if (agentName.startsWith('crawler')) {
+        // Crawler custom dialog with conditional depth field visibility
+        canvasItemList.innerHTML = '';
+
+        const crawlerLegend = document.createElement('p');
+        crawlerLegend.innerHTML = '<strong>&#127760; Crawler</strong> — Recorre páginas web y procesa su contenido con Tlamatini. <b>Small-range</b>: sólo links del mismo dominio. <b>Medium-range</b>: todos los links (entre dominios). <b>Large-range</b>: todos los links, de forma recursiva, hasta una profundidad configurable.';
+        crawlerLegend.style.color = '#00BCD4';
+        crawlerLegend.style.marginBottom = '12px';
+        crawlerLegend.style.padding = '8px';
+        crawlerLegend.style.border = '1px solid #00BCD4';
+        crawlerLegend.style.borderRadius = '5px';
+        crawlerLegend.style.backgroundColor = 'rgba(0, 188, 212, 0.1)';
+        canvasItemList.appendChild(crawlerLegend);
+
+        renderFields(canvasItemList, dataObj);
+
+        // Wire up conditional depth field visibility based on crawl_type
+        setTimeout(() => {
+            const radioSmall = document.getElementById('prop-crawl_type-small-range');
+            const radioMedium = document.getElementById('prop-crawl_type-medium-range');
+            const radioLarge = document.getElementById('prop-crawl_type-large-range');
+            const inputDepth = document.getElementById('prop-depth');
+
+            function applyCrawlerState() {
+                const isLargeRange = radioLarge && radioLarge.checked;
+
+                // depth field: only enabled and visible when large-range is selected
+                if (inputDepth) {
+                    inputDepth.disabled = !isLargeRange;
+                    inputDepth.style.opacity = isLargeRange ? '1' : '0.4';
+                    // Also hide/show the parent container (label + input)
+                    const depthContainer = inputDepth.closest('div');
+                    if (depthContainer) {
+                        depthContainer.style.display = isLargeRange ? 'flex' : 'none';
+                    }
+                }
+            }
+
+            if (radioSmall) radioSmall.addEventListener('change', applyCrawlerState);
+            if (radioMedium) radioMedium.addEventListener('change', applyCrawlerState);
+            if (radioLarge) radioLarge.addEventListener('change', applyCrawlerState);
+
+            // Apply initial state
+            applyCrawlerState();
+        }, 50);
+
+    } else if (agentName.startsWith('flowhypervisor')) {
+        // FlowHypervisor custom dialog
+        canvasItemList.innerHTML = '';
+
+        const hvLegend = document.createElement('p');
+        hvLegend.innerHTML = '<strong>&#128737; FlowHypervisor</strong> — Monitoreo del flow con Tlamatini. Configura Tlamatini y el intervalo de monitoreo, y luego haz clic en <strong>Guardar</strong> para empezar.';
+        hvLegend.style.color = '#AB47BC';
+        hvLegend.style.marginBottom = '12px';
+        hvLegend.style.padding = '8px';
+        hvLegend.style.border = '1px solid #AB47BC';
+        hvLegend.style.borderRadius = '5px';
+        hvLegend.style.backgroundColor = 'rgba(171, 71, 188, 0.1)';
+        canvasItemList.appendChild(hvLegend);
+
+        const hvWarning = document.createElement('p');
+        hvWarning.innerHTML = '<strong>&#9888; Nota:</strong> Este agent monitorea a todos los demás agents del flow y avisa cuando detecta anomalías.';
+        hvWarning.style.color = '#f0ad4e';
+        hvWarning.style.marginBottom = '12px';
+        hvWarning.style.padding = '8px';
+        hvWarning.style.border = '1px solid #f0ad4e';
+        hvWarning.style.borderRadius = '5px';
+        hvWarning.style.backgroundColor = 'rgba(240, 173, 78, 0.1)';
+        canvasItemList.appendChild(hvWarning);
+
+        renderFields(canvasItemList, dataObj);
+
+        // Style the user_instructions textarea with placeholder and extra rows
+        const instrTextarea = canvasItemList.querySelector('[data-key="user_instructions"]');
+        if (instrTextarea) {
+            instrTextarea.placeholder = 'p. ej. "Ignora las advertencias de los agents sleeper", "Avisa de inmediato si executer tarda más de 2 minutos", "Es normal que el agent crawler tarde 5+ minutos — no lo marques como atorado"';
+            instrTextarea.rows = 5;
+        }
+
+    } else if (agentName.startsWith('ender')) {
+        // Ender agent: sanitize config to only include known fields.
+        // Prevents rendering of corrupted/duplicate keys (e.g., "utput_agents").
+        const enderKnownKeys = ['target_agents', 'source_agents', 'output_agents'];
+        const sanitizedData = {};
+        for (const key of enderKnownKeys) {
+            if (key in dataObj) {
+                sanitizedData[key] = dataObj[key];
+            }
+        }
+        renderFields(canvasItemList, sanitizedData);
+
+    } else {
+        // Standard Behavior
+        renderFields(canvasItemList, dataObj);
+
+        if (canvasItemList.children.length === 0) {
+            const msg = document.createElement('p');
+            msg.innerText = "No se encontró ninguna configuración editable.";
+            msg.style.textAlign = "center";
+            canvasItemList.appendChild(msg);
+        }
+    }
+
+    // Track if this is a FlowCreator or FlowHypervisor dialog for custom save behavior
+    const isFlowCreatorDialog = agentName.startsWith('flowcreator');
+    const isFlowHypervisorDialog = agentName.startsWith('flowhypervisor');
+
+    $("#canvas-item-dialog-message").dialog({
+        title: "Propiedades: " + (itemInfo.id || "Desconocido"),
+        autoOpen: false,
+        modal: true,
+        width: 800,
+        maxHeight: 800,
+        resizable: true,
+        draggable: true,
+        closeText: "",
+
+        create: function () {
+            // Ensure dialog content area is flex/column if needed, or just let custom div handle scroll
+            // Fix button styles
+            // The footer BAR and the outlined Cancel button both come from
+            // dialog_theme.css now. This used to blank the pane
+            // (`background: none; border: none`), which erased the footer,
+            // and paint Cancel #777 so both buttons read as "confirm".
+            styleAcpDialogButtons($(this).parent().find('.ui-dialog-buttonpane'));
+        },
+        open: function () {
+            // Bind Enter key to trigger Save button (except in textareas)
+            const dialogEl = $(this);
+            dialogEl.off('keydown.enterSave').on('keydown.enterSave', function (e) {
+                if (e.key === 'Enter' && !$(e.target).is('textarea')) {
+                    e.preventDefault();
+                    // Find and click the Save/Go! button
+                    dialogEl.parent().find('.ui-dialog-buttonpane button:contains("Guardar"), .ui-dialog-buttonpane button:contains("¡Adelante!")').click();
+                }
+            });
+        },
+        buttons: [
+            {
+                text: isFlowCreatorDialog ? "¡Adelante!" : isFlowHypervisorDialog ? "Guardar" : "Guardar",
+                click: async function () {
+                    console.log("Saving item properties...");
+                    const inputs = canvasItemList.querySelectorAll('input, textarea');
+                    const updates = {};
+
+                    // Special handling for Cleaner agent checkboxes
+                    const cleanerCheckboxes = canvasItemList.querySelectorAll('.cleaner-agent-checkbox');
+                    if (cleanerCheckboxes.length > 0) {
+                        const selectedAgents = [];
+                        cleanerCheckboxes.forEach(cb => {
+                            if (cb.checked) {
+                                selectedAgents.push(cb.value);
+                            }
+                        });
+                        updates['agents_to_clean'] = selectedAgents;
+                    }
+
+                    // Reconstruct nested object from flat keys
+                    inputs.forEach(inp => {
+                        // Skip inputs without a key (like our custom cleaner checkboxes)
+                        if (!inp.dataset.key) return;
+
+                        const keys = inp.dataset.key.split('.');
+                        let current = updates;
+                        for (let i = 0; i < keys.length; i++) {
+                            const k = keys[i];
+                            if (i === keys.length - 1) {
+                                // Check if this is an array field
+                                if (inp.dataset.isArray === 'true') {
+                                    // Parse comma-separated string back to array
+                                    const val = inp.value.trim();
+                                    if (val === '') {
+                                        current[k] = [];
+                                    } else {
+                                        current[k] = val.split(',').map(s => s.trim()).filter(s => s !== '');
+                                    }
+                                } else if (inp.type === 'number' && inp.value !== '') {
+                                    // Preserve number types
+                                    current[k] = parseFloat(inp.value);
+                                } else if (inp.type === 'checkbox' && !inp.dataset.isRadio) {
+                                    // Handle boolean checkboxes
+                                    current[k] = inp.checked;
+                                } else if (inp.type === 'radio') {
+                                    // For radio buttons, only set value if checked
+                                    if (inp.checked) {
+                                        current[k] = inp.value;
+                                    }
+                                    // If not checked, do nothing (don't overwrite with unchecked value)
+                                } else {
+                                    current[k] = inp.value;
+                                }
+                            } else {
+                                current[k] = current[k] || {};
+                                current = current[k];
+                            }
+                        }
+                    });
+
+                    // Get agent ID from dialog title
+                    const agentId = itemInfo.id;
+
+                    try {
+                        const response = await fetch(`/agent/save_agent_config/${agentId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getHeaders()
+                            },
+                            body: JSON.stringify(updates)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log("Configuration saved to:", result.path);
+                            $(canvasItemDialogMessage).dialog("close");
+
+                            if (isFlowCreatorDialog) {
+                                // FlowCreator: clean canvas, clean pool, start agent, poll for result
+                                await _executeFlowCreator(agentId);
+                            } else if (isFlowHypervisorDialog) {
+                                // FlowHypervisor: monitoring agent
+                                await _executeFlowHypervisor(agentId);
+                            } else {
+                                showDeploymentResultDialog(true, agentId, result.path);
+                            }
+                            if (callbackOnSave != null) {
+                                // Sanitize Ender config to prevent corrupted keys from persisting in .flw files
+                                let savedData = result.config || updates;
+                                if (agentId.toLowerCase().startsWith('ender')) {
+                                    const enderKnownKeys = ['target_agents', 'source_agents', 'output_agents'];
+                                    const cleanData = {};
+                                    for (const key of enderKnownKeys) {
+                                        if (key in savedData) {
+                                            cleanData[key] = savedData[key];
+                                        }
+                                    }
+                                    savedData = cleanData;
+                                }
+                                callbackOnSave(savedData);
+                            }
+                        } else {
+                            const errorText = await response.text();
+                            console.error("Save failed:", errorText);
+                            $(canvasItemDialogMessage).dialog("close");
+                            showDeploymentResultDialog(false, agentId, "Error al guardar la configuración: " + errorText);
+                        }
+                    } catch (err) {
+                        console.error("Error saving configuration:", err);
+                        $(canvasItemDialogMessage).dialog("close");
+                        showDeploymentResultDialog(false, agentId, "Error al guardar la configuración: " + err.message);
+                    }
+                }
+            },
+            {
+                text: "Cancelar",
+                click: function () {
+                    console.log("Cancel item properties...");
+                    $(this).dialog("close");
+                    if (callbackOnCancel != null) {
+                        callbackOnCancel();
+                    }
+                }
+            }
+        ]
+    });
+}
+
+function renderCanvasItemDialog() {
+    // `height: 4vh` used to live here - the one control in the app that
+    // resized with the window. Button height now comes from the shared
+    // padding in dialog_theme.css.
+    styleAcpDialogButtons();
+    $("#canvas-item-dialog-message").dialog("open");
+}
+
+/**
+ * Show deployment result dialog (success or error)
+ * @param {boolean} success - Whether the deployment was successful
+ * @param {string} agentName - Name of the agent (e.g., 'monitor-log-1')
+ * @param {string} pathOrError - Path to created directory (success) or error message (failure)
+ */
+function showDeploymentResultDialog(success, agentName, pathOrError) {
+    const dialog = $("#deployment-result-dialog");
+    const iconEl = document.getElementById('deployment-result-icon');
+    const titleEl = document.getElementById('deployment-result-title');
+    const messageEl = document.getElementById('deployment-result-message');
+    const pathEl = document.getElementById('deployment-result-path');
+
+    if (success) {
+        iconEl.innerHTML = '✅';
+        iconEl.style.color = '#55BBAA';
+        titleEl.innerText = 'Deployment exitoso';
+        titleEl.style.color = '#55BBAA';
+        messageEl.innerText = `Se hizo el deploy del agent "${agentName}" correctamente.`;
+        pathEl.innerText = `Directorio: ${pathOrError}`;
+        pathEl.style.display = 'block';
+    } else {
+        iconEl.innerHTML = '❌';
+        iconEl.style.color = '#e74c3c';
+        titleEl.innerText = 'Error en el deployment';
+        titleEl.style.color = '#e74c3c';
+        messageEl.innerText = pathOrError;
+        pathEl.style.display = 'none';
+    }
+
+    dialog.dialog({
+        title: success ? "Deployment completo" : "Error de deployment",
+        autoOpen: true,
+        modal: true,
+        width: 500,
+        resizable: false,
+        draggable: true,
+        closeText: "",
+        create: function () {
+            styleAcpDialogButtons($(this).parent().find('.ui-dialog-buttonpane'));
+        },
+        open: function () {
+            // Re-style on open: this dialog is reused across deployments.
+            // The OK button is no longer painted red on failure - the
+            // outcome is already carried by the icon and the coloured
+            // title, and a red confirm button reads as "destructive".
+            styleAcpDialogButtons($(this).parent().find('.ui-dialog-buttonpane'));
+        },
+        buttons: [
+            {
+                text: "Aceptar",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ]
+    });
+}
+
+// ========================================
+// FLOWCREATOR EXECUTION & RENDERING
+// ========================================
+
+/**
+ * Execute the FlowCreator agent: clean canvas/pool, start agent, poll for result, render flow.
+ * @param {string} agentId - The FlowCreator agent ID (e.g., 'flowcreator-1')
+ */
+async function _executeFlowCreator(agentId) {
+    // Show progress dialog
+    const progressDialog = _showFlowCreatorProgress('Inicializando FlowCreator...');
+
+    try {
+        // 1. Clean canvas (except FlowCreator item)
+        _updateFlowCreatorProgress(progressDialog, 'Limpiando el canvas...');
+        const flowCreatorItem = document.getElementById(agentId);
+        const allItems = document.querySelectorAll('.canvas-item');
+        const itemsToRemove = [];
+
+        allItems.forEach(item => {
+            if (item.id !== agentId) {
+                itemsToRemove.push(item);
+            }
+        });
+
+        // Remove connections not involving FlowCreator
+        const connectionsToRemove = [...ACP.connections];
+        connectionsToRemove.forEach(conn => {
+            if (conn.path) conn.path.remove();
+        });
+        ACP.connections.length = 0;
+        ACP.selectedItems.clear();
+
+        // Remove items from canvas
+        itemsToRemove.forEach(item => item.remove());
+
+        // Reset counters but keep FlowCreator's count
+        const fcBaseName = agentId.split('-').slice(0, -1).join('-');
+        const fcCount = ACP.itemCounters.get(fcBaseName) || 1;
+        ACP.itemCounters.clear();
+        ACP.itemCounters.set(fcBaseName, fcCount);
+
+        // Clear node configs except FlowCreator
+        const fcConfig = ACP.nodeConfigs.get(agentId);
+        ACP.nodeConfigs.clear();
+        if (fcConfig) ACP.nodeConfigs.set(agentId, fcConfig);
+
+        // 2. Clean pool directory (except FlowCreator)
+        _updateFlowCreatorProgress(progressDialog, 'Limpiando el directorio del pool...');
+        try {
+            await fetch(`/agent/clean_pool_except/${agentId}/`, {
+                method: 'POST',
+                headers: getHeaders(),
+                credentials: 'same-origin'
+            });
+        } catch (cleanErr) {
+            console.error('Failed to clean pool:', cleanErr);
+        }
+
+        // 3. Start the FlowCreator agent
+        _updateFlowCreatorProgress(progressDialog, 'Iniciando el agent FlowCreator... Enviando el prompt a Tlamatini...');
+        const execResponse = await fetch(`/agent/execute_flowcreator/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin'
+        });
+
+        if (!execResponse.ok) {
+            const errData = await execResponse.json();
+            throw new Error(errData.message || 'Error al iniciar el agent FlowCreator');
+        }
+
+        // 4. Poll for flow_result.json
+        _updateFlowCreatorProgress(progressDialog, 'Esperando la respuesta de Tlamatini... Puede tardar un minuto...');
+
+        // Show hourglass while waiting
+        if (typeof isFlowCreatorWaiting !== 'undefined') {
+            isFlowCreatorWaiting = true;
+            titleBusyPrefix = "⏳ ";
+        }
+
+        const flowResult = await _pollFlowCreatorResult(agentId, progressDialog);
+
+        if (!flowResult || flowResult.status === 'error') {
+            const errMsg = flowResult ? flowResult.message : 'No se recibió ningún resultado del agent FlowCreator';
+            _closeFlowCreatorProgress(progressDialog);
+            showDeploymentResultDialog(false, agentId, 'Error en FlowCreator: ' + errMsg);
+            return;
+        }
+
+        // 5. Render the flow on canvas
+        _updateFlowCreatorProgress(progressDialog, `Dibujando el flow con ${flowResult.nodes.length} agents...`);
+        await _renderFlowCreatorResult(flowResult, agentId, flowCreatorItem);
+
+        _closeFlowCreatorProgress(progressDialog);
+        showDeploymentResultDialog(true, agentId,
+            `¡Flow creado correctamente! Se generaron ${flowResult.nodes.length} agents y ${flowResult.connections.length} conexiones.`);
+
+    } catch (error) {
+        console.error('FlowCreator execution error:', error);
+        _closeFlowCreatorProgress(progressDialog);
+        showDeploymentResultDialog(false, agentId, 'Error de FlowCreator: ' + error.message);
+    } finally {
+        if (typeof isFlowCreatorWaiting !== 'undefined') {
+            isFlowCreatorWaiting = false;
+            // Force title update if polling is not running
+            titleBusyPrefix = "";
+            if (typeof globalRunningState !== 'undefined' && typeof GLOBAL_STATE !== 'undefined' && globalRunningState === GLOBAL_STATE.RUNNING) {
+                if (typeof pollAgentStatus === 'function') {
+                    pollAgentStatus();
+                }
+            }
+        }
+    }
+}
+
+// ========================================
+// FLOWHYPERVISOR EXECUTION
+// ========================================
+
+/**
+ * Execute the FlowHypervisor agent: start monitoring, show success dialog.
+ * Unlike FlowCreator, this does NOT clean the canvas or pool.
+ * @param {string} agentId - The FlowHypervisor agent ID (e.g., 'flowhypervisor')
+ */
+async function _executeFlowHypervisor(agentId) {
+    try {
+        const execResponse = await fetch(`/agent/execute_flowhypervisor/${agentId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            credentials: 'same-origin'
+        });
+
+        if (!execResponse.ok) {
+            const errData = await execResponse.json();
+            throw new Error(errData.message || 'Error al iniciar el agent FlowHypervisor');
+        }
+
+        const result = await execResponse.json();
+        showDeploymentResultDialog(true, agentId,
+            `FlowHypervisor se inició correctamente (PID: ${result.pid}). El monitoreo ya está activo.`);
+    } catch (error) {
+        console.error('FlowHypervisor execution error:', error);
+        showDeploymentResultDialog(false, agentId, 'Error de FlowHypervisor: ' + error.message);
+    }
+}
+
+/**
+ * Poll the backend for flow_result.json until the agent finishes.
+ * @param {string} agentId
+ * @param {Object} progressDialog
+ * @returns {Object|null} The flow result or null on timeout
+ */
+async function _pollFlowCreatorResult(agentId, progressDialog) {
+    const maxWait = 600000; // 10 minutes
+    const interval = 2000;  // 2 seconds
+    let elapsed = 0;
+
+    while (elapsed < maxWait) {
+        try {
+            const response = await fetch(`/agent/check_flowcreator_result/${agentId}/`, {
+                method: 'GET',
+                headers: getHeaders(),
+                credentials: 'same-origin'
+            });
+
+            if (response.status === 200) {
+                return await response.json();
+            }
+            // 202 = still running, keep polling
+        } catch (err) {
+            console.warn('Poll error:', err);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, interval));
+        elapsed += interval;
+
+        const secs = Math.floor(elapsed / 1000);
+        _updateFlowCreatorProgress(progressDialog, `Esperando la respuesta de Tlamatini... (${secs} s transcurridos)`);
+    }
+
+    return null; // Timeout
+}
+
+/**
+ * Render the flow result on the canvas.
+ * Creates canvas items, deploys templates, and draws connections.
+ * @param {Object} flowResult - The flow_result.json data
+ * @param {string} flowCreatorId - The FlowCreator's agent ID
+ * @param {HTMLElement} flowCreatorItem - The FlowCreator's canvas item element
+ */
+async function _renderFlowCreatorResult(flowResult, flowCreatorId, flowCreatorItem) {
+    const nodes = flowResult.nodes || [];
+    const connections = flowResult.connections || [];
+    const loadedNodes = [];
+
+    // Create each agent node on the canvas
+    for (const nodeData of nodes) {
+        const agentText = nodeData.text || 'unknown';
+        const newItem = document.createElement('div');
+        newItem.classList.add('canvas-item');
+
+        const registration = registerItem(agentText);
+        newItem.textContent = `${agentText} (${registration.count})`;
+        newItem.id = registration.id;
+        setCanvasItemMetadata(
+            newItem,
+            agentText,
+            nodeData.agentPurpose || getAgentPurposeForName(agentText)
+        );
+
+        const lowerName = agentText.toLowerCase().replace(/\s+/g, '-');
+        applyAgentTypeClass(newItem, lowerName);
+        appendInputTriangles(newItem, lowerName);
+        appendOutputTriangles(newItem, lowerName);
+        appendLedIndicator(newItem);
+
+        newItem.style.left = nodeData.left || '50px';
+        newItem.style.top = nodeData.top || '50px';
+
+        const canvasContentEl = document.getElementById('canvas-content') || submonitor;
+        canvasContentEl.appendChild(newItem);
+        makeDraggable(newItem);
+        if (typeof updateCanvasContentSize === 'function') updateCanvasContentSize();
+
+        // Deploy agent to pool directory with config
+        try {
+            if (nodeData.configData && Object.keys(nodeData.configData).length > 0) {
+                ACP.nodeConfigs.set(newItem.id, nodeData.configData);
+                const saveResp = await fetch(`/agent/save_agent_config/${newItem.id}/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...getHeaders() },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(nodeData.configData)
+                });
+                if (saveResp.ok) {
+                    const saveResult = await saveResp.json();
+                    console.log(`[FlowCreator] Deployed ${newItem.id} with config:`, saveResult.path);
+                } else {
+                    console.error(`[FlowCreator] Failed to deploy ${newItem.id}:`, saveResp.statusText);
+                }
+            } else {
+                const deployResp = await fetch(`/agent/deploy_agent_template/${newItem.id}/`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    credentials: 'same-origin'
+                });
+                if (deployResp.ok) {
+                    console.log(`[FlowCreator] Deployed template ${newItem.id}`);
+                }
+            }
+        } catch (deployErr) {
+            console.error(`[FlowCreator] Error deploying ${newItem.id}:`, deployErr);
+        }
+
+        loadedNodes.push(newItem);
+    }
+
+    // Create connections
+    for (const connData of connections) {
+        const sourceNode = loadedNodes[connData.sourceIndex];
+        const targetNode = loadedNodes[connData.targetIndex];
+
+        if (!sourceNode || !targetNode) {
+            console.warn(`[FlowCreator] Skip connection: invalid indices ${connData.sourceIndex}->${connData.targetIndex}`);
+            continue;
+        }
+
+        try {
+            const startPos = getCenter(sourceNode);
+            const endPos = getCenter(targetNode);
+            const created = createConnectionGroup();
+            setPathD(startPos.x, startPos.y, endPos.x, endPos.y, created.visiblePath, created.hitPath);
+
+            const newConn = {
+                source: sourceNode,
+                target: targetNode,
+                path: created.group,
+                visiblePath: created.visiblePath,
+                hitPath: created.hitPath,
+                inputSlot: parseInt(connData.inputSlot) || 0,
+                outputSlot: parseInt(connData.outputSlot) || 0
+            };
+            ACP.connections.push(newConn);
+
+            // Restore backend connections
+            await restoreAgentConnection(sourceNode, targetNode, connData);
+
+        } catch (connErr) {
+            console.error(`[FlowCreator] Error creating connection:`, connErr);
+        }
+    }
+
+    // Force layout update
+    setTimeout(() => {
+        loadedNodes.forEach(node => updateAttachedConnections(node));
+        if (flowCreatorItem) updateAttachedConnections(flowCreatorItem);
+    }, 200);
+
+    updateSaveButtonState();
+    markDirty();
+}
+
+// ========================================
+// FLOWCREATOR PROGRESS DIALOG HELPERS
+// ========================================
+
+function _showFlowCreatorProgress(message) {
+    const overlay = document.createElement('div');
+    overlay.id = 'flowcreator-progress-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:var(--tlm-dlg-overlay);z-index:10000;display:flex;align-items:center;justify-content:center;';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background:var(--tlm-dlg-surface);border:1px solid rgba(255,255,255,0.12);'
+        + 'border-radius:8px;box-shadow:0 22px 70px rgba(0,0,0,0.62);'
+        + 'padding:30px 40px;text-align:center;min-width:400px;';
+
+    const spinner = document.createElement('div');
+    spinner.style.cssText = 'width:40px;height:40px;border:4px solid rgba(255,255,255,0.12);border-top:4px solid #4FC3F7;border-radius:50%;animation:fc-spin 1s linear infinite;margin:0 auto 15px;';
+
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fc-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}';
+    document.head.appendChild(style);
+
+    const msgEl = document.createElement('p');
+    msgEl.id = 'flowcreator-progress-message';
+    msgEl.style.cssText = 'color:#4FC3F7;font-size:1.1em;margin:0;';
+    msgEl.textContent = message;
+
+    box.appendChild(spinner);
+    box.appendChild(msgEl);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    return overlay;
+}
+
+function _updateFlowCreatorProgress(overlay, message) {
+    if (!overlay) return;
+    const msgEl = overlay.querySelector('#flowcreator-progress-message');
+    if (msgEl) msgEl.textContent = message;
+}
+
+function _closeFlowCreatorProgress(overlay) {
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+    }
+}
+
+
+
+

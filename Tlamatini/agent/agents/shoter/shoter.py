@@ -1,0 +1,585 @@
+# ═══════════════════════════════════════════════════════════════════
+#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#
+#   Created by  Angela López Mendoza   ·   @angelahack1
+#   Developer · Architect · Creator of Tlamatini
+#
+#   Every line of this file was written by Angela López Mendoza.
+# ═══════════════════════════════════════════════════════════════════
+#   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+# Shoter Agent - Screenshot capture agent
+# Action: Triggered by upstream -> Capture screenshot -> Save to numbered dir -> Trigger downstream
+
+import os
+import sys
+
+# FIX: Disable Intel Fortran runtime Ctrl+C handler
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
+
+import time
+import yaml
+import logging
+import subprocess
+import ctypes
+import json
+
+# -- conhost.exe orphan guard ------------------------------------------
+# When Tlamatini's runtime launches us with DETACHED_PROCESS we have no
+# console attached. Any child we Popen WITHOUT CREATE_NO_WINDOW makes
+# Windows allocate a fresh console (and a companion conhost.exe) for the
+# child -- which lingers as an orphan bearing the Tlamatini icon if we
+# exit before the child detaches. Default every Popen to
+# CREATE_NO_WINDOW unless the caller explicitly asked for a console
+# (CREATE_NEW_CONSOLE) or detached the child themselves.
+if os.name == 'nt' and not getattr(subprocess, '_conhost_guard_applied', False):
+    _CHG_NO_WINDOW = subprocess.CREATE_NO_WINDOW
+    _CHG_RESPECT = (
+        _CHG_NO_WINDOW
+        | getattr(subprocess, 'CREATE_NEW_CONSOLE', 0)
+        | getattr(subprocess, 'DETACHED_PROCESS', 0)
+    )
+    _chg_orig_init = subprocess.Popen.__init__
+    def _chg_guarded_init(self, *args, **kwargs):
+        cf = kwargs.get('creationflags', 0) or 0
+        if not (cf & _CHG_RESPECT):
+            kwargs['creationflags'] = cf | _CHG_NO_WINDOW
+        return _chg_orig_init(self, *args, **kwargs)
+    subprocess.Popen.__init__ = _chg_guarded_init
+    subprocess._conhost_guard_applied = True
+from datetime import datetime
+from typing import Dict
+
+# Set working directory to script location
+try:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+except Exception as e:
+    sys.stderr.write(f"Critical Error: Failed to set working directory: {e}\n")
+
+# Use directory name for log file
+CURRENT_DIR_NAME = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+LOG_FILE_PATH = f"{CURRENT_DIR_NAME}.log"
+
+# Reanimation detection: AGENT_REANIMATED=1 means resume from pause
+_IS_REANIMATED = os.environ.get('AGENT_REANIMATED') == '1'
+if not _IS_REANIMATED:
+    open(LOG_FILE_PATH, 'w').close()
+logging.basicConfig(
+    filename=LOG_FILE_PATH,
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    encoding='utf-8'
+)
+
+# Also log to console
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logging.getLogger().addHandler(console_handler)
+
+
+def load_config(path: str = "config.yaml") -> Dict:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        logging.error(f"❌ Error: {path} not found.")
+        sys.exit(1)
+    except Exception as e:
+        logging.error(f"❌ Error parsing {path}: {e}")
+        sys.exit(1)
+
+
+def get_python_command() -> list:
+    """
+    Get the command to run a Python script.
+    - In Dev: Use current sys.executable (handles venvs).
+    - In Frozen (Windows): Check for bundled python.exe, else fallback to 'python'.
+    - In Frozen (Unix): Fallback to 'python3'.
+    """
+    if not getattr(sys, 'frozen', False):
+        return [sys.executable]
+
+    # Prefer PYTHON_HOME from USER environment variables
+    python_home = get_user_python_home()
+    if python_home:
+        python_exe = os.path.join(python_home, 'python.exe' if sys.platform.startswith('win') else 'python3')
+        if os.path.exists(python_exe):
+            return [python_exe]
+
+    if sys.platform.startswith('win'):
+        bundled_python = os.path.join(os.path.dirname(sys.executable), 'python.exe')
+        if os.path.exists(bundled_python):
+            return [bundled_python]
+        return ['python']
+
+    return ['python3']
+
+
+
+def get_user_python_home() -> str:
+    """Resolve the Python home used to spawn pool-agent subprocesses.
+
+    FROZEN: ALWAYS prefer the Python interpreter CARRIED INSIDE Tlamatini's
+    installation (``<install_dir>/python``) so pool agents NEVER depend on a
+    system Python or a user-set ``PYTHON_HOME``. The carried interpreter is
+    pinned to Python 3.12.10 (shipped by the installer). Only when the carried
+    interpreter is somehow absent (e.g. running from source) does this fall
+    back to the registry / environment ``PYTHON_HOME``.
+    """
+    if getattr(sys, 'frozen', False):
+        _carried = os.path.join(os.path.dirname(sys.executable), 'python')
+        if sys.platform.startswith('win'):
+            _exe = os.path.join(_carried, 'python.exe')
+        else:
+            _exe = os.path.join(_carried, 'bin', 'python3')
+        if os.path.isfile(_exe):
+            return _carried
+    if not sys.platform.startswith('win'):
+        return os.environ.get('PYTHON_HOME', '')
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Environment') as key:
+            value, _ = winreg.QueryValueEx(key, 'PYTHON_HOME')
+            return str(value) if value else ''
+    except (FileNotFoundError, OSError):
+        return ''
+
+
+def get_agent_env() -> dict:
+    """Build environment for child processes with PYTHON_HOME from USER env vars on PATH."""
+    env = os.environ.copy()
+    
+    # Reset PyInstaller's DLL search path alteration on Windows
+    # If we don't do this, child Python processes will WinError 1114 when loading C extensions (like torch)
+    if sys.platform.startswith('win'):
+        try:
+            import ctypes
+            if hasattr(ctypes.windll.kernel32, 'SetDllDirectoryW'):
+                ctypes.windll.kernel32.SetDllDirectoryW(None)
+        except Exception:
+            pass
+
+    # Remove PyInstaller's _MEIPASS from PATH to prevent DLL conflicts in child processes
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        meipass = getattr(sys, '_MEIPASS')
+        if meipass:
+            path_parts = env.get('PATH', '').split(os.pathsep)
+            path_parts = [p for p in path_parts if os.path.normpath(p) != os.path.normpath(meipass)]
+            env['PATH'] = os.pathsep.join(path_parts)
+            
+    python_home = get_user_python_home()
+    if not python_home:
+        return env
+        
+    env['PYTHON_HOME'] = python_home
+    scripts_dir = os.path.join(python_home, 'Scripts')
+    current_path = env.get('PATH', '')
+    env['PATH'] = f"{python_home};{scripts_dir};{current_path}"
+    return env
+
+def get_pool_path() -> str:
+    """Get the pool directory path where deployed agents reside."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Check if deployed in session: pools/<session_id>/<agent_dir>
+    parent = os.path.dirname(current_dir)
+    grandparent = os.path.dirname(parent)
+
+    if os.path.basename(grandparent) == 'pools':
+        return parent
+
+    if os.path.basename(parent) == 'pools':
+        return parent
+
+    return os.path.join(os.path.dirname(current_dir), 'pools')
+
+
+def get_agent_directory(agent_name: str) -> str:
+    return os.path.join(get_pool_path(), agent_name)
+
+
+def get_agent_script_path(agent_name: str) -> str:
+    agent_dir = get_agent_directory(agent_name)
+    if os.path.exists(os.path.join(agent_dir, f"{agent_name}.py")):
+        return os.path.join(agent_dir, f"{agent_name}.py")
+
+    parts = agent_name.rsplit('_', 1)
+    if len(parts) == 2 and parts[1].isdigit():
+        base = parts[0]
+        if os.path.exists(os.path.join(agent_dir, f"{base}.py")):
+            return os.path.join(agent_dir, f"{base}.py")
+
+    return os.path.join(agent_dir, f"{agent_name}.py")
+
+
+def is_agent_running(agent_name: str) -> bool:
+    """Check if an agent is currently running by verifying its PID file and process."""
+    agent_dir = get_agent_directory(agent_name)
+    pid_path = os.path.join(agent_dir, "agent.pid")
+
+    if not os.path.exists(pid_path):
+        return False
+
+    try:
+        with open(pid_path, "r") as f:
+            pid = int(f.read().strip())
+    except (ValueError, OSError):
+        return False
+
+    try:
+        import psutil
+        if not psutil.pid_exists(pid):
+            return False
+        proc = psutil.Process(pid)
+        if proc.status() == psutil.STATUS_ZOMBIE:
+            return False
+        return True
+    except Exception:
+        try:
+            os.kill(pid, 0)
+            return True
+        except OSError:
+            return False
+
+
+def wait_for_agents_to_stop(agent_names: list):
+    """
+    Wait until ALL specified agents have stopped running.
+    Logs ERROR every 10 seconds while waiting. Never proceeds until all have stopped.
+    """
+    if not agent_names:
+        return
+
+    waited = 0.0
+    poll_interval = 0.5
+
+    while True:
+        still_running = [name for name in agent_names if is_agent_running(name)]
+        if not still_running:
+            return
+
+        if waited >= 10.0:
+            logging.error(
+                f"❌ WAITING FOR AGENTS TO STOP: {still_running} still running "
+                f"after {int(waited)}s. Will keep waiting..."
+            )
+            waited = 0.0
+
+        time.sleep(poll_interval)
+        waited += poll_interval
+
+
+def start_agent(agent_name: str) -> bool:
+    agent_dir = get_agent_directory(agent_name)
+    script_path = get_agent_script_path(agent_name)
+
+    if not os.path.exists(script_path):
+        logging.error(f"❌ Agent script not found: {script_path}")
+        return False
+
+    try:
+        cmd = get_python_command() + [script_path]
+        logging.info(f"   Command: {cmd}")
+
+        process = subprocess.Popen(
+            cmd,
+            cwd=agent_dir,
+            env=get_agent_env(),
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+        )
+
+        try:
+            pid_path = os.path.join(agent_dir, "agent.pid")
+            with open(pid_path, "w") as f:
+                f.write(str(process.pid))
+        except Exception as pid_err:
+            logging.error(f"⚠️ Failed to write PID file for target {agent_name}: {pid_err}")
+
+        logging.info(f"✅ Started agent '{agent_name}' with PID: {process.pid}")
+        return True
+    except Exception as e:
+        logging.error(f"❌ Failed to start agent '{agent_name}': {e}")
+        return False
+
+
+def _default_temp_output_dir() -> str:
+    """Resolve the DEFAULT save location: ``<where-Tlamatini-lives>/Temp``.
+
+    Temp/Templates policy (Angela, 2026-06-09): screenshots are TEMPORARY assets
+    and live under ``<app>/Temp``. Order: (1) the ``TLAMATINI_TEMP`` env var the
+    Django process pins and every pool agent inherits; (2) walk up to the app dir
+    (holding ``manage.py``); (3) the executable's ``Temp`` when frozen; (4) a home
+    fallback. Never raises.
+    """
+    env = (os.environ.get('TLAMATINI_TEMP') or '').strip().strip('"').strip("'")
+    if env:
+        return env
+    if getattr(sys, 'frozen', False):
+        return os.path.join(os.path.dirname(sys.executable), 'Temp')
+    probe = script_dir
+    for _ in range(10):
+        if os.path.exists(os.path.join(probe, 'manage.py')):
+            return os.path.join(probe, 'Temp')
+        parent = os.path.dirname(probe)
+        if parent == probe:
+            break
+        probe = parent
+    return os.path.join(os.path.expanduser("~"), "Tlamatini", "Temp")
+
+
+def _tlm_dir_accepts_new_files(path: str) -> bool:
+    """True when a NEW file can really be created in ``path`` (exists-and-lists is not
+    proof: Windows Controlled Folder Access / a paused OneDrive refuse every create)."""
+    try:
+        os.makedirs(path, exist_ok=True)
+        probe = os.path.join(path, ".tlm_write_probe_%d" % os.getpid())
+        with open(probe, "w", encoding="utf-8") as fh:
+            fh.write("ok")
+        os.remove(probe)
+        return True
+    except Exception:
+        return False
+
+
+def _tlm_protected_folder_hint(path: str) -> str:
+    """Name the usual cause of a refused write into Documents / Desktop / Pictures:
+    Windows' Controlled Folder Access reports a BLOCKED write as
+    "[WinError 2] cannot find the file"."""
+    try:
+        parts = set(os.path.normcase(os.path.abspath(path or "")).split(os.sep))
+        protected = {"documents", "documentos", "desktop", "escritorio", "pictures",
+                     "imagenes", "music", "musica", "videos", "onedrive"}
+        if os.name == "nt" and parts & protected:
+            return ("Likely cause: Windows Security 'Controlled folder access' (ransomware "
+                    "protection) blocks this program from writing there. Fix: run "
+                    "security\\enable_tlamatini_v2.bat as administrator, or allow Tlamatini's "
+                    "python.exe in Windows Security > Ransomware protection > Allow an app.")
+    except Exception:
+        pass
+    return ""
+
+
+def _tlm_safe_output_dir(chosen: str, label: str, fallback_base: str) -> str:
+    """NEVER lose a capture to a refused folder: when ``chosen`` cannot take a new file,
+    save under <app>/Temp/<label>/saved instead and say why (and the likely cause)."""
+    if _tlm_dir_accepts_new_files(chosen):
+        return chosen
+    fallback = os.path.join(os.path.abspath(fallback_base), label, "saved")
+    if _tlm_dir_accepts_new_files(fallback):
+        hint = _tlm_protected_folder_hint(chosen)
+        logging.warning("[%s] %s refuses new files - saving under %s instead. %s",
+                        label, chosen, fallback, hint)
+        return fallback
+    return chosen
+
+def get_next_shoter_dir(base_output_dir: str) -> str:
+    """
+    Find the next available shoter_<n> subdirectory.
+    E.g., if shoter_1 and shoter_2 exist, returns path to shoter_3.
+    """
+    n = 1
+    while True:
+        candidate = os.path.join(base_output_dir, f"shoter_{n}")
+        if not os.path.exists(candidate):
+            return candidate
+        n += 1
+
+
+def capture_screenshot(output_dir: str, all_screens: bool = True,
+                       filename: str = "", metadata=None) -> str:
+    """
+    Capture a screenshot and save it. Returns the absolute path of the image.
+
+    all_screens (default TRUE)
+        Captures the WHOLE DESKTOP, not just the primary monitor. True by
+        default on purpose: Shoter's job is to prove what was on screen, and a
+        bare `ImageGrab.grab()` — which is what this used to be — silently loses
+        half of a two-monitor machine. If the window being documented sat on the
+        second monitor, the shot came back showing an empty desktop and it
+        looked like nothing had happened.
+        On a single screen both forms return the identical image, so defaulting
+        it on costs nobody anything.
+
+    filename
+        EXACT file name. Empty = the usual timestamped name inside the numbered
+        shoter_<n> sub-directory. When given, the image is written STRAIGHT into
+        output_dir — what a caller building a report wants, so photo 3 can carry
+        the name of check 3. It is basename'd, so a name containing ../ cannot
+        write outside output_dir.
+    """
+    try:
+        from PIL import ImageGrab
+    except ImportError:
+        logging.error("❌ Pillow is not installed. Cannot capture screenshot.")
+        raise
+
+    # Resolve output_dir relative to script location if not absolute
+    if not os.path.isabs(output_dir):
+        output_dir = os.path.join(script_dir, output_dir)
+
+    name = os.path.basename(str(filename or '').strip())
+    if name:
+        # Explicitly requested name: honour it, no numbered sub-directory.
+        if not os.path.splitext(name)[1]:
+            name += ".png"
+        save_dir = output_dir
+    else:
+        # Long-standing behaviour: numbered sub-directory + timestamped name.
+        save_dir = get_next_shoter_dir(output_dir)
+        now = datetime.now()
+        name = (now.strftime("screenshot_%Y%m%d_%H%M%S_")
+                + f"{now.microsecond // 1000:03d}.png")
+
+    os.makedirs(save_dir, exist_ok=True)
+    filepath = os.path.join(save_dir, name)
+
+    # FAIL-OPEN: all_screens only exists on Windows/macOS. On a platform or a
+    # Pillow build without it, fall back to the plain capture instead of
+    # raising — a primary-monitor shot beats no shot at all.
+    screenshot = None
+    previous_dpi = None
+    dpi_setter = None
+    physical = False
+    monitors = []
+    if os.name == 'nt':
+        try:
+            dpi_setter = ctypes.WinDLL('user32').SetThreadDpiAwarenessContext
+            dpi_setter.argtypes = [ctypes.c_void_p]
+            dpi_setter.restype = ctypes.c_void_p
+            previous_dpi = dpi_setter(ctypes.c_void_p(-4))
+            physical = bool(previous_dpi)
+        except (OSError, AttributeError):
+            pass
+    try:
+        if physical:
+            import win32api
+            monitors = [tuple(rect) for _, _, rect in win32api.EnumDisplayMonitors()]
+        if all_screens:
+            try:
+                screenshot = ImageGrab.grab(all_screens=True)
+            except TypeError:
+                logging.warning('all_screens unavailable; capturing primary screen only')
+                all_screens = False
+        if screenshot is None:
+            screenshot = ImageGrab.grab()
+        if metadata is not None:
+            metadata.update(image_width=screenshot.width, image_height=screenshot.height,
+                            all_screens=all_screens, captured_at=time.time(),
+                            coordinate_space='unknown')
+            if physical and monitors:
+                left = min(r[0] for r in monitors) if all_screens else 0
+                top = min(r[1] for r in monitors) if all_screens else 0
+                width = (max(r[2] for r in monitors) - left if all_screens
+                         else win32api.GetSystemMetrics(0))
+                height = (max(r[3] for r in monitors) - top if all_screens
+                          else win32api.GetSystemMetrics(1))
+                if screenshot.size == (width, height):
+                    metadata.update(coordinate_space='physical_screen', capture_left=left,
+                                    capture_top=top, capture_width=width, capture_height=height,
+                                    monitors_json=json.dumps(monitors))
+    finally:
+        if previous_dpi:
+            dpi_setter(previous_dpi)
+
+    screenshot.save(filepath, "PNG")
+
+    return os.path.abspath(filepath)
+
+
+# PID Management
+PID_FILE = "agent.pid"
+
+
+def write_pid_file():
+    try:
+        with open(PID_FILE, "w") as f:
+            f.write(str(os.getpid()))
+    except Exception as e:
+        logging.error(f"❌ Failed to write PID file: {e}")
+
+
+def remove_pid_file():
+    for attempt in range(5):
+        try:
+            if os.path.exists(PID_FILE):
+                os.remove(PID_FILE)
+            return
+        except PermissionError:
+            time.sleep(0.1)
+        except Exception as e:
+            logging.error(f"❌ Failed to remove PID file: {e}")
+            return
+
+
+def main():
+    config = load_config()
+
+    # Write PID file immediately
+    write_pid_file()
+    if _IS_REANIMATED:
+        logging.info(f"🔄 {CURRENT_DIR_NAME} REANIMATED (resuming from pause)")
+        logging.info("=" * 60)
+
+    try:
+        output_dir = str(config.get('output_dir') or '').strip() or _default_temp_output_dir()
+        _base = output_dir if os.path.isabs(output_dir) else os.path.join(script_dir, output_dir)
+        output_dir = _tlm_safe_output_dir(_base, 'Shoter', _default_temp_output_dir())
+        target_agents = config.get('target_agents', [])
+        # Defaults to TRUE when the key is absent: an older config.yaml keeps
+        # working AND silently gains the fix (it used to crop to the primary).
+        all_screens = config.get('all_screens', True)
+        all_screens = str(all_screens).strip().lower() not in ('false', '0', 'no', '')
+        filename = str(config.get('filename') or '').strip()
+
+        logging.info("📸 SHOTER AGENT STARTED")
+        logging.info(f"📁 Output directory: {output_dir}")
+        logging.info(f"🖥️ Whole desktop: {all_screens}")
+        if filename:
+            logging.info(f"🏷️ Requested name: {filename}")
+        logging.info(f"🎯 Targets: {target_agents}")
+
+        # Capture screenshot
+        try:
+            metadata = {}
+            saved_path = capture_screenshot(output_dir, all_screens=all_screens,
+                                            filename=filename, metadata=metadata)
+            logging.info(f"✅ Screenshot saved: {saved_path}")
+            # Emit a Parametrizer-compatible block so downstream agents
+            # (and the Multi-Turn LLM) can read the path verbatim instead
+            # of guessing at the auto-numbered shoter_<n> sub-folder layout.
+            # Atomicity matters: keep this in a single logging.info() call.
+            logging.info(
+                "INI_SECTION_SHOTER<<<\n"
+                f"output_path: {saved_path}\n"
+                f"output_dir: {os.path.dirname(saved_path)}\n"
+                f"filename: {os.path.basename(saved_path)}\n"
+                + ''.join(f'{key}: {value}\n' for key, value in metadata.items()) + '\n'
+                + f"Screenshot saved to {saved_path}\n"
+                ">>>END_SECTION_SHOTER"
+            )
+        except Exception as e:
+            logging.error(f"❌ Screenshot capture failed: {e}")
+            sys.exit(1)
+
+        # Trigger downstream agents
+        total_triggered = 0
+        if target_agents:
+            wait_for_agents_to_stop(target_agents)
+            logging.info(f"🚀 Triggering {len(target_agents)} downstream agents...")
+            for target in target_agents:
+                if start_agent(target):
+                    total_triggered += 1
+
+        logging.info(f"🏁 Shoter agent finished. Triggered {total_triggered}/{len(target_agents)} agents.")
+
+    finally:
+        # Keep LED green briefly for visual feedback
+        time.sleep(0.4)
+        remove_pid_file()
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

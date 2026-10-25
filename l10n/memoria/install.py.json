@@ -1,0 +1,337 @@
+{
+ "archivo": "install.py",
+ "segmentos": [
+  {
+   "en": "\"Preparing installation directory…\"",
+   "es": "\"Preparando el directorio de instalación…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Extracting files…\"",
+   "es": "\"Extrayendo archivos…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Securing agent environments…\"",
+   "es": "\"Asegurando los entornos de los agents…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Writing configuration…\"",
+   "es": "\"Escribiendo la configuración…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Copying uninstaller…\"",
+   "es": "\"Copiando el desinstalador…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Creating shortcuts…\"",
+   "es": "\"Creando los accesos directos…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Registering .flw and .fpmt file associations…\"",
+   "es": "\"Registrando las asociaciones de archivo .flw y .fpmt…\"",
+   "n": 2
+  },
+  {
+   "en": "\"Refreshing Windows Desktop…\"",
+   "es": "\"Actualizando el escritorio de Windows…\"",
+   "n": 2
+  },
+  {
+   "en": "f\"Tlamatini Installer v{self.version}\"",
+   "es": "f\"Instalador de Tlamatini v{self.version}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini Installer\"",
+   "es": "\"Instalador de Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"pkg.zip was not found alongside the installer.\\n\\n\"",
+   "es": "\"No se encontró pkg.zip junto al instalador.\\n\\n\"",
+   "n": 2
+  },
+  {
+   "en": "\"Keep the complete release folder together, then retry.\"",
+   "es": "\"Mantén junta toda la carpeta del release y vuelve a intentarlo.\"",
+   "n": 2
+  },
+  {
+   "en": "\"Choose a parent directory for Tlamatini\"",
+   "es": "\"Elige un directorio padre para Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"No path selected\"",
+   "es": "\"No seleccionaste un path\"",
+   "n": 1
+  },
+  {
+   "en": "\"Please select an installation directory.\"",
+   "es": "\"Selecciona un directorio de instalación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid path\"",
+   "es": "\"Path inválido\"",
+   "n": 1
+  },
+  {
+   "en": "f\"The directory does not exist:\\n{raw}\\n\\n\"",
+   "es": "f\"El directorio no existe:\\n{raw}\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Please select an existing directory.\"",
+   "es": "\"Selecciona un directorio que exista.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid installation folder\"",
+   "es": "\"Carpeta de instalación inválida\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose a separate application folder. Setup cannot overwrite a source checkout, a file or a redirected directory.\"",
+   "es": "\"Elige una carpeta de aplicación aparte. El instalador no puede sobrescribir una copia del código fuente, un archivo ni un directorio redirigido.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Directory not empty\"",
+   "es": "\"El directorio no está vacío\"",
+   "n": 1
+  },
+  {
+   "en": "f\"The target directory already contains files:\\n{target}\\n\\n\"",
+   "es": "f\"El directorio de destino ya contiene archivos:\\n{target}\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Do you want to choose a different directory?\\n\\n\"",
+   "es": "\"¿Quieres elegir otro directorio?\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Click Yes to choose another directory.\\n\"",
+   "es": "\"Haz clic en Sí para elegir otro directorio.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Click No to continue and overwrite.\"",
+   "es": "\"Haz clic en No para continuar y sobrescribir.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Checking release integrity and recovery…\"",
+   "es": "\"Revisando la integridad del release y la recuperación…\"",
+   "n": 1
+  },
+  {
+   "en": "\"The release package could not be verified. No installation files were changed.\\n\\n\"",
+   "es": "\"No se pudo verificar el paquete del release. No se cambió ningún archivo de instalación.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Extract the complete release again, keeping pkg.zip beside Installer.exe, then retry. \"",
+   "es": "\"Vuelve a extraer el release completo, dejando pkg.zip junto a Installer.exe, y vuelve a intentarlo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"If Windows denied access, close applications holding the package and check its permissions.\\n\\n\"",
+   "es": "\"Si Windows negó el acceso, cierra las aplicaciones que tengan abierto el paquete y revisa sus permisos.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Details: {exc}\"",
+   "es": "f\"Detalles: {exc}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Close Tlamatini and its remaining agents before installing into this folder, then retry.\"",
+   "es": "\"Cierra Tlamatini y los agents que sigan activos antes de instalar en esta carpeta, y vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Restoring the previous installation…\"",
+   "es": "\"Restaurando la instalación anterior…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{exc}\\n\\nThe previous files and Windows registrations were restored. You can retry.\"",
+   "es": "f\"{exc}\\n\\nSe restauraron los archivos anteriores y los registros de Windows. Puedes volver a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Verifying release integrity before installation…\"",
+   "es": "\"Verificando la integridad del release antes de instalar…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Creating installation directory…\"",
+   "es": "\"Creando el directorio de instalación…\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Extracting files… ({i}/{total})\"",
+   "es": "f\"Extrayendo archivos… ({i}/{total})\"",
+   "n": 1
+  },
+  {
+   "en": "\"Registering with Windows…\"",
+   "es": "\"Registrando en Windows…\"",
+   "n": 1
+  },
+  {
+   "en": "\"Installation complete!\"",
+   "es": "\"¡Instalación completa!\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{filename} not found at {dst}\"",
+   "es": "f\"{filename} no se encontró en {dst}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Uninstaller.exe is missing from the release folder: {src}. \"",
+   "es": "f\"Falta Uninstaller.exe en la carpeta del release: {src}. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Restore the complete release folder and retry.\"",
+   "es": "\"Restaura la carpeta del release completa y vuelve a intentarlo.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Windows Installed apps registration needs attention: {e}\"",
+   "es": "f\"El registro en las aplicaciones instaladas de Windows necesita atención: {e}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Companion app discovery needs attention: {de}\"",
+   "es": "f\"El descubrimiento de la app complementaria necesita atención: {de}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini is installed.\\n\\nDesktop shortcuts are ready.\\n\"",
+   "es": "\"Tlamatini quedó instalada.\\n\\nLos accesos directos del escritorio están listos.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\".flw and .fpmt flow files are now associated with Tlamatini.\"",
+   "es": "\"Los archivos de flow .flw y .fpmt ya están asociados con Tlamatini.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Loading installer…\"",
+   "es": "\"Cargando el instalador…\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"Segoe UI\"",
+   "motivo": "nombre de fuente"
+  },
+  {
+   "en": "\"Tlamatini\"",
+   "motivo": "nombre del producto (valor DisplayName del registro)"
+  },
+  {
+   "en": "\"Temp\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "\"Templates\"",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "\"in-place reinstall: retained existing database and WAL\\n\"",
+   "motivo": "texto de archivo marcador (no es pantalla)"
+  },
+  {
+   "en": "f\"[INSTALL] Preserved existing user state: {', '.join(sorted(kept))}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"The old preserved-agents marker could not be removed: {marker}. {exc}\"",
+   "motivo": "texto de advertencia que sólo se imprime en consola"
+  },
+  {
+   "en": "f\"[INSTALL] {warning}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"WARNING: Uninstaller.exe missing — skipping Installed-apps registration.\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Publisher\"",
+   "motivo": "nombre de valor del registro"
+  },
+  {
+   "en": "f\"Registered Tlamatini in Installed apps (HKCU): {key_path}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"WARNING: Could not register Installed-apps entry: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"Version\"",
+   "motivo": "nombre de valor del registro"
+  },
+  {
+   "en": "f\"Registered companion-app discovery (HKCU): {disc_key}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"WARNING: Could not register companion-app discovery: {de}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"WARNING: Desktop refresh failed: {exc}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "\"    # Reset PyInstaller's DLL search path alteration on Windows\\n\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "\"    # If we don't do this, child Python processes will WinError 1114 when loading C extensions (like torch)\\n\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "\"    if sys.platform.startswith('win'):\\n\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "\"            import ctypes\\n\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "\"            if hasattr(ctypes.windll.kernel32, 'SetDllDirectoryW'):\\n\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "\"        except Exception:\\n\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "\"    # Remove PyInstaller's _MEIPASS from PATH to prevent DLL conflicts in child processes\\n\"",
+   "motivo": "código fuente inyectado"
+  },
+  {
+   "en": "f\"Non-fatal error patching agent environments: {e}\"",
+   "motivo": "log de consola"
+  }
+ ]
+}

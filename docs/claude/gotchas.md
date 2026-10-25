@@ -1,0 +1,353 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# Tlamatini — Gotchas, Build/Lint, Roadmap, Work Style
+
+> Current release: **[v1.90.0](../changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+## v1.90.0 — editable canvas and Interactor
+
+The current source has **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 direct/module + 67 wrapped + 12 ACPX/Skills + 10 supervisors), and 219 migrations**. Interactor adds a module/tool; do not register it as an Agent. The annotated tag resolves to `ebc5c3b4`; its GitHub release was published on 2026-10-22 and is marked Latest. `main` continues after the tag (`d274f89c`, `8c577d3a`, `939acf6b`, `5403fa49`) and still reports 1.90.0; migration 0219 (`939acf6b`) makes the catalog's account wizard request local Notifier pop-ups at its checkpoints (`docs/user-creation-wizard.md`). Dated source and frozen runs remain separate.
+
+- **Editor:** `agent_page_editing.js` owns the CodeMirror document, dirty baseline, encoding and save snapshot. `agent_page_canvas.js` owns load/refresh generation and cancellation. Markdown Preview and Source share the buffer; HTML/SVG remain inert source; PDF saving copies the original PDF. Never read a hidden compatibility element instead of the editor.
+- **Native files:** `canvas_file_views.py` and `native_dialogs.py` provide local Save As/read/save. Authentication, CSRF, loopback-only host access, account/session-bound capabilities and full revision checks prevent a browser name from becoming an arbitrary host path. Existing Windows replacement preserves metadata; DB backup/restore mechanics are unchanged.
+- **Interactor:** `agent/interactor/` connects the synchronous tool loop to the browser through session-authenticated `ws/interactor/`. Server-issued tab identity travels through ContextVar; bounded commands and receipts verify document/revision and full buffer. Browser messages acknowledge/access/stop; they cannot request arbitrary host-path commands.
+- **Tutor:** read fresh unsaved text, type a small segment, guide the next field and end mutations for the turn. Continue begins a fresh chat/read. Prepared choices match locally, with no per-key model call. User input and Stop win; hidden tabs pause with bounded recovery rather than repeating edits.
+- **Carriage:** migration 0218 seeds the Tool/catalog rows; `tool_gate_table()` supplies binding, Compact selection and cost labels. The offline editor bundle, Interactor browser files, frozen imports and source/static inventories must travel together.
+- **Intent:** password input is not ownership of every command; a wizard email field or DONE reply is not notification consent. Preserve genuine user-runs tutorials. The catalog wizard uses createsuperuser and therefore creates an administrative account.
+
+Contracts and evidence: [v1.90.0](../changes/2026-10-22-v1.90.0.md), [Canvas editing](../canvas-editing.md), [Interactor](../interactor.md), [Account wizard](../user-creation-wizard.md). Source/frozen rendering tests do not certify a rebuilt installed executable.
+
+
+> **Carried from v1.88.0 (tagged 2026-10-20):** [Terminater](../terminater.md) (workflow agent #86 and the Terminals area) and a private release that carries the builder's own data. Counts: 86 workflow agents, 67 wrapped chat agents, 109 built-in tools, 217 migrations. See the [v1.88.0 release record](../changes/2026-10-20-v1.88.0.md) and the change records [Terminater](../changes/2026-10-19-terminater.md) and [private-release data](../changes/2026-10-19-private-release-data.md).
+
+
+## v1.87.0 — Leaner catalog, safer removal, smaller release (carried)
+
+**v1.87.0** (tagged 2026-10-18; it also carries
+v1.86.0, tagged 2026-10-17) came before v1.88.0. Its catalog was **85 workflow agents, 66 wrapped
+chat agents and 108 built-in tools**: Gatewayer, Gateway-Relayer, Node-Manager
+and Zavuerer were removed, and migration **0214** deletes their rows and the
+Zavuerer prompts without renumbering. Removal moves application entries into a
+same-drive recovery folder (schema 2 journal, **Retry cleanup**,
+`.tlamatini-removal.json`) instead of copying the payload. `build.py` keeps the
+carried-Python-only media and browser packages out of the frozen interpreter
+(`test_release_payload_ownership.py`). About ▸ Usage waits for real data and
+sends a bodyless `POST /api/me`. `npm run lint:python` runs
+`scripts/check_python_quality.py`. From v1.86.0: Mover creates a missing
+destination name as a folder (`_names_a_file()`), and `scripts/architecture_atlas/`
+rebuilds `Tlamatini-Architecture.pdf` with LaTeXer. The static suffix for that release was
+`-agent-catalog-1-quality-cleanup-1-usage-status-2`.
+
+See [the v1.87.0 release record](../changes/2026-10-18-v1.87.0.md).
+
+## v1.85.0 — Refresh, Views and centered avatar (carried)
+
+**v1.85.0** (2026-10-16) added Refresh, Views and the centered avatar. `agent_page_canvas.js` owns Refresh
+source access, complete-text comparison, cancellation and status. Retain browser
+file handles during the drop event; snapshot-only access cannot refresh a path.
+PDF replacement stages a ready viewer and keeps its iframe attached at commit.
+
+`agent_page_layout.js` exposes `TlamatiniViews.setCanvasVisible`,
+`isCanvasVisible` and `resetLayout`. Hiding toggles `tlm-canvas-hidden`, preserves
+the canvas DOM and context, cancels divider gestures and moves focus only when
+its current region disappears. The account/browser preference is
+`tlamatini.chat.views.v1.<user id>`. `avatar_size.js::setDockedOnly` enforces the
+hidden-canvas docking rule in pointer, keyboard and public API paths. Reset shows
+both panes, resets their sizes and docks the portrait without clearing content.
+
+The docked frame uses `--tlm-avatar-docked-right` measured from the full Mic/Send
+row. Its square size and 120 px minimum stay independent of floating geometry.
+v1.85.0's static suffix was `-avatar-center-1`; Views scripts retain `_views1`.
+`build_runtime_assets.py` and `copy_source_assets.py` require the Views template,
+scripts and snapshot harnesses. No migration or dependency was added.
+
+See [the release implementation and evidence matrix](../changes/2026-10-16-v1.85.0.md),
+[Refresh](../canvas-refresh.md) and [carriage](../self-management-carriage.md).
+
+
+
+> **HEADLESS IS FORBIDDEN. ALL EXECUTION MUST BE VISIBLE.** Every automated test, command, diagnostic, script, build, agent, prompt and browser must run in a visible, forked foreground window on Angela's real desktop. Use visible CMD/PowerShell consoles and headed browsers (`headless=False`); keep output on screen and monitor live. No hidden/background execution, including CI or quick checks. If visibility cannot be confirmed, do not run. Mandatory policy: [visible execution](../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+> **Developer/product boundary (Angela, 2026-09-27):** these visibility requirements govern development and verification. They must not create extra windows, steal focus or expose internal diagnostics in the shipped UX. Direct chat dictation keeps status in chat and uses only Tlamatini's main console/log.
+
+## Direct microphone: product UX and release carriage (2026-09-27)
+
+Angela is the developer; her visible-execution rule governs our commands and
+verification, not end-user UI. Do not reintroduce a Whisperer PowerShell/conhost
+window, foreground activation or a visibility gate. Keep the main console/log
+and the chat's recording indicator.
+
+The source/carried-Python child must include capture and ASR dependencies.
+`build.py` requires `agent.chat_voice_consumer` and
+`agent.chat_voice_runtime` and `agent.chat_voice_settings`;
+`build_runtime_assets.py` carries `chat_voice_settings.py` at the install root
+and verifies `agents/whisperer/chat_worker.py`, `mic_settings.js`, `chat_dictation.js` and
+`chat_dictation.css`. Keep routing, template, composer sizing, form dispatch,
+avatar hooks and INFO logging aligned. Required files alone do not prove a
+frozen runtime works. Restart source; rebuild/update installed binaries.
+
+The current source record is 108 passing voice regressions and 42 existing
+dialog-theme tests. Real capture/cancellation was checked earlier; current
+metadata refresh and two worker restart cycles produced no windows or focus
+changes. Headed-browser checks cover both modes and settings using controlled transport; no new live Ollama job
+or installer build is claimed. Run checks in a visible console and inspect the
+main application log. [Full contract](../chat-microphone-design.md).
+
+The whole-source dependency guard is `scripts/check_requirements_coverage.py`;
+the older agent-only import test is insufficient on its own. Main declarations
+and ESPHome's separate private-runtime manifest are explained in the
+[dependency audit](../dependency-coverage-audit.md).
+
+Config → Mic is last, after Voice. Keep capture preferences per recording:
+saving during dictation cannot change its send/draft behavior. Review mode must
+restore editing without calling the form or avatar processing acknowledgment.
+Use whole shared border tokens and explicit secondary backgrounds for all Mic
+buttons; unset backgrounds produced white buttons with white text. Outside
+clicks must not discard settings. Source/static collection must stay in sync.
+
+## Models and frozen runtime preparation (2026-09-20)
+
+- Never open `model_settings.py` relative to a frozen service's `__file__`: the
+  `_internal` path may represent compiled code, not a loose template. Import the
+  compiled registry and resolve portable copies via `get_agents_root()`.
+- Non-model agents must prepare without a loose registry. Refresh helpers for
+  existing pools as well as new ones. Do not depend on `TlamatiniSourceCode/`.
+- Read portable YAML as UTF-8 (BOM allowed); the Windows default code page corrupted
+  Monitor-Log, Monitor-Netstat and RecMailer's real configurations.
+- A saved model choice affects the next load. Existing literal YAML overrides and
+  explicit tool arguments can intentionally differ. A global fallback to Unified
+  applies only while the dedicated key is missing/blank, not after a dedicated save.
+- Image/video model failures reject the attempt and accumulate a themed fatal
+  error without stopping Tlamatini or its retry/flow recovery tactics. Keep the
+  configured models. HTTP 410 requires an explicit user configuration change;
+  never turn a missing observer, raw notes or missing evidence into success.
+
+Read [model configuration](../model_configuration.md) and run `check_agent_runtimes`
+in source and frozen modes; file inclusion alone does not prove execution.
+
+> **The chronological "Recent Fixes / Gotchas" fix log now lives in `docs/claude/recent-fixes.md`** — it was split out of this file and is **NOT auto-imported** into the assistant context, to keep every session lean. It holds the dated "do NOT revert this / keep these surfaces aligned" contracts for ACPX, the Flow Compiler, the planner, the Exec Report pipeline, the ACP canvas, wrapped chat-agent parsing, the desktop-UI agents, `prompt.pmt`, `regen_secrets.py`, and the logging filters. **Read `recent-fixes.md` before modifying or reverting code in any of those subsystems.**
+
+## Claude API Client (opus_client)
+
+Located in `agent/opus_client/claude_opus_client.py`. Features:
+- Text chat, image analysis, PDF analysis, streaming
+- Multi-turn conversations with `create_conversation()`
+- Tool/function calling with auto-execution
+- Models: `Model.OPUS_4_5`, `Model.SONNET_4_5`, `Model.HAIKU_4_5`
+
+```python
+from claude_opus_client import ClaudeClient
+client = ClaudeClient()
+response = client.chat("Hello")
+```
+
+---
+
+## Building & Packaging
+
+```bash
+# Step 1: Build the app
+python build.py
+#   add --self-modify to ship the self-modify source tree (see below)
+
+# Step 2: Build the uninstaller
+python build_uninstaller.py
+
+# Step 3: Build the installer
+python build_installer.py
+```
+
+The frozen build resolves paths via `os.path.dirname(sys.executable)` vs source mode `os.path.dirname(os.path.abspath(__file__))`. Both modes must be supported in any new tool.
+
+**`build.py --self-modify` (2026-05-25; snapshot generation 2026-06-12)** — when this flag is passed, the build bundles Tlamatini's own source tree `TlamatiniSourceCode/` next to the executable (it then flows into `pkg.zip`), producing a **self-able-modify** build the running app can read, rewrite, and REBUILD. Since 2026-06-12 the tree is **generated fresh** by `copy_source_assets.py` (repo root) from the live repo — full source surface (.py/.js/.css/.html/.ps1/.pmt/.yaml/build scripts + build-required .ico/.wav/.svg), with media (.pdf/.pptx/images/videos), jd-cli.jar, secrets (redacted to `<KEY goes here>`), and regenerable state omitted; the snapshot carries `_REBUILD_INSTRUCTIONS.md` + `_SOURCE_SNAPSHOT_MANIFEST.json` telling the runtime how to restore the omitted binaries from the install root and rebuild. A generation or copy failure aborts the build; a stale static source tree is never substituted. The shared runtime inventory verifies snapshot inputs and restore mappings. Without the flag the directory is omitted entirely — a **not-self-able-modify** build. The build prints `Self-modify build : YES — bundling TlamatiniSourceCode` / `… no — source tree omitted`. **Since 2026-08-08 `agent/Tlamatini.md` (the LLM self-knowledge file) is gated on the SAME flag** — it is bundled via `--add-data` and copied to the install root **only** under `--self-modify`, so her source and her self-description ship together or not at all. `--no-self-modify` is a real flag that WINS over `--self-modify`, and both `build_complete_*` wrappers default to OFF, pass the decision explicitly, and then open `pkg.zip` to PROVE the payload matches. At runtime the whole `<self_knowledge>` section of `prompt.pmt` is dropped in a not-self-able-modify build (**≈15.7k tokens saved per request**); with `--self-modify` nothing changes and she keeps everything about herself. See `docs/claude/recent-fixes.md` (2026-08-08). **Since 2026-10-03 the flag sets the CEILING, not the rule:** a source run of this checkout is always self-able (with or without the folder), and a self-able build sends the self-knowledge only while the toolbar's **Self-modify** box is ON and the model can hold it — see item 24 below and `architecture.md` → *The Self-modify switch*. See `docs/claude/architecture.md` → *Self-Knowledge & Self-Modification*.
+
+---
+
+### The build PROVES what it ships — `verify_frozen_agent_modules()` (2026-08-16, v1.48.16)
+
+Several `agent.*` modules reach the frozen app **only through a fail-open import** (`try: from . import runtime_provisioner` / `except ImportError: runtime_provisioner = None`). A fail-open import **cannot report its own absence**: drop the module and Tlamatini boots perfectly, then simply never provisions `node`/`npm`/`npx`/`pnpm`/`uv`/`uvx` again, so every `npx -y <pkg>` External-MCP server dies with `[WinError 2]` on exactly the fresh machine the provisioner exists to rescue. Reading `build.py` therefore cannot answer *"did it really ship?"* — only the produced archive can.
+
+**Two halves, keep both.** (1) `--hidden-import` now NAMES `agent.runtime_provisioner`, `agent.external_mcp_defaults`, `agent.external_mcp_manager` and `agent.agent_verdict`, so the import graph can never quietly decide they are unreachable. (2) **`verify_frozen_agent_modules(dist/manage)`** runs on the successful-build path, opens the archive the build just produced, and **ABORTS the build** if any of the seven `_FROZEN_REQUIRED_AGENT_MODULES` (those four plus `agent.path_guard`, `agent.self_update`, `agent._version`) is absent.
+
+⚠️ **The PYZ is NOT a loose `_internal/PYZ-00.pyz`** under PyInstaller 6 onedir — it is an entry named `PYZ.pyz` **inside the executable's CArchive**, so the reader uses `CArchiveReader` on the `.exe` (with a `ZlibArchiveReader` fallback for legacy/onefile layouts). A glob for `PYZ-*.pyz` finds nothing and would have reported *"cannot verify"* forever: a check that never fails and never proves anything. Measured against the shipped install — CArchive = 21 entries, PYZ = 15,075 modules, all 7 required modules present. An **unreadable** archive warns and continues (that is a PyInstaller-version question, not evidence Tlamatini is broken); a **genuinely missing** module aborts. Guarded by `agent/test_runtime_provisioner.py::WiringContractTests`.
+
+**Corollary for new work:** if your module is imported anywhere behind a `try/except ImportError`, add it to `_FROZEN_REQUIRED_AGENT_MODULES` **and** give it a `--hidden-import`. Silence is the failure mode you are defending against.
+
+---
+
+### numpy / OpenCV must be embedded in BOTH Pythons (2026-06-15)
+
+The media agents (Recorder / Camcorder / AudioPlayer / VideoPlayer / Whisperer) run under the **carried** Python (`<install>/python`), NOT the frozen exe — so their native libs must be installed THERE. `build.py` asserts `numpy` + `cv2` in `_CARRIED_PYTHON_REQUIRED_IMPORTS` (the carried-Python probe → the build ABORTS if either is missing) and in the frozen-asset `_agent_libs` import-verify list, and adds `--collect-all cv2` so OpenCV is also embedded in the frozen `_internal` (numpy is handled by `pyinstaller_hooks/hook-numpy.py`). A dependency that is pinned in `requirements.txt` but NOT installed in the carried Python crashes the pool agent at runtime even though the source is correct — these guards exist to catch exactly that. See `docs/claude/recent-fixes.md` (2026-06-15).
+
+---
+
+### Never hand-type a count (or a rule number) in a test — DERIVE it (2026-08-16)
+
+Three test failures that day were the **TEST** being stale, not the code. `test_external_mcp_universal.py` pinned the prose *"eight supervisor tools"* after the Runtime Provisioner had legitimately made it **ten**, and `test_temp_dir_policy.py` asserted *"19) Conflict resolution rule"* after two new `prompt.pmt` rules (18b diagnostic-finding, 19 External-MCP runtime) pushed it to 20. A hand-typed number inside a test is a time bomb: **it goes red for the wrong reason and sends the reader to the wrong file.** Both now DERIVE their expectation from source — `len(em._SUPERVISOR_TOOL_NAMES)`, and the invariant *"Conflict resolution is always the LAST rule"* — so an 11th supervisor tool fails loudly and names the exact document to update. Apply the same rule to any new count-pinning test (agent totals, tool totals, migration numbers, JS module counts).
+
+---
+
+## Linting
+
+```bash
+# Python
+python -m ruff check
+
+# Every tracked Python file: compile + Ruff (since v1.87.0; refuses to run
+# outside a verified visible foreground console)
+npm run lint:python
+
+# JavaScript/CSS  (ESLint + a node --check parse gate)
+npm run lint
+
+# lint + the file-drop router's 138 behaviour cases
+npm test
+```
+
+Since v1.87.0 `npm run lint` also covers `scripts/` and `Tests/*.cjs`, with `--max-warnings 0` (a warning fails the gate).
+
+`npm run lint` runs **two** JS gates: ESLint (with **`no-undef` as an ERROR** — an undeclared identifier in a `window.Tlamatini*` export literal throws `ReferenceError` at load and silently loses that feature) **then** `node scripts/check_js_parse.mjs`, which runs `node --check` on every `agent/static/agent/js/*.js` (a file that does not parse is a dead page with no visible error). Both are pinned by `agent/test_js_gates.py`. Check the lint EXIT CODE — never grep its output for "error" (the compact formatter was removed from ESLint core, so a filtered failure reads as a pass).
+
+> **Tests are silent by design.** `manage.py::_silence_the_tests()` sets `TLAMATINI_NO_AUDIO=1` for any `test` run, and Talker / AudioPlayer / VideoPlayer skip playback under it (pinned by `agent/test_no_audio_in_tests.py`). A test must never make a sound on the developer's desktop.
+
+---
+
+## Versioning (SemVer 2.0.0, git-tag-derived) — see `VERSIONING.md`
+
+Tlamatini uses SemVer 2.0.0 with git tags (`vMAJOR.MINOR.PATCH`) as the single source of truth. The full contract — including bump rules, the four-tier resolution precedence, the no-tag fallback behaviour (always the bare base tag — no `.devN`, no `+gSHA`, no `.dirty` ever appears in the version string), the step-by-step release cut, and the file-by-file integration map — lives in **`VERSIONING.md`** at the repo root. Quick map for AI assistants:
+
+- Runtime resolver: `Tlamatini/agent/version.py::get_version()` (no Django dep, safe to import from `manage.py` before Django init).
+- Build-time shim used by all three build scripts: `versioning.py` at the repo root.
+- Generated bundle file (gitignored): `Tlamatini/agent/_version.py`.
+- Template surface: `{{ version }}` via `tlamatini.context_processors.app_version`, currently consumed only by `agent_page.html` (the About dialog).
+- HTTP surface: `GET /agent/version/` (open endpoint).
+- **Never** re-introduce a hardcoded `Tlamatini v1.0.0` anywhere. The About dialog HTML now reads `{{ version }}`.
+- **Never** commit `_version.py` — it's gitignored and rewritten on every build.
+- When adding a new artefact-producing script that ships an `.exe` (or any binary with VERSIONINFO), mirror the `build_uninstaller.py` pattern: import `extract_cli_version` + `resolve_build_version` + `render_versioninfo_for` from `versioning.py`, write a `<Name>.version.txt`, pass `--version-file=…` to PyInstaller, and `.gitignore` the .txt.
+
+---
+
+## Known Hardcoded Assumptions
+
+1. `factory.py` recognizes only `System-Metrics` and `Files-Search` by Mcp description
+2. Frontend MCP dialog is hardcoded for two checkboxes
+3. Tool UI is dynamic; MCP UI is not
+4. `get_mcp_tools()` returns LangChain tools, not MCP services
+5. `ask_rag()` does not fetch MCP data itself
+6. Files-Search main path uses `FileSearchRAGChain`, not `mcp_files_search_client.py`
+7. `mcp_files_search_client_uri` in config is unused by the main chain
+8. `FileSearchRAGChain` falls back to `localhost:50051` for gRPC
+9. Tool status keys are handwritten and can drift
+10. `mcpContent` is stored as string, not boolean
+11. Planner default `max_selected_tools` was lowered from 50 → **20** to prevent keyword inflation from selecting every tool on a single request *(historical: since 2026-06 Multi-Turn binds the FULL enabled surface — the planner subset no longer drops tools from the bind; the constant now only shapes capability hints/ordering — see `multi-turn.md`)*
+12. `tlamatini.log` is truncated on every server start (mode `'w'`) and has no rotation. **⚠️ Since 2026-09-10 the log file is written BEFORE the console, and the console is written on a drain thread** — see assumption 15.
+13. **The web port is NOT hardcoded any more (v1.40.1)** — it is `config.json` → `django_port` (default `8000`), resolved by `manage.py::_resolve_django_port()` and injected into every launch path by `_apply_configured_port()` (frozen double-click, `.flw` association, browser auto-open, source `runserver`, `startserver`). An explicit CLI `[ipaddr:]port` wins; resolution is fail-open to 8000. **Do not re-introduce a literal `8000` in a launch path.** Still genuinely hardcoded and NOT covered by the key: a direct `daphne`/`uvicorn` launch (bypasses `manage.py`), the MCP helper listeners `:8765` / `:50051`, and TeleTlamatini's own `tlamatini.base_url`. See `docs/claude/architecture.md` → *Configurable web port*.
+14. **Binary files are dropped from the RAG context by CONTENT, not just by name** (`agent/rag/binary_guard.py`, `binary_context_detection`, default **on**). The pre-existing **Context ▸ Set file type omissions** list is name-based; the guard is byte-based and complements it. Both feed the same drop mechanism (`raise ValueError` swallowed by `DirectoryLoader(silent_errors=True)`), and every drop is logged with the `--- [BINARY-GUARD]` prefix in `tlamatini.log` (frozen and source alike). **The contract is FAIL-OPEN**: any error, any uncertainty, any malformed config value resolves to "load it as text" — a guard that wrongly drops a file silently deletes the user's context, which is worse than no guard. Do NOT reorder the cascade: the **BOM stage must stay ahead of the NUL stage** or every UTF-16 document disappears. See `docs/claude/architecture.md` → *Binary-content guard for context loading*.
+15. **The CONSOLE cannot block the core, and clicking it is no longer dangerous (2026-09-10).** Windows consoles ship with **QuickEdit Mode ON**, so a click or drag inside the window puts the console into selection mode and **`WriteConsoleW` stops returning** — it does not fail, it **BLOCKS**, and ⚠️ **a block is not an exception**, so the `try/except` around the write could never catch it. Because `_TeeStream.write()` used to write the console FIRST, one mouse click froze the calling thread, **`tlamatini.log` itself**, and then every other thread — the whole app. Two layered defences now: **(a)** `console_quick_edit: false` (`manage.py::_apply_console_quick_edit_policy`) clears `ENABLE_QUICK_EDIT_INPUT` so a click cannot start a selection — **FROZEN builds only**, because console mode belongs to the console and a source-mode terminal **outlives** Tlamatini; **(b)** `manage.py::_ConsoleWriter` queues every console chunk onto **one daemon drain thread** — **BOTH modes, never gated**, since the freeze is identical in dev and this is the only defence that also covers Windows Terminal (which ignores the flag) and a stalled pipe. **Do NOT reverse the sink order** (file first, console second) and **do NOT nest `_LOG_LOCK` inside `_cond`** (deadlock). ⚠️ **Ctrl+C (`ENABLE_PROCESSED_INPUT`) is FORCED ON, read back, and rolled back on doubt** — it shares the DWORD with QuickEdit, and losing it would also lose the SIGINT that runs the Tier-3 orphan reaper. **Shipped `false`, code fallback `true`** — both deliberate. See `docs/claude/architecture.md` → *The CONSOLE SHIELD* and `TlamatiniConsoleShieldByClaude.md`.
+
+16. **`ollama_num_ctx` is a NO-OP for a `:cloud` model, and the sampler must never be tuned from one run (2026-09-13).** Proved: a **263,159-token** prompt sent with `num_ctx=8192` recalled a needle planted near its start. The cloud server enforces its own limit instead, cleanly — 1,297,992 tokens returns **HTTP 400** *"model maximum context length: 1048576"*, never a silent truncation. So `ollama_num_ctx: 1048576` is the honest value for cloud (matching `glm_dsa_moe.context_length` and docs.z.ai) and costs nothing; the old 63,536 described nothing, since real requests already ran at **78,288** prompt tokens. ⚠️ **But `num_ctx` IS real for a LOCAL model**, where it sizes the KV cache at load — cloud-first is why this default is safe. ⚠️ **And the sampler failure is HEAVY-TAILED**: a 6-trial run scored `repeat_penalty 1.9` at **0/6**, eight trials of the same cell scored **7/8**, at `temperature 0.0`, because cloud MoE routing varies per call. `repeat_last_n` is **per-model** (256 makes glm-5.3 6× faster and hurts kimi-k3) while `repeat_penalty` is not. Every new sampler key must be set in **both** `factory.py` chains **and** added to the `[LLM-PARAMS]` banner, or it drifts or silently never ships — `repeat_last_n` was unwired for months. ⚠️ `frequency_penalty`/`presence_penalty` are **not exposed by `langchain-ollama` 0.2.1** and would be dropped silently. See `docs/claude/architecture.md` → *Ollama sampler settings*.
+17. **`langchain-ollama` 0.2.1 DROPS the `thinking` field.** Reasoning models (`glm-5.3`, `kimi-k3`) emit `thinking` separately from `content`; our pinned wrapper discards it entirely, so a model that burns its whole turn reasoning reaches the user only as *"The tool-calling model returned an empty final response."* Measured: **196,003** and once **3,101,216** characters of thinking, invisible. 1.1.0 is current; the upgrade is real work and is NOT done. Until it is, that canned line can mean "the model thought itself to death", not "the model said nothing".
+18. **The chat navbar has no MCPs, Agents or Admin menu any more (2026-09-25).** **Configure MCPs** and **Configure Agents** live under **Config**; **Agentic Control Panel**, **Prompt Flow Panel** and the staff-only **Admin Panel** live under **Panels**. The ids `#mcps-menu-button`, `#agents-menu-button` and `#admin-menu-button` no longer exist, so a Playwright harness that waits on them times out with a meaningless selector error. Wait on `#config-menu-button` (Configure dialogs) or `#panels-menu-button` (panels) instead. The Configure dialogs' own ids (`#enable-mcps`, `#enable-agents`) and handlers did not change. See `docs/claude/frontend.md` → *Chat navbar*.
+19. **The ACP canvas zooms, and ALL pointer math must divide by `ACP.zoom` (2026-09-25).** The toolbar sets CSS `zoom` on `#canvas-content` (25 %–200 %). Saved coordinates are unzoomed; pointer deltas are zoomed. Any new code that turns a mouse position into `style.left/top`, a connection endpoint or a selection box must use `(e.clientX - canvasContent.getBoundingClientRect().left) / ACP.zoom`. It looks right at 100 %, which is exactly why it slips through. Also gate every new editing gesture on `ACP.canEdit()`.
+20. **`.pmt` and `.fpmt` are different formats.** `.pmt` is Tlamatini's plain-text system prompt (`agent/prompt.pmt`, `flowhypervisor/monitoring-prompt.pmt`); `.fpmt` is a Prompt Flow Panel diagram (JSON, `format: "tlamatini-prompting-flow"`). The panel refuses to open a `.pmt`, and nothing that loads a system prompt should ever accept a `.fpmt`. The guide keeps its historical filename `docs/prompting-flow-designer.md` because three build scripts pin that path — do not "tidy" it without updating `build.py`, `build_runtime_assets.py`, `copy_source_assets.py` and `test_prompt_flow_panel_carriage.py` together.
+21. **The chat history the model reads IS the `AgentMessage` table — and nothing else caches it (2026-09-30).** `DBChatHistoryLoader.load(limit=8)` re-reads the newest rows for the user on every request, which is exactly why the card's **Drop** button works with no reconnect: delete the row and the next question simply never sees it. Two traps: **(a)** a dropped prompt's words also live in the hidden `Referenced Rephrase:` rows saved right after it — `delete_message_for_user` removes those too, and any new code that saves "shadow" rows derived from a message must be dropped with it or the words come back on reload; **(b)** the `memory` External MCP is a SEPARATE store (`%LOCALAPPDATA%\Tlamatini\memory\memory.json`, shared by every install on the machine) that a Drop does not touch. When the memory server is active, the model can write to it even in one-shot mode. A visible test that feeds her personal "facts" must tell her not to use tools and must check the graph afterwards — the first Drop run wrote four test facts into Angela's real graph. See `docs/claude/recent-fixes.md` (2026-09-30).
+22. **A small model gets a COMPACT request, and its window is NOT `/api/show` (2026-10-01).** Ollama never refuses an oversized request for a local model — it keeps the tail and answers from it (`qwen2.5:latest` read 16,386 of ~52K tokens and lost the System Context). `context_fitter.py` fits every request; `context_governor.note_real_count` learns the real window from a cut. A local model's `/api/show` `context_length` is the TRAINED context, while `OLLAMA_NUM_PARALLEL` splits the loaded window between request slots. A harness that drives a small model must expect the Compact dialog and the Compact mode box switched ON and LOCKED (🔒) by itself. See `architecture.md` → *Compact mode*.
+23. **Compact mode rewrites the REAL Configure rows, and they apply at once (2026-10-02).** Ticking the toolbar's Compact mode box unticks every MCP / tool / agent / skill row except System-Metrics, Files-Search and Current-Time (and pauses the External MCPs); unticking it ticks EVERY row again. So a test or a script that expects "all rows on" must first check the switch (`agent/compact_mode.py::state()`), and one that flips rows must restore them. Saved dialogs no longer ask for a restart: `compact_mode.after_toggles_saved` applies the rows to `global_state` and the executor re-reads its tools on the next request. ⚠️ A NEW built-in tool goes into **`tools.tool_gate_table()`** (the ONE gate list both binding and the dialogs' prices read) — a tool appended anywhere else is invisible to Compact mode and to the cost labels. ⚠️ The Monitor-Netstat row now really gates `execute_netstat` (its old key `execute-netstat` matched no row). ⚠️ `apps.py` now KEEPS each agent's on/off across restarts — it used to reset them all to on.
+24. **The self-knowledge is a SWITCH now, and dev mode always has it (2026-10-03).** `rag/config.self_modify_available()` is True for every source run of this checkout and for a frozen `--self-modify` build only; the chat toolbar's **Self-modify** box is rendered only then. ON (the default) sends Tlamatini.md (~115K chars) with every request that can hold it; OFF and "locked OFF" (a model that cannot hold it) send one honest line instead. So a test that compares prompt TEXT must say which it wants (`_build_system_prompt(…, self_knowledge=True/False)`), and a test that runs `fit_request` should `compact_mode.reset_cache()` — the verdict is process-wide. ⚠️ Compact mode's STRICT check is measured WITHOUT the self-knowledge; keep it that way.
+25. **`build.py` ERASES `Tlamatini/db.sqlite3` and wipes `dist/` before it builds** (and removes `dist/` again after it writes `pkg.zip`). The dev database holds the chat history and the test account, and `dist/` holds release zips — never run a build just to "check the frozen mode"; frozen behaviour is unit-tested by rendering the real view under a patched `sys.frozen` (`test_self_modify_switch.FrozenPageTests`). Ask Angela before any real build.
+26. **An Ollama request may carry at most FOUR stop sequences (2026-10-03).** Ollama's cloud models refuse five or more with HTTP 400 *"too many stop sequences; maximum is 4"* (measured on `glm-5.3:cloud` and `glm-5.2:cloud`); the chat LLM used to send nine, so the chat-history summary - the first call of a request once the history passes `history_summary_trigger_tokens` - killed the whole request. Every stop list goes through `agent/ollama_stop.fit_stop_sequences()` (≤4 for EVERY model, most important first), and every chain's summary goes through `rag/chains/base.summarize_or_none()` (fail-open; Cancel still propagates). `agent/test_ollama_stop_limit.py` scans the whole source tree and fails on any unfitted stop list longer than four. See `recent-fixes.md` (2026-10-03).
+
+---
+
+## Recent Fixes / Gotchas
+
+The dated fix log moved to **`docs/claude/recent-fixes.md`** (consult-on-demand, not auto-imported). Prepend new fix entries there, not here. See the note at the top of this file for when to read it.
+
+---
+
+## Recommended New Agents (Roadmap)
+
+From `NEW_AGENT_RECOMMENDATIONS.md`:
+
+| Priority | Agent | Purpose |
+|----------|-------|---------|
+| 1 | **Tester** | Test runner (pytest, jest, junit) with pass/fail routing |
+| 2 | **Reviewer** | ✅ **Implemented v1.4.2** — AI code review (LLM-powered git-diff analysis); canvas agent (#63) + `code-review` skill |
+| 3 | **Analyzer** | ✅ **Implemented v1.4.2** — Static analysis / SAST (bandit, semgrep, ruff, eslint, gitleaks, pip-audit); canvas agent (#64) + `security-audit` skill |
+| 4 | **Jiraer** | Issue tracker integration (Jira/GitHub Issues) |
+| 5 | **Logger** | Structured log writer / report aggregator |
+| 6 | **Vaulter** | Secrets / environment injection |
+| 7 | **Webhooker** | Webhook listener (inbound HTTP endpoint) |
+| 8 | **Terraformer** | Infrastructure as Code (Terraform/Pulumi) |
+| 9 | **Metrixer** | Metrics collector (Prometheus/Grafana) |
+| 10 | **Diffr** | File/content comparison |
+| 11 | **Zipper** | Archive creation (ZIP/TAR) |
+
+---
+
+## Work Style Preferences (for AI assistants)
+
+- When given a broad directive ("Go!", "modify everything"), execute comprehensively across all relevant files without asking for confirmation at each step
+- Use parallel subagents to maximize throughput
+- Read broadly first, plan the full scope, then execute in parallel batches
+- Only ask for confirmation on truly ambiguous architectural decisions
+- The developer values robustness ("bullet-proof") and uniformity in system design
+- Comfortable with large cross-cutting changes (16+ files in one session)
+
+## Image/video error reporting and recovery (2026-09-26)
+
+Image/video model failures accumulate in one shared, themed, non-modal fatal-error dialog with an audible notification. Tlamatini keeps running: preserve its retry/tactic ladder, cancellation controls and configured flow recovery routes. Keep the configured model identities; never report a surviving observer or raw concatenation as successful analysis. Dismiss hides the dialog while retaining its history; new failures reopen it. See [the shared behavior and verification contract](../visual-analysis-errors.md).
+
+27. **User Commentary is no longer the reply operation (2026-10-03).** New `.fpmt` files are version 2: `user_input` runs the existing question/reply/cancel mechanism with the notched-top, downward-point figure; `user_commentary` is a static speech-bubble review note. Version 1 executable commentary must migrate to User Input, preserving IDs/edges/configuration. Never reinterpret it as a static note. Static bubbles have no ports/Start state and do not count toward executable reachability or playback steps. Preserve automatic full-text containment at the chosen width/font without internal scrollbars, including the inline editor; the saved height is a minimum. The `.draft.v1.<user id>` storage key intentionally stays compatible and does not mean document version 1. See [the guide](../prompting-flow-designer.md).
+
+**Graphical commentary update (2026-10-04):** User Commentary has no configuration dialog. Its floating toolbar formats selected ranges or subsequent typing with mixed fonts/sizes/colors/bold/italic/underline; eight borders/corners resize the bubble directly. Both validators preserve allowlisted rich `runs` whose literal concatenation equals `text`, normalize older plain version 2 notes, and retain version 1 User Input migration. Full-text containment, static runtime isolation and portable/draft persistence remain required. See [the designer guide](../prompting-flow-designer.md).
+
+28. **Pane scrolling and commentary containment are different contracts (2026-10-04).** Commentary bubbles contain all their text without internal scrollbars. Canvas and Run output are independently scrollable viewports; their horizontal divider assigns 5–95% of usable pane height to output without changing zoom, geometry or fonts. Native `<details>` creates an anonymous content wrapper, so give the log an explicit measured pixel viewport height; a percentage height alone can clip its scrollbar. Layout uses `tlamatini.prompting-flow.layout.v1.<user id>`, never the flow draft, dirty state or Undo stack. See [the verified resize record](../changes/2026-10-04-run-output-resize.md).
+
+
+29. **The sampler keys are the LEGACY set now, and the stall clocks are gone (2026-10-08, `v1.76.0`).** With `model_brain` at its default `auto`, `rag/factory.py::_model_sampling_kwargs` sends what `agent/model_brain.py` decided for THAT model (a value it does not set is not sent at all); `ollama_repeat_penalty` / `ollama_repeat_last_n` / `ollama_num_ctx` apply only with `model_brain: off` or when the brain cannot plan. A test or a fix that tunes one of those keys and expects to see it on the wire must set `model_brain: off` first. `llm_liveness.py` (the first-chunk / stall clocks) was erased on purpose — do NOT bring back a "the model is too slow, abort and retry" clock: measured with Ollama's own numbers, the time is the model's generated reasoning, and a clock cannot tell a dead call from a slow one. The self-healing watchdog (`unified_agent_llm_step_timeout_seconds`) and `llm_client_timeout_seconds` are separate, long bounds and stay. See `architecture.md` → *The Model Brain*.
+
+30. **Two accounts signed in from ONE browser share ONE session cookie (2026-10-08).** Signing in replaces the cookie of every open tab, while an open chat WebSocket keeps the user it opened with — so an upload from an older tab arrives as the NEW account, and the PDF context refuses it (`PdfContextAccountMismatch`, whose message names the cause and the fix: reload with F5). The refusal is logged as `--- [PDF-CONTEXT] refused for user N: …`. A harness that needs a second user in the same browser must `clear_cookies()` and log in again (see `pdf_context_visible.py`), or use a second browser context.
+
+31. **A model's VERDICT never re-measures (2026-10-08).** `compact_mode.VERDICT_KINDS` (`capacity`, `self_modify_fit`): a verdict updates every tab's box and stops there. `note_capacity` keeps ONE shared note of the current model, so before this two chat pages on two different models re-measured each other forever (209,006 log lines in 60 idle seconds on dev). A NEW `notify()` kind that only reports a verdict must join `VERDICT_KINDS`. Proof: `agent/test_compact_mode_pingpong.py`, visible `compact_pingpong_visible.py`.
+
+32. **The `v1.76.0` tag sits ONE commit before the Model Brain commit (2026-10-08).** The tag points to `953ad2d8`; `72799950` (the Model Brain, the coloured console, the PDF message, the `VERDICT_KINDS` fix and File-Creator `append`) is the next commit on `main`. Both are pushed, and a pushed tag is never moved: build a release from `main` (it still reports `1.76.0`), and check `gh release list` before calling any version published. The published v1.76.0 release (2026-10-09) was built from `main`: its notes describe the Model Brain.
+
+33. **Claude Code sets `NO_COLOR=1` for every program it launches, and Windows Terminal is Windows 11's default console (2026-10-08).** A visible check of the console colours must remove `NO_COLOR` in its launcher, or the colours are (correctly) switched off. A Windows Terminal window's process is `WindowsTerminal.exe`, never the program inside it, so find Tlamatini's console by its title, not by pid; and Windows Terminal ignores the QuickEdit flag, so the console shield's queue is what protects it.
+
+34. **Tlamatini's fixed chat lines are recognised BY THEIR WORDS, and they are first person since 2026-10-09.** `agent/constants.py` holds every fixed line (*"I'm ready, Angela! …"*, *"I'm working on your request, Angela. …"*), filled by `say(template, display_name(user))`. `agent_page_ui.js`, `agent_page_chat.js`, `avatar.js`, `teletlamatini.py` and the harness markers find them by substrings, so a reworded line silently breaks the busy spinner, the avatar or the Telegram bridge unless its matchers change in the same pass. Keep the old third-person phrases in the matchers, and fill a user-supplied value only AFTER `say()`.
+
+35. **An in-app update keeps the OLD `Uninstaller.exe` (2026-10-09).** The uninstaller is built after `pkg.zip`, the updater extracts only `pkg.zip`, and `Uninstaller.exe` is in `$Preserve`, so a fix to `uninstall.py` (for example the 2026-10-09 Templates keep-list) reaches only fresh installs and reinstalls with the new Installer. The updater that runs is the OLD install's `self_update.py`, which deletes the extracted bundle before the swap — do not assume a change to `self_update.py` reaches the very next update. See `docs/self-management-carriage.md`.
+
+36. **The `v1.78.0` tag sits ONE commit before the Usage commit (2026-10-10), and its GitHub title says v1.77.0.** The tag points to `0e6fc72d` (Image-Interpreter's comma-separated list); `7460a147` (About ▸ Usage, migration 0213) and `113eddc4` (message-box resize + Usage outage recovery) follow it on `main` — the same shape as `v1.76.0` (item 32). Never move the pushed tag; the published release was built from `main` (its zip matches `113eddc4`). The release TITLE on GitHub still reads "Tlamatini Release v1.77.0 Win11x64": trust the tag and the asset name (`Tlamatini_Release_v1.78.0_Win11x64.zip`), never the title, before calling a version published.
+
+37. **`v1.83.0` is the tag that carries `91ff8453`, `63a62cc1` and `a2914019` (2026-10-14), and there is no `v1.81.0` tag.** `v1.82.0` (`880a335e`, the setup windows) was published first; the three later commits — a wrongly worded image/video request is not fatal, the docked avatar follows both composer dividers, and the page-wide file-drop router — ship in `v1.83.0`, tagged at `a2914019`. `v1.79.0` and `v1.80.0` are pushed tags with NO published release, and no `v1.81.0` tag exists. Read `gh release list` and, when it matters, the frozen code itself before saying a change "shipped".
+
+38. **A registry read from a development console can disagree with an Explorer-launched process, and a headed test's browser can lock a file you are about to remove (2026-10-11/12).** In the setup campaign the same read-only script saw Tlamatini's Installed Apps and flow keys from the development console and did NOT see them when launched from Explorer (same user SID, no package identity, no AppContainer; the mechanism is not identified), so certify Windows registration only with checks launched in the desktop context (`scripts/setup_desktop_cycles.py`). And a Chrome renderer started by a headed test inherited the installation's `Temp` as its `TEMP` and held a file there, so the Uninstaller (correctly) stopped before deleting anything. Close the test browser before a removal, or give it its own `TEMP`.
+
+39. **A dropped file is claimed by ONE listener (2026-10-14, `v1.83.0`).** Never add a page-level `drop` handler for files: register with `TlamatiniFileDrop.register(kinds, fn, {label})` (`file_drop_router.js`, capture phase on `window`, `Files` drags only). A new page must load the router in its `<head>` BEFORE any script that registers; text drags (`text/plain`, the palette's `application/x-tlamatini-operation`) must never be claimed; and the Prompt Flow Panel restores a local draft, so a `.fpmt` drop legitimately asks "Replace the current diagram?" — a test must answer it. Sync Playwright `time.sleep` does not pump dialog events (use `page.wait_for_timeout`). Proof: `scripts/file_drop_router_cases.mjs`, `agent/test_file_drop_router.py`, visible `file_drop_visible.py`.
+
+40. **Terminater's terminals belong to the Django process and to Windows (2026-10-19, `main`).** One `TerminalHub` per process owns every shell; ConPTY needs Windows 10 1809+; an install that is not Windows reports the feature unavailable instead of failing. The engine is loaded **by path** from the agents tree, so it must stay stdlib-only flat siblings (a package would break the pool copy and the frozen layout); the reapers must keep calling `terminal_hub.live_pids()` (never create the hub from a reaper); the hub token is exported before any pool agent starts. Prompt Flow Panel: the shipped kickoff example holds only the seven prompting operations, and `check_prompt_flow_panel` validates a Terminater step on its own — adding Terminater to the example would also change the palette-count assertions in the older visible scripts. The canvas tooltip text for any agent comes from its **`agents_descriptions.md` row**; a missing row is a visible defect. See [docs/terminater.md](../terminater.md).
+41. **Line endings in this repository are MIXED, and some tools flatten them (2026-10-19).** Many tracked files hold both CRLF and LF-only lines (`CLAUDE.md` 861/348, `build.py` 1,939/346, `copy_source_assets.py` 509/357). An editor or a text-mode rewrite that normalises every line turns an edit of a few lines into a diff of hundreds, and `git diff --stat` is the only place it shows. Count real endings with Python (`bytes.count(b"\r\n")` against `bytes.count(b"\n")`), not with `grep -c` in Git Bash, where `$'\r'` matches every line. Edit mixed files by bytes, or restore the committed endings afterwards by aligning with `git show HEAD:<file>`.
+42. **The private release is data-bearing, and four things keep it from leaking (2026-10-19, `main`).** `build_complete_private_release.py` rebuilds the gitignored `external_mcps.private.json` (dev catalog + the install's servers) and ships `data.keys` as `<install>/data.keys` through `TLAMATINI_BUNDLE_DATA_KEYS`. Never move that variable into the public builder, which pops it; `build.py` aborts if the vault is requested with the PUBLIC catalog; `.gitignore` and the self-modify snapshot exclude the new file. Open: an in-app update does not preserve `data.keys`; installing over an existing install keeps its own `external_mcps.json`. See [the record](../changes/2026-10-19-private-release-data.md).
+
+## Windows flow-file lifecycle — 2026-10-04, shipped in `v1.76.0`
+
+Both `.flw` agent flows and `.fpmt` prompting flows now have Windows registration, repair, removal, status and Default Apps handling. Explorer/source command-line opening validates a bounded snapshot, reuses a matching running server before database startup, and returns through login to the correct editor without execution. Main-chat Open/drop routes both formats into separate editor tabs while preserving the chat document. The historical `.flw` installer wrappers cover both types for old installer/uninstaller binaries; independent management uses `flow_file_associations.ps1 -Extensions`. Never erase UserChoice or another application’s Open With entries. Update Repair respects explicit unregistration and installation ownership. See [Windows flow files](../windows-flow-files.md). Cache suffix at that change: `-flow-file-opening-2`. Committed to `main` on 2026-10-04. The October 4 local release-validation campaign also rebuilds isolated frozen artifacts; its dated evidence distinguishes build completion from runtime acceptance.
+
+## Usage data is scoped, not an estimate (2026-10-10)
+
+Never calculate monthly usage from a rolling 7/30-day total. Read the included
+allowance/balance and purchased balance from `/api/balance`; use its UTC period
+for refill. Plan names do not establish an allowance or unlimited cloud credits.
+Legacy history can omit cost/tokens; missing does not mean zero. Account-wide
+per-model history is currently website-only; local model graphs cover measured
+Tlamatini main-chat calls since recording began. Cloud and Tlamatini accounts
+are different identities. Keep account checks and stale timestamps.
+See [Usage](../usage-dashboard.md). Shipped in `v1.78.0` (2026-10-10).

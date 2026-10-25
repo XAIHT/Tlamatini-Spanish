@@ -1,0 +1,190 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0108_add_flow_making_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **ALARM FLOW FORGE** demo, please &mdash; a one-call showcase of the \"",
+   "es": "\"Tlamatini, ejecuta la demo **ALARM FLOW FORGE**, por favor &mdash; una muestra de una sola llamada del \"",
+   "n": 1
+  },
+  {
+   "en": "\"**flow-making** skill that turns a plain-language objective into a real, canvas-loadable \"",
+   "es": "\"skill **flow-making** que convierte un objetivo en lenguaje natural en un workflow `.flw` real, \"",
+   "n": 1
+  },
+  {
+   "en": "\"`.flw` workflow by driving the FlowCreator engine (it already knows the full 69-agent \"",
+   "es": "\"cargable en el canvas, manejando el engine FlowCreator (ya conoce todo el catálogo de 69 agents \"",
+   "n": 1
+  },
+  {
+   "en": "\"catalog and the connection rules). The goal: build a flow named \"",
+   "es": "\"y las reglas de conexión). El objetivo: construir un flow llamado \"",
+   "n": 1
+  },
+  {
+   "en": "\"**alarm_every_3_hours.flw** that, every 3 hours, sends me a Telegram message saying that \"",
+   "es": "\"**alarm_every_3_hours.flw** que, cada 3 horas, me envíe un mensaje de Telegram diciendo que \"",
+   "n": 1
+  },
+  {
+   "en": "\"another 3-hour lap has passed &mdash; and save it to my Desktop Flows folder. \"",
+   "es": "\"pasó otra vuelta de 3 horas &mdash; y guardarlo en mi carpeta Flows del escritorio. \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; trust them and go straight \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; confía en ellas y ve directo \"",
+   "n": 1
+  },
+  {
+   "en": "\"to Step 1): (a) tick **Multi-Turn** AND **ACPX** before sending (this catalog entry \"",
+   "es": "\"al Paso 1): (a) marca **Multi-Turn** AND **ACPX** antes de enviar (esta entrada del catálogo \"",
+   "n": 1
+  },
+  {
+   "en": "\"auto-enables both &mdash; the flow-making skill is reached via **invoke_skill**, an \"",
+   "es": "\"activa las dos automáticamente &mdash; al skill flow-making se llega con **invoke_skill**, un \"",
+   "n": 1
+  },
+  {
+   "en": "\"ACPX-surface tool); (b) Ollama is running locally and the FlowCreator model is available \"",
+   "es": "\"tool de la superficie ACPX); (b) Ollama está corriendo localmente y el modelo de FlowCreator está disponible \"",
+   "n": 1
+  },
+  {
+   "en": "\"(the skill queries it to design the flow); (c) do NOT hand-author the `.flw` yourself and \"",
+   "es": "\"(el skill lo consulta para diseñar el flow); (c) NO escribas el `.flw` tú mismo y \"",
+   "n": 1
+  },
+  {
+   "en": "\"do NOT use acp_spawn / chat_agent_executer &mdash; the ONE tool you call is **invoke_skill**. \"",
+   "es": "\"NO uses acp_spawn / chat_agent_executer &mdash; el ÚNICO tool que llamas es **invoke_skill**. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127754; ALARM FLOW FORGE &#9200;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#127754; ALARM FLOW FORGE &#9200;</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini flow-making &mdash; objective &middot; FlowCreator &middot; .flw</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini flow-making &mdash; objetivo &middot; FlowCreator &middot; .flw</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (forge the flow): call **invoke_skill** with skill_name='flow-making' and \"",
+   "es": "\"Paso 1 (forja el flow): llama a **invoke_skill** con skill_name='flow-making' y \"",
+   "n": 1
+  },
+  {
+   "en": "\"args_json='{\\\"objective\\\":\\\"Every 3 hours, send me a Telegram message telling me that \"",
+   "es": "\"args_json='{\\\"objective\\\":\\\"Every 3 hours, send me a Telegram message telling me that \""
+  },
+  {
+   "en": "\"another 3-hour lap has passed.\\\",\\\"out_path\\\":\\\"C:/Users/angel/OneDrive/Desktop/Flows/\"",
+   "es": "\"another 3-hour lap has passed.\\\",\\\"out_path\\\":\\\"C:/Users/angel/OneDrive/Desktop/Flows/\""
+  },
+  {
+   "en": "\"alarm_every_3_hours.flw\\\",\\\"flow_name\\\":\\\"alarm_every_3_hours.flw\\\"}'. The skill copies \"",
+   "es": "\"alarm_every_3_hours.flw\\\",\\\"flow_name\\\":\\\"alarm_every_3_hours.flw\\\"}'. El skill copia \"",
+   "n": 1
+  },
+  {
+   "en": "\"the FlowCreator template to an isolated runtime dir, writes its config, runs FlowCreator \"",
+   "es": "\"la plantilla de FlowCreator a un directorio de runtime aislado, escribe su config, ejecuta FlowCreator \"",
+   "n": 1
+  },
+  {
+   "en": "\"(which designs a recurring Telegram-alert flow &mdash; typically Starter &rarr; Telegrammer \"",
+   "es": "\"(que diseña un flow de alertas recurrentes de Telegram &mdash; normalmente Starter &rarr; Telegrammer \"",
+   "n": 1
+  },
+  {
+   "en": "\"&rarr; a 3-hour Sleeper looping back, terminated cleanly), and converts the result into a \"",
+   "es": "\"&rarr; un Sleeper de 3 horas que regresa en bucle, terminado de forma limpia) y convierte el resultado en un \"",
+   "n": 1
+  },
+  {
+   "en": "\"schemaVersion-2 `.flw`. The Desktop\\\\Flows folder is created automatically if it does not \"",
+   "es": "\"`.flw` de schemaVersion 2. La carpeta Escritorio\\\\Flows se crea automáticamente si no \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (read the result): from the invoke_skill return, capture **flw_path**, \"",
+   "es": "\"Paso 2 (lee el resultado): del return de invoke_skill, captura **flw_path**, \"",
+   "n": 1
+  },
+  {
+   "en": "\"**agent_count**, and **connection_count** and report them in one short HTML table. If the \"",
+   "es": "\"**agent_count** y **connection_count** y repórtalos en una tabla HTML corta. Si el \"",
+   "n": 1
+  },
+  {
+   "en": "\"skill returns ok=false (or its log shows a line beginning with `ERROR`), surface that \"",
+   "es": "\"skill devuelve ok=false (o su log muestra una línea que empieza con `ERROR`), muestra ese \"",
+   "n": 1
+  },
+  {
+   "en": "\"message VERBATIM and STOP &mdash; the usual cause is 'Cannot reach Ollama' / 'FlowCreator \"",
+   "es": "\"mensaje TAL CUAL y DETENTE &mdash; la causa habitual es 'Cannot reach Ollama' / 'FlowCreator \"",
+   "n": 1
+  },
+  {
+   "en": "\"timed out' (start Ollama or pass a different model) &mdash; do NOT fabricate a `.flw`. \"",
+   "es": "\"timed out' (inicia Ollama o pasa otro modelo) &mdash; NO inventes un `.flw`. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: close with one HTML banner &mdash; \"",
+   "es": "\"Paso 3: cierra con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:1px;'>&#9989; FLOW FORGED</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:1px;'>&#9989; FLOW FORJADO</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Open it on the ACP designer (Open &#9656; select the \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Ábrelo en el diseñador de ACP (Abrir &#9656; elige el \"",
+   "n": 1
+  },
+  {
+   "en": "\".flw) &mdash; then fill the Telegrammer bot-token and `@username` recipient and press Start.</div></div>. \"",
+   "es": "\".flw) &mdash; luego llena el bot-token de Telegrammer y el destinatario `@username` y presiona Iniciar.</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Remind me that the generated Telegrammer node ships with placeholder credentials I must set \"",
+   "es": "\"Recuérdame que el nodo Telegrammer generado trae credenciales de ejemplo que debo configurar \"",
+   "n": 1
+  },
+  {
+   "en": "\"before the alarm can actually send.\"",
+   "es": "\"antes de que la alarma pueda enviar de verdad.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#06283D 0%,#0E7C86 38%,#1CA7AB 68%,#9BE7D9 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

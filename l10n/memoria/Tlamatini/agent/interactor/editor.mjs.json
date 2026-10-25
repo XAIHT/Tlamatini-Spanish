@@ -1,0 +1,47 @@
+{
+ "archivo": "Tlamatini/agent/interactor/editor.mjs",
+ "segmentos": [
+  {
+   "en": "'‹your choice›'",
+   "es": "'‹tu elección›'",
+   "n": 1
+  },
+  {
+   "en": "'Finish the current input composition before Tlamatini types.'",
+   "es": "'Termina la composición de texto actual (IME) antes de que Tlamatini escriba.'",
+   "n": 1
+  },
+  {
+   "en": "'Typing stopped; your editor content is kept.'",
+   "es": "'Se detuvo la escritura; el contenido de tu editor se conserva.'",
+   "n": 2
+  },
+  {
+   "en": "'Typing stopped because the source editor is hidden. Your content is kept.'",
+   "es": "'Se detuvo la escritura porque el editor del código fuente está oculto. Tu contenido se conserva.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'true'",
+   "motivo": "valor de aria-hidden"
+  },
+  {
+   "en": "'Shift'",
+   "motivo": "nombre de tecla (event.key)"
+  },
+  {
+   "en": "'Control'",
+   "motivo": "nombre de tecla (event.key)"
+  },
+  {
+   "en": "'Alt'",
+   "motivo": "nombre de tecla (event.key)"
+  },
+  {
+   "en": "'Meta'",
+   "motivo": "nombre de tecla (event.key)"
+  }
+ ]
+}

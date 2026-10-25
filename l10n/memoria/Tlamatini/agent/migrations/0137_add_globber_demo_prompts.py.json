@@ -1,0 +1,143 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0137_add_globber_demo_prompts.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **FILE FINDER** demo, please &mdash; a basic showcase of your own \"",
+   "es": "\"Tlamatini, ejecuta la demo **FILE FINDER**, por favor &mdash; una muestra básica de tu propio \"",
+   "n": 1
+  },
+  {
+   "en": "\"filename pattern searcher, driven from chat through the wrapped **chat_agent_globber** tool \"",
+   "es": "\"buscador de archivos por pattern, controlado desde el chat a través del tool wrapper **chat_agent_globber** \"",
+   "n": 1
+  },
+  {
+   "en": "\"(the glob / find-files equivalent that lists matching file paths, newest-first). Tick ONLY \"",
+   "es": "\"(el equivalente de glob / find-files que lista los paths de archivo que coinciden, del más nuevo al más viejo). Marca SÓLO \"",
+   "n": 1
+  },
+  {
+   "en": "\"the **Multi-Turn** checkbox before sending. Use ONLY chat_agent_file_creator (to seed the \"",
+   "es": "\"la casilla **Multi-Turn** antes de enviar. Usa SÓLO chat_agent_file_creator (para sembrar los \"",
+   "n": 1
+  },
+  {
+   "en": "\"scratch files) and chat_agent_globber (to list them). \"",
+   "es": "\"archivos de prueba) y chat_agent_globber (para listarlos). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128193; FILE FINDER</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128193; BUSCADOR DE ARCHIVOS</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Globber &mdash; glob in, file paths out</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Globber &mdash; glob de entrada, paths de archivo de salida</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (seed A): call **chat_agent_file_creator** with request \\\\\\\"Run File Creator with \"",
+   "es": "\"Paso 1 (semilla A): llama a **chat_agent_file_creator** con el request \\\"Run File Creator with \"",
+   "n": 1
+  },
+  {
+   "en": "\"file_path='<TEMP>/globber_demo/one.txt' and content='first file'\\\\\\\", where <TEMP> is your app \"",
+   "es": "\"file_path='<TEMP>/globber_demo/one.txt' and content='first file'\\\", donde <TEMP> es tu directorio \"",
+   "n": 1
+  },
+  {
+   "en": "\"Temp directory (the absolute path the system prompt gives you). \"",
+   "es": "\"Temp (el path absoluto que te da el system prompt). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (seed B): call **chat_agent_file_creator** with request \\\\\\\"Run File Creator with \"",
+   "es": "\"Paso 2 (semilla B): llama a **chat_agent_file_creator** con el request \\\"Run File Creator with \"",
+   "n": 1
+  },
+  {
+   "en": "\"file_path='<TEMP>/globber_demo/sub/two.txt' and content='second file'\\\\\\\". \"",
+   "es": "\"file_path='<TEMP>/globber_demo/sub/two.txt' and content='second file'\\\". \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3 (find): call **chat_agent_globber** with request \\\\\\\"Run Globber with \"",
+   "es": "\"Paso 3 (busca): llama a **chat_agent_globber** con el request \\\"Run Globber with \"",
+   "n": 1
+  },
+  {
+   "en": "\"pattern='**/*.txt', path='<TEMP>/globber_demo', sort_by='mtime'\\\\\\\". From the \"",
+   "es": "\"pattern='**/*.txt', path='<TEMP>/globber_demo', sort_by='mtime'\\\". Del \"",
+   "n": 1
+  },
+  {
+   "en": "\"INI_SECTION_GLOBBER block in the run's log_excerpt capture status (matches | no_matches | \"",
+   "es": "\"bloque INI_SECTION_GLOBBER del log_excerpt de la ejecución captura status (matches | no_matches | \"",
+   "n": 1
+  },
+  {
+   "en": "\"not_found | error) and matches, plus the file paths in the body (newest first). \"",
+   "es": "\"not_found | error) y matches, además de los paths de archivo del body (del más nuevo primero). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 4: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>File Finder &mdash; Matches</strong>' and columns <em>#</em>, <em>path</em> &mdash; \"",
+   "es": "\"'<strong>File Finder &mdash; Coincidencias</strong>' y con las columnas <em>#</em>, <em>path</em> &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"one row per file path in the INI_SECTION_GLOBBER body, in the order returned. Light body cells \"",
+   "es": "\"una fila por cada path de archivo del body de INI_SECTION_GLOBBER, en el orden en que se devolvieron. Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 5: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 5: cierra con un banner HTML que reutilice el estilo del Paso 0 y muestre, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; FOUND <matches>' (status matches) or '&#128193; NONE' (status no_matches), and \"",
+   "es": "\"'&#9989; ENCONTRÉ <matches>' (status matches) o '&#128193; NINGUNO' (status no_matches), y \"",
+   "n": 1
+  },
+  {
+   "en": "\"underneath a one-line metric 'pattern: **/*.txt &middot; matches: <matches>'. \"",
+   "es": "\"debajo una métrica de una línea 'pattern: **/*.txt &middot; coincidencias: <matches>'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#1e0a3c 0%,#4c1d95 33%,#8b5cf6 66%,#c4b5fd 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

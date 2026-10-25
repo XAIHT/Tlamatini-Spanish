@@ -1,0 +1,54 @@
+---
+name: hello-world
+description: Smoke-test skill that echoes its inputs and confirms the SkillHarness wiring is alive end-to-end.
+metadata:
+  openclaw:
+    emoji: "👋"
+  tlamatini:
+    runtime: in-process
+    requires_tools: []
+    requires_mcps: []
+    budget:
+      max_iterations: 2
+      max_seconds: 10
+      max_tokens: 2000
+    permissions:
+      filesystem:
+        read:  []
+        write: []
+      shell:   []
+      network: deny
+      db:      deny
+    inputs:
+      - { name: who, type: string, required: false, default: "world" }
+    outputs:
+      - { name: greeting, type: string, required: true }
+    triggers:
+      keywords: ["hello", "smoke test", "ping", "acpx ready"]
+---
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+
+# Hello World
+
+> Current release: **[v1.90.0](../../../../docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+
+> **HEADLESS IS FORBIDDEN. VISIBLE FOREGROUND EXECUTION ONLY.** Every command, automated test, diagnostic, script, build, agent and browser must run in a visible foreground window on Angela's real desktop. Use forked CMD/PowerShell windows, `execute_forked_window: true`, and `headless: false`. Monitor live; if visibility cannot be confirmed, do not run. Read the [mandatory execution policy](../../../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+This skill exists to prove the SkillHarness pipeline is wired correctly.
+It must:
+
+1. Accept an optional `who` input (default: "world").
+2. Return `{"greeting": "hello, <who>"}` exactly.
+
+There are no side effects. There is no shell. There is no file IO.
+
+If this skill cannot be invoked end-to-end, the SkillHarness is broken
+and no other skill should be trusted. Treat that as the smoke-test gate.

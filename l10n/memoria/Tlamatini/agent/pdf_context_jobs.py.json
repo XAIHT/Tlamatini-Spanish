@@ -1,0 +1,51 @@
+{
+ "archivo": "Tlamatini/agent/pdf_context_jobs.py",
+ "segmentos": [
+  {
+   "en": "'PDF context preparation cancelled.'",
+   "es": "'Se canceló la preparación del contexto del PDF.'",
+   "n": 2
+  },
+  {
+   "en": "'PDF cancellation requested.'",
+   "es": "'Se pidió cancelar el PDF.'",
+   "n": 1
+  },
+  {
+   "en": "'PDF queued for context preparation…'",
+   "es": "'PDF en cola para preparar el contexto…'",
+   "n": 1
+  },
+  {
+   "en": "'This PDF upload has already been submitted.'",
+   "es": "'Esta subida del PDF ya se había enviado.'",
+   "n": 1
+  },
+  {
+   "en": "'PDF upload cancelled.'",
+   "es": "'Se canceló la subida del PDF.'",
+   "n": 2
+  },
+  {
+   "en": "'PDF upload failed.'",
+   "es": "'Error al subir el PDF.'",
+   "n": 1
+  },
+  {
+   "en": "'PDF context is ready.'",
+   "es": "'El contexto del PDF está listo.'",
+   "n": 1
+  },
+  {
+   "en": "f'Could not prepare PDF context: {error}'",
+   "es": "f'No se pudo preparar el contexto del PDF: {error}'",
+   "n": 1
+  },
+  {
+   "en": "'PDF context job is unavailable. Use Reopen and try again.'",
+   "es": "'El trabajo del contexto del PDF no está disponible. Vuelve a abrir el PDF e inténtalo otra vez.'",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

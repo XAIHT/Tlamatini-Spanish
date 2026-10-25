@@ -1,0 +1,247 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/skills_dialog.js",
+ "segmentos": [
+  {
+   "en": "'Configure Skills'",
+   "es": "'Configurar Skills'",
+   "n": 2
+  },
+  {
+   "en": "'Toggle SKILL.md packages on or off.'",
+   "es": "'Activa o desactiva los paquetes SKILL.md.'",
+   "n": 1
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'Browse ACPX-Skills'",
+   "es": "'Explorar ACPX-Skills'",
+   "n": 1
+  },
+  {
+   "en": "'<li class=\"skill-browse-loading\">Loading…</li>'",
+   "es": "'<li class=\"skill-browse-loading\">Cargando…</li>'",
+   "n": 1
+  },
+  {
+   "en": "'<div class=\"skill-detail-loading\">Loading…</div>'",
+   "es": "'<div class=\"skill-detail-loading\">Cargando…</div>'",
+   "n": 1
+  },
+  {
+   "en": "'<dt>Budget</dt><dd>'",
+   "es": "'<dt>Presupuesto</dt><dd>'",
+   "n": 1
+  },
+  {
+   "en": "'<dt>Requires tools</dt><dd>'",
+   "es": "'<dt>Tools requeridos</dt><dd>'",
+   "n": 1
+  },
+  {
+   "en": "'<dt>Requires MCPs</dt><dd>'",
+   "es": "'<dt>MCPs requeridos</dt><dd>'",
+   "n": 1
+  },
+  {
+   "en": "'<h5>Body</h5><pre class=\"skill-detail-body\">'",
+   "es": "'<h5>Cuerpo</h5><pre class=\"skill-detail-body\">'",
+   "n": 1
+  },
+  {
+   "en": "' orphan DB rows'",
+   "es": "' filas huérfanas en la DB'",
+   "n": 1
+  },
+  {
+   "en": "'<li class=\"skill-browse-error\">Load failed: '",
+   "es": "'<li class=\"skill-browse-error\">Error al cargar: '",
+   "n": 1
+  },
+  {
+   "en": "'ACPX-Skills Diagnostics'",
+   "es": "'Diagnóstico de ACPX-Skills'",
+   "n": 1
+  },
+  {
+   "en": "'<em>Loading diagnostics…</em>'",
+   "es": "'<em>Cargando el diagnóstico…</em>'",
+   "n": 1
+  },
+  {
+   "en": "'</strong> skills on disk &nbsp;·&nbsp; '",
+   "es": "'</strong> skills en disco &nbsp;·&nbsp; '",
+   "n": 1
+  },
+  {
+   "en": "'</strong> DB rows &nbsp;·&nbsp; '",
+   "es": "'</strong> filas en la DB &nbsp;·&nbsp; '",
+   "n": 1
+  },
+  {
+   "en": "'</strong> Tools tracked &nbsp;·&nbsp; '",
+   "es": "'</strong> Tools registrados &nbsp;·&nbsp; '",
+   "n": 1
+  },
+  {
+   "en": "'</strong> MCPs tracked &nbsp;·&nbsp; '",
+   "es": "'</strong> MCPs registrados &nbsp;·&nbsp; '",
+   "n": 1
+  },
+  {
+   "en": "'</strong> ACPX agents tracked'",
+   "es": "'</strong> agents de ACPX registrados'",
+   "n": 1
+  },
+  {
+   "en": "'<li><em>none — all good</em></li>'",
+   "es": "'<li><em>ninguno: todo bien</em></li>'",
+   "n": 1
+  },
+  {
+   "en": "'Missing tool dependencies'",
+   "es": "'Dependencias de tools faltantes'",
+   "n": 1
+  },
+  {
+   "en": "'</strong> — disabled tools: '",
+   "es": "'</strong> — tools desactivados: '",
+   "n": 1
+  },
+  {
+   "en": "'Missing MCP dependencies'",
+   "es": "'Dependencias de MCPs faltantes'",
+   "n": 1
+  },
+  {
+   "en": "'</strong> — disabled MCPs: '",
+   "es": "'</strong> — MCPs desactivados: '",
+   "n": 1
+  },
+  {
+   "en": "'Unknown ACPX agents'",
+   "es": "'Agents de ACPX desconocidos'",
+   "n": 1
+  },
+  {
+   "en": "'Orphan DB rows (no SKILL.md on disk)'",
+   "es": "'Filas huérfanas en la DB (sin SKILL.md en disco)'",
+   "n": 1
+  },
+  {
+   "en": "'<div class=\"skill-diag-error\">Load failed: '",
+   "es": "'<div class=\"skill-diag-error\">Error al cargar: '",
+   "n": 1
+  },
+  {
+   "en": "'Skill registry reloaded — '",
+   "es": "'Se recargó el registro de skills — '",
+   "n": 1
+  },
+  {
+   "en": "' skill(s) on disk · '",
+   "es": "' skill(s) en disco · '",
+   "n": 1
+  },
+  {
+   "en": "' DB row(s).'",
+   "es": "' fila(s) en la DB.'",
+   "n": 1
+  },
+  {
+   "en": "'Reload failed: '",
+   "es": "'Error al recargar: '",
+   "n": 2
+  },
+  {
+   "en": "'unknown error'",
+   "es": "'error desconocido'",
+   "n": 1
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Continue\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Continuar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Cancel\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Cancelar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'.ui-dialog-buttonpane button:contains(\"Close\")'",
+   "es": "'.ui-dialog-buttonpane button:contains(\"Cerrar\")'",
+   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
+   "n": 1
+  },
+  {
+   "en": "'<span class=\"skill-detail-badge on\">enabled</span>'",
+   "es": "'<span class=\"skill-detail-badge on\">activado</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<span class=\"skill-detail-badge off\">disabled</span>'",
+   "es": "'<span class=\"skill-detail-badge off\">desactivado</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<em>none</em>'",
+   "es": "'<em>ninguno</em>'",
+   "n": 3
+  },
+  {
+   "en": "' <span class=\"skill-detail-req\">required</span>'",
+   "es": "' <span class=\"skill-detail-req\">obligatorio</span>'",
+   "n": 1
+  },
+  {
+   "en": "'<li><em>(none)</em></li>'",
+   "es": "'<li><em>(ninguno)</em></li>'",
+   "n": 2
+  },
+  {
+   "en": "'</strong> requires <code>'",
+   "es": "'</strong> requiere <code>'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'skill-browse-dot skill-browse-dot-'",
+   "motivo": "clases CSS"
+  },
+  {
+   "en": "'<dt>Runtime</dt><dd>'",
+   "motivo": "término técnico (runtime)"
+  },
+  {
+   "en": "' iter · '",
+   "motivo": "abreviatura técnica (iteraciones)"
+  },
+  {
+   "en": "'<dt>Triggers</dt><dd>'",
+   "motivo": "término técnico (triggers)"
+  },
+  {
+   "en": "'<dt>Path</dt><dd><code class=\"skill-detail-path\">'",
+   "motivo": "término técnico (path)"
+  },
+  {
+   "en": "'<h5>Inputs</h5><ul class=\"skill-detail-io\">'",
+   "motivo": "término técnico (inputs)"
+  },
+  {
+   "en": "'<h5>Outputs</h5><ul class=\"skill-detail-io\">'",
+   "motivo": "término técnico (outputs)"
+  },
+  {
+   "en": "'<section class=\"skill-diag-section '",
+   "motivo": "HTML y clases CSS"
+  }
+ ]
+}

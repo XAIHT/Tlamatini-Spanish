@@ -1,0 +1,221 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-control-buttons.js",
+ "segmentos": [
+  {
+   "en": "'No Starter agents found on the canvas. Add a Starter agent and connect it to other agents to begin.'",
+   "es": "'No hay agents Starter en el canvas. Agrega un agent Starter y conéctalo a otros agents para empezar.'",
+   "n": 1
+  },
+  {
+   "en": "'Could not compile the current flow before starting: '",
+   "es": "'No se pudo compilar el flow actual antes de iniciarlo: '",
+   "n": 1
+  },
+  {
+   "en": "\"The Tlamatini is awakening the Starter agents, wait a moment...\"",
+   "es": "\"Tlamatini está despertando a los agents Starter, espera un momento...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Starting agents...\"",
+   "es": "\"Iniciando los agents...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Continue!\"",
+   "es": "\"Continuar\"",
+   "n": 5
+  },
+  {
+   "en": "\"Startup Complete\"",
+   "es": "\"Inicio completado\"",
+   "n": 1
+  },
+  {
+   "en": "'All Starter agents have been successfully awakened!'",
+   "es": "'¡Todos los agents Starter despertaron correctamente!'",
+   "n": 1
+  },
+  {
+   "en": "\"Startup Failed\"",
+   "es": "\"Error al iniciar\"",
+   "n": 1
+  },
+  {
+   "en": "'The following Starter agents could not be verified:'",
+   "es": "'No se pudieron verificar estos agents Starter:'",
+   "n": 1
+  },
+  {
+   "en": "'No Ender agents found on the canvas. Add an Ender agent and connect it to other agents to enable stop functionality.'",
+   "es": "'No hay agents Ender en el canvas. Agrega un agent Ender y conéctalo a otros agents para poder detener el flow.'",
+   "n": 1
+  },
+  {
+   "en": "'launch failed'",
+   "es": "'no se pudo iniciar'",
+   "n": 1
+  },
+  {
+   "en": "\"The Tlamatini is awakening the Ender agents, wait a moment...\"",
+   "es": "\"Tlamatini está despertando a los agents Ender, espera un momento...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ending agents...\"",
+   "es": "\"Deteniendo los agents...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Termination Complete\"",
+   "es": "\"Terminación completada\"",
+   "n": 2
+  },
+  {
+   "en": "'All agents (including output chain) have completed!'",
+   "es": "'¡Todos los agents (incluido el chain de output) terminaron!'",
+   "n": 1
+  },
+  {
+   "en": "\"Confirming all output agents have stopped...\"",
+   "es": "\"Confirmando que todos los agents de output se detuvieron...\"",
+   "n": 1
+  },
+  {
+   "en": "`Waiting for output agents: ${names}...`",
+   "es": "`Esperando a los agents de output: ${names}...`",
+   "n": 1
+  },
+  {
+   "en": "\"Enders done. Waiting for output agents to complete...\"",
+   "es": "\"Los agents Ender terminaron. Esperando a que terminen los agents de output...\"",
+   "n": 1
+  },
+  {
+   "en": "'All Ender agents have been successfully executed!'",
+   "es": "'¡Todos los agents Ender se ejecutaron correctamente!'",
+   "n": 1
+  },
+  {
+   "en": "\"Termination Failed\"",
+   "es": "\"Error al terminar\"",
+   "n": 1
+  },
+  {
+   "en": "'The following Ender agents could not be verified:'",
+   "es": "'No se pudieron verificar estos agents Ender:'",
+   "n": 1
+  },
+  {
+   "en": "\"All Agents Already Down\"",
+   "es": "\"Todos los agents ya estaban detenidos\"",
+   "n": 1
+  },
+  {
+   "en": "'All target agents are already stopped. No termination was needed.'",
+   "es": "'Todos los agents de destino ya estaban detenidos. No hizo falta terminar ninguno.'",
+   "n": 1
+  },
+  {
+   "en": "\"Stop Complete\"",
+   "es": "\"Detención completada\"",
+   "n": 1
+  },
+  {
+   "en": "'The system is not running. Start the flow before attempting to pause.'",
+   "es": "'El sistema no está en ejecución. Inicia el flow antes de pausarlo.'",
+   "n": 1
+  },
+  {
+   "en": "'Failed to get running processes: '",
+   "es": "'Error al obtener los procesos en ejecución: '",
+   "n": 1
+  },
+  {
+   "en": "'Unknown error'",
+   "es": "'Error desconocido'",
+   "n": 1
+  },
+  {
+   "en": "'No running processes found to pause.'",
+   "es": "'No hay procesos en ejecución para pausar.'",
+   "n": 1
+  },
+  {
+   "en": "'Error during pause operation: '",
+   "es": "'Error al pausar: '",
+   "n": 1
+  },
+  {
+   "en": "`Warning: ${reanimateResult.failed.length} agent(s) failed to reanimate.`",
+   "es": "`Advertencia: no se pudieron reanimar ${reanimateResult.failed.length} agent(s).`",
+   "n": 1
+  },
+  {
+   "en": "'Error during resume operation: '",
+   "es": "'Error al reanudar: '",
+   "n": 1
+  },
+  {
+   "en": "'Clear the pool and the canvas?'",
+   "es": "'¿Quieres limpiar el pool y el canvas?'",
+   "n": 1
+  },
+  {
+   "en": "'This permanently deletes every agent deployed in the pool directory and empties the canvas. This cannot be undone.'",
+   "es": "'Esto elimina de forma permanente todos los agents del directorio del pool y vacía el canvas. No se puede deshacer.'",
+   "n": 1
+  },
+  {
+   "en": "'Clear everything'",
+   "es": "'Limpiar todo'",
+   "n": 1
+  },
+  {
+   "en": "'Failed to clear pool directory: '",
+   "es": "'Error al limpiar el directorio del pool: '",
+   "n": 1
+  },
+  {
+   "en": "'Error during clear operation: '",
+   "es": "'Error al limpiar: '",
+   "n": 1
+  },
+  {
+   "en": "'FlowHypervisor Alert'",
+   "es": "'Alerta del FlowHypervisor'",
+   "n": 1
+  },
+  {
+   "en": "'ATTENTION NEEDED'",
+   "es": "'SE REQUIERE ATENCIÓN'",
+   "n": 1
+  },
+  {
+   "en": "\"Stop Flow\"",
+   "es": "\"Detener el flow\"",
+   "n": 2
+  },
+  {
+   "en": "\"Dismiss\"",
+   "es": "\"Descartar\"",
+   "n": 2
+  },
+  {
+   "en": "'button:contains(\"Stop Flow\")'",
+   "es": "'button:contains(\"Detener el flow\")'",
+   "maquina": "contrato de etiquetas: selector del botón «Detener el flow» del diálogo del FlowHypervisor (mismo archivo)",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "`--- Agent ${item.id} already exists`",
+   "motivo": "texto de consola"
+  },
+  {
+   "en": "`--- Deployed ${item.id}`",
+   "motivo": "texto de consola"
+  }
+ ]
+}

@@ -1,0 +1,215 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0122_add_talker_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **TLAMATINI SPEAKS** demo, please &mdash; a basic showcase of your own \"",
+   "es": "\"Tlamatini, ejecuta la demo **TLAMATINI SPEAKS**, por favor &mdash; una muestra básica de tu propia \"",
+   "n": 1
+  },
+  {
+   "en": "\"TEXT-TO-SPEECH voice, driven entirely from chat through the wrapped **chat_agent_talker** \"",
+   "es": "\"voz TEXT-TO-SPEECH, controlada por completo desde el chat a través del tool wrapper **chat_agent_talker**: \"",
+   "n": 1
+  },
+  {
+   "en": "\"tool: you synthesise short lines of speech with two of your FEMALE voices and play them on \"",
+   "es": "\"sintetizas líneas cortas de habla con dos de tus voces FEMENINAS y las reproduces en \"",
+   "n": 1
+  },
+  {
+   "en": "\"the speakers, then report what was spoken. \"",
+   "es": "\"las bocinas, y luego reportas lo que se dijo. \"",
+   "n": 1
+  },
+  {
+   "en": "\"PRECONDITIONS you can assume are TRUE (do NOT verify them &mdash; go straight to Step 1): \"",
+   "es": "\"PRECONDICIONES que puedes dar por CIERTAS (NO las verifiques &mdash; ve directo al Paso 1): \"",
+   "n": 1
+  },
+  {
+   "en": "\"(a) tick ONLY the **Multi-Turn** checkbox before sending (ACPX is NOT required &mdash; \"",
+   "es": "\"(a) marca SÓLO la casilla **Multi-Turn** antes de enviar (NO se necesita ACPX &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_talker is the ONLY tool you may use; do NOT use chat_agent_executer / \"",
+   "es": "\"chat_agent_talker es el ÚNICO tool que puedes usar; no uses chat_agent_executer / \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_pythonxer / acp_spawn); (b) hearing the audio needs a reachable Ollama serving \"",
+   "es": "\"chat_agent_pythonxer ni tools de ACPX); (b) oír el audio necesita un Ollama accesible sirviendo \"",
+   "n": 1
+  },
+  {
+   "en": "\"the Orpheus model plus `snac`+`torch` installed &mdash; if they are absent Talker still runs \"",
+   "es": "\"el modelo Orpheus más `snac`+`torch` instalados &mdash; si no están, Talker igual corre \"",
+   "n": 1
+  },
+  {
+   "en": "\"and returns status `tokens_only` (a documented degraded mode, NOT a failure): record it \"",
+   "es": "\"y devuelve status `tokens_only` (un modo degradado documentado, NO un error): regístralo \"",
+   "n": 1
+  },
+  {
+   "en": "\"verbatim and CONTINUE. \"",
+   "es": "\"tal cual y CONTINÚA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"VOICE RULE (by design, non-negotiable): you are FEMALE and you speak ONLY with a female \"",
+   "es": "\"REGLA DE VOZ (por diseño, no negociable): eres MUJER y hablas SÓLO con voz de mujer \"",
+   "n": 1
+  },
+  {
+   "en": "\"voice &mdash; tara (preferred), leah, jess, mia, or zoe. Use ONLY these. \"",
+   "es": "\"&mdash; tara (preferida), leah, jess, mia o zoe. Usa SÓLO estas. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Each step is exactly ONE chat_agent_talker call shaped \\\"Speak with input_text='<text>' and \"",
+   "es": "\"Cada paso es exactamente UNA llamada a chat_agent_talker con la forma \\\"Speak with input_text='<text>' and \"",
+   "n": 1
+  },
+  {
+   "en": "\"voice='<female voice>'\\\". After each call read the JSON return (an INI_SECTION_TALKER block \"",
+   "es": "\"voice='<female voice>'\\\". Después de cada llamada lee el JSON que devuelve (un bloque INI_SECTION_TALKER \"",
+   "n": 1
+  },
+  {
+   "en": "\"under the run's log_excerpt) and capture voice / gender / status / audio_seconds / \"",
+   "es": "\"del log_excerpt de la ejecución) y captura voice / gender / status / audio_seconds / \"",
+   "n": 1
+  },
+  {
+   "en": "\"output_path plus the body. \"",
+   "es": "\"output_path, además del body. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner &mdash; \"",
+   "es": "\"Paso 0: abre con un banner HTML &mdash; \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128483;&#65039; TLAMATINI SPEAKS &#127908;</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>&#128483;&#65039; TLAMATINI HABLA &#127908;</h2>\"",
+   "n": 1
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Talker &mdash; her own voice, always female</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Tlamatini Talker &mdash; su propia voz, siempre de mujer</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1 (greeting in her default voice): call **chat_agent_talker** with request \"",
+   "es": "\"Paso 1 (saludo con su voz predeterminada): llama a **chat_agent_talker** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Speak with input_text='Hello, I am Tlamatini. This is my voice.' and voice='tara'\\\". \"",
+   "es": "\"\\\"Speak with input_text='Hello, I am Tlamatini. This is my voice.' and voice='tara'\\\". \""
+  },
+  {
+   "en": "\"From the INI_SECTION_TALKER block capture voice (tara), gender (female), status \"",
+   "es": "\"Del bloque INI_SECTION_TALKER captura voice (tara), gender (female), status \"",
+   "n": 1
+  },
+  {
+   "en": "\"(spoken / saved / tokens_only), audio_seconds and output_path. \"",
+   "es": "\"(spoken / saved / tokens_only), audio_seconds y output_path. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2 (a second female voice): call **chat_agent_talker** with request \"",
+   "es": "\"Paso 2 (una segunda voz femenina): llama a **chat_agent_talker** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Speak with input_text='And this is another of my voices.' and voice='leah'\\\". \"",
+   "es": "\"\\\"Speak with input_text='And this is another of my voices.' and voice='leah'\\\". \""
+  },
+  {
+   "en": "\"Capture the same fields (voice=leah, gender=female). \"",
+   "es": "\"Captura los mismos campos (voice=leah, gender=female). \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: render an HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 3: muestra una tabla HTML con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>Tlamatini Speaks &mdash; Voice Report</strong>' and columns <em>step</em>, \"",
+   "es": "\"'<strong>Tlamatini Speaks &mdash; Reporte de voz</strong>' y con las columnas <em>paso</em>, \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>voice</em>, <em>gender</em>, <em>status</em> (spoken|saved|tokens_only|error), \"",
+   "es": "\"<em>voice</em>, <em>gender</em>, <em>status</em> (spoken|saved|tokens_only|error), \""
+  },
+  {
+   "en": "\"<em>seconds</em>, <em>saved WAV</em> &mdash; one row per call in execution order, every value \"",
+   "es": "\"<em>segundos</em>, <em>WAV guardado</em> &mdash; una fila por cada llamada en orden de ejecución, cada valor \"",
+   "n": 1
+  },
+  {
+   "en": "\"verbatim from the INI_SECTION_TALKER block (do NOT re-classify). Light body cells \"",
+   "es": "\"tal cual del bloque INI_SECTION_TALKER (NO lo reclasifiques). Celdas del cuerpo claras \"",
+   "n": 1
+  },
+  {
+   "en": "\"(background:#ffffff;color:#0f172a; or striped #f1f5f9), green tint for spoken, amber tint for \"",
+   "es": "\"(background:#ffffff;color:#0f172a; o rayado #f1f5f9), tono verde para spoken, tono ámbar para \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 4: close with one HTML banner reusing the Step 0 style printing, in big letters, \"",
+   "es": "\"Paso 4: cierra con un banner HTML que reutilice el estilo del Paso 0 y muestre, en letras grandes, \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#9989; SPOKEN' (both calls returned status spoken &mdash; the audio played), \"",
+   "es": "\"'&#9989; HABLÓ' (ambas llamadas devolvieron status spoken &mdash; el audio se reprodujo), \"",
+   "n": 1
+  },
+  {
+   "en": "\"'&#128266; SAVED, NOT PLAYED' (status saved), or '&#128221; TOKENS ONLY' (status tokens_only \"",
+   "es": "\"'&#128266; GUARDADO, NO REPRODUCIDO' (status saved) o '&#128221; SÓLO TOKENS' (status tokens_only \"",
+   "n": 1
+  },
+  {
+   "en": "\"&mdash; no vocoder/Ollama, the audio tokens were saved instead), and underneath a one-line \"",
+   "es": "\"&mdash; sin vocoder/Ollama, en su lugar se guardaron los tokens de audio), y debajo una métrica de una línea \"",
+   "n": 1
+  },
+  {
+   "en": "\"metric 'voices: tara, leah &middot; status: <s1>/<s2> &middot; audio: <sec1>s + <sec2>s'. \"",
+   "es": "\"'voces: tara, leah &middot; status: <s1>/<s2> &middot; audio: <sec1>s + <sec2>s'. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#5b1d2e 0%,#c1462e 33%,#f2a35e 66%,#ffe3a3 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

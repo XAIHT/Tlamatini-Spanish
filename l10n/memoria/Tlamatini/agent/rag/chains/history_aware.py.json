@@ -1,0 +1,227 @@
+{
+ "archivo": "Tlamatini/agent/rag/chains/history_aware.py",
+ "segmentos": [
+  {
+   "en": "\"No files are currently loaded in the knowledge base. Please load documents to enable file listing.\"",
+   "es": "\"Todavía no tengo archivos cargados en mi base de conocimiento. Carga documentos para que pueda listarlos.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Files with extension .{ext} in knowledge base ({len(filtered_files)} total):\\n\"",
+   "es": "f\"Archivos con extensión .{ext} en la base de conocimiento ({len(filtered_files)} en total):\\n\"",
+   "n": 1
+  },
+  {
+   "en": "f\"No files with extension .{ext} found in the knowledge base.\"",
+   "es": "f\"No encontré archivos con extensión .{ext} en la base de conocimiento.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Available files in knowledge base ({len(files)} total):\\n\"",
+   "es": "f\"Archivos disponibles en la base de conocimiento ({len(files)} en total):\\n\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"--- _is_list_files_query: extension pattern matched but prompt is long and has no listing verb → ignoring ---\\n\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Detected files prompt! ---\\n\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Forcibly closing httpx transport ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Transport closed ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [ABORT] Transport close error (expected): {te}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Client closed ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [ABORT] Client close error (expected): {ce}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- [ABORT] Error during abort (connection may already be closed): {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- [ABORT] Connection reference cleared ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"You are a conversation summarizer. Create **JUST ONCE** a concise, factual summary of the dialogue that captures information relevant to answering the user's current question.\\n\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"STRICT GUIDELINES:\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"a. Focus on: key facts, decisions made, technical details, entity names, constraints, and ongoing context\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"b. Exclude: pleasantries, acknowledgments, clarifying questions, and redundant information\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"c. Format: Single paragraph, factual statements only, no conversational markers\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"d. Length: Maximum 120 words\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"e. Style: Neutral, technical documentation tone\\n\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"f. Return ONLY the summary content - no prefixes, role indicators, or meta-commentary.\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"Current user question: {q}\\n\\nGenerate summary focusing on information relevant to this question:\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "f\"CHAT HISTORY SUMMARY:\\n{summary}\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"--- HistoryAwareNoDocsChain: Processing contextual request without retrieval ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Evaluating conversation history for intelligent rephrasing ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- Original input: {original_input}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"\\n--- History: {hist}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- No significant chat history detected, proceeding with original question ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"WEB CONTEXT (summarized from live search):\\n{ext}{sources_str}\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"Apply all of the Rules only to the **CURRENT** human input ({input}); ignore chat_history for all of the Rules.\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "f\"\\n--- OptimizedHistoryAwareRAGChain::invoke(): >>>>>>>>>>{payload}<<<<<<<<<<\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- OptimizedHistoryAwareRAGChain: Processing request with document retrieval ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Analyzing conversation context and preparing intelligent document search ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- No conversation context available, proceeding with original query ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"--- Expanded query: {q_rewritten}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: Query expansion failed: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"provided context\"",
+   "motivo": "marcador que compara el código"
+  },
+  {
+   "en": "\"LLM Clarification\"",
+   "motivo": "marcador que compara el código"
+  },
+  {
+   "en": "\"File search was not possible\"",
+   "motivo": "marcador que compara el código"
+  },
+  {
+   "en": "\"File search was not needed\"",
+   "motivo": "marcador que compara el código"
+  },
+  {
+   "en": "\"No files found\"",
+   "motivo": "marcador que compara el código"
+  },
+  {
+   "en": "\"No files matching\"",
+   "motivo": "marcador que compara el código"
+  },
+  {
+   "en": "\"Which base location\"",
+   "motivo": "marcador que compara el código"
+  },
+  {
+   "en": "\"--- Using files_context from FileSearchRAGChain ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- FileSearchRAGChain returned non-useful result, using knowledge base instead ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- User explicitly requested 'provided context', ignoring FileSearchRAGChain results ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Multi-Turn mode: file-listing detection triggered but BYPASSED → request goes to LLM ---\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: Context budget allocation failed: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "f\"Warning: Cross-reference addition failed: {e}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"WEB CONTEXT (summarized from live search):\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "f\"{ext_header}{ext}{sources_str}\\n\\nLOCAL CONTEXT:\\n{context_blob}\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "\"FILE MANIFEST (all loaded):\\n\"",
+   "motivo": "instrucción o contexto para el LLM"
+  },
+  {
+   "en": "f\"\\n--- Rewritten input: {q_rewritten}\"",
+   "motivo": "log de consola"
+  },
+  {
+   "en": "\"--- Context blob saved with hash: \"",
+   "motivo": "log de consola"
+  }
+ ]
+}

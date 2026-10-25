@@ -1,0 +1,34 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0208_video_demo_config_models.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "'(qwen3-vl:235b-cloud) and interpreter_model_2 (jcyhsiao/qwen3.5cloud:latest) IN PARALLEL on two dedicated '",
+   "motivo": "contrato de resultado de Video-Analyzer que el patch compara (__contains); conservar"
+  },
+  {
+   "en": "'Ollama connections, then fuses them with merging_model (glm-5.3:cloud).'",
+   "motivo": "contrato de resultado de Video-Analyzer que el patch compara (__contains); conservar"
+  },
+  {
+   "en": "'and interpreter_model_2 selected in Config > Models IN PARALLEL on two dedicated '",
+   "motivo": "contrato de resultado de Video-Analyzer que el patch compara (__contains); conservar"
+  },
+  {
+   "en": "'Ollama connections, then fuses them with the merging_model selected there. '",
+   "motivo": "contrato de resultado de Video-Analyzer que el patch compara (__contains); conservar"
+  },
+  {
+   "en": "'Keep the saved model choices unless the user explicitly requests an override.'",
+   "motivo": "contrato de resultado de Video-Analyzer que el patch compara (__contains); conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "contrato de resultado de Video-Analyzer que el patch compara (__contains); conservar"
+  },
+  {
+   "en": "'VIDEO-ANALYZER ROBOTIC-LOOP DEMO'",
+   "motivo": "contrato de resultado de Video-Analyzer que el patch compara (__contains); conservar"
+  }
+ ]
+}

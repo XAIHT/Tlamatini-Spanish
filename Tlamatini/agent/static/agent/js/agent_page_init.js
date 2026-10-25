@@ -1,0 +1,1904 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *   ✦  T L A M A T I N I  ✦   —   "one who knows"
+ *
+ *   Created by  Angela López Mendoza   ·   @angelahack1
+ *   Developer · Architect · Creator of Tlamatini
+ *
+ *   Every line of this file was written by Angela López Mendoza.
+ * ═══════════════════════════════════════════════════════════════════
+ *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+ */
+
+// ============================================================
+// agent_page_init.js  –  Initialization, event wiring & actions
+// ============================================================
+/* global restoreMenuControlsAfterOperation, syncClearContextMenuState, isMultiTurnEnabled, applyStoredMultiTurnState, multiTurnCheckbox, persistMultiTurnState, isExecReportEnabled, applyStoredExecReportState, execReportCheckbox, persistExecReportState, isAcpxEnabled, applyStoredAcpxState, acpxCheckbox, persistAcpxState, isAskExecsEnabled, applyStoredAskExecsState, syncAskExecsAvailability, askExecsCheckbox, persistAskExecsState, isStepByStepEnabled, applyStoredStepByStepState, stepByStepCheckbox, persistStepByStepState, dismissExecPermissionDialogForRuntimeProceed, dismissExecPermissionDialogSilently, openAccessKeysWizardDialog */
+
+// --- Prevent accidental close during long operations ---
+window.addEventListener('beforeunload', (event) => {
+    if (inLongOperation) {
+        event.preventDefault();
+        event.returnValue = '';
+        sendPostBeacon('/agent/clear_session_state/'); // eslint-disable-line no-undef
+        console.log('--- Page closing during long operation: Sent session cleanup via beacon');
+    }
+});
+
+// ----------------------------------------------------------------
+// Top-level actions
+// ----------------------------------------------------------------
+
+function Reconnect(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (reConnectEnabled === false) {
+        console.log("Reconnect is not allowed at this moment...");
+        return;
+    }
+    if (!isChatSocketOpen()) {
+        console.log("--- WebSocket is closed, reloading page to rebuild the live session.");
+        window.location.reload();
+        return;
+    }
+    reConnectEnabled = true;
+    reConnectButton.disabled = true;
+
+    setTitleBusy(false);
+    contextEnabled = true;
+    contextButton.style.backgroundColor = "darkgreen";
+    contextButton.disabled = false;
+    contextButtonClicked = false;
+    contextButton.textContent = "Usar como contexto";
+    chatInput.readOnly = false;
+    chatInput.style.backgroundColor = '#40414F';
+    const existingSpinner = document.getElementById(spinnerId);
+
+    if (existingSpinner && existingSpinner.parentNode) {
+        existingSpinner.parentNode.removeChild(existingSpinner);
+    }
+
+    agents = [];
+    tools = [];
+    skills = [];
+    openEnabled = true;
+    reConnectEnabled = true;
+    contextEnabled = true;
+    cleanCanvasEnabled = true;
+    contextButtonClicked = false;
+    canvasSettedAsContext = false;
+    reConnectButton.disabled = false;
+    contextMenuButton.removeAttribute('disabled', 'disabled');
+    contextMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+    panelsMenuButton.removeAttribute('disabled', 'disabled');
+    panelsMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+
+    restoreMenuControlsAfterOperation();
+
+    contextButton.textContent = "Usar como contexto";
+    contextButton.disabled = false;
+    contextButton.style.backgroundColor = "darkgreen";
+
+    if (canvasLoaded === true) {
+        enableCanvasButtons();
+    } else {
+        disableCanvasButtons();
+    }
+
+    chatSubmitButton.textContent = 'Enviar';
+    inLongOperation = false;
+    userCancelledRun = false;   // full UI reset — re-arm the normal busy behaviour
+    actualContextDir = null;
+    updateViewContextDirMenuState();
+    console.log("--- actualContextDir reset to null on reconnect.");
+    if (!sendChatSocketMessage(JSON.stringify({
+        'type': 'reconnect-llm-agent',
+        'message': 'reconnect'
+    }))) {
+        return;
+    }
+    clearContextEnabled = false;
+    clearContextButton.setAttribute("style", "display: none !important;");
+    contextDataSpan.innerText = "<<<" + "..." + ">>>  ";
+    contextInfoDiv.setAttribute("class", "col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-invisible");
+    enableControlsAfterOperation();
+    console.log("--- Reconnect message sent to server.");
+}
+
+function CleanHistory(e) {
+    e.preventDefault();
+    if (cleanHistoryEnabled === false) {
+        console.log("Clean history is not allowed at this moment...");
+        return;
+    }
+
+    const callbackOnCont = () => {
+        const cleanHistorySent = sendChatSocketMessage(JSON.stringify({
+            'type': 'clean-history-and-reconnect',
+            'message': 'clean-history'
+        }));
+        if (!cleanHistorySent) {
+            return false;
+        }
+
+        chatLog.innerHTML = '';
+        chatHistory = [];
+        historyIndex = 0;
+        tempInput = '';
+        sessionStorage.removeItem('chatHistory');
+
+        setTitleBusy(false);
+        agents = [];
+        tools = [];
+        openEnabled = true;
+        reConnectEnabled = true;
+        contextEnabled = true;
+        cleanCanvasEnabled = true;
+        cleanHistoryEnabled = true;
+        contextButtonClicked = false;
+        canvasSettedAsContext = false;
+        reConnectButton.disabled = false;
+        cleanHistoryButton.disabled = false;
+        cleanHistoryButton.style.backgroundColor = "darkgreen";
+        contextMenuButton.removeAttribute('disabled', 'disabled');
+        contextMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+        panelsMenuButton.removeAttribute('disabled', 'disabled');
+        panelsMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+
+        restoreMenuControlsAfterOperation();
+
+        contextButton.textContent = "Usar como contexto";
+        contextButton.disabled = false;
+        contextButton.style.backgroundColor = "darkgreen";
+
+        if (canvasLoaded === true) {
+            enableCanvasButtons();
+        } else {
+            disableCanvasButtons();
+        }
+
+        chatSubmitButton.textContent = 'Enviar';
+        inLongOperation = false;
+        actualContextDir = null;
+        updateViewContextDirMenuState();
+        clearContextEnabled = false;
+        clearContextButton.setAttribute("style", "display: none !important;");
+        contextDataSpan.innerText = "<<<" + "..." + ">>>  ";
+        contextInfoDiv.setAttribute("class", "col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-invisible");
+
+        enableControlsAfterOperation();
+        console.log("--- Clean history message sent to server.");
+        return true;
+    };
+
+    const callbackOnCanc = () => {
+        confirmationByUser = false;
+        console.log("Clean history was dismissed...");
+        return false;
+    };
+
+    confirmationByUser = false;
+    preRenderConfirmationDialog('Confirmación...', '¿Seguro que quieres borrar el historial?', 'Esto borrará el contexto actual que sigue Tlamatini y reiniciará la conversación.', callbackOnCont, callbackOnCanc);
+    renderConfirmationDialog();
+}
+
+function CancelAllAndLogout(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+
+    const callbackOnCont = () => {
+        try {
+            sendChatSocketMessage(JSON.stringify({
+                'type': 'cancel-all',
+                'message': 'cancel'
+            }));
+            confirmationByUser = true;
+            console.log("--- Cancel all message sent to server.");
+        } catch (err) {
+            console.error('Failed to send cancel message:', err);
+        } finally {
+            const addr = logoutButton.getAttribute('param');
+            const debouncedFunction = debounce(() => { window.top.location.href = addr; });
+            debouncedFunction();
+        }
+        return true;
+    };
+
+    const callbackOnCanc = () => {
+        confirmationByUser = false;
+        console.log("Cancel and Logout was dismissed...");
+        return false;
+    };
+
+    if (inLongOperation === true) {
+        confirmationByUser = false;
+        preRenderConfirmationDialog('Confirmación...', '¿Seguro que quieres cancelar ahora?', 'Si cancelas, se interrumpirá la operación en curso y se descartará el contexto actual', callbackOnCont, callbackOnCanc);
+        renderConfirmationDialog();
+    } else {
+        const logoutBtn = document.getElementById('logout-button');
+        const addr = logoutBtn.getAttribute('param');
+        const debouncedFunction = debounce(() => { window.top.location.href = addr; });
+        debouncedFunction();
+    }
+}
+
+function OpenOmissionsDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+
+    if (inLongOperation === true) {
+        console.log("Dialog omissions can't be opened during a long operation...");
+        return;
+    }
+
+    const callbackOnCont = () => {
+        try {
+            fileTypeOmissions = omissionContentInput.value;
+            sendChatSocketMessage(JSON.stringify({
+                'type': 'set-file-omissions',
+                'message': fileTypeOmissions
+            }));
+            console.log("--- Sent set-file-omissions message sent to server.");
+        } catch (err) {
+            console.error('--- Failed to send omissions message:', err);
+        }
+        return true;
+    };
+
+    const callbackOnCanc = () => {
+        console.log("--- Omissions dialog was dismissed...");
+        return false;
+    };
+
+    preRenderOmissionsDialog("Omisiones...", "Indica las extensiones o los nombres de archivo que se van a omitir, separados por comas", "Los archivos omitidos se ignoran por completo durante la recuperación del contexto.", callbackOnCont, callbackOnCanc);
+    renderOmissionsDialog();
+}
+
+function OpenMcpsDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+
+    if (inLongOperation === true) {
+        console.log("Dialog mcps can't be opened during a long operation...");
+        return;
+    }
+
+    const callbackOnCont = () => {
+        try {
+            const mcp1Checked = $("#mcp-1").is(":checked");
+            const mcp2Checked = $("#mcp-2").is(":checked");
+            const message2send = JSON.stringify({
+                'type': 'set-mcps',
+                'message': '1=' + label_mcp1.innerText + "=" + mcp1Checked + "," + '2=' + label_mcp2.innerText + "=" + mcp2Checked
+            });
+            sendChatSocketMessage(message2send);
+            console.log("Message sent to socket: ", message2send);
+            console.log("--- Sent set-mcps message sent to server.");
+        } catch (err) {
+            console.error('--- Failed to send mcps message:', err);
+        }
+
+        console.log("--->>> tools: ", tools);
+        if (tools.length > 0) {
+            let completeTools = "";
+            for (const tool of tools) {
+                if (!tool || !tool.name) {
+                    continue;
+                }
+                const checked = $("#" + tool.name).is(":checked");
+                tool.content = checked ? 'true' : 'false';  // the next open starts from this
+                completeTools = completeTools + tool.name + "=" + tool.description + "=" + checked + ",";
+            }
+            console.log("--->>> complete tools: ", completeTools);
+            sendChatSocketMessage(JSON.stringify({
+                'type': 'set-tools',
+                'message': completeTools
+            }));
+            console.log("--- Sent set-tools message sent to server, complete tools: ", completeTools);
+        }
+        return true;
+    };
+
+    const callbackOnCanc = () => {
+        console.log("--- Mcps dialog was dismissed...");
+        return false;
+    };
+
+    preRenderMcpsDialog("Configurar MCPs...", "Los MCPs se usarán para darle información adicional a Tlamatini.", "Marca los Rag-MCPs que quieres usar:", "Marca los Tool-MCPs que quieres usar:", callbackOnCont, callbackOnCanc);
+    renderMcpsDialog();
+}
+
+function OpenAgentsDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+
+    if (inLongOperation === true) {
+        console.log("Dialog Agents can't be opened during a long operation...");
+        return;
+    }
+
+    const callbackOnCont = () => {
+        console.log("--->>> agents: ", agents);
+        if (agents.length > 0) {
+            let completeAgents = "";
+            for (const agent of agents) {
+                if (!agent || !agent.name) {
+                    continue;
+                }
+                const checked = $("#" + agent.name).is(":checked");
+                agent.content = checked ? 'true' : 'false';  // the next open starts from this
+                completeAgents = completeAgents + agent.name + "=" + agent.description + "=" + checked + ",";
+            }
+            console.log("--->>> complete agents: ", completeAgents);
+            sendChatSocketMessage(JSON.stringify({
+                'type': 'set-agents',
+                'message': completeAgents
+            }));
+            console.log("--- Sent set-agents message sent to server, complete agents: ", completeAgents);
+        }
+        return true;
+    };
+
+    const callbackOnCanc = () => {
+        console.log("--- Agents dialog was dismissed...");
+        return false;
+    };
+
+    preRenderAgentsDialog("Configurar Agents...", "Los Agents se usarán para darle información adicional a Tlamatini.", "Marca los Rag-Agents que quieres usar:", callbackOnCont, callbackOnCanc);
+    renderAgentsDialog();
+}
+
+// ----------------------------------------------------------------
+// ACPX-Skills dropdown handlers — see skills_dialog.js for the
+// jQuery-UI dialog implementations they delegate to.
+// ----------------------------------------------------------------
+function OpenSkillsConfigureDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Dialog Skills can't be opened during a long operation...");
+        return;
+    }
+    const callbackOnCont = () => {
+        if (!Array.isArray(skills) || skills.length === 0) {
+            console.log("--- No skills to save.");
+            return true;
+        }
+        // Payload mirrors set-tools / set-agents: `name=description=true/false,...`
+        // The skill name is the SKILL.md frontmatter `name` directly (no
+        // `skill-N` prefix because the Skill DB row keys on `name`).
+        let completeSkills = "";
+        for (const skill of skills) {
+            if (!skill || !skill.name) continue;
+            const checked = $("#skill-checkbox-" + CSS.escape(skill.name)).is(":checked");
+            const desc = (skill.description || '').replace(/[,=]/g, ' ');
+            completeSkills += skill.name + "=" + desc + "=" + checked + ",";
+        }
+        sendChatSocketMessage(JSON.stringify({
+            'type': 'set-skills',
+            'message': completeSkills
+        }));
+        console.log("--- Sent set-skills message:", completeSkills);
+        return true;
+    };
+    const callbackOnCanc = () => false;
+    preRenderSkillsConfigureDialog(
+        "Configurar ACPX-Skills...",
+        "Activa o desactiva los paquetes SKILL.md. Los skills desactivados no aparecen en list_skills, e invoke_skill los rechaza.",
+        callbackOnCont, callbackOnCanc
+    );
+    renderSkillsConfigureDialog();
+}
+
+function OpenSkillsBrowseDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Dialog Skills-Browse can't be opened during a long operation...");
+        return;
+    }
+    openSkillsBrowseDialog();
+}
+
+function OpenSkillsDiagnosticsDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Dialog Skills-Diagnostics can't be opened during a long operation...");
+        return;
+    }
+    openSkillsDiagnosticsDialog();
+}
+
+function ReloadSkillRegistry(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    reloadSkillRegistry();
+}
+
+// ----------------------------------------------------------------
+// Chat form submit handler
+// ----------------------------------------------------------------
+
+document.getElementById('chat-form').onsubmit = function (e) {
+    e.preventDefault();
+
+    const callbackOnCont = () => {
+        console.log("--- Cancel confirmed by user, sending cancel-current message...");
+
+        const cancelMsg = JSON.stringify({
+            'type': 'cancel-current',
+            'message': 'cancel'
+        });
+        console.log("--- Sending cancel message:", cancelMsg);
+        if (!sendChatSocketMessage(cancelMsg, 'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de cancelar la solicitud actual.')) {
+            return;
+        }
+        console.log("--- cancel-current message sent to server successfully");
+        // The cancel is now in flight. From here on, ANY late self-healing "Tactic #…"
+        // status frame belongs to a run the user has already killed and must NOT be
+        // allowed to re-disable the controls. Set BEFORE the UI reset below so no late
+        // frame can race it. Cleared on the next submit.
+        userCancelledRun = true;
+        window.TlamatiniInteractor?.cancel();
+        // Close any OPEN Ask-Execs Proceed/Deny prompt. The backend auto-denies it
+        // (the run is latched dead), so leaving it up would force the user to answer a
+        // question that has already been answered — and the dialog is modal with no
+        // Esc and no X, so a button is her only way out. (Angela hit this: "I had to
+        // push Deny, but the denial was already done.") No decision frame is sent.
+        if (typeof dismissExecPermissionDialogSilently === 'function') {
+            dismissExecPermissionDialogSilently('cancelled');
+        }
+        const debouncedFunction = debounce(unsetContextButton);
+        debouncedFunction();
+        // Reset UI state after cancellation
+        chatInput.readOnly = false;
+        chatInput.style.backgroundColor = '#40414F';
+        if (chatSubmitButton) chatSubmitButton.textContent = 'Enviar';
+        chatSubmitButton.disabled = false;
+        inLongOperation = false;
+        lapseLoadingContext = false;
+        const spinner = document.getElementById('wait-spinner');
+        if (spinner && spinner.parentNode) spinner.parentNode.removeChild(spinner);
+        contextEnabled = true;
+        contextMenuButton.removeAttribute('disabled');
+        contextMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+        panelsMenuButton.removeAttribute('disabled', 'disabled');
+        panelsMenuButton.setAttribute('data-bs-toggle', 'dropdown');
+
+        restoreMenuControlsAfterOperation();
+        cleanCanvasButton.style.backgroundColor = "darkgreen";
+        cleanCanvasButton.disabled = false;
+        cleanCanvasEnabled = true;
+        reopenOpenCanvasButton.style.backgroundColor = "darkgreen";
+        reopenOpenCanvasButton.disabled = false;
+        copyCanvasButton.style.backgroundColor = "darkgreen";
+        copyCanvasButton.disabled = false;
+        clearContextEnabled = false;
+        clearContextButton.setAttribute("style", "display: none !important;");
+        setContextText("<<<" + "..." + ">>>  ");
+        contextInfoDiv.setAttribute("class", "col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-invisible");
+        actualContextDir = null;
+        updateViewContextDirMenuState();
+        enableControlsAfterOperation();
+        console.log("--- actualContextDir reset to null on cancel.");
+    };
+
+    const callbackOnCanc = () => {
+        console.log("Cancel was dismissed...");
+        return false;
+    };
+
+    if ((inLongOperation === true && (chatSubmitButton && chatSubmitButton.textContent === 'Cancelar')) || lapseLoadingContext === true) {
+        console.log("--- Cancel dialog triggered. inLongOperation: " + inLongOperation + ", lapseLoadingContext: " + lapseLoadingContext);
+        confirmationByUser = false;
+        preRenderConfirmationDialog('Confirmación...', '¿Seguro que quieres cancelar ahora?', 'Si cancelas, se interrumpirá la operación en curso y se descartará el contexto actual', callbackOnCont, callbackOnCanc);
+        renderConfirmationDialog();
+    } else {
+        const rawMessage = chatInput.value;
+        const message = rawMessage;
+        console.log("message: " + message);
+        if (rawMessage.trim() === '') return;
+        const messageSent = sendChatSocketMessage(JSON.stringify({
+            'message': rawMessage,
+            'interactor_client_id': window.TlamatiniInteractor?.beforeChat() || '',
+            'multi_turn_enabled': isMultiTurnEnabled(),
+            'exec_report_enabled': isExecReportEnabled(),
+            'acpx_enabled': isAcpxEnabled(),
+            'ask_execs_enabled': isAskExecsEnabled(),
+            'step_by_step_enabled': isStepByStepEnabled()
+        }));
+        if (!messageSent) {
+            return;
+        }
+        // A NEW run owns the UI now — re-arm the normal busy behaviour. (A FAILED send
+        // deliberately leaves the latch as it was.) Forgetting this line would leave
+        // the busy UI permanently disabled after the first cancel: the button would
+        // never show "Cancel" again for any later request.
+        userCancelledRun = false;
+        chatHistory.push(rawMessage);
+        historyIndex = chatHistory.length;
+        tempInput = '';
+        try {
+            sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            sessionStorage.setItem('historyIndex', String(historyIndex));
+        } catch (err) {
+            console.error("Catched error in onsubmit(): " + err);
+        }
+        chatInput.value = '';
+        document.dispatchEvent(new CustomEvent('tlm-chat-submitted', {
+            detail: { voice: document.getElementById('chat-form').dataset.voiceSubmitting === 'true' }
+        }));
+    }
+};
+
+// ----------------------------------------------------------------
+// window.onload  –  wire up all event listeners
+// ----------------------------------------------------------------
+
+window.onload = () => {
+    chatLog.scrollTop = chatLog.scrollHeight;
+    updateViewContextDirMenuState();
+    applyStoredMultiTurnState();
+    applyStoredExecReportState();
+    applyStoredAcpxState();
+    applyStoredAskExecsState();
+    applyStoredStepByStepState();
+    syncAskExecsAvailability();
+    syncExecReportAvailability();
+    if (openButton) {
+        openButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            openCanvas();
+        });
+    }
+    if (reopenOpenCanvasButton) {
+        reopenOpenCanvasButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (openEnabled === false) {
+                console.log("Refresh canvas is not allowed at this moment...");
+                return;
+            }
+            void refreshCanvas();
+        });
+    }
+    if (setDirContextMenu) {
+        setDirContextMenu.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (contextEnabled === false) {
+                return;
+            }
+            try {
+                // Native server-side picker returns the FULL absolute path,
+                // so a project nested any number of levels deep under the
+                // application root loads correctly (the old
+                // window.showDirectoryPicker() only sent the leaf folder name
+                // and broke every non-direct-child directory).
+                const chosenPath = await _pickContextDirectory();
+                if (!chosenPath) {
+                    // User canceled, or picker unavailable and no path typed.
+                    return;
+                }
+                const sent = sendChatSocketMessage(JSON.stringify({
+                    'type': 'set-directory-as-context',
+                    'message': chosenPath
+                }));
+                if (!sent) {
+                    return;
+                }
+                const dirLabel = chosenPath.split(/[\\/]/).filter(Boolean).pop() || chosenPath;
+                actualContextDir = null;
+                updateViewContextDirMenuState();
+                clearContextEnabled = false;
+                clearContextButton.setAttribute("style", "display: none !important;");
+                setContextText("<<< contexto de directorio pendiente: " + dirLabel + " >>>");
+                contextInfoDiv.setAttribute("class", "col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-visible");
+                console.log("--- Waiting for server confirmation of directory context: " + chosenPath);
+            } catch (err) {
+                console.error("Catched error in listener of setDirContextMenu: " + err);
+            }
+        });
+    }
+    if (setFileContextMenu) {
+        setFileContextMenu.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (contextEnabled === false) {
+                return;
+            }
+
+            const callback2SetFileAsContext = () => {
+                const type = "set-canvas-as-context";
+                const codeRegex = /<<< (.+?) >>>/s;
+                const result = filenameSpan.textContent.match(codeRegex);
+                const content = textEditorCode.textContent;
+                const tokensNumber = genericTokenCounting(content);
+                console.log("--- The number of tokens in file is: " + tokensNumber);
+                if (tokensNumber > maximalTheoricTokens) {
+                    console.log("--- The number of tokens in file (if used as context) may not be completely processed by Tlamatini, it wont fit the context window.");
+                    alert("Es posible que Tlamatini no procese todos los tokens del archivo cargado (si lo usas como contexto): no caben en la ventana de contexto.");
+                }
+                console.log("--- The content is: " + content);
+                if (result) {
+                    const filename = result[1];
+                    const sent = sendChatSocketMessage(JSON.stringify({
+                        'type': type,
+                        'message': filename,
+                        'content': content
+                    }));
+                    if (!sent) {
+                        return;
+                    }
+                    clearContextEnabled = false;
+                    clearContextButton.setAttribute("style", "display: none !important;");
+                    actualContextDir = null;
+                    updateViewContextDirMenuState();
+                    setContextText("<<< contexto pendiente: " + filename + " >>>");
+                    contextInfoDiv.setAttribute("class", "col-md-2 col-lg-3 col-xl-4 col-xxl-4 flex-nowrap p-0 m-0 context-info-visible");
+                    setContextButton();
+                    console.log("--- Waiting for server confirmation of file context: " + filename);
+                    console.log("...Rebuild rag action sent.");
+                }
+            };
+            loadFileContent(true, callback2SetFileAsContext);
+        });
+    }
+    if (viewContextDirInCanvasMenu) {
+        viewContextDirInCanvasMenu.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (contextEnabled === false) {
+                return;
+            }
+            if (actualContextDir === null || actualContextDir === '') {
+                console.log("--- actualContextDir is null or empty, menu action ignored.");
+                return;
+            }
+            if (actualContextDir !== null) {
+                try {
+                    const sent = sendChatSocketMessage(JSON.stringify({
+                        'type': 'view-context-dir-in-canvas',
+                        'message': actualContextDir
+                    }));
+                    if (!sent) {
+                        return;
+                    }
+                    window.TlamatiniViews?.setCanvasVisible(true);
+                    console.log("--- actualContextDir is: " + actualContextDir + ", message 'view-context-dir-in-canvas' has been sent.");
+                    return;
+                } catch (err) {
+                    console.error("--- Catched error in listener of viewContextDirInCanvasMenu: " + err);
+                }
+            }
+            if (actualContextDir == null)
+                console.log("--- actualContextDir is null, message 'view-context-dir-in-canvas' not sent.");
+        });
+    }
+    if (clearContextButton) {
+        clearContextButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            ClearContext(e);
+        });
+    }
+    if (cleanCanvasButton) {
+        cleanCanvasButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (cleanCanvasEnabled === false) {
+                return;
+            }
+            cleanCanvas();
+        });
+    }
+    if (cleanHistoryButton) {
+        cleanHistoryButton.addEventListener('click', (e) => {
+            CleanHistory(e);
+        });
+    }
+    const initialDataScript = document.getElementById('initial_messages');
+    if (initialDataScript && initialDataScript.textContent) {
+        try {
+            const initialMessages = JSON.parse(initialDataScript.textContent);
+            renderInitialMessages(initialMessages);
+            if (Array.isArray(initialMessages)) {
+                chatHistory = initialMessages
+                    .filter(m => m && m.username === userUsername && typeof m.message === 'string' && m.message.trim() !== '')
+                    .map(m => m.message);
+                historyIndex = chatHistory.length;
+            }
+            try {
+                const stored = sessionStorage.getItem('chatHistory');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        chatHistory = parsed;
+                        const storedIndex = parseInt(sessionStorage.getItem('historyIndex') || String(parsed.length), 10);
+                        historyIndex = isNaN(storedIndex) ? parsed.length : storedIndex;
+                    }
+                }
+            } catch (err) {
+                console.error("Catched error at getItem of ChatHistory: " + err);
+            }
+        } catch (e) {
+            console.error('Failed to parse initial messages JSON:', e);
+        }
+    }
+    rotateTitle();
+
+    $('#internetEnabled').click(function () {
+        const isChecked = this.checked;
+        console.log('InternetEnabled is:', isChecked);
+        if (isChecked) {
+            sendChatSocketMessage(JSON.stringify({
+                'type': 'enable-llm-internet-access',
+                'message': ''
+            }));
+        } else {
+            sendChatSocketMessage(JSON.stringify({
+                'type': 'disable-llm-internet-access',
+                'message': ''
+            }));
+        }
+    });
+    if (multiTurnCheckbox) {
+        multiTurnCheckbox.addEventListener('change', function () {
+            persistMultiTurnState(!!this.checked);
+            // Ask-Execs AND Exec-report availability both depend on Multi-Turn —
+            // re-sync the enabled/disabled state of both checkboxes on every toggle.
+            syncAskExecsAvailability();
+            syncExecReportAvailability();
+        });
+    }
+    if (execReportCheckbox) {
+        execReportCheckbox.addEventListener('change', function () {
+            persistExecReportState(!!this.checked);
+        });
+    }
+    if (acpxCheckbox) {
+        acpxCheckbox.addEventListener('change', function () {
+            persistAcpxState(!!this.checked);
+        });
+    }
+    if (askExecsCheckbox) {
+        askExecsCheckbox.addEventListener('change', function () {
+            const enabled = !!this.checked;
+            persistAskExecsState(enabled);
+            // If a Multi-Turn run is already in flight, propagate the new
+            // choice to the live broker so it takes effect for the REMAINDER
+            // of that run (uncheck → stop asking / auto-proceed; re-check →
+            // resume asking). Harmless if no run is in flight — the backend
+            // no-ops without a registered broker.
+            if (inLongOperation === true) {
+                sendChatSocketMessage(JSON.stringify({
+                    // 'message' is required by the consumer's receive() (it
+                    // reads text_data_json['message'] unconditionally).
+                    message: 'set-ask-execs-runtime',
+                    type: 'set-ask-execs-runtime',
+                    ask_execs_runtime_enabled: enabled
+                }));
+                // When relaxing mid-run, dismiss any open permission prompt so
+                // the user isn't left staring at a dialog the backend has
+                // already auto-proceeded.
+                if (!enabled && typeof dismissExecPermissionDialogForRuntimeProceed === 'function') {
+                    dismissExecPermissionDialogForRuntimeProceed();
+                }
+            }
+        });
+    }
+    if (stepByStepCheckbox) {
+        stepByStepCheckbox.addEventListener('change', function () {
+            const enabled = !!this.checked;
+            persistStepByStepState(enabled);
+            if (enabled && multiTurnCheckbox && !multiTurnCheckbox.checked) {
+                multiTurnCheckbox.checked = true;
+                persistMultiTurnState(true);
+                syncAskExecsAvailability();
+                syncExecReportAvailability();
+            }
+        });
+    }
+    syncClearContextMenuState();
+    updateViewContextDirMenuState();
+
+    // Detect installed apps for "Open in..." dropdown
+    detectInstalledApps();
+
+    // THE BUSY UI IS ASSERTED LONG BEFORE THIS EVENT FIRES - RE-ASSERT IT.
+    //
+    // A restored context starts rebuilding the instant the socket opens: the
+    // consumer sends `session-restored` with loading:true, and chat.js handles
+    // it at SCRIPT-PARSE time (draining the buffer agent_page_state.js filled).
+    // `window.onload` only fires once every image, font and stylesheet has
+    // landed - much later - so EVERYTHING above here runs against a page that
+    // is ALREADY busy. renderInitialMessages() in particular wipes #chat-log,
+    // which is exactly where the spinner lives.
+    //
+    // Without this, the logical state (inLongOperation / lapseLoadingContext)
+    // and the VISIBLE state disagreed: 'Cancelar' button, greyed menus, read-only
+    // input - and no spinner anywhere. To the user that reads as a GUI that has
+    // simply stopped responding, which is the one thing a busy indicator exists
+    // to prevent. Re-asserting here makes the two agree again, so an
+    // auto-restored context looks identical to one loaded from the menu.
+    //
+    // Both calls are idempotent and both flags start false on every page load,
+    // so this is a strict no-op on an idle page - it can never freeze one.
+    if (inLongOperation === true || lapseLoadingContext === true) {
+        console.log('--- window.onload: an operation is already in flight - re-asserting the busy UI (spinner + Cancel).');
+        setTitleBusy(true);
+        disableControlsDuringOperation();
+    }
+};
+
+// ----------------------------------------------------------------
+// Ollama helper
+// ----------------------------------------------------------------
+
+// Per-server result of the last catalog request: [{url, ok, count, error}].
+let _ollamaCatalogServers = [];
+
+function _ollamaServersText(servers) {
+    return (servers || [])
+        .map(s => s.ok ? `${s.url} (${s.count} modelos)` : `${s.url} (no responde: ${s.error})`)
+        .join(', ');
+}
+
+/**
+ * Fetch the Ollama model catalog and return the model names (Promise<string[]>).
+ *
+ * The SERVER asks Ollama (/agent/ollama_models/), never the browser. The page
+ * used to fetch <ollama_base_url>/api/tags by itself, with a URL baked into
+ * the HTML when the page loaded. After Config -> URLs pointed Tlamatini at a
+ * remote Ollama (a rented GPU server) it kept asking the OLD, usually local,
+ * Ollama until a full page reload, so the Models dialog refused models that
+ * WERE installed on the remote server. It also could not send ollama_token.
+ * The server reads config.json on every call and sends the token.
+ *
+ * Rejects when no configured Ollama server answered; the Error message names
+ * each server and why it failed. The per-server detail of the last call stays
+ * in _ollamaCatalogServers.
+ */
+function listOllamaModels(options = {}) {
+    const { silent = false, timeoutMs = 20000 } = options;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    return fetch('/agent/ollama_models/', { signal: controller.signal, credentials: 'same-origin' })
+        .then(response => response.json()
+            .catch(() => ({}))
+            .then(data => ({ response, data })))
+        .then(({ response, data }) => {
+            _ollamaCatalogServers = Array.isArray(data.servers) ? data.servers : [];
+            if (!response.ok || !data.success || !Array.isArray(data.models)) {
+                throw new Error(_ollamaCatalogServers.length
+                    ? _ollamaServersText(_ollamaCatalogServers)
+                    : `Tlamatini respondió con HTTP ${response.status}`);
+            }
+            const names = data.models.filter(n => typeof n === 'string' && n);
+            if (!silent) {
+                console.log('Available Ollama models on ' + _ollamaServersText(_ollamaCatalogServers) + ':');
+                names.forEach(n => console.log(" - " + n));
+            }
+            return names;
+        })
+        .finally(() => clearTimeout(timer));
+}
+
+// ----------------------------------------------------------------
+// Config dialog handlers (Models / URLs)
+// ----------------------------------------------------------------
+
+let _configModelsBaseline = null;
+let _configUrlsBaseline = null;
+let _modelSettingsFields = [];
+
+function _renderModelSettings(fields) {
+    _modelSettingsFields = Array.isArray(fields) ? fields : [];
+    configModelsForm.replaceChildren();
+    const nav = document.getElementById('config-models-tabs');
+    const search = document.getElementById('config-models-search');
+    nav.replaceChildren();
+    search.value = '';
+    const groups = [...new Set(_modelSettingsFields.map(field => field.group))];
+    let selected = groups[0];
+    const panels = [];
+    function filter() {
+        const query = search.value.trim().toLowerCase();
+        panels.forEach(({ panel, group, cards }) => {
+            let matches = 0;
+            cards.forEach(({ card, field }) => {
+                const visible = !query || `${field.label} ${field.group} ${field.help}`.toLowerCase().includes(query);
+                card.hidden = !visible;
+                if (visible) matches += 1;
+            });
+            panel.hidden = query ? matches === 0 : group !== selected;
+        });
+        nav.querySelectorAll('button').forEach(button => {
+            button.setAttribute('aria-selected', String(!query && button.dataset.group === selected));
+            button.tabIndex = button.dataset.group === selected ? 0 : -1;
+        });
+        document.getElementById('config-models-no-results').hidden = panels.some(item => !item.panel.hidden);
+    }
+    groups.forEach((group, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.id = `model-tab-${index}`;
+        button.setAttribute('role', 'tab');
+        button.setAttribute('aria-controls', `model-panel-${index}`);
+        button.dataset.group = group;
+        const fieldsInGroup = _modelSettingsFields.filter(field => field.group === group);
+        button.textContent = `${group} (${fieldsInGroup.length})`;
+        button.addEventListener('click', () => { selected = group; search.value = ''; filter(); });
+        button.addEventListener('keydown', event => {
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+            event.preventDefault();
+            const next = event.key === 'Home' ? 0 : event.key === 'End' ? groups.length - 1
+                : (index + (event.key === 'ArrowRight' ? 1 : -1) + groups.length) % groups.length;
+            const target = nav.children[next];
+            target.click(); target.focus();
+        });
+        nav.appendChild(button);
+        const panel = document.createElement('section');
+        panel.id = `model-panel-${index}`;
+        panel.className = 'model-settings-panel';
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', button.id);
+        const heading = document.createElement('h3');
+        heading.textContent = group;
+        panel.appendChild(heading);
+        const grid = document.createElement('div');
+        grid.className = 'model-settings-grid';
+        const cards = fieldsInGroup.map(field => {
+            const card = document.createElement('div');
+            card.className = 'model-settings-card';
+            const label = document.createElement('label');
+            const id = `config-models-${field.key.replaceAll('_', '-')}`;
+            label.htmlFor = id; label.className = 'config-form-label'; label.textContent = field.label;
+            const input = document.createElement(field.kind === 'choice' ? 'select' : 'input');
+            input.id = id; input.className = 'config-form-input';
+            input.dataset.configKey = field.key;
+            input.dataset.modelKind = field.kind;
+            input.dataset.optional = String(field.optional);
+            if (field.kind === 'choice') {
+                field.choices.forEach(value => { const option = document.createElement('option'); option.value = value; option.textContent = value; input.appendChild(option); });
+            } else {
+                input.type = 'text'; input.spellcheck = false;
+                if (field.kind === 'ollama') input.setAttribute('list', 'config-models-ollama-options');
+            }
+            const hint = document.createElement('small');
+            hint.id = `${id}-help`;
+            hint.textContent = field.help || (field.kind === 'ollama' ? 'Modelo de Ollama · elige uno del catálogo o escribe un tag.' : 'Nombre del modelo o directorio local del modelo.');
+            input.setAttribute('aria-describedby', hint.id);
+            card.append(label, input, hint); grid.appendChild(card);
+            return { card, field };
+        });
+        panel.appendChild(grid); configModelsForm.appendChild(panel);
+        panels.push({ panel, group, cards });
+    });
+    search.oninput = filter;
+    filter();
+    const status = document.getElementById('config-models-catalog-status');
+    status.textContent = 'Cargando las sugerencias de Ollama…';
+    listOllamaModels({ silent: true }).then(models => {
+        const options = document.getElementById('config-models-ollama-options');
+        options.replaceChildren();
+        (models || []).forEach(model => { const option = document.createElement('option'); option.value = model; options.appendChild(option); });
+        status.textContent = `${(models || []).length} modelos de Ollama disponibles en ${_ollamaServersText(_ollamaCatalogServers)}. Los modelos de voz locales y de proveedores usan sus propios nombres.`;
+    }).catch(err => { status.textContent = `Las sugerencias de Ollama no están disponibles: ${err.message}. Aun así puedes guardar los ajustes de voz locales y de proveedores.`; });
+}
+
+function _snapshotConfigValues(values) {
+    const snapshot = {};
+    Object.keys(values || {}).forEach(key => {
+        snapshot[key] = String(values[key] == null ? '' : values[key]);
+    });
+    return snapshot;
+}
+
+function _configValuesDiffer(baseline, current) {
+    if (!baseline || !current) return false;
+    const keys = new Set([...Object.keys(baseline), ...Object.keys(current)]);
+    for (const key of keys) {
+        const a = String(baseline[key] == null ? '' : baseline[key]);
+        const b = String(current[key] == null ? '' : current[key]);
+        if (a !== b) return true;
+    }
+    return false;
+}
+
+function _showReconnectRequiredAfterDialogClose() {
+    setTimeout(() => {
+        preRenderReconnectRequiredDialog(
+            'Se requiere reconexión...',
+            'Tienes que hacer una reconexión (Reconectar) para leer y aplicar los nuevos valores configurados.',
+            'Haz clic en el botón Reconectar de la barra de herramientas para aplicar los cambios a la sesión activa.'
+        );
+        renderReconnectRequiredDialog();
+    }, 100);
+}
+
+async function _loadConfigSectionValues(section) {
+    const response = await fetch(`/agent/load_config_section/${section}/`, {
+        credentials: 'same-origin'
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to load ${section} config: HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    if (!data || data.success !== true || !data.values) {
+        throw new Error(`Failed to load ${section} config: bad payload`);
+    }
+    if (section === 'models') _renderModelSettings(data.fields);
+    return data.values;
+}
+
+function _populateConfigForm(form, values) {
+    if (!form) return;
+    const inputs = form.querySelectorAll('[data-config-key]');
+    inputs.forEach(input => {
+        const key = input.getAttribute('data-config-key');
+        input.value = (values && Object.prototype.hasOwnProperty.call(values, key)) ? String(values[key]) : '';
+        input.classList.remove('config-form-invalid');
+    });
+}
+
+function _collectConfigFormValues(form) {
+    const values = {};
+    if (!form) return values;
+    const inputs = form.querySelectorAll('[data-config-key]');
+    inputs.forEach(input => {
+        const key = input.getAttribute('data-config-key');
+        values[key] = input.value.trim();
+    });
+    return values;
+}
+
+function _markInvalidInputs(form, invalidKeys) {
+    if (!form) return;
+    const inputs = form.querySelectorAll('[data-config-key]');
+    inputs.forEach(input => {
+        const key = input.getAttribute('data-config-key');
+        if (invalidKeys.has(key)) {
+            input.classList.add('config-form-invalid');
+        } else {
+            input.classList.remove('config-form-invalid');
+        }
+    });
+}
+
+async function _saveConfigSection(endpoint, payload) {
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(payload)
+    });
+    let body = null;
+    try {
+        body = await response.json();
+    } catch (_e) {
+        // Non-JSON body (e.g. 500 HTML page); fall through with body=null.
+    }
+    if (!response.ok) {
+        const err = new Error(`No se pudo guardar: HTTP ${response.status}`);
+        err.body = body;
+        throw err;
+    }
+    if (!body || body.success !== true) {
+        const err = new Error('No se pudo guardar en el servidor');
+        err.body = body;
+        throw err;
+    }
+    return body;
+}
+
+function OpenConfigModelsDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Config Models dialog can't be opened during a long operation...");
+        return;
+    }
+
+    _loadConfigSectionValues('models')
+        .then(values => {
+            // The chat can start loading while the configuration fetch is in
+            // flight. Recheck the lock before opening the delayed dialog.
+            if (inLongOperation) return;
+            _populateConfigForm(configModelsForm, values);
+            _configModelsBaseline = _snapshotConfigValues(_collectConfigFormValues(configModelsForm));
+            preRenderConfigModelsDialog(
+                'Configurar modelos...',
+                'Elige los modelos de cada agent.',
+                'Los ajustes de los agents marcados con @config siguen lo que elijas aquí. Si un agent fija su propio valor, ese valor tiene prioridad.'
+            );
+            renderConfigModelsDialog();
+        })
+        .catch(err => {
+            console.error('Failed to load Models config:', err);
+            alert('No se pudo cargar la configuración actual del servidor. Vuelve a intentarlo.');
+        });
+}
+
+function OpenConfigUrlsDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Config URLs dialog can't be opened during a long operation...");
+        return;
+    }
+
+    _loadConfigSectionValues('urls')
+        .then(values => {
+            if (inLongOperation) return;
+            _populateConfigForm(configUrlsForm, values);
+            _configUrlsBaseline = _snapshotConfigValues(_collectConfigFormValues(configUrlsForm));
+            preRenderConfigUrlsDialog(
+                'Configurar URLs...',
+                'Define las URLs base, los hosts y los puertos que usa Tlamatini.',
+                'Las URLs deben incluir el esquema http(s):// o ws(s)://; los puertos van de 1 a 65535.'
+            );
+            renderConfigUrlsDialog();
+        })
+        .catch(err => {
+            console.error('Failed to load URLs config:', err);
+            alert('No se pudo cargar la configuración actual del servidor. Vuelve a intentarlo.');
+        });
+}
+
+function OpenAccessKeysWizard(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Access Keys Wizard can't be opened during a long operation...");
+        return;
+    }
+    if (typeof openAccessKeysWizardDialog !== 'function') {
+        alert('Access Keys Wizard no está disponible en este build.');
+        return;
+    }
+    openAccessKeysWizardDialog();
+}
+
+/**
+ * Validate the URLs form client-side, by data-config-type. Returns
+ * { ok, errors } where errors is { key: humanReason } when ok is false.
+ */
+function _validateUrlsForm(form) {
+    const errors = {};
+    if (!form) return { ok: false, errors };
+    const inputs = form.querySelectorAll('input[data-config-key]');
+    inputs.forEach(input => {
+        const key = input.getAttribute('data-config-key');
+        const type = input.getAttribute('data-config-type') || 'url';
+        const raw = (input.value || '').trim();
+        if (!raw) {
+            errors[key] = 'no puede quedar en blanco';
+            return;
+        }
+        if (type === 'url') {
+            let parsed;
+            try {
+                parsed = new URL(raw);
+            } catch (_e) {
+                errors[key] = 'no es una URL válida';
+                return;
+            }
+            const scheme = (parsed.protocol || '').replace(':', '').toLowerCase();
+            if (!['http', 'https', 'ws', 'wss'].includes(scheme)) {
+                errors[key] = 'debe usar el esquema http(s):// o ws(s)://';
+                return;
+            }
+            if (!parsed.host) {
+                errors[key] = 'debe incluir un host';
+
+            }
+        } else if (type === 'host') {
+            const ipv4 = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            const hostname = /^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(?:\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*$/;
+            if (!ipv4.test(raw) && !hostname.test(raw)) {
+                errors[key] = 'debe ser un nombre de host (p. ej. localhost) o una dirección IPv4';
+            }
+        } else if (type === 'port') {
+            const port = Number(raw);
+            if (!Number.isInteger(port) || port < 1 || port > 65535) {
+                errors[key] = 'debe ser un número entero entre 1 y 65535';
+            }
+        }
+    });
+    return { ok: Object.keys(errors).length === 0, errors };
+}
+
+function _labelForConfigInput(input) {
+    if (!input || !input.id) return '';
+    const label = document.querySelector(`label[for="${input.id}"]`);
+    return label ? label.textContent.trim() : input.id;
+}
+
+function _formatErrorsForAlert(form, errors) {
+    const lines = [];
+    Object.keys(errors).forEach(key => {
+        const input = form ? form.querySelector(`[data-config-key="${key}"]`) : null;
+        const label = input ? _labelForConfigInput(input) : key;
+        lines.push(`  • ${label}: ${errors[key]}`);
+    });
+    return lines.join('\n');
+}
+
+/**
+ * Save handler for the Models dialog. Returns a Promise that resolves to
+ * ``true`` on success (so the dialog can close) or ``false`` on validation
+ * failure (so the dialog stays open and the user can correct the inputs).
+ */
+async function _saveConfigModels() {
+    const values = _collectConfigFormValues(configModelsForm);
+
+    // 1) Basic non-empty check before bothering Ollama
+    const invalidKeys = new Set();
+    const emptyErrors = {};
+    Object.keys(values).forEach(key => {
+        const field = _modelSettingsFields.find(item => item.key === key);
+        if (!values[key] && !(field && field.optional)) {
+            emptyErrors[key] = 'no puede quedar en blanco';
+            invalidKeys.add(key);
+        }
+    });
+    if (invalidKeys.size > 0) {
+        _markInvalidInputs(configModelsForm, invalidKeys);
+        alert('Estos campos son obligatorios:\n\n' + _formatErrorsForAlert(configModelsForm, emptyErrors));
+        return false;
+    }
+
+    // Validate changed Ollama choices only. Whisper/Hugging Face/provider IDs
+    // are not Ollama models; unchanged settings must not block an offline edit.
+    const ollamaKeys = _modelSettingsFields.filter(field => field.kind === 'ollama'
+        && values[field.key] && (!_configModelsBaseline || values[field.key] !== _configModelsBaseline[field.key])).map(field => field.key);
+    let catalog;
+    if (ollamaKeys.length) {
+        try {
+            catalog = await listOllamaModels({ silent: true });
+        } catch (err) {
+            console.error('Failed to query Ollama for model catalog:', err);
+            alert('No se pudo conectar con Ollama para validar los modelos de Ollama que cambiaste:\n\n'
+                + err.message
+                + '\n\nRevisa Config -> URLs y ollama_token. Los ajustes de voz locales no necesitan Ollama.');
+            return false;
+        }
+
+        const serversText = _ollamaServersText(_ollamaCatalogServers);
+        if (!Array.isArray(catalog) || catalog.length === 0) {
+            alert(`Ollama respondió con un catálogo vacío en ${serversText}.\n\nAsegúrate de que haya al menos un modelo instalado en Ollama antes de volver a hacer clic en "Guardar".`);
+            return false;
+        }
+
+        const catalogSet = new Set(catalog);
+
+        // 3) Every model in the form must be in the catalog.
+        const missing = {};
+        ollamaKeys.forEach(key => {
+            if (!catalogSet.has(values[key])) {
+                missing[key] = `el modelo "${values[key]}" no está instalado`;
+                invalidKeys.add(key);
+            }
+        });
+        if (Object.keys(missing).length > 0) {
+            _markInvalidInputs(configModelsForm, invalidKeys);
+            alert(`Estos modelos NO están instalados en los servidores de Ollama configurados, ${serversText}:\n\n`
+                + _formatErrorsForAlert(configModelsForm, missing)
+                + '\n\nCorrígelos (o instálalos en Ollama) antes de volver a hacer clic en "Guardar".');
+            return false;
+        }
+
+    }
+
+    // 4) All validated — persist on the server.
+    try {
+        await _saveConfigSection('/agent/save_config_models/', values);
+    } catch (err) {
+        console.error('Failed to save Models config:', err);
+        const serverErrors = err && err.body && err.body.errors;
+        if (serverErrors && typeof serverErrors === 'object') {
+            _markInvalidInputs(configModelsForm, new Set(Object.keys(serverErrors)));
+            alert('Error en la validación del servidor:\n\n' + _formatErrorsForAlert(configModelsForm, serverErrors));
+        } else {
+            alert('Error al guardar la configuración: ' + (err.message || 'error desconocido'));
+        }
+        return false;
+    }
+
+    _markInvalidInputs(configModelsForm, new Set());
+    console.log('--- Saved Models config.');
+
+    const changed = _configValuesDiffer(_configModelsBaseline, _snapshotConfigValues(values));
+    _configModelsBaseline = null;
+    // The MODEL BRAIN tunes itself for the saved models in front of the user
+    // (model_brain_tuning.js); the Reconnect notice follows when it is closed.
+    const afterTuning = changed ? _showReconnectRequiredAfterDialogClose : null;
+    const tuning = window.TlmModelBrainTuning;
+    if (tuning && typeof tuning.open === 'function') {
+        setTimeout(() => {
+            try {
+                tuning.open({ onClose: afterTuning });
+            } catch (err) {
+                console.error('Auto-tuning dialog failed:', err);
+                if (afterTuning) afterTuning();
+            }
+        }, 150);
+    } else if (afterTuning) {
+        afterTuning();
+    }
+    return true;
+}
+
+/**
+ * Save handler for the URLs dialog. Same return convention as Models.
+ */
+async function _saveConfigUrls() {
+    const { ok, errors } = _validateUrlsForm(configUrlsForm);
+    if (!ok) {
+        _markInvalidInputs(configUrlsForm, new Set(Object.keys(errors)));
+        alert('Estos campos no son válidos:\n\n'
+            + _formatErrorsForAlert(configUrlsForm, errors)
+            + '\n\nCorrígelos antes de volver a hacer clic en "Guardar".');
+        return false;
+    }
+
+    const values = _collectConfigFormValues(configUrlsForm);
+    // Send ports as numbers (the server is strict about it).
+    const payload = { ...values };
+    const portInputs = configUrlsForm.querySelectorAll('input[data-config-type="port"]');
+    portInputs.forEach(input => {
+        const key = input.getAttribute('data-config-key');
+        payload[key] = Number(values[key]);
+    });
+
+    try {
+        await _saveConfigSection('/agent/save_config_urls/', payload);
+    } catch (err) {
+        console.error('Failed to save URLs config:', err);
+        const serverErrors = err && err.body && err.body.errors;
+        if (serverErrors && typeof serverErrors === 'object') {
+            _markInvalidInputs(configUrlsForm, new Set(Object.keys(serverErrors)));
+            alert('Error en la validación del servidor:\n\n' + _formatErrorsForAlert(configUrlsForm, serverErrors));
+        } else {
+            alert('Error al guardar la configuración: ' + (err.message || 'error desconocido'));
+        }
+        return false;
+    }
+
+    _markInvalidInputs(configUrlsForm, new Set());
+    console.log('--- Saved URLs config.');
+
+    const changed = _configValuesDiffer(_configUrlsBaseline, _snapshotConfigValues(values));
+    _configUrlsBaseline = null;
+    if (changed) {
+        _showReconnectRequiredAfterDialogClose();
+    }
+    return true;
+}
+
+// ----------------------------------------------------------------
+// DB -> Backup database dialog
+// ----------------------------------------------------------------
+
+let _backupDbValidationTimer = null;
+let _backupDbInputListenerAttached = false;
+
+function _setBackupDbStatus(text, kind) {
+    if (!backupDbStatusElement) return;
+    backupDbStatusElement.innerText = text || '';
+    backupDbStatusElement.classList.remove('backup-db-status-ok', 'backup-db-status-warn', 'backup-db-status-error');
+    if (kind === 'ok') {
+        backupDbStatusElement.classList.add('backup-db-status-ok');
+    } else if (kind === 'warn') {
+        backupDbStatusElement.classList.add('backup-db-status-warn');
+    } else if (kind === 'error') {
+        backupDbStatusElement.classList.add('backup-db-status-error');
+    }
+}
+
+async function _checkBackupDbDirectory(rawPath) {
+    const url = '/agent/check_backup_directory/?path=' + encodeURIComponent(rawPath);
+    const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin'
+    });
+    let body = null;
+    try {
+        body = await response.json();
+    } catch (_e) {
+        // Non-JSON; fall through.
+    }
+    if (!response.ok) {
+        const err = new Error(`Error de validación: HTTP ${response.status}`);
+        err.body = body;
+        throw err;
+    }
+    return body || {};
+}
+
+function _onBackupDbInputChanged() {
+    if (!backupDbTargetDirInput) return;
+    const raw = (backupDbTargetDirInput.value || '').trim();
+    if (_backupDbValidationTimer) {
+        clearTimeout(_backupDbValidationTimer);
+        _backupDbValidationTimer = null;
+    }
+    backupDbTargetDirInput.classList.remove('config-form-invalid');
+    if (!raw) {
+        _setBackupDbStatus('', '');
+        return;
+    }
+    _setBackupDbStatus('Revisando el path...', '');
+    _backupDbValidationTimer = setTimeout(() => {
+        _checkBackupDbDirectory(raw)
+            .then(info => {
+                const currentRaw = (backupDbTargetDirInput.value || '').trim();
+                if (currentRaw !== raw) {
+                    return; // user kept typing; a newer check will fire
+                }
+                if (info.kind === 'directory') {
+                    _setBackupDbStatus('El directorio existe. db.sqlite3 se guardará aquí.', 'ok');
+                    backupDbTargetDirInput.classList.remove('config-form-invalid');
+                } else if (info.kind === 'file') {
+                    _setBackupDbStatus('Indicaste un nombre de archivo — indica sólo el directorio.', 'warn');
+                    backupDbTargetDirInput.classList.add('config-form-invalid');
+                } else {
+                    _setBackupDbStatus('El directorio no existe.', 'error');
+                    backupDbTargetDirInput.classList.add('config-form-invalid');
+                }
+            })
+            .catch(err => {
+                console.error('Failed to validate backup directory:', err);
+                _setBackupDbStatus('No se pudo validar el directorio.', 'error');
+            });
+    }, 350);
+}
+
+// Friendly handler for a failed native picker. When the server reports the
+// picker is unavailable (no GUI, or a frozen build whose Tcl/Tk data tree
+// wasn't bundled — "Can't find a usable init.tcl"), we steer the user to
+// the manual path field instead of dumping a raw multi-line Tcl error in
+// an alert. The dialog stays usable either way: the path can always be
+// typed. `inputEl` is the dialog's manual-path field; `kindLabel` is
+// 'folder' or 'file' for the generic fallback wording.
+function _notifyPickerUnavailable(body, fallbackReason, inputEl, kindLabel) {
+    const unavailable = !!(body && body.picker_unavailable);
+    const friendly = (body && body.message)
+        || ('No se pudo abrir el selector de ' + kindLabel + ': '
+            + (fallbackReason || 'error desconocido'));
+    if (unavailable && inputEl) {
+        // Make the manual path field the obvious next step.
+        try { inputEl.focus(); } catch (_e) { /* ignore */ }
+        try {
+            inputEl.setAttribute(
+                'placeholder',
+                'Selector nativo no disponible — escribe aquí el path completo'
+            );
+        } catch (_e) { /* ignore */ }
+    }
+    alert(friendly);
+}
+
+// Native server-side folder picker for the chat "Set directory as context"
+// menu. Returns the chosen ABSOLUTE path, or '' when the user canceled or no
+// path was provided.
+//
+// Why not window.showDirectoryPicker(): that browser API only exposes the
+// LEAF folder name (FileSystemDirectoryHandle.name), never the full path, so
+// the server could only locate a directory that was a direct child of the
+// runtime root. A project nested several levels deep
+// (<app>/applications/proj/src) was impossible to load. The native Win32
+// picker returns the real full path, which path_guard accepts for any depth
+// under the application root. On hosts without a native dialog (e.g.
+// non-Windows) we fall back to a manual path prompt.
+async function _pickContextDirectory() {
+    try {
+        const response = await fetch('/agent/pick_context_directory/', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+        let body = null;
+        try { body = await response.json(); } catch (_e) { /* non-JSON */ }
+        if (response.ok && body) {
+            if (typeof body.path === 'string' && body.path) {
+                return body.path;
+            }
+            if (body.canceled) {
+                return '';  // user closed the dialog — respect it, no fallback
+            }
+            if (body.error || body.picker_unavailable) {
+                return _promptForContextDirectory(body);
+            }
+        }
+        if (!response.ok) {
+            return _promptForContextDirectory(body);
+        }
+    } catch (err) {
+        console.error('Native context-directory picker failed:', err);
+        return _promptForContextDirectory(null);
+    }
+    return '';
+}
+
+// Manual-entry fallback used when the native folder picker is unavailable
+// (no GUI / non-Windows). Mirrors the Set-DB / Backup-DB "type the path"
+// guidance. Returns the trimmed path the user typed, or '' if canceled.
+function _promptForContextDirectory(body) {
+    const friendly = (body && body.message)
+        || ('El selector de carpetas nativo no está disponible en esta computadora. '
+            + 'Escribe o pega el path absoluto COMPLETO del directorio '
+            + 'del proyecto (debe estar dentro del directorio raíz de la aplicación).');
+    try {
+        const typed = window.prompt(friendly, '');
+        return (typed && typed.trim()) ? typed.trim() : '';
+    } catch (_e) {
+        return '';
+    }
+}
+
+// Browse button — opens a native folder picker on the server host and
+// drops the chosen absolute path into the dialog's input so the existing
+// live-validation pipeline (`_onBackupDbInputChanged`) classifies it.
+async function _browseBackupDbDirectory() {
+    const browseBtn = document.getElementById('backup-db-browse-btn');
+    if (!backupDbTargetDirInput) return;
+    if (browseBtn) browseBtn.disabled = true;
+    try {
+        const response = await fetch('/agent/pick_backup_directory/', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+        let body = null;
+        try { body = await response.json(); } catch (_e) { /* non-JSON */ }
+        if (!response.ok) {
+            _notifyPickerUnavailable(body, 'HTTP ' + response.status, backupDbTargetDirInput, 'carpetas');
+            return;
+        }
+        if (body && (body.error || body.picker_unavailable)) {
+            _notifyPickerUnavailable(body, body.error, backupDbTargetDirInput, 'carpetas');
+            return;
+        }
+        const chosen = (body && typeof body.path === 'string') ? body.path : '';
+        if (!chosen) {
+            // User canceled the dialog — leave the input untouched.
+            return;
+        }
+        backupDbTargetDirInput.value = chosen;
+        backupDbTargetDirInput.dispatchEvent(new Event('input', { bubbles: true }));
+        backupDbTargetDirInput.focus();
+    } catch (err) {
+        console.error('Browse for backup directory failed:', err);
+        alert('No se pudo abrir el selector de carpetas: ' + (err.message || 'error de red'));
+    } finally {
+        if (browseBtn) browseBtn.disabled = false;
+    }
+}
+
+function OpenBackupDbDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Backup DB dialog can't be opened during a long operation...");
+        return;
+    }
+
+    if (backupDbTargetDirInput) {
+        backupDbTargetDirInput.value = '';
+        backupDbTargetDirInput.classList.remove('config-form-invalid');
+        if (!_backupDbInputListenerAttached) {
+            backupDbTargetDirInput.addEventListener('input', _onBackupDbInputChanged);
+            _backupDbInputListenerAttached = true;
+        }
+    }
+    _setBackupDbStatus('', '');
+
+    preRenderBackupDbDialog(
+        'Hacer backup de la base de datos...',
+        'Indica el directorio de destino donde se guardará el backup de db.sqlite3.',
+        'Indica SÓLO el directorio — Tlamatini guardará el archivo como "db.sqlite3" para poder volver a cargarlo correctamente después.'
+    );
+    renderBackupDbDialog();
+}
+
+async function _saveBackupDb() {
+    const raw = (backupDbTargetDirInput ? backupDbTargetDirInput.value : '').trim();
+
+    if (!raw) {
+        backupDbTargetDirInput.classList.add('config-form-invalid');
+        _setBackupDbStatus('El directorio de destino no puede quedar vacío.', 'error');
+        alert('El directorio de destino no puede quedar vacío.\n\nIndica un directorio existente antes de hacer clic en "Hacer backup".');
+        return false;
+    }
+
+    let info;
+    try {
+        info = await _checkBackupDbDirectory(raw);
+    } catch (err) {
+        console.error('Failed to validate backup directory:', err);
+        alert('No se pudo validar el directorio de destino: ' + (err.message || 'error desconocido'));
+        return false;
+    }
+
+    if (info.kind === 'file') {
+        backupDbTargetDirInput.classList.add('config-form-invalid');
+        _setBackupDbStatus('Indicaste un nombre de archivo — indica sólo el directorio.', 'warn');
+        alert('NO se recomienda cambiar el nombre del archivo.\n\nSi le cambias el nombre a db.sqlite3, el sistema no podrá volver a cargarlo correctamente. Indica sólo el directorio de destino — Tlamatini guardará el archivo como "db.sqlite3".');
+        return false;
+    }
+
+    if (info.kind !== 'directory') {
+        backupDbTargetDirInput.classList.add('config-form-invalid');
+        _setBackupDbStatus('El directorio no existe.', 'error');
+        alert('El directorio de destino no existe:\n\n' + raw + '\n\nIndica un directorio existente antes de hacer clic en "Hacer backup".');
+        return false;
+    }
+
+    let response;
+    try {
+        response = await fetch('/agent/backup_db/', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ target_dir: raw })
+        });
+    } catch (err) {
+        console.error('Backup request failed:', err);
+        alert('Error al hacer el backup: ' + (err.message || 'error de red'));
+        return false;
+    }
+
+    let body = null;
+    try {
+        body = await response.json();
+    } catch (_e) {
+        // Non-JSON body; body stays null.
+    }
+
+    if (!response.ok || !body || body.success !== true) {
+        const reason = (body && (body.error || body.reason)) || ('HTTP ' + response.status);
+        if (body && body.kind === 'file') {
+            backupDbTargetDirInput.classList.add('config-form-invalid');
+            alert('NO se recomienda cambiar el nombre del archivo.\n\nSi le cambias el nombre a db.sqlite3, el sistema no podrá volver a cargarlo correctamente. Indica sólo el directorio de destino — Tlamatini guardará el archivo como "db.sqlite3".');
+        } else {
+            alert('Error al hacer el backup: ' + reason);
+        }
+        return false;
+    }
+
+    console.log('--- Backup completed at:', body.path);
+    alert('Se hizo el backup de la base de datos en:\n\n' + body.path);
+    return true;
+}
+
+// ----------------------------------------------------------------
+// DB -> Set DB dialog
+// ----------------------------------------------------------------
+
+let _setDbValidationTimer = null;
+let _setDbInputListenerAttached = false;
+
+function _setSetDbStatus(text, kind) {
+    if (!setDbStatusElement) return;
+    setDbStatusElement.innerText = text || '';
+    setDbStatusElement.classList.remove('set-db-status-ok', 'set-db-status-warn', 'set-db-status-error');
+    if (kind === 'ok') {
+        setDbStatusElement.classList.add('set-db-status-ok');
+    } else if (kind === 'warn') {
+        setDbStatusElement.classList.add('set-db-status-warn');
+    } else if (kind === 'error') {
+        setDbStatusElement.classList.add('set-db-status-error');
+    }
+}
+
+async function _checkSetDbFile(rawPath) {
+    const url = '/agent/check_set_db_file/?path=' + encodeURIComponent(rawPath);
+    const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin'
+    });
+    let body = null;
+    try {
+        body = await response.json();
+    } catch (_e) {
+        // Non-JSON; fall through.
+    }
+    if (!response.ok) {
+        const err = new Error(`Error de validación: HTTP ${response.status}`);
+        err.body = body;
+        throw err;
+    }
+    return body || {};
+}
+
+function _renderSetDbValidationFeedback(info) {
+    if (info.kind === 'file') {
+        if (info.sqlite === false) {
+            _setSetDbStatus('El archivo seleccionado no parece una base de datos SQLite.', 'error');
+            setDbSourcePathInput.classList.add('config-form-invalid');
+            return;
+        }
+        if (info.basename_ok === false) {
+            _setSetDbStatus('Se encontró el archivo, pero no se llama "db.sqlite3". Aun así, Tlamatini lo preparará como db.sqlite3.', 'warn');
+            setDbSourcePathInput.classList.remove('config-form-invalid');
+            return;
+        }
+        _setSetDbStatus('El archivo existe. Se cargará en el próximo arranque.', 'ok');
+        setDbSourcePathInput.classList.remove('config-form-invalid');
+    } else if (info.kind === 'directory') {
+        _setSetDbStatus('Indica el path completo de un archivo db.sqlite3, no un directorio.', 'warn');
+        setDbSourcePathInput.classList.add('config-form-invalid');
+    } else {
+        _setSetDbStatus('El archivo no existe.', 'error');
+        setDbSourcePathInput.classList.add('config-form-invalid');
+    }
+}
+
+function _onSetDbInputChanged() {
+    if (!setDbSourcePathInput) return;
+    const raw = (setDbSourcePathInput.value || '').trim();
+    if (_setDbValidationTimer) {
+        clearTimeout(_setDbValidationTimer);
+        _setDbValidationTimer = null;
+    }
+    setDbSourcePathInput.classList.remove('config-form-invalid');
+    if (!raw) {
+        _setSetDbStatus('', '');
+        return;
+    }
+    _setSetDbStatus('Revisando el path...', '');
+    _setDbValidationTimer = setTimeout(() => {
+        _checkSetDbFile(raw)
+            .then(info => {
+                const currentRaw = (setDbSourcePathInput.value || '').trim();
+                if (currentRaw !== raw) {
+                    return; // newer keystroke will trigger its own check
+                }
+                _renderSetDbValidationFeedback(info);
+            })
+            .catch(err => {
+                console.error('Failed to validate db file path:', err);
+                _setSetDbStatus('No se pudo validar el path del archivo.', 'error');
+            });
+    }, 350);
+}
+
+// Browse button — opens a native file picker on the server host
+// restricted to files named ``db.sqlite3`` and drops the chosen
+// absolute path into the dialog's input so the existing live-validation
+// pipeline (`_onSetDbInputChanged`) classifies it (SQLite-header check,
+// basename match, etc.).
+async function _browseSetDbFile() {
+    const browseBtn = document.getElementById('set-db-browse-btn');
+    if (!setDbSourcePathInput) return;
+    if (browseBtn) browseBtn.disabled = true;
+    try {
+        const response = await fetch('/agent/pick_db_sqlite_file/', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+        let body = null;
+        try { body = await response.json(); } catch (_e) { /* non-JSON */ }
+        if (!response.ok) {
+            _notifyPickerUnavailable(body, 'HTTP ' + response.status, setDbSourcePathInput, 'archivos');
+            return;
+        }
+        if (body && (body.error || body.picker_unavailable)) {
+            _notifyPickerUnavailable(body, body.error, setDbSourcePathInput, 'archivos');
+            return;
+        }
+        const chosen = (body && typeof body.path === 'string') ? body.path : '';
+        if (!chosen) {
+            // User canceled the dialog — leave the input untouched.
+            return;
+        }
+        setDbSourcePathInput.value = chosen;
+        setDbSourcePathInput.dispatchEvent(new Event('input', { bubbles: true }));
+        setDbSourcePathInput.focus();
+    } catch (err) {
+        console.error('Browse for db.sqlite3 file failed:', err);
+        alert('No se pudo abrir el selector de archivos: ' + (err.message || 'error de red'));
+    } finally {
+        if (browseBtn) browseBtn.disabled = false;
+    }
+}
+
+function OpenSetDbDialog(e) { // eslint-disable-line no-unused-vars
+    e.preventDefault();
+    if (inLongOperation === true) {
+        console.log("Set DB dialog can't be opened during a long operation...");
+        return;
+    }
+
+    if (setDbSourcePathInput) {
+        setDbSourcePathInput.value = '';
+        setDbSourcePathInput.classList.remove('config-form-invalid');
+        if (!_setDbInputListenerAttached) {
+            setDbSourcePathInput.addEventListener('input', _onSetDbInputChanged);
+            _setDbInputListenerAttached = true;
+        }
+    }
+    _setSetDbStatus('', '');
+
+    preRenderSetDbDialog(
+        'Elegir la base de datos...',
+        'Indica el path completo de un archivo db.sqlite3 para cargarlo en el próximo arranque.',
+        'Tlamatini preparará el archivo en DB/ToLoad/ y lo pondrá en lugar del actual ANTES de que Django abra su base de datos en el próximo arranque. El db.sqlite3 actual se mueve a DB/Older/<timestamp>/ para que se pueda recuperar después.'
+    );
+    renderSetDbDialog();
+}
+
+function _showSetDbLoadedNextSessionWarning() {
+    preRenderSetDbWarningDialog(
+        'Base de datos lista para la siguiente sesión',
+        'La base de datos seleccionada se cargará la próxima vez que inicie Tlamatini.',
+        'Si quieres que se cargue de inmediato, reinicia Tlamatini por completo para que el cambio se haga ANTES de que Django abra la base de datos activa.'
+    );
+    renderSetDbWarningDialog();
+}
+
+async function _saveSetDb() {
+    const raw = (setDbSourcePathInput ? setDbSourcePathInput.value : '').trim();
+
+    if (!raw) {
+        setDbSourcePathInput.classList.add('config-form-invalid');
+        _setSetDbStatus('El path del archivo no puede quedar vacío.', 'error');
+        alert('El path del archivo no puede quedar vacío.\n\nIndica un archivo db.sqlite3 existente antes de hacer clic en "Establecer".');
+        return false;
+    }
+
+    let info;
+    try {
+        info = await _checkSetDbFile(raw);
+    } catch (err) {
+        console.error('Failed to validate db file path:', err);
+        alert('No se pudo validar el path del archivo: ' + (err.message || 'error desconocido'));
+        return false;
+    }
+
+    if (info.kind === 'directory') {
+        setDbSourcePathInput.classList.add('config-form-invalid');
+        _setSetDbStatus('Indica el path completo de un archivo db.sqlite3, no un directorio.', 'warn');
+        alert('El path apunta a un directorio.\n\nIndica el path completo de un archivo db.sqlite3 (p. ej. C:\\Backups\\Tlamatini\\db.sqlite3).');
+        return false;
+    }
+
+    if (info.kind !== 'file') {
+        setDbSourcePathInput.classList.add('config-form-invalid');
+        _setSetDbStatus('El archivo no existe.', 'error');
+        alert('El archivo no existe:\n\n' + raw + '\n\nIndica un archivo db.sqlite3 existente antes de hacer clic en "Establecer".');
+        return false;
+    }
+
+    if (info.sqlite === false) {
+        setDbSourcePathInput.classList.add('config-form-invalid');
+        _setSetDbStatus('El archivo seleccionado no parece una base de datos SQLite.', 'error');
+        alert('El archivo seleccionado no parece una base de datos SQLite.\n\nIndica un archivo db.sqlite3 real.');
+        return false;
+    }
+
+    let response;
+    try {
+        response = await fetch('/agent/set_db/', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ source_path: raw })
+        });
+    } catch (err) {
+        console.error('Set DB request failed:', err);
+        alert('Error al elegir la DB: ' + (err.message || 'error de red'));
+        return false;
+    }
+
+    let body = null;
+    try {
+        body = await response.json();
+    } catch (_e) {
+        // Non-JSON body; body stays null.
+    }
+
+    if (!response.ok || !body || body.success !== true) {
+        const reason = (body && (body.error || body.reason)) || ('HTTP ' + response.status);
+        alert('Error al elegir la DB: ' + reason);
+        return false;
+    }
+
+    console.log('--- Set DB staged at:', body.path);
+    _showSetDbLoadedNextSessionWarning();
+    return true;
+}
+

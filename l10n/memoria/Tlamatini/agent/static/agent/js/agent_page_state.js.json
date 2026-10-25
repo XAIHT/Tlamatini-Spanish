@@ -1,0 +1,46 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/agent_page_state.js",
+ "segmentos": [
+  {
+   "en": "'Send a message...'",
+   "es": "'Escribe un mensaje...'",
+   "n": 1
+  },
+  {
+   "en": "'Connection lost. Use Reconnect or refresh before continue.'",
+   "es": "'Se perdió la conexión. Usa Reconectar o actualiza la página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Disconnected'",
+   "es": "'Desconectado'",
+   "n": 1
+  },
+  {
+   "en": "'Live connection lost. Use Reconnect or refresh before continuing.'",
+   "es": "'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "'Send'",
+   "es": "'Enviar'",
+   "n": 1
+  },
+  {
+   "en": "'Live connection lost. Use Reconnect or refresh before continue.'",
+   "es": "'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.'",
+   "n": 1
+  },
+  {
+   "en": "\"Use as context\"",
+   "es": "\"Usar como contexto\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'warning'",
+   "motivo": "valor de máquina (sufijo de clase CSS)"
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/dialog_policy.js",
+ "segmentos": [
+  {
+   "en": "'Resize dialog. Left/Right changes width; Up/Down changes height. Shift for larger steps.'",
+   "es": "'Cambiar el tamaño del diálogo. Izquierda/Derecha cambia el ancho; Arriba/Abajo cambia el alto. Shift para pasos más grandes.'",
+   "n": 1
+  },
+  {
+   "en": "'This operation cannot be interrupted.'",
+   "es": "'Esta operación no se puede interrumpir.'",
+   "n": 1
+  },
+  {
+   "en": "'Please wait'",
+   "es": "'Espera un momento'",
+   "n": 1
+  },
+  {
+   "en": "'Close'",
+   "es": "'Cerrar'",
+   "n": 1
+  },
+  {
+   "en": "'OK'",
+   "es": "'Aceptar'",
+   "n": 1
+  },
+  {
+   "en": "'Please confirm'",
+   "es": "'Confirmación'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 2
+  },
+  {
+   "en": "'Continue'",
+   "es": "'Continuar'",
+   "n": 2
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'button'",
+   "motivo": "valor del atributo role"
+  },
+  {
+   "en": "'.ui-dialog:visible .ui-dialog-content'",
+   "motivo": "selector CSS"
+  },
+  {
+   "en": "'.ui-widget-overlay, .modal-backdrop'",
+   "motivo": "selector CSS"
+  },
+  {
+   "en": "'dialog'",
+   "motivo": "valor del atributo role"
+  },
+  {
+   "en": "'true'",
+   "motivo": "valor del atributo aria-modal"
+  },
+  {
+   "en": "'Tlamatini'",
+   "motivo": "nombre del producto"
+  }
+ ]
+}

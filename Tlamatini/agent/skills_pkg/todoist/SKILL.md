@@ -1,0 +1,58 @@
+---
+name: todoist
+description: Manage Todoist tasks and projects via the Todoist REST API v2.
+metadata:
+  openclaw:
+    emoji: "✅"
+    requires:
+      env: ["TODOIST_API_TOKEN"]
+    primaryEnv: "TODOIST_API_TOKEN"
+  tlamatini:
+    runtime: in-process
+    requires_tools: ["chat_agent_apirer"]
+    requires_mcps: []
+    budget:
+      max_iterations: 4
+      max_seconds: 30
+      max_tokens: 6000
+    permissions:
+      filesystem: { read: [], write: [] }
+      shell:     []
+      network:   allow
+      db:        deny
+    inputs:
+      - { name: action, type: enum,
+          values: ["list-tasks","add-task","close-task","reopen-task","list-projects","add-project"],
+          required: true }
+      - { name: payload, type: object, required: false }
+    outputs:
+      - { name: response, type: object, required: true }
+    triggers:
+      keywords: ["todoist","task","todo"]
+---
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+
+# Todoist skill
+
+> Current release: **[v1.90.0](../../../../docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+
+> **HEADLESS IS FORBIDDEN. VISIBLE FOREGROUND EXECUTION ONLY.** Every command, automated test, diagnostic, script, build, agent and browser must run in a visible foreground window on Angela's real desktop. Use forked CMD/PowerShell windows, `execute_forked_window: true`, and `headless: false`. Monitor live; if visibility cannot be confirmed, do not run. Read the [mandatory execution policy](../../../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+Base URL: `https://api.todoist.com/rest/v2/`. Token goes in
+`Authorization: Bearer $TODOIST_API_TOKEN`.
+
+Endpoints:
+- `list-tasks`     → `GET /tasks`
+- `add-task`       → `POST /tasks`
+- `close-task`     → `POST /tasks/{id}/close`
+- `reopen-task`    → `POST /tasks/{id}/reopen`
+- `list-projects`  → `GET /projects`
+- `add-project`    → `POST /projects`

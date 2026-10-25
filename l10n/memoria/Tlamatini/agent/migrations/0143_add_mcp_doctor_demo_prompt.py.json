@@ -1,0 +1,117 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0143_add_mcp_doctor_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **MCP DOCTOR** demo, please &mdash; a safe External MCP \"",
+   "es": "\"Tlamatini, ejecuta la demo **MCP DOCTOR**, por favor &mdash; un diagnóstico seguro del catálogo \"",
+   "n": 1
+  },
+  {
+   "en": "\"catalog diagnostic driven entirely through the wrapped **chat_agent_mcp_doctor** \"",
+   "es": "\"de External MCPs, controlado por completo a través del tool wrapper **chat_agent_mcp_doctor**. \"",
+   "n": 1
+  },
+  {
+   "en": "\"tool. Tick ONLY the **Multi-Turn** checkbox before sending. Use ONLY \"",
+   "es": "\"Marca SÓLO la casilla **Multi-Turn** antes de enviar. Usa SÓLO \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_mcp_doctor; do NOT use chat_agent_executer, chat_agent_pythonxer, \"",
+   "es": "\"chat_agent_mcp_doctor; no uses chat_agent_executer, chat_agent_pythonxer \"",
+   "n": 1
+  },
+  {
+   "en": "\"or acp_spawn. \"",
+   "es": "\"ni acp_spawn. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 0: open with one HTML banner: \"",
+   "es": "\"Paso 0: abre con un banner HTML: \"",
+   "n": 1
+  },
+  {
+   "en": "\"<h2 style='margin:0;letter-spacing:2px;'>MCP DOCTOR</h2>\"",
+   "es": "\"<h2 style='margin:0;letter-spacing:2px;'>MCP DOCTOR</h2>\""
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:4px;'>External MCP catalog &middot; runtime &middot; transport &middot; setup readiness</div></div>. \"",
+   "es": "\"<div style='opacity:.92;margin-top:4px;'>Catálogo de External MCPs &middot; runtime &middot; transport &middot; disponibilidad de la configuración</div></div>. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 1: call **chat_agent_mcp_doctor** with request \"",
+   "es": "\"Paso 1: llama a **chat_agent_mcp_doctor** con el request \"",
+   "n": 1
+  },
+  {
+   "en": "\"\\\"Run MCP Doctor with mode='catalog'\\\". Read the JSON return and the \"",
+   "es": "\"\\\"Run MCP Doctor with mode='catalog'\\\". Lee el JSON que devuelve y el \"",
+   "n": 1
+  },
+  {
+   "en": "\"INI_SECTION_MCP_DOCTOR block in log_excerpt. Capture status, server_key, \"",
+   "es": "\"bloque INI_SECTION_MCP_DOCTOR del log_excerpt. Captura status, server_key, \"",
+   "n": 1
+  },
+  {
+   "en": "\"transport, runtime, supported, catalog_path, and the response_body. \"",
+   "es": "\"transport, runtime, supported, catalog_path y el response_body. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 2: render one compact HTML table with class='exec-report-table' titled \"",
+   "es": "\"Paso 2: muestra una tabla HTML compacta con class='exec-report-table' titulada \"",
+   "n": 1
+  },
+  {
+   "en": "\"'<strong>MCP Doctor &mdash; Catalog Readiness</strong>' and columns \"",
+   "es": "\"'<strong>MCP Doctor &mdash; Disponibilidad del catálogo</strong>' y con las columnas \"",
+   "n": 1
+  },
+  {
+   "en": "\"<em>field</em> and <em>value</em>. Include at least catalog_path, status, \"",
+   "es": "\"<em>campo</em> y <em>valor</em>. Incluye al menos catalog_path, status, \"",
+   "n": 1
+  },
+  {
+   "en": "\"server_key, transport, runtime, supported, and the first next-step sentence \"",
+   "es": "\"server_key, transport, runtime, supported y la primera oración del siguiente paso \"",
+   "n": 1
+  },
+  {
+   "en": "\"from the response body. \"",
+   "es": "\"del response body. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Step 3: close with one sentence telling the user the next MCP setup action. \"",
+   "es": "\"Paso 3: cierra con una oración que le diga al usuario la siguiente acción de configuración de MCP. \"",
+   "n": 1
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "es": "\"Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style='padding:18px;border-radius:14px;background:linear-gradient(135deg,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#0F3D3E 0%,#1E7B73 33%,#E0A83A 66%,#FFF2C6 100%);color:#fff;font-family:Inter,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"Segoe UI,sans-serif;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.45);'>\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

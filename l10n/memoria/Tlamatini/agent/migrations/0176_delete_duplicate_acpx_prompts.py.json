@@ -1,0 +1,10 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0176_delete_duplicate_acpx_prompts.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Prompt\"",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

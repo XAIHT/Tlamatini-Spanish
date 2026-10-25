@@ -1,0 +1,139 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0197_add_netspeed_calculator_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"font-weight:600;\\\">📡 NetSpeed-Calculator — how fast is this connection, \"",
+   "es": "\"font-weight:600;\\\">📡 NetSpeed-Calculator — ¿qué tan rápida es esta conexión, \"",
+   "n": 1
+  },
+  {
+   "en": "\"FILL IN (optional — leave them as they are for a one-click demo):\\n\"",
+   "es": "\"LLENA LOS CAMPOS (opcional — déjalos como están para una demo de un solo clic):\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  · Providers to measure against: \"",
+   "es": "\"  · Proveedores contra los que medir: \"",
+   "n": 1
+  },
+  {
+   "en": "\"[[ providers — OPTIONAL, default: cloudflare,ookla,fast ]]\\n\"",
+   "es": "\"[[ providers — OPCIONAL, predeterminado: cloudflare,ookla,fast ]]\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  · Seconds of steady-state measurement per direction: \"",
+   "es": "\"  · Segundos de medición en estado estable por cada dirección: \"",
+   "n": 1
+  },
+  {
+   "en": "\"[[ test_duration_seconds — OPTIONAL, default: 10 ]]\\n\"",
+   "es": "\"[[ test_duration_seconds — OPCIONAL, predeterminado: 10 ]]\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"If you left the blanks above untouched, use the stated defaults and run \"",
+   "es": "\"Si dejaste los espacios de arriba sin tocar, usa los valores predeterminados indicados y ejecútala \"",
+   "n": 1
+  },
+  {
+   "en": "\"anyway — do not ask me to fill them in.\\n\\n\"",
+   "es": "\"de todos modos — no me pidas que los llene.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, measure THIS machine's real Internet connection with \"",
+   "es": "\"Tlamatini, mide la conexión de internet real de ESTA máquina con \"",
+   "n": 1
+  },
+  {
+   "en": "\"chat_agent_netspeed_calculator using action='full', and then tell me, in \"",
+   "es": "\"chat_agent_netspeed_calculator usando action='full' y luego dime, en \"",
+   "n": 1
+  },
+  {
+   "en": "\"plain language:\\n\"",
+   "es": "\"lenguaje sencillo:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  1. My download and upload speed in Mbps, each WITH its 95% confidence \"",
+   "es": "\"  1. Mi velocidad de descarga y de subida en Mbps, cada una CON su intervalo de confianza \"",
+   "n": 1
+  },
+  {
+   "en": "\"interval — I want the error bar, not a single flattering number.\\n\"",
+   "es": "\"del 95% — quiero la barra de error, no un solo número que se vea bonito.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  2. My idle latency, my jitter, and my BUFFERBLOAT grade (A+ to F), and \"",
+   "es": "\"  2. Mi latencia en reposo, mi jitter y mi grado de BUFFERBLOAT (de A+ a F), y \"",
+   "n": 1
+  },
+  {
+   "en": "\"what that grade means for video calls and voice.\\n\"",
+   "es": "\"qué significa ese grado para las videollamadas y la voz.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  3. Whether the providers AGREED with each other (the I² heterogeneity \"",
+   "es": "\"  3. Si los proveedores COINCIDIERON entre sí (la cifra de heterogeneidad I²) \"",
+   "n": 1
+  },
+  {
+   "en": "\"figure) — and if they did not, say so plainly and tell me which one was \"",
+   "es": "\"— y si no, dímelo con claridad e indícame cuál fue \"",
+   "n": 1
+  },
+  {
+   "en": "\"the outlier, because that is a peering story, not a speed story.\\n\"",
+   "es": "\"el outlier, porque eso es un tema de peering, no de velocidad.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  4. One sentence on whether this link looks healthy for everyday work.\\n\\n\"",
+   "es": "\"  4. Una oración sobre si este enlace se ve sano para el trabajo diario.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Report the absolute path of the saved JSON artifact at the end. Please note \"",
+   "es": "\"Reporta al final el path absoluto del artefacto JSON guardado. Ten en cuenta \"",
+   "n": 1
+  },
+  {
+   "en": "\"this consumes real, possibly METERED bandwidth (roughly 100-200 MB), so run \"",
+   "es": "\"que esto consume ancho de banda real, posiblemente MEDIDO (unos 100-200 MB), así que ejecútala \"",
+   "n": 1
+  },
+  {
+   "en": "\"it once — do not repeat it to 'double-check'.\\n\\n\"",
+   "es": "\"una vez — no la repitas para 'verificar de nuevo'.\\n\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"PRE-FLIGHT: this run needs the **Multi-Turn** mode with the **Exec report** \"",
+   "es": "\"PRE-FLIGHT: esta ejecución necesita el modo **Multi-Turn** con el **Exec report** \"",
+   "n": 1
+  },
+  {
+   "en": "\"— clicking this card ticks both toolbar checkboxes for you.\"",
+   "es": "\"— al hacer clic en esta tarjeta se marcan por ti las dos casillas de la barra de herramientas.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"<div style=\\\"background:linear-gradient(135deg,#041E2B 0%,#0E6BA8 33%,\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "\"#21D4B4 66%,#F9C80E 100%);color:#ffffff;padding:10px 14px;border-radius:8px;\"",
+   "motivo": "CSS del banner (valor de máquina)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

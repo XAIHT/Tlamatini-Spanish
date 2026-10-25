@@ -1,0 +1,785 @@
+{
+ "archivo": "Tlamatini/agent/external_mcp_manager.py",
+ "segmentos": [
+  {
+   "en": "\"Roblox StudioMCP is running, but it currently exposes 0 MCP tools. \"",
+   "es": "\"Roblox StudioMCP está corriendo, pero por ahora expone 0 tools de MCP. \"",
+   "n": 1
+  },
+  {
+   "en": "\"In Roblox Studio, open Assistant > ... > Manage MCP Servers, turn on \"",
+   "es": "\"En Roblox Studio, abre Assistant > ... > Manage MCP Servers, activa \"",
+   "n": 1
+  },
+  {
+   "en": "\"Enable Studio as MCP server, then confirm the green connected-client \"",
+   "es": "\"Enable Studio as MCP server y luego confirma el indicador verde de cliente \"",
+   "n": 1
+  },
+  {
+   "en": "\"indicator. If Studio logs localhost:4932 /poll connection failures, \"",
+   "es": "\"conectado. Si el log de Studio muestra errores de conexión a localhost:4932 /poll, \"",
+   "n": 1
+  },
+  {
+   "en": "\"the Studio-side local bridge is not accepting the long-poll yet.\"",
+   "es": "\"el bridge local del lado de Studio todavía no acepta el long-poll.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"{base} Child stderr tail: {tail[-500:]}\"",
+   "es": "f\"{base} Final del stderr del proceso hijo: {tail[-500:]}\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Connected but exposed 0 tools. Child stderr tail: {tail[-500:]}\"",
+   "es": "f\"Se conectó, pero expone 0 tools. Final del stderr del proceso hijo: {tail[-500:]}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Connected but exposed 0 tools. The server may still be warming up, \"",
+   "es": "\"Se conectó, pero expone 0 tools. Puede que el servidor todavía esté arrancando, \"",
+   "n": 1
+  },
+  {
+   "en": "\"waiting for its backend application, or requiring an enable/authorize step.\"",
+   "es": "\"esperando su aplicación de backend o pidiendo un paso de activación o autorización.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Active but not connected yet; Tlamatini will warm-connect it in the background.\"",
+   "es": "\"Activo, pero todavía sin conectar; Tlamatini lo va a conectar en segundo plano.\"",
+   "n": 1
+  },
+  {
+   "en": "\"no mcpServers found in payload\"",
+   "es": "\"no se encontró ningún mcpServers en el payload\"",
+   "n": 1
+  },
+  {
+   "en": "\"no server key(s) to remove\"",
+   "es": "\"no se indicó ningún servidor para quitar\"",
+   "n": 1
+  },
+  {
+   "en": "\"no matching server(s) in catalog\"",
+   "es": "\"ningún servidor del catálogo coincide\"",
+   "n": 1
+  },
+  {
+   "en": "\"stdio MCP server has no command\"",
+   "es": "\"el servidor MCP stdio no tiene comando\"",
+   "n": 1
+  },
+  {
+   "en": "\"streamable-http MCP server has no url\"",
+   "es": "\"el servidor MCP streamable-http no tiene URL\"",
+   "n": 1
+  },
+  {
+   "en": "\"sse MCP server has no url\"",
+   "es": "\"el servidor MCP sse no tiene URL\"",
+   "n": 1
+  },
+  {
+   "en": "\"websocket MCP server has no url\"",
+   "es": "\"el servidor MCP websocket no tiene URL\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Unsupported External MCP transport '{transport}'. Tlamatini connects \"",
+   "es": "f\"Transporte de External MCP no compatible: '{transport}'. Tlamatini se conecta a servidores \"",
+   "n": 1
+  },
+  {
+   "en": "\"stdio, streamable-http, sse, and websocket servers; this carrier \"",
+   "es": "\"stdio, streamable-http, sse y websocket; este carrier \"",
+   "n": 1
+  },
+  {
+   "en": "f\"({transport}) needs a stdio bridge or a future transport adapter.\"",
+   "es": "f\"({transport}) necesita un bridge stdio o un futuro adaptador de transporte.\"",
+   "n": 1
+  },
+  {
+   "en": "f\"  | child stderr (tail): ...{tail[-600:]}\"",
+   "es": "f\"  | stderr del proceso hijo (final): ...{tail[-600:]}\"",
+   "n": 1
+  },
+  {
+   "en": "\"  | (the child produced no stderr — the command likely blocked or \"",
+   "es": "\"  | (el proceso hijo no escribió nada en stderr: es probable que el comando se haya bloqueado o \"",
+   "n": 1
+  },
+  {
+   "en": "\"the server never started; is the binary/daemon available?)\"",
+   "es": "\"que el servidor nunca haya arrancado; ¿está disponible el binario o el daemon?)\"",
+   "n": 1
+  },
+  {
+   "en": "f\"  | {transport} carrier at {getattr(client, 'url', '') or _server_url(spec)} \"",
+   "es": "f\"  | carrier {transport} en {getattr(client, 'url', '') or _server_url(spec)} \"",
+   "n": 1
+  },
+  {
+   "en": "\"did not complete the MCP handshake — is the server running and the \"",
+   "es": "\"no completó el handshake de MCP: revisa que el servidor esté corriendo y que la \"",
+   "n": 1
+  },
+  {
+   "en": "\"URL/headers correct?\"",
+   "es": "\"URL y los headers sean correctos.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "f\"… [truncated — {len(sc_json)} chars of structuredContent total]\"",
+   "motivo": "formato del resultado de un tool para el LLM"
+  },
+  {
+   "en": "\"Error: \"",
+   "motivo": "formato del resultado de un tool para el LLM"
+  },
+  {
+   "en": "\"tool reported an error\"",
+   "motivo": "formato del resultado de un tool para el LLM"
+  },
+  {
+   "en": "\"0 tools\"",
+   "motivo": "vocabulario del producto (tools); el JS conserva el mismo «0 tools»"
+  },
+  {
+   "en": "\"PATH resolution\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"server process exited before responding \"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"(see child stderr)\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"client not started\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "f\"{method} timed out after {timeout}s\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"Tlamatini\"",
+   "motivo": "nombre del cliente MCP (valor de protocolo)"
+  },
+  {
+   "en": "\"is likely not ready yet (e.g. Roblox Studio not open / its MCP plugin not \"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"connected; or a server whose tools appear only once its session is up). \"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"Tlamatini re-lists every turn, so they appear once the server offers them.\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"backend may not be ready, or it needs an enable/authorize step. \"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"Tlamatini re-lists every turn, so tools appear once offered.\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"application/json, text/event-stream\"",
+   "motivo": "header HTTP"
+  },
+  {
+   "en": "f\"HTTP {status} from MCP endpoint: {body[:400]}\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "f\"{method}: no matching JSON-RPC response (HTTP {status})\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"websocket closed before responding\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"websocket not connected\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "f\"HTTP {self._stream_resp.status_code} opening SSE stream\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"SSE server did not announce a POST endpoint\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"SSE stream closed before responding\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "f\"HTTP {resp.status_code} posting to SSE endpoint: {resp.text[:300]}\"",
+   "motivo": "error de transporte de bajo nivel (protocolo; también lo leen los marcadores de reintento)"
+  },
+  {
+   "en": "\"provisioning Tlamatini's private runtime now (one time, no admin needed).\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"spawn anyway so the real error is reported.\"",
+   "motivo": "log"
+  },
+  {
+   "en": "\"Server is not connected.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"server_key is required\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"tool_name is required\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"unknown MCP server: {key}\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"MCP server is not active: {key}\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"external MCP '{key}' is not connected\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"unknown tool '{name}' for External MCP server '{key}'\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"shell wrapper\"",
+   "motivo": "etiqueta del diagnóstico para el LLM"
+  },
+  {
+   "en": "f\"transport not connectable here: {transport} (needs a stdio bridge)\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"stdio server has no command\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"command not found on PATH: {command}\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"{transport} server has no url\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"missing or placeholder secret fields: \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"This server uses {transport}, which Tlamatini cannot connect directly yet. \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Wrap it with a stdio MCP bridge, or expose it over streamable-http/sse/websocket.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Add the server command from the MCP documentation, then import the JSON again.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"`{command}` is not on this machine yet — but Tlamatini provisions it \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"HERSELF. Just activate the server (external_mcp_set_active with '{key}') \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"and her private per-user runtime is installed automatically: no admin \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"rights, no system PATH change, no manual Node/uv install. Use \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"external_mcp_runtime_install first if you would rather do it up front.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"Install or expose `{command}` on PATH, then ask Tlamatini to reconnect this MCP.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"Add the {transport} server url to the JSON, then re-import via external_mcp_import.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Fill the required secret/environment fields, then reconnect the MCP.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"Call external_mcp_set_active with '{key}' to activate and warm-connect it.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Run external_mcp_status, then external_mcp_list_tools, then perform one safe smoke-test tool call.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Identify the authoritative docs: use source/docs/repository URLs if present; otherwise search the MCP name plus its command/package.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Verify prerequisites for the inferred runtime before activation.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Check secrets/env placeholders and ask the user for missing keys without exposing stored secret values.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Activate and inspect initialize + tools/list through external_mcp_status.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Use external_mcp_list_tools to learn exact tool names and schemas.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Use external_mcp_call for a small safe read-only or reversible write smoke test.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Teach the user one READY-gated step at a time when Step-by-Step is enabled.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"unknown MCP server: {wanted}\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"'{wanted}' is not in the catalog yet. If the user gave its JSON config, call \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"external_mcp_import with that JSON, then external_mcp_set_active to connect it. \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Otherwise ask the user for the server's mcpServers JSON (a command/args or a url).\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Reconnect already in progress.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Reconnect started.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"MCP server is not active: {key} — call external_mcp_set_active first\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Tools are live now — call the bound ext__%s__<tool> tools \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"(or external_mcp_list_tools + external_mcp_call).\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"'{key}' was not ready within {int(budget)}s. A FIRST-run Docker image pull \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"(or a cold npx/uvx download) can take longer than this — call external_mcp_wait \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"again with a larger timeout_seconds (e.g. 180), or external_mcp_status to keep \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"watching. Do NOT abandon the task; the server is still coming online.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"declares '%s' - coerced to %r\"",
+   "motivo": "log"
+  },
+  {
+   "en": "f\"External MCP server '{server_key}', tool '{tool_name}'. \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"Error: external MCP '{server_key}' is not connected.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "f\"Error calling {server_key}.{tool_name}: {exc}\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Optional MCP server key to inspect.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Refresh tools/list before reporting.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Active MCP server key to reconnect.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Optional MCP server key to diagnose. Empty diagnoses the whole \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"External MCP catalog.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Optional active MCP server key to inspect.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Optional text filter for tool names/descriptions.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Include each tool inputSchema.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Active MCP server key, e.g. Redis or Roblox_Studio.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Raw MCP tool name from external_mcp_list_tools, not the wrapped ext__ name.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"JSON object of tool arguments.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"MCP server config — the same mcpServers shape a Claude-Code .mcp.json uses. \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Pass it as a JSON OBJECT (preferred) OR a JSON string, e.g. \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "'{\"mcpServers\": {\"redis\": {\"command\": \"docker\", \"args\": [\"run\",\"-i\",\"--rm\",\"mcp/redis\"]}}}. '",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"A bare single-server object or a {name: spec} map is also accepted.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Catalog server keys to ACTIVATE (max 5). Pass a LIST (preferred) like \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"['redis'] or ['redis','Roblox_Studio'], OR a comma-separated string like \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"'redis,Roblox_Studio'. Only active servers connect and expose their tools.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Active MCP server key to wait for, e.g. 'memory'.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"How long to block while the server connects (5-300s). A FIRST-run Docker image \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"pull or cold npx/uvx download can be slow, so use 120-180 for a brand-new server.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "f\"invalid JSON: {exc}\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"expected a JSON object\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Now call external_mcp_set_active with \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\" to connect it, then external_mcp_status to verify.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"No servers were parsed from the JSON.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Servers warm-connect in the BACKGROUND (a first-run Docker pull or npx/uvx \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"download can take a minute). Call external_mcp_wait('<key>', 120) to BLOCK until \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"it is ready instead of polling external_mcp_status in a loop, then use the bound \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"ext__<server>__<tool> tools (or external_mcp_list_tools + external_mcp_call).\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Package managers to install. A LIST like ['npx','uvx'] (preferred) or a \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"comma-separated string. Valid: node, npm, npx, pnpm, uv, uvx. Installing \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"'npx' also delivers node and npm; 'uvx' also delivers uv.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Reinstall even if the tool already resolves. Normally leave False.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"runtime provisioner unavailable\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Every package manager is available — npx/uvx MCP servers can be activated.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Call external_mcp_runtime_install to download the missing manager(s) into \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Tlamatini's private per-user runtime. No admin rights are needed and the \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"system PATH is never modified.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Runtimes are ready — now call external_mcp_set_active for the server that \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"needed them, then external_mcp_wait to block until it connects.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"One or more runtimes could not be installed (see tools[].reason). A blocked \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"network or a proxy is the usual cause; the user can also install Node / uv \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"themselves and Tlamatini will simply use theirs.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Inspect active External MCP servers, their connection state, tool count, \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"PIDs, stderr tails, and diagnostics. Use this whenever the user asks \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"about MCPs, Roblox Studio MCP, missing external tools, or bridge health.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Force reconnect one active External MCP server by key. Use after \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"external_mcp_status shows a stuck, dead, or zero-tool server and the \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"user wants recovery.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Diagnose catalogued External MCP servers before or after activation. \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Infers transport, runtime prerequisites, command/PATH health, source \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"URLs, missing secret placeholders, current status, blockers, and the \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"next user-facing setup step. Use for every new or unknown MCP from a \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"marketplace before giving installation instructions.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Report whether node / npm / npx / pnpm / uv / uvx are available to \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Tlamatini, where each one lives, and whether it came from her own \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"private per-user runtime or the system PATH. Use this whenever an MCP \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"server launched by npx or uvx fails to start, whenever the user asks \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"if Node/Python tooling is installed, and BEFORE telling anyone to \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"install Node — Tlamatini provisions it herself.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"Download and install the package managers an MCP server needs \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"(npx/npm/node, uvx/uv, pnpm) into Tlamatini's PRIVATE per-user runtime \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"— no administrator rights, no change to the system PATH, nothing \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"installed outside her own folder. Use when external_mcp_runtime_status \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"reports a missing manager or an npx/uvx server cannot spawn. Normally \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"unnecessary: activating such a server provisions its runtime \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"List exact tool names, descriptions, and schemas exposed by active External MCP \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"servers. Use this before claiming a tool is unavailable, and whenever a large \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"MCP server may have tools that were not directly bound into the current prompt.\"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"Call any tool on an active External MCP server by server_key, raw tool_name, \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"and JSON arguments. Use this generic dispatcher when the direct ext__ tool \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"was not selected or when external_mcp_list_tools showed the needed tool.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"ADD one or more External MCP servers to Tlamatini's catalog from a JSON config \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"(the mcpServers shape). Use this to set up a NEW MCP the user names or pastes \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"(e.g. 'add the redis MCP') — you do NOT need a file-writing or shell tool, and \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"you do NOT need the user to open the dialog; call this directly with the JSON. \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"After importing, call external_mcp_set_active to connect it.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"ACTIVATE catalogued External MCP servers (max 5) so they connect and expose \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"their tools. Call after external_mcp_import, or to enable an already-catalogued \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"server, then call external_mcp_wait to block until it is ready.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"WAIT (block) until an active External MCP server is connected and exposing its \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"tools. Use this right after external_mcp_set_active instead of polling \"",
+   "motivo": "descripción del tool para el LLM"
+  },
+  {
+   "en": "\"external_mcp_status in a loop — it gives a slow first-run server (a Docker image \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"being pulled, or a cold npx/uvx download) time to come online, then returns when \"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  },
+  {
+   "en": "\"ready. On timeout it says so and tells you to wait longer; never give up on the task.\"",
+   "motivo": "resultado de un tool de supervisión para el LLM"
+  }
+ ]
+}

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Canvas de PDF</title>
+  <link rel="stylesheet" href="../vendor/pdfjs/web/pdf_viewer.css">
+  <link rel="stylesheet" href="../css/ui_tokens.css?v=ui-sweep-1">
+  <link rel="stylesheet" href="../css/ui_shell.css?v=ui-sweep-1">
+  <link rel="stylesheet" href="../css/pdf_canvas.css?v=ui-sweep-1">
+  <script src="../js/file_drop_router.js?v=file-drop-router-1"></script>
+  <script src="../js/pdf_canvas_viewer.js" defer></script>
+</head>
+<body>
+  <nav id="pdf-toolbar" aria-label="Controles del PDF">
+    <button id="pdf-previous" type="button" disabled aria-label="Página anterior">Anterior</button>
+    <label>Página <input id="pdf-page" type="number" min="1" value="1" disabled></label>
+    <span id="pdf-page-count">de …</span>
+    <button id="pdf-next" type="button" disabled aria-label="Página siguiente">Siguiente</button>
+    <label>Zoom
+      <select id="pdf-zoom" disabled>
+        <option value="page-width">Ajustar al ancho</option>
+        <option value="page-fit">Ajustar a la página</option>
+        <option value="0.5">50%</option>
+        <option value="1">100%</option>
+        <option value="1.5">150%</option>
+        <option value="2">200%</option>
+        <option value="3">300%</option>
+      </select>
+    </label>
+    <button id="pdf-rotate" type="button" disabled>Girar</button>
+    <label>Vista
+      <select id="pdf-scroll-mode" disabled>
+        <option value="0">Continua</option>
+        <option value="3">Una página</option>
+      </select>
+    </label>
+  </nav>
+  <p id="pdf-status" role="status" aria-live="polite">Abriendo el PDF…</p>
+  <form id="pdf-password-form" hidden>
+    <label id="pdf-password-label" for="pdf-password">Contraseña de este PDF</label>
+    <input id="pdf-password" type="password" autocomplete="off" required>
+    <button type="submit">Desbloquear</button>
+    <button id="pdf-password-cancel" type="button">Cancelar</button>
+  </form>
+  <main id="pdf-content">
+    <div id="pdf-viewer-container" tabindex="0" aria-label="Documento PDF">
+      <div id="pdf-viewer" class="pdfViewer"></div>
+    </div>
+  </main>
+</body>
+</html>

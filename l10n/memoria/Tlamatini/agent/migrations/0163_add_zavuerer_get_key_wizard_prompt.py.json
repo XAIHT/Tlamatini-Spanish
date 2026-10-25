@@ -1,0 +1,122 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0163_add_zavuerer_get_key_wizard_prompt.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Tlamatini, hold my hand and set up **Zavuerer** with me from zero so I can text / WhatsApp / \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"email someone from ONE single key. I am NOT technical, so do EXACTLY ONE step at a time, in the \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"simplest possible words, then STOP and WAIT until I reply 'READY' before the next step. Tick the \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"**Multi-Turn**, **Exec report** and **step-by-step** checkboxes for this.\\n\\n\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"STEP 1 — OBTAIN YOUR KEY (just click): tell me to open this link in my browser and click \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"**Sign up** — sign-up is free and needs no card (but Zavu charges a small fee per message you send):  https://www.zavu.dev  . Then have me sign in, \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"open my **Dashboard → API Keys**, click **Create key**, and **Copy** the key. Tell me to paste \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"that key here in the chat so we keep it handy. Then STOP and WAIT for me to reply 'READY'.\\n\\n\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"STEP 2 — PUT THE KEY IN THE DIALOG: walk me click-by-click — open the top menu **Config → Access \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"Keys Wizard**, find the **\\\"Unified Messaging (Zavu)\\\"** box, paste my key into it, and click \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"**Save**. Then tell me to fully close and reopen Tlamatini so it loads the new key. Then STOP and \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"WAIT for me to reply 'READY'.\\n\\n\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"STEP 3 — RUN THE DOCTOR: run chat_agent_zavuerer with action='health' and tell me in plain words \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"**YES, the key works** or **NO, it is still missing**. If it is still missing, gently send me back \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"to STEP 2. Then STOP and WAIT for me to reply 'READY'.\\n\\n\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"STEP 4 — WRITE THE MESSAGE: ask me WHO I want to reach (a phone number, or an email) and WHAT I \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"want to say. Collect both, read them back to me so I can confirm, and do NOT send anything yet. \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"Then STOP and WAIT for me to reply 'READY'.\\n\\n\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"STEP 5 — RUN A TEST (to me first, so nothing embarrassing goes out): send my message to MY OWN \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"number first with chat_agent_zavuerer (action='send', channel='auto', to=<my own number>, \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"text=<my message>). Tell me which channel Zavu used and whether it arrived. Then STOP and WAIT \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"for me to reply 'READY'.\\n\\n\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"STEP 6 — SEND THE LITTLE MENSAJITO: now send the same message for real to the person I named in \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"STEP 4, with chat_agent_zavuerer (action='send', channel='auto', to=<their number or email>, \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"text=<my message>), tell me it is on its way, and celebrate with me. 🎉\\n\\n\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"Rules: ONE step, then wait for my 'READY' — never skip ahead, never dump everything at once. Use \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"ONLY chat_agent_zavuerer for the agent work. No code, no jargon — just the click, the link, and \"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "\"the plain-words result. End with END-RESPONSE.\"",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "prompt de Zavuerer: 0214 lo borra por marcador en inglés; conservar"
+  }
+ ]
+}

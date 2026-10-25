@@ -1,0 +1,278 @@
+---
+name: tlamatini-daily-chat-test
+description: Run the daily automated Tlamatini chat regression — drive a visible Chrome via Playwright, log into agent_page.html, ask up to 1000 curated safe questions one-by-one (Multi-Turn ON, ACPX/Ask-Execs/Exec-Report/Internet OFF), wait for and qualify each answer (heuristic + LLM judge on failures), then write a dated report + summary. Invoke when the user says "run the daily chat test", "test Tlamatini with the 1000 questions", "daily Tlamatini regression", or schedules this test.
+---
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+
+# Tlamatini Daily Chat Test
+
+> Current release: **[v1.90.0](../../../docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+
+> **HEADLESS IS FORBIDDEN. VISIBLE FOREGROUND EXECUTION ONLY.** Every command, automated test, diagnostic, script, build, agent and browser must run in a visible foreground window on Angela's real desktop. Use forked CMD/PowerShell windows, `execute_forked_window: true`, and `headless: false`. Monitor live; if visibility cannot be confirmed, do not run. Read the [mandatory execution policy](../../../TestsVisiblesAndVisibleExecutionFromClaude2Codex.md).
+
+> **Developer/product boundary (Angela, 2026-09-27):** these visibility requirements govern development and verification. They must not create extra windows, steal focus or expose internal diagnostics in the shipped UX. Direct chat dictation keeps status in chat and uses only Tlamatini's main console/log.
+
+### Direct microphone verification is separate from catalog verification
+
+The Mic button beside Send uses `/ws/chat-voice/`. Config → Mic selects
+automatic normal-form submission or an editable draft for manual Send. Verify
+both modes, saved settings, per-recording snapshots, invalid/missing device
+choices, shared button styles, Escape/focus and narrow layouts. The catalog's `voice_commands_visible.py` checks do not test this
+button or prove real audio capture. `scripts/chat_microphone_visible.py` verifies
+the direct UI in headed Chrome using controlled transport; real host capture,
+gate/ASR and windowless lifecycle require separate visible probes. Keep the
+production worker windowless, its diagnostics in the main application log and
+recording status in chat. Do not introduce a debug console to satisfy the test
+visibility rule. See [the direct voice guide](../../../docs/chat-microphone-design.md).
+
+A self-contained Playwright harness lives in `harness/` next to this file. It opens
+**real Chrome**, logs into Tlamatini, and asks up to **1000 curated questions** to
+the chat one at a time — typing, sending, waiting for the answer to finish, scraping
+it, and qualifying it — then writes a Markdown report + JSON summary.
+
+This is the operator-mode regression the user wants run **daily**.
+
+## ⛔ FORBIDDEN: headless tests — ALL TESTS MUST BE VISIBLE (Angela, HARD RULE, 2026-07-07)
+
+**HEADLESS / INVISIBLE AUTOMATED TESTS ARE FORBIDDEN. This test ALWAYS runs in a VISIBLE, HEADED real Chrome on Angela's desktop — she MUST see every step live.**
+
+`--headless` is **disabled in `run_test.py`** (it is ignored and forced back to headed). Never try to run this or any test invisibly. Launch it inside a VISIBLE foreground window (`Start-Process powershell -WindowStyle Normal -ArgumentList '-NoExit', …`, `dangerouslyDisableSandbox:true`), never `run_in_background`. Verify steps with FULL-SCREEN screenshots (whole desktop, taskbar clock visible) and NEVER record a stale/transient/timed-out answer as a pass.
+
+See memory `feedback_forbidden_headless_visible_tests` and the visible runners `harness/discoverer_1000.py` (Discoverer), **`harness/pdfer_nuance_visible.py`** (PDFer), **`harness/dialog_policy_visible.py`** , **`harness/voice_commands_visible.py`** (the VOICE COMMANDS catalog section) and **`harness/drop_message_visible.py`** (the chat card's Drop button).
+
+**`harness/voice_commands_visible.py`** is the 2026-09-12 proof of the catalog's new FIRST section. In headed Chrome it opens the real Catalog of Prompts and checks what the user actually sees: VOICE COMMANDS is the first `.prompt-category-header` in the DOM and really renders in capitals; its two cards sit in rank order (#121 opener, #122 SPEAK YOUR PROMPT); #122 carries Angela's sentence **verbatim**; the badges are exactly **Multi-turn · ACPX · Exec-report**; and **clicking #122 really ticks those three toolbar checkboxes** while leaving Step-by-Step off. It then clicks #121 and asserts the toolbar flips the OTHER way (Step-by-Step on, ACPX off) — which is what proves the boxes follow the CARD rather than lingering from the previous click. Every photo is taken by **Shoter**. Two honesty guards: it asks `/agent/list_prompts/` FIRST and **stops with a distinct exit code 3** if the app answering `:8000` has no `voice_commands` section (that means the FROZEN install is serving, and the section lives in the SOURCE tree), rather than reporting a misleading fail — and it states, on screen and in its `SUMMARY.html`, that **no microphone was used**: a voice command needs a human voice, and faking it would fake the very thing under test. Measured 2026-09-12 against the source server: **23/23 checks green**.
+
+**`harness/drop_message_visible.py`** is the 2026-09-30 proof of the chat card's **Drop** button. It restarts the SOURCE server on `:8001`, clicks Clean History, and in headed Chrome tells Tlamatini three made-up facts (a colour, a code word, a cat's name), each prompt ending "without using any tool". It then checks the confirmation dialog the user actually sees (title, the explanation, the memory-tool warning, Cancel focused, a red Drop, and that Cancel and Escape both KEEP the card), drops the user's code-word prompt AND Tlamatini's answer to it, drops a status line, and finally asks what she remembers. The verdict comes from the server's own `tlamatini.log` history lines, not from her prose: the dropped words must be absent from the history she was sent, the other messages must still be there, and no reconnect may have happened (same window marker, same WebSocket count); a page reload must not bring the cards back. ⚠️ A `memory_guard` checks the `memory` External MCP graph afterwards: the first run let her save the test facts into Angela's REAL graph, so the harness now fails if an `ext__memory__` write appears, and removes only the lines it added. Every photo is taken by **Shoter**; results in `Temp/drop_message/visible_run/SUMMARY.html`. Measured 2026-09-30: **30/30 checks green**.
+
+**`harness/compact_mode_visible.py`** is the 2026-10-01 proof of **Compact mode** on the INSTALLED app's model: it copies the model keys from `C:\Tlamatini\config.json` into the dev config (restored byte for byte at the end) and runs the SOURCE server on `:8019`. In headed Chrome it checks the capacity dialog (model, window, what stays active and what is paused), the badge, the ACPX lock and Escape, then asks one-shot questions (live metrics, time, identity, code, a table that must be READABLE — lowest cell contrast ≥ 3 — the previous question, an honest "I can't do that right now") and one Multi-Turn question, and reads `tlamatini.log` for COMPACT fits and cuts. Its sibling **`harness/full_mode_visible.py --model <name>`** proves the other direction on a big model: no dialog or badge, ACPX free, every request FULL, Ollama's REAL count ≥ 50K tokens. ⚠️ It points every cloud model key at the model under test and switches the at-rest gauge probes OFF, because each full request spends ~100K tokens of the user's cloud allowance. ⚠️ Wait for the page to go BUSY before waiting for it to go idle: the page locks only when the server echoes the question, which can lag ~2 s while the previous answer's cleanup finishes.
+
+**`harness/compact_switch_visible.py`** and **`harness/self_modify_visible.py`** are the 2026-10-03 proofs of the two toolbar SWITCHES, and they update the paragraph above: since 2026-10-02 the Compact badge and the ACPX lock are GONE (ACPX follows the rows the user ticks), so a harness must not assert them any more. `compact_switch_visible.py` checks, on the installed app's local `qwen2.5:latest`, that the **Compact mode** box switches ON by itself and is LOCKED (greyed, 🔒), that the Configure rows really change (ESPHomer chained to its tool row), the gauge past the CONTEXT-WINDOW and the warned answer; then, on the free `nemotron-3-ultra:cloud` with NO question asked and the probes OFF, that the box unlocks, the choices survive a restart, untick ⇒ every row back and tick ⇒ Current-Time only — **ALL 57 CHECKS PASSED** (2026-10-03). `self_modify_visible.py` checks the **Self-modify** box: on qwen2.5 it is present but unticked, greyed and `Self-modify 🔒`, a click explains why and a forged tick is refused; on the cloud model it is ticked by default, OFF saves 107,458 bytes at rest and ON brings back 117,517 with the same 119 tools — **ALL 28 CHECKS PASSED** (2026-10-03; database, choice and `config.json` restored). ⚠️ **A harness that drives a small model must expect BOTH locks at once: Compact mode locked ON and Self-modify locked OFF.** A source (dev) run ALWAYS renders the Self-modify box, because dev mode is always self-able (`rag/config.self_modify_available()`); only a frozen build made without `--self-modify` hides it. ⚠️ Compact mode rewrites the REAL Configure rows, so a harness must put them back: `compact_switch_visible.py` resets the dev database to "every row ON, Compact OFF" at the start and at the end — a crashed run once left Compact ON and the dev External MCPs paused. Both scripts photograph with **Shoter** and live only in `.claude/skills/tlamatini-daily-chat-test/harness/` (harness scripts are Claude-side tooling, not mirrored to `.gemini`).
+
+**`harness/model_brain_visible.py`**, **`harness/pdf_context_visible.py`** and **`harness/compact_pingpong_visible.py`** are the 2026-10-08 (`v1.76.0`) proofs. `model_brain_visible.py` saves Config ▸ Models and checks the **Auto-tuning** dialog (every card finishes, the brain models show the vendor's values and their sources, Escape closes), then runs a real Multi-Turn tool task (`file_creator`, then `grepper`) and checks the file on disk, the `[MODEL-BRAIN]` + `[LLM-PARAMS]` lines actually SENT, the reasoning returned inside the tool loop and the gauge's REAL counts — **25 of 25 in dev**; it uses the dev config's model, which may be a paid cloud model, so keep its runs lean. `pdf_context_visible.py` loads a PDF as one account (the header shows the context, nothing refused), then signs a SECOND account in from the same browser and checks that the refusal names the cause and the fix, the header comes back, Clear canvas leaves no "pending context", the refusal is logged, and a reload loads the PDF — **20 of 20 in dev**; `--frozen` runs only the one-account phase. `compact_pingpong_visible.py` opens two chat pages on two different models (probes OFF) and, after 20 s to settle, counts 60 idle seconds of log: it passes on **0 row re-sends**, at most one Compact note and fewer than 200 new lines (before the fix: 1,081 re-sends and 209,006 lines). ⚠️ `manage.py` TRUNCATES `tlamatini.log` on every command, so these harnesses create their extra account BEFORE the server starts and delete it after it stops. ⚠️ Windows' foreground lock can keep the test page behind another window: the harness notes the foreground title beside each photo, and the verdict rests on the log counts, never on the picture alone. ⚠️ Claude Code sets `NO_COLOR=1` for every program it launches; a visible check of the console colours must remove it in its launcher.
+
+**`harness/pdfer_nuance_visible.py`** is the 2026-09-06 proof of PDFer's nuance / typography / layout overhaul. It spawns the REAL `pdfer.py` the way the pool does (a copied runtime dir + a written `config.yaml`, never an import), renders the same content under different treatments, **audits every produced PDF against the file on disk** with PyMuPDF, opens each one on screen, and photographs the whole desktop with **Shoter**. Its seventh case deliberately renders the torture tables through the **OLD xhtml2pdf engine** so the before/after sits together rather than being a claim: measured 2026-09-06, the new engine is CLEAN and the old one shows **8 overlapping text pairs** on the same tables while reporting `err=0`. A case passes only if the PDF exists AND the audit is clean AND the reported design fields match what was asked for AND Shoter produced a photo — a missing photo is a FAILURE, never a silent pass. ⚠️ It drives the agent in the **repo** (`C:\Development\XAIHT\Tlamatini`) on purpose: the Django server on this machine runs from a DIFFERENT install (`C:\Development\Tlamatini`), so a chat-GUI route would exercise the OLD PDFer until that install is synced. The 2026-08-16 dialog-dismissal proof opens each real dialog in headed Chrome, presses Escape, and confirms it closed with the same meaning as its ✕. It also proves that the **sealed updater refuses** Escape / Ctrl+F4 / F5 while a download is in progress through a `window.__tlmSealCanary`, so "the dialog is gone" and "F5 worked" can never look identical. It never starts a real update: it calls `seal('update')` to reproduce the exact policy state.
+
+### PDFer signature-style evidence — 2026-09-15
+
+The [PDFer style guide](../../../Tlamatini/agent/agents/pdfer/STYLES.md) now documents 24 explicit styles alongside 20 semantic themes, `mode: styles` catalog discovery, and `style`/`style_family` flow outputs. Its development record covers 130 PDFer tests and 24 two-page samples with clean audits. `scripts/verify_pdfer_styles.py` renders fixture PDFs, audits them and uses Poppler to produce a gallery/atlas. Those previews are reproducible ignored outputs and were removed after inspection.
+
+This fixture verification is distinct from the visible `harness/pdfer_nuance_visible.py` proof above: the generator does not exercise live chat, canvas delivery or Shoter screenshots. When reporting a visible test result, identify the tested installation and actual UI evidence; neither a source-tree catalog nor a preview audit establishes that a separate frozen installation has the style extension.
+
+## Pinned run mode (do not change without being told)
+
+| Toggle | State |
+|---|---|
+| Multi-Turn | **ON** |
+| ACPX | **OFF** |
+| Ask-Execs | **OFF** |
+| Exec-Report | **OFF** |
+| Add internet context | **OFF** |
+
+The harness sets these on the toolbar automatically. Because Multi-Turn is ON the
+LLM is an **operator** (tools really execute), so the 1000-question bank in
+`harness/questions.py` is deliberately **safe to execute 1000×/day**
+(knowledge / introspection / benign read-only ops / general Q&A). **Never** load
+the bank with destructive prompts. ACPX/skill *execution* is excluded (ACPX is OFF,
+so `acp_*` tools are filtered out); ACPX appears only as knowledge questions.
+
+## How to run it (the daily procedure)
+
+1. **Confirm the Tlamatini server is up** at `http://127.0.0.1:8000` (the user
+   normally runs it). Quick check:
+   ```bash
+   curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/
+   ```
+   If it's down, ask the user to start it (`cd Tlamatini && python manage.py runserver 127.0.0.1:8000 --noreload`) — do **not** silently start a second instance (ports 8000/8765/50051 are single-bound and a second copy just crashes on bind).
+
+2. **Ensure credentials.** The installer default `user`/`changeme` is usually wrong
+   on a dev box. Get them from the user once and pass via env or flags:
+   ```bash
+   set TLAMATINI_USER=<user>
+   set TLAMATINI_PASS=<pass>
+   ```
+   (Or store them in `harness/.creds.env` — gitignored — and source it.)
+
+3. **First-time setup only:**
+   ```bash
+   cd .claude/skills/tlamatini-daily-chat-test/harness
+   pip install -r requirements.txt
+   python -m playwright install chrome
+   ```
+
+4. **Run the test — in a VISIBLE FOREGROUND window. NEVER in the background.**
+
+   ⚠️ This step used to say "run it in the **background**", contradicting the
+   hard rule at the top of this very file. It is resolved: **a long run is not
+   a reason to hide it.** `run_in_background`, a detached job and a hidden
+   window are all forbidden here — Angela watches the screen, and a run that
+   dies 30 seconds in is visible to her immediately.
+
+   Launch it in its own visible console and leave that console open:
+   ```powershell
+   Start-Process -FilePath powershell.exe -WindowStyle Normal -ArgumentList @(
+     '-NoProfile', '-NoExit', '-Command',
+     'cd .claude/skills/tlamatini-daily-chat-test/harness; ' +
+     'python run_test.py --user $env:TLAMATINI_USER --password $env:TLAMATINI_PASS ' +
+     '2>&1 | Tee-Object -FilePath $env:TLAMATINI_TEMP\daily_chat_test.log'
+   )
+   ```
+   (`dangerouslyDisableSandbox: true` when you launch it through a tool, or the
+   window renders in an isolated station and she cannot see it.)
+
+   **How a long run stays visible while you monitor it.** The run is visible in
+   its own window; you follow it by TAILING the tee'd log in short intervals
+   (5–15 s) and reporting **what CHANGED** each time — prompt N of M, the live
+   pass/fail counts, the first error. A single long sleep and a late summary is
+   sleeping on the job. Read the **HEAD** of a failing log (the first traceback
+   is the cause; the tail is only the last symptom) and read
+   `Tlamatini/tlamatini.log` too — the harness says "selector timeout" while the
+   app log says `no such table: auth_user`.
+
+   **State these in the report, every time:**
+   - **Which installation was tested** — the source checkout or the frozen
+     install at `C:\Tlamatini` (they serve DIFFERENT static files).
+   - **Credentials used** (the account name, never the password).
+   - **How completion was detected** — the runner's exit code and the final
+     summary line, not "it looked finished".
+
+   **Completion detection:** the run is done when the process exits and writes
+   its summary; until then it is running, however quiet it looks.
+   - For a quick health check first, use `--count 10`.
+   - **To run ONE specific test** (e.g. when the user says "run the Emailer test"),
+     use the `wrapped` bank + `--select`:
+     ```bash
+     python run_test.py --bank wrapped --select emailer   # just the Send-Email agent
+     python run_test.py --bank wrapped --list             # discover --select tokens (no browser)
+     ```
+     `--select` matches a question's id (`W041`), category (`wrapped:send_email`),
+     wrapped key (`send_email`), or display name (`Send Email`) — case-insensitive,
+     substring, with aliases (`emailer`→`send_email`, `imap`→`recmailer`). Pass a
+     comma-separated list to run several (`--select emailer,recmailer`). A single
+     `--select` run is short, so run it in the **foreground**.
+   - **Question order is RANDOMIZED by default** — each run asks the selected
+     questions in a fresh random sequence so order-dependent / state-leakage bugs
+     surface instead of being masked by an always-identical run. The seed is logged
+     (and saved in `summary.json` / `report.md`); replay a failing order with
+     `--seed <N>`. Use `--no-shuffle` to force the bank's fixed sequential order.
+   - On a crash, resume with `--resume reports/run_<timestamp>` (it skips answered ids).
+   - `results.jsonl` is written incrementally, so progress is never lost.
+
+5. **Report the outcome.** Read `harness/reports/run_<timestamp>/summary.json` and
+   relay: total asked, pass / weak / fail counts, pass-rate %, average response
+   time, and the per-category breakdown. Then surface the top WEAK/FAIL items from
+   `report.md` (each lists the question, the heuristic reason, the judge verdict,
+   and the answer excerpt) so regressions are visible at a glance.
+
+## Verdicts
+
+- **PASS** — answered, no error, long enough, expected keywords present.
+- **PASS\*** — heuristic flagged it but the Anthropic judge rated it acceptable.
+- **WEAK** — answered but thin / off expectation (sent to the judge).
+- **FAIL** — empty, errored (traceback / error banner), or timed out.
+
+The LLM judge (Anthropic, failures only) auto-loads its key from
+`ANTHROPIC_API_KEY` / `Tlamatini/agent/config.json` / `data.keys`; if none is
+present it degrades to `skip` and the run still completes on heuristics alone.
+
+## Scheduling it daily
+
+This is a Claude Code skill, so the daily cadence is driven by the harness's CLI,
+not by the skill itself. Two options for the user:
+- Use the Claude Code **`/schedule`** (routine) or **`/loop`** mechanism to invoke
+  this skill once a day.
+- Or a Windows Task Scheduler job configured to **run only when Angela is logged
+  on**, with **Hidden disabled**, that opens a visible foreground console and
+  headed browser and drops the report under `harness/reports/`. Never use a
+  non-interactive or hidden scheduled run. Any scheduler must satisfy the same
+  verified-visibility requirement; if it cannot, do not start the run.
+
+## How it works (contract, for maintenance)
+
+- **Login:** POST `/` (`#id_username`, `#id_password`, submit) → chat at `/agent/`.
+- **Send:** fill `#chat-message-input`, click `#chat-message-submit`.
+- **Answer complete:** the input stops being `readOnly` **and** `#wait-spinner` is
+  removed from `#chat-log` (`enableControlsAfterOperation()` in `agent_page_ui.js`).
+  Intermediate "busy" banners keep it `readOnly`, so they don't cause an early read.
+- **Answer text:** the last `.message.bot-message .automated-message-body` in
+  `#chat-log`, after filtering the known busy/system banners.
+
+If the chat UI changes, fix `harness/config.py` (selectors + the ready/started JS in
+`run_test.py`) — everything else keys off that single contract.
+
+## v1.48.13 regression set
+
+When the touched surface is relevant, include visible cases for: Mover/Deleter empty, relative, legacy `C:/Temp/...`, and explicit absolute destinations; long-operation menu disable/restore (since 2026-09-25: **Panels** stays usable while Open/Save/Context/ACPX-Skills/External/Config/DB/Reconnect lock, and all of them re-arm after completion, Reconnect, Clean History, Cancel and a dropped socket; wait on `#config-menu-button` / `#panels-menu-button` — `#mcps-menu-button`, `#agents-menu-button` and `#admin-menu-button` no longer exist, and **Configure MCPs / Configure Agents** now open from **Config**); the Agentic Control Panel editor toolbar (undo/redo, configure, duplicate-with-settings, delete, zoom/fit, agent search, locked while a flow runs); the Prompt Flow Panel (`.fpmt` open/save/draft, a `.pmt` refused, validate/play/pause/stop, User Input replies and a reply dialog's Cancel stopping the run); dialog dismissal (**Escape must close every dialog with the same meaning as its ✕ / Cancel; an outside click must still NOT dismiss; a sealed updater must refuse Escape and Ctrl+F4/F5 while downloading**), ✕/Cancel/Continue behavior, and that no native `alert()`/`confirm()` appears over a themed dialog; safe update release-note rendering; and per-user/request/stream/line log attribution. A movement test must prove Deleter scope was not widened.
+
+For the 2026-10-04 graphical Prompt Flow redesign, verify multiple static commentaries entirely on the canvas: no configuration dialog or dimension inputs; floating toolbar; selected ranges with mixed fonts/sizes/colors/bold/italic/underline; styled caret typing; copy/paste between rich comments; all eight edges/corners and keyboard resizing; editor and flow Undo/Redo; long text containment without scrollbars; three real `.fpmt` save/open cycles with identical rendered line boxes and styles, plus draft recovery. Preserve User Input replies/cancellation and version 1 migration. Launch `scripts/prompt_flow_commentary_visible.py` in a verified visible foreground console with explicit `headless=False` Chrome. See the dated change record for current results. Stop only owned processes through `Temp/prompt-commentary-redesign-visible/close.confirmed`, verify cleanup, and preserve unrelated user applications.
+
+## v1.48.14 release-target regression set
+
+When External MCP or response rendering changes, visibly verify: the dialog lists inactive `memory` and `sequential-thinking`; the runtime strip reports node/npm/npx/pnpm/uv/uvx without blocking the page; **Install now** has honest success/failure state; activating a default is explicit; deleting it does not resurrect it after reload; and a nested explicit/auto ASCII diagram followed by Markdown `---` renders every diagram once with no `DGRM_*` or NUL leakage. Use an isolated catalog/config path for tests so a maintainer's keyed `external_mcps.json` is never modified.
+
+## v1.48.17 release regression set
+
+When search, wrapped-agent reporting, Kubernetes execution, build privacy, or self-update changes, add visible/focused cases for: Grepper searching BOM-marked UTF-8/16/32 and cp1252/Latin-1 while skipping binary data; all five status classes and pairwise-disjoint `KNOWN_STATUSES`; degraded output rendering red; completed diagnostics rendering green; unknown-status compatibility plus guard rejection; Kuberneter emitting numeric `returncode`, boolean `success`, and `status: ok|failed`; public builds excluding a maintainer catalog while the explicit private builder may include one; and update swaps retaining `Uninstaller.exe`. Run `agent.test_grepper_encodings`, `agent.test_status_vocabulary`, `agent.test_agent_verdict`, and `agent.test_preserved_user_state` when those surfaces are touched.
+
+
+## Grepper verbatim-read proof (`harness/grepper_lines_visible.py`)
+
+VISIBLE end-to-end proof that Grepper's `output_mode: lines` works in the LIVE app and that the three existing search modes still do. Headed Chrome drives the real chat with Multi-Turn + Exec report on, makes Tlamatini run `chat_agent_grepper` twice (a `content` search, then a `lines` verbatim read), and judges on **DOM truth** — a Grepper table in the Exec Report plus a planted marker coming back — never on prose. Shoter photographs the whole desktop.
+
+```bash
+set "TLAMATINI_USER=user" && set "TLAMATINI_PASS=changeme"
+python harness/grepper_lines_visible.py --base http://127.0.0.1:8000 --user user
+```
+
+⚠️ **Two traps this runner already pays for you.** In a batch file `set VAR=value && …` stores the TRAILING SPACE, so the browser types `"changeme "` and the login silently fails — always use the quoted `set "VAR=value"` form. And the chat page posts a GREETING bot message on connect, so counting messages before it lands makes the greeting look like the answer and the run ends in seconds with a false FAIL; wait for the submit button to go back from **Cancel** to **Send**.
+
+Companion: `harness/grepper_login_probe.py` prints URL/title/selector presence at each step when a login or selector question needs settling with evidence instead of guesses.
+
+## Release regression set — HISTORICAL RECORD (v1.50.0), plus how to validate TODAY's release
+
+⚠️ **Read the numbers below as DATED EVIDENCE from the v1.50.0 pass, not as
+current facts.** They were written while v1.50.0 was current; the annotated
+release has since moved on, and a count copied forward silently becomes a lie.
+
+**Before running this set, derive the current facts — never type them:**
+
+```bash
+git describe --tags            # the reachable annotated release
+git describe --tags --abbrev=0 # the tag alone
+git rev-parse --short HEAD     # HEAD is usually LATER than the tag — report
+                               # the two SEPARATELY, and never call a tagged
+                               # release "untagged" just because HEAD moved
+python scripts/skill_inventory.py    # skill counts + all four locations
+python scripts/update_flow_catalog.py --check   # agent/type counts
+```
+
+Validate the release those commands report. The historical paragraph that
+follows stays intact as the record of what the v1.50.0 pass covered.
+
+When the current release is touched, verify NetSpeed-Calculator with `action='latency'` or `validate` by default, never a repeated `full` run; assert the full/download/upload bandwidth warning and tier-D Ask-Execs classification. Run WAL-mode Backup DB/Set DB/hot-swap tests through `sqlite_copy.py` and prove `quick_check` plus sidecar hygiene. Run `agent.test_googler_dorks` and pin preset-under-explicit-field precedence, aliases, no-space operator syntax, uppercase parenthesized `OR`, site-group same-domain handling, `links_only` file-hunt guidance, and the direct-tool versus visual/pool structured-field boundary. Also pin the two-tier order (four plain-HTTP server-rendered routes before any browser), explicit engine pins skipping Tier 0, `headless: false` for Tier 1, the seven-route browser order, tolerant string booleans, bounded retries, first-answer stopping, pinned-engine behavior, redirect unwrapping, and explicit Google-only advanced-operator semantics. The optional visible proof is `harness/googler_dork_hunt.py`: it uses the shipped builder, opens headed Chrome, targets public-domain/open-access sources, and stores JSON evidence under Tlamatini `Temp`; search-engine refusal is a failed proof run, not proof that the compiled query is wrong. Validate migration 0194's Deep Internet Research card and 0195-0197's NetSpeed rows, the `adding-external-mcp` classify/import/doctor/activate/wait/list/call lifecycle, the 88/66/108/29/197 source counts, and the private contact-sync/public-empty boundary. (That pass verified `v1.50.0` as the annotated release. The RULE generalises and still applies: verify whatever `git describe` reports today, and report a later `HEAD` separately rather than calling the release untagged.)
+
+When Terminater is touched (on `main` since 2026-10-19), the wrapped bank carries one safe question for it
+(`wrapped_questions.py`: open a PowerShell terminal, type `Write-Output tlamatini-terminater-ok`, report status and exit code,
+close it). The command is typed at about 50 words per minute, so allow for its time and never shorten the command; the question
+asserts `completed` and exit code 0 (a non-zero exit is `command_failed` and must read as a failure, not a pass). The hub does not
+need a chat page open to run it, but the Terminals area is where a human watches it. Use `scripts/terminater_visible_all.py` for
+the three-page visible suite.
+
+> ⚠️ If the answer-complete logic ever needs adjusting, verify it against a LIVE
+> server with `--count 2` before trusting a full run — a daily test that silently
+> mis-detects completion is worse than no test.
+
+### Prompt Flow Run output regression (2026-10-04)
+
+From a verified visible foreground PowerShell `-NoExit` console, run `python -u scripts/prompt_flow_output_resize_visible.py --resume`. Chrome must use explicit `headless=False` and pass the foreground HWND gate. Its 14 checkpoints cover 5%/50%/95% dragging and limits, unchanged fonts/geometry/zoom, independent canvas/log scrolling, keyboard controls, Escape, collapse/reopen, the Operations divider, window resizing and layout recovery. The fixture includes three mixed-style notes and uses ordinary `.fpmt` opening and User Input playback. Observe the final browser, then use its documented `Temp/run-output-resize-visible/close.confirmed` handoff and verify owned processes/ports stop. Do not substitute these checks for the separate 23-check rich-commentary/file-fidelity suite or claim a release rebuild. See `docs/changes/2026-10-04-run-output-resize.md`.
+
+## v1.85.0 chat acceptance
+
+In explicitly headed Chrome, verify Refresh rereads a real opened file without a picker, Views retains canvas/context while toggling full-width chat, Reset preserves content, and the docked avatar stays centered over Mic through Send at minimum composer height. Use `scripts/canvas_refresh_visible.py`, `scripts/chat_views_visible.py` and the existing docked-avatar checks from a verified foreground console.

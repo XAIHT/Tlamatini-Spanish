@@ -1,0 +1,314 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/avatar.js",
+ "segmentos": [
+  {
+   "en": "'start chatting with me'",
+   "es": "'empezar a platicar conmigo'",
+   "maquina": "acoplada con constants.MSG_AGENT_READY",
+   "n": 1
+  },
+  {
+   "en": "\"i'm back and ready\"",
+   "es": "\"ya volví y estoy lista\"",
+   "maquina": "acoplada con constants.MSG_LLM_REESTABLISHED",
+   "n": 1
+  },
+  {
+   "en": "'you cancelled'",
+   "es": "'lo cancelaste'",
+   "maquina": "acoplada con constants.MSG_LLM_CANCELLED y self_healing.py",
+   "n": 1
+  },
+  {
+   "en": "'execution interrupted'",
+   "es": "'ejecución interrumpida'",
+   "maquina": "acoplada con mcp_agent.py y response_parser.py",
+   "n": 1
+  },
+  {
+   "en": "'please rephrase'",
+   "es": "'reformula tu'",
+   "maquina": "acoplada con rag/interface.py",
+   "n": 1
+  },
+  {
+   "en": "\"can't process your requests\"",
+   "es": "\"no puedo procesar tus solicitudes\"",
+   "maquina": "acoplada con constants.ERROR_AGENT_NOT_READY",
+   "n": 1
+  },
+  {
+   "en": "\"i'm not ready yet\"",
+   "es": "\"todavía no estoy lista\"",
+   "maquina": "acoplada con constants.ERROR_AGENT_NOT_READY_SIMPLE",
+   "n": 1
+  },
+  {
+   "en": "\"i'm working on your request\"",
+   "es": "\"estoy trabajando en tu solicitud\"",
+   "maquina": "acoplada con constants.MSG_PROCESSING_REQUEST",
+   "n": 1
+  },
+  {
+   "en": "\"i'm getting myself ready\"",
+   "es": "\"me estoy preparando\"",
+   "maquina": "acoplada con constants.MSG_AGENT_LOADING",
+   "n": 1
+  },
+  {
+   "en": "\"i'm still getting ready\"",
+   "es": "\"todavía me estoy preparando\"",
+   "maquina": "acoplada con constants.MSG_AGENT_STILL_LOADING",
+   "n": 1
+  },
+  {
+   "en": "\"i'm rebuilding myself\"",
+   "es": "\"me estoy reconstruyendo\"",
+   "maquina": "acoplada con constants.MSG_LLM_REBUILDING",
+   "n": 1
+  },
+  {
+   "en": "'please wait a moment'",
+   "es": "'espera un momento'",
+   "maquina": "acoplada con constants.MSG_AGENT_LOADING*",
+   "n": 1
+  },
+  {
+   "en": "'loading the context'",
+   "es": "'cargando el contexto'",
+   "maquina": "acoplada con constants.MSG_AGENT_LOADING_CONTEXT",
+   "n": 1
+  },
+  {
+   "en": "'outside my application root'",
+   "es": "'fuera del path raíz de mi aplicación'",
+   "maquina": "acoplada con constants.ERROR_*_OUTSIDE_ROOT",
+   "n": 1
+  },
+  {
+   "en": "'not a valid directory'",
+   "es": "'no es un directorio válido'",
+   "maquina": "acoplada con constants.ERROR_NOT_A_DIRECTORY",
+   "n": 1
+  },
+  {
+   "en": "'Click = stop talking / greet  ·  Double-click = mute  ·  Esc = stop  ·  Ctrl+Shift+M = mute'",
+   "es": "'Clic = dejar de hablar / saludar  ·  Doble clic = silenciar  ·  Esc = detener  ·  Ctrl+Shift+M = silenciar'",
+   "n": 1
+  },
+  {
+   "en": "      \"Tlamatini here, \"+uname+\" - one who knows, ready to learn with you.\",\n      uname+\", I'm awake and sharp. Point me at something hard.\",\n      \"Systems humming, \"+uname+\". What are we building today?\",\n      \"Ready and listening, \"+uname+\". Give me a real challenge.\",\n      \"I've got you, \"+uname+\". Say the word and I move.\",\n      \"Standing by, \"+uname+\". Let's make something worth remembering.\",\n      \"All circuits calm, \"+uname+\". Ask me anything.\",\n      \"Here and focused, \"+uname+\". What's the mission?\"",
+   "es": "      \"Aquí Tlamatini\"+(who?\", \"+who:\"\")+\" — la que sabe, lista para aprender contigo.\",\n      \"Estoy despierta y atenta\"+(who?\", \"+who:\"\")+\". Ponme algo difícil.\",\n      \"Sistemas a tope\"+(who?\", \"+who:\"\")+\". ¿Qué construimos hoy?\",\n      \"Lista y escuchando\"+(who?\", \"+who:\"\")+\". Dame un reto de verdad.\",\n      \"Te tengo\"+(who?\", \"+who:\"\")+\". Tú di la palabra y me muevo.\",\n      \"Aquí en espera\"+(who?\", \"+who:\"\")+\". Hagamos algo que valga la pena recordar.\",\n      \"Todo en calma\"+(who?\", \"+who:\"\")+\". Pregúntame lo que sea.\",\n      \"Aquí y concentrada\"+(who?\", \"+who:\"\")+\". ¿Cuál es la misión?\"",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "      \"On it, \"+uname+\" - threads spinning, closing in.\",\n      \"Deep in the work, \"+uname+\". Give me a heartbeat.\",\n      \"Crunching this for you, \"+uname+\". Almost there.\",\n      \"Hold tight, \"+uname+\" - I'm threading it together right now.\",\n      \"Working hard, \"+uname+\". The good stuff is worth the wait.\",\n      \"Almost done, \"+uname+\" - polishing the last piece.\",\n      \"In the zone, \"+uname+\". Don't blink.\",\n      \"Processing, \"+uname+\" - I've nearly got it.\"",
+   "es": "      \"En eso\"+(who?\", \"+who:\"\")+\" — los hilos girando, cada vez más cerca.\",\n      \"Metida en el trabajo\"+(who?\", \"+who:\"\")+\". Dame un segundo.\",\n      \"Procesando esto para ti\"+(who?\", \"+who:\"\")+\". Ya casi.\",\n      \"Aguanta tantito\"+(who?\", \"+who:\"\")+\" — lo estoy armando ahora mismo.\",\n      \"Trabajando duro\"+(who?\", \"+who:\"\")+\". Lo bueno se hace esperar.\",\n      \"Casi lista\"+(who?\", \"+who:\"\")+\" — puliendo la última pieza.\",\n      \"En la zona\"+(who?\", \"+who:\"\")+\". No parpadees.\",\n      \"Procesando\"+(who?\", \"+who:\"\")+\" — ya casi lo tengo.\"",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "    const COMPLETE_PHRASE=\"I've finished your request\"+(who?\", \"+who:\"\")+\".\";\n    const CANCEL_PHRASE=\"Okay\"+(who?\", \"+who:\"\")+\" - I've stopped that task. I'm ready for your next instruction.\";",
+   "es": "    const COMPLETE_PHRASE=\"Ya terminé tu solicitud\"+(who?\", \"+who:\"\")+\".\";\n    const CANCEL_PHRASE=\"Listo\"+(who?\", \"+who:\"\")+\" — detuve esa tarea. Estoy lista para tu siguiente instrucción.\";",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "        if(busy){ stopSpeaking(); showBubble(\"Okay, I'll stop talking.\"); return; }",
+   "es": "        if(busy){ stopSpeaking(); showBubble(\"Listo, dejo de hablar.\"); return; }",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "      fem.forEach(function(v){const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o);});",
+   "es": "      // Show the preferred-language (e.g. es-MX) voices first.\n      const want=(document.documentElement.lang||navigator.language||'').toLowerCase().split('-')[0];\n      if(want)fem.sort(function(a,b){return ((a.lang||'').toLowerCase().startsWith(want)?0:1)-((b.lang||'').toLowerCase().startsWith(want)?0:1);});\n      fem.forEach(function(v){const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o);});",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "      const test=document.getElementById('tlm-voice-test'); if(test)test.addEventListener('click',function(){ saveSettings(readDialog()); prime(); speak(\"Hello \"+uname+\"! This is my voice.\"); });",
+   "es": "      const test=document.getElementById('tlm-voice-test'); if(test)test.addEventListener('click',function(){ saveSettings(readDialog()); prime(); speak(\"¡Hola\"+(who?\", \"+who:\"\")+\"! Esta es mi voz.\"); });\n      if(window.speechSynthesis)window.speechSynthesis.addEventListener('voiceschanged',function(){ try{ if(overlay&&overlay.style.display!=='none')fillVoices(); }catch(e){ /* voice-list refresh is best-effort */ } });",
+   "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"I've finished your request.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Voice OFF - I'll stay quiet.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Voice ON - I'll talk to you again!\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Tlamatini here, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\" - one who knows, ready to learn with you.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\", I'm awake and sharp. Point me at something hard.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Systems humming, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". What are we building today?\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Ready and listening, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Give me a real challenge.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"I've got you, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Say the word and I move.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Standing by, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Let's make something worth remembering.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"All circuits calm, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Ask me anything.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Here and focused, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". What's the mission?\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"On it, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\" - threads spinning, closing in.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Deep in the work, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Give me a heartbeat.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Crunching this for you, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Almost there.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Hold tight, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\" - I'm threading it together right now.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Working hard, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". The good stuff is worth the wait.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Almost done, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\" - polishing the last piece.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"In the zone, \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Don't blink.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\" - I've nearly got it.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"I've finished your request\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Okay\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\" - I've stopped that task. I'm ready for your next instruction.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"I'm working on your request\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\". Please wait a moment.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "'Tlamatini presence: '",
+   "motivo": "texto de log (console.info)"
+  },
+  {
+   "en": "' fps (median frame '",
+   "motivo": "texto de log (console.info)"
+  },
+  {
+   "en": "\"Okay, I'll stop talking.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Voice OFF - I'll stay quiet (double-click me to hear me again).\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"Hello \"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  },
+  {
+   "en": "\"! This is my voice.\"",
+   "motivo": "voz: lo dice o lo muestra el avatar en su burbuja; se porta en la fase de voz"
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "archivo": "Tlamatini/tlamatini/settings.py",
+ "segmentos": [
+  {
+   "en": "LANGUAGE_CODE = 'en-us'",
+   "es": "LANGUAGE_CODE = 'es-mx'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'Temp'",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "'Templates'",
+   "motivo": "nombre de carpeta"
+  },
+  {
+   "en": "'PRAGMA journal_mode=WAL;'",
+   "motivo": "PRAGMA de SQLite"
+  },
+  {
+   "en": "'PRAGMA synchronous=NORMAL;'",
+   "motivo": "PRAGMA de SQLite"
+  },
+  {
+   "en": "'PRAGMA busy_timeout=5000;'",
+   "motivo": "PRAGMA de SQLite"
+  },
+  {
+   "en": "\"%(asctime)s [%(name)s] %(levelname)s %(message)s\"",
+   "motivo": "formato del log"
+  }
+ ]
+}

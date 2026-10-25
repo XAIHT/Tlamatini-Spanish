@@ -1,0 +1,71 @@
+{
+ "archivo": "Tlamatini.ps1",
+ "segmentos": [
+  {
+   "en": "\"Starting Tlamatini Development Server...\"",
+   "es": "\"Iniciando el servidor de desarrollo de Tlamatini...\"",
+   "n": 1
+  },
+  {
+   "en": "'Choose a .flw or .fpmt flow file.'",
+   "es": "'Elige un archivo de flow .flw o .fpmt.'",
+   "n": 1
+  },
+  {
+   "en": "\"Working directory: $scriptDir\"",
+   "es": "\"Directorio de trabajo: $scriptDir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Error: Tlamatini.exe not found!\"",
+   "es": "\"Error: falta Tlamatini.exe\"",
+   "n": 1
+  },
+  {
+   "en": "\"Expected location: $TlamatiniExe\"",
+   "es": "\"Debe estar en: $TlamatiniExe\"",
+   "n": 1
+  },
+  {
+   "en": "\"Press Enter to exit\"",
+   "es": "\"Presiona Enter para salir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Warning: Flow file not found: $FlowFile\"",
+   "es": "\"Aviso: no existe el archivo de flow: $FlowFile\"",
+   "n": 1
+  },
+  {
+   "en": "\"Opening flow file: $FlowFile\"",
+   "es": "\"Abriendo el archivo de flow: $FlowFile\"",
+   "n": 1
+  },
+  {
+   "en": "\"Executing: Tlamatini.exe $($serverArgs -join ' ')\"",
+   "es": "\"Ejecutando: Tlamatini.exe $($serverArgs -join ' ')\"",
+   "n": 1
+  },
+  {
+   "en": "\"Server starting...\"",
+   "es": "\"Arrancando el servidor...\"",
+   "n": 1
+  },
+  {
+   "en": "\"Press Ctrl+C to stop the server.\"",
+   "es": "\"Presiona Ctrl+C para detener el servidor.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini.exe has exited (code: $LASTEXITCODE).\"",
+   "es": "\"Tlamatini.exe se detuvo (exit code: $LASTEXITCODE).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Press Enter to close this window\"",
+   "es": "\"Presiona Enter para cerrar esta ventana\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

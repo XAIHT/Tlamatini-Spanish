@@ -1,0 +1,143 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-parametrizer-dialog.js",
+ "segmentos": [
+  {
+   "en": "'Failed to load Parametrizer configuration.'",
+   "es": "'Error al cargar la configuración de Parametrizer.'",
+   "n": 1
+  },
+  {
+   "en": "'Failed to communicate with the server.'",
+   "es": "'Error al comunicarse con el servidor.'",
+   "n": 1
+  },
+  {
+   "en": "`\r\n        <h3 style=\"margin-top:0; color:#FF6D00;\">Parametrizer Validation Error</h3>\r\n        <p style=\"color:var(--tlm-dlg-body); line-height:1.6;\">${_escapeParametrizerHtml(message)}</p>\r\n        <button id=\"parametrizer-error-ok\" style=\"\r\n            margin-top:15px; padding:8px 14px;\r\n            border:1px solid rgba(255,255,255,0.12); border-radius:6px;\r\n            background:#55BBAA;\r\n            color:white; cursor:pointer; font-size:0.88rem; font-weight:bold;\r\n        \">OK</button>\r\n    `",
+   "es": "`\n        <h3 style=\"margin-top:0; color:#FF6D00;\">Error de validación de Parametrizer</h3>\n        <p style=\"color:var(--tlm-dlg-body); line-height:1.6;\">${_escapeParametrizerHtml(message)}</p>\n        <button id=\"parametrizer-error-ok\" style=\"\n            margin-top:15px; padding:8px 14px;\n            border:1px solid rgba(255,255,255,0.12); border-radius:6px;\n            background:#55BBAA;\n            color:white; cursor:pointer; font-size:0.88rem; font-weight:bold;\n        \">Aceptar</button>\n    `",
+   "n": 1
+  },
+  {
+   "en": "`\r\n        <span style=\"display:block; color:var(--tlm-dlg-kicker); font-size:0.72rem;\r\n            font-weight:700; line-height:1.1; text-transform:uppercase;\">Parametrizer</span>\r\n        <h3 style=\"margin:2px 0 5px; color:var(--tlm-dlg-title); font-weight:700;\r\n            font-size:1.15em; line-height:1.2;\">\r\n            ${_escapeParametrizerHtml(agentId)}\r\n        </h3>\r\n        <p style=\"margin:0; color:var(--tlm-dlg-muted); font-size:0.85em;\">\r\n            Source: <strong style=\"color:#00E5FF\">${_escapeParametrizerHtml(source_agent)}</strong> &rarr;\r\n            Target: <strong style=\"color:#FF6D00\">${_escapeParametrizerHtml(target_agent)}</strong>\r\n        </p>\r\n        <p style=\"margin:5px 0 0; color:var(--tlm-dlg-muted); font-size:0.8em;\">\r\n            Click a source field (left), then click a target parameter (right) to create a mapping.\r\n            Click an existing line to remove it.\r\n        </p>\r\n        <p style=\"margin:5px 0 0; color:var(--tlm-dlg-muted); font-size:0.8em;\">\r\n            If a target value already contains configured markers such as {content}, they appear as indented target slots\r\n            so Parametrizer can replace only that marker instead of overwriting the entire parameter.\r\n        </p>\r\n    `",
+   "es": "`\n        <span style=\"display:block; color:var(--tlm-dlg-kicker); font-size:0.72rem;\n            font-weight:700; line-height:1.1; text-transform:uppercase;\">Parametrizer</span>\n        <h3 style=\"margin:2px 0 5px; color:var(--tlm-dlg-title); font-weight:700;\n            font-size:1.15em; line-height:1.2;\">\n            ${_escapeParametrizerHtml(agentId)}\n        </h3>\n        <p style=\"margin:0; color:var(--tlm-dlg-muted); font-size:0.85em;\">\n            Origen: <strong style=\"color:#00E5FF\">${_escapeParametrizerHtml(source_agent)}</strong> &rarr;\n            Destino: <strong style=\"color:#FF6D00\">${_escapeParametrizerHtml(target_agent)}</strong>\n        </p>\n        <p style=\"margin:5px 0 0; color:var(--tlm-dlg-muted); font-size:0.8em;\">\n            Haz clic en un campo de origen (izquierda) y luego en un parámetro de destino (derecha) para crear un mapeo.\n            Haz clic en una línea existente para quitarla.\n        </p>\n        <p style=\"margin:5px 0 0; color:var(--tlm-dlg-muted); font-size:0.8em;\">\n            Si un valor de destino ya contiene marcadores configurados, como {content}, aparecen como espacios de destino con sangría\n            para que Parametrizer reemplace sólo ese marcador en lugar de sobrescribir todo el parámetro.\n        </p>\n    `",
+   "n": 1
+  },
+  {
+   "en": "`<strong style=\"color:#00E5FF; font-size:0.9em;\">Source Output Fields</strong>`",
+   "es": "`<strong style=\"color:#00E5FF; font-size:0.9em;\">Campos de output del origen</strong>`",
+   "n": 1
+  },
+  {
+   "en": "`<strong style=\"color:#FF6D00; font-size:0.9em;\">Target Config Parameters</strong>`",
+   "es": "`<strong style=\"color:#FF6D00; font-size:0.9em;\">Parámetros de configuración del destino</strong>`",
+   "n": 1
+  },
+  {
+   "en": "`\r\n                <span>${_escapeParametrizerHtml(param)}</span>\r\n                <span style=\"float:right; color:#AA00FF; font-size:0.75em;\">${markers.length} marker${markers.length === 1 ? '' : 's'}</span>\r\n            `",
+   "es": "`\n                <span>${_escapeParametrizerHtml(param)}</span>\n                <span style=\"float:right; color:#AA00FF; font-size:0.75em;\">${markers.length} marcador${markers.length === 1 ? '' : 'es'}</span>\n            `",
+   "n": 1
+  },
+  {
+   "en": "'Clear All'",
+   "es": "'Limpiar todo'",
+   "n": 1
+  },
+  {
+   "en": "'Cancel'",
+   "es": "'Cancelar'",
+   "n": 1
+  },
+  {
+   "en": "'Save Mappings'",
+   "es": "'Guardar mapeos'",
+   "n": 1
+  },
+  {
+   "en": "'Failed to save mappings.'",
+   "es": "'Error al guardar los mapeos.'",
+   "n": 1
+  },
+  {
+   "en": "'Failed to save mappings to server.'",
+   "es": "'Error al guardar los mapeos en el servidor.'",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "'center'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'0 22px 70px rgba(0,0,0,0.62)'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'margin:-25px -25px 20px; padding:14px 25px;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'border-bottom:1px solid rgba(255,255,255,0.08);'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'border-top-left-radius:8px; border-top-right-radius:8px;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'all 0.2s'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'right'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'margin:20px -25px -25px; padding:12px 25px;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'border-top:1px solid rgba(255,255,255,0.08);'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'border-bottom-left-radius:8px; border-bottom-right-radius:8px;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'display:flex; align-items:center; justify-content:flex-end; gap:10px;'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'none'",
+   "motivo": "valor de atributo SVG"
+  },
+  {
+   "en": "'2px solid #00E5FF'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'1px solid #00E5FF'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'1px solid #444'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'1px solid #FFB74D'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'1px dashed #555'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'1px solid #FF6D00'",
+   "motivo": "valor CSS"
+  },
+  {
+   "en": "'1px solid #6D4C41'",
+   "motivo": "valor CSS"
+  }
+ ]
+}

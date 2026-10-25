@@ -1,0 +1,1290 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0073_acpx_demo_gemini_uplift.py",
+ "segmentos": [],
+ "conservar": [
+  {
+   "en": "\"Tlamatini, run the **ACPX HEALTH &amp; ROSTER PARADE [GEMINI EDITION]** \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"demo, please. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 1: emit a hero banner &mdash; one HTML block \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='padding:22px 18px;border-radius:18px;background:\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"radial-gradient(circle at 20% 20%,#ff5f3a 0%,transparent 55%),\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"radial-gradient(circle at 80% 30%,#9d3bff 0%,transparent 55%),\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"radial-gradient(circle at 50% 90%,#13c2e0 0%,transparent 60%),\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"linear-gradient(135deg,#0d0d12 0%,#1a0a2e 100%);\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"color:#fff;font-family:Inter,Segoe UI,sans-serif;text-align:center;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"box-shadow:0 8px 28px rgba(157,59,255,0.45);'>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='font-size:36px;letter-spacing:6px;'>&#128293; ACPX HEALTH \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"&amp; ROSTER PARADE &#128293;</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Tlamatini ACPX &mdash; Gemini-primed, OpenClaw-parity demonstration\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"probeAgent=gemini &middot; permissionMode=approve-reads &middot; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 2: call **acp_doctor** and capture its `details` array (it should \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"report `probe 'gemini' --version exited 0` because gemini is on PATH \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"and the runtime is configured with a real GEMINI_API_KEY). \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 3: call **list_acp_agents** and capture every entry, paying \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"special attention to the `resolvable` flag. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 4: render an HTML table with class='exec-report-table' titled \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'&#127942; Tlamatini ACPX Roster vs. OpenClaw acp-router &#127942;' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"whose columns are agent_id, command, description, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"resolvable_on_this_machine, openclaw_compatible, gemini_primed_today. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"openclaw_compatible='YES' for every row (the agent_id keys are \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"identical in both projects). gemini_primed_today='YES' only on the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"row where agent_id='gemini'; the others get '&mdash;'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 5: call **invoke_skill** with skill_name='hello-world' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"args_json='{\\\"who\\\":\\\"angel\\\"}' to prove the in-process Skill harness \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"is alive end-to-end. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 6: render an HTML <ul> with three <li> bullets summarizing what \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"this run just proved: (a) the runtime is alive, (b) gemini is \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"spawnable with its API key already injected, (c) the Skill harness \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"executed an in-process skill and returned an audit_id. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 7: close with a final hero banner that prints, in 32-px letters, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"either 'ACPX FULLY OPERATIONAL &mdash; GEMINI ARMED' (if \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"acp_doctor.ok is true) or 'ACPX RUNTIME UP &mdash; GEMINI NOT ON PATH' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"(if acp_doctor.ok is false but list_acp_agents returned at least one \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"entry). End with END-RESPONSE.\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Tlamatini, run the **SKILL CATALOG CARNIVAL [GEMINI-ROUTED]** demo, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 1: emit an opening hero banner \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"linear-gradient(135deg,#7a1bff 0%,#3b5bff 35%,#13c2e0 70%,#1de9b6 100%);\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"box-shadow:0 10px 30px rgba(122,27,255,0.5);'>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='font-size:34px;letter-spacing:5px;'>&#127881; SKILL CATALOG \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"CARNIVAL &#127881;</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"20 seed skills &mdash; OpenClaw-format compatible &mdash; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Gemini as the routing destination</div></div>. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 2: call **list_skills** with no filter and capture every entry. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 3: render an HTML table with class='exec-report-table' titled \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'&#128218; Tlamatini Skill Catalog (Phase 3 Seed)' whose columns are \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"name, description, runtime, acpx_agent_or_in_process, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"openclaw_droppable. openclaw_droppable should be 'YES' for every \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"skill (SKILL.md frontmatter contract is OpenClaw-compatible verbatim). \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 4: call **invoke_skill** with skill_name='summarize' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"args_json='{\\\"text\\\":\\\"Tlamatini ACPX implements the same agent_id \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"mapping (claude, cursor, codex, copilot, gemini, qwen, pi, droid, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"iflow, kilocode, kimi, kiro, opencode) and the same permissionMode \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"vocabulary (approve-reads, approve-all, deny-all) as OpenClaw, so \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"any acp-router skill written for one project runs unmodified on the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"other. The Tlamatini install primes gemini with a real \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"GEMINI_API_KEY through acpx.agents.gemini.env so spawning the gemini \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"child requires zero shell setup.\\\",\\\"target_words\\\":48}' and quote \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"the resulting summary inside an HTML <blockquote> with a thick \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"purple-to-cyan gradient left border. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 5: call **invoke_skill** with skill_name='acp-router' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"args_json='{\\\"intent\\\":\\\"reason about a complex codebase\\\",\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"\\\"prefer\\\":\\\"gemini\\\"}' and capture which agent_id it picks. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 6: render a final HTML <table class='exec-report-table'> titled \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'&#127919; Skill -&gt; ACPX Routing Decision' with two rows (\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"intent_received, chosen_agent_id) explaining how the acp-router \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"skill selected the agent. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 7: close with a hero banner that says, in 32-px letters, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'PARITY: 20 SKILLS &middot; 14 ACP AGENTS &middot; 1 PROTOCOL' and a \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"one-line subtitle naming the agent_id chosen by acp-router. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"End with END-RESPONSE.\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Tlamatini, run the **END-TO-END ACPX PIPELINE [GEMINI EDITION]** \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"demo, please &mdash; the showcase that proves Tlamatini covers \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"OpenClaw's ACPX mechanism end to end with a REAL Gemini child doing \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"REAL reasoning. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 1: emit a hero banner \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='padding:24px 20px;border-radius:18px;background:\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"linear-gradient(135deg,#ff2e63 0%,#ff8b3d 25%,#ffd23f 50%,\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"#2ec4b6 75%,#0a0a23 100%);color:#fff;font-family:Inter,Segoe UI,\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"sans-serif;text-align:center;box-shadow:0 12px 36px \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='font-size:36px;letter-spacing:5px;'>&#9889; END-TO-END \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"ACPX PIPELINE &#9889;</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='opacity:.92;margin-top:10px;font-size:14px;'>spawn(gemini) \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"&rarr; converse &rarr; harvest transcript &rarr; summarize &rarr; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"persist &rarr; notify</div></div>. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 2: call **acp_doctor**. If `ok` is true, proceed; if `ok` is \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"false (gemini missing), emit a yellow fallback banner \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='padding:14px;border-radius:12px;background:#fff3bf;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"color:#5c3c00;border-left:6px solid #f5a623;'>Gemini unresolvable on \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"this PATH &mdash; falling back to the in-process Skill harness for \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"every reasoning step</div> and use **invoke_skill** \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"skill_name='summarize' for every reasoning step instead of \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"acp_spawn/acp_send. Either way, every remaining step still runs. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 3 (REAL CHILD): call **acp_spawn** with agent_id='gemini' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"task='Read the directory tree at C:/Development/Tlamatini/agent/ \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"from the perspective of a senior engineer reviewing a multi-agent \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"framework. In 6 sentences, identify which subdirectory is the most \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"architecturally important and explain WHY in concrete terms.' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"cwd='C:/Development/Tlamatini'. Capture session_id and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 4 (FOLLOW-UP): call **acp_send** on that session_id with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text='Now propose a concrete improvement to that subdirectory in 4 \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"sentences, prioritizing changes that would help a NEW contributor.' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Capture events. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 5: call **acp_kill** on the session_id and confirm killed=true. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 6: call **invoke_skill** with skill_name='summarize' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"args_json='{\\\"text\\\":\\\"<paste the joined text from spawn + send \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"events here>\\\",\\\"target_words\\\":80}' to compress the transcript. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 7: call **chat_agent_file_creator** with filepath=\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'C:/Development/Tlamatini/_acpx_pipeline_demo_report.md' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"content='# ACPX Pipeline Demo &mdash; Live Gemini Run\\\\n\\\\n\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"## Summary\\\\n<the summarized markdown>\\\\n\\\\n## Footer\\\\n\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Generated by Tlamatini ACPX &mdash; functional parity with OpenClaw \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"confirmed by a real Gemini ACP child.\\\\n'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 8: call **chat_agent_notifier** with title='ACPX Pipeline Demo' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"and message='spawn(gemini) &rarr; send &rarr; kill &rarr; summarize \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"&rarr; persist &mdash; complete.'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 9: render an HTML closing table with class='exec-report-table' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"titled '&#128202; ACPX vs OpenClaw &mdash; this run' and columns \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"(behavior, covered_by_tlamatini, evidence) with five rows: \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"spawn external CLI child; multi-turn conversation; graceful kill; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"transcript harvested to disk; downstream skill chained. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"covered_by_tlamatini='YES' on every row; evidence cites the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"session_id, transcript path, or skill audit_id. End with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Tlamatini, run the **PERMISSION GATE &amp; AUDIT TOUR [GEMINI VERIFIED]\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"** demo, please. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"linear-gradient(135deg,#0a0a23 0%,#3a0ca3 30%,#7209b7 60%,\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"#f72585 100%);color:#fff;font-family:Inter,Segoe UI,sans-serif;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text-align:center;box-shadow:0 12px 36px rgba(247,37,133,0.4);'>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='font-size:34px;letter-spacing:6px;'>&#128274; PERMISSION \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"GATE &amp; AUDIT TOUR &#128274;</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"three modes &middot; one gate &middot; full audit trail &middot; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Gemini API key sandbox-verified</div></div>. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 2: call **acp_doctor** and report what permissionMode and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"nonInteractivePermissions are currently active in the runtime. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 3: render an HTML table titled \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'&#127919; ACPX Permission Modes &mdash; Tlamatini implements the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"OpenClaw matrix verbatim' with three rows (approve-reads, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"approve-all, deny-all) and four columns (mode, what_it_does, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"when_to_use, openclaw_equivalent). The openclaw_equivalent column is \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"the same string as `mode` for all three rows because the vocabulary \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"is identical. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 4: call **invoke_skill** with skill_name='hello-world' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"args_json='{\\\"who\\\":\\\"audit-tour\\\"}' &mdash; this WILL succeed and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"produce an audit_id; capture and report that audit_id verbatim. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 5: call **invoke_skill** with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"skill_name='__definitely_does_not_exist__' and args_json='{}' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"&mdash; this MUST fail with code='UNKNOWN_SKILL'; capture the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"failure envelope and quote `code` and `reason` verbatim inside an \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"HTML <pre style='background:#1f1f2e;color:#ff6b6b;padding:12px;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"border-radius:8px;'> block. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 6: call **list_skills** with filter_keywords='kyber' to \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"demonstrate keyword filtering on the registry. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 7: close with a hero banner that prints, in 32-px letters, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'GATE ENFORCED &middot; AUDIT WRITTEN &middot; PARITY PROVEN' with a \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"one-line subtitle naming the captured audit_id from Step 4 so the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"user can locate the per-invocation NDJSON file under \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"~/.tlamatini/skill-audit/. End with END-RESPONSE.\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Tlamatini, run the **MULTI-CLI ACPX RELAY [GEMINI &times; PEER]** \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"demo, please &mdash; the showcase that proves Tlamatini orchestrates \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"two distinct ACP children back-to-back, exactly like OpenClaw's \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"multi-agent acp-router pattern. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"linear-gradient(135deg,#00d4ff 0%,#7b2cbf 30%,#ff006e 65%,\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"#fb5607 100%);color:#fff;font-family:Inter,Segoe UI,sans-serif;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text-align:center;box-shadow:0 12px 36px rgba(123,44,191,0.5);'>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='font-size:36px;letter-spacing:5px;'>&#128260; MULTI-CLI \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"ACPX RELAY &#128260;</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"gemini &rarr; transcript hand-off &rarr; peer CLI &rarr; verdict</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 2: call **acp_doctor** and capture the `details` array. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 3: call **list_acp_agents**. PIN leg A to agent_id='gemini' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"(the CLI we have a real API key for). For leg B, pick the FIRST \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"resolvable agent_id from the list that is NOT gemini. If only \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"gemini is resolvable, simulate leg B with **invoke_skill** \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"skill_name='summarize' and announce the fallback in a yellow HTML \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"banner that explicitly names the limitation. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 4 (LEG A &mdash; GEMINI): call **acp_spawn** with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"agent_id='gemini' and task='You are a senior systems architect. In \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"one paragraph (max 6 sentences), describe the trade-offs of an \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"HTTP-based webhook gateway vs. a WebSocket-based chat gateway for \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"triggering automation pipelines. Be concrete and opinionated.' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Capture session_id_A and the events. Then call **acp_kill** on \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 5: render an HTML <blockquote style='border-left:6px solid \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"#7b2cbf;padding:14px 20px;background:linear-gradient(90deg,\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"#f5f0ff 0%,#fff 100%);border-radius:8px;font-style:italic;'>...gemini's \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"answer...</blockquote> containing the joined text from leg A so the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"user can SEE what was relayed. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 6 (LEG B &mdash; PEER): call **acp_spawn** with the second \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"agent_id (or simulate via invoke_skill summarize per Step 3) and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"task='Read the following analysis from a peer ACP agent (Gemini) and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"produce a 4-bullet HTML <ul> verdict that either AGREES, REFUTES, or \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"EXTENDS each point. Be specific. Analysis: <paste leg A text here>'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Capture session_id_B and the events; then call **acp_kill** on \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 7: render an HTML table with class='exec-report-table' titled \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'&#129309; Multi-CLI Relay &mdash; covered behaviors' with columns \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"(behavior, leg_a_agent, leg_b_agent, openclaw_pattern_match) and rows \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"(spawn first child, harvest transcript, hand-off content, spawn \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"second child with first transcript as input, dual graceful kill). \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"openclaw_pattern_match='YES' on every row. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 8: close with a hero banner that prints, in 32-px letters, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'TWO CLIs &middot; ONE PIPELINE &middot; ZERO BRANDING' and a \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"one-line subtitle naming the two agent_ids actually used. End with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Tlamatini, run the **ACPX AUDITOR'S REPLAY [GEMINI-AWARE]** demo, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"please &mdash; the showcase that proves the on-disk transcript and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"skill-audit trails are real, structured, and replayable, exactly the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"way OpenClaw's audit story promises. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"linear-gradient(135deg,#1b1b3a 0%,#693668 35%,#a74482 70%,\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"#f1c453 100%);color:#fff;font-family:Inter,Segoe UI,sans-serif;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text-align:center;box-shadow:0 12px 36px rgba(167,68,130,0.45);'>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='font-size:34px;letter-spacing:5px;'>&#128196; ACPX \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"AUDITOR&#39;S REPLAY &#128196;</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"NDJSON on disk &mdash; structured &mdash; replayable &mdash; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"spans skills AND ACP children</div></div>. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 2: call **invoke_skill** with skill_name='hello-world' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"args_json='{\\\"who\\\":\\\"auditor\\\"}' to GUARANTEE a fresh audit record \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"is on disk. Capture the returned audit_id. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 3: call **acp_doctor** and report the active stateDir from its \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"details (should be C:/Users/angel/.tlamatini/acpx-state per the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"demo config). \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 4: call **execute_command** with command='dir /b /o:-d \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"%USERPROFILE%\\\\.tlamatini\\\\skill-audit 2>NUL || ls -1t \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"~/.tlamatini/skill-audit/ 2>/dev/null' to list audit-month \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 5: call **execute_command** with command='dir /b /s /o:-d \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"%USERPROFILE%\\\\.tlamatini\\\\skill-audit\\\\*hello_world*auditor* 2>NUL \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"|| find ~/.tlamatini/skill-audit -name \\\"*hello_world*auditor*\\\" \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"2>/dev/null | head -1 || true' to locate the NDJSON file matching \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"the audit_id from Step 2. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 6: call **chat_agent_file_extractor** with filepath set to the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"located NDJSON path so we can read the structured event stream. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 7: call **invoke_skill** with skill_name='summarize' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"args_json='{\\\"text\\\":\\\"<paste the joined NDJSON event lines here>\\\",\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"\\\"target_words\\\":60}' to produce a human-readable replay narrative. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 8: render an HTML table with class='exec-report-table' titled \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'&#128190; Audit Trail &mdash; What's Actually On Disk' with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"columns (artifact, location, format, openclaw_equivalent_present) \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"and three rows: skill_invocation_audit \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"NDJSON, YES); acp_session_transcript \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"NDJSON, YES); acp_session_record \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"(C:/Users/angel/.tlamatini/acpx-state/&lt;session&gt;.json, JSON, YES). \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 9: close with a hero banner that prints, in 32-px letters, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'EVERY ACTION &middot; EVERY EVENT &middot; ON DISK' and a one-line \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"subtitle naming the audit_id from Step 2 and the absolute path of \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"the NDJSON file located in Step 5 so the user can open it with any \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text editor and verify the replay byte-for-byte. End with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Tlamatini, run the **GEMINI LIVE REASONING SHOWCASE** demo, please \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"&mdash; the most rimbombante demo we have, dedicated entirely to \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Google Gemini doing REAL multi-turn reasoning through Tlamatini's \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"ACPX runtime with its API key already injected through \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 1: emit the headline hero banner \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='padding:30px 24px;border-radius:22px;background:\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"conic-gradient(from 220deg at 50% 50%,#4285f4 0deg,#9b59ff 90deg,\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"#ff3d7f 180deg,#ff9d3b 270deg,#4285f4 360deg);\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"box-shadow:0 18px 48px rgba(66,133,244,0.55),inset 0 0 50px \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='font-size:42px;letter-spacing:7px;font-weight:800;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text-shadow:0 2px 8px rgba(0,0,0,0.45);'>&#10024; GEMINI LIVE \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"REASONING &#10024;</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"ACPX-spawned &middot; api-key-pre-injected &middot; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"three-turn conversation &middot; auto-summarized &amp; persisted</div>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 2 (PRE-FLIGHT): call **acp_doctor** and confirm the probe \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"agent is 'gemini'. If ok=false, emit a red HTML banner \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='padding:14px;border-radius:12px;background:#fee2e2;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"color:#7f1d1d;border-left:6px solid #dc2626;font-weight:600;'>\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Gemini is not on PATH &mdash; this demo cannot run. Install \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"@google/gemini-cli, then retry.</div> and END-RESPONSE immediately. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Otherwise proceed. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 3 (LAUNCH): call **acp_spawn** with agent_id='gemini', \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"cwd='C:/Development/Tlamatini', and task='You are advising a solo \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"developer who is building a self-hosted AI developer assistant. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"List, in one short paragraph, the THREE most underrated \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"architectural pillars of such a system &mdash; pillars whose \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"importance only becomes obvious AFTER 12+ months of usage. Be \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"concrete; cite specific failure modes that show up if a pillar is \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"absent.'. Capture session_id and the events. Render the events \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"inside an HTML <div style='padding:14px 18px;border-radius:12px;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"background:linear-gradient(135deg,#eef2ff 0%,#fef3ff 100%);\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"border-left:6px solid #4285f4;font-family:Georgia,serif;'> block \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"titled 'Turn 1 &mdash; Gemini speaks'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 4 (TURN 2): call **acp_send** on the same session_id with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text='Of those three pillars, pick the ONE you would prioritize for \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"the next 30 days of work, and write a 4-line action plan describing \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"what to ship, in what order, with what success metric.'. Render the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"events in a parallel block titled 'Turn 2 &mdash; the plan'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 5 (TURN 3): call **acp_send** on the same session_id with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"text='Now anticipate the most likely way that 30-day plan will fail. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Write a 3-line risk register: each line names the failure mode, the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"early-warning signal, and the cheapest mitigation.'. Render the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"events in a parallel block titled 'Turn 3 &mdash; the risk \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 6 (HARVEST): call **acp_kill** on session_id and confirm \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 7 (DIGEST): call **invoke_skill** with skill_name='summarize' \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"and args_json='{\\\"text\\\":\\\"<paste joined text from turns 1+2+3 \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"here>\\\",\\\"target_words\\\":120}'. Render the digest inside an HTML \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"<div style='padding:18px 22px;border-radius:14px;background:\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"linear-gradient(135deg,#0a0a23 0%,#3a0ca3 100%);color:#f1c453;\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"font-family:Georgia,serif;line-height:1.6;'> block titled \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'&#128221; Executive Digest'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 8 (PERSIST): call **chat_agent_file_creator** with filepath=\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"'C:/Development/Tlamatini/_gemini_live_reasoning.md' and \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"content='# Gemini Live Reasoning &mdash; Tlamatini ACPX session\\\\n\\\\n\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"## Turn 1 &mdash; The three underrated pillars\\\\n<turn 1 text>\\\\n\\\\n\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"## Turn 2 &mdash; 30-day priority plan\\\\n<turn 2 text>\\\\n\\\\n\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"## Turn 3 &mdash; Risk register\\\\n<turn 3 text>\\\\n\\\\n\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"## Executive digest\\\\n<step 7 digest>\\\\n\\\\n---\\\\n\"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"_Generated by Tlamatini ACPX through a real Gemini child whose API \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"key was injected via acpx.agents.gemini.env._\\\\n'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 9 (NOTIFY): call **chat_agent_notifier** with title='Gemini \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Live Reasoning' and message='3-turn reasoning &rarr; digest &rarr; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"report saved to _gemini_live_reasoning.md.'. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 10 (SCOREBOARD): render an HTML table with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"class='exec-report-table' titled '&#127942; Gemini Live Reasoning \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"&mdash; Capability Scoreboard' and columns (capability, \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"demonstrated_this_run, evidence). Rows: real_external_LLM_spawned; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"api_key_injected_via_acpx_env; multi_turn_conversation_3_turns; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"transcript_persisted_NDJSON; downstream_skill_chained; \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"audit_trail_written; openclaw_protocol_compatible. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"demonstrated_this_run='YES' on every row; evidence cites the \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"session_id, transcript path, audit_id, or output filepath. \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"Step 11: close with the headline-style hero banner repeated, but \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"with the subtitle replaced by 'GEMINI ANSWERED &middot; TLAMATINI \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "\"ORCHESTRATED &middot; OPENCLAW PARITY DEMONSTRATED'. End with \"",
+   "motivo": "prompt duplicado de ACPX: 0175 lo oculta y 0176 lo borra (ids 40-52), nunca llega al catálogo"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}

@@ -1,0 +1,4636 @@
+<!--
+═══════════════════════════════════════════════════════════════════
+  ✦  T L A M A T I N I  ✦   —   "one who knows"
+  Created by  Angela López Mendoza   ·   @angelahack1
+  Developer · Architect · Creator of Tlamatini
+  Tlamatini Author Banner — do not remove (Angela's name is kept in every build)
+═══════════════════════════════════════════════════════════════════
+-->
+# Tlamatini
+
+> Current release: **[v1.90.0](docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.
+
+
+![Project Logo](Tlamatini.jpg)
+
+> **The Book of Tlamatini** — a step-by-step guide to running, using, and mastering a locally-deployed AI developer assistant with RAG, Multi-Turn tool orchestration, ACPX external-CLI delegation, an Unreal MCP client for driving Unreal Engine 5 from chat or canvas, a visual workflow designer, 86 drag-and-drop agent types, and a backend Flow Compiler that turns the live canvas — or a chat-generated tool-call log — into a registry-validated, secret-redacted, source-and-frozen-portable workflow.
+>
+> Visit our site at **https://xaiht.org**, or get a one-minute taste of Tlamatini on YouTube: **https://youtu.be/a51miZ1JIe0**.
+>
+> 💬 **Join the community on Discord:** **https://discord.gg/WFQsrskgc** — get help, show what you build, report bugs, and help shape the roadmap.
+
+---
+
+## ⚠️ CLEAR DISCLAIMER — USER CONTROL, JURISDICTION, AND RESPONSIBILITY FOR AGENTS
+
+Every agent in `Tlamatini/agent/agents/` is intentionally provided as a **plain-Python program** so its operating code can be read, audited, edited, restricted, or disabled by the user. This transparency is a user-control mechanism, **not a warranty that an agent is secure or suitable for a particular environment**. The agents do not have independent authority or jurisdiction: the user alone decides whether, where, how, and with which permissions they run.
+
+When you enable, configure, modify, chain, or execute an agent, **that agent and its execution are under your control and your jurisdiction**. You are solely responsible for reviewing its code and configuration; protecting and limiting its secrets, credentials, and permissions; selecting and authorizing every file, folder, network target, browser, shell, API, external MCP server, machine, hardware device, and downstream system it can access; supervising its output; and complying with every law, policy, license, contract, and authorization that applies to your use.
+
+**BY RUNNING AN AGENT, YOU ACCEPT RESPONSIBILITY FOR ITS ACTIONS AND CONSEQUENCES. TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, ANY SECURITY BREACH, DATA EXPOSURE OR LOSS, UNAUTHORIZED ACTION, CREDENTIAL LEAK, UNSAFE AUTOMATION, POLICY OR LEGAL VIOLATION, SYSTEM COMPROMISE, DEVICE DAMAGE, FINANCIAL LOSS, OR OTHER HARM ARISING FROM YOUR USE, CONFIGURATION, MODIFICATION, OR EXECUTION OF AN AGENT OR AGENT WORKFLOW IS THE RESPONSIBILITY OF THE USER WHO RUNS IT.** Tlamatini's orchestration, documentation, examples, and guardrails do not authorize access to third-party systems and cannot replace the user's own security review, permission controls, monitoring, or legal compliance.
+
+---
+
+## ⭐ Start here — five steps to a cloud-powered Tlamatini
+
+Before any of the deep chapters, here is the whole journey on a single page. It is the first and most important thing you will do with Tlamatini, so it comes first.
+
+Tlamatini itself is free and open-source, but the complete system was designed and coded primarily around the larger cloud models exposed through Ollama. **To use Tlamatini with its complete intended functionality, an active Ollama Pro plan — or a higher Ollama plan such as Max — is mandatory.** A free Ollama account or an all-local model configuration may be enough to launch the application and experiment with limited work, but neither is the supported baseline for the full Multi-Turn, long-context, parallel-vision, and agent-orchestration workload described in this book.
+
+> [!IMPORTANT]
+> **Ollama Pro is a Tlamatini system requirement, not a sponsorship.** XAIHT/Tlamatini is not sponsored, endorsed, affiliated with, funded by, or compensated by Ollama. We receive no referral fee or commission. The subscription is purchased directly from Ollama; it is specified here only because Tlamatini's architecture depends on the practical cloud usage and concurrency that Pro-or-higher service provides.
+
+Ollama currently advertises Pro at **$20/month or $200/year**, with substantially more cloud usage and concurrency than a free account. Pricing and limits are controlled by Ollama and can change, so verify the current terms on **[Ollama's official site](https://ollama.com)** before subscribing.
+
+Five steps take you from a bare machine to a Tlamatini that can flash a board, drive an engine, and run a whole workflow unattended.
+
+### Step one — Install Tlamatini
+
+There are two ways into Tlamatini, and they suit two different readers. The app itself is **free** — you never pay us a cent; the required external service cost in this chapter is paid directly to Ollama, three steps from now. Optional third-party APIs and external coding-agent services may have their own independent charges. Choose **one** road.
+
+**🟢 Option A — the release installer (recommended; no Python required).** This is the gentle path, and the right one for most people. Open the **[Releases page](https://github.com/XAIHT/Tlamatini/releases)**, download the latest installer, and run it. It carries its own Python 3.12.10 and every dependency inside, so there is nothing else to install. Launch Tlamatini from its Start-menu shortcut and your browser opens at `http://127.0.0.1:8000/`, behind the default login **user / changeme**. When a new version lands, you update from inside the app — **About ▸ Check for updates** — and it keeps your config, database, and keys intact.
+
+**🔵 Option B — from source (for developers).** Take this road if you mean to read, modify, or contribute to her code; it asks that **Python 3.12.10** and **git** already be on your machine. Six commands suffice:
+
+```bash
+git clone https://github.com/XAIHT/Tlamatini.git
+cd Tlamatini
+python -m venv venv && venv\Scripts\activate
+pip install -r requirements.txt
+python Tlamatini/manage.py migrate
+python Tlamatini/manage.py runserver --noreload
+```
+
+> **`--noreload` is optional (since 2026-07-11):** plain `python Tlamatini/manage.py runserver` now boots clean and auto-reloads on code edits. It used to double-start the MCP helper ports `:8765` / `:50051` and crash with `WinError 10048`; fixed by a reloader-aware gate in `agent/apps.py`.
+
+Then open `http://127.0.0.1:8000/` and log in with **user / changeme**.
+
+*(Part I, §3–§7 walks both routes in full; this page is the map, not the territory.)*
+
+### Step two — Install Ollama
+
+Tlamatini never talks to a model directly; she speaks through **[Ollama](https://ollama.com/download)**, the engine that serves every model — the small embedding model that lives on your own GPU, and the large chat models that live in the cloud. Install it once.
+
+### Step three — Activate Ollama Pro or higher (required for complete operation)
+
+Sign in at **[ollama.com](https://ollama.com)** and activate **at least Ollama Pro**; Max also satisfies the requirement. Ollama may allow limited cloud use on a free account, but Tlamatini does not treat that allowance as a completely functional production configuration: a single Multi-Turn task can make repeated model decisions and may involve several cloud-backed subsystems. Pro is therefore the minimum intended capacity tier. Then introduce your machine to your account:
+
+```bash
+ollama signin
+```
+
+### Step four — Download the models
+
+Pull the small embedding model onto your own disk, and reach for the cloud chat models you intend to use:
+
+```bash
+# Local — small, runs on your own GPU/CPU
+ollama pull nomic-embed-text
+
+# Cloud — use a signed-in Pro-or-higher account for full Tlamatini operation
+ollama pull glm-5.3:cloud
+ollama pull jcyhsiao/qwen3.5cloud:latest
+```
+
+Any cloud model will do; the two above are the current recommended pair (screenshots that follow may still show earlier model names).
+
+### Step five — Point Tlamatini at the models
+
+The final step lives inside Tlamatini's own interface. In the navbar, open the **Config** menu — it holds three doors: *Models*, *URLs*, and the *Access Keys Wizard*.
+
+![The Config menu](Tlamatini/agent/images/MenuConfig.jpg)
+
+Behind **Config ▸ Models** are 38 settings in six searchable categories: Core, Vision, Speech, Workflows, Documents, and Monitoring & messaging. Set the models for all 21 model-backed agents, including Talker and Whisperer. Ollama choices use catalog suggestions; Whisper and cloud-provider models use their own identifiers. Save, reconnect chat, and restart running agents as needed. Agent YAML values marked `@config` inherit these choices; explicit per-agent values remain overrides. See [the full model configuration contract](docs/model_configuration.md).
+
+The current dialog has six category tabs, searchable fields and dedicated engine/voice selectors. [Open the complete Models guide](docs/model_configuration.md#use-the-dialog).
+
+Behind **Config ▸ Access Keys Wizard** the cloud connection is sealed — and here a single, important distinction decides whether you type anything at all. **If Ollama runs on your own machine (the usual `localhost`), you need no Ollama token — leave that field blank;** a local Ollama answers without a password. **Only when Ollama lives on a remote server — a rented GPU box on [Vast.ai](https://vast.ai), say — do you paste an Ollama token here,** so Tlamatini can authenticate to it across the network. Add any cloud-CLI keys you care to in the same place; blank fields are left untouched, so you only ever type what you mean to change. **Save**, and the wizard tallies how many of its slots are filled.
+
+![The Access Keys Wizard](Tlamatini/agent/images/ACPXKeysConfigureWizard.jpg)
+
+That is the whole setup. Tick **Multi-Turn** in the chat toolbar and hand Tlamatini her first real task. Everything past this chapter is depth — but you are already running.
+
+---
+
+## A note on the settings you will never touch
+
+Underneath Config ▸ Models sit a handful of numbers nobody normally sees, and one of them was quietly breaking Tlamatini until September 2026. It is worth one page, because the story explains why you should trust the values that ship and leave them alone.
+
+The symptom was an answer that said nothing: *"The tool-calling model returned an empty final response."* It arrived after about six minutes of silence, which felt like a crash but was not one. The cause was `ollama_repeat_penalty` — the dial that tells a model how strongly to avoid reusing words it has already used. It shipped at **1.9**, and nothing anywhere recommended that. Ollama's own default is 1.1, the reference implementations use 1.0, and the tuning guide everyone cites says to raise it gradually and stop at about 1.2.
+
+Why did a too-high dial produce *silence* rather than strange prose? Because the models Tlamatini talks to now are **reasoning** models. They think privately first, in a stream you never see, and only then write an answer. Push the dial too hard and the thinking can never settle — every word that would round off a thought is the very word being penalised. So the model thinks, and thinks. One measured run produced **196,003 characters** of private reasoning in 287 seconds and then stopped with nothing written. A later one produced **3.1 million characters over fifty-one minutes**. From the outside: a long pause, then an empty reply.
+
+Finding it took longer than it should have, for a reason worth remembering. The failure is **intermittent**. Six test runs of the bad setting came back perfectly clean; eight runs of the identical setting failed seven times. Nothing had changed between them. These are enormous models served from the cloud, and which machines answer your request varies from call to call. Four different theories were tested and discarded — the size of the tool list, the difficulty of the question, the context window, even the penalty itself measured the wrong way — each of which looked proven on a single run and each of which was wrong. **One run proves nothing here.**
+
+The penalty now ships at **1.2**, and on the flagship model that took failures from seven in eight down to one in eight. Two neighbours were corrected at the same time: `ollama_repeat_last_n`, which decides how far back the penalty reaches, was never actually reaching Ollama at all — it is now wired, and set to a value that made the same model six times faster — and `ollama_num_ctx`, which now reads **1,048,576** instead of a smaller number that described nothing real. That last one is honesty rather than power. On a cloud model the server enforces its own limit regardless of what Tlamatini asks for, and it enforces it *well*: exceed it and you get a clear error naming both your size and the maximum, never a conversation quietly trimmed behind your back. While checking, Tlamatini was asked to find one buried fact inside a prompt of **660,000 tokens**. She found it every time.
+
+The lesson generalises past these three numbers. A default with no reason recorded beside it is a bug waiting for someone to inherit it — so every one of these values now carries its measurement in the project's history, and the one remaining gap is written down too: the library Tlamatini uses to reach Ollama throws away the model's private reasoning, which is exactly why a runaway looks like an empty answer instead of an honest *"still thinking"*.
+
+---
+
+## How to read this book
+
+Tlamatini does a lot. This book is organized so you can stop reading at the depth you need.
+
+- **⭐ Start here** (the chapter just above): the entire five-step setup — install, Ollama, Ollama Pro, models, config — on a single page. *If you read nothing else, read this.*
+- **Part I — Getting Tlamatini Running**: prerequisites, Ollama, the **Pro-or-higher requirement for complete functionality**, cloud models, installation, and first login. *Read this once.*
+- **Part II — Using the Chat**: the five toolbar checkboxes (Multi-Turn, Exec Report, ACPX, Ask Execs, internet) walked through one by one. *This is the dummy-friendly heart of the book.*
+- **Part III — The Visual Workflow Designer**: drag-and-drop flows, FlowCreator, FlowHypervisor, Parametrizer.
+- **Part IV — The Tlamatini Bestiary**: compact reference covering all 86 workflow agents, with one authoritative row per live agent directory.
+- **Part V — The Tool Surface**: every LLM-facing tool the chat can call, organized by family.
+- **Part VI — Inside Tlamatini**: architecture, RAG, the embedding-memory pre-flight guard, Multi-Turn pipeline, ACPX runtime mechanics. *For the curious.*
+- **Part VII — Configuration Reference**: every `config.json` knob.
+- **Part VIII — Deploying & Packaging**: build, installer, frozen mode.
+- **Part IX — The Command Deck**: WebSocket protocol, HTTP endpoints.
+- **Part X — Survival Guide**: troubleshooting, `tlamatini.log`, common issues.
+- **Bonus chapter §57** — Driving Unreal Engine 5 from Tlamatini (the Unrealer agent + Unreal MCP plugin). Read this if you build games or simulations in UE5 and want a chat / canvas surface for the editor.
+- **Bonus chapter §59** — Sculpting in Blender from Tlamatini (the Blenderer agent + the official Blender MCP add-on). Read this if you make 3D art / assets in Blender and want a chat / canvas surface for the editor — and to see why Blender's *code-execution* protocol differs from Unreal's verbs.
+- **[The Prompt Flow Panel: draw a chain of prompts, then press Play](#the-prompt-flow-panel-draw-a-chain-of-prompts-then-press-play)** — the 2026-09-25 sibling of the Agentic Control Panel: eight executable operations, including Terminater, plus static review bubbles, `.fpmt` files (and why `.pmt` stays with the system prompt), running, pausing and stopping, and what a run may and may not touch.
+- **[Enable Tlamatini as a Blue-hat agent](#enable-tlamatini-as-a-blue-hat-agent)** — the complete Windows defensive-toolkit runbook: asset validation, persistent host changes, detect-only baselining, armed/watch modes, evidence review, false positives, response rollback, and operator responsibility.
+- **[Voice commands: your words become the prompt](#voice-commands-your-words-become-the-prompt)** — the catalog's new first section: speak your instruction instead of typing it, why it needed the silence gate to exist, and the two promises (she reads it back; if she did not hear you she says so).
+- **[Whisperer listens: the silence gate](#whisperer-listens-the-silence-gate)** — why a fixed recording length was the wrong question, how the gate hears you, the countdown in the console bar, and the one thing that would have made the whole feature invisible.
+- **[Terminals you can watch: Terminater](#terminals-you-can-watch-terminater)** — the visible Executer: real CMD and PowerShell terminals in the Terminals area, typed key by key like a person, with a hand-over, an Esc that gives you the keyboard back, hung-command detection and a safe three-card tour in the catalog. *New in v1.88.0.*
+- **[Avatar animation repair and reproducible visible tests](#avatar-animation-repair-and-reproducible-visible-tests)** — frame assets, the transparency-flash diagnosis, the source fix, real Django/Windows-voice validation, and the Python test launcher.
+- **Appendix A** — Keyboarder key reference.
+- **Appendix B** — Glossary.
+- **Appendix C** — Full changelog (preserved verbatim).
+- **Appendix D** — Acknowledgments / Contributing / License.
+
+If you only have ten minutes, read Part I §3–§7 (install + first login), then Part II §12 (Multi-Turn).
+
+---
+
+## The Prompt Flow Panel: draw a chain of prompts, then press Play
+
+### Why a second canvas
+
+The Agentic Control Panel wires **agents** together: a Starter, an Executer, a Shoter, an Ender. But a lot of real work is a *conversation* with a shape — ask something, look at the answer, go one way or another, ask a follow-up, stop and check with a human. The **Prompt Flow Panel** (2026-09-25) is a canvas for exactly that: you draw the conversation once, and Tlamatini walks it for you.
+
+Open it from the chat with **Panels ▸ Prompt Flow Panel**, or from the Agentic Control Panel with **File ▸ Prompt Flow Panel**. It opens in its own tab.
+
+### Eight operations and static review bubbles
+
+| Operation | Shape | What happens when the flow reaches it |
+|---|---|---|
+| **Prompt** | rectangle | Sends its text to Tlamatini. You can switch on **Multi-Turn** (and, with it, **ACPX**) for that one step, so a step can use every tool and agent she has. |
+| **Programmed Prompt** | rectangle with a clock | The same, but first waits a number of seconds, or until a date and time you choose. |
+| **Decision** | diamond | Takes the **Y** or **N** branch: does the last answer *contain*, *not contain* or *equal* some text, or is it *empty*? Or it can simply ask you. |
+| **Feed embeddings** | triangle pointing up | Adds reference text to this run, so the following prompts can draw on it. |
+| **Flush embeddings** | triangle pointing down | Takes that reference text away again, keeping the conversation. |
+| **Clean History** | trapezoid | Forgets this run's conversation so far, keeping the reference text. |
+| **User Input** | notched top and downward point | Stops and asks you something; your reply joins the conversation. |
+| **Terminater** | parallelogram | Runs one action in your visible CMD or PowerShell terminal; its output becomes `{{last_output}}`. Stop aborts typing and the running command. |
+| **User Commentary** | speech bubble | A static review note on the canvas; it never runs or changes the conversation. |
+
+In executable operation text, `{{last_output}}` inserts the previous answer (or your last reply). Inside a static User Commentary, that token stays literal. A Decision only ever compares text — nothing in a flow file is ever run as code.
+
+### Building and running a flow
+
+1. Drag operations from the **Operations bar** onto the canvas, or just click one to drop it in.
+2. Double-click an executable figure (or select **Configure**) to set its text and options. Double-click a User Commentary to write directly inside its bubble; select text and format it with the floating mini toolbar.
+3. Drag a white **output triangle** on the right of an executable figure onto an **input triangle** on the left of another and release to connect them. Static commentary has no ports. A Decision has two outputs, **Y** and **N**; every output leads to exactly one place, and connecting it again replaces the old line.
+4. Choose where the flow begins in the **Start** list, press **Validate**, then **Play**. Validate refuses a flow with a dead end it cannot explain: every executable operation must be reachable from Start, and every Decision needs both branches. Static comments need no connection and cannot be Start.
+5. Watch the running figure light up and read everything in **Run output** below the canvas. **Pause** lets the current step finish and holds the next one; **Stop** cancels and waits for the current step to wind down cleanly. Loops are allowed — **Flow settings** caps how many steps one run may take (500 by default, 5,000 at most).
+
+Keep the page — and Tlamatini — open while a flow is playing, especially one with a scheduled prompt. This is not a background scheduler. Closing a question dialog with **Cancel**, **✕** or **Esc** stops the flow; clicking outside it does not.
+
+### Writing static User Commentaries
+
+Add independent **User Commentary** bubbles within the 500-asset limit. Double-click a bubble or press Enter to write directly inside it. Select a word or passage, then use the **floating mini toolbar** to choose its font, text size, text color, bold, italic or underline. One note can mix styles: an Arial italic sentence, a large Verdana heading and a Georgia paragraph. With no text selected, a formatting choice sets the style for the next text you type. When the note is selected outside editing, formatting applies to the entire note. The color swatches change the bubble; the underlined **A** opens text colors. Alignment applies to the whole note.
+
+Drag **any border or corner** to reshape the bubble; the handles also respond to arrow keys (Shift moves farther). Resizing works while writing. **Fit text** removes spare height. There are no numeric dimension fields or commentary configuration dialogs. **Edit comment** in the main toolbar or context menu starts the same inline editor. **Done** or Ctrl+Enter saves the complete edit; **Cancel** or Escape restores its original text, styles, size and position. Ctrl+Z/Y undoes/redoes changes while writing. Completed edits, moving, resizing, copying and deletion also support flow Undo/Redo.
+
+Bubbles grow to contain every wrapped line at the chosen width and mixed fonts, without internal scrollbars. The chosen height is a minimum. Text stays literal, including `<script>` and `{{last_output}}`. Notes have no ports or Start status and never enter model context, history or playback steps. Notes save/open and recover with the diagram. The palettes offer eight bubble colors and eight text colors; fonts are Nunito, Arial, Verdana, Georgia, Times New Roman and Courier New. Text sizes range from 10 to 48, with named choices from Fine through Display. Each note holds up to 100,000 characters and 10,000 formatted runs. Internal geometry limits are width 200–2,400 and minimum height 128–2,400; automatic containment can grow taller. A notes-only diagram can be saved; Play requires an executable operation.
+
+The separate **User Input** operation keeps the former question-and-reply behavior and uses the notched figure. Closing its reply dialog stops the flow.
+
+### Resizing the canvas and Run output
+
+Drag the horizontal divider above **Run output** to give the log **5%–95% of the available canvas/output height**, excluding headers, status and the divider. The starting share is 20%. Both panes scroll independently, keeping text size, figures and canvas zoom unchanged. Tab to the divider and use Up/Down for one percentage point, Shift+Up/Down for five, Home for 5%, or End for 95%. Escape ends a drag. Collapse the output by clicking its heading; reopening restores its height. Window resizing preserves the ratio, and the browser remembers the layout per user. Layout preferences do not change your flow file, its saved draft or Undo/Redo history.
+
+### What a run may and may not touch
+
+Every run is its own little world. It gets its **own conversation** and its **own reference text**, starts empty, and throws both away when it ends. It never edits your chat history, never changes your global embedding settings, and never loads the shared `application` folder into its context. Stopping a flow never cancels an answer she is writing for you in another tab.
+
+### Saving flows: `.fpmt`, not `.pmt`
+
+**File ▸ Save as .fpmt** downloads your diagram; **File ▸ Open .fpmt**, or dropping a file on the canvas, brings it back. Opening a flow never runs it. Since v1.83.0 a `.fpmt` file dropped on any Tlamatini page is recognised by its content and sent here: the panel loads it (asking before it replaces a diagram you have open), and from the chat or the Agentic Control Panel it opens in a new Prompt Flow Panel tab. The October 4 source update also opens prompting flows from the main chat or Windows Explorer and takes you back to the requested editor after login. Both `.flw` and `.fpmt` have per-user Windows association management; see [Windows flow files](docs/windows-flow-files.md). A file may hold up to 500 assets (executable operations and static comments together) and 1,000 connections and be up to 5 MiB. The panel also keeps a draft in your browser, just for you, so a closed tab is not a lost afternoon — but save a file if you want to keep or share the flow.
+
+Why the odd extension? Because **`.pmt` already means something**: it is the extension of Tlamatini's own plain-text system prompt, `prompt.pmt`. Flow diagrams are **`.fpmt`** — *flow prompt* — so the two can never be confused, and the panel refuses to open a `.pmt`. If you made a diagram in the earliest version and saved it as `.pmt`, just rename it to `.fpmt`; nothing inside it needs to change.
+
+Want to see one first? **File ▸ Open example** loads a small branching flow, and the prompting tour — seven prompting operations and a static commentary — ships as `docs/examples/prompting-kickoff.fpmt`. Terminater is the eighth executable operation; configure it separately for a real terminal on your machine.
+
+New saves use document **version 2**. Version 1 files and browser drafts automatically turn their old executable `user_commentary` nodes into **User Input**, keeping IDs, connections and settings. Version 2 `user_commentary` means a static note. Its allowlisted styled `runs` concatenate to the saved literal `text`; older plain version 2 notes normalize to one run. Opening an old file never silently changes a reply step into an annotation. The extension remains `.fpmt`. The commentary/input split and graphical rich-text redesign date from 2026-10-03/04 and shipped in v1.76.0.
+
+### Shortcuts
+
+| Keys | Action |
+|---|---|
+| Ctrl+S / Ctrl+O | save / open |
+| Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y | undo / redo |
+| Ctrl+A / Ctrl+D | select all / duplicate the selection with its inner connections |
+| Delete or Backspace | delete the selection |
+| Arrow keys / Shift+arrows | nudge the selection 10 / 40 units |
+| Ctrl + mouse wheel, **Fit** | zoom, fit the whole flow |
+| Double-click / Enter on a commentary | edit the static note in its bubble |
+| Ctrl+Enter while editing a commentary | save the complete edit |
+| Ctrl+B / Ctrl+I / Ctrl+U while editing | bold / italic / underline the selection or next typed text |
+| Up/Down on the output divider; Shift for larger steps | resize output by 1 / 5 percentage points |
+| Home / End on the output divider | output at 5% / 95% |
+| Esc | cancel a commentary edit, close the top dialog, or leave connection mode and clear the selection |
+
+### How it was tested
+
+The file format and the interpreter have their own regression tests, the real WebSocket route is exercised end to end with a stand-in model, and the release build refuses to package itself unless the panel's self-check (`check_prompt_flow_panel`) passes *inside the frozen application*. The `.fpmt` behaviour — default and typed file names, an old `.pmt` name being converted, Unicode and upper-case names, a real reopened flow playing back, the example, and every kind of bad file being refused — was checked in a visible Chrome window with fifteen photographed checkpoints, all passing on 2026-09-25. The 2026-10-03 commentary/input refactor passed 61 backend/packaging tests and nine visible Chrome checkpoints, including 5,000-character containment without scrolling, formatting, resize/Undo/Redo, saved-file/draft recovery, unchanged User Input replies/cancellation and version 1 migration. The October 4 graphical redesign subsequently passed 29 diagram/runner tests, three carriage tests and 23 visible Chrome checkpoints, including three differently styled notes through three save/open/save cycles with equal JSON and rendered line boxes. The October 4 Run output change passed 14 visible Chrome checkpoints for dragging, limits, independent scrolling, unchanged content geometry, keyboard controls, collapse/reopen, window resizing and layout recovery. These are dated implementation checks; regenerating this book does not rerun them. The full maintainer guide is `docs/prompting-flow-designer.md`.
+
+---
+
+## Reading a PDF: open it in the canvas, then hand her the whole document
+
+### The canvas learned to read
+
+For its whole life the canvas on the right of the chat held one kind of thing: text. Code you loaded, code Tlamatini wrote, a file you opened to look at. Anything that was not text had to be *described* to her rather than *shown* to her.
+
+Since **2026-09-16** it holds PDFs as well. Press **Open**, pick a `.pdf`, and the document appears in the canvas — the real document, not an extracted approximation of it. Every page is there. You can select text with the mouse, jump to a page, zoom, fit to width, fit the whole page, rotate, scroll continuously or one page at a time. If the file is password-protected, the viewer asks you for the password itself.
+
+The buttons above the canvas keep the meanings they always had:
+
+| Button | What it does to a PDF |
+|---|---|
+| **Copy** | Lifts the selectable text out of *every* page. If the file is a scan with no text layer, it says so and explains that OCR is needed — it does not hand you an empty string and let you think the document was blank. |
+| **Save As** | Writes the **original PDF bytes** back out, untouched. |
+| **Refresh** | Rereads the open document without a chooser. Unchanged text stays in place; changed content replaces it after preparation. Failure or cancellation keeps the previous document/context. |
+| **Clear canvas** | Puts the document away and shuts down its background worker. |
+
+### Nothing leaves your machine just because you opened it
+
+This is worth being precise about, because “open a PDF in a web page” normally means “upload a PDF”.
+
+It does not here. The viewer reads the file **in slices, straight off your disk**, as you scroll. The document is never copied whole into memory and never sent anywhere. That has a pleasant consequence: **Tlamatini imposes no file-size limit and no page-count limit.** The test suite opens a sparse 256 MB file and navigates to page 10,001, and both work — past ten thousand pages the viewer switches itself to single-page scrolling, because browsers cannot scroll an arbitrarily tall page, and every page stays reachable. What limits you is your own machine's memory and disk, not a number somebody picked.
+
+And **no AI model is called merely because a PDF is on the screen.** Opening one costs nothing at all.
+
+### “Use as context” — the button that changes what she knows
+
+The canvas has always had a **Use as context** button. On a PDF it means what you would hope: Tlamatini takes in the **whole document** — not the page you are looking at, not a snippet — and can answer questions about it for the rest of the conversation.
+
+Press it and a dialog opens before anything happens. It shows the filename, the size, an elapsed clock, and asks you exactly one question: **Process images?**
+
+**It starts unticked. Every single time.** That is deliberate, and it is the difference between two quite different jobs:
+
+- **Unticked — text only.** She reads the selectable text of every page. No page is rendered, no image is extracted, no vision model is contacted. It is fast, it is private, and it works on a machine with no vision model configured at all. This is the right choice for a report, a manual, a paper, a contract — anything typed.
+- **Ticked — text *and* pictures.** She additionally renders every page as an image, pulls out every unique embedded image, and hands each one to her **Image-Interpreter**: the same two-models-in-parallel-plus-a-referee vision pipeline she already uses on your screenshots, running from its own saved configuration, with a prompt written for documents — read the text in the image, interpret the chart, the table, the diagram, and *say plainly when you are unsure*. This is the choice for a scan, a slide deck exported to PDF, an engineering drawing, anything where the meaning lives in the pictures.
+
+**Nothing starts until you press Continue.** Cancel, Escape or closing the dialog before that point does exactly nothing: no upload, no extraction, no analysis, no background job, and no change to whatever context you already had.
+
+### Watching it work, and stopping it
+
+Once you press Continue you get four progress rows, and they are honest ones: **bytes uploaded**, **pages extracted**, **images analysed**, **context loaded**. In text-only mode the image row simply says *Skipped* rather than pretending to do something. The clock starts when you press Continue, not while the dialog sat waiting for you. The final row stays indeterminate until the server confirms it is done — it does not invent a percentage or an estimated time that nobody could actually know.
+
+**Cancel really cancels.** It aborts the browser's requests and signals the background worker, which checks between upload chunks, between pages and between image calls. One honest caveat: a vision request that is already in flight may finish before the cancellation reaches it — the configured engine has its own request timeout. Once the context is actually loading, the button becomes **Close**, and the ordinary chat status keeps you informed.
+
+If the work succeeds the dialog closes itself. If it fails it stays open with its error, so you are never left guessing.
+
+### What she will and will not claim
+
+Three promises are built into this feature, and they are the reason to trust it:
+
+1. **Partial image analysis is reported, never hidden.** Every image keeps its own report. If four figures out of thirty could not be read, the dialog says the analysis was incomplete instead of quietly claiming all thirty succeeded.
+2. **A scan with no text is refused, not faked.** Hand her a photographed document with *Process images* unticked and she explains that there is no selectable text and suggests ticking the box — rather than loading an empty document and then answering your questions about it. On a mixed document, the pages that had no text layer are marked in the index.
+3. **A failed context load is reported separately, and you can retry.** Extraction succeeding and the context loading are two different events, and they are told apart.
+
+### Where it is kept, and your password
+
+Each prepared document becomes a private package under the runtime agent root, at `context_files/pdf_canvas/<your-user-id>/<document-id>/`: the `source.pdf`, a `document.txt` holding the complete extracted text, and — when you enabled images — the page previews, the extracted images and an `.analysis.txt` report beside each one. Successful packages stay so the context can be restored in a later session. A cancelled or failed preparation **deletes its own half-finished package**, and the upload staging file under Tlamatini's own `Temp` folder is removed when the job ends.
+
+**A PDF password is used in memory to open the document and is written nowhere** — not into browser storage, not into the context text, and not into `tlamatini.log`.
+
+Text-only and image-enabled preparations are cached **separately**, so changing that checkbox can never silently reuse a result prepared the other way.
+
+### What it is made of
+
+The viewer is **Mozilla PDF.js 6.3.289**, vendored into the repository with its unmodified Apache-2.0 licence — the API, the worker, the viewer, the character maps, the standard fonts, the annotation images, the ICC profile and the WebAssembly decoders. That means rendering needs **no npm install and no CDN at runtime**; nothing is fetched from the internet to draw your document. You can reproduce the exact pinned bundle yourself:
+
+```powershell
+python scripts/vendor_pdfjs.py
+```
+
+It verifies SHA-512 integrity before extracting an explicit subset of files.
+
+Extraction on the server side uses **PyMuPDF**, which Tlamatini already shipped, so this whole feature added **no new Python dependency**. The backend is four small modules — `pdf_context.py` (extraction, private packages, signed context tokens), `pdf_image_analysis.py` (the adapter to the real Image-Interpreter engine), `pdf_context_jobs.py` (a serial background queue with cancellation) and `pdf_context_views.py` (prepare / status / cancel, behind the existing login, CSRF and method checks). The handoff into the retrieval chain is a **user-bound signed token**, so one account's prepared document cannot be handed to another.
+
+Image-Interpreter is **reused, not re-implemented**: its pipeline builder was made import-safe so the PDF backend can call it directly, while running it as a pool agent still does its own logging and process setup exactly as before.
+
+### How it was tested
+
+The browser suite drives **real Chromium** against the application's real markup, real modules and real PDF.js, on an isolated HTTP server, with generated PDF fixtures and genuine extraction and background jobs. It covers the first, middle and last pages; zoom, rotation and resizing; saving the original bytes; copying; handing the document to context; switching between a PDF and a text file; scanned files; password-protected files; a sparse 256 MB file read in ranges; navigating to page 10,001; the progress dialog; cancellation; and retrying. It also **rejects any request for an external asset**, which is how “no CDN” is kept true rather than merely intended. Set `PDF_CANVAS_HEADED=1` to watch it run.
+
+```powershell
+python -m pytest Tests/test_pdf_canvas_browser.py Tests/test_pdf_canvas_assets.py -q
+python Tlamatini/manage.py test agent.test_pdf_context agent.test_image_interpreter_agent --noinput
+```
+
+The complete contract — every guarantee, limit and file path — lives in [docs/pdf-canvas.md](docs/pdf-canvas.md).
+
+---
+## Voice commands: your words become the prompt
+
+### Direct microphone beside Send
+
+Click **Mic** next to **Send**, wait for **Listening**, and speak your
+prompt. The colored microphone, live input meter, elapsed time and silence
+countdown stay in the chat. **Opening microphone** means capture is starting;
+**Listening** means actual samples have arrived.
+
+After the configured continuous silence (default **3.5 seconds**) the gate
+stops capture. Whisperer immediately begins transcription, then the normal chat
+form **sends the recognized text automatically** by default, including the
+existing draft. In **Config ▸ Mic**, choose **Keep in the chat input** instead to
+review and correct the transcript, then press Send yourself. That mode starts
+no task or processing acknowledgment until Send. No read-back dialog is added.
+The normal chat/permission behavior then applies to the resulting request.
+Successful dispatch triggers the avatar's browser-voice acknowledgment unless
+Silent mode suppresses it.
+
+The button does not ask Ollama to choose Whisperer and does not turn on
+Multi-Turn, Exec Report, ACPX, Ask Execs, Step-by-Step or Internet. Those current
+settings travel with the submitted prompt. Click again or press **Escape** to
+cancel; a cancelled or stale transcript cannot be sent. No speech, empty
+recognition and errors leave the original draft unchanged. If submission becomes
+unavailable after transcription, the recognized text remains in the draft.
+
+Recording uses the **microphone on the Tlamatini host computer**, not a remote
+phone or laptop's browser microphone. No extra Whisperer console opens and the
+worker does not steal focus. Its diagnostics go to the main Tlamatini console
+and log. Config ▸ Models ▸ Speech selects the recognizer. **Mic**, the last
+Config entry after Voice, opens the shared system-style settings dialog:
+input device/refresh, software gain (0–300%), silence (0.3–20 s), duration cap
+(5–600 s), automatic/manual sensitivity, language, English translation, sample
+rate, channels, beam size and local VAD. Preferences persist in this browser;
+Reset then Save restores inheritance from Whisperer's template. Save affects
+the next recording, including when a capture is already underway. Cancel, ✕
+and Escape discard edits; outside clicks leave the dialog open. First model
+loading or download can delay recognition; the button does not promise zero
+latency.
+
+### The VOICE COMMANDS catalog is a different entry point
+
+The catalog's **VOICE COMMANDS** section still contains guided workflows that
+ask the model to invoke the wrapped `chat_agent_whisperer` tool. They keep
+their own instructions and mode badges; they are not the microphone button.
+
+**#121 — YOUR FIRST VOICE COMMAND** is the Step-by-Step rehearsal: it checks
+microphone/recognition setup, shows the transcript and guides a read-only trial.
+
+**#122 — SPEAK YOUR PROMPT** uses Angela's original request:
+
+> *"Tlamatini, using Whisperer record my voice till I finish to tell you a prompt, then use the text extracted as a prompt and invoke it, go!."*
+
+That card selects **Multi-Turn, Exec report and ACPX**. Its transcript read-back
+and written-confirmation instructions belong to that catalog workflow. They
+must not be described as a confirmation screen implemented by the direct button.
+Both routes refuse to invent a command from empty or failed recognition.
+
+### Shared gate, distinct lifecycle
+
+Standalone/workflow Whisperer still supports fixed-duration and file inputs,
+saved transcript/audio artifacts, optional Ollama transcript cleanup, structured
+`INI_SECTION_WHISPERER` output and downstream targets. The direct button
+forces microphone input, silence gating and no cleanup/targets for that job; it
+returns text to the existing composer instead of writing workflow output files
+or calling an agent pool. It does not create a separate Exec Report tool row.
+
+See [the full microphone contract](docs/chat-microphone-design.md) for the state
+machine, configuration precedence, authentication, worker lifecycle, troubleshooting
+and dated measurements.
+
+---
+
+## Whisperer listens: the silence gate
+
+### The wrong question
+
+For most of Whisperer's life, asking her to take dictation meant answering a question nobody can actually answer: *how many seconds are you going to speak for?* The agent recorded `record_seconds: 30` and stopped, whether you were mid-sentence or had finished twenty seconds ago. Both failures are bad, and the second one is worse than it looks — a recording full of silence is a recording the speech recogniser has to wade through, and the model will cheerfully hallucinate words into it.
+
+The fix is not a better guess. It is to stop guessing: **keep recording while somebody is talking, and stop once they have finished.** That is the sound gate, and since v1.51.7 it is the default.
+
+### Telling "no duration" from "thirty seconds"
+
+The only genuinely hard part was a small one. `record_seconds` always held a number, so the agent could not tell a user who said nothing about length from a user who deliberately asked for thirty seconds. Inventing a second flag would have meant two knobs that can contradict each other.
+
+The answer was already in the file. A few lines above, `sample_rate: 0` has long meant *"use the microphone's native rate"* — zero as a word, not a quantity. So `record_seconds: 0` now means **"no duration was given: listen until I stop talking"**, and any number you name turns the gate off and is honoured to the sample. *"Record 45 seconds"* still records exactly 45. An old saved flow that stored `30` asked for thirty and still gets thirty; nothing you already built changes behaviour behind your back.
+
+### How it hears you
+
+Whisperer already opened the microphone through a callback that measures every twenty-millisecond block to drive the VU meter, so the gate costs one extra measurement on audio she is holding anyway — no new library, nothing to install, and it works exactly the same with the cloud recognisers.
+
+The rule is deliberately simple. Whisperer tracks the room's own noise, and counts anything about nine decibels above it as a voice. Speech must last two blocks before it counts, so a chair creak is not a word; silence only begins accruing a little below the speech threshold, which is what stops the countdown flickering on the quiet tail of a sentence. Any voice at all resets the clock to zero.
+
+Two decisions inside that are worth knowing, because both protect *you* rather than the machine:
+
+- **She starts sensitive, not cautious.** A gate that listens to the room first, then decides, will take the voice of somebody who begins talking immediately for the room itself — and then gate that person out, cutting them off mid-sentence. So the threshold begins at a fixed, generous floor and is tightened only by evidence.
+- **Fifteen seconds of unbroken "voice" re-measures the room.** People breathe; a fan does not. A steady mechanical hum sits above the starting threshold and would otherwise read as somebody talking forever, so a stretch with no gaps at all is treated as a machine and the room is re-baselined around it.
+
+### The countdown you can watch
+
+**Direct chat dictation shows its meter and countdown inside the composer and opens no extra window.** The console example below belongs only to standalone/workflow Whisperer's legacy REC indicator; it is not the microphone-button interface. The sample uses the current 3.5-second silence default:
+
+```
+ ● REC [████████──────] 12.3s   ● VOICE    [──────────] 0.0s/3.5s
+ ● REC [──────────────] 14.5s   ○ silence  [██████────] 2.2s/3.5s
+ ■ REC STOPPED ✓  silence 3.5s   captured 15.8s
+```
+
+The silence bar fills as the room stays quiet and empties the instant you speak, turning amber past halfway and red past eighty percent — so you can see it about to fire and keep talking if you want it. The final line says *why* it stopped, which matters: a recording that ends on its own and does not explain itself reads as a crash.
+
+### The thing that would have made it invisible
+
+The largest risk in this change was never the audio code. It was habit. Whisperer's own tool description used to tell Tlamatini that she *"records record_seconds (default 30)"*, and its worked example opened with *"Transcribe 5 seconds…"*. Had that stayed, Tlamatini would have kept volunteering a duration out of politeness, the gate would never have fired once, and the whole feature would have been invisible — while looking, from the outside, exactly like it worked.
+
+So the description now says plainly: **do not pass `record_seconds` unless the user named a duration**, and a test fails if that sentence ever drifts back out.
+
+Two smaller honesty repairs travelled with it. The reported recording length used to echo what was *requested*; it now reports what was actually *captured*, which under a gate are different numbers by design. And because the gate lives inside the audio callback, a sound driver that refuses that callback cannot be gated at all — standalone Whisperer records a fixed length and **says so**, rather than calling it gated listening. Direct chat dictation instead refuses that fallback and reports an error, because automatic submission requires a working gate and reliable cancellation.
+
+### Knobs
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `record_seconds` | `0` | **The switch.** 0 = listen until the speaker stops; N = record exactly N seconds, gate off. |
+| `silence_timeout_seconds` | `3.5` | Silence that ends the recording. The clock starts when the microphone opens, so an empty room still stops. |
+| `silence_gate` | `auto` | `auto` follows `record_seconds`; `on` forces the gate (the duration becomes a ceiling); `off` forces a fixed recording. |
+| `max_record_seconds` | `300` | Ceiling for a gate that never fires — a radio left playing is never silent. |
+| `silence_threshold_db` | `0` | 0 measures the room automatically. A negative value forces a fixed threshold for an unusual room. |
+
+---
+
+## Edit and save a canvas file
+
+Open or drop text, source code, JSON or Markdown into the chat canvas. The filename bar now has **Save**, **Save as**, **Undo**, **Redo**, **Find/replace** and **Wrap**. The dirty marker means the current buffer differs from its saved baseline. Ctrl/Cmd+S saves; Ctrl/Cmd+Shift+S chooses a destination. Copy and Use as context take the edited source. Tab normally moves focus; Ctrl+[ and Ctrl+] indent.
+
+| File kind | Editing and saving |
+|---|---|
+| Text, code, JSON and configuration | Edit directly with syntax support; Save writes the current buffer. |
+| Markdown | Edit Source or inspect sanitized Preview; both share one buffer and undo history. |
+| HTML and SVG | Edit source as text; the canvas does not execute the document. |
+| PDF | Read-only PDF.js viewer; Save exports the original PDF as a copy. |
+| Flow files and images | Their existing designer or attachment route remains in charge. |
+
+On a local connection, **Save as** and the navbar **Save** open a native Windows destination dialog, so you can choose a project folder or another writable location outside Downloads. Toolbar Save reuses an authorized destination; a file without one asks first. Cancelling or failing a save leaves edits in place. A supported browser-granted file handle can also provide write access. Remote browsers need a picker supported by that browser.
+
+Saving compares the disk revision and refuses external modifications instead of overwriting them. Save As can preserve a separate copy. A save captures one buffer revision: if you keep typing, later edits remain dirty. Unedited files retain exact bytes; edited files retain encoding/BOM and existing line terminators. New lines use the original first terminator. UTF-8 and BOM-marked UTF-16 are supported strictly; malformed text and binary files are refused. The text/native-save limit is 64 MiB.
+
+Open, Clear and Refresh ask before discarding edits. Unsaved buffers are held in memory: save before closing the page. Refresh reloads an accessible source; it does not merge changes. Use as context is a snapshot, so use it again after editing when you need to update ordinary chat context.
+
+## Learn in the editor with Interactor
+
+**Interactor is a module and a built-in tool, not a workflow agent.** Enable **Multi-Turn**, **Interactor** in Configure MCPs/Tools and **Live editor** above the canvas. Try: “Help me create a Dockerfile for a Java servlet application using your text editor. Teach one step at a time.”
+
+1. Tlamatini reads the exact unsaved editor buffer and selection. If no path was provided, she creates the requested filename under Temp/interactor in an account-specific unique directory; an existing file is not overwritten.
+2. She types a short known segment, for example `FROM `, then hands the next field to you and explains which base image suits your Java runtime. The handoff stops further editor mutations in that chat turn.
+3. As you type, optional ghost text matches your prefix against choices prepared for this field. **Tab** accepts the suggestion, **Ctrl+Right** accepts a word and **Escape** dismisses it. You can type a different value.
+4. **Continue** sends a new chat turn and reads the live buffer again before reviewing your work. **Another hint** and **Explain selection** also use normal chat while preserving an existing composer draft.
+5. Save when you want the buffer persisted. Typing is not saving and does not execute code.
+
+The model prepares field choices once; matching is local, with no model request per keystroke. New questions still have normal chat/model latency. User input, selection, Escape, Stop, cancellation or disconnection interrupts AI typing and keeps the typed prefix editable. A temporarily hidden or occluded tab pauses for up to two extra minutes, then resumes at the next character when visible; a timeout never replays text. Switching to Markdown Preview or hiding the canvas returns control.
+
+Live tutoring accepts at most 262,144 UTF-16 units; a smaller configured tool-result/context budget can refuse a read. Oversized or stale content is refused explicitly, never silently truncated. For permissions and dated source/frozen evidence, see [Canvas editing](docs/canvas-editing.md) and [Interactor](docs/interactor.md).
+
+The [account-creation wizard](docs/user-creation-wizard.md) is separate from editor tutoring: it opens the interactive createsuperuser console and keeps passwords out of chat. It creates an administrative superuser. Saying that you will type a password does not reserve all commands for you, and an optional email field does not authorize an outbound notification.
+
+
+## Terminals you can watch: Terminater
+
+> **Carried from v1.88.0** (tagged 2026-10-20). The dated evidence below describes that release; current source and frozen-package results are distinguished above.
+
+### The problem it solves
+
+Executer is wonderful when you only want the *answer*: it runs a command in a shell nobody can see and hands back text. But sometimes you want to *watch* — to learn what a command does, to follow a walk-through, to answer the question an installer asks, or to be sure nothing surprising is typed. For those moments Tlamatini now has **Terminater**, the visible sibling of Executer.
+
+### See it in thirty seconds
+
+1. Open the chat and choose **Views ▸ Terminals** (or press **Ctrl+`**). A Terminals area appears under the canvas. Nothing is running yet.
+2. Open **Catalog of Prompts**, go to **Run & Execute** and click **TERMINATER FIRST LOOK**. Tick **Multi-Turn** and **Exec report** as the card says.
+3. Send it. A real PowerShell appears in the Terminals area, and you can watch Tlamatini *type* a command — a little faster and slower here and there, like a person at about 50 words per minute. When the command finishes she reads the whole output and reports the exit code.
+
+Typing is slow **on purpose**: a 60-character command takes about fifteen seconds. There is no paste and no instant mode, so you always see what is being typed before it runs.
+
+### Take the keyboard — and give it
+
+* **Esc** stops Tlamatini's typing at once and the keyboard is yours. You never have to fight for it.
+* **Hand-over.** Try the **TERMINATER HAND-OVER** card. Tlamatini types `ping `, then waits for *you* to type the host and press Enter, then types ` -n 2` and runs the line. Whatever you type is reported separately from what she typed, so the report always says who did what. If you do not finish in five minutes the result is `operator_required` — she never invents a host.
+* **Secrets.** When the part you type is a password or a token, the request says `secret: true` and that part is never logged or returned.
+
+### Several terminals at once
+
+The **TERMINATER GUIDED TOUR** card opens a CMD and a PowerShell side by side (`tile-h`), types a version command in each, and then — one step at a time — watches what *you* start to type in one of them and warns you if it looks dangerous or mistyped. The layouts are `tabs`, `tile`, `tile-h`, `tile-v` and `grid`, and the area can be the docked strip or the whole canvas.
+
+### When a command misbehaves
+
+A command that prints nothing for 45 seconds is flagged **hung**; Tlamatini can abort it (Ctrl+C, Ctrl+C again, then ending its processes) without losing the terminal. A command that exits with an error is a red row in the Exec report even though the terminal itself worked, so a flow can branch on it.
+
+### Where else it lives
+
+* On the **Agentic Control Panel** it is workflow agent #86 — draw it, wire it, and a Forker can branch on `{status}` and `{exit_code}`. If a terminal needs your input while a flow runs, the Start dialog gets out of the way so the terminal holds the keyboard.
+* In the **Prompt Flow Panel** it is the new parallelogram: the node's text is typed into your terminal and the output becomes `{{last_output}}`.
+* It is on the **Ask Execs** list: a visible command can still delete things, so with Ask Execs ticked you see exactly what will be typed before it is.
+
+### Good to know
+
+It needs Windows 10 version 1809 or newer. Closing a page never closes a terminal, but they all end when Tlamatini does. To switch the whole feature off, set `terminater_enabled` to `false` in `config.json`. The complete rules, every action and how it is tested are in `docs/terminater.md`.
+
+---
+
+## Avatar animation repair and reproducible visible tests
+
+### Four expression assets and their animation coordinates
+
+The avatar combines independent eye and mouth states. Each source asset is an opaque **1024 × 1024 RGB JPG**, rendered in the same square viewport without per-state layout changes:
+
+| Application asset | Expression | Converted image deliverable |
+| --- | --- | --- |
+| `Tlamatini/agent/static/agent/img/avatar/eo_mc.jpg` | Eyes open, mouth closed | `02_eyes_open_neutral.jpg` |
+| `Tlamatini/agent/static/agent/img/avatar/ec_mc.jpg` | Eyes closed, mouth closed | `04_eyes_closed_neutral.jpg` |
+| `Tlamatini/agent/static/agent/img/avatar/eo_mo.jpg` | Eyes open, mouth open/smiling | `01_eyes_open_smiling.jpg` |
+| `Tlamatini/agent/static/agent/img/avatar/ec_mo.jpg` | Eyes closed, mouth open/smiling | `03_eyes_closed_smiling.jpg` |
+
+The [image deliverables](https://github.com/XAIHT/Tlamatini/tree/46a18c8d2965af6e833b1fb3aaa68b3039be4167/output/Gemini_girl_animation/) also preserve the original four 1024-square quadrant crops from the 2048-square source sheet. The animation-oriented PNGs correct small source offsets using translation registration on stable hair/armor, a shared six-pixel inset, and one common Lanczos resampling operation. The image files are not distorted independently or regenerated. `alignment.json` records crop boxes, shifts, dimensions, and hashes. Small non-rigid differences already drawn into the source remain; this is expression switching, not generated video or phoneme-level lip synthesis.
+
+`sprite_2x2.png` contains the aligned frames in original row-major order. `preview.html` preloads/decodes the PNGs and draws them at identical canvas coordinates. The later JPG conversion retained the supplied frames' dimensions and positions, using JPEG quality 98 with no chroma subsampling. Both the [complete image ZIP](https://github.com/XAIHT/Tlamatini/blob/46a18c8d2965af6e833b1fb3aaa68b3039be4167/output/Gemini_girl_animation.zip) and [JPG ZIP](https://github.com/XAIHT/Tlamatini/blob/46a18c8d2965af6e833b1fb3aaa68b3039be4167/output/Gemini_girl_animation/girl_frames_jpg.zip) are committed deliverables.
+
+### Why the entire portrait flashed
+
+The old CSS applied `transition: opacity 90ms linear` to all four full portraits. During a switch, two overlapping frames were each partly transparent. At the midpoint, the combined coverage is `1 - (1 - 0.5) * (1 - 0.5) = 0.75`: **25% of the dark background leaks through**. A real Chromium reproduction measured minimum coverage approximately **0.753**, so the dimming was a rendering problem, not a bad JPG or a `collectstatic` conversion.
+
+Source JPGs, development collected JPGs, frozen installed static/collected/source copies, and the initially served frozen HTTP responses were SHA-256 identical. The real Django collector was independently checked for exact byte copies, then the full project's `collectstatic` was run after migrations. Image dimensions and content did not change.
+
+### The source repair
+
+1. [avatar.css](Tlamatini/agent/static/agent/css/avatar.css) switches visibility with opacity fixed at one and no transition. The neutral frame remains underneath as a fallback. The dock disables selection, preventing a blue highlight when double-clicking to mute.
+2. [avatar.js](Tlamatini/agent/static/agent/js/avatar.js) decodes each frame before selecting it. Slow, failed, or pending-decode frames leave the last valid portrait visible; class changes occur together in one JavaScript task. Mouth changes stop when speech is paused, the document is hidden, or reduced motion is requested.
+3. [agent_page.html](Tlamatini/agent/templates/agent/agent_page.html) adds a matching avatar cache-busting suffix to CSS and JS. The existing startup-generated `STATIC_VERSION` mechanism remains intact.
+
+Normal behavior is preserved: automatic blinking, mouth movement while native speech runs, click-to-greet or stop, Escape-to-stop, double-click mute, and Ctrl+Shift+M to toggle mute. These repairs do not add a remote video service or change the user's four source JPGs.
+
+### One Python command to run the visible test
+
+From the repository root:
+
+```powershell
+.\python\python.exe Tests\run_avatar_tests.py
+```
+
+For a different Python environment with the project requirements, use `python Tests/run_avatar_tests.py`. The launcher:
+
+1. Checks Django, Node.js, Playwright, and Chromium. It detects existing project/PATH/Codex-bundled dependencies; it does not silently install packages.
+2. Checks that port 8001 is free, without stopping any existing application.
+3. Prepares `Temp/avatar_flash_fix/development-test.sqlite3`, using the published session-free fixture when available; applies migrations; and creates/updates only the ordinary test account **user / changeme**.
+4. Runs the project's `collectstatic` against the source assets.
+5. Starts the real Django development page on **127.0.0.1:8001**, with distinct test cookies so it does not collide with the frozen app's session.
+6. Opens a **visible browser**, signs in, runs native Windows speech, checks at least 300 frame changes across three viewports, and exercises pause/resume/stop/mute controls.
+7. Saves screenshots and JSON proof under `output/avatar_flash_fix/visible-test/`. Closing the browser stops the server launched by this command. `--auto-close` performs that cleanup after a successful run; `--check` only validates dependencies, and `--prepare-only` stops after database preparation and `collectstatic`.
+
+If dependencies are missing, install Node.js and run `npm install --no-save playwright` followed by `npx playwright install chromium`. `TLAMATINI_TEST_NODE` can select a Node executable; `PLAYWRIGHT_MODULE` can select an installed Playwright package. The test account is deliberately generic and must not be treated as a production credential.
+
+### What was tested, and what was not
+
+The final visible repair run checked **311 transitions and 10,813 browser paints** using **Microsoft Zira — English (United States)**, with all four states exercised, zero transparency/coverage failures, zero within-viewport layout jumps, and no JavaScript errors. Native speech pause/resume, Escape, click-to-greet/stop, double-click mute without blue selection, and keyboard unmute all passed. Earlier focused browser checks also covered delayed image downloads, missing images, held decode promises, and reduced-motion mode. A preceding visible run exposed the selection highlight; it was fixed and the visible test was repeated.
+
+The tests use real Django login, templates, middleware, static HTTP responses, and native speech synthesis. The browser's LLM WebSocket is isolated so these frontend tests do not launch model jobs or modify the frozen session. **LLM answer generation is not claimed as covered.** The developer's normal database and frozen installation were not replaced or restarted during the repair. Frozen-mode rebuild/reinstall remains a separate validation step.
+
+### Repository assets and publication safety
+
+The complete deliverables are now tracked under [output/](output/), rather than hidden by the old blanket `/output/` ignore rule. They include PNG/JPG frames, crops, sprite sheets, ZIPs, preview HTML, scripts, image-alignment metadata, screenshots, visual-test JSON, original code snapshots, and deployment-code backups. The [verification report](https://github.com/XAIHT/Tlamatini/blob/46a18c8d2965af6e833b1fb3aaa68b3039be4167/output/avatar_flash_fix/README.md) explains each evidence file. The test suites are [test_avatar_animation.cjs](Tests/test_avatar_animation.cjs), [test_avatar_collectstatic.py](Tests/test_avatar_collectstatic.py), and [test_avatar_visible.cjs](Tests/test_avatar_visible.cjs), with [run_avatar_tests.py](Tests/run_avatar_tests.py) as the Python entry point.
+
+The committed `output/avatar_flash_fix/development-test.sqlite3` is a **sanitized fixture containing seeded project data and the generic test user**, not a personal/production database. Live login sessions were removed before publication; runtime sessions and server logs are kept under ignored `Temp/avatar_flash_fix/`. Binary attributes prevent Git from changing line endings inside PDFs, PPTX files, image files, ZIP archives, or SQLite fixtures. The original release/file-count snapshots elsewhere in this book retain their stated measurement scope; the newly published avatar assets are documented separately here.
+
+## Demo videos
+
+- [First system-usage walkthrough](https://www.youtube.com/watch?v=CkvDPSd_c-g)
+- [Loading a complete project and summarizing its source code](https://www.youtube.com/watch?v=Lrpbt_dPIXw)
+- [Installing OpenCV end-to-end in Multi-Turn](https://www.youtube.com/watch?v=bBlqbZVK-Wk)
+- [Uninstalling Poco — Exec Report and matching flow](https://www.youtube.com/watch?v=E5vi0q5FxXQ)
+- [Designing a flow with FlowCreator's help](https://www.youtube.com/watch?v=Tgoa7Tmoo0o)
+
+---
+
+## Enable Tlamatini as a Blue-hat agent
+
+In this book, **Blue-hat** means a defensive operator posture: Tlamatini helps inspect and respond to security signals on a Windows machine that you own or are explicitly authorised to defend. It does **not** turn her into an unsupervised endpoint-security authority, add a new database-backed workflow Agent, or make every alert a confirmed intrusion. The `security/` directory is an administrator-operated host toolkit. A human chooses when to enable it, reviews the evidence, decides whether response is justified, and owns the resulting Windows policy changes.
+
+This distinction matters because the toolkit has two very different jobs:
+
+1. **Host enablement** changes persistent Windows settings so Tlamatini can run and observe more of the machine.
+2. **Defensive monitoring and response** inspects ten signal families and can, in armed modes, add firewall blocks or force-stop selected processes.
+
+The safest operating pattern is always **validate → record a baseline → enable → restart → detect-only → investigate → arm only when justified**.
+
+### The complete `security/` asset map
+
+```text
+<Tlamatini-root>/
+├── Tlamatini.exe                         # installed build; absent in a source checkout
+├── agents/                               # installed agent catalog, including Shoter
+├── Tlamatini/agent/agents/               # equivalent source-tree catalog
+└── security/
+    ├── README.md                         # local quick reference
+    ├── enable_tlamatini_v2.bat           # self-elevating enablement launcher
+    ├── tlamatini_whitelist_v2.ps1        # verified Windows access setup v2.3
+    ├── run_defender.bat                  # self-elevating report-only launcher
+    ├── tlamatini_defender.ps1            # report-only monitor, optional response v2.2
+    ├── automated_tests_of_security_assets.py
+    └── security_logs/                    # created at runtime; git-ignored
+        ├── alerts.log                    # concise alert and response stream
+        ├── monitor.log                   # complete monitor stream
+        └── asset_tests/                  # visible-test logs, HTML, JSON, and screenshots
+```
+
+The two batch files resolve themselves with `%~f0`, carry that path through UAC in an environment variable so spaces are preserved, locate their companion scripts with `%~dp0`, and invoke Windows PowerShell with `-NoProfile -ExecutionPolicy Bypass`. They propagate the PowerShell process's failure code instead of always appearing successful. The PowerShell files derive the repository/install root from `$PSScriptRoot` and `Split-Path -Parent`; there is no fixed drive letter or install-directory name.
+
+### Requirements and authority boundary
+
+- Windows 10 or Windows 11 with Microsoft Defender PowerShell cmdlets and the Windows Firewall/Security-log facilities used by the scripts.
+- Administrator approval for the whitelist and defender. The asset regression test itself is non-destructive and does not require elevation.
+- A machine you own or have explicit written authority to defend. The toolkit does not authorise scanning, containment, or investigation of third-party systems.
+- A human operator who can review Windows events, process paths, firewall rules, and false positives before treating a signal as malicious.
+- A recovery plan. There is currently **no bundled undo script** for the whitelist's persistent changes.
+
+The toolkit supplements Microsoft Defender and human incident response. It is not an antivirus engine, EDR, SIEM, sandbox, forensic product, legal conclusion, or certification that a host is clean.
+
+### Validate the assets before changing Windows
+
+Run the persistent test from the repository/install root:
+
+```powershell
+python security\automated_tests_of_security_assets.py
+```
+
+Open a new foreground PowerShell with `-NoExit`, confirm that it is visible, and run the test there. The harness asks for confirmation before checks and keeps using that console. It parses every PowerShell asset, verifies standalone payload parity, runs mocked permission/defender behavior tests, checks the real BAT parser from a complex path, and captures all screens through **Shoter**. JSON and a viewable HTML summary are saved under `security/security_logs/asset_tests/`. No browser is started automatically.
+
+These checks do not apply Windows policies or run an armed sweep. Screenshots may contain sensitive desktop information. For actual non-admin interpreter, file, shell and loopback checks, run `python security\verify_agent_execution.py` in the same confirmed visible console. Its unique scratch files are removed afterward; it makes no paid model calls and does not certify external dependencies. Use `--visible-console-verified` only after a human confirms that same persistent console. See [security/README.md](security/README.md) for the maintained file inventory and switches.
+
+### Record a pre-enable baseline
+
+The whitelist saves Defender preferences and audit policy before changing them, execution policies before policy changes, and a pre-operation journal for firewall, registry and group membership changes under `security_logs/enablement-<timestamp>/`. These are selective recovery records, not an automatic rollback or a full system restore point. Additional read-only baseline commands are:
+
+```powershell
+Get-MpPreference | Select-Object ExclusionPath, ExclusionProcess, `
+    ControlledFolderAccessAllowedApplications, AttackSurfaceReductionRules_Ids, `
+    AttackSurfaceReductionRules_Actions
+Get-ExecutionPolicy -List
+Get-NetFirewallRule -DisplayName "Tlamatini*" -ErrorAction SilentlyContinue
+auditpol /get /category:*
+(Get-Item "HKLM:\SYSTEM\CurrentControlSet\Services\EventLog\Security").GetValue("CustomSD")
+```
+
+Store the output somewhere protected and outside the Tlamatini install tree. Domain policy, Intune, Group Policy, or another security product may own some of these settings; coordinate with that control plane instead of fighting it locally.
+
+### What enablement actually changes
+
+Run `security\enable_tlamatini_v2.bat` once and approve UAC. It launches `tlamatini_whitelist_v2.ps1`; most changes persist after the script exits.
+
+| Area | Actual implementation | Security consequence |
+|---|---|---|
+| Microsoft Defender | Adds the whole Tlamatini root to `ExclusionPath`, adds `Tlamatini.exe`, and adds bundled Python executables when found to `ExclusionProcess`. | Defender services remain on, but excluded content/processes receive less scanning. Malicious code placed in the excluded tree can inherit that blind spot. |
+| Controlled Folder Access | Leaves the global mode unchanged and adds exact discovered Python, application and toolchain paths, including bundled Python in source checkouts. Every entry is read back. | Shared interpreter exceptions also apply to commands run outside Tlamatini. |
+| Attack Surface Reduction | Adds verified per-program exceptions. Only explicit `-AuditCompatibility` changes six global rules to **AuditMode (2)**. Action **6 means Warn**, not Audit. | Global changes are opt-in; a rejected or unverifiable setting produces `[ATTENTION]` and exit 2. |
+| PowerShell | Sets the current user's execution policy to `RemoteSigned`. | Local scripts can run unsigned; downloaded scripts normally require a trusted signature unless explicitly bypassed. The batch launchers themselves use `Bypass`. |
+| Windows Firewall | Creates stable owned outbound/loopback rules, checks ActiveStore, and disables exact local application blocks. Managed/broad blocks are reported and preserved. | Incoming access defaults to loopback; `-AllowLan` explicitly adds LocalSubnet access on Private/Domain profiles. |
+| Security event log | Adds and verifies elevated-user Event Log Readers membership by locale-neutral SID, records the change, and leaves CustomSD untouched. | A new logon may be needed; using another administrator account applies membership to that account. |
+| Audit policy | Uses stable subcategory GUIDs to enable success/failure Logon, Credential Validation, Sensitive Privilege Use, and User Account Management; success Process Creation. Every `auditpol` exit code is checked. | Produces the events the defender reads, avoids dependence on the Windows display language, and can increase Security-log volume. |
+| Process command lines | Sets `ProcessCreationIncludeCmdLine_Enabled=1`. | Event 4688 gains command-line evidence, which is useful but can record sensitive arguments. |
+| PowerShell logging | Enables Script Block Logging. | Improves script evidence but may log commands or values that need restricted retention. |
+| WMI, tasks, registry, services | Executes `Get-CimInstance`, `Get-ScheduledTask`, Run-key reads, and `Get-Service` probes. | These four steps **verify** the elevated session's existing access; they do not install a WMI provider or create separate task/registry/service permissions. |
+
+The accurate statement is therefore: **Defender, CFA, ASR, and firewall components are not globally disabled, but the whitelist deliberately creates exceptions; selected global ASR rules change only with explicit `-AuditCompatibility`.** Treat the Tlamatini tree and every executable allowed by those exceptions as a privileged trust boundary.
+
+The six optional `-AuditCompatibility` ASR behaviors are: Office applications creating child processes; LSASS credential stealing; WMI event-subscription persistence; executable content from email/webmail; untrusted or unsigned USB processes; and process creation through PSExec/WMI. Their IDs are Microsoft's published identifiers, not locally invented aliases; compare them against the [Microsoft ASR rules reference](https://learn.microsoft.com/en-us/defender-endpoint/attack-surface-reduction-rules-reference) whenever the toolkit is updated.
+
+After enablement completes, restart Tlamatini and open a fresh PowerShell/logon session where practical. Read every `[ATTENTION]` line. Exit 0 means configured checks succeeded, 2 means partial results need attention, and 1 means setup failed. Successful earlier changes are not automatically rolled back.
+
+### Start with detect-only
+
+The batch launcher `run_defender.bat` runs one **report-only** scan. The PS1 also defaults to report-only. To establish a baseline, open a visible persistent PowerShell as Administrator:
+
+```powershell
+cd <Tlamatini-root>\security
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tlamatini_defender.ps1 -DetectOnly
+```
+
+In detect-only mode, a response candidate becomes `WOULD BLOCK` or `WOULD KILL` in the alert log. Let normal developer, automation, firmware, browser, security-testing, backup, and administrative workloads run while you review what the heuristics consider suspicious. Record expected tools, paths, ports, accounts, and tasks before moving to an armed mode.
+
+### Operating modes
+
+```powershell
+# One-shot observation; never blocks or kills
+.\tlamatini_defender.ps1 -DetectOnly
+
+# Continuous observation every 60 seconds; Ctrl+C stops it
+.\tlamatini_defender.ps1 -Watch -DetectOnly
+
+# Continuous observation with a deliberate interval
+.\tlamatini_defender.ps1 -Watch -IntervalSeconds 30 -DetectOnly
+
+# One-shot armed response (explicit opt-in)
+.\tlamatini_defender.ps1 -Armed
+
+# Armed watch loop
+.\tlamatini_defender.ps1 -Armed -Watch -IntervalSeconds 60
+
+# Also kill recognised dual-use tools outside Tlamatini's self roots
+.\tlamatini_defender.ps1 -Armed -Aggressive
+```
+
+`-Watch` is a foreground loop, not a Windows service or scheduled task. It scans, appends logs, sleeps, and repeats until `Ctrl+C` or process termination. `-IntervalSeconds` is validated from `5` through `86400`, preventing zero/negative busy loops and unbounded accidental values. The whitelist's Windows settings persist; the watch process does not.
+
+### The ten monitor families
+
+| Monitor | Evidence examined | Response behavior |
+|---|---|---|
+| Defender health | Real-time/antivirus/tamper status, signature age, Defender detections from the last 24 hours. | Alerts and desktop notifications; does not re-enable Defender automatically. |
+| Logons | Last 100 Security events 4624/4625, logon types, account and source IP. | Suspicious successful logons alert. Five or more failed events from one non-local IP cause a persistent inbound+outbound firewall block in armed mode. |
+| Network | Established TCP connections and listening TCP sockets against a suspicious-port list; optional known-bad IP list (empty by default). | Suspicious ports/listeners alert only. A populated known-bad IP match can create a firewall block. |
+| Processes | Process basename, path, known attacker-tool patterns, dual-use names, and execution from Temp/AppData/Public paths. | Known attacker-tool name patterns are force-stopped in armed mode. Dual-use names alert unless `-Aggressive` is set. Suspicious paths alert only. |
+| Scheduled tasks | Enabled non-Microsoft/non-Tlamatini tasks, action paths, encoded PowerShell, and download/execute indicators. | Alerts only. |
+| Services | Running non-Windows/non-Program-Files services, temporary/user paths, and missing descriptions. | Alerts only. |
+| Registry persistence | Run/RunOnce, Winlogon Shell/Userinit, AppInit DLLs, and IFEO Debugger values. | Alerts only. |
+| Critical directories | Executable/script/link extensions changed in the last 24 hours under Windows Temp, Public, user Temp, and Startup locations. | Alerts only. |
+| Ransomware indicators | Recent event 4688 command lines for shadow-copy/recovery/log destruction; ransom-note names and bursts of five or more encrypted extensions in user data. | Critical alerts and notifications; it does not stop the process or restore files. |
+| Account/privilege abuse | Security events 4720/4728/4732/4756 from the last 24 hours plus current local Administrators membership. | Alerts and inventory logging only. |
+
+The monitor is primarily heuristic. A developer tool, legitimate red-team utility, installer, updater, administrative task, backup tool, encrypted archive, unusual service, or sanctioned account change can match these signals. Conversely, a real attacker can evade fixed names, extensions, ports, and event-window limits. Treat every result as a lead that needs corroboration.
+
+### Self-safe classification: availability guard, not trust proof
+
+The defender recognizes the parent of the active `security/` directory, `%LOCALAPPDATA%\Tlamatini` when present, and the registered installation root. Comparisons use literal normalized path boundaries. `Test-IsSelf` compares a process/file path to those roots. A matching process is not auto-killed. Names such as `nmap`, `ncat`, `john`, and `hashcat` are classified as dual-use and only alert by default; `-Aggressive` may stop them when they run outside a self root.
+
+This protects Tlamatini's Nmapper, Kalier, Discoverer, and related work from accidental termination, but **a path match is not a code-signing or provenance check**. If an attacker places a payload inside a recognised/excluded Tlamatini tree, both the defender's self-safe rule and the Defender path exclusion can reduce scrutiny. Protect write access to the install/source tree, review modifications, and never treat "self" as equivalent to "trusted".
+
+### Armed response and rollback
+
+Explicit `-Armed` mode has two containment actions:
+
+1. `Block-SuspiciousIP` creates `Tlamatini Block <IP> Inbound` and `Tlamatini Block <IP> Outbound` Windows Firewall rules.
+2. `Stop-SuspiciousProcess` uses `Stop-Process -Force` for a process classified by the known attacker-tool name patterns, after refusing a recognised self path.
+
+The firewall rules have no expiration and remain after the defender exits. List them with:
+
+```powershell
+Get-NetFirewallRule -DisplayName "Tlamatini Block *"
+```
+
+Before removing a block, correlate its source IP, event times, account, process/network evidence, and organisational policy. Then remove only the validated pair, naming the exact IP-specific rules rather than deleting every Tlamatini rule. Preserve the relevant log lines as the audit record for both containment and release.
+
+There is also no automatic restoration for a killed process, no quarantine copy, no memory capture, and no process-tree containment. During a real incident, preserve evidence and follow your response plan before restarting software or deleting artifacts.
+
+### Read and protect the logs
+
+`Write-Alert` appends every entry to both `security_logs\alerts.log` and `security_logs\monitor.log`; the latter is not currently a separate lower-level stream, so expect substantial duplication and repeated findings in watch mode. There is no built-in rotation, retention limit, deduplication database, or automatic SIEM forwarding.
+
+Severity means **triage priority**, not certainty:
+
+- `INFO` records health, inventory, sweep boundaries, and successful checks.
+- `WARNING` records weaker heuristics, stale protection state, access failures, and suspicious paths.
+- `ALERT` records stronger leads, dual-use tools, suspicious logons, account events, and detect-only response previews.
+- `CRITICAL` records high-risk patterns, armed containment actions, ransomware indicators, Defender disablement, and known attacker-tool names.
+
+The logs may contain usernames, administrator-group membership, IP addresses, executable paths, registry values, task arguments, and command lines. Script-block and process-creation auditing can also place sensitive arguments in Windows event logs. Restrict access, establish retention, and redact before sharing.
+
+### Packaging, updates, and self-modification
+
+`build.py` copies the entire repository `security/` tree beside the installed executable and excludes `security_logs`, `*.log`, and `__pycache__`. On self-update, `security/` is treated as **application code**: a new release replaces the scripts, which is what you want — a fixed defender has to be able to reach a user who already installed a broken one. But `security/security_logs/` is the **operator's evidence** and lives inside that replaced directory, so like the database it needs separate handling: `apply_update.ps1` moves it to `Temp/_security_logs_carryover_<unique-id>` before the delete (step 3c) and moves it back into the new `security/` afterwards (step 5b). A failed stash aborts before application deletion. A failed restore leaves the unique stash intact without overwriting other evidence. `copy_source_assets.py` includes the `.ps1`, `.bat`, `.py`, and Markdown source in self-modify snapshots while pruning every directory named `security_logs`. `.gitignore` likewise excludes `/security/security_logs/`.
+
+These rules keep test screenshots and host telemetry out of Git, the public installer, and self-modify source snapshots. They do not encrypt the logs on the local machine; that remains an operator responsibility.
+
+### Blue-hat deployment checklist
+
+- Read and diff every `security/` asset before elevation.
+- Run the non-destructive visible test and require exit code `0`.
+- Record Defender, ASR, CFA, firewall, execution-policy, audit-policy, and Security-log baselines.
+- Confirm organisational policy permits exclusions, ASR Audit mode, command-line auditing, and Script Block Logging.
+- Run the whitelist once, review every warning, and restart the relevant sessions.
+- Run detect-only first and document expected false positives.
+- Protect the Tlamatini root as a privileged/excluded trust boundary.
+- Arm only with an operator present; avoid `-Aggressive` during ordinary development or sanctioned security testing.
+- Review persistent firewall blocks and log retention after every armed/watch session.
+- Escalate confirmed compromise to a real incident-response process; do not rely on this toolkit alone.
+
+> **Created by Angela López Mendoza (@angelahack1)** — Tlamatini, the one who knows.
+
+---
+
+# Part I — Getting Tlamatini Running
+
+## 1. What is Tlamatini?
+
+**Tlamatini** (Nahuatl for "one who knows") is a local-first AI development and automation environment. It runs in your browser, keeps its control plane on your machine, knows your code, and can actually *do* things — not just describe how to do them. “Local-first” identifies where the application, database, workflows, credentials, agent programs, tools, files, and hardware connections are controlled; it does **not** mean Tlamatini was designed as a local-model-only assistant. Its intended reasoning layer uses Ollama cloud models.
+
+The four things Tlamatini gives you that a plain ChatGPT-style box does not:
+
+1. **A real RAG pipeline** that reads your project files, classifies their architectural roles, and grounds answers in your real source code.
+2. **Multi-Turn mode** that turns the chat into a tool operator: the LLM can run shell commands, hit APIs, send emails, take screenshots, type into windows, query SQL — and chain those steps to finish the job.
+3. **ACPX** that lets the LLM delegate sub-tasks to external coding-agent CLIs you already have installed (Claude Code, Cursor, Codex, Gemini CLI, Qwen Code, and more).
+4. **A visual workflow designer** where you drag 85 different agent types onto a canvas (including the microcontroller-firmware trio **STM32er** / **ESP32er** / **Arduiner**, the **Unrealer** for driving Unreal Engine 5 — see bonus chapter §57 — the **Camcorder** for grabbing photos/video off a webcam, the **Recorder** for capturing audio off a microphone, the matching **AudioPlayer** / **VideoPlayer** for playing sound to the speakers and video on a screen, the **Talker** for synthesizing speech from text, and the **Whisperer** for transcribing speech back into text), wire them up, and run the result as an unattended `.flw` workflow. Save, Validate, and Start all funnel the canvas through a backend **Flow Compiler** (`agent/services/flow_compiler.py`) that consults a single Agent Contract registry — so a flow that runs in source mode runs identically in a frozen `.exe` install.
+
+The **control plane is local**; the intended reasoning plane is cloud-backed through Ollama. The small retrieval embedding model runs locally, while configured `:cloud` models handle demanding chat, planning, coding, tool selection, long contexts, and vision. Prompts and context sent to those models are processed by Ollama's cloud service. The whole application can still be packaged as a standalone Windows `.exe`, but the executable does not remove the Pro-or-higher service requirement for complete functionality.
+
+## 2. What you need before installing
+
+| Requirement | Recommended | Notes |
+|---|---|---|
+| **Python** | 3.12.10 | **Installer users do NOT need Python** — as of **v1.17.0** the installer carries a self-contained Python 3.12.10 (with all dependencies) into `<install_dir>\python\`, and every pool agent runs on that carried interpreter. Python 3.12.10 is required **only** when running from source (Path A). It is the only version Tlamatini has been fully tested with. |
+| **Operating system** | Windows 11 | The visual designer is cross-platform; some Windows-specific helpers (Mouser, Keyboarder, `.flw` / `.fpmt` file associations) are best on Windows. |
+| **Disk space** | ~10 GB | Application dependencies, carried runtimes and browsers, plus the local embedding model; optional local LLMs require additional space. |
+| **RAM** | 16 GB minimum | 32 GB is comfortable for the bigger embedding models. |
+| **Model runtime** | **Ollama** | The local Ollama daemon exposes one API for the local embedding model and the cloud reasoning models Tlamatini uses. |
+| **Cloud capacity** | **Ollama Pro or higher** | Mandatory for Tlamatini's complete intended functionality. Free/local-only operation is a limited experimental compatibility path, not the supported full-workload baseline. |
+| **An IDE or editor** | Optional | Tlamatini ships with built-in "Open in VS Code / Antigravity / File Explorer" buttons if those are installed. |
+
+You do **not** need administrator rights to install Tlamatini or Ollama if you follow the per-user paths in chapters 3 and 6.
+
+## 3. Installing Ollama (no admin rights needed)
+
+The official Windows PowerShell installer supports a per-user installation. Open PowerShell normally (do *not* right-click → Run as administrator).
+
+### 3.1. Install Ollama into your user profile
+
+```powershell
+$env:OLLAMA_INSTALL_DIR = "$env:LOCALAPPDATA\Programs\Ollama"
+irm https://ollama.com/install.ps1 | iex
+```
+
+This forces the install into a folder you already own (`%LOCALAPPDATA%\Programs\Ollama`) — no machine-wide location, no elevation prompt.
+
+### 3.2. Reopen PowerShell, then verify
+
+Close the PowerShell window. Open a fresh one. Then:
+
+```powershell
+ollama --version
+```
+
+If you see a version number, Ollama is installed and on `PATH`. If PowerShell complains it does not recognize `ollama`, close it once more, open a fresh window, and try again — the new `PATH` only takes effect in shells launched *after* the install.
+
+### 3.3. Make sure the Ollama service is up
+
+Tlamatini expects Ollama at `http://127.0.0.1:11434`. On most Windows installs Ollama starts on its own. If it is not running, leave a dedicated terminal open with:
+
+```powershell
+ollama serve
+```
+
+Verify it answers:
+
+```powershell
+Invoke-WebRequest http://127.0.0.1:11434/api/tags -UseBasicParsing
+```
+
+A normal HTTP response (any non-error code) means Ollama is reachable.
+
+## 4. Pulling the default models
+
+Tlamatini ships with default model names in `Tlamatini/agent/config.json` and several agent `config.yaml` files. Pull them exactly as written:
+
+```powershell
+ollama pull Nomic-Embed-Text:latest
+ollama pull glm-5.3:cloud
+ollama pull jcyhsiao/qwen3.5cloud:latest
+ollama pull gemma4:cloud
+```
+
+| Model tag | Used by |
+|---|---|
+| `Nomic-Embed-Text:latest` | RAG embedding model (default — light VRAM footprint, ~600 MB resident) |
+| `glm-5.3:cloud` | Default chat model, Multi-Turn unified-agent model, MCP file-search, internet classifier and web summarizer — and the default `model` of most workflow-agent templates (FlowCreator, FlowHypervisor, Crawler, File-Interpreter, Monitor-Log, Monitor-Netstat, Notifier, PDFer, Prompter, PSer, RecMailer, Reviewer, Summarizer, TeleTlamatini, Instant Messaging Doctor, and LaTeXer's repair rung 7) |
+| `jcyhsiao/qwen3.5cloud:latest` | Image-Interpreter interpreter 1 (forensic OCR / measurement) and Video-Analyzer interpreter 2 |
+| `gemma4:cloud` | Image-Interpreter interpreter 2 and Video-Analyzer interpreter 1; selectable in Config → Models |
+
+Some pulls are large and slow. Start them, walk away, come back.
+
+> **Model names are substitutable; the capacity baseline is not.** You may replace a cloud tag with another compatible Ollama cloud model in `config.json` (Part VII) or an agent's `config.yaml`, provided the chosen name appears in `ollama list`. Replacing every cloud tag with local models is possible as an advanced experiment, but it does not represent the complete, supported Tlamatini configuration and does not remove the documented Pro-or-higher requirement for full functionality.
+
+> **High-detail embedding opt-in.** If your retrieval quality on dense, technical corpora is not good enough with `Nomic-Embed-Text:latest`, you can swap it for `qwen3-embedding:8b` from the **Config → Models** menu inside the app (or by editing the `embeding-model` key in `config.json` and reconnecting). **Use with caution**: `qwen3-embedding:8b` is roughly **10× heavier in VRAM** than the default (~6.24 GB resident vs ~600 MB on a Q4_K_M quant) and will trip the embedding-memory pre-flight guard (Part §34) on 8 GB consumer GPUs. Pull it first with `ollama pull qwen3-embedding:8b`.
+
+## 5. Complete Tlamatini operation requires Ollama Pro or higher
+
+Three of the four default models in chapter §4 are **cloud-backed** — `glm-5.3:cloud`, `jcyhsiao/qwen3.5cloud:latest`, and `gemma4:cloud` (only `Nomic-Embed-Text:latest` runs locally). Most of them carry a literal `:cloud` suffix, but not all: `jcyhsiao/qwen3.5cloud:latest` is that same Qwen3.5 cloud model republished under a community namespace, so the suffix is not the test. The reliable test is `ollama list` — a cloud-backed tag shows a blank **SIZE** column, because nothing was downloaded to your disk. Those models are not actually running on your machine. They live on **Ollama Cloud**, and the `ollama pull <tag>` command registers them with the local daemon, which proxies inference requests to Ollama's service. You must have an Ollama account and be signed in on the host that runs Tlamatini. Ollama documents this local-API/cloud-offload design in its **[official cloud-model documentation](https://docs.ollama.com/cloud)**.
+
+Ollama may make limited cloud use available to free accounts. That does not make Free the operational baseline for this application. **Tlamatini requires an active Ollama Pro plan, or a higher plan such as Max, for its complete intended functionality.** Multi-Turn orchestration, long agent runs, FlowCreator, parallel Image-Interpreter calls, repeated tool decisions, and large project contexts can use cloud quota and concurrency much faster than a single conversational request.
+
+### 5.1. Plans and real account allowances
+
+Pricing and limits change. The following is a dated reference checked on **2026-10-10**,
+not a fixed entitlement used by Tlamatini. See [Ollama pricing](https://ollama.com/pricing).
+
+| Plan | Current published allowance | Fit and reporting |
+|---|---|---|
+| **Free** | Starter usage; additional credits can be purchased. | Light experiments; below Tlamatini’s documented full-workload baseline. Show the account’s actual response. |
+| **Pro** | $60 monthly credits; 3 concurrent requests. | The project’s minimum intended tier for full cloud workloads. |
+| **Max** | $300 monthly credits; 10 concurrent requests. | Higher capacity for sustained work; use actual returned balances. |
+| **Team / Enterprise** | Team advertises $1,000 shared monthly credits; Enterprise is custom. | Shared balances and member usage have different scopes; do not assume organization-wide totals. |
+
+There is no current listed cloud plan named **Unlimited**. Unlimited execution on
+your own hardware does not imply unlimited cloud credits. Older Pro/Max accounts
+can still report session and weekly limits; their percentages must not be
+converted into dollars. [About Usage](docs/usage-dashboard.md) adapts to these
+response shapes and explains missing fields.
+
+### 5.2. Why this requirement is not a sponsorship
+
+**XAIHT/Tlamatini is independent from Ollama.** The project is not sponsored, endorsed, affiliated with, funded by, or compensated by Ollama. There is no referral link, commission, revenue share, or other commercial relationship. Users subscribe directly with Ollama, and pricing, availability, quotas, model access, service operation, and privacy terms remain Ollama's responsibility.
+
+The book names Pro because Tlamatini was designed and coded around Ollama's cloud-model interface and practical capacity. This is the same kind of technical disclosure as naming a minimum Python version or a required hardware interface: it tells the reader what the system was built and tested to use. It is not an advertisement and it does not imply that Ollama requires every application to purchase Pro.
+
+### 5.3. What if I do not want to subscribe?
+
+Tlamatini can be launched and experimentally reconfigured without Pro, but that is **a limited compatibility path, not the complete supported product configuration**. A free account may permit light cloud testing. An advanced user with sufficiently powerful hardware may replace cloud tags with local open-weight models. Neither path is represented as equivalent to the cloud-backed system on which Tlamatini's full orchestration behavior was designed and tested.
+
+To experiment with an all-local configuration, use **Config → Models** (or the active source/installed `config.json`) and select locally available models suited to each role. The following older examples illustrate the core/vision subset; they are not a complete migration checklist or a current availability test:
+
+| Config key | Default (cloud) | A reasonable local substitute |
+|---|---|---|
+| `chained-model` | `glm-5.3:cloud` | `qwen2.5-coder:14b` or `llama3.1:8b` |
+| `unified_agent_model` | `glm-5.3:cloud` | same as above |
+| `mcp_files_search_model` | `glm-5.3:cloud` | same as above |
+| `internet_classifier_model` / `web_summarizer_model` | `glm-5.3:cloud` | same as above |
+| `image_interpreter_model` | `jcyhsiao/qwen3.5cloud:latest` | `llama3.2-vision:11b` (a local vision model — pull it first with `ollama pull llama3.2-vision:11b`) |
+| `image_interpreter_model_2` | `gemma4:cloud` | same as above |
+| `image_merging_model` | `glm-5.3:cloud` | `qwen2.5:32b` or any large local model you can fit in VRAM |
+
+Use **Config → Models** to review all six categories, including Video vision, speech, workflows, documents and monitors; the table above is only a core/vision subset. FlowCreator now uses the global `flowcreator_model` key through `llm.model: "@config"`, and the other model-backed agents inherit their dedicated global keys in the same way. Existing workflows with literal tags remain explicit overrides: set their registered model fields to `"@config"` if they should follow the global choices. Reconnect chat and restart already running agents after saving. Direct cloud speech/Claude paths and external ACPX providers need separate consideration in an all-local setup. [The full reference](docs/model_configuration.md) lists every setting and compatibility constraint. Quality, latency, context capacity, vision support, tool-calling reliability, and concurrency will depend on the exact local models and hardware. Some individual features may work; **complete behavioral equivalence is neither promised nor the supported baseline**.
+
+### 5.4. This subscription is separate from your coding-agent API keys
+
+The Ollama plan only governs `*:cloud` Ollama models. If you plan to use **ACPX** (chapter §46) to delegate sub-tasks to external coding-agent CLIs (`claude`, `cursor-agent`, `codex`, `gemini`, `qwen-code`, …), each of those carries its own credentials: the Anthropic API key for `claude`, OpenAI for `codex`, Google for `gemini`, and so on. Those keys are configured in `Tlamatini/agent/config.json` under the top-level fields *and* the per-agent `acpx.agents.<id>.env` blocks, and they are completely independent of your Ollama subscription. The `setup-new-acpx-key` skill (chapter §15) automates that wiring.
+
+### 5.5. Troubleshooting the cloud path
+
+| Symptom | Likely cause | What to try |
+|---|---|---|
+| `ollama pull glm-5.3:cloud` succeeds but inference returns "unauthorized" / "401" | Not signed in to Ollama on this host. | Run `ollama signin` (or use the Ollama desktop app) and confirm `ollama whoami` prints your account. |
+| Inference returns "rate limit exceeded" / "429" right after a Multi-Turn step | Your plan's concurrent-model or monthly-usage cap is full. | Either upgrade the plan, drop concurrency by running fewer wrapped agents in parallel, or swap one of the cloud tags for a local model in `config.json`. |
+| Inference returns "model not available on this plan" | The tag you pulled is gated to a higher tier (Pro/Max only). | Check `ollama.com/pricing` for which models each tier covers, and pick a tag your plan includes — or upgrade. |
+| Tlamatini chat says "Ollama backend unreachable" | Local daemon is down, **not** a cloud problem. | `ollama serve` and `Invoke-WebRequest http://127.0.0.1:11434/api/tags -UseBasicParsing` per chapter §3.3. Cloud requests still go through the local daemon. |
+
+## 6. Installing Tlamatini
+
+You have three paths. Pick one.
+
+### Path A — From source (developers, contributors, full control)
+
+```bash
+git clone https://github.com/XAIHT/Tlamatini.git
+cd Tlamatini
+
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
+
+pip install -r requirements.txt
+
+python Tlamatini/manage.py migrate
+python Tlamatini/manage.py createsuperuser
+python Tlamatini/manage.py collectstatic --noinput
+```
+
+When the migrations finish and you have a superuser, run the server (chapter 7).
+
+### Path B — Pre-built one-click installer (end users)
+
+This book documents **v1.90.0**, including editable canvas files, native Save As and Interactor. Obtain the intended package from [Tlamatini Releases](https://github.com/XAIHT/Tlamatini/releases) and verify its version before installing. The source tag is not itself proof of a published or accepted package.
+
+1. Open the unzipped folder.
+2. Double-click **`Installer.exe`**.
+3. Pick a destination directory (any folder you can write to — no admin needed).
+4. Click **Install**.
+5. The installer creates a desktop shortcut, registers `.flw` and `.fpmt` as Tlamatini file types, copies in the bundled Ollama-default `config.json`, and creates a default user (`user` / `changeme`). Since v1.82.0, if anything fails the window stays open with **Retry** and **Change folder**, a verified recovery copy puts back whatever was changed, and the last page shows where its log was written.
+
+That is it. Double-click the desktop shortcut to launch. The carried Python 3.12.10, Java, Git and Playwright browsers all come inside the ZIP — nothing else to install except Ollama and the models from chapters §3–§4.
+
+### Path C — Build the installer yourself (releasers)
+
+See **Part VIII — Deploying & Packaging**. Three scripts, run in order: `build.py` → `build_uninstaller.py` → `build_installer.py`.
+
+## 7. First login
+
+After step 5 (any path), run the server:
+
+```bash
+python Tlamatini/manage.py runserver --noreload
+```
+
+> **`--noreload` is optional (since 2026-07-11):** plain `python Tlamatini/manage.py runserver` also boots clean and auto-reloads — it used to double-start the MCP ports `:8765` / `:50051` and crash with `WinError 10048`, now fixed in `agent/apps.py`.
+
+(For installer builds, just double-click the desktop shortcut.)
+
+Open `http://127.0.0.1:8000/` in your browser.
+
+| You used... | Log in with |
+|---|---|
+| Path A (from source) | The superuser you created with `createsuperuser` |
+| Path B (installer) | `user` / `changeme` |
+| Path C (your own build) | Whatever the build configured |
+
+> **Change the default password.** If you used the installer's default `user / changeme`, the very first thing to do after logging in is open `/admin/`, find your user, and change the password. Especially before exposing the host on a network.
+
+After login you arrive at the welcome page. **Just press Enter** and you are in the chat — that is the default action, so nothing has to be clicked or tabbed first (if you Tab to *Logout* and press Enter you still log out; the shortcut steps aside whenever a button already holds focus). Otherwise click into **`/agent/`** for the chat or **`/agentic_control_panel/`** for the visual designer. The chat is what Part II is about.
+
+---
+
+# Part II — Using the Chat (the dummy walkthrough)
+
+## 8. A tour of the chat page
+
+Open `/agent/agent/` (the page the welcome screen's **Go to Chat** takes you to). Here is what you are looking at:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Tlamatini [Open] [Save] [Context ▼] [Panels ▼] [ACPX-Skills ▼] [External ▼] │ ← Top navigation
+│           [Config ▼] [DB ▼] [Reconnect] [About ▼]                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Multi-Turn ☐  Exec Report ☐  ACPX ☐  Ask Execs ☐  Add internet context ☐  │ ← Toolbar (the five checkboxes!)
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌─────────────────────────────────┐   ┌───────────────────────────────┐  │
+│   │  CHAT WINDOW                    │   │   CODE CANVAS                 │  │
+│   │  (conversation history)         │   │   (generated code lives here, │  │
+│   │                                 │   │    syntax-highlighted, with   │  │
+│   │                                 │   │    copy / save buttons)       │  │
+│   │                                 │   │                               │  │
+│   └─────────────────────────────────┘   └───────────────────────────────┘  │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Type your prompt here…                               [ Mic ] [ Send ] │ ← Input bar
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+The five checkboxes in the toolbar are **the** thing to learn. Each one is explained in its own chapter below. They are independent — except **Ask Execs**, which only activates while **Multi-Turn** is ticked — so tick whatever combination fits your task.
+
+The navbar also has a **Config** dropdown now. It exposes two validated dialogs: **Models** for 38 model, engine and voice settings in six searchable categories, and **URLs** for the Ollama / unified-agent / MCP endpoint values. That means the most common runtime settings can now be changed from the chat UI without manually editing `config.json`. The chat/canvas divider was also polished so width changes feel steadier while you work.
+
+**The menu bar was reorganized on 2026-09-25.** Two things you may be looking for moved: **Configure MCPs** and **Configure Agents** now live inside **Config**, right above Models and URLs, and there is a new **Panels** menu that opens the **Agentic Control Panel**, the **Prompt Flow Panel** and — if your account is staff — the Django **Admin Panel**, each in its own tab. The old separate *MCPs*, *Agents* and *Admin* menus are gone. While Tlamatini is busy answering you, most menus grey out so nothing can change under her feet — but **Panels stays open**, because opening another panel in a new tab never disturbs the answer she is writing.
+
+### Speaking instead of typing
+
+The microphone beside Send starts the [direct voice-prompt route](#voice-commands-your-words-become-the-prompt). It listens on the Tlamatini host, shows recording and silence progress inside this composer, then transcribes and sends automatically. Click again or press Escape to cancel. It uses the existing draft and selected modes; no extra terminal opens.
+
+### Pasting a screenshot into the chat (2026-07-14)
+
+You can hand Tlamatini a picture without ever leaving the chat box. Take a screenshot (Print Screen, or a snip), Alt+Tab back to Tlamatini, click where you want it and press **Ctrl+V**. She saves the image into her own `Temp` folder as `image_<timestamp>.jpg`, shows a small **thumbnail chip** just above the input, and writes the image's **full path into your message at the cursor** — so you can keep typing around it: *"Look at C:\Tlamatini\Temp\image_20260714_005340_168.jpg and tell me why the button is cut off."* Then send.
+
+Dropping image files from Explorer onto the chat does exactly the same thing (since v1.83.0 through the page-wide file-drop router described below). Each image gets its own chip; clicking a chip's **×** removes both the thumbnail and its path from your message, so a mis-paste costs nothing.
+
+The reason it hands you a *path* instead of an attachment is that a path is what her vision agent actually eats: **Image-Interpreter** reads the file from disk and answers in text. Tick **Multi-Turn** and she will do it herself — read the screenshot, then act on what she saw.
+
+### Dropping a message (2026-09-30)
+
+Every message card has two small buttons in its header: **Copy** and **Drop**. Drop works on your own messages and on Tlamatini's answers alike.
+
+Press **Drop** and a confirmation explains exactly what happens next: she forgets that message, it leaves the chat, and from your next message on she answers as if it had never been written. Everything before and after it stays exactly as it was, and nothing reconnects. **Cancel** is selected when the dialog opens, so a stray Enter never deletes anything; the red **Drop** confirms, and Escape backs out.
+
+Why it needs no reconnect: Tlamatini re-reads your conversation from her database before every answer (the newest eight saved messages). Nothing else keeps a copy — no cached summary, nothing inside the chain — so removing one saved message is all it takes. Because the window is "the newest eight", an older message may slide back into view, exactly as if the dropped one had never existed.
+
+A few details worth knowing:
+
+- Dropping only her answer leaves your question behind, so she may treat it as not answered yet. Drop both to erase the whole exchange.
+- When you drop your own message, the hidden "Referenced Rephrase" rows she saved for it go too, so a page reload cannot bring the dropped words back.
+- Status lines such as "I'm working on your request…" were never saved; dropping one only tidies your screen.
+- You cannot drop while she is still answering — that answer already read its history.
+- If her **memory tool** (External ▸ MCPs ▸ memory) is switched on, she may have copied a fact into that long-term memory. That copy is separate from the chat and stays; ask her to forget it too. The dialog reminds you of this.
+
+## Canvas, Views and avatar in v1.85.0
+
+**Open** chooses a document. **Refresh** reads that same document again without a
+file picker. It reports unchanged content, reloads changed content and retains
+the previous document when a read fails. Markdown keeps Preview/Source and its
+resources; PDF keeps page, zoom, rotation and scroll mode. Snapshot-only sources
+explain why Refresh is unavailable. See [Canvas Refresh](docs/canvas-refresh.md).
+
+**Views → Canvas** hides or shows the canvas. Hiding makes chat full width while
+keeping the document, refresh handle, PDF viewer, draft, chat history and context.
+The setting is saved per account in this browser and synchronized between tabs.
+Open, file drops and generated-document links reveal the canvas when needed.
+While the canvas is hidden, the avatar is docked and its floating resize handle
+is disabled. Showing it again enables the handle and keeps the avatar docked.
+
+**Views → Reset layout** shows both panes, restores the initial divider positions
+and docks the avatar, without clearing content. Shrinking the message box keeps
+the portrait and its frame horizontally centered between Mic's left edge and
+Send's right edge. The portrait remains square with a 120 px minimum.
+
+### Dropping a file anywhere (v1.83.0, 2026-10-14)
+
+Drop a file on any Tlamatini page and she works out what it is — from its **bytes**, not just its name — and sends it where it belongs. One small script, `file_drop_router.js`, listens on every page (the chat, the Agentic Control Panel, the Prompt Flow Panel, the welcome and login pages, the Django admin, and the PDF viewer inside the chat canvas). It only ever claims file drags: dragging text or a palette item is left alone, and the browser no longer wanders off to open the file by itself. Before it, an MCP `.json` dropped on the chat reported an error, on the canvas was opened as text (which killed the import) and on every other page navigated the browser away to the file.
+
+| You drop | What happens |
+|---|---|
+| An MCP server `.json` (any shape people paste into a desktop MCP client, even a UTF-16 file saved by PowerShell) | A confirmation first — it lists the servers and warns they can launch programs — then the servers join the **External ▸ MCPs** catalog, on any page; an open External ▸ MCPs dialog refreshes. Never silent |
+| A `.flw` agent flow | Loads in the Agentic Control Panel; from another page it opens the panel in a new tab |
+| A `.fpmt` prompting flow | Loads in the Prompt Flow Panel (asking before it replaces your diagram); from another page it opens in a new tab |
+| A picture | Attached to your message, exactly like Ctrl+V (saved in `Temp`) |
+| A PDF, a Markdown file, source code or plain JSON | Opens in the chat canvas (on the chat page) |
+| A folder, an archive or any other binary | A plain-words note saying where that kind of file can be used |
+
+While you drag, an overlay tells you what will happen on that particular page. A JSON file counts as an MCP config only if every entry in it is a server, so ordinary JSON is never hijacked, and the login page never imports or navigates anything. Each page tells the router what it can do with `TlamatiniFileDrop.register(kinds, fn, {label})`, and the label is also the text of the drag overlay. Checked by 138 router cases and a headed Chrome run of 58 of 58 checks with 24 Shoter photos; the contract is in `docs/claude/frontend.md`.
+
+### The message box and her avatar (v1.83.0, 2026-10-13)
+
+With her avatar docked above the buttons, the vertical divider between the chat history and the message box now shrinks the portrait as well as the box. It used to reserve the portrait's current width as the box's minimum height, so a wide portrait locked the divider in place. Now the docked portrait's side is a quarter of the form's width, but never more than the room above the Send and Mic row and never less than 120 px (a 106 px face with its 22 px resize handle). The first, quarter-width portrait is kept until you first move the divider, and undocking her keeps the floating size you chose. At 1440 CSS px the portrait went from 282 px to 120 px, returning about 162 px to the chat history. Verified in headed Chrome (19 docked-avatar and 18 existing composer checkpoints); a change credited to Tlamatini's-AutoBot ([record](docs/changes/2026-10-13-docked-avatar-divider.md)).
+
+### About → Usage: read credits while she works
+
+Open **About → Usage** at any time, including during a long answer. **Cloud credits**
+shows the configured Ollama account’s reported monthly and purchased balances,
+monthly usage and refill weeks/date. Its 7/30-day spend and token charts are a
+separate rolling history. **Chat activity** and **Models** show measured calls for
+your Tlamatini user since recording began, with peak UTC dates and model graphs.
+They do not reconstruct older history or count other applications and child agents.
+
+The **ABOUT USAGE** window occupies at most about 60% of the client area, follows
+the normal dialog typography and theme, and displays at most two decimal places.
+Refresh follows the context gauge; account requests are cached for one minute.
+If a field is unavailable, the dialog explains it and offers **Ollama Usage ↗**.
+Legacy session/weekly limits are percentages, not invented dollar allowances.
+
+This feature was verified from source on 2026-10-10 and awaits a rebuilt release.
+For plan behavior, data boundaries, refresh timing and dated tests, read the
+[complete Usage guide](docs/usage-dashboard.md).
+
+## 9. Asking your first question (no toggles)
+
+Leave every checkbox unticked. This is the **simplest** possible chat: one question in, one answer out.
+
+**Try this:**
+
+> "Write a Python function that validates an email address using a regular expression. Just the function, no main."
+
+The bot answers in the chat panel. If it generates code, you will see it appear in the code canvas on the right with a filename header and a copy button.
+
+What is happening under the hood:
+
+1. Your message goes to the server over WebSocket.
+2. Tlamatini decides it is a programming question (not a system / files question), runs prompt-shape validation, and sends it to the LLM.
+3. The LLM responds in one shot. Done.
+
+This is the **legacy one-shot chat path**. It is fast, deterministic, and uses no tools. It is also intentionally limited: the LLM cannot run anything on your machine, cannot search the web, cannot read files. For that, you tick checkboxes.
+
+## 10. Setting code as context
+
+Most of the time, you want the bot to answer questions about *your* code, not generic Python. Click **Context** in the top nav:
+
+| Menu entry | What it does |
+|---|---|
+| **Set directory as context** | Loads a folder. Tlamatini reads every text file in it, splits them into chunks, embeds them, builds a hybrid FAISS+BM25 index, and grounds every answer in those files. |
+| **Set file as context** | Loads a single file (smaller scope, faster). |
+| **Set canvas as context** | Uses the code currently shown in the right-hand canvas as context (handy for iterative editing). |
+| **Clear context** | Removes the current context and rebuilds the chain empty. |
+
+> **PDFs take a different door.** A PDF is not loaded from this menu: you open it in the canvas with **Open** and then press the canvas's own **Use as context** button, which reads the whole document (and, if you ask, looks at its pictures). See *Reading a PDF: open it in the canvas, then hand her the whole document* near the front of this book.
+
+After you set a context, the top of the page shows a green banner with the path. Now ask:
+
+> "How does authentication work in this project?"
+
+The bot will quote real files, reference real classes, and stay grounded. If it cannot find the answer in the loaded files, it will say so rather than hallucinate.
+
+> **What if my model runs out of memory?** If Ollama returns "model requires more system memory" while building the embedding index, Tlamatini does **not** wipe the loaded files. It packs them into a fallback context and keeps answering from the raw source until embeddings can be built again. Retrieval quality drops; access to your code does not.
+
+One subtle but important reliability fix landed here: when a browser refresh restores a saved context, the chat input is now disabled immediately and remains disabled until the contextual RAG chain has really finished rebuilding. In older builds, the user could briefly type into a half-restored session because the welcome-back banner arrived before the context-loading lifecycle had finished.
+
+## 10.5. Binary files are skipped automatically (and the log tells you which)
+
+Section 10 showed you how to point Tlamatini at a folder. Real folders are messy: alongside your source code there are compiled binaries, images, ZIPs, PDFs, model weights, databases and build leftovers. None of that is readable text, and feeding it into the embedding index actively hurts you — it wastes GPU memory and time, and it buries your actual code under noise so the answers get worse.
+
+Since 2026-07-26 Tlamatini handles this for you. **Every file is screened by its real content before it is loaded**, and the binary ones are quietly left out. You do not have to configure anything.
+
+**This is not the same thing as "Set file type omissions".** Both exist and both run:
+
+| | What it looks at | Who decides | Example it catches |
+|---|---|---|---|
+| **Set file type omissions** (Context menu) | the file's **name** | you | `*.doc`, `package-lock.json` |
+| **Binary guard** (automatic) | the file's **bytes** | Tlamatini | a `.pyc`, a `.so`, a PNG someone renamed `notes.md` |
+
+**It is fast.** Known binary types (`.png`, `.exe`, `.zip`, …) are recognised from the extension and never even opened. Everything else is judged from a single 8 KiB peek at the start of the file — so checking a 4 GB video costs the same as checking a README.
+
+**It tells you what it did.** Open `tlamatini.log` and search for `BINARY-GUARD`:
+
+```
+--- [BINARY-GUARD] 3 binary file(s) OMITTED from the context / embedding chain
+--- [BINARY-GUARD] Detected by: extension=2, signature=1
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\assets\logo.png  [extension: known binary extension .png]
+--- [BINARY-GUARD]   ✗ OMITTED C:\proj\notes.md         [signature: PNG image]
+```
+
+So if you ever wonder *"why isn't that file in my context?"*, the log answers it directly — file by file, with the reason.
+
+**It errs on the side of keeping your files.** If a file cannot be read, or the evidence is ambiguous, Tlamatini loads it as text rather than dropping it. Text in Spanish, French or any legacy encoding is always kept. The guard only removes what it is confident about.
+
+**If you want to change it**, in `config.json`:
+
+- `"binary_context_detection": false` — turn the whole thing off (back to the old behaviour).
+- `"binary_detection_force_text_extensions": [".dat"]` — force an extension to be treated as text; this always wins.
+- `"binary_detection_extra_binary_extensions": [".myblob"]` — add your own binary types.
+
+## 11. The "Add internet context" toggle
+
+Tick **Add internet context** when the question genuinely needs information from the web. Examples:
+
+- "What is the latest stable version of FastAPI as of right now?"
+- "Show me a current example of using OpenAI's responses API."
+- "What does the `2024-11-30` row in the React 19 changelog say?"
+
+Tlamatini classifies your question with a small LLM call ("does this need the web?"), then runs a DuckDuckGo search, fetches and summarizes the top results, and inlines the summary into the LLM's context.
+
+Leave it **unticked** for everything that does not need fresh web data. The classifier is fast but a web round-trip still adds latency.
+
+## 12. The "Multi-Turn" toggle (turning Tlamatini into a *doer*)
+
+This is the big one. Until you tick **Multi-Turn**, Tlamatini only *describes* things. With Multi-Turn ticked, Tlamatini can *do* them.
+
+### What it does
+
+Multi-Turn flips Tlamatini from "answerer" to **operator**:
+
+- The chat skips its prompt-shape validator (you no longer have to phrase requests as questions).
+- A request-scoped **planner** picks the relevant tools from **110 built-ins**: 21 direct/module tools, 67 wrapped chat-agents, 12 ACPX/Skill tools, and 10 External-MCP supervisors. Healthy active servers can add lazily discovered `ext__<server>__<tool>` remotes on top without inflating every prompt permanently.
+- The unified-agent loop runs **up to 4096 iterations** (`unified_agent_max_iterations`): the LLM calls a tool, sees the result, decides what to call next, and chains its way to the goal.
+- Wrapped sub-agents launch **silently** in the background (no console window pop-ups).
+
+### When to use it
+
+- "Run my project's test suite and tell me what failed."
+- "Crawl this URL, summarize the result, and email it to me."
+- "Open Notepad, type 'Hello world', save it as `out.txt`, then close it."
+- "Install OpenCV in the `venv` here and verify it works." (See the demo video.)
+- Any task where you would otherwise paste commands one at a time.
+
+### Step-by-step: your first Multi-Turn run
+
+1. Tick **Multi-Turn**. Leave the others unticked for now.
+2. Type:
+   > "Take a screenshot of my desktop and save it to `C:\Tlamatini-test\shot.png`."
+3. Hit **Send**.
+4. Watch the chat. You will see:
+   - A short "Working on it…" sort of message.
+   - A final answer like "Done — saved to C:\Tlamatini-test\shot.png."
+5. Open the file. The screenshot is there.
+
+What just happened: the planner picked `chat_agent_shoter` (the wrapped Shoter agent), the LLM called it with the right `output_dir`, the agent took a screenshot, the LLM read the JSON result, and replied with the path.
+
+### What you'll see if it goes well
+
+- The LLM does **not** ask you for permission to take the screenshot — Multi-Turn means "you're an operator, not an advisor."
+- A **Create Flow** button appears in the message header (chapter 16 explains it).
+- The answer ends in a period, with no `END-RESPONSE` sentinel leaking through.
+
+### Common pitfalls
+
+| Symptom | Fix |
+|---|---|
+| LLM says "Tool X is not available" | The planner did not bind that tool. Check the `[Planner._select]` log lines in the console — adjust your prompt so the relevant keywords are present, or relax the threshold by raising `max_selected_tools` in `config.json`. |
+| LLM tries to do everything in plain text | You forgot to tick Multi-Turn. Tick it and resend. |
+| Tool runs but the LLM calls the same tool twice with identical args | This is suppressed by the dedup guard. The second call returns "skipped — duplicate" and the LLM moves on. |
+| 4096 iterations exhausted | Your task probably hit a polling loop (e.g. waiting for an external service). Use `chat_agent_sleeper` instead of busy-polling, or break the task into two prompts. |
+
+### Combine Multi-Turn with context
+
+Multi-Turn and **Set context** stack. If your project is loaded as context, the LLM can ask the codebase about itself *and* run tools on the result. Example:
+
+> "Find the file in this project that defines the `User` model, then run `python -c \"...\"` to dump its `__dict__` schema."
+
+The planner pulls `chat_agent_executer` for the shell call; the loaded context tells the LLM where the model lives.
+
+## 13. The "Exec Report" toggle (seeing every step)
+
+### What it does
+
+Below the LLM's prose answer, Tlamatini appends **per-agent execution tables** — one HTML table per wrapped Multi-Turn agent that actually ran during the request, each row a real tool call with a deterministic SUCCESS/FAILURE verdict. Observational and read-only agents are included too; the report records execution truth, not only filesystem mutation.
+
+This is the "show your work" view. It is the ground-truth counterpart to the prose summary. The prose can be ambiguous; the tables are not.
+
+### When to use it
+
+- Always when you are debugging a Multi-Turn run.
+- Always when you want to convert a chat into a flow (chapter 16).
+- Whenever you want to be sure what *actually* happened on disk / on the network.
+
+### Step-by-step
+
+1. Tick **Multi-Turn** AND **Exec Report**. Both must be on.
+2. Run a Multi-Turn task that touches multiple state-changing tools, e.g.:
+   > "Create the file `C:\test\hello.txt` with the content `Hi from Tlamatini`, then read it back and tell me its size."
+3. Send.
+4. After the prose answer, scroll down. You will see a styled table:
+
+   ```
+   ┌──────────────────────────────── List of File-Creator Operations ─┐
+   │ # │  Command                                              │ ✓/✗ │
+   │ 1 │  filepath='C:\test\hello.txt' content='Hi from Tla…'  │  ✓  │
+   └──────────────────────────────────────────────────────────────────┘
+   ┌──────────────────────────────── List of Executer Operations ─────┐
+   │ # │  Command                                              │ ✓/✗ │
+   │ 1 │  type C:\test\hello.txt                               │  ✓  │
+   └──────────────────────────────────────────────────────────────────┘
+   ```
+
+### What gets a table
+
+Capture is automatic for every wrapped `chat_agent_*` tool that actually executes. That includes state-changing agents, diagnostics, readers, media output/capture, and observational agents such as Shoter, Camcorder, Recorder, Talker, AudioPlayer, VideoPlayer, Whisperer, Grepper, File-Interpreter, and Image-Interpreter. Direct execution tools, ACPX actions, and `invoke_skill` are also captured; management/polling helpers that do not perform the requested operation remain excluded. `_EXEC_REPORT_TOOLS` in `agent/mcp_agent.py` is now an optional styling/grouping map, not a capture whitelist.
+
+The verdict engine reads the agent's own `INI_SECTION` self-report before the process exit code. Its vocabulary is closed and split into five disjoint classes: completed diagnostics, intact completed work, degraded work, work not done, and agent errors. A diagnostic that successfully finds a problem is green because the finding is its deliverable. A degraded or missing deliverable is red even when some output exists. Unknown status tokens remain fail-open for runtime continuity but are named by rule `R8b`, while `agent/test_status_vocabulary.py` scans every pool agent and prevents undeclared tokens from shipping. Kuberneter follows this contract by keeping its numeric result in `returncode`, publishing `success`, and using `status: ok|failed`.
+
+### A persistence detail worth knowing
+
+The Exec Report tables are **persisted into the chat history**, not just broadcast live. Reload the page — the tables are still there. This is intentional, and the order in `process_llm_response()` is strict: classify success → append exec-report HTML → save → broadcast. Do not reorder.
+
+## 14. The "ACPX" toggle (delegating to external coding-agent CLIs)
+
+### What it does
+
+ACPX is the most ambitious feature. It lets Tlamatini **spawn external coding-agent CLIs** (Anthropic's `claude` CLI, Cursor's `cursor-agent`, OpenAI's `codex`, Google's `gemini`, Alibaba's `qwen-code`, plus eight more) **as child processes**, talk to them over stdin/stdout, and broker their output back to the LLM as if they were native tools.
+
+Picture it like this:
+
+```
+┌──────────────────────────────────────┐
+│ You (in the chat)                    │
+└──────────────┬───────────────────────┘
+               │ "Use claude to refactor X, then have gemini critique it"
+               ▼
+┌──────────────────────────────────────┐
+│ Tlamatini chat (the Multi-Turn LLM)  │
+│   acp_doctor → acp_spawn(claude) →   │
+│   acp_send_and_wait → acp_relay →    │
+│   acp_spawn(gemini) → acp_kill       │
+└──────────────┬───────────────────────┘
+               │ subprocess.Popen
+               ▼
+┌──────────────────────────────────────┐
+│ External CLIs running on your box    │
+│   claude, gemini, cursor, codex, …   │
+└──────────────────────────────────────┘
+```
+
+The full ACPX deep-dive is in **Part VI §46**. This chapter is just the toolbar walkthrough.
+
+### When to use it
+
+Tick **ACPX** when:
+
+- You want a sub-task delegated to a *different* LLM than the one driving Tlamatini's chat. (Example: your chat runs glm-5.3, but you want Claude Code to do the actual refactor because it is better at long-context Python.)
+- You want a **multi-CLI relay** — Claude does the first pass, Gemini critiques, Cursor applies the fix.
+- You need a coding agent that can edit files in the *current working directory* without the wrapping ceremony of Multi-Turn.
+
+Untick **ACPX** when you don't have any external CLIs installed, or when you want the legacy pre-ACPX Multi-Turn flow. The 12-tool ACPX surface is filtered out of the planner — the LLM never sees it.
+
+### Step-by-step: your first ACPX run
+
+**Prereq:** at least one external CLI installed and on PATH. The simplest is Anthropic's:
+
+```bash
+npm install -g @anthropic-ai/claude-code
+claude --version
+```
+
+Then put your API key into `Tlamatini/agent/config.json`:
+
+```json
+{
+  "ANTHROPIC_API_KEY": "sk-ant-api03-...",
+  "acpx": {
+    "agents": {
+      "claude": { "env": { "ANTHROPIC_API_KEY": "sk-ant-api03-..." } }
+    }
+  }
+}
+```
+
+(Two layers — top-level for Tlamatini's own Anthropic calls, and `acpx.agents.claude.env` for the spawned `claude` CLI. The skill `setup-new-acpx-key` automates this; see chapter 15.)
+
+Now in the chat, tick **Multi-Turn** AND **ACPX** AND **Exec Report**, and type:
+
+> "Use ACPX to spawn the claude CLI in `C:/Development/Tlamatini`, ask it to summarize CLAUDE.md in 5 bullet points, harvest the answer, and kill the session."
+
+You will see:
+
+1. The LLM calls `acp_doctor` first (always).
+2. Then `acp_spawn(agent_id="claude", task="...summarize CLAUDE.md...")`.
+3. A `session_id` comes back; the LLM uses it.
+4. `acp_send_and_wait` to ensure the answer is fully drained.
+5. `acp_kill` to shut the child cleanly.
+6. The 5-bullet summary appears in the prose answer.
+7. The Exec Report shows a "List of ACPx Operations" table with all four tool calls.
+
+### Common pitfalls
+
+| Symptom | Fix |
+|---|---|
+| `acp_doctor` says `claude` is not resolvable | The CLI is not on `PATH`. Either fix `PATH`, or set `acpx.agents.claude.command` to the absolute path of `claude.cmd`. |
+| Transcript only shows the outbound prompt, no answer | This used to be the bug for TUI-style CLIs (claude/gemini/cursor/qwen on Windows). It is fixed in current builds via the `oneshot-prompt` transport. If you see it, your build is older than May 2026 — update. |
+| Session left running | Always end with `acp_kill`. The LLM is rule-instructed to do so, but if a request times out, manually call `acp_list_sessions` and `acp_kill`. |
+| API key not picked up | Order matters: per-agent `acpx.agents.<id>.env` wins over a shell-exported variable. Double-check both layers. |
+
+## 14.5. The "Ask Execs" toggle (approve every step before it runs)
+
+**Ask Execs** is the human-in-the-loop safety belt. With it on, Tlamatini asks your permission *before* it runs each action in a Multi-Turn chain — and a single **Deny** stops the whole run.
+
+It is a **Multi-Turn-only modifier**: the checkbox is disabled and greyed until you tick **Multi-Turn**, because the permission prompt lives inside the Multi-Turn tool loop. Leave it unticked and Tlamatini behaves exactly like it always has.
+
+### What you see
+
+When **Ask Execs** is on, before each state-changing **Tool / MCP / Agent** the chain wants to run, it *pauses* and a modal dialog (same look-and-feel as every other Tlamatini dialog) shows you:
+
+- **Tlamatini Tool / MCP / Agent** — what is about to execute, e.g. `Tool: Executer`, `Agent: SSHer`, `MCP / ACPX agent: ACPx`, `Skill: summarize`.
+- **Underlying tool** — the raw tool name (`execute_command`, `chat_agent_ssher`, `acp_spawn`, …).
+- **Parameters of execution** — the full argument set (read-only).
+- **Program to be executed** — the command / script / intent text (read-only).
+- **Shell to be executed** — `cmd.exe / PowerShell (Windows)`, `Python interpreter`, `Remote SSH shell @ <host>`, `Kali Linux (MCP-Kali-Server)`, … (read-only).
+
+Two buttons:
+
+- **Proceed** (green) — run this step, then continue to the next one (which prompts again).
+- **Deny** (red) — **halt the entire chain immediately**. Nothing else runs.
+
+### What a Deny gives you back
+
+1. The prose answer up to that point.
+2. The **Exec Report** tables of the steps that *did* run — only if **Exec Report** is also ticked.
+3. **Always**, a big red **⛔ "Execution interrupted"** banner that names exactly the Tool/MCP/Agent you denied, plus its program/command, shell, and parameters — so you have an auditable record of where and why the run stopped.
+
+### What is NOT prompted
+
+Read-only / polling tools (`chat_agent_run_status`, `chat_agent_run_log`, `get_current_time`, `window_present`, …) only *observe*; they are not "executions", so they never trigger a prompt.
+
+### Step-by-step: your first Ask-Execs run
+
+1. Tick **Multi-Turn**, then **Ask Execs** (it only becomes clickable once Multi-Turn is on). Tick **Exec Report** too if you want the run table.
+2. Send: *"Delete every `*.tmp` file under `C:/Temp`, then list what's left."*
+3. A permission dialog appears for the deletion step, showing the exact command and shell.
+4. Click **Deny** → the run halts with the red banner naming the denied deletion. Click **Proceed** → it deletes and carries on to the listing step (which prompts again).
+
+This is the toggle to reach for whenever a request touches destructive or sensitive operations and you want to eyeball each action before it runs.
+
+> **Under the hood.** The Multi-Turn executor runs in a worker thread and *blocks* on a browser round-trip via `agent/exec_permission.py` (`ExecPermissionBroker`): it emits a permission request onto the WebSocket and waits on a `threading.Event` until your Proceed/Deny reply resolves it. The round-trip is **fail-safe** — if the browser disconnects, the request is cancelled, or the emit fails, the decision defaults to *Deny* so an unconfirmed action never runs. See chapter §35 (Multi-Turn pipeline).
+
+## 15. Combining the five toggles — worked examples
+
+### Example A — "Set up a new ACPX agent_id from scratch"
+
+**Tick:** Multi-Turn + ACPX + Exec Report.
+
+> "Use the `setup-new-acpx-key` skill to register my Gemini API key (paste your key) for the `gemini` agent_id. Then run `acp_doctor` to verify it works."
+
+The LLM picks `invoke_skill`, the skill walks itself through writing `data.keys`, patching `config.json` at both layers, and finishes with `acp_doctor` confirming `gemini` is resolvable.
+
+### Example B — "Build a feature with three different LLMs in sequence"
+
+**Tick:** all four (Multi-Turn + Exec Report + ACPX + internet).
+
+> "Crawl https://docs.python.org/3/library/asyncio-task.html, summarize it. Then have claude propose a refactor of `myapp/worker.py` using those new patterns. Hand the proposal to gemini and ask it to critique. Apply the cleaned-up critique to the file with cursor. Use `acp_relay` between legs."
+
+This is the multi-CLI relay flow. The Exec Report at the end shows every spawn, send, relay and kill — auditable.
+
+### Example C — "Just answer this code question, please"
+
+**Tick:** nothing. Set context to your project. Ask:
+
+> "Where do we cap the connection-pool size in the database client?"
+
+You get a quoted-and-cited answer in <2 seconds. No tools, no wait, no overhead.
+
+### Example D — "Run my tests, but don't crash my desktop with popups"
+
+**Tick:** Multi-Turn + Exec Report.
+
+> "Run `pytest -x -k auth` in this project and summarize the output. If anything fails, show me the failing assertion."
+
+Multi-Turn suppresses console pop-ups for wrapped runtimes; Exec Report gives you an audit table after.
+
+## 16. From chat to flow — the Create Flow button
+
+When a Multi-Turn run **succeeds** and used at least one state-changing tool, Tlamatini renders a **Create Flow** button in the message header. Click it to download a `.flw` JSON file that mirrors the exact tool sequence the LLM ran, laid out left-to-right, ready to load in the visual designer.
+
+How the gating works (all four conditions must be true):
+
+| # | Condition | Why |
+|---|---|---|
+| 1 | Multi-Turn was on | One-shot chats never use tools. |
+| 2 | At least one tool that maps to an ACP agent succeeded | Read-only tools are excluded from flow generation. |
+| 3 | Answer was classified `SUCCESS` by an LLM-based classifier | Hides the button on failures. |
+| 4 | The user is logged in (not anonymous) | Sanity. |
+
+The classifier is a tiny `chained-model` call with a strict binary prompt. It fails *open* (returns SUCCESS on internal error) so the button is never hidden by a flake.
+
+What the generated `.flw` looks like (3-tool example):
+
+```
+Starter ──► Crawler ──► File-Creator ──► Ender
+```
+
+You can immediately re-open it in `/agentic_control_panel/` and run it as an unattended workflow — the LLM is no longer involved.
+
+**Behind the scenes** (since commit `0bea21d`, May 2026), clicking Create Flow does NOT just dump the legacy draft. The browser POSTs the draft + `tool_calls_log` to `/agent/flow_from_tool_calls/`, which runs it through `agent/services/flow_spec.py::normalize_flow_payload()` and returns `flow_spec_to_legacy_json(spec, redact=True)` — a registry-canonical `.flw` whose agent / pool names match the backend Agent Contract registry and whose known secret fields (e.g. `tlamatini.password`) are stripped before the file ever touches your disk. If the round-trip fails (offline frozen install, backend down), the browser gracefully falls back to the un-normalized legacy draft so you still get a usable file.
+
+---
+
+## 17. The DB menu — backups and the next-session swap-in
+
+Tlamatini's whole world — chat history, agent definitions, Tool/MCP toggle rows, session state, deployed-pool metadata, the per-user account that gates the chat — lives inside a single SQLite file: `db.sqlite3`. The top-of-page **DB** dropdown gives you a safe, GUI-first way to handle that file without ever stopping Tlamatini, opening Explorer, or remembering where the database actually sits in frozen vs. source mode.
+
+The dropdown has two entries:
+
+| Entry | What it does | When you use it |
+|---|---|---|
+| **Backup database** | Copies the live `db.sqlite3` to a directory you pick — keeps the live database in place. | Before risky changes (mass-deploying agents, migrating, experimenting), or as a routine snapshot. |
+| **Set DB** | Stages a `db.sqlite3` file of *your* choice so Tlamatini swaps it in on the **next start-up**. The current database is moved into a timestamped archive folder. | Restoring a backup, importing a friend's database, switching between project-specific databases. |
+
+### 17.1. Backup database — the read-only copy
+
+`DB → Backup database` opens a dialog with one input — the **target directory** you want the copy written into. The input is **live-validated** (350 ms debounce): as you type, the page asks the server `GET /agent/check_backup_directory/?path=…` and colors the status line green / amber / red:
+
+| State | Status line | Meaning |
+|---|---|---|
+| Green | `Directory exists. db.sqlite3 will be saved here.` | Ready to backup. |
+| Amber | `A filename was specified — please specify the directory only.` | You typed a file path instead of a directory; Tlamatini always names the output `db.sqlite3` so it can be loaded back later. |
+| Red | `Directory does not exist.` | Path is missing on disk. |
+
+Click **Backup** and Tlamatini calls `POST /agent/backup_db/`, which resolves the live database path via `settings.DATABASES['default']['NAME']` (so source-mode and frozen-mode work identically) and writes a consistent SQLite snapshot into `<your-dir>/db.sqlite3`. Because the live database uses WAL, SQLite's online backup API includes committed pages still resident in `db.sqlite3-wal`. The result must pass `PRAGMA quick_check` before the UI reports success. **The live database stays open and unchanged** — Backup is purely additive.
+
+### 17.2. Set DB — staging a database for the next session
+
+`DB → Set DB` is the harder direction: it replaces the database the next time Tlamatini boots. The dialog has one input — the **full path to a `db.sqlite3` file** you want loaded — and the same live-validation behavior as Backup, but with stricter rules:
+
+| State | Status line | Meaning |
+|---|---|---|
+| Green | `File exists. It will be loaded on the next start-up.` | Real `db.sqlite3` with a valid SQLite header. |
+| Amber | `File found, but its name is not "db.sqlite3". Tlamatini will still stage it as db.sqlite3.` | Some users keep snapshot files named like `db_2026-05-14.sqlite3` — they still work because Tlamatini renames on stage. |
+| Amber | `Specify the full path to a db.sqlite3 file, not a directory.` | You typed a directory; Set DB needs a file path. |
+| Red | `The selected file does not look like a SQLite database.` | The first 16 bytes don't match the `SQLite format 3\x00` magic header. |
+| Red | `File does not exist.` | Path is missing on disk. |
+
+The SQLite header check is a cheap sanity guard — it catches the common "I picked the wrong file" mistake (a `.csv`, an `.flw`, a screenshot, an empty file) before Tlamatini commits to swapping it in.
+
+When you click **Set** and the file passes validation, the page POSTs `POST /agent/set_db/`. The view computes the deployment-specific **staging directory** — `<exe_dir>/DB/ToLoad/` in frozen mode, `<repo>/Tlamatini/DB/ToLoad/` in source mode — creates it if needed, and writes a consistent, self-contained snapshot there as `DB/ToLoad/db.sqlite3`. If the selected database has committed pages in a neighboring WAL, those pages are included. **The live database is NOT touched.** SQLite is open in-process while Tlamatini runs; replacing it mid-flight would corrupt the live connection pool, so Set DB *only stages*.
+
+Immediately after staging succeeds, the dialog is replaced by a second one — a yellow ⚠ warning panel — telling you in two sentences:
+
+> **The selected database will be loaded the next time Tlamatini starts.**
+> If you want it loaded immediately, you must restart Tlamatini completely so the swap-in can run BEFORE Django opens the live database.
+
+Click **OK** and the dialog closes. There is no Cancel — by the time you see this dialog the file is already staged.
+
+### 17.3. The start-up swap-in (what "next session" actually means)
+
+The third leg of the DB mechanic — and the only one without a UI surface — is the start-up swap-in itself. It lives at the very top of `Tlamatini/manage.py` and runs in this exact order before *anything Django* is imported:
+
+```
+_apply_pending_db_swap()           ← runs directly BEFORE Django
+    ↓
+[ os.path detection: frozen or source? ]
+    ↓
+[ DB/ToLoad/db.sqlite3 exists? ]
+    │
+    ├─ NO  ──► return (no-op, normal start-up continues)
+    │
+    └─ YES ──► [1] mkdir DB/Older/<YYYY-MM-DD_HHMMSS>/
+               [2] shutil.move(live db.sqlite3 + sidecars → Older/<timestamp>/)
+               [3] ensure no stale live WAL/SHM remains
+               [4] shutil.move(DB/ToLoad/db.sqlite3 → live db.sqlite3 path)
+               [5] return (Django opens the freshly-swapped file)
+```
+
+The three guarantees this gives you:
+
+1. **Pre-Django timing.** Because the swap-in runs before the `from django.core.management import execute_from_command_line` line, Django's SQLite connection pool is never holding a stale file descriptor at the moment of the swap. A simple **Reconnect** from the navbar is NOT enough to trigger the swap-in — you must restart the entire process (close the console, launch Tlamatini again).
+2. **Atomic moves, no stale WAL.** Both legs use `shutil.move` (filesystem rename when possible, copy+delete across mounts) so the source files are consumed. The outgoing SQLite sidecars are archived with their database, and none may remain beside the promoted database. A second launch with `DB/ToLoad/` empty is automatically a no-op — there's no "stuck flag" to clear.
+3. **Mode-correct path resolution.** Frozen mode looks at `<exe_dir>/DB/ToLoad/db.sqlite3` (where you can browse to in Explorer); source mode looks at `<repo>/Tlamatini/DB/ToLoad/db.sqlite3` (where `manage.py` lives). The live `db.sqlite3` path is computed the same way Django does — `_MEIPASS/db.sqlite3` under PyInstaller, `<manage.py dir>/db.sqlite3` in source mode — so the swap-in writes to exactly the location Django will open.
+
+If anything fails inside the swap-in (locked file on Windows, corrupt source, permission error), the function catches the exception, prints `--- [DB SWAP] Skipped due to error: <reason>` to `tlamatini.log`, and lets Tlamatini start normally with the previous database. **A bad ToLoad file must never block start-up** — that would lock you out of your own database.
+
+### 17.4. The Older audit trail
+
+Every successful swap-in leaves a complete record under `<base>/DB/Older/<YYYY-MM-DD_HHMMSS>/`. The timestamp is the local time at the moment the swap happened, filesystem-safe on Windows / Linux / macOS. If the outgoing database has WAL/SHM sidecars, they remain beside its `db.sqlite3` in the same archive:
+
+```
+DB/
+├─ ToLoad/
+│   └─ (empty most of the time; momentary home of the next-session pick)
+└─ Older/
+    ├─ 2026-05-14_153022/
+    │   ├─ db.sqlite3      ← database that was live before swap #1
+    │   └─ db.sqlite3-wal  ← committed pages, when present
+    ├─ 2026-05-14_164410/
+    │   └─ db.sqlite3      ← database that was live before swap #2
+    └─ 2026-05-14_172908/
+        └─ db.sqlite3      ← and so on
+```
+
+Because Set DB **moves** (not copies) the prior live database into Older, this archive is the only built-in recovery path. To roll back to a previous database, you do exactly the same thing you did to load a new one: copy the archived `db.sqlite3` back into `DB/ToLoad/` and restart. The swap-in archives the *current* live one under a fresh timestamp and promotes your roll-back pick.
+
+Tlamatini **never** deletes anything from `DB/Older/`. If swaps become routine, you may want to prune the oldest folders by hand — but read each carefully first, because each `db.sqlite3` contains chat history, agent definitions, session state, and your user account, so think twice before deleting any of them.
+
+### 17.5. The DB tree ships in both modes
+
+The `DB/ToLoad/` and `DB/Older/` directories must exist on day one — the swap-in opens them with `os.makedirs(exist_ok=True)`, but having them pre-seeded with documentation prevents user confusion. So:
+
+- **Source / dev mode**: `Tlamatini/Tlamatini/DB/ToLoad/README.md` and `Tlamatini/Tlamatini/DB/Older/README.md` are checked into the repo. Each is a short standalone guide describing the contract, how to use the directory, and the rollback recipe. They survive in git only because git ignores empty directories; the README is the trick that keeps the tree.
+- **Frozen mode**: `build.py` extends its `empty_dirs` tuple to include `"DB/ToLoad"` and `"DB/Older"`. The PyInstaller post-build step creates both under `dist/manage/` (which becomes the install root next to `Tlamatini.exe`), and the `pkg.zip` packager preserves empty directories via explicit zip entries. End-users get the same `DB/{ToLoad,Older}/` tree from the very first launch, ready to receive a drop or archive a swap.
+
+### 17.6. Mental model — three questions to ask before each operation
+
+When you reach for `DB → Backup database`, ask:
+
+> *"Do I want a copy I can come back to, while continuing to use the live database?"*
+
+When you reach for `DB → Set DB`, ask:
+
+> *"Am I prepared to restart Tlamatini? Do I want the current database moved out of the way and replaced?"*
+
+When you reach into `DB/Older/` by hand, ask:
+
+> *"Which timestamp do I trust? Am I about to overwrite the only running database with one that may be older / smaller / from a different machine?"*
+
+The DB menu is intentionally small — three primitives (backup, stage, archive), one swap window (process restart), one audit trail (timestamps). Everything else is just discipline.
+
+---
+
+## 17.5. The ACPX-Skills menu — admining the skill catalog
+
+Tlamatini ships with 27 markdown skill packages under `Tlamatini/agent/skills_pkg/`. Each one is a small playbook the LLM can run: `acp-router` picks the right external coding-agent CLI for an intent, `summarize` compresses text to a target word count, `setup-new-acpx-key` walks the user through plugging in a new API key, `skill-creator` bootstraps a brand-new SKILL.md, `flow-making` turns a plain-language objective into a canvas-loadable `.flw` by driving the FlowCreator engine (it supersedes the older `tlamatini-flow-from-objective`, which now delegates to it), `code-review` runs a senior-engineer pass over a git diff (returning an APPROVE / REQUEST_CHANGES verdict) and `security-audit` sweeps a path with the installed SAST / secret / dependency scanners, the `tlamatini_*` family audits and refactors Tlamatini's own codebase, and a handful of integration stubs (`github`, `gmail`, `notion`, `slack`, `jira`, `todoist`, `trello`, `weather`) reach out to third-party services through their REST APIs. They run inside a sandbox called the **SkillHarness**: budgets cap iterations, wall-clock, and tokens; declared filesystem / shell / network / db permissions gate side effects; declared inputs and outputs are validated on the way in and the way out.
+
+Before May 2026, the only way to interact with this catalog was through the LLM itself. You'd type "list the skills you have" and the chat would call `list_skills` and read out the rows; you'd type "use the summarize skill to compress this" and the chat would call `invoke_skill('summarize', '{...}')` and surface the result. Catalog hygiene — knowing exactly what was installed, picking which skills the planner was allowed to surface, reloading the registry after editing a SKILL.md on disk — all of it had to be routed through the model. That worked but it felt wrong: a piece of catalog admin that belongs to the person at the keyboard kept asking permission from the model.
+
+The **ACPX-Skills** dropdown closes that gap. It lives between **Panels** and **External** in the chat navbar (before the 2026-09-25 menu reorganization it sat between *Agents* and *Config*) and has four entries:
+
+### `ACPX-Skills → Browse Skills`
+
+Opens a two-pane modal: a search-filterable list on the left with one row per skill (a small green dot for enabled, a small grey dot for disabled, the skill's name, and a runtime tag — `IN-PROCESS` or `ACPX`), and a detail pane on the right that fills in when you click a row. The detail pane is read-only and pulled fresh from the registry on every click — it shows the description, the runtime (and the `acpx_agent` if `runtime: acpx`), the budget triple (`12 iter · 180 s · 30000 tokens` style), the trigger keywords the planner uses to score the skill against a prompt, the `requires_tools` and `requires_mcps` arrays (so you can immediately see if a skill depends on something you've disabled), the inputs and outputs (with required-field markers and per-field types), the on-disk path to the SKILL.md, the first sixteen characters of its body SHA-256, and finally the full markdown body of the skill in a scrollable pre block. A search box at the top of the dialog filters the list as you type — matching against name + description + keywords. The list shows `N / 27` so you always know how much was hidden by your search. There's also a small note at the right when the registry has orphan DB rows — skills the database thinks exist but whose SKILL.md was deleted on disk; Diagnostics gives you the full list.
+
+Use Browse when (a) you've just authored a new SKILL.md and you want to confirm it parsed correctly, (b) you want to know exactly what permissions a third-party integration skill is asking for before you enable it, (c) you're debugging a failing `invoke_skill` and you want to look at the body the LLM was supposed to follow.
+
+### `ACPX-Skills → Configure Skills`
+
+A checkbox grid, one row per skill, that mirrors the **Configure MCPs** and **Configure Agents** dialogs you already know (both under **Config** since 2026-09-25). Each row is `[ ] skill-name — description`. Toggle a checkbox off, click **Continue**, and a couple of things happen simultaneously: the `Skill.enabled` column flips to `false` in the database, and the change broadcasts over the same WebSocket channel the existing MCPs/Tools/Agents toggles ride — the payload is encoded as `name=description=true|false,...` exactly the way `set-mcps` / `set-tools` / `set-agents` encode their payloads. The backend's new `set-skills` handler in `consumers.AgentConsumer.receive` parses the payload and calls `save_skill(name, enabled)` for each row.
+
+After the toggle lands, two consequences arrive immediately for the next request:
+
+- The LLM's `list_skills` tool filters disabled rows out of its returned array — disabled skills become invisible to enumeration, so the planner won't surface them.
+- The LLM's `invoke_skill('<disabled-skill>', '{...}')` returns `{"ok": false, "code": "SKILL_DISABLED"}` instead of running.
+
+Toggling the row back to enabled restores both behaviors. This is the right knob when you want to hide an unfinished skill from the planner, when you don't have the API key for an integration skill (no point letting the LLM keep trying `notion` without `NOTION_TOKEN`), or when you're running a demo and you want a minimal tool surface so the model doesn't waste turns picking obscure options.
+
+### `ACPX-Skills → Diagnostics`
+
+A cross-check report that catches the kind of drift you'd otherwise only discover at runtime. It has four sections; each is collapsed when clean (green ✓) and expanded with a red ⚠ count when something's wrong:
+
+- **Missing tool dependencies** — for each skill whose `requires_tools` lists a Tool you've currently disabled in the **Tools** dialog. A disabled tool means the skill would fail at runtime; Diagnostics surfaces it before the LLM tries.
+- **Missing MCP dependencies** — same idea against disabled `Mcp` rows.
+- **Unknown ACPX agents** — for `runtime: acpx` skills, flags any `acpx_agent` value that isn't in the live `AcpAgent` table (typo, removed CLI, etc).
+- **Orphan DB rows** — `Skill` rows whose SKILL.md file no longer exists on disk; typically a sign that someone deleted a skill directory without running Reload.
+
+A header strip at the top gives you the counts at a glance: how many skills are on disk, how many DB rows exist, how many Tools/MCPs/ACPX agents are tracked. The endpoint is `GET /agent/skills/_/diagnostics/` — pure read, no writes.
+
+### `ACPX-Skills → Reload Registry`
+
+A single-click action that re-runs the registry boot pipeline: rescan `agent/skills_pkg/`, refresh every `Skill` DB row's metadata cache (description, runtime, acpx_agent, frontmatter_json, body_sha256), prune any DB row whose SKILL.md is gone. The user-toggled `enabled` field is preserved. A toast confirms the new count.
+
+Use Reload after authoring a new SKILL.md or editing an existing one. No server restart needed.
+
+### The line the database deliberately does not cross
+
+The `Skill` model itself was older than this dropdown — it was added back in migration `0071_acpx_skills.py` with a richer shape than the `Tool` / `Mcp` / `Agent` toggle rows: it has `name`, `description`, `runtime`, `acpx_agent`, `enabled`, `frontmatter_json`, `body_sha256`, `last_loaded_at`. Building this admin UI on top of it required a small but deliberate decision: the dropdown **only** ever writes the `enabled` boolean. Every other column is owned by `agent/acpx/service.py::boot_skills()` and is overwritten on every reload from the SKILL.md on disk. The cached `frontmatter_json` and `body_sha256` are present because earlier work needed them for fast lookups; the admin UI ignores them and reads fresh from the registry instead, so the disk stays the only source of truth for permissions, budgets, and body.
+
+This matters because the obvious alternative — "let the user override a skill's `max_seconds` from the browser" — is a trap. The next backup would silently archive that override, the next `git pull` would not show it in `git diff`, and a user on a different machine would have no way to know why their identical SKILL.md behaved differently. Editing the SKILL.md and clicking Reload keeps every behavioural change visible in a file and a commit. The DB stays at "enumeration plus enable/disable", exactly the way the Mcps and Agents dialogs constrain themselves.
+
+### Where to look in the code
+
+- `agent/views.py` — `list_skills_view`, `skill_detail_view`, `reload_skills_view`, `skills_diagnostics_view`.
+- `agent/urls.py` — `/agent/skills/`, `/agent/skills/<name>/`, `/agent/skills/_/reload/`, `/agent/skills/_/diagnostics/`.
+- `agent/consumers.py` — `skill_establishment`, `get_all_skills`, `save_skill`, the new `set-skills` branch, the establishment loops in both the session-restore and rebuild paths.
+- `agent/acpx/tools.py` — `_disabled_skill_names()` plus the gating clauses in `list_skills` and `invoke_skill`. Fails OPEN on DB exception by design.
+- `agent/templates/agent/agent_page.html` — the dropdown, the three dialog containers, the asset includes.
+- `agent/static/agent/js/skills_dialog.js` — all four dialogs (Configure / Browse / Diagnostics / Reload) in one module.
+- `agent/static/agent/css/skills_dialog.css` — styling.
+- Coverage: 14 tests across `SkillsAdminEndpointTests`, `SkillsToolSurfaceGatingTests`, `SkillsNavbarTemplateContractTests`.
+
+---
+
+# Part III — The Visual Workflow Designer
+
+## 18. Why drag-and-drop flows
+
+The chat is amazing for one-off tasks. But some jobs you want to:
+
+- Run on a schedule (every hour, every Monday at 9 a.m.)
+- Run unattended on a remote server
+- Run identically every time, with no LLM creativity in the loop
+- Compose at design-time so the steps are auditable before any LLM is involved
+
+Those are flows. You drag agents from a sidebar onto a canvas, draw lines between them, configure their parameters, save the result as a `.flw` file, and run it.
+
+## 19. Anatomy of the canvas
+
+Open it from the chat's **Panels ▸ Agentic Control Panel** (it lives at `/agent/agentic_control_panel/` and opens in its own tab):
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ ▶ Start  ⏸ Pause  ⏹ Stop  ⚠ Hypervisor  💾 Save  📂 Load  ✓ Validate  │ ← Toolbar
+├──────────────────┬──────────────────────────────────────────────────────┤
+│  Sidebar         │                                                      │
+│  ─ Control       │                                                      │
+│    Starter       │                                                      │
+│    Ender         │                                                      │
+│  ─ Routing       │             CANVAS                                   │
+│    Forker        │       (draggable agents,                             │
+│    Asker         │        connections, LEDs)                            │
+│  ─ Logic Gates   │                                                      │
+│    AND  OR  …    │                                                      │
+│  ─ Action        │                                                      │
+│    Executer      │                                                      │
+│    …             │                                                      │
+│  …               │                                                      │
+└──────────────────┴──────────────────────────────────────────────────────┘
+```
+
+A few facts about the canvas you need to internalize:
+
+- **It scrolls.** The visible area is a viewport (`#submonitor-container`). The actual canvas (`#canvas-content`) grows to the right and bottom as you drop more agents. Use the themed scrollbars.
+- **Each agent is a draggable item.** Double-click to open its config. Right-click for the context menu (description, log, explore directory, open cmd, restart).
+- **Connections are typed.** A green line means "start the target after this finishes" (`target_agents`). A blue line means "monitor this source's log" (`source_agents`). The direction matters.
+- **LEDs show state.** Green = running, red = down while the flow is active, yellow blinking = paused, gray = stopped/idle.
+- **It has an editor toolbar (2026-09-25)**, in a strip right above the canvas: **↶ Undo / ↷ Redo** (Ctrl+Z / Ctrl+Y), **⚙ Configure** (opens the one selected agent's settings — the same thing a double-click does), **▣ Duplicate** (copies the selected agents *together with their settings* and the connections between them; FlowCreator and FlowHypervisor are one-per-flow, so they are never duplicated), **⌫ Delete**, a **Starters** list that scrolls to any Starter on a big canvas (Start still runs all of them), **Flow settings** (show or hide the dot grid, set the zoom, quick-configure Starter/FlowCreator/FlowHypervisor), and **− 100% + Fit** to zoom from 25 % to 200 % or fit the whole flow on screen. Zooming never changes the positions saved in your `.flw`.
+- **You can search the agents.** The box above the sidebar filters the 85 agents by name as you type ("shot" finds Shoter), even while the list is still loading.
+- **An empty canvas helps you start.** It says *Design your agent flow* and offers **Try an example**, which lays down a Starter → Sleeper → Ender flow you can undo in one step. **Help** in the top bar lists every gesture.
+- **Editing locks while a flow runs or is paused.** Stop the flow to change it. A leading **•** in the browser tab title means you have unsaved changes.
+
+Another recent change matters if you use the config dialogs heavily: dialog-edited wiring fields now survive the compile pass. In practice that means a user-edited `source_agents`, `target_agents`, or Ender kill list is preserved, while the canvas still contributes its live connections where appropriate. Validate and Start no longer flatten those deliberate edits back into stale pool defaults.
+
+## 20. Your first flow (3-agent example)
+
+Goal: run a shell command, take a screenshot, end.
+
+**Step-by-step:**
+
+1. Drag **Starter** onto the canvas (top-left).
+2. Drag **Executer** to its right.
+3. Drag **Shoter** further right.
+4. Drag **Ender** at the far right.
+5. Connect: Starter → Executer → Shoter → Ender (click the right edge of one, drag to the left edge of the next).
+6. Double-click **Executer** and set its `command` to `dir C:\` (or `ls /tmp` on Linux).
+7. Double-click **Shoter** and set `output_dir` to a folder you can write to.
+8. Double-click **Ender** and confirm its `target_agents` lists every other agent (Starter, Executer, Shoter) — Ender's job is to terminate them on completion.
+9. Click **✓ Validate** — Tlamatini runs structural checks (no orphans, no self-connections, terminal agents reachable).
+10. Click **▶ Start**.
+
+You'll see LEDs go green, then sequential outputs in the log viewer, then everything turns gray. Open your `output_dir` — there is a screenshot.
+
+## 21. Saving and loading `.flw` files
+
+Use **File ▸ Save as**, pick a name. You get a JSON file with all node positions, configs, and connections. Distribute it; somebody else loads it via **File ▸ Open**, gets the same flow. Positions are always saved at 100 % zoom, so a flow you arranged while zoomed out reopens exactly where you put it. Loading a flow clears the undo history — the loaded diagram is the new starting point. A `.flw` file dropped on the canvas — or on any other Tlamatini page — is recognised by its content and loaded here (or opened in a new Agentic Control Panel tab) instead of being opened as plain text.
+
+`.flw` files are also what the chat's **Create Flow** button (chapter 16) emits.
+
+## 22. Pause, Resume, and Stop
+
+The three buttons each do something different:
+
+| Button | What happens |
+|---|---|
+| **⏸ Pause** | Stores the currently-running agents into `paused_agents.reanim`, kills their processes, **leaves logs and `reanim*` state files intact**. The ACP enters paused state (yellow LEDs). |
+| **▶ Resume** (after pause) | Reanimates each saved agent with `AGENT_REANIMATED=1`. Each agent reads its `reanim*` files and continues from exactly where it stopped. |
+| **⏹ Stop** | Hard stop. Ender runs its termination logic; reanimation files are cleared. |
+
+This is why long-running workflows (Crawler scraping 10,000 URLs, Parametrizer iterating through segments) survive pauses without data loss.
+
+The stop path also got harder to break in mixed flows. Current builds are better at killing lingering session processes during cleanup, so a half-manual / half-compiled run is less likely to leave zombie agents behind before the next start.
+
+## 23. FlowHypervisor (your watchdog)
+
+Click **⚠ Hypervisor** and a system-managed FlowHypervisor agent starts watching every other running agent. It is an LLM that:
+
+- Reads each agent's log incrementally.
+- Builds an execution matrix from current output-slot/lifecycle contracts, including Counter branches and Parametrizer targets; kill lists and observation dependencies remain separate.
+- Looks for: stuck agents (started >5 min ago, no output, downstream never fired); broken chains (agent finished, but its `target_agents` never started); fatal/critical errors; user-imposed time constraints.
+- Outputs exactly **`OK`** when healthy or **`ATTENTION NEEDED { explanation }`** when not.
+
+If a problem fires, the browser shows an alert dialog. You can append your own rules to the watchdog through the FlowHypervisor agent's `user_instructions` config field — useful for "don't flag this known false-positive" or "wake me if X is silent for >10 min."
+
+## 24. FlowCreator — let an LLM design the flow for you
+
+Drag a **FlowCreator** node onto the canvas, double-click it, and type a natural-language objective:
+
+> "Every hour, crawl our status page; if it shows ERROR, email the on-call engineer; otherwise, do nothing."
+
+Click **Generate**. FlowCreator selects capabilities from all 85 installed agents, then designs with the relevant `agentic_skill.md` sections and current schemas/contracts. It validates references, connection slots and Parametrizer mappings, with bounded repair, before writing a `.flw` and publishing the canvas result. You can review, edit parameters, and run. GUI-Manager remains design only.
+
+This is the highest-leverage feature for non-technical users: you describe what you want, the system *draws* the flow.
+
+**You can also do this straight from chat — no canvas required.** With Multi-Turn on, just ask: *"create a flow that watches my GlassFish log and Telegrams me the summary when it sees an error, call it glassfish_alert.flw"*. The wrapped **`chat_agent_flowcreator`** tool drives the same FlowCreator engine and writes the same canvas-loadable **`.flw` file** to disk (into Tlamatini's Temp folder by default, or wherever you pass `output_dir`); Tlamatini gives you back the file path to open in the Control Panel. It writes the file — it does not run the flow, so you stay in control of when it goes live.
+
+## 25. Parametrizer (chaining outputs into the next agent's config)
+
+This is the agent that makes multi-stage pipelines work without manual `config.yaml` editing.
+
+### The problem it solves
+
+Tlamatini agents communicate through **log files** and **`config.yaml` files** — they have no shared memory. So if you want Apirer's response to become Kyber-Cipher's input, somebody has to copy data between agents.
+
+Parametrizer is that somebody. It reads structured output segments from one source agent's log, injects mapped values into one target agent's `config.yaml`, runs that target, waits for it to finish, restores the target config, advances its source cursor, and only then moves to the next source segment.
+
+### The unified section format
+
+Every "Parametrizer-friendly" agent emits its results in **one** format:
+
+```
+INI_SECTION_<AGENT_TYPE><<<
+key1: value1
+key2: value2
+
+multi-line body content (becomes 'response_body')
+>>>END_SECTION_<AGENT_TYPE>
+```
+
+Rules:
+
+- `<AGENT_TYPE>` is the agent's UPPERCASE name (`APIRER`, `CRAWLER`, `KYBER_KEYGEN`, …).
+- The first blank line separates the KV header from the body.
+- The whole section must be emitted in a **single `logging.info()` call** — concurrent log writes from other threads could otherwise interleave and corrupt the block.
+- One section per output unit. If the agent produces N results, emit N sections.
+
+### Supported source agents
+
+46 agents emit Parametrizer-compatible sections:
+
+Apirer, Gitter, Kuberneter, Crawler, Summarizer, File-Interpreter, Image-Interpreter, File-Extractor, Prompter, FlowCreator, Kyber-KeyGen, Kyber-Cipher, Kyber-DeCipher, Googler, **Playwrighter**, **ACPXer**, Shoter, **Camcorder**, **Recorder**, **AudioPlayer**, **VideoPlayer**, Mouser, **Windower**, **Unrealer**, **Blenderer**, **Reviewer**, **Analyzer**, **Kalier**, **STM32er**, **ESP32er**, **ESPHomer**, **Arduiner**, **De-Compresser**, **Talker**, **Whisperer**, **Editor**, **Grepper**, **Globber**, **Telegrammer**, **Whatsapper**, **Instant Messaging Doctor**, **MCP Doctor**, **Discoverer**, **Video-Analyzer**.
+
+### How the visual mapping works
+
+On the canvas, double-click a Parametrizer node to open its custom mapping dialog (not the standard config editor):
+
+1. Left column shows the source agent's available output fields (cyan).
+2. Right column shows the target agent's `config.yaml` parameters, flattened to dot-notation if nested (orange).
+3. Click a source field, then a target parameter, to draw a curved Bezier line connecting them.
+4. Click any line to remove it.
+5. Save. Tlamatini writes the mapping to `interconnection-scheme.csv` in the deployed Parametrizer pool directory.
+
+### Iterative execution
+
+If the source produces 5 segments (e.g. Apirer hits 5 endpoints), Parametrizer processes them **one at a time**, in order, with a full `config.yaml.bck` backup-and-restore around each one. The target agent gets a clean config every time, and its log is archived as `<target>_segment_1.log`, `<target>_segment_2.log`, … so each segment outcome stays inspectable.
+
+### A canonical example
+
+```
+Apirer ──▶ Parametrizer ──▶ Kyber-Cipher
+```
+
+- Apirer calls 3 endpoints, emits 3 `INI_SECTION_APIRER<<<` blocks.
+- Parametrizer maps `response_body → buffer` (the value to encrypt).
+- Kyber-Cipher runs 3 times, once per response body, encrypting each.
+
+No manual config editing. No race conditions. Pause-safe.
+
+# Part IV — The Tlamatini Bestiary
+
+A compact reference for all 85 workflow-agent types. The **Parametrizer** chapter (§25) explains output mapping; **Unrealer** gets a full bonus chapter at §57, **Blenderer** at §59, and **ESPHomer** at §60.
+
+> **Naming reminder.** The `agentDescription` (set by each migration) is the single source of truth. CSS classmap key, sidebar visual, and connection-handler name all derive from it.
+
+> **Description-tooltip source.** The hover tooltip and right-click "Description" dialog both pull their text from `agents_descriptions.md` at the repo root (the Django view parses its `## Workflow Agents` tables and injects them as `agent_purpose_map`). `README.md` is kept as a legacy fallback only. Editing a row in `agents_descriptions.md` changes both human docs AND the live UI text.
+
+## Control
+
+| Agent | Purpose |
+|---|---|
+| **Starter** | Entry point. Launches first agents. |
+| **Ender** | Terminates all agents in `target_agents`, then launches `output_agents` (typically Cleaners, FlowBackers). |
+| **Stopper** | Single-threaded pattern-matcher that kills agents when patterns appear in source logs. |
+| **Cleaner** | Post-Ender cleanup of logs / PIDs. |
+| **Sleeper** | Wait `duration_ms` and trigger downstream. |
+| **Croner** | Scheduled trigger (`HH:MM`). |
+
+## Routing
+
+| Agent | Purpose |
+|---|---|
+| **Raiser** | Watches a source log for a pattern; starts downstream when found. The "event-driven launcher". |
+| **Forker** | Auto-routes to Path A or Path B based on two pattern sets. |
+| **Asker** | Interactive A/B chooser; pauses the flow until the user picks in the browser. 5-min timeout. |
+| **Counter** | Persistent counter; routes to Path L (`<` threshold) or Path G (`>=` threshold). |
+
+## Logic gates
+
+| Agent | Purpose |
+|---|---|
+| **OR** | Fires when EITHER of two sources completes. |
+| **AND** | Fires when BOTH of two sources complete. |
+| **Barrier** | Generalized AND: fires when ALL N sources complete. |
+
+## Action
+
+| Agent | Purpose |
+|---|---|
+| **Executer** | Shell command. |
+| **Pythonxer** | Inline Python behind a strict `compile()` + blocking-Ruff gate (`ruff_blocking` default true); ALWAYS triggers downstream regardless of outcome (exit code drives only the LED + Multi-Turn retry loop). |
+| **Prompter** | LLM prompt → log. |
+| **Summarizer** | LLM polls source logs for events; one-shot mode also accepts `input_text`. |
+| **Crawler** | Reads a web page (by default exactly the one given; range modes also walk its links) with raw-content or text capture and LLM analysis. Block- and hang-proof: every page and the whole run are time-bounded, and a bot wall, 401/403/429 or timeout is reported as `status: blocked` / `timeout`, never as page content. |
+| **Googler** | Block- and hang-proof indexed-web search with readable-text/raw extraction or URL-only delivery. One wall-clock deadline (`deadline_seconds`, default 120) bounds the whole run. Tier 0 asks six server-rendered routes over plain HTTP in parallel (DuckDuckGo HTML/Lite, Bing, Mojeek, Brave, Yahoo); Tier 1 opens real installed Chrome with a persistent profile (`window_mode` visible/offscreen/headless, bundled Chromium fallback) across eight routes; Tier 2 answers from open knowledge sources (Wikipedia, arXiv, OpenAlex, Hacker News, GitHub, Internet Archive, Project Gutenberg) and says so. A relevance guard rejects poisoned answers, a refusal classifier names CAPTCHA/anomaly/rate-limit walls, a shared health ledger cools refusing engines instead of hammering them, and `search_status` reports ok, no_matches, blocked, unreachable or timeout truthfully; the log names the route that answered. Its visual/pool configuration includes a structured dork builder: presets for books, lawful public/open books, papers, manuals, docs, slides, sheets, and directories; aliases such as `ebook`, `docs`, `code`, and `data`; exact/exclusion/date/range/proximity and title/URL/text/anchor/discovery operators; and mechanically correct parenthesized uppercase-`OR` groups for multiple sites or file types. Explicit fields override preset defaults. Advanced date/proximity/range semantics are Google-specific and may broaden on fallback engines; pin `engines: [google]` for exact full-vocabulary behavior and to skip Tier 0. Use `content_mode: links_only` for PDF/EPUB/file hunts, then feed the URLs to Apirer/File-Extractor/File-Interpreter. The direct Multi-Turn tool accepts equivalent operators in `query`; structured fields are canvas/pool-only. It finds public indexed URLs, does not bypass access controls, and leaves copyright/licensing/authorization decisions to the user. |
+| **Playwrighter** | Scripted interactive browser automation via Playwright (Chromium/Firefox/WebKit). Drives a REAL browser through an ordered list of declarative steps — `goto` / `click` / `fill` / `press` / `wait_for` / `extract_text` / `extract_attr` / `screenshot` / `assert_visible` / `assert_text` / `download` — for authenticated, JS-rendered, multi-step flows (logins, forms, wizards, SPA scraping, end-to-end UI checks) that Crawler (static fetch) and Googler (search) cannot do. Deterministic (no LLM). Set `headless: false` to watch it drive and `hold_open_seconds: N` (alias `hold_open_ms`) to keep the browser visible N seconds after the last step before it closes. Emits an `INI_SECTION_PLAYWRIGHTER<<<` block (`start_url`, `final_url`, `status`, `steps_run`, `assert_result`, `response_body`) and always triggers `target_agents`. Canvas counterpart of the `chat_agent_playwrighter` Multi-Turn tool. |
+| **Apirer** | HTTP REST request with structured logging. |
+| **Gitter** | Git operations on a local repo. |
+| **SSHer / SCPer** | SSH command execution / SCP file transfer. |
+| **Dockerer / Kuberneter** | Docker / Kubernetes commands. |
+| **PSer** | LLM-powered semantic process finder. |
+| **Jenkinser** | Jenkins pipeline trigger with CSRF crumb support. |
+| **SQLer / Mongoxer** | SQL Server / MongoDB scripting (external windows). |
+| **Mover / Deleter** | File move/copy / deletion (glob, recursive, `filetype_exclusions`). |
+| **Shoter** | Screenshot capture (read-only). |
+| **Camcorder** | Physical-camera (webcam) capture via OpenCV (`cv2`) — Shoter's hardware-camera sibling (Shoter = screen, Camcorder = camera). `capture_mode` ∈ `photo` (default, one `.jpg`) / `video` (a `.mp4` segment of `video_duration_seconds`, no audio); `camera_index` selects the device; `resolution_width`/`resolution_height` default `0×0` = camera-native (set `W×H` to request a mode — requested + read-back logged); `warmup_seconds` lets the sensor settle. Saves to `Pictures/TlamatiniCamcorder` with a collision-proof timestamped filename (override via `output_dir`). Observational (read-only, but STILL in the Exec Report); emits `INI_SECTION_CAMCORDER<<<` and always triggers `target_agents`. Needs `opencv-python`. Canvas counterpart of `chat_agent_camcorder`. |
+| **Recorder** | Microphone / audio-input capture via `sounddevice`, saved as a WAV (stdlib `wave`) — the audio sibling of the capture trio (Shoter = screen, Camcorder = camera, Recorder = sound). Records from the system DEFAULT input device for `record_seconds` (pick another mic with `device_index` — the agent logs the numbered device list at startup — or by case-insensitive name substring with `device_name`); `sample_rate` defaults `0` = the device's NATIVE rate (forcing an unsupported rate raises a PortAudio error, so the safe default lets the device choose — the value used is read back + logged); `channels` defaults mono (`1`, clamped down to the device max); `input_gain_percent` is POST-capture digital gain (`100` = unity; `200`/`50`/`0` = louder/quieter/silence — amplifying may CLIP, so `clipped_samples` is reported). Saves to `Music/TlamatiniRecords` with a collision-proof timestamped filename (override via `output_dir`). Observational (read-only, but STILL in the Exec Report); emits `INI_SECTION_RECORDER<<<` and always triggers `target_agents`. Needs `sounddevice`. Canvas counterpart of `chat_agent_recorder`. |
+| **AudioPlayer** | Audio-file PLAYBACK to a system OUTPUT device (speakers) via `soundfile` (decode) + `sounddevice` (stream) — the playback counterpart of Recorder (mic-IN → speakers-OUT). `audio_file` (required) is the path (WAV/FLAC/OGG/AIFF, MP3 with a recent libsndfile); plays to the system DEFAULT output by default (`device_index`/`device_name` to pick another). `volume_percent` is a software gain (`100` = unity; clip count reported). **`time_played`**: `0` = the whole file once; `N>0` = exactly N s — a longer file is TRUNCATED, a shorter one is LOOPED (whole repeats + a final partial segment) via a streaming wrap-around callback (no giant buffer). `sample_rate` defaults `0` = the file's own native rate (correct pitch; read from the file). Does NOT change the OS default output device. Observational/output (STILL in the Exec Report); emits `INI_SECTION_AUDIOPLAYER<<<` and always triggers `target_agents`. Needs `sounddevice` + `soundfile`. Canvas counterpart of `chat_agent_audioplayer`. |
+| **VideoPlayer** | Video-file PLAYBACK (WITH audio) on a chosen DISPLAY via `ffpyplayer` (decode + synced audio + volume; its pip wheel BUNDLES ffmpeg + SDL — no external ffmpeg, no runtime download — collected into the frozen build by `build.py --collect-all ffpyplayer`) + OpenCV (`cv2`) for the window; degrades to SILENT cv2 video if ffpyplayer is absent. `video_file` (required) is the path (.mp4/.mov/.mkv/.avi/.webm). `display_index` picks the monitor (`-1` = primary; enumerated via Win32 `EnumDisplayMonitors`, logged at startup). `volume_percent` = audio level (capped at 100). **`time_played`** TRUNCATES a longer video or LOOPS a shorter one (whole repeats + final partial). `window_width`/`window_height` size the window (`0` = native, centered on the chosen display); `fullscreen` fills the monitor; `keep_aspect` letterboxes (cv2 `WINDOW_KEEPRATIO`) instead of stretching. Observational/output (STILL in the Exec Report); emits `INI_SECTION_VIDEOPLAYER<<<` and always triggers `target_agents`. Needs `ffpyplayer` + `opencv-python`. Canvas counterpart of `chat_agent_videoplayer`. |
+| **Talker** | TEXT-TO-SPEECH (TTS): speaks `input_text` aloud through the speakers by driving an OLLAMA connection running a neural TTS model (selected by `talker_model` in Config > Models > Speech; initial default `legraphista/Orpheus:3b-ft-q8`) — streams the model's audio tokens, decodes them to a 24 kHz WAV with the **SNAC** codec, saves the file, and plays it. The voice-synthesis sibling of the media family (AudioPlayer plays an existing file; Talker GENERATES speech from text). **FEMALE-VOICE-ONLY by design** (Tlamatini is female; a male voice is FORBIDDEN — asking for one makes Talker close its execution with "male voice is forbidden by design — NOW CLOSING.. BYE", never substituting): permitted voices `tara` (default) / `leah` / `jess` / `mia` / `zoe`, and `gender` accepts only `female`. `emotion` weaves a paralinguistic tag (`<laugh>` / `<sigh>` / 8 total) into the speech; `language` is a hint; generation knobs `temperature` / `top_p` / `top_k` / `min_p` / `repetition_penalty` / `max_tokens` / `seed`; playback `device_index` / `volume_percent` / `sample_rate`. Observational/output (STILL in the Exec Report); emits `INI_SECTION_TALKER<<<` and always triggers `target_agents`. Rendering audible audio needs `snac` + `torch` (CPU is fine); without them it degrades to `status: tokens_only` (saves tokens, no sound — not a crash). Canvas counterpart of the `chat_agent_talker` Multi-Turn tool. |
+| **Whisperer** | **Direct chat microphone:** Mic beside Send starts host capture without an LLM decision and stops on the configured silence gate. Config → Mic (last entry) selects automatic submission with the current draft/modes or an editable transcript for manual Send, and configures device, gain, gate and recognition preferences per browser. Each recording snapshots its settings. It has no extra console, workflow artifact output or wrapped-tool Exec Report row. **Standalone/workflow surface:** SPEECH-TO-TEXT (STT / voice recognition), the sibling of Talker — turns spoken audio into a text string. 100% self-sufficient for the microphone: it opens, configures (channels / sample-rate / gain) and records the mic ITSELF (no Recorder dependency; `record_seconds: 0` uses the sound gate by default), or transcribes a given audio FILE (`input_source` ∈ mic / file / auto, `audio_file`). Transcription engine: **faster-whisper LOCALLY by default** — it auto-detects an NVIDIA GPU via CTranslate2 and ALWAYS falls back to CPU (int8) on a machine without one (and auto-retries on CPU if the GPU path fails); `model` ∈ tiny / base / small / medium / large-v3 / large-v3-turbo (default `base`). Cloud engines `cloud-groq` / `cloud-openai` are also supported. **NOTE — Ollama CANNOT do speech-to-text** (no audio input): recognition is always done by the ASR engine; an optional Ollama pass only tidies the FINISHED transcript's punctuation. Observational (but STILL in the Exec Report); emits `INI_SECTION_WHISPERER<<<` (body = the transcript text) and always triggers `target_agents`. Needs `faster-whisper` for local transcription (absent + no cloud key → `status: engine_unavailable`, not a crash). Canvas counterpart of the `chat_agent_whisperer` Multi-Turn tool. |
+| **Mouser** | Pointer movement, click, drag, scroll, click-at-window, locate-image. |
+| **Keyboarder** | Keyboard typing / hotkey chords (PyAutoGUI). |
+| **Terminater** | Visible, user-supervised terminals (CMD / PowerShell / PowerShell 7) in the Terminals area. Types every key like a person (`typing_wpm` 50 by default, 20-160; no paste, no instant mode), waits for the command, reads the output back in full, detects a hung command (`hang_seconds` 45), hands the keyboard to the user at `<<USER:hint>>`, and lets the user take over with Esc. One `action` per run (`run`, `open`, `type`, `send_key`, `wait`, `read`, `abort`, `kill`, `force_kill`, `layout`, `watch_user`, `warn_user`, `handover`, …); terminals persist in the Tlamatini hub between runs. Emits `INI_SECTION_TERMINATER` (`status`, `exit_code`, `typed`, `user_part`, …) and always starts its `target_agents`. Windows 10 1809+ (ConPTY). Agent #86; see [docs/terminater.md](docs/terminater.md). |
+| **Windower** | Deterministic Win32 window manager (pywin32 + ctypes). Locates an application window by title (`match_mode` ∈ substring/exact/regex, plus `match_index` to disambiguate same-titled windows) and runs ONE window-lifecycle operation: `focus`, `minimize`, `maximize`, `restore`, `move`, `resize`, `move_resize`, `close`, `topmost` / `untopmost` (always-on-top), or `arrange` (snap/tile to left/right/top/bottom halves, four quadrants, center, or full) — or `list` every open window with its position, size, and state. The window member of the desktop-UI trio (Windower = the window, Mouser = clicks, Keyboarder = typing). Ports the window-management subset of Microsoft's Windows-MCP (incl. the AttachThreadInput cross-process focus-transfer dance). Emits an `INI_SECTION_WINDOWER<<<` block (`action`, `window_title`, `matched`, `match_count`, `state`, `left`, `top`, `width`, `height`, `response_body`) and always triggers `target_agents`. Canvas counterpart of the `chat_agent_windower` Multi-Turn tool. |
+| **Kalier** | Kali Linux offensive-security bridge to the **MCP-Kali-Server** (`server.py` Flask API; default `http://127.0.0.1:5000`; stdlib `urllib`, self-contained — no `requests`/`mcp` deps in the pool). `action` ∈ `command` / `nmap` / `gobuster` / `dirb` / `nikto` / `sqlmap` / `metasploit` / `hydra` / `john` / `wpscan` / `enum4linux` / `health`. Emits an `INI_SECTION_KALIER<<<` block (`action`, `endpoint`, `method`, `subject`, `return_code`, `success`, `timed_out`, `server_url`, `response_body`) and always triggers `target_agents` so a Forker can branch on `{success}`/`{return_code}`. Canvas counterpart of the `chat_agent_kalier` Multi-Turn tool. **Authorized targets only.** |
+| **Nmapper** | LOCAL, **use-only** nmap bridge for pentesters and CTF recon — the instant, zero-install sibling of Kalier (a REMOTE Kali box) and Discoverer (the ProjectDiscovery suite). It RUNS an nmap the user installed and **never bundles or redistributes nmap** (the NPSL forbids embedding it), resolving PATH → `C:\Program Files (x86)\Nmap` / `C:\Program Files\Nmap` → a `%LOCALAPPDATA%\Tlamatini\nmap` copy; with none found it REFUSES gracefully with install guidance, and `action: install` downloads + launches the OFFICIAL FREE nmap installer (which also brings Npcap). The DEFAULT is an **unprivileged TCP connect scan** (`-sT`) needing no Npcap and no admin, so a fresh install scans immediately; on Windows without Npcap a SYN scan auto-downgrades to `-sT`, `-O` is dropped (both warned) and a raw `udp` scan is refused — never a crash. `action` ∈ quick (`-sT -sV -sC -Pn -T4 --top-ports 1000`, the CTF opener) / full / top_ports / version / scripts (NSE) / host_discovery / udp / custom (shell metacharacters rejected) / validate / install. Runs `-oX` (parsed for `hosts_up` / `open_ports`) + `-oN` (the human report). Emits `INI_SECTION_NMAPPER<<<` (`action`, `target`, `scan_technique`, `ports`, `return_code`, `success`, `hosts_up`, `open_ports`, `npcap_present`, `xml_path`, `output_path`, `stage`) and always triggers `target_agents`. Canvas counterpart of the `chat_agent_nmapper` Multi-Turn tool. **Authorized targets only** — treat scan output as untrusted data. |
+| **File-Creator** | Write a file. |
+| **File-Interpreter / File-Extractor** | Document parsing (DOCX, PPTX, XLSX, PDF, …); raw text extraction with strings-fallback for unknowns. |
+| **Image-Interpreter** | LLM vision analysis of images. |
+| **J-Decompiler** | JAR/WAR/CLASS decompilation via bundled `jd-cli`. |
+| **De-Compresser** | Deterministic archive worker (compress OR decompress). Inferred direction: `input` ext or `output` ext picks the operation. Supports `.gz`, `.zip`, `.7z`, `.tar.gz`/`.gz.tar`. Password from `DE_COMPRESSER_PWD` env var when `passwordless=false`. |
+| **Telegrammer** | Single-run Telegram agent on **official Telegram surfaces only**. Bot mode uses the official Bot API (`telegram.bot_token` from @BotFather); optional user-session mode uses Telegram API credentials (`telegram.api_id`, `telegram.api_hash`, `telegram.session_name` / `session_string`) when private `@username` sends need a logged-in Telegram account. `mode` ∈ `auto` / `send` / `receive`: in `send` it posts `message` (or resolves a `contact_name`) to a human-readable `telegram.chat_id` / `@username`, then starts `target_agents`; in `receive` it waits up to `rx_max_seconds` for an inbound Bot API update (optionally filtered by `rx_from_chat_id` / `rx_match`), then starts `target_agents`. Contacts should keep people as `telegram: "@username"`; any Bot API numeric routing id belongs only in Telegrammer's private local username cache. Parametrizer SOURCE — emits `INI_SECTION_TELEGRAMMER<<<` (`mode`, `direction`, `chat_id`, `status`, `message_id`, body = `response_body`) with the visible recipient preserved. |
+| **Whatsapper** | Single-run WhatsApp send/receive agent with an explicit identity switch. `provider=cloud` (default) uses the **official Meta WhatsApp Cloud API** from the business number: `mode` ∈ `auto` / `send` / `receive`, templates and the 24-hour free-text window apply, and receive runs the verified Graph-API webhook. `provider=web` / `me` sends from the operator's own personal number through a persistent Playwright WhatsApp Web profile after a one-time headed QR login; it is UNOFFICIAL, ignores templates, and carries account-ban risk. Contacts can resolve through `contact_name`; providers are never switched silently. Either route starts `target_agents`, exits, and emits `INI_SECTION_WHATSAPPER<<<` (`mode`, `direction`, `recipient`, `status`, `message_id`, body = `response_body`). No Twilio/TextMeBot route exists. |
+| **Instant Messaging Doctor** | Diagnostic/repair companion for **Telegrammer** and **Whatsapper**. It validates official Telegram token/user-session readiness, contact-book resolution, readable Telegram `@username` reachability, official Meta WhatsApp Cloud API phone-number/token/template/webhook readiness, WhatsApp 24-hour/template policy blockers, and failure-log excerpts. It can run directly as `chat_agent_instant_messaging_doctor` or automatically after Telegrammer/Whatsapper failures. Parametrizer SOURCE — emits `INI_SECTION_INSTANT_MESSAGING_DOCTOR<<<` (`platform`, `status`, `telegram_status`, `whatsapp_status`, `contact_status`, `repair_status`, `retry_status`, `actions_required`, body = `response_body`) so Forker can branch on ready vs operator-required repairs. It never substitutes Twilio/TextMeBot or silently switches an explicitly selected WhatsApp Web session. |
+| **TeleTlamatini** | Long-running Telegram bridge that exposes the full Multi-Turn + Exec Report Tlamatini chat to authorized Telegram users. |
+| **ACPXer** | Visual canvas counterpart of the 12 LLM-facing ACPX tools. One node = one external-CLI session lifecycle. |
+| **Unrealer** | Drives Unreal Engine 5 via the Unreal MCP plugin's TCP socket protocol (`127.0.0.1:55557` by default — plugin must already be running inside an UE5 editor instance). One node sends one JSON command (`{"type": <verb>, "params": {...}}`) and captures the engine's response into an `INI_SECTION_UNREALER<<<` block. Up to a 53-command surface across nine categories — editor / blueprint / node / project / umg plus system (in-editor `execute_python` + console), level, asset, and material. (See bonus chapter §57.) |
+| **Blenderer** | Drives a running Blender through the OFFICIAL Blender MCP add-on's TCP socket (`localhost:9876`). Unlike Unreal's verb-dispatch protocol the Blender wire format is a **code-execution** protocol — each run sends `{"type":"execute","code":<python>}` (NUL-framed) and Blender runs that Python — so instead of forcing you to hand-write `bpy`, Blenderer exposes a rich `command` catalog: passthrough `execute_code`; read-only `ping` / `scene_info` / `get_objects` / `get_object_detail` / `blendfile_summary`; and mutating/output `create_object` (cube/sphere/cylinder/cone/plane/monkey/torus) / `delete_object` / `set_material` / `screenshot` / `render` (file outputs default under `<app>/Temp`). Self-contained: Tlamatini speaks the add-on socket DIRECTLY with a stdlib NUL-byte socket, skipping blender.org's `blmcp` bridge and its bare chat client, so the whole canvas / Multi-Turn / Exec-Report / Parametrizer stack sits on top. Requires Blender running with the add-on enabled, "Online access" on and the server started — the agent does not launch Blender. Captures the reply into an `INI_SECTION_BLENDERER<<<` block and always triggers `target_agents` on success or failure. Canvas counterpart of the `chat_agent_blenderer` Multi-Turn tool. |
+| **Reviewer** | LLM-powered code reviewer. Resolves a `git diff` for `repo_path` (`diff_ref` like `HEAD~1` / `origin/main`, or empty = uncommitted working-tree + staged changes), sends it to an Ollama model with a senior-engineer prompt, and emits an `INI_SECTION_REVIEWER<<<` block whose first field is a `verdict` (`APPROVE` / `REQUEST_CHANGES` / `COMMENT`). Always triggers `target_agents`, so a downstream Forker can branch on `{verdict}`. Canvas counterpart of the `code-review` skill. |
+| **Analyzer** | Deterministic static-analysis / security scanner (no LLM). Runs whichever of `bandit` / `semgrep` / `ruff` / `eslint` / `gitleaks` / `pip-audit` are on PATH over `target_path`, aggregates findings, and emits an `INI_SECTION_ANALYZER<<<` block whose `status` is `clean` / `findings` / `error` and whose `total_findings` is routable. Always triggers `target_agents`, so a downstream Forker can gate on `{status}` / `{total_findings}`. Canvas counterpart of the `security-audit` skill. |
+| **STM32er** | STM32 firmware bridge to the **STM32 Template Project MCP** (`https://github.com/XAIHT/STM32TemplateProjectMCP`), driven through a self-contained inline MCP stdio JSON-RPC client (no `mcp` dependency in the pool). It scaffolds, builds, flashes, and observes STM32F407VG firmware. `action` ∈ the **23 MCP tools** + 2 composites (`serial_session`, `live_monitor`) + 2 meta (`bootstrap`, `validate`). **Zero-config auto-bootstrap**: with no on-disk `server_script` (the default is now empty), STM32er DOWNLOADS the MCP itself — a shallow `git clone`, falling back to the GitHub zip when git is absent — into `%LOCALAPPDATA%/Tlamatini/STM32TemplateProjectMCP`, pip-installs `mcp` + `pyserial` if missing, and validates the install, so the user only ever installs **STM32CubeIDE + Tlamatini** (`action: bootstrap`; config keys `auto_bootstrap` / `mcp_repo_url` / `mcp_ref` / `mcp_install_dir` / `auto_update` / `pip_install`). **Safety preflight** (critical-mission fail-safe): it validates the compiler / CubeIDE / make / programmer / ST-LINK driver + probe / device family before any compile or flash and REFUSES rather than mis-build or mis-flash — a compile needs no board, while flash / erase / reset / serial / SWD / `live_*` require a connected ST-LINK, and a cross-STM32F-family device is refused (`action: validate`; config keys `preflight`, `device`). The MCP template is still STM32F407VG-specific, so STM32er safely refuses other families (a multi-family fork is future work). Emits an `INI_SECTION_STM32ER<<<` block and always triggers `target_agents`. Canvas counterpart of the `chat_agent_stm32er` Multi-Turn tool. The first of the microcontroller-firmware trio (STM32er drives an MCP **server**; ESP32er and Arduiner drive a CLI **directly**). **Serial caveat:** on the STM32F4-Discovery family (incl. the STM32F407G-DISC1) the on-board ST-LINK does **not** bridge its USB Virtual COM Port to the MCU's USART pins (unlike *Nucleo* boards), so a `serial_session` read of the VCP returns nothing even while the firmware runs — to capture USART2 output (PA2 = TX / PA3 = RX) you must wire an external USB-TTL adapter; the SWD `live_monitor` proof needs no wiring. (See the demo nuance in the changelog.) |
+| **ESP32er** | ESP32 firmware bridge built on **PlatformIO Core** (`https://platformio.org`). Unlike STM32er — which drives a separate MCP server because STM32CubeIDE has no unified CLI — PlatformIO already ships a complete `pio` CLI, so ESP32er invokes `pio` subcommands **directly** (the Kalier / Executer pattern; **no MCP server**) over a stdlib-only agent (`subprocess` + `urllib`, no `pio` dependency in the pool). `action` selects ONE capability per run across environment/meta (`bootstrap`, `validate`, `system_info`, `boards`), project lifecycle (`create_project`, `write_source`, `read_source`, `list_sources`, `clean`), build & flash (`build`, `upload`, `build_and_upload`, `list_artifacts`, and the one-call composite **`scaffold_build_upload`** = create→write→build→upload→optional-monitor in a single run — fail-safe: it skips only the upload leg with a "built OK" result when no board is connected), serial HIL (`device_list`, `monitor`, `monitor_session` = upload→monitor), and packages/QA (`pkg_install`, `pkg_list`, `pkg_update`, `check`, `test`). **Zero-config auto-bootstrap**: with no on-disk `pio_executable` and `auto_bootstrap: true`, ESP32er downloads PlatformIO Core itself (the official `get-platformio.py` installer, with a `pip install platformio` fallback) into `%LOCALAPPDATA%/Tlamatini/platformio`, so the user installs **only the board USB driver + Tlamatini**. **Safety preflight** (fail-safe): before any build/upload it validates `pio` is resolvable + a `platformio.ini` exists, and for an upload/monitor that a serial port is connected (`pio device list`; ESP32 flashes over its onboard USB-serial bootloader so no external JTAG probe is needed for upload) — and REFUSES rather than run a build/upload that cannot succeed; a non-espressif32 platform is a warning, not a refusal. Emits an `INI_SECTION_ESP32ER<<<` block (`action`, `tool`, `ok`, `returncode`, `success`, `project_dir`, `port`, `environment`, `stage`, `response_body`) and always triggers `target_agents` so a Forker can branch on `{success}` / `{returncode}`. Note: the FIRST build downloads the espressif32 platform + toolchain (hundreds of MB). Canvas counterpart of the `chat_agent_esp32er` Multi-Turn tool. (See the ESP32 Template Project in bonus chapter §58.) |
+| **Arduiner** | Arduino firmware bridge built on the **Arduino CLI** (`https://arduino.github.io/arduino-cli/`). The third microcontroller agent and the direct-CLI sibling of ESP32er: like PlatformIO's `pio`, `arduino-cli` is itself a complete CLI, so Arduiner invokes `arduino-cli` subcommands **directly** (**no MCP server**) over a stdlib-only agent (`subprocess` + `urllib` + `zipfile`/`tarfile`). **The microcontroller is selected by `fqbn`** (Fully Qualified Board Name, e.g. `arduino:avr:uno`, `arduino:avr:mega2560`, `esp32:esp32:esp32`); `port` + `baud` set the upload/monitor link. `action` selects ONE capability per run across environment/meta (`bootstrap`, `validate`, `system_info`, `boards`, `device_list`), cores & libraries (`core_update_index`, `core_search`, `core_list`, `core_install`, `core_uninstall`, `lib_update_index`, `lib_search`, `lib_list`, `lib_install`), project lifecycle (`create_project`, `write_source`, `read_source`, `list_sources`), build & flash (`build`, `upload`, `build_and_upload`, `clean`, `list_artifacts`), and serial HIL (`monitor`, `monitor_session` = upload→monitor). **Zero-config auto-bootstrap**: with no on-disk `arduino_cli_executable` and `auto_bootstrap: true`, Arduiner downloads the arduino-cli binary itself (the platform release archive from `downloads.arduino.cc`, unzipped into `%LOCALAPPDATA%/Tlamatini/arduino-cli`) then runs `config init` + `core update-index` — a binary download, not a pip install — so the user installs **only the board USB driver + Tlamatini**. **Auto-core-install**: arduino-cli does NOT auto-install platforms on compile, so before a build/upload Arduiner derives the FQBN's platform and, when missing and `auto_core_install: true`, runs `core update-index` + `core install` (honoring `additional_urls` for third-party ESP32/STM32/RP2040 cores); when off it REFUSES with the exact `core install` to run. **Safety preflight** (fail-safe): validates `arduino-cli` is resolvable + a sketch (`.ino`) + an FQBN exist, and for an upload/monitor that a serial port is connected (`arduino-cli board list`); a malformed FQBN is a warning, not a refusal. **Uniform template project**: `create_project` scaffolds from the bundled `ArduinoTemplateProject/` (the Arduino analog of the STM32 / ESP32 templates), renames the `.ino`, and stamps the FQBN/port into the template's `sketch.yaml` profile. Emits an `INI_SECTION_ARDUINER<<<` block (`action`, `tool`, `ok`, `returncode`, `success`, `fqbn`, `port`, `sketch_path`, `stage`, `response_body`) and always triggers `target_agents`. Note: the FIRST core install + compile downloads the board toolchain so it is slow. Canvas counterpart of the `chat_agent_arduiner` Multi-Turn tool. |
+| **ESPHomer** | ESPHome smart-home device-firmware bridge for ESP32 / ESP8266 / RP2040 / BK72xx, built on the **`esphome` CLI** (`https://esphome.io`) — the fourth microcontroller-firmware agent and the odd one out: where STM32er / ESP32er / Arduiner author source code, ESPHomer authors **configuration** (a device is a `*.yaml` file, **NO C++**). Like ESP32er and Arduiner it drives the CLI **directly** (**no MCP server**) over a stdlib-only agent (`subprocess` + `glob`). `action` selects ONE capability per run across environment/meta (`bootstrap`, `validate`, `version`), device-YAML lifecycle (**`new_config`** — a built-in headless generator that writes a minimal valid device YAML from `name` / `platform` / `board` / `wifi_ssid` / `wifi_password` / `led_pin`, the unattended replacement for `esphome wizard` — `write_config`, `read_config`, `config`, `clean`), build & flash (`compile`, `upload`, `run`, `list_artifacts`, and the one-call composite **`scaffold_compile_upload`** = author→config→compile→upload→optional-logs in a single run — fail-safe: it skips only the upload leg with a "compiled OK" result when no board is connected), and serial/OTA HIL (`logs`). **Zero-config auto-bootstrap**: with no on-disk `esphome_executable` and `auto_bootstrap: true`, ESPHomer `pip install esphome` into Tlamatini's own carried Python — no IDE, no Go binary, no installer script — so the user installs **only the board USB driver + Tlamatini**. **Safety preflight** (fail-safe): before any compile/upload it validates `esphome` is resolvable + a device YAML exists, and for an upload/logs/run that a serial port is connected OR an OTA host is supplied in `port` (ESPHome's first flash is USB-serial; after that, every generated device's `ota:` block lets you re-flash over WiFi by passing the device IP as `port`) — and REFUSES rather than run a build that cannot succeed. Emits an `INI_SECTION_ESPHOMER<<<` block (`action`, `tool`, `ok`, `returncode`, `success`, `config_path`, `name`, `port`, `stage`, `response_body`) and always triggers `target_agents`. Note: the FIRST compile downloads the platform + toolchain (via PlatformIO under the hood) so it is slow. Canvas counterpart of the `chat_agent_esphomer` Multi-Turn tool. (See bonus chapter §60.) |
+
+## Cryptography (post-quantum)
+
+| Agent | Purpose |
+|---|---|
+| **Kyber-KeyGen** | CRYSTALS-Kyber public/private key pair (Kyber-512/768/1024). |
+| **Kyber-Cipher** | Kyber encapsulation + AES-256-CTR encryption. |
+| **Kyber-DeCipher** | Kyber decapsulation + AES-256-CTR decryption. |
+
+## Utility
+
+| Agent | Purpose |
+|---|---|
+| **Parametrizer** | Strict single-lane queue mapping source-agent log segments into target-agent config. (See §25.) |
+| **FlowBacker** | Post-Ender backup of session logs/configs. |
+| **MCP Doctor** | Diagnoses a catalogued **external MCP server WITHOUT connecting to it** — the triage nurse you consult before wiring a new MCP up. Reads the External-MCPs catalog and reports the truth about an entry: which transport it uses (stdio / streamable-http / sse / websocket), what runtime prerequisite it needs (Docker / Node-NPX / UVX / Python / Java / .NET / …), whether that command is actually on PATH, whether its secrets are still placeholders, what is blocking it, and the single next step to take. Emits an `INI_SECTION_MCP_DOCTOR<<<` block so a downstream Forker can branch on `{status}`, and always triggers `target_agents`. The canvas counterpart of the `external_mcp_doctor` tool and of the wrapped `chat_agent_mcp_doctor` Multi-Turn tool; part of the External MCPs feature (a config-driven universal MCP client). |
+| **Globber** | Read-only FILE discovery by glob pattern (the Claude-Glob equivalent): finds files matching `pattern` (`*.py`, `**/*.md` — `**` recursive) under `path`, newest-first by default (`sort_by` ∈ mtime / name / none, `max_results` default 500). Files only; changes nothing. The enumeration step ahead of Grepper / File-Interpreter / Editor — prefer it over an Executer `dir`/`ls`. Emits `INI_SECTION_GLOBBER<<<` (`pattern`, `path`, `matches`, `truncated`, `status`, body = the file list) and always triggers `target_agents`. Canvas counterpart of the `chat_agent_globber` Multi-Turn tool. |
+| **Grepper** | Read-only regex CONTENT search across one file or a whole tree (the Claude-Grep equivalent): returns `file:line:match` lines for a Python-regex `pattern`, with a `glob` basename filter, `case_insensitive`, `output_mode` ∈ content / files / count, `max_results` default 200; prunes noise dirs (.git / node_modules / venv / __pycache__ / dist / build). Its BOM-first reader searches UTF-8, UTF-16/32, cp1252, and Latin-1 text, testing BOMs before NUL bytes so PowerShell logs and accented Windows/Spanish sources are not mistaken for binaries; genuinely binary or unreadable files are skipped. **Since 2026-09-14 it also READS**: `output_mode: lines` returns a chosen range of ONE file verbatim with no pattern (`start_line`/`end_line`, 1-based inclusive, `0` = first/last), refusing a directory or a binary rather than guessing; with `line_numbers: false` it additionally emits `content_b64`, a base64 copy of the exact bytes — needed because the agent log is written in text mode and rewrites line endings on Windows, so only the encoded copy is safe to build an Editor `old_string` from. That closes the last gap in the toolset: find → search → read → edit now happens entirely inside Tlamatini, with no shell step. Emits `INI_SECTION_GREPPER<<<` (`pattern`, `path`, `glob`, `matches`, `files_searched`, `truncated`, `start_line`, `end_line`, `lines_returned`, `total_lines`, `content_b64`, `status`, body = the matches or the verbatim slice) and always triggers `target_agents`. Canvas counterpart of the `chat_agent_grepper` Multi-Turn tool. |
+| **Editor** | Surgical in-place find-and-replace on ONE existing text file (the Claude-Edit equivalent): replaces an EXACT `old_string` with `new_string`, refusing a non-unique match unless `replace_all: true`; `old_string_b64` / `new_string_b64` give a byte-exact channel for code with backslashes/quotes; byte-exact, line endings preserved. State-changing → it IS in the Exec Report. Prefer it over File-Creator when only PART of a file should change. Emits `INI_SECTION_EDITOR<<<` (`file_path`, `status` ∈ edited / not_found / not_unique / noop / error, `occurrences`, `replacements`, body = `response_body`) and always triggers `target_agents` so a Forker can branch on `{status}`. Canvas counterpart of the `chat_agent_editor` Multi-Turn tool. |
+| **PDFer** | DOCUMENT COMPOSER: authors a PDF from an answer, Markdown, HTML, plain text, images or existing PDFs, with a cover, tables, page numbers and optional TOC. Modes: `auto`, `markdown`, `html`, `text`, `images`, `mixed`, `merge`, `info`, `validate`, `styles`. `mode: styles` lists **24 visual identities across five families** without writing a PDF (`status: inspected`). Choose cute/nursery, cyberpunk, cosmic, electronics or Tlamatini artwork with `style`; keep document purpose in `nuance`, which retains **20 content themes**. `style: auto` preserves automatic styling. A single `predominant_color` recolors the palette; per-role, font and page overrides remain available. Vector artwork respects the content's decoration ceiling, including no ornament for legal, clinical and financial documents. The default atelier path measures cover text and table widths, continues long cover text onto later pages, and audits the finished PDF for overlap, off-sheet text, blank pages and contrast. Read `layout_clean` and diagnostics before claiming verification. Styles apply to atelier composition; legacy CSS, image-only layouts and existing merged pages retain their own designs. No new runtime dependencies; optional Ollama polish/design remain off. Saves to the Documents known-folder under `TlamatiniPDF`, or a chosen `output_dir`, with collision-safe naming. Emits `INI_SECTION_PDFER`: `mode`, `source_type`, `output_path`, `output_dir`, `filename`, `page_count`, `bytes`, `images_used`, `engine`, `nuance`, `nuance_confidence`, `nuance_source`, `style`, `style_family`, `palette`, `predominant_color`, `background_mode`, `font_pairing`, `decorations`, `overlaps`, `layout_clean`, `repairs`, `status`, plus body=`response_body`. Always triggers downstream agents. Available as a canvas node and `chat_agent_pdfer`; Exec Report and Ask-Execs tier A integration remain. [Styles, examples and verification](Tlamatini/agent/agents/pdfer/STYLES.md). |
+| **PPTXer** | Deck composer: builds editable PowerPoint from text, Markdown, outlines, or JSON, with embedded media, diagrams, charts, tables, and generated artwork. **36 named treatments** (24 automatic content treatments + 12 explicit styles) and **17 font pairings**. Set `nuance` to a style key or leave it empty for content classification; color, font, background, and density overrides remain available. Font measurement and continuation slides preserve complete long text. Saved geometry, native text bounds, and rendered contrast are audited; inspect `layout_clean`, `ground_truth`, and confidence, and review `created_with_findings`. Atomic saves protect existing files; native rendering uses a bounded worker for installed PowerPoint. [Style and verification guide](Tlamatini/agent/agents/pptxer/STYLES.md). |
+| **LaTeXer** | LaTeX TYPESETTING — the typesetting sibling of PDFer (PDFer *composes* a PDF from Markdown/HTML/images; LaTeXer *typesets* one from real `.tex` source: proper mathematics, bibliographies, numbered cross-references, an index). Embeds the whole `mcp-latex-server` tool surface NATIVELY — no MCP server, no sidecar, no new dependency (stdlib only) — and adds whole-PROJECT compilation (master `.tex` auto-detected, every `\input` followed), a real BibTeX/biber + makeindex + makeglossaries convergence loop, latexmk pass-through, and LaTeX-log diagnostics a human can read. `action` ∈ compile / compile_project / scaffold_compile / create_file / create_from_template (article, report, book, beamer, letter, cv, homework, spanish-article) / edit_file / read_file / list_files / validate_tex (a STATIC lint needing no LaTeX) / structure / clean / validate / install / list_styles; `auto_preamble` wraps a bare fragment like `$E = mc^2$`. **Compilation requires a TeX distribution; MiKTeX is recommended** — Tlamatini bundles no TeX distribution (several GB; the release stays under 2 GB), and MiKTeX is preferred because it installs a missing `.sty` on demand mid-compile, when the package is available; with no engine, compilation REFUSES cleanly and `action: install` launches the official installer. ⚠️ latexmk is probed for USABILITY not presence (it is a Perl script most Windows boxes cannot run → automatic fallback to the built-in loop). `shell_escape` OFF by default (`\write18` = arbitrary command execution). PDFs land in `Documents/TlamatiniLaTeX`, projects in `Templates/LaTeXer`; `compiled_with_errors` means a PDF exists but LaTeX complained and is reported as exactly that. State-changing → in the Exec Report and on the Ask-Execs tier-A allowlist. Emits `INI_SECTION_LATEXER<<<` (`action`, `engine`, `distribution`, `tex_path`, `project_dir`, `output_path`, `output_dir`, `filename`, `page_count`, `bytes`, `passes`, `bibliography`, `errors`, `warnings`, `success`, `status`, `style`, `style_family`, `style_mode`, `style_count`; body = `response_body`) and always triggers `target_agents`. Canvas counterpart of the `chat_agent_latexer` Multi-Turn tool. **30 opt-in styles across six families**: editorial, cute/nursery, cyberpunk, cosmic, electronics and extraterrestrial Tlamatini. `template` selects the document structure; `style` selects its visual identity. The catalogue action needs no TeX; see the [signature collection](Tlamatini/agent/agents/latexer/STYLES.md). |
+| **Discoverer** | **ProjectDiscovery** recon-suite bridge — ONE tool per run: `subfinder` (passive subdomain enum) / `httpx` (HTTP probe + fingerprint) / `naabu` (port scan; Windows-safe CONNECT default) / `katana` (crawler) / `nuclei` (template vuln scan) / `cvemap`→`vulnx` (CVE search; cvemap's own API was retired Aug 2025, so the tool runs `vulnx`), plus meta `bootstrap` / `validate` / `update_templates` / `list_tools`. Direct CLIs — no MCP server, stdlib-only, the sibling of Kalier / ESP32er / Arduiner. **Zero-config PRIVATE Go toolchain**: on first use it downloads the Go compiler into `<install_dir>/Go` and `go install`s the tools into `<install_dir>/Go/bin-tools` (no system Go, no PATH change; slow once, then cached). PDCP key OPTIONAL — set once in **Config ▸ Access Keys Wizard ▸ "Security Recon (ProjectDiscovery)"** (auto-injected on every run; redacted from `.flw` exports and by `regen_secrets.py`). Fail-safe preflight REFUSES rather than mis-scan. Emits `INI_SECTION_DISCOVERER<<<` (`tool`, `target`, `returncode`, `success`, `findings_count`, `json_path`, `pdcp_used`, `stage`, body = output) and always triggers `target_agents`. **Authorized targets only.** Canvas counterpart of the `chat_agent_discoverer` Multi-Turn tool. |
+| **Video-Analyzer** | Video-Analyzer supports `analysis_type: robotics` (default), `transcription`, and `summary`. Robotics preserves the deterministic motion gate and dual-vision/merge verdict, with `PASS_OK` only on two explicit independent passes. Transcription reads selected video audio tracks (`audio_tracks: all` or `0,1`) using Whisperer's local faster-whisper backend, GPU auto/CPU fallback and timestamped segments; it never opens a microphone. Summary combines speech with two independent visual observers over frame batches spanning the whole clip, then synthesizes an overview, chronology, readable screen text, facts, steps, decisions, action items and limitations. Content modes accept static scenes, bypass the motion gate, and emit `TLM_ANALYSIS::` tokens rather than robotics verdicts. Missing audio/speech and partial failures are explicit. Each content run saves transcript, segments, report and full analysis artifacts. Parametrizer and wrapped chat results expose `analysis_type`, `analysis_token`, `transcript`, `summary`, `audio_status`, timestamped `segments_json` and artifact paths; the body remains `response_body`. Input remains a file, wildcard, newest video in a folder or Camcorder pool name, or a web link (YouTube and other sites): Video-Analyzer downloads it itself (one item; sound only for transcription), joins picture and sound with PyAV when ffmpeg is absent, keeps a self-updating private yt-dlp, names every download failure, and adds `source_url`/`source_title` to its result. Always starts downstream agents; sampled perception is not exhaustive. |
+| **NetSpeed-Calculator** | Measures THIS machine's Internet connection and reports it **with an error bar** — download, upload, latency, jitter, packet loss and **bufferbloat** — following RFC 6349 (TCP throughput) and RFC 3550 §6.4.1 (jitter) against SEVERAL keyless public providers at once (Cloudflare, Ookla, Fast.com/Netflix, LibreSpeed, Hetzner, CacheFly — no API key, no login, no account). Per provider and direction it opens `parallel_streams` concurrent TCP flows, **DISCARDS the slow-start ramp** (`warmup_seconds`), and samples **d(bytes)/dt** every `sample_interval_seconds` rather than the naive total÷elapsed — which is what makes dropping the ramp possible and stops a constant socket-buffer occupancy inflating the upload figure. Samples are Tukey-IQR outlier-rejected, trimmed-mean averaged and given a Student-t interval; the providers are then FUSED by a **DerSimonian-Laird random-effects meta-analysis** that publishes a 95% confidence interval and the **I²** heterogeneity figure — so when CDNs genuinely disagree the interval widens on purpose instead of the flattering one winning. Bufferbloat is the RTT increase *under load*, graded **A+ → F**, and is usually the real reason a "fast" link has choppy calls. Endpoint discovery is live and self-healing: Ookla and LibreSpeed servers are chosen by **measured RTT** (a published list is geography, and geography is only a proxy for network distance), Cloudflare's object is clamped below the size it rejects with HTTP 403, LibreSpeed's retired backend is replaced by its public server list, `speed.hetzner.de` (now NXDOMAIN) by the `.com` mirror mesh, and Hetzner's reset-on-query-string is handled by a per-provider `cache_bust` flag plus a runtime self-heal. **A transfer that moves zero bytes must NAME its cause** — in the log and in the saved result — because a silent `0.00 Mbps` is indistinguishable from a slow link. `action` ∈ full / download / upload / latency / **validate** / providers; `validate` probes reachability without running throughput measurements, and `providers` prints the read-only catalog. Saves a full JSON artifact under `<app>/Temp/NetSpeedCalculator`; a fail-safe preflight REFUSES rather than publish a number it cannot trust. Emits `INI_SECTION_NETSPEED_CALCULATOR<<<` and always triggers `target_agents`. **⚠️ Consumes real, possibly metered bandwidth (~100-200 MB per full run)** and deliberately saturates the link — Ask-Execs tier D. Canvas counterpart of the `chat_agent_netspeed_calculator` Multi-Turn tool. |
+
+### PPTXer: choose a style and keep complete text visible
+
+Use `nuance` for the visual identity. The twelve additions are `swiss_editorial`, `warm_editorial`, `midnight_luxe`, `botanical`, `oceanic`, `blueprint`, `terracotta`, `nordic_frost`, `bauhaus`, `lavender_studio`, `monochrome_ink`, `sunset_coral`. Together with the original 24 content treatments, they make 36 named treatments. Empty `nuance` keeps automatic classification; a style key or display name selects a preset. Existing color, font, background, and density overrides take priority.
+
+```yaml
+action: create
+nuance: blueprint
+slide_size: "16:9"
+generate_art: true
+input_text: |
+  # Architecture review
+  ## Delivery plan
+  - Explain the system and its next milestone.
+```
+
+Long content is measured and can continue across slides; 256 characters is a tested field length, not a maximum. Inspect `status`, `layout_clean`, `ground_truth`, and the report's confidence before delivering a deck. `created_with_findings` means a deck exists and needs review. The [canonical guide](Tlamatini/agent/agents/pptxer/STYLES.md) records the 126-test snapshot, the 151-slide native new-style run, exact scope, and commands to regenerate the disposable evidence.
+
+### LaTeXer: choose a structure, then a style
+
+Use `template` for article, report, book, beamer, letter, cv, homework or spanish-article. Independently choose one of the 30 `style` IDs: for example `baby_blush`, `cyberpunk`, `cosmic_nebula`, `circuit_board` or `quetzal_supernova`. `action: list_styles` returns all IDs, aliases, families and motifs without an installed TeX engine.
+
+```yaml
+action: scaffold_compile
+template: report
+style: tlamatini_celestial
+title: Signals from the stars
+subtitle: A notebook of discovery
+style_mode: print
+style_decoration: rich
+style_cover: true
+predominant_color: "#238D87"
+content: |
+  \section{First observations}
+  Every signal is a question waiting for a measurement.
+```
+
+`screen` uses the selected style's light or dark palette; `print` uses white paper. `style_decoration` accepts none/restrained/rich, and a false `style_cover` gives a compact title (Beamer retains its title frame without illustration). Report/book include contents; CV/homework use compact headings; letters use a conventional opening and signature. Beamer has a separate rendering recipe and accepts a frame body. Metadata and content remain LaTeX: escape literal special characters and use `content_b64` for complex chat payloads.
+
+Styles apply to `create_file`, `create_from_template`, `scaffold_compile`, and fragment `compile` with `auto_preamble: true`. Omit `style` for complete `.tex` sources and projects; those already own their preamble. Empty/none/plain/default preserves legacy rendering. Unknown styles are refused. The generated source is editable and uses original TikZ geometry and portable Latin Modern fonts. The palette maintains a 4.5:1 text contrast floor against assigned grounds; custom LaTeX still needs normal layout review.
+
+The [complete style guide](Tlamatini/agent/agents/latexer/STYLES.md) includes all IDs, table/callout helpers, result fields and the real-engine verification matrix. In flows, inspect `status`/`success` before forwarding `output_path`; a catalogue response is `listed`, with `style_count: 30`, and creates no PDF.
+
+## Terminal / monitoring (do NOT start downstream)
+
+| Agent | Purpose |
+|---|---|
+| **Monitor-Log** | LLM-powered log file monitor. |
+| **Monitor-Netstat** | LLM-powered network port monitor. |
+| **Emailer** | SMTP email on pattern detection. |
+| **RecMailer** | IMAP receiver with LLM keyword analysis. |
+| **Notifier** | Browser popup + optional sound on pattern detection (LangGraph). |
+| **FlowHypervisor** | LLM watchdog over running agents. (See §23.) |
+
+## AI / design
+
+| Agent | Purpose |
+|---|---|
+| **FlowCreator** | LLM that designs flows from natural-language objectives. (See §24.) |
+
+---
+
+# Part V — The Tool Surface
+
+Every tool the chat LLM can call in Multi-Turn mode. Tools can be individually enabled/disabled via the **Tools Dialog** in the chat.
+
+## 27. Core tools
+
+| Tool | What it does |
+|---|---|
+| `get_current_time` | Returns current datetime. |
+| `execute_command` | Shell command. |
+| `execute_file` | Run a Python script in a new terminal. |
+| `execute_netstat` | Network diagnostics. |
+| `launch_view_image` | Open an image in a viewer. |
+| `unzip_file` | Extract ZIP archives. |
+| `decompile_java` | Decompile JAR/WAR via bundled `jd-cli`. |
+| `opus_analyze_image` | Image analysis with Claude Opus. |
+| `qwen_analyze_image` | Image analysis with Qwen via Ollama. |
+| `googler` | Direct Playwright web search + extraction; put manual Google operators in `query`. Structured dork fields/presets are available on the visual/pool Googler agent. |
+| `agent_parametrizer` | Configure a template workflow agent from chat. |
+| `agent_starter` | Start a template workflow agent from chat. |
+| `agent_stopper` | Stop a template workflow agent. |
+| `agent_stat_getter` | Check template-agent runtime status. |
+| `interactor` | Read and edit the live unsaved canvas; teach one segment, guide a learner field, save with authorization. |
+
+## 28. Wrapped chat-agent tools (67)
+
+Each wrapped tool launches an isolated, sequenced runtime copy of a workflow agent template under `agent/agents/pools/_chat_runs_/{agent}_{seq:03d}_{short_id}/`. Failed runs are preserved.
+
+| Family | Tool names |
+|---|---|
+| **Execution & files** | `chat_agent_executer`, `chat_agent_pythonxer`, `chat_agent_terminater`, `chat_agent_pser`, `chat_agent_move_file`, `chat_agent_deleter`, `chat_agent_sleeper` |
+| **DevOps & infra** | `chat_agent_gitter`, `chat_agent_dockerer`, `chat_agent_kuberneter`, `chat_agent_jenkinser`, `chat_agent_ssher`, `chat_agent_scper` |
+| **Data & interpretation** | `chat_agent_sqler`, `chat_agent_mongoxer`, `chat_agent_file_creator`, `chat_agent_file_extractor`, `chat_agent_file_interpreter`, `chat_agent_image_interpreter`, `chat_agent_summarize_text` |
+| **Notifications & comms** | `chat_agent_send_email`, `chat_agent_notifier`, `chat_agent_telegrammer`, `chat_agent_whatsapper`, `chat_agent_recmailer` |
+| **Desktop UI automation** | `chat_agent_shoter` (read-only), `chat_agent_camcorder` (read-only — webcam photo/video via OpenCV; canvas counterpart is the Camcorder workflow agent), `chat_agent_recorder` (read-only — microphone audio → WAV via `sounddevice`; canvas counterpart is the Recorder workflow agent), `chat_agent_audioplayer` (observational/output — plays an audio file to the speakers via `soundfile` + `sounddevice`, with `volume_percent` and a `time_played` truncate/loop; canvas counterpart is the AudioPlayer workflow agent), `chat_agent_videoplayer` (observational/output — plays a video file with audio on a chosen display via `ffpyplayer` + OpenCV, with `display_index` / `volume_percent` / `time_played` truncate-loop / window-size / `fullscreen`; canvas counterpart is the VideoPlayer workflow agent), `chat_agent_keyboarder`, `chat_agent_mouser`, `chat_agent_windower` |
+| **Routing** | `chat_agent_asker` |
+| **Archives & decompilation** | `chat_agent_j_decompiler`, `chat_agent_de_compresser` |
+| **Game engines** | `chat_agent_unrealer` (drives an Unreal Engine 5 editor via the Unreal MCP plugin's TCP socket; canvas counterpart is the Unrealer workflow agent — see §57) |
+| **3D / DCC** | `chat_agent_blenderer` (drives Blender via the official Blender MCP add-on's TCP socket — a code-execution protocol with a rich action catalog; canvas counterpart is the Blenderer workflow agent — see §59) |
+| **Embedded / firmware** | `chat_agent_stm32er` (scaffolds / builds / flashes / observes STM32F407VG firmware through the STM32 Template Project MCP — 23 MCP tools + `serial_session` / `live_monitor` composites + `bootstrap` / `validate` meta-actions; zero-config auto-bootstrap downloads the MCP itself, and a safety preflight refuses to compile or flash on a bad toolchain / missing ST-LINK / wrong device family; canvas counterpart is the STM32er workflow agent), `chat_agent_esp32er` (ESP32 firmware via PlatformIO `pio` CLI directly — **no MCP server**; `scaffold_build_upload` collapses create→write→build→upload into one run; zero-config `get-platformio.py` bootstrap + serial-port preflight; canvas counterpart is the ESP32er workflow agent), `chat_agent_arduiner` (Arduino firmware via `arduino-cli` directly — **no MCP server**; MCU chosen by `fqbn`; zero-config arduino-cli binary bootstrap + auto-core-install; ships an ArduinoTemplateProject scaffold; canvas counterpart is the Arduiner workflow agent) |
+| **Web & browser** | `chat_agent_playwrighter` (drives a real browser through a scripted step list — login, forms, clicks, waits, extraction, screenshots, asserts, downloads; canvas counterpart is the Playwrighter workflow agent) |
+| **Crawling, monitoring, APIs, prompts, crypto** | `chat_agent_crawler`, `chat_agent_monitor_log`, `chat_agent_monitor_netstat`, `chat_agent_apirer`, `chat_agent_prompter`, `chat_agent_kyber_keygen`, `chat_agent_kyber_cipher`, `chat_agent_kyber_deciph` |
+
+## 29. Wrapped runtime lifecycle tools (6)
+
+After launching a wrapped agent, you can monitor and control it:
+
+| Tool | What it does |
+|---|---|
+| `chat_agent_run_list` | List recent runs (capped by `chat_agent_limit_runs`). |
+| `chat_agent_run_status` | Inspect status of one run. |
+| `chat_agent_run_log` | Read the latest log excerpt. |
+| `chat_agent_run_stop` | Stop a run by `run_id`. |
+| `chat_agent_run_wait` | **Block** until a run reaches a terminal status (or `max_seconds` fires). Replaces busy-poll loops. |
+| `window_present(title)` | Fast (<100 ms) yes/no helper for "is this window open?" — use this instead of `chat_agent_image_interpreter` for window-presence gates. |
+
+## 30. ACPX & Skills tools (12)
+
+The ACPX/Skill surface. Every tool returns a JSON envelope. Failure envelopes are always `{ ok: false, reason: "...", code: "..." }`.
+
+| Tool | What it does |
+|---|---|
+| `acp_doctor` | Health-probe the runtime + enumerate every registered ACP agent with on-PATH `resolvable` and `cli_version`. **Always call first** when starting an ACPX flow. |
+| `list_acp_agents` | Cheap enumeration without the probe. |
+| `acp_spawn(agent_id, task, …)` | Spawn an external CLI as a child process. Returns `session_id`, `transport`, `transcript_path`, `events`. **TUI agents return sub-second**; pass `timeout_seconds>0` to force a drain on spawn. |
+| `acp_send(session_id, text, …)` | Send a follow-up turn. |
+| `acp_send_and_wait(session_id, text, until_idle_seconds=10, max_wait_seconds=180)` | Send and **block until the child settles**. Prefer this for "wait for the full answer" prompts. |
+| `acp_kill(session_id)` | Terminate a session. Returns `transcript_path` so the row in Exec Report can cite it. |
+| `acp_transcript(session_id, max_chars, direction)` | Read the on-disk NDJSON transcript. Use for harvest / cite-evidence prompts. |
+| `acp_session_status(session_id)` | `{alive, pid, transcript_size, last_event_at, closed}`. |
+| `acp_list_sessions` | Enumerate live sessions. |
+| `acp_relay(session_id_src, session_id_dst, transform, …)` | **Single-call hand-off** between sessions. Replaces transcript→manipulate→send. |
+| `invoke_skill(skill_name, args_json)` | Run a registered SKILL.md package inside the `SkillHarness`. |
+| `list_skills(filter_keywords)` | List every registered skill. |
+
+The 27 seed skills (`agent/skills_pkg/<name>/SKILL.md`) cover: `hello-world`, `skill-creator`, `acp-router`, `setup-new-acpx-key`, `summarize`, `weather`, `flow-making` (objective → canvas-loadable `.flw` by driving the FlowCreator engine), `create-new-agent` / `create-new-mcp` (authoring runbooks for Tlamatini's own surfaces), `code-review` (senior-engineer git-diff review with a verdict), `security-audit` (multi-scanner SAST/secret/dependency sweep), `kali-pentest` (authorized Kali Linux / MCP-Kali-Server assessment runbook driving the Kalier agent), `tlamatini-*` (8 maintenance skills: csrf-exempt-audit, exec-report-row-adder, allowed-hosts-tighten, planner-trace-replay, flow-from-objective — now delegates to flow-making, flw-doctor, new-acp-agent, static-version-bumper), and OpenClaw-format ports for `github`, `notion`, `jira`, `slack`, `gmail`, `todoist`, `trello`.
+
+---
+
+# Part VI — Inside Tlamatini
+
+This is the deep-dive section. Skip if you only want to use Tlamatini.
+
+## 31. The big picture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  Browser (Chat UI / ACP Workflow Designer)                          │
+└──────────────────────────────────┬──────────────────────────────────┘
+                                   │ WebSocket (ws://)
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│  Django Channels (Daphne ASGI)                                      │
+│    AgentConsumer  →  routing, session, heartbeat                    │
+└──────────────────────────────────┬──────────────────────────────────┘
+                                   │
+       ┌───────────────────────────┼───────────────────────────┐
+       ▼                           ▼                           ▼
+┌──────────────────┐   ┌────────────────────┐   ┌─────────────────────┐
+│  RAG Pipeline    │   │  Unified Agent     │   │  MCP Services       │
+│  Document loader │   │  Multi-Turn loop   │   │  System metrics     │
+│  FAISS + BM25    │   │  Tool execution    │   │  (WebSocket)        │
+│  Context budget  │   │  Planner / DAG     │   │  File search (gRPC) │
+│  Fallback mode   │   │  Wrapped runtimes  │   │                     │
+└──────────────────┘   └────────────────────┘   └─────────────────────┘
+       │                           │                           │
+       └─────────────┬─────────────┴─────────────┬─────────────┘
+                     ▼                           ▼
+       ┌─────────────────────────┐   ┌──────────────────────────┐
+       │ LLM Backends            │   │  ACPX Runtime            │
+       │ Ollama  Claude  Qwen    │   │  External CLIs as kids   │
+       └─────────────────────────┘   └──────────────────────────┘
+```
+
+## 32. The Five Layers
+
+The system is organized in five conceptual layers. Each layer has a single responsibility.
+
+| Layer | Responsibility | Where it lives |
+|---|---|---|
+| **1. Persisted toggles** | Database rows for `Mcp`, `Tool`, and `Agent` — the UI's enable/disable state. | `agent/models.py` |
+| **2. Runtime MCP services** | System-Metrics (WebSocket) and Files-Search (gRPC) running as daemon threads. | `agent/mcp_*` |
+| **3. Context fetcher chains** | LCEL sidecars that fetch system / files context and inject it into the answer chain. | `agent/chain_*_lcel.py` |
+| **4. Main answer chains** | Basic / History-aware / Unified chains. `factory.py` monkey-patches `invoke()` to wire context from sidecars. | `agent/rag/chains/` |
+| **5. Unified-agent tools** | Synchronous LangChain `@tool` functions returned by `get_mcp_tools()`. Only active when the unified-agent chain is selected. | `agent/tools.py` |
+
+## 33. RAG pipeline
+
+When you set a directory as context:
+
+1. **Load** every text file under the path.
+2. **Chunk** into 3000-character windows with 800-char overlap.
+3. **Extract metadata** — class names, function names, imports, file roles (`controller`, `data_model`, `service_layer`, …).
+4. **Embed** each chunk using the model in `config.embeding-model`.
+5. **Build** the FAISS index.
+6. **Build** the BM25 index in parallel.
+7. At query time, both indexes return their top-K hits; **Reciprocal Rank Fusion** combines them; **context budgeting** picks chunks within token limits, allocating 60% to high-relevance, 20% to architecture, 15% to related, 5% to documentation.
+
+If embedding fails (out-of-memory), **memory-insufficient fallback** kicks in: the loaded source files are packed into a raw context block and injected directly into the prompt-only / unified-agent path. You get reduced retrieval quality, not a wiped chat.
+
+## 34. Embedding-memory pre-flight guard (GPU hosts)
+
+When you click **Set directory as context** in the Context menu, Tlamatini is about to do something dangerously bursty: walk every text file under the path, split each into chunks, push every chunk through Ollama's embedding API to build a FAISS index, and only then return control to the chat. On a PC or consumer GPU this is the moment of truth — if the embedding model needs more VRAM than the GPU can spare, Ollama starts evicting and re-loading on every batch, and what should be a thirty-second operation turns into a multi-hour stall while RAM and VRAM swap back and forth across the PCIe bus. The dev box this codebase is calibrated on — an RTX 4070 Laptop with 8 188 MiB of VRAM — sees exactly this with the default embedding model `qwen3-embedding:8b`, which sits at ~6.24 GB resident, 77.9 % of total. Add a chat model on top, and the GPU is over capacity.
+
+The **embedding-memory pre-flight guard** (`Tlamatini/agent/embedding_memory_guard.py`, introduced 2026-05-12) catches the problem before the embed burst starts. It runs only when an NVIDIA GPU is detected. On CPU-only, AMD, and Apple Silicon hosts it is a silent no-op, and the legacy load path is unchanged. The guard is informational and non-blocking — it raises a chat-bubble warning, then lets the load proceed. The choice of whether to wait it out, hit Cancel, or change models in `config.json` belongs to the user.
+
+### Where the guard fires
+
+There is exactly one hook in the codebase, and it lives in `agent/consumers.py::setup_contextual_rag_chain`. After the consumer broadcasts the "Loading context…" banner to the chat (`MSG_AGENT_LOADING_CONTEXT`), and before it schedules the heavy `asyncio.to_thread(setup_llm_with_context, …)` call that drives `FAISS.from_documents(...)`, the guard runs inside its own `asyncio.to_thread` — both so a slow `nvidia-smi` probe never blocks the Channels event loop, and so the whole step can be wrapped in `try/except Exception` to enforce a strict fail-open contract.
+
+```
+WebSocket "set-directory-as-context"
+        ↓
+consumers.py:setup_contextual_rag_chain(path_only)
+        ↓
+broadcast MSG_AGENT_LOADING_CONTEXT  ──→  user sees "Loading context…"
+        ↓
+► embedding_memory_guard.check_embedding_memory_for_directory(...)
+        │
+        ├── returns None     → proceed silently
+        │                      (no GPU, under threshold, or any probe failed)
+        │
+        └── returns warning  → broadcast HTML warning chat bubble
+                             → proceed anyway (informational, non-blocking)
+        ↓
+asyncio.to_thread(setup_llm_with_context, ...)
+        └─ OllamaEmbeddings + FAISS.from_documents(...)   ← the VRAM burst
+```
+
+If anything goes wrong inside the guard — `nvidia-smi` missing, Ollama unreachable, a JSON-shape change in a future Ollama release — the `try/except` swallows the exception, prints a one-line `--- [EMBED-MEM] Pre-flight check skipped (fail-open): …` to `tlamatini.log`, and the load continues. A diagnostic must never block the user. This is the same fail-open philosophy `agent/gpu_perf.py` uses for its model-pinning hook, and it pairs naturally with the existing `_has_nvidia_gpu()` cache that the guard re-uses for its first gate.
+
+### Detection — who pays for the check
+
+The guard's very first action is to ask the cached `gpu_perf._has_nvidia_gpu()` probe whether this host has an NVIDIA GPU at all. That helper runs `nvidia-smi -L` exactly once per process and caches the result in a module-level boolean. On a CPU-only Linux or Windows machine, an AMD GPU, or Apple Silicon, the probe returns `False` once at server start, and **every subsequent call to the guard returns `None` immediately** — no subprocesses spawned, no HTTP calls made, no overhead beyond a single boolean check.
+
+This is the portability guarantee. A fresh `git pull` on a no-GPU box behaves exactly as before the guard existed. The 28 dedicated no-GPU compatibility tests in `agent/test_embedding_memory_guard.py::NoGpuCompatibilityTests` pin the contract in place; the most consequential of them, `test_real_entry_point_call_never_raises`, calls the real entry point with the real subprocess + real urllib code paths and asserts the return is **either** `None` **or** a well-formed warning dict — never an exception. The same test passes on this RTX 4070 dev box and on a CPU-only CI image.
+
+### Three-tier VRAM prediction
+
+When the GPU gate passes, the guard predicts the embedding model's resident VRAM in three tiers, in priority order — each more accurate than the next is convenient:
+
+**Tier A — model already resident.** A `GET /api/ps` against the Ollama daemon returns a list of currently-loaded models, each with a `size_vram` field that is the exact bytes Ollama allocated for that model. If the configured `embeding-model` shows up in the list, the guard uses `size_vram` verbatim. There is no estimation here — this is daemon ground truth.
+
+**Tier B — model on disk but not loaded.** A `POST /api/show` returns the model's metadata: parameter count, quantization level, embedding dimension, layer count, attention shape. The guard computes weights bytes as `parameter_count × bits_per_weight(quant) / 8`, then multiplies by an overhead factor that accounts for KV cache, activation buffers, and the GGML allocator's slack. The bits-per-weight table follows the standard llama.cpp / GGUF averages — `F16` is 16 bits, `Q8_0` is 8.5, `Q4_K_M` is 4.83, `Q2_K` is 2.96. Unknown quants fall back to a conservative `5.0`. The overhead is **×1.40** for models with at least one billion parameters and **×2.20** for sub-1 B models, where the proportional cost of fixed KV/buffer overhead is larger.
+
+**Tier C — anything else.** If Ollama is down, the model has not been pulled, or it is a cloud model (`:cloud` suffix), the guard returns `None` and lets the load proceed. This is fail-open by design.
+
+The overhead numbers are not guesses; they were calibrated on this dev box against two real models:
+
+| Model | params × bits/8 (raw) | × overhead = predicted | Ollama-reported resident | error |
+|---|---|---|---|---|
+| `qwen3-embedding:8b` (Q4_K_M) | 4.54 GB | **6.36 GB** (× 1.40) | 6.24 GB | +1.9 % |
+| `Nomic-Embed-Text:latest` (F16) | 274 MB | **603 MB** (× 2.20) | 600 MB | +0.5 % |
+
+Both predictions land within 2 % of the measured value. The two-tier overhead split (large vs small) gives a tighter fit than any single multiplier would have. When a future model family proves the calibration off by more than 10 %, the two `_OVERHEAD_*` constants in the module are the only knobs to recalibrate.
+
+The same `/api/show` payload also tells the guard the model's embedding dimension. The key is architecture-prefixed — `qwen3.embedding_length=4096`, `nomic-bert.embedding_length=768` — and the guard finds it by suffix match, so a new architecture (whatever Ollama adopts next) does not need code changes.
+
+### What VRAM is the model competing against?
+
+The guard reads total VRAM via `nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits`, parses one integer per line, and **picks the smallest of the values**. Why the smallest? Because Ollama loads each model into a **single device** by default. Using the sum of all GPUs would silently under-report the constraint on a heterogeneous rig (e.g. an 8 GiB consumer card paired with a 4 GiB eGPU), and using the largest would mis-predict on the bad cases the warning is meant to catch. The smallest single-GPU value is the conservative constraint.
+
+The 80 % threshold then compares: when **predicted_vram ≥ 0.80 × smallest_gpu_total**, the warning fires. The threshold is a function argument (default `0.80`) so the trigger can be tuned per installation. The number was picked to leave room for chat-model overhead, OS-reserved memory, and the activation buffers Ollama needs on every embed batch — anything tighter than 80 % is already in the "expect slow embed throughput or RAM↔VRAM swap" zone.
+
+### The chat-bubble warning
+
+When the threshold trips, the guard returns a structured dict and the consumer renders it as an HTML chat bubble — the same `agent_message` surface the chat already uses for every Tlamatini-side message. A real example from this dev box, with the threshold artificially lowered to 70 % so `qwen3-embedding:8b` trips:
+
+> ⚠️ **Embedding-memory warning**
+>
+> Embedding model `qwen3-embedding:8b` needs ~6,378 MiB of VRAM (currently resident in VRAM), which is **77.9 %** of the smallest GPU's total (8,188 MiB) — above the safety threshold of 70 %.
+>
+> Projected FAISS vector store (RAM, not VRAM): ~28 MiB across 1,847 chunks at dim 4096.
+>
+> Context loading will continue, but expect slow embedding throughput or RAM↔VRAM swap. To eliminate the pressure, switch `embeding-model` in `config.json` to a smaller model (e.g. `nomic-embed-text:v1.5`) and restart.
+
+Notice the source qualifier: *currently resident in VRAM* means the prediction came from Tier A — exact `/api/ps`. *Estimated from model parameters* means Tier B. The user always knows whether they are looking at ground truth or an extrapolation.
+
+The FAISS line is an informational projection. The guard pre-scans the chosen directory the same way `CustomTextLoader` will, applying the same exclusions (`package-lock.json`, `yarn.lock`, `*.<user-omitted>`, …), and counts projected chunks per file using `ceil(file_size / (chunk_size − chunk_overlap))`, capped by `max_chunks_per_file`. Multiplied by `embedding_dim × 4` bytes (float32 vector storage), that gives the FAISS index's RAM footprint. This is **not** VRAM; FAISS lives on CPU. It is shown for one reason: very large directories produce very large indexes that can matter for the host's RAM budget independently of the GPU question.
+
+### Tuning, overrides, and explicit non-goals
+
+The guard exposes four knobs, all in the module:
+
+| Knob | Default | When to change |
+|---|---|---|
+| `threshold` (function argument) | `0.80` | Pass `0.70` on small GPUs (6 GB cards) where 80 % is already too tight. |
+| `_OVERHEAD_LARGE` constant | `1.40` | Recalibrate against `/api/ps` if a new model family proves it off by > 10 %. |
+| `_OVERHEAD_SMALL` constant | `2.20` | Same calibration story for sub-1 B models. |
+| `_QUANT_BITS` dict | standard table | Add an entry when a new GGUF quant ships. |
+
+And four things the guard deliberately does **not** do:
+
+It does not abort context loading. The warning is informational. If you want abort-on-warning behavior, you can wire a confirm/cancel WebSocket round-trip — the surface is described in `agent_page_init.js` near the `set-dir-context` listener.
+
+It does not estimate the chat model's VRAM. Only the embedding model is checked, because that is the model the directory-load path forces into VRAM at this exact moment. The chat model is handled separately by `gpu_perf.pin_ollama_model`.
+
+It does not persist warnings. Each context-load runs an independent check; toggling `config.json` and reloading will surface a fresh prediction next time.
+
+It does not call `nvidia-smi` on CPU-only hosts. Both gates — the cached `_has_nvidia_gpu_cached()` and the `_gpu_total_memory_bytes()` query — short-circuit before any subprocess spawn. `top` on a CPU-only box will show zero new processes when a user clicks **Set directory as context**.
+
+### Test coverage
+
+The guard ships with **49 automated tests** in `agent/test_embedding_memory_guard.py`, organized into seven `SimpleTestCase` classes. Two of them deserve special mention.
+
+`PredictFromShowTests` (3 tests) pins the Tier-B math against the two reference models the calibration was derived from: `qwen3-embedding:8b` must predict within ±5 % of the 6.24 GB measured, and `Nomic-Embed-Text:latest` within reasonable bounds of the 600 MB measured. If a future change to the overhead constants or the bits-per-weight table breaks these, the suite fails loudly.
+
+`NoGpuCompatibilityTests` (28 tests) is the portability proof. Its coverage matrix walks every failure mode a non-NVIDIA / no-driver / no-Ollama machine can hit: `nvidia-smi` binary missing entirely; `nvidia-smi` present but driver unloaded; the binary hangs and `subprocess.run` raises `TimeoutExpired`; permission denied; generic `OSError`; empty or unparseable output; heterogeneous multi-GPU rig; `gpu_perf` module missing or its probe raising; Ollama daemon offline; closed port; malformed URLs; model not in `/api/ps`; entry on a CPU-only host; GPU detected but `--query-gpu` fails; GPU detected but Ollama offline; pathological 0 MiB GPU readings; empty `ollama_base_url`; deleted or non-existent directory paths; unreadable files inside the walked tree; partial warning dicts with missing optional keys. The capstone test, `test_real_entry_point_call_never_raises`, makes the *actual* `subprocess.run(["nvidia-smi", …])` and `urlopen("http://127.0.0.1:11434/…")` calls against whatever the runner offers, and asserts the return is **either** `None` **or** a well-formed warning dict — never an exception. The same test passes on this RTX 4070 dev box (returns `None` because qwen3-embed sits at 77.9 %, just under the 80 % gate) and on a CPU-only CI image (returns `None` because the GPU gate fails fast).
+
+To run the full guard suite:
+
+```
+cd Tlamatini
+python manage.py test agent.test_embedding_memory_guard --verbosity=2
+```
+
+Forty-nine tests in roughly 2.3 seconds, no database setup, no GPU required.
+
+## 35. Multi-Turn execution pipeline
+
+Below the toolbar checkbox, here is what really happens when you tick **Multi-Turn**:
+
+```
+1. FRONTEND
+   User types message + ticks Multi-Turn
+   → WebSocket sends {message, multi_turn_enabled: true,
+                      exec_report_enabled: ?, acpx_enabled: ?,
+                      ask_execs_enabled: ?}
+                                ↓
+2. WEBSOCKET CONSUMER (consumers.py)
+   Saves to DB, broadcasts user message, queues LLM retrieval
+                                ↓
+3. RAG INTERFACE (rag/interface.py)
+   Bypasses prompt-shape validation (acpx_enabled OR multi_turn_enabled)
+   Bypasses path-access validation
+   Passes flags into the chain payload
+                                ↓
+4. UNIFIED RAG CHAIN (rag/chains/unified.py)
+   Retrieves docs, builds enhanced input
+   Bypasses file-listing short-circuit
+   Filters tools through agent.acpx.filter_acpx_tools(tools, acpx_enabled)
+                                ↓
+5. CAPABILITY-AWARE EXECUTOR (mcp_agent.py)
+   Picks the relevant tool subset (default cap: 20 tools)
+   Builds a request-scoped MultiTurnToolAgentExecutor
+                                ↓
+6. MULTI-TURN TOOL LOOP
+   for i in 1..unified_agent_max_iterations (default 4096):
+     LLM call with bind_tools(selected_tools)
+     if tool_calls:
+       for each call (after dedup + quota):
+         if ask_execs_enabled and call is state-changing:
+           BLOCK on browser Proceed/Deny (ExecPermissionBroker)
+           if DENIED: record denial, HALT the whole chain
+         execute, append ToolMessage
+       continue
+     if pure text: that's the final answer, exit loop
+                                ↓
+7. EXEC REPORT (if exec_report_enabled)
+   Capture every state-changing tool call into _exec_report_entries
+   Render <table class="exec-report-...">
+   Append to llm_response BEFORE save_message (strict ordering)
+   If a tool was DENIED (Ask Execs): append the red "Execution
+   interrupted" banner (always, regardless of exec_report_enabled)
+                                ↓
+8. WEBSOCKET BROADCAST
+   {message, tool_calls_log, multi_turn_used}
+                                ↓
+9. FRONTEND
+   appendChatMessage() renders prose, then exec-report tables / denial banner
+   if Multi-Turn ran with ≥1 SUCCESSFUL agent (and user not anonymous)
+   → render "Create Flow" button (no whole-answer classifier gate;
+     the flow is built from only the successful agents)
+```
+
+### Self-healing model steps — she never hangs, never loses your work, never lies (2026-07-06)
+
+Every time Tlamatini talks to the model during a Multi-Turn run (step 6 above), that call goes through a **self-healing invoker** (`agent/self_healing.py`). If the model hiccups — a slow network, an overloaded server, an empty response — she does not freeze and she does not give up:
+
+- **She never hangs.** Each attempt has a time limit (`unified_agent_llm_step_timeout_seconds`, 80 s by default); an attempt that runs over is abandoned, not waited on. She then tries again with a *different* tactic — plain retry, a short back-off, trimming the oldest messages, or a plain no-tools call — up to `unified_agent_llm_step_max_tactics` (4096) times. Only **you** (pressing Cancel) — or running out of tactics — stops her.
+- **She never throws away work.** If she truly cannot reach the model but agents have already run, she finishes from that real work instead of discarding it, so your **Create Flow** button and **Exec report** still appear and the answer is honest about what actually got done.
+- **She never lies about it.** However the run ends, a short recovery note is prepended to the answer telling you exactly what she went through, and while she is retrying you see live status messages appear in the chat.
+
+### The Ask-Execs permission round-trip (step 6, expanded)
+
+The Multi-Turn executor is **synchronous** and runs in a worker thread (`sync_to_async(ask_rag, thread_sensitive=False)`), so it cannot `await` a WebSocket reply directly. `agent/exec_permission.py::ExecPermissionBroker` bridges the gap:
+
+1. The consumer registers one broker per request, keyed by user id, before invoking the chain (and tears it down in a `finally`).
+2. Before a state-changing tool runs, the executor calls `broker.request_permission(detail)`, which emits an `exec_permission_request` frame onto the consumer's event loop (`asyncio.run_coroutine_threadsafe`) and then **blocks on a `threading.Event`**.
+3. The browser shows the modal and replies with an `exec-permission-response` frame; the consumer routes it through `resolve_permission(user_id, request_id, decision)`, which sets the event and unblocks the executor.
+4. **Proceed** → the tool runs. **Deny** → `_exec_denied` is recorded and the executor returns immediately, halting the chain; the denial detail flows back through the chain → `interface.ask_rag` (`global_state['last_exec_report_denied']`) → the consumer → `response_parser` renders the red banner.
+
+The round-trip is **fail-safe**: an emit failure, a mid-flight Cancel, or a broker `close()` (e.g. the browser disconnected) all resolve to **Deny**, so an unconfirmed state-changing tool never runs. The wait loop polls `cancel_generation` on a short tick so a Cancel never deadlocks the worker thread. Read-only / polling tools are exempt from the prompt (they only observe).
+
+The capability-aware selector scores each tool with name match (+14 exact), alias / hint phrase match (+10–12), example-request token overlap (up to +3), description token overlap (up to +10), plus a +15 history-aware boost on short follow-ups (≤4 meaningful tokens). The cap is 20 tools per request by default — lowered from 50 after observing keyword inflation pulled in everything.
+
+## 36. ACPX runtime mechanics
+
+ACPX is a Python port of OpenClaw's ACPX plugin. The `agent_id` mapping, `permissionMode` vocabulary, and SKILL.md frontmatter contract match OpenClaw verbatim.
+
+### Three transport profiles
+
+| Transport | Used by | Drain mechanic |
+|---|---|---|
+| `oneshot-prompt` | claude, codex, cursor, gemini, qwen | Re-spawn the CLI fresh per turn with the prompt as a CLI arg (`claude -p "<task>"`, `codex exec "<task>"`, …). Close stdin. `proc.communicate(timeout=180)` captures stdout to EOF. **The only transport that reliably captures TUI agents on Windows** — long-lived stdin-fed children only capture the outbound prompt because TUI CLIs detect a piped stdout and refuse to flush. |
+| `json-acp` | tlamatini self-host | Strict ACP envelope: drain until `{"done": true}` line. |
+| `tui-repl` | kiro, kimi, iflow, kilocode, opencode, pi, droid, copilot | Long-lived REPL. Drain via the **transport-aware idle rule**: armed after `startup_grace + idle_seconds` even with zero events (a silent TUI is, by definition, finished). |
+
+### The idle-rule fix
+
+Before the redesign, every TUI spawn burned the full 45 s timeout because the idle rule required `event_count > 0`, but TUIs almost never emit stdout when fed JSON on a piped stdin (Node block-buffers stdout to 64 KB when piped). The transport-aware idle rule fires on `tui-repl` even with zero events. **Per-leg latency dropped from ~91 s to ~9 s.**
+
+### Per-event payload trimming
+
+Every event-returning tool caps each event body at `max_event_chars` (default 2048) before returning it to the LLM. A chatty REPL paste-back of a long document cannot blow the LLM's context budget on the next iteration. Trimmed events carry `_truncated: true`.
+
+### Permission gating
+
+| Mode | What it does |
+|---|---|
+| `approve-reads` (default) | Reads auto-approved; writes / shell / network / db need a prompt. |
+| `approve-all` | Auto-approves everything. **Flagged DANGEROUS.** |
+| `deny-all` | Lockdown — even `acp_spawn` returns `PERMISSION_DENIED`. `acp_doctor` still works. |
+
+Plus a non-interactive policy (`deny` / `fail`) for unattended runs.
+
+### Persisted artifacts on disk
+
+| Path | What |
+|---|---|
+| `<stateDir>/<session>.json` | `AcpSessionRecord` (session_id, agent_id, cwd, paths, pid, timestamps, closed). |
+| `<stateDir>/<session>.transcript.ndjson` | Per-session full transcript: one `{"direction":"out", "text":..., "ts":...}` line per outbound, one `{"direction":"in", "raw":..., "ts":...}` per inbound. |
+| `~/.tlamatini/skill-audit/<YYYY-MM>/<epoch>_<skill>_<id8>.ndjson` | Per-`invoke_skill` audit. Append-only. Replayable byte-for-byte. |
+
+### ACPX visual canvas counterpart
+
+The **ACPXer** workflow agent is the canvas counterpart of the 12 LLM-facing tools. One ACPXer node = one ACPX session lifecycle. It mirrors the runtime mechanics inline (in ~120 lines) because workflow agents in the pool run as separate Python subprocesses and cannot import `agent.acpx`. The transcript format is byte-identical, so an ACPXer transcript is interchangeable with a chat-driven one.
+
+## 37. Database models
+
+13 models in `agent/models.py`. The ones that matter day-to-day:
+
+| Model | Purpose |
+|---|---|
+| `Agent` | Type registry — one row per agent type in the sidebar (`idAgent`, `agentName`, `agentDescription`, `agentContent`). |
+| `Mcp` | UI toggle rows for MCP context providers. |
+| `Tool` | UI toggle rows for unified-agent tools. |
+| `ChatHistory` | Chat messages, with per-user isolation via `conversation_user`. |
+| `AgentMessage` | Per-message records, `conversation_user` foreign key for user isolation. It is the ONLY place the LLM's conversation memory lives (re-read before every answer), which is why the chat card's **Drop** deletes one row and needs no reconnect. |
+| `AcpAgent` | Mirrors `agent_registry.py + config.json` overrides. Reconciled by `service.boot_acpx()` on every start. |
+| `Skill` | Mirrors `SKILL.md` packages. Reconciled by `service.boot_skills()`. |
+| `AcpSession` | One row per real (or recently-real) ACP child. |
+| `SkillInvocation` | Append-only audit row per `invoke_skill` call. |
+| `ChatAgentRun` | Per wrapped chat-agent run — run_id, status, runtime_dir, log_path, start/end times. |
+| `SessionState` | Per-user session state (24-hour TTL). |
+| `AgentProcess` | Tracked PIDs for canvas agents. Cleared on shutdown. |
+| `Omission` | Secret-redaction patterns for context. |
+
+## 38. The application log (`tlamatini.log`)
+
+`Tlamatini/manage.py` defines a `_TeeStream` wrapper that replaces `sys.stdout` and `sys.stderr` **before Django initializes**. Every print, every Django logger (they all use `StreamHandler`), and every tool's stdout/stderr lands in both the console and a single file:
+
+| Mode | Path |
+|---|---|
+| Source | `Tlamatini/tlamatini.log` (next to `manage.py`) |
+| Frozen (PyInstaller) | Next to the executable |
+
+Characteristics:
+
+- **Truncated on every restart** (mode `'w'`).
+- **No rotation, no size cap.** Long sessions grow unbounded — copy or rename before restart if you need history.
+- **Stream-level**, upstream of Django's logging config — picks up `print()` calls and third-party stdout too.
+- **HTTP GET noise filter**: successful `"GET /…" 200/304` lines are silenced (the per-poll runtime status pings flooded the log otherwise). Non-2xx/3xx GETs stay visible — real failures are still surfaced.
+
+When debugging an issue, `tlamatini.log` is the first artifact to consult.
+
+## 39. ASCII / box-drawing diagrams in chat
+
+LLM-generated ASCII art / flowcharts / column layouts render in the chat with a fixed-width font and preserved whitespace. The LLM is instructed (rule 13 in `prompt.pmt`) to wrap diagrams in `BEGIN-DIAGRAM` / `END-DIAGRAM` markers. There is also auto-detection: any run of consecutive lines containing box-drawing characters (`│┃|─━┌┐└┘├┤┬┴┼╭╮╯╰`), arrow glyphs (`▲▼►◄→←↑↓`), or ASCII-art runs (`+`, `-`, `=`, `|`) is wrapped automatically. Both pipelines emit `<pre class="ascii-diagram">…</pre>` HTML.
+
+The `v1.48.14` parser hardening makes that two-pass behavior lossless. Explicit diagrams are replaced by NUL-wrapped `DGRM_<n>` sentinels while Markdown is processed; if a later auto-detected diagram temporarily captures an earlier sentinel, restoration expands the nested placeholder to a fixed point. A Markdown thematic break such as `---` after a blank line stays a thematic break rather than becoming a false diagram. Any malformed residual sentinel or NUL byte is removed before HTML reaches the browser, so users never see a bare `DGRM_0` or an empty diagram box.
+
+---
+
+# Part VII — Configuration Reference
+
+The main file is `Tlamatini/agent/config.json`.
+
+| Mode | Resolution order |
+|---|---|
+| Source | `Tlamatini/agent/config.json` |
+| Frozen | `<install-dir>/config.json` next to the executable |
+| Both | `CONFIG_PATH` env var, if set, wins over both |
+
+## 40. LLM settings
+
+```json
+{
+  "embeding-model": "Nomic-Embed-Text:latest",
+  "chained-model": "glm-5.3:cloud",
+  "ollama_base_url": "http://127.0.0.1:11434",
+  "ollama_token": "",
+  "ANTHROPIC_API_KEY": "config you api key here by claude",
+  "GEMINI_API_KEY": "config your api key here by gemini",
+  "enable_unified_agent": true,
+  "unified_agent_model": "glm-5.3:cloud",
+  "unified_agent_base_url": "http://127.0.0.1:11434",
+  "unified_agent_temperature": 0.0,
+  "unified_agent_max_iterations": 4096,
+  "chat_agent_limit_runs": 100
+}
+```
+
+| Key | What it does |
+|---|---|
+| `embeding-model` | RAG embedding model. |
+| `chained-model` | Primary chat model. |
+| `unified_agent_model` | Multi-Turn tool-loop model. Can differ from `chained-model`. |
+| `unified_agent_max_iterations` | Hard cap on the tool loop. Default 4096. |
+| `unified_agent_temperature` | 0.0 for deterministic. |
+| `ollama_token` | Bearer token for authenticated remote Ollama. |
+| `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | Top-level keys for Tlamatini's own cloud paths (image analysis, Opus client). |
+| `enable_unified_agent` | Master switch for the tool-calling chain. |
+| `chat_agent_limit_runs` | Wrapped-run listing cap. |
+| `kali_server_url` | Base URL of the MCP-Kali-Server (`server.py`) on your Kali box. Tlamatini is the **embedded client** — the `chat_agent_kalier` tool auto-injects this as the default `server_url` on every run, so chat pentest prompts never repeat the address (the LLM may still override per-call). Default `http://127.0.0.1:5000` (works for WSL2 localhost-forwarding or an SSH tunnel); editable via `Config -> URLs`. |
+
+You can still edit `config.json` by hand, but you no longer have to for the common cases. The chat navbar's `Config -> Models` dialog submits all 38 registered model, engine and voice settings, including values on hidden tabs. `Config -> URLs` writes the endpoint / host / port subset. The backend validates before `config_loader.save_config_updates()` atomically merges the submitted section into the active source/frozen `config.json`, preserving unrelated keys. The model API requires the complete 38-key object, not a one-key patch. Reconnect chat after changed client settings; already running agents must reload/restart.
+
+### Model settings, inheritance and runtime paths
+
+The complete [38-field reference](docs/model_configuration.md#complete-setting-reference)
+lists every global key, initial default, local/provider/Ollama kind, fallback and
+agent YAML path. Core and Vision each have 7 settings, Speech 7, Workflows 6,
+Documents 5, Monitoring & messaging 6. Search spans the categories; engine and voice
+fields are selectors. There are 21 model-backed agent types, not 38 separate agents.
+
+Missing registered agent fields and quoted `"@config"` inherit central settings.
+Literal canvas values remain overrides. Wrapped chat starts from globals and then
+applies explicit tool arguments; standalone MCP preserves literal template choices
+and applies invocation overrides last. Parametrizer and FlowCreator preserve these
+strings. Saving never rewrites old workflows or downloads weights.
+
+Talker requires Orpheus-compatible audio tokens and one of its five voices.
+Whisperer offers `faster-whisper`, `cloud-groq`, `cloud-openai`; an empty cloud model
+uses its provider default, while cleanup remains a separately enabled stage.
+Video-Analyzer's `transcription.model` is local and independent of Whisperer's
+engine. Empty LaTeXer repair model disables that stage. Credentials, hosts, audio
+devices, sampling controls and external ACPX/MCP provider settings remain separate.
+
+Source configuration lives at `Tlamatini/agent/config.json`; frozen configuration
+lives beside the executable. `CONFIG_PATH` overrides either. Frozen services import
+the compiled registry and copy portable helpers from the resolved agents root,
+never a synthetic `_internal` source path. The offline `check_agent_runtimes` gate
+executes in both modes and is mandatory before frozen packaging; a source snapshot
+is not needed for ordinary execution. [Dated verification](docs/model-configuration-verification.md)
+covers 89 runtime preparations, 21 loaders and actual File-Creator execution.
+
+Any failed image/video observer or merger rejects that attempt and accumulates a
+visible fatal error. Tlamatini continues its configured recovery routes and existing
+retry tactics with the same model identities. A retired HTTP 410 model requires an
+explicit user configuration change; do not substitute a survivor or raw notes.
+Robotics still requires two explicit independent passes for `PASS_OK`.
+
+## 41. RAG settings
+
+```json
+{
+  "chunk_size": 3000,
+  "chunk_overlap": 800,
+  "max_chunks_per_file": 50,
+  "k_vector": 100,
+  "k_bm25": 100,
+  "k_fused": 150,
+  "enable_bm25": true,
+  "rrf_k": 60,
+  "fetch_k": 300,
+  "max_doc_chars": 150000,
+  "max_context_chars": 250000,
+  "context_budget_allocation": {
+    "high_relevance": 0.60,
+    "architecture": 0.20,
+    "related": 0.15,
+    "documentation": 0.05
+  },
+  "use_llm_extractor": true,
+  "use_long_context_reorder": true,
+  "metadata_extraction": {
+    "enable_code_structure": true,
+    "enable_file_role_classification": true,
+    "enable_dependency_tracking": true,
+    "enable_cross_references": true
+  },
+  "retrieval_strategy": {
+    "enable_multi_stage": false,
+    "enable_query_expansion": true,
+    "enable_hierarchical_context": true,
+    "enable_context_budget_allocation": true
+  }
+}
+```
+
+## 42. Internet search settings
+
+```json
+{
+  "internet_classifier_model": "deepseek-v3.2:cloud",
+  "internet_classifier_max_iterations": 4,
+  "internet_hint_words_mode": "extend",
+  "internet_hint_words": [],
+  "web_summarizer_model": "deepseek-v3.2:cloud",
+  "web_context_max_chars": 10000
+}
+```
+
+## 43. MCP services
+
+```json
+{
+  "mcp_system_server_host": "127.0.0.1",
+  "mcp_system_server_port": 8765,
+  "mcp_files_search_server_port": 50051,
+  "mcp_files_search_server_max_workers": 10,
+  "mcp_files_search_model": "deepseek-v3.2:cloud",
+  "max_lines_search_files": 1024
+}
+```
+
+### 43.1. External MCP defaults and private runtimes
+
+The **External ▸ MCPs** dialog is the operator surface for universal MCP connections. Tlamatini speaks stdio, Streamable HTTP, SSE, and WebSocket transports, keeps at most five catalog servers active, and exposes ten built-in supervisor tools for import, activation, diagnostics, calls, waits, and runtime management.
+
+Every installation contains two official catalog entries defined in `agent/external_mcp_defaults.py`:
+
+| Default | Purpose | Initial state |
+|---|---|---|
+| `memory` | Persistent knowledge graph from `@modelcontextprotocol/server-memory`; its data file is `%LOCALAPPDATA%\Tlamatini\memory\memory.json`. | Inactive |
+| `sequential-thinking` | Structured, revisable step-by-step reasoning from `@modelcontextprotocol/server-sequential-thinking`. | Inactive |
+
+Neither default is activated without the user. Existing edits win over shipped defaults, and deleting a default writes its key to `_removed_defaults` so a later launch does not resurrect it. Re-importing that server explicitly clears the tombstone. This seeding happens in code when `load_catalog()` reads the user catalog because `external_mcps.json` is preserved across self-updates.
+
+Most community MCP servers launch through `npx` or `uvx`. `agent/runtime_provisioner.py` can acquire Node/npm/npx/pnpm and uv/uvx once into `%LOCALAPPDATA%\Tlamatini\runtimes`: no administrator rights, no system `PATH` mutation, and no multi-gigabyte runtime bundle in the installer. The operation is fail-open, backgrounded during startup, downloaded from official upstreams, checksum-verified where upstream publishes checksums, and installed through an atomic partial-directory swap. The runtime strip in the dialog reports each tool's location; click **Install now** for an explicit installation, or simply activate an npx/uvx server and let its background connection provision what is missing. Multi-Turn can inspect or initiate the same path through `external_mcp_runtime_status` and `external_mcp_runtime_install`.
+
+Public and private builds deliberately differ. A normal public build generates a secret-free catalog containing only the two inactive defaults and aborts if a live-looking credential reaches a secret-shaped environment field. A keyed/private build may include the maintainer catalog after `regen_secrets.py` has rehydrated it. Never hand-copy a private `external_mcps.json` into a public release.
+
+### 43.2. External MCP Adder skill
+
+The `adding-external-mcp` skill is the supported guided path for bringing a new server into Tlamatini. It keeps setup deterministic and prevents a configuration record from being mistaken for a healthy connection:
+
+1. Classify the server as stdio, Streamable HTTP, SSE, or WebSocket from its official launch instructions.
+2. Build a secret-separated `mcpServers` entry; never place a live credential in a public catalog or generated document.
+3. Import the entry through `external_mcp_import` instead of editing user state blindly.
+4. Run `external_mcp_doctor` before the first activation so transport, runtime, endpoint, and placeholder-secret failures are named.
+5. Activate only with operator intent and keep the global active-server cap at five.
+6. Wait for a healthy connection with `external_mcp_wait`; catalog presence alone is not readiness.
+7. Inspect `external_mcp_status` and `external_mcp_list_tools` before selecting a remote operation.
+8. Call the proven remote tool through `external_mcp_call`, or let Multi-Turn bind its `ext__<server>__<tool>` wrapper lazily.
+
+The append-only Deep Internet Research starter prompt (migration `0194`, prompt 118, Getting Started, `sort_rank=100`) demonstrates this ecosystem at full scale. It requests a long, link-rich search and explicitly selects Multi-Turn plus Exec Report; Sequential Thinking, Memory, External MCPs, and workflow agents remain tools the operator can authorize rather than hidden prerequisites.
+
+## 44. ACPX settings
+
+The whole `acpx` block is **optional**. When missing or partial, every value falls back to a safe default. On first boot of an upgrade build, `agent/acpx/service.py::boot_acpx()` calls `ensure_acpx_block_in_config_json()` and **appends the documented default block to your existing `config.json` atomically**.
+
+```json
+{
+  "acpx": {
+    "cwd": "C:/Development/Tlamatini",
+    "stateDir": "C:/Users/angel/.tlamatini/acpx-state",
+    "probeAgent": "gemini",
+    "permissionMode": "approve-reads",
+    "nonInteractivePermissions": "deny",
+    "timeoutSeconds": 180,
+    "agents": {
+      "claude":  {
+        "command": "C:/Users/angel/AppData/Roaming/npm/claude.cmd",
+        "env": { "ANTHROPIC_API_KEY": "sk-ant-api03-..." }
+      },
+      "gemini":  {
+        "command": "C:/Users/angel/AppData/Roaming/npm/gemini.cmd",
+        "env": {
+          "GEMINI_API_KEY": "AIza...",
+          "GOOGLE_API_KEY": "AIza..."
+        }
+      },
+      "qwen":   { "command": "qwen-code", "env": { "DASHSCOPE_API_KEY": "sk-..." } },
+      "codex":  { "command": "codex",     "env": { "OPENAI_API_KEY":    "sk-..." } }
+    }
+  }
+}
+```
+
+| Key | Default | Description |
+|---|---|---|
+| `cwd` | Django process cwd | Default working directory used when `acp_spawn` is called without `cwd`. |
+| `stateDir` | `~/.tlamatini/acpx-state/` | Directory for `<session>.json` and `<session>.transcript.ndjson`. |
+| `probeAgent` | first resolvable | `agent_id` used by `acp_doctor`'s `--version` probe. |
+| `permissionMode` | `approve-reads` | One of `approve-reads`, `approve-all` (DANGEROUS), `deny-all`. |
+| `nonInteractivePermissions` | `deny` | What to do when a permission prompt fires unattended. `deny` or `fail`. |
+| `timeoutSeconds` | 120 | Per-turn timeout for the embedded runtime. |
+| `agents` | `{}` | Per-`agent_id` command + `env` overrides on top of the built-in registry. |
+
+### API key setup — two layers, in plain English
+
+**Layer 1 — top-level config keys** (consumed by Tlamatini's own cloud calls):
+
+```json
+{ "ANTHROPIC_API_KEY": "sk-ant-...", "GEMINI_API_KEY": "AIza..." }
+```
+
+**Layer 2 — per-`agent_id` `env` injection** (consumed by the spawned ACP child):
+
+```json
+{
+  "acpx": {
+    "agents": {
+      "claude": { "env": { "ANTHROPIC_API_KEY": "sk-ant-..." } },
+      "gemini": { "env": { "GEMINI_API_KEY": "AIza...", "GOOGLE_API_KEY": "AIza..." } }
+    }
+  }
+}
+```
+
+How the merge works at spawn time:
+
+1. `build_agent_registry(overrides, env_overrides)` merges per-agent `env` on top of `DEFAULT_ACP_AGENTS[agent_id].env` (override wins on conflict).
+2. `AcpSession.spawn_child()` builds the child env as `{**os.environ, **self.spec.env}` — parent process env first, then per-agent override on top. **Explicit `acpx.agents.<id>.env` value wins over an exported shell variable.**
+
+Canonical env var per CLI:
+
+| Agent | Env var(s) | Where to put it |
+|---|---|---|
+| `claude` | `ANTHROPIC_API_KEY` | Both layers (top-level for Tlamatini, per-agent for the spawned `claude`). |
+| `gemini` | `GEMINI_API_KEY` (newer builds also accept `GOOGLE_API_KEY`) | Both layers; per-agent should set both names. |
+| `qwen` | `DASHSCOPE_API_KEY` | `acpx.agents.qwen.env`. |
+| `codex` | `OPENAI_API_KEY` | `acpx.agents.codex.env`. |
+| `cursor` | (own credential store) | usually no env injection needed. |
+| `copilot` | (`gh auth login`) | usually no env injection needed. |
+| `pi`, `droid`, `iflow`, `kilocode`, `kimi`, `kiro`, `opencode` | per upstream | check each CLI's docs. |
+
+> **Security warning.** `config.json` is tracked by git. Three safer patterns:
+>
+> 1. **Don't commit the keys.** Use the `regen_secrets.py` script:
+>    ```bash
+>    python regen_secrets.py --mode push-able   # rewrite secrets to placeholders before commit
+>    python regen_secrets.py --mode keyed       # restore from data.keys (gitignored) for local use
+>    ```
+>    Or run `git update-index --skip-worktree Tlamatini/agent/config.json` after configuring locally.
+> 2. **Use shell env vars in development.** Export the keys; leave `acpx.agents.<id>.env` empty.
+> 3. **Rotate immediately if a key has been pushed.** Any leaked key should be revoked at the provider before reuse.
+
+### The `setup-new-acpx-key` skill (the easy button)
+
+Instead of editing `config.json` by hand, in chat (Multi-Turn + ACPX ticked):
+
+> "Use `invoke_skill` with `setup-new-acpx-key` to register my Anthropic key for the `claude` agent_id." (paste the key)
+
+The skill walks itself through writing `data.keys`, patching both `config.json` layers, optionally extending `regen_secrets.py`, and verifying via `acp_doctor`.
+
+## 45. Image interpreter
+
+```json
+{
+  "image_interpreter_base_url": "http://127.0.0.1:11434",
+  "image_interpreter_model": "jcyhsiao/qwen3.5cloud:latest",
+  "image_interpreter_temperature": 0
+}
+```
+
+## 46. Advanced options
+
+```json
+{
+  "history_summary_enable": true,
+  "history_summary_trigger_tokens": 150,
+  "history_keep_last_turns": 3,
+  "performance": { "enable_caching": true, "cache_embeddings": true, "parallel_processing": true, "max_workers": 12 },
+  "logging": { "log_retrieval_metrics": true, "log_context_size": true, "log_query_rewrites": true, "verbose_metadata": true },
+  "load_hidden": true,
+  "ssl_verify": false,
+  "max_input_tokens": 5000,
+  "keep_last_turns": 3
+}
+```
+
+---
+
+# Part VIII — Deploying & Packaging
+
+## 47. The three-step build pipeline
+
+```
+build.py  ──►  build_uninstaller.py  ──►  build_installer.py
+   │                   │                         │
+   ▼                   ▼                         ▼
+pkg.zip          Uninstaller.exe        dist/Tlamatini_Release/
+(app bundle)     (project root)           ├─ Installer.exe
+                                          ├─ Uninstaller.exe
+                                          ├─ pkg.zip
+                                          └─ _internal/
+```
+
+The final distributable is `dist/Tlamatini_Release/` — zip the folder, share it.
+
+### Step 1 — `build.py`
+
+```bash
+python build.py
+```
+
+Installs deps, runs `collectstatic`, executes PyInstaller, copies required payloads (including `README.md` and bundled `jd-cli/`), runs migrations, creates the default user (`user`/`changeme`), renames the exe to `Tlamatini.exe`, copies agent templates, bundles support scripts (`flow_file_associations.ps1`, `register_flw.ps1`, `register_fpmt.ps1`, `unregister_flw.ps1`, `unregister_fpmt.ps1`, `CreateShortcut.ps1`, `Tlamatini.ps1`, `.ico`), and zips it all into **`pkg.zip`**.
+
+`build.py` is strict: missing `README.md`, missing `jd-cli/`, or missing `jd-cli.bat` causes a non-zero exit instead of a silent half-package.
+
+### Step 2 — `build_uninstaller.py`
+
+```bash
+python build_uninstaller.py
+```
+
+Builds `uninstall.py` into a single `--onefile` Tkinter exe. Output: `Uninstaller.exe` at the project root.
+
+### Step 3 — `build_installer.py`
+
+```bash
+python build_installer.py
+```
+
+Requires `pkg.zip` and `Uninstaller.exe` from steps 1 and 2. Builds `install.py` with `--onedir --windowed` and a splash screen, copies `pkg.zip` and `Uninstaller.exe` into `dist/Installer/`, and assembles `dist/Tlamatini_Release/` with SHA-256 verification.
+
+### Private keyed build and contact synchronization
+
+`build_complete_private_release.py` is the maintainer-only keyed path and must never be published. Before building, it synchronizes contact records from the development-tree `contacts.json` and a same-machine frozen installation into gitignored `contacts.private.json`: names are compared case- and accent-insensitively, aliases are unioned, and existing non-empty values win. That merged private file may be bundled only when the explicit private-build opt-in is set. Public builds still ship an empty contacts book, and `TlamatiniSourceCode/` never carries contact files or other contact PII.
+
+## 48. Versioning
+
+Tlamatini follows [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH` — but the **single source of truth is a git tag**, not a number sitting in any source file. You never hand-edit a version anywhere. You tag, then you build, and the three build scripts in §47 each bake the resolved value into the artefact they produce.
+
+### What the three numbers mean
+
+- **MAJOR** bumps when something that already shipped breaks for the user: the `.flw` file schema changes, an Agent Contract is removed, an LLM tool is renamed, a public endpoint URL changes. The first `2.0.0` is the first release where loading an old `.flw` might not just work.
+- **MINOR** bumps when you add a backward-compatible feature: a new agent (ACPXer was a minor bump), a new toolbar checkbox, a new SKILL package, a new HTTP endpoint, a new optional field on an existing API.
+- **PATCH** bumps for backward-compatible fixes: the conjunction-parser fix, the exec-report ordering fix, the ACPX `oneshot-prompt` capture fix — anything that closes a regression without changing surface.
+
+Pre-releases use the standard SemVer suffixes — `2.0.0-alpha.1`, `2.0.0-beta.1`, `2.0.0-rc.1`. They sort **before** the final release, so `2.0.0-rc.2` < `2.0.0` for the Windows installer registry and for Python tooling alike.
+
+### Cutting a release in five commands
+
+```powershell
+git status                                          # clean tree, on main
+git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH: <one-liner>"   # annotated tag, an unused version (1.90.0 is taken)
+git push origin vMAJOR.MINOR.PATCH
+python build.py
+python build_uninstaller.py
+python build_installer.py
+```
+
+All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini_Release_v1.90.0/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. The current version is `v1.90.0`, so the bare runtime version resolves to `1.90.0`. Tlamatini deliberately never puts a `.devN`, `+gSHA` or `.dirty` suffix into its version string — it always reports the base tag, which is the designed behaviour described in `VERSIONING.md`. That is exactly why the five commands above start with `git status` on a clean tree: a release cut from a dirty tree would ship a version number that says nothing about what is actually inside it.
+
+### Where the version shows up in a running install
+
+The build computes the version once and bakes it into four surfaces:
+
+- **`Tlamatini/agent/_version.py`** — generated at build time, gitignored, read at runtime by `agent.version.get_version()`. This is what every in-process surface reads.
+- **Win32 `VERSIONINFO`** — `Tlamatini.exe`, `Installer.exe`, and `Uninstaller.exe` all carry the version in their resource fork. Right-click the file → Properties → Details → ProductVersion.
+- **Release folder name** — `dist/Tlamatini_Release_v1.85.0/`.
+- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.85.0` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.85.0","commit":"abc1234","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
+
+If the four surfaces ever disagree, your build was run with a stale `$env:TLAMATINI_VERSION` or against an out-of-date `_version.py` — clear them and re-run `build.py`.
+
+### What happens if you don't tag
+
+The build never fails for "no version" — and the version surface is always a clean SemVer like `1.1.1`. The resolver returns the **bare base tag** reachable from HEAD; distance / commit / dirty state are deliberately stripped from the displayed version:
+
+| Situation | Version baked in |
+|---|---|
+| Tag exists, HEAD exactly on `v1.2.0` | `1.2.0` |
+| Tag exists, HEAD 17 commits past, clean tree | `1.2.0` |
+| Tag exists, HEAD 17 commits past, uncommitted edits | `1.2.0` |
+| No tags at all | `0.0.0` |
+| Not a git repo (e.g. download zip) | `0.0.0+unknown` |
+
+No `.devN`, no `+gSHA`, no `.dirty` ever appears in the version string. Distance from the tag and dirty state are git concerns and live in `git status` / `git describe --long --dirty`, not in the user-facing version.
+
+### Overriding the resolver
+
+There are four sources of the version, in precedence order:
+
+1. `--version X.Y.Z` on the build script's command line (highest).
+2. `$env:TLAMATINI_VERSION` exported in the shell.
+3. `git describe --tags --abbrev=0 --match 'v[0-9]*'` against the working tree — the bare base tag, no distance/dirty suffix (the normal path).
+4. The sentinel `0.0.0+unknown` (lowest — only fires when there is no git at all).
+
+`build.py` exports `$env:TLAMATINI_VERSION` after it resolves, so `build_installer.py` and `build_uninstaller.py` in the same shell see exactly the same value — the three artefacts cannot disagree. Even on an untagged commit, the git-derived dev version stays consistent across all three.
+
+The full contract — including the recovery path for a mis-tagged release, the runtime resolver internals, the file-by-file integration map, and the FAQ — lives in [`VERSIONING.md`](VERSIONING.md) at the repo root.
+
+## 49. What the installer does
+
+When an end user runs `Installer.exe`:
+
+1. Opens the shared setup window (`setup_wizard.py`, since v1.82.0) to choose and review the installation directory; before it changes any file it prepares and verifies a recovery copy (`setup_recovery.py`, journal in `Temp/.setup-recovery`), restores an interrupted run on the next start, keeps errors on screen with **Retry** and **Change folder**, and logs to `%LOCALAPPDATA%\Tlamatini\SetupLogs`.
+2. Extracts `pkg.zip` into `<install_path>/Tlamatini/`.
+3. Locks agent venv permissions.
+4. Writes `config.json` with installation settings.
+5. Copies `Uninstaller.exe` into the install dir.
+6. Creates desktop and Start Menu shortcuts (`Tlamatini.lnk`).
+7. Registers `.flw` extension to open with Tlamatini.
+8. Cleans the PyInstaller bundle path from helper subprocess environments so PowerShell helpers and Explorer restarts don't stall.
+
+## 50. What the uninstaller does
+
+1. Refuses to start while Tlamatini is still running from that folder (Retry or Exit — there is no "continue anyway"), then asks for confirmation.
+2. Stops the workers that installation started, removes its shortcuts and its Installed Apps entry, and unregisters the `.flw` / `.fpmt` associations it owns (the shell is refreshed without restarting Explorer).
+3. Deletes the application files **except**:
+   - `agents/` — always kept (your agents; companion apps such as Tlamatini-FlowPills keep reading it);
+   - `application/`, `applications/`, `content_generated/`, `context_files/`, `doc_generated/` and `Templates/` — kept whenever they hold at least one file. `Templates/` is where STM32er, ESP32er, Arduiner, ESPHomer, Unrealer and LaTeXer put the projects they create, so it holds your own code; it was missing from the list until 2026-10-09, when uninstalling `C:\Tlamatini` erased Angela's code.
+   - `Temp/` is scratch and is always erased.
+4. The last screen names the folders it kept; files Windows still holds are removed right after the uninstaller closes.
+5. Since v1.82.0 the removal runs inside the same recovery transaction (`setup_recovery.py`): a verified recovery copy is prepared before files are removed, a file that stays locked for five seconds is named (with the program holding it when Windows can tell, which is never closed for you), and the removal stops before deleting anything; Installed Apps is checked to be really gone, and only Tlamatini's own registry values and shortcut are touched (`setup_windows.py`).
+
+⚠️ The uninstaller is not part of an in-app update: **About ▸ Check for updates** keeps the `Uninstaller.exe` already installed. A new Installer replaces it.
+
+## 51. Frozen-mode behavior
+
+The Multi-Turn implementation carries frozen-build awareness in supporting runtime code:
+
+- `config_loader.py` resolves `CONFIG_PATH`, then executable-local `config.json`, then module-local.
+- `FileSearchRAGChain` resolves its default `config.json` from the executable directory in frozen mode.
+- Template-agent discovery checks both `<install_dir>/agents` and `<install_dir>/Tlamatini/agent/agents`.
+- `_get_agents_root()` in `chat_agent_runtime.py` resolves from `sys.executable` in frozen mode, from `__file__` in source mode — both paths are logged at INFO level.
+- `_resolve_python_executable()` tries `PYTHON_HOME`, then bundled `python.exe` beside the frozen executable, then PATH.
+
+---
+
+# Part IX — The Command Deck (API + WebSocket)
+
+## 52. WebSocket protocol
+
+Endpoint: `ws://<host>/ws/agent/`. (A second, separate endpoint — `ws://<host>/ws/prompt-flow-panel/` — carries the Prompt Flow Panel's run commands: `start`, `pause`, `resume`, `stop`, `reply` and a `ping` heartbeat. It serves one run per connection and refuses anonymous sockets; see the chapter *The Prompt Flow Panel* near the front of this book.)
+
+### Direct voice input: `/ws/chat-voice/`
+
+This authenticated same-origin WebSocket prepares a resident Whisperer worker without opening the microphone. Client messages are `{"action":"start","run_id":"unique-id"}` and `{"action":"cancel","run_id":"unique-id"}`. The server reports preparing/ready, starting, real recording telemetry, transcribing and a terminal result/empty/error/cancelled event; cancellation can first report cancelling. It rejects anonymous or foreign-origin sockets and overlapping commands. Text results return to the browser, which submits once through `/ws/agent/` with the current options. No raw audio travels through this browser socket and no new public port is introduced. Full frame and size limits: [microphone protocol](docs/chat-microphone-design.md#transport-and-ownership).
+
+### Client → Server (chat)
+
+```json
+{
+  "message": "Your question here",
+  "multi_turn_enabled": true,
+  "exec_report_enabled": true,
+  "acpx_enabled": true
+}
+```
+
+Optional toggles. `multi_turn_enabled=false` falls back to legacy one-shot.
+
+### Client → Server (control)
+
+| Type | Purpose |
+|---|---|
+| `set-canvas-as-context` | Use the current canvas file as context |
+| `unset-canvas-as-context` | Remove the canvas file from context |
+| `set-directory-as-context` | Load a directory as context |
+| `set-file-as-context` | Load a single file as context |
+| `cancel-current` | Cancel the current generation |
+| `reconnect-llm-agent` | Rebuild the current LLM/RAG chain |
+| `clean-history-and-reconnect` | Clear chat history and rebuild |
+| `drop-message` | Delete ONE saved message (`message_id`) of this user's conversation — the card's **Drop** button; no rebuild. Answered with a `message-dropped` frame (`ok`, `message_ids`, or a `reason`) sent to every open tab |
+| `clear-context` | Remove persisted context and rebuild |
+| `cancel-all` | Cancel all active generation |
+| `save-files-from-db` | Persist canvas / DB-backed files |
+| `enable-llm-internet-access` | Enable internet access for the LLM |
+| `disable-llm-internet-access` | Disable internet access for the LLM |
+| `view-context-dir-in-canvas` | Show the current context directory tree in the canvas |
+| `set-file-omissions` | Update file omission patterns |
+| `set-mcps` | Persist MCP enablement |
+| `set-tools` | Persist tool enablement |
+| `set-agents` | Persist agent enablement |
+
+### Server → Client
+
+```json
+{ "message": "Processing request...", "username": "Tlamatini" }
+```
+
+```json
+{ "type": "session-restored", "context_type": "directory", "context_path": "/path/to/project" }
+```
+
+A Multi-Turn message also carries `tool_calls_log` and `multi_turn_used`. The Create Flow button appears whenever ≥1 agent in that log executed successfully; the old `answer_success` classifier flag was removed 2026-07-06.
+
+A message that was SAVED to the conversation (your prompt, her answer) also carries `message_id`, the row's id; the card keeps it so its **Drop** button can name the row. Live status lines carry none. The first page render passes the same id as `id` in `initial_messages`.
+
+## 53. HTTP endpoints
+
+The backend currently exposes 104 routes. Highlights:
+
+### Pages
+
+| Endpoint | Method |
+|---|---|
+| `/` | GET/POST (login) |
+| `/welcome/` | GET |
+| `/agent/` | GET (chat) |
+| `/agentic_control_panel/` | GET (designer) |
+| `/logout/` | GET |
+
+### Data loading
+
+| Endpoint | Method |
+|---|---|
+| `/load_canvas/<filename>/` | GET |
+| `/load_prompt/<prompt_name>/` | GET |
+| `/load_omissions/<omission_name>/` | GET |
+| `/load_mcp/<mcp_name>/` | GET |
+| `/load_tool/<tool_name>/` | GET |
+| `/load_agent/<agent_name>/` | GET |
+| `/load_agent_description/<agent_name>/` | GET |
+| `/load_agent_config/<agent_name>/` | GET |
+
+### Agent management
+
+| Endpoint | Method |
+|---|---|
+| `/save_agent_config/<agent_name>/` | POST |
+| `/deploy_agent_template/<agent_name>/` | POST |
+| `/ensure_agent_exists/<agent_name>/` | GET |
+| `/execute_starter_agent/<agent_name>/` | POST |
+| `/execute_ender_agent/<agent_name>/` | POST |
+| `/check_starter_log/<agent_name>/` | GET |
+| `/check_ender_log/<agent_name>/` | GET |
+| `/check_agents_running/<agent_name>/` | GET |
+| `/check_all_agents_status/` | GET |
+| `/read_agent_log/<agent_name>/` | GET |
+| `/restart_agent/<agent_name>/` | POST |
+| `/restart_agents/` | POST |
+| `/asker_choice/<agent_name>/` | POST |
+| `/execute_flowhypervisor/<agent_name>/` | POST |
+| `/check_flowhypervisor_alert/<agent_name>/` | GET |
+| `/validate_flow/` | GET |
+
+### Flow Compiler & Agent Contracts (since commit `0bea21d`, May 2026)
+
+| Endpoint | Method | Notes |
+|---|---|---|
+| `/agent/compile_flow/` | POST | Backend Flow Compiler. Body: `{ "mode": "dry_run"\|"write", "flow": <ACP snapshot> }`. Save / Validate use `dry_run`; Start uses `write` to materialize `config.yaml` and `interconnection-scheme.csv` into the session pool. |
+| `/agent/flow_from_tool_calls/` | POST | Chat Create-Flow normalizer. Body: `{ "tool_calls_log": [...], "flow_data": <legacy draft> }`. Returns a registry-canonical, secret-redacted `.flw` JSON. |
+| `/agent/agent_contracts/` | GET | Returns the live `AgentContract` registry summary — connection-field shape, parametrizer source-fields, secret paths, singleton/long-running/never-starts-targets/excluded-from-validation flags. Used for diagnostics and for any out-of-tree client (e.g. a future MCP server) that needs to introspect the agent surface. |
+
+### Connection updates (canvas auto-configuration)
+
+`/update_<agent>_connection/<agent_name>/` — 83 live connection endpoints (2026-10-19), one per agent type that saves its canvas wiring the moment a wire is drawn: Raiser, Emailer, Monitor-Log, Ender, Starter, Whatsapper, Croner, Mover, Sleeper, Cleaner, Deleter, Notifier, Executer, Pythonxer, Stopper, RecMailer, Asker, Forker, Counter, Shoter, Camcorder, Globber, Grepper, Editor, Recorder, Whisperer, AudioPlayer, VideoPlayer, Talker, SSHer, SCPer, TeleTlamatini, ACPXer, Telegrammer, SQLer, Prompter, Gitter, Dockerer, MCP Doctor, Instant Messaging Doctor, PSer, Kuberneter, Apirer, Unrealer, Blenderer, Playwrighter, Reviewer, Analyzer, Jenkinser, Crawler, Summarizer, FlowHypervisor, Mouser, Windower, Kalier, Discoverer, Nmapper, PDFer, LaTeXer, PPTXer, STM32er, ESP32er, ESPHomer, Arduiner, File-Interpreter, Image-Interpreter, Video-Analyzer, NetSpeed-Calculator, File-Creator, File-Extractor, Kyber-KeyGen, Kyber-Cipher, Kyber-DeCipher, Parametrizer, FlowBacker, Barrier, J-Decompiler, De-Compresser, Keyboarder, Googler, OR and AND. FlowCreator has no connections; Mongoxer and Monitor Netstat have no live endpoint, and their wiring is written by the Flow Compiler when the flow is validated or started.
+
+Plus the Parametrizer-specific pair:
+
+| Endpoint | Method |
+|---|---|
+| `/get_parametrizer_dialog_data/<agent_name>/` | GET |
+| `/save_parametrizer_scheme/<agent_name>/` | POST |
+
+### Session & pool
+
+| Endpoint | Method |
+|---|---|
+| `/session_state/` | GET |
+| `/save_session_state/` | POST |
+| `/clear_session_state/` | POST |
+| `/clear_pool/` | POST |
+| `/cleanup_session/` | POST |
+| `/clear_agent_logs/` | POST |
+| `/clear_pos_files/` | POST |
+| `/reanimate_agents/` | POST |
+| `/save_paused_agents/` | POST |
+| `/load_paused_agents/` | GET |
+| `/delete_paused_agents/` | POST |
+| `/delete_agent_pool_dir/<agent_name>/` | POST |
+| `/get_session_running_processes/` | GET |
+| `/kill_session_processes/` | POST |
+
+### Open in… external editors
+
+| Endpoint | Method |
+|---|---|
+| `/agent/detect_installed_apps/` | GET — returns which of File Explorer / VS Code / Antigravity are installed |
+| `/agent/open_in_app/` | POST — accepts `app_id` plus `directory` or `agent_name`; resolves the current session pool instance directory |
+
+---
+
+### Chat image ingest (screenshot paste / file drop)
+
+| Endpoint | Method |
+|---|---|
+| `/agent/paste_image/` | POST — multipart `image` field. Re-encodes the clipboard bitmap to JPEG (Pillow; alpha flattened onto white; 25 MB cap) and writes it to `<app>/Temp/image_<timestamp>.jpg`. Returns `{ success, path, filename, directory, width, height, bytes }`; the chat page splices `path` into the message at the caret. |
+
+Dropped image files no longer have a listener of their own: since v1.83.0 the page-wide file-drop router (`file_drop_router.js`) recognises them by their bytes and hands them to the same path-splicing code as a Ctrl+V paste. The same router sends an MCP `.json` to the External ▸ MCPs catalog (after a confirmation), a `.flw` to the Agentic Control Panel and a `.fpmt` to the Prompt Flow Panel.
+
+---
+
+# Part X — Survival Guide (Troubleshooting)
+
+## 54. Common issues
+
+### Microphone button unavailable, silent, or opening another console
+
+Wait for voice preparation and ensure the normal chat connection is ready and idle. The host computer's microphone must be available to Tlamatini; changing a remote browser's microphone permission does not select that device. Check Whisperer's device/engine settings and the main `tlamatini.log` for `[Whisperer]` diagnostics. Empty audio preserves the draft. Cancellation during recognition can wait for the native decode to finish, but its result is discarded. A second Whisperer PowerShell window indicates an older launcher: restart the updated source app, or install a rebuilt package. See [diagnosis and recovery](docs/chat-microphone-design.md#troubleshooting).
+
+### Ollama connection failed
+
+- Run `ollama serve` in a dedicated terminal.
+- Check `ollama_base_url` in `config.json` is `http://127.0.0.1:11434`.
+- `ollama list` shows your pulled models.
+- Remote Ollama? Set `ollama_token` for bearer auth.
+
+### RAG context not loading
+
+- Look for the green confirmation banner after Set Context.
+- Check file permissions and that files are text (not binary).
+- Hit `max_doc_chars`? Bump the limit.
+- "Out of memory" during embedding? You're now in fallback mode — answers still work, retrieval quality degrades. Fix by switching to a smaller embedding model.
+
+### Multi-Turn not engaging
+
+- Did you tick the **Multi-Turn** checkbox?
+- `enable_unified_agent: true` in `config.json`?
+- Look for `[Planner._select]` in the console — it shows scoring decisions.
+- "Tool X is not available"? The planner did not select X. Verify X is enabled in the Tools dialog and that your prompt has matching keywords.
+
+### ACPX child not capturing answers
+
+If transcripts only show outbound prompts and no inbound responses, your build is older than May 2026. Update — the fix is `transport="oneshot-prompt"` for claude/gemini/cursor/qwen/codex (re-spawn per turn with `-p "<task>"`).
+
+### Frozen build uses wrong config
+
+- Place `config.json` next to the executable, or set `CONFIG_PATH`.
+- Verify `agents/` directory exists in the install.
+- Rebuild if `README.md`, `jd-cli/`, or template directories are missing.
+
+### WebSocket disconnections
+
+- Check network stability.
+- Increase Daphne timeouts.
+- Verify no proxy is interfering.
+- Browser console for errors.
+
+### Agent not starting
+
+- Check the agent's log in the pool directory.
+- `config.yaml` valid YAML?
+- Port conflicts with MCP servers? Change ports in config.
+- Use **Read Log** in the workflow designer.
+
+### Memory issues
+
+- Reduce `chunk_size` and `k_vector` / `k_bm25`.
+- Lower `max_chunks_per_file`.
+- Reduce `max_context_chars`.
+
+### Image analysis fails
+
+- Claude path: check `ANTHROPIC_API_KEY` (and that you have credits).
+- Qwen path: verify the vision model is pulled (`ollama list`) and that `image_interpreter_base_url` points at the right Ollama.
+- Image format must be supported (jpg/png/gif/bmp/tiff/webp/svg/ico/heic/avif).
+
+### Forker / Asker not routing
+
+- Verify `pattern_a` / `pattern_b` actually appear in the source agent's log output.
+- `source_agents` and `target_agents_a/b` populated by the canvas auto-config?
+- Read the Forker/Asker log for pattern-matching diagnostics.
+- Asker only: did the browser dialog appear? Check console errors.
+
+## 55. Debug mode
+
+```json
+{
+  "logging": {
+    "verbose_metadata": true,
+    "log_retrieval_metrics": true,
+    "log_context_size": true,
+    "log_query_rewrites": true
+  }
+}
+```
+
+INFO-level loggers configured in `tlamatini/settings.py`:
+
+| Logger | What it logs |
+|---|---|
+| `agent.chat_agent_runtime` | Runtime dir creation, template copy, subprocess launch, PID, Python executable selection |
+| `agent.tools` | Wrapped chat-agent launch lifecycle |
+| `agent.mcp_agent` | Multi-turn tool invocation: which tools called, args, return values |
+| `agent.global_execution_planner` | Planner scoring, selected tools, threshold, top score |
+| `agent.capability_registry` | Capability scoring details |
+
+All log lines are prefixed with timestamp and logger name (e.g. `2026-04-13 12:28:39 [agent.tools] INFO …`).
+
+## 56. Log locations
+
+| What | Where |
+|---|---|
+| Django / Multi-Turn console | stdout |
+| **Application-wide** | `Tlamatini/tlamatini.log` (truncated on every start; see §37) |
+| ACP workflow agent logs | `<pool_directory>/<agent_name>/<agent_name>.log` |
+| Chat-launched wrapped agents | `agent/agents/pools/_chat_runs_/<agent>_<seq>_<id>/<agent>_<seq>_<id>.log` (failed runs preserved) |
+
+---
+
+# Bonus Chapter — § 57. The Day Tlamatini Learned to Drive Unreal Engine
+
+> *A bonus chapter, in the spirit of the book — narrative first, reference second. Read this if you want to understand not just **how** Tlamatini talks to Unreal Engine 5, but **why** the conversation looks the way it does, and how to make it bullet-proof on your own box. If you only need the dry reference, the matching coverage lives in **README §6** and in the agent's own `agents_descriptions.md` entry.*
+
+## 57.1. The shape of the problem
+
+For most of the work Tlamatini does, the universe is plain text. Files have lines, lines have characters, the LLM produces a string, a tool consumes a string, and the world rearranges itself. Even the visual workflow designer is, at the end of the day, a YAML file the engine reads and obeys.
+
+Unreal Engine is not like that. Unreal Engine is a **running editor process** holding a hierarchy of in-memory objects — actors, components, blueprints, widgets, level streaming volumes — and it does not want you to reach in from outside. It wants you to drive it through its own UI: click here, drag this into the level, type this transform, press Compile. That is fine if you are a human at a desk. It is a problem if you want a chat agent to *do* something — anything — in the editor without you needing to take your hands off the keyboard.
+
+The **Unreal MCP** project, hosted upstream at `https://github.com/chongdashu/unreal-mcp` (MIT-licensed, UE5.5+) — and shipped in the extended, Tlamatini-tuned form we recommend at `https://github.com/XAIHT/XaihtUnrealEngineMCP.git` (the Unreal Engine MCP modified specifically for this system; see §57.2) — solves that problem from the engine side. It is a small C++ plugin that you drop into your project's `Plugins/UnrealMCP/` folder, enable from `Edit → Plugins`, and forget. From the moment the editor opens, the plugin starts listening on `127.0.0.1:55557` for **JSON commands over a TCP socket**. The wire shape is brutally simple — one command per connection, going in as `{"type": "<verb>", "params": {...}}`, coming back as `{"status": "ok"|"error", "result": {...}, "error": "..."}`. That is the whole API. There is no SDK. There is no authentication. There is just a socket, and a script that knows the right verbs.
+
+The Tlamatini side is even simpler. The **Unrealer** agent (`agent/agents/unrealer/unrealer.py`, the 62nd entry in the catalog) is a pool subprocess that opens that socket, sends one command, captures one response, writes it as an `INI_SECTION_UNREALER<<<` block to its own log, triggers any downstream agents, and exits. The plugin does the heavy lifting; Tlamatini does the orchestration. It is, structurally, the smallest agent in the whole catalog — about 120 lines of business logic on top of the standard pool-agent boilerplate — and it gives you the entire command surface the connected plugin build exposes — up to 53 verbs across nine categories.
+
+## 57.2. Where the plugin lives (the MCP git location, repeated for emphasis)
+
+You install the plugin once, per Unreal project. **The build we recommend — and the one Tlamatini is developed and tested against — is Tlamatini's own extended fork, the Unreal Engine MCP modified specifically for this system:**
+
+- **Repository**: `https://github.com/XAIHT/XaihtUnrealEngineMCP.git`
+- **What it is**: the canonical `chongdashu/unreal-mcp` plugin forked and extended for Tlamatini. It ships the full **53-verb, nine-category** surface this chapter describes — the base editor / blueprint / node / project / umg verbs **plus** the System / Level / Asset / Material families and `take_screenshot` / `focus_viewport` / `set_pawn_properties` / `find_blueprint_nodes`.
+- **Plugin folder name (inside your project)**: `Plugins/UnrealMCP/`
+- **Default in-engine TCP port**: `55557` on `127.0.0.1`
+- **Supported Unreal Engine versions**: 5.5 and newer
+
+It is a drop-in for the upstream — same wire protocol, same port, same folder name — so Tlamatini's Unrealer needs no client-side changes to use it.
+
+The fork is built on the canonical reference implementation, which is what Tlamatini's `UnrealConnection` adapter mirrors verbatim:
+
+- **Repository**: `https://github.com/chongdashu/unreal-mcp`
+- **License**: MIT
+- **Supported Unreal Engine versions**: 5.5 and newer
+
+The upstream alone gives you the base 28-verb surface; install the XAIHT fork above for the System / Level / Asset / Material families that demos 60/61/62 (§57.7) exercise. Two further community forks ship the same wire protocol on the same port and also work with Tlamatini's Unrealer with no client-side changes:
+
+- `https://github.com/CrispyW0nton/Unreal-MCP-Ghost`
+- `https://github.com/gingerol/vhcilab-unreal-engine-mcp`
+
+You are also welcome to fork the plugin and add your own command verbs. Tlamatini's Unrealer does not maintain a client-side allow-list of verbs — it forwards whatever `command` + `params` pair you give it, verbatim. If your fork understands a new verb like `spawn_one_thousand_grass_blades`, your fork will get a call for `spawn_one_thousand_grass_blades`, and Tlamatini will pass the response back into the conversation the same way it does for any other verb. The decoupling is intentional, and it is the entire reason Tlamatini does not need to track the plugin's version.
+
+## 57.3. Wiring up your UE5 project
+
+There is no shortcut, but there are no surprises either:
+
+1. **Clone the plugin** from your chosen upstream (or download the ZIP and unzip it).
+2. **Drop the `UnrealMCP` folder** into your project's `Plugins/` directory so the path ends `<YourProject>/Plugins/UnrealMCP/UnrealMCP.uplugin`. If you do not have a `Plugins` directory in your project root, create one — UE5 expects exactly that name.
+3. **Open the project in the UE5 editor.** Because the plugin is C++, the editor will offer to rebuild it for your engine version. Accept. If the project is Blueprint-only and you have never built a C++ project before, the editor will first nudge you to install Visual Studio Build Tools (Windows) or the Xcode command-line tools (macOS). This is a one-time set-up.
+4. **Enable the plugin** via `Edit → Plugins`, search "UnrealMCP", tick **Enabled**, restart the editor when prompted.
+5. **Confirm the listener** by opening `Window → Developer Tools → Output Log` and watching for a line such as `LogTemp: UnrealMCP listening on 127.0.0.1:55557`. That line is the *single* green light you need. Without it, every Unrealer call from Tlamatini will return `Failed to connect to Unreal at 127.0.0.1:55557` — which is the right error message, but not the one you want to chase if you can avoid it.
+
+> A subtlety worth knowing: **you do not need to press Play (PIE)** to drive the editor through Unreal MCP. The plugin operates at editor level — spawning actors, building blueprints, compiling them — and that work happens against the open project, not the running game. Some UMG operations like `add_widget_to_viewport` queue the widget for the next PIE session, so if you are testing a HUD widget you will need to press Play to actually see it. That is an Unreal MCP behaviour, not a Tlamatini one.
+
+## 57.4. The thirty-second conceptual model
+
+```
+┌─────────────────────────────────────────┐
+│ You (in the Tlamatini chat)             │
+└────────────┬────────────────────────────┘
+             │ "Run Unreal command with command='spawn_actor' …"
+             ▼
+┌─────────────────────────────────────────┐
+│ Tlamatini Multi-Turn LLM                │
+│   → chat_agent_unrealer (one call)      │
+└────────────┬────────────────────────────┘
+             │ writes config.yaml, spawns child process
+             ▼
+┌─────────────────────────────────────────┐
+│ unrealer.py (pool subprocess, ~120 LOC) │
+│   opens socket → 127.0.0.1:55557        │
+│   sends {"type":"spawn_actor", …}        │
+│   reads JSON until complete             │
+│   logs INI_SECTION_UNREALER<<<          │
+└────────────┬────────────────────────────┘
+             │ TCP/JSON
+             ▼
+┌─────────────────────────────────────────┐
+│ UnrealMCP plugin (inside UE5 editor)    │
+│   schedules work on the game thread     │
+│   returns {"status":"ok", "result":…}   │
+└─────────────────────────────────────────┘
+```
+
+The diagram is not lying for the sake of clarity — that **is** the whole pipeline. There is no middle service to start, no daemon to register, no broker to authenticate against. The plugin listens, the agent calls, the answer comes back.
+
+## 57.5. The command surface, organised the way a builder thinks
+
+The wrapped tool `chat_agent_unrealer` and the canvas **Unrealer** node both forward whatever verb you pick, so the catalog is exactly whatever your connected plugin build exposes — from the base 28 verbs up to the **53-verb, nine-category** extended surface that Tlamatini's own fork (`XAIHT/XaihtUnrealEngineMCP`, §57.2) ships. It splits into reasoning units:
+
+- **Reading the level + observing (editor reads).** `get_actors_in_level`, `find_actors_by_name`, `get_actor_properties`, plus `focus_viewport` (aim the editor camera) and `take_screenshot` (capture the viewport to a file so the LLM can *see* the result of its own change — the observe→act loop). These are the safe, side-effect-free probes you sprinkle through any flow to give the LLM enough context to make decisions ("the level already has a `MyCube`; do I need to spawn another?").
+- **Modifying the level (editor writes).** `spawn_actor`, `create_actor`, `spawn_blueprint_actor`, `delete_actor`, `set_actor_transform`, `set_actor_property`. The bread-and-butter of any procedural-content flow.
+- **Authoring Blueprints (blueprint).** `create_blueprint`, `add_component_to_blueprint`, `set_static_mesh_properties`, `set_component_property`, `set_physics_properties`, `compile_blueprint`, `set_blueprint_property`, `set_pawn_properties`. You can scaffold an entire new Actor class from chat — give it a static-mesh component, configure its physics, compile it — and then spawn instances of it back into the level in the same conversation.
+- **Wiring Blueprint event graphs (node).** `add_blueprint_event_node`, `add_blueprint_input_action_node`, `add_blueprint_function_node`, `connect_blueprint_nodes`, `add_blueprint_variable`, `find_blueprint_nodes`, `add_blueprint_get_self_component_reference`, `add_blueprint_self_reference`. This is the niche that ties Tlamatini to *gameplay* engineering and not just level-decoration tooling.
+- **Project input + UMG widgets (project, umg).** `create_input_mapping`, `create_umg_widget_blueprint`, `add_text_block_to_widget`, `add_button_to_widget`, `bind_widget_event`, `add_widget_to_viewport`, `set_text_block_binding`. A complete HUD pipeline in seven verbs.
+- **The escape hatch + introspection (system).** `execute_python` (run ANY script inside the editor — it reaches all of UE5's `unreal` Python API, so Niagara, Sequencer, landscape, audio, etc. are all in range even without a dedicated verb), `execute_console_command` (any console line / CVar — pass it as `params.console_command`, which the agent remaps to the wire's `params.command`), `get_class_info` (reflect a UClass before you set a property), `list_assets` (enumerate the content browser). `execute_python` is the single most powerful verb in the catalog.
+- **Levels / world (level).** `open_level`, `new_level`, `get_current_level`, `save_current_level`, `save_all`. The AI can now change *which* map it is editing, not just what is in the current one.
+- **Assets (asset).** `import_asset` (pull an FBX / texture / audio file off disk into the project), `duplicate_asset`, `rename_asset`, `delete_asset`, `save_asset`, `create_folder`.
+- **Materials (material).** `create_material`, `create_material_instance`, `set_material_parameter`, `assign_material` — author a material, derive an instance, tint it, and paint it onto a level actor, all from chat.
+
+> The plugin's *headless* tools (`build_project`, `run_automation_tests`, `run_macro`) are **not** part of this socket surface — they shell out to `UnrealEditor-Cmd` as separate processes and cannot be reached over the editor's TCP listener. Chain Unrealer nodes through a Parametrizer for the `run_macro` equivalent.
+
+If you forget which verb does what, ask Tlamatini. The agent's `purpose` string in `chat_agent_registry.py` carries the full taxonomy, so the LLM has it in its tool-description prompt at all times.
+
+## 57.6. The smallest possible "hello, Unreal" you can run today
+
+Once UE5 is open with the plugin enabled and Tlamatini is running:
+
+1. Open the chat at `http://127.0.0.1:8000/agent/`.
+2. Tick **Multi-Turn**. Tick **Exec Report** too — you will want the run table.
+3. Send: `"Run Unreal command with command='get_actors_in_level'."`
+
+A few seconds later you should see:
+
+- The chat LLM picked `chat_agent_unrealer` from the planner.
+- The wrapped runtime spawned `unrealer_001_<id>` under `agent/agents/pools/_chat_runs_/`.
+- The agent's log contains the outbound JSON and the inbound JSON.
+- The chat answer carries a one-line summary ("Level contains N actors: …") followed by the per-step **Unrealer Operations** table.
+
+If that round-trip works, the rest of the command surface is just paperwork. If it does not, jump to §57.10 (troubleshooting).
+
+## 57.7. The full demo (built in, no setup beyond the plugin)
+
+Tlamatini ships with a seeded demo prompt — `idPrompt=25`, *Unreal MCP End-to-End Editor Drive* — that puts every **base** command category (editor / blueprint / node / umg) through its paces in a single Multi-Turn run. It:
+
+1. Sanity-probes the connection (`get_actors_in_level`).
+2. Spawns a bare `StaticMeshActor` named `TlamatiniProbe_Cube` (`spawn_actor`).
+3. Verifies the spawn (`find_actors_by_name`).
+4. Scaffolds a brand-new Blueprint Actor (`create_blueprint`) called `BP_TlamatiniProbe`.
+5. Gives it a `StaticMeshComponent` (`add_component_to_blueprint`).
+6. Compiles it (`compile_blueprint`).
+7. Spawns a `BP_TlamatiniProbe` instance (`spawn_blueprint_actor`) called `TlamatiniProbe_Spawned`.
+8. Builds a UMG HUD widget called `WBP_TlamatiniProbeHUD` (`create_umg_widget_blueprint` → `add_text_block_to_widget` → `add_button_to_widget` → `add_widget_to_viewport`).
+9. Renders the whole run as an HTML report table at the bottom of the answer.
+10. Closes with a banner — ✅ FULLY OPERATIONAL, ⚠️ PARTIALLY OPERATIONAL, or ❌ UNREACHABLE — that mirrors the verdict the row-by-row table already gave you.
+
+After the demo finishes, your project will have three new artifacts in it (one actor, one Blueprint, one widget). They are intentionally left in place so you can poke at them in the editor; delete them via the Content Browser when you are done.
+
+If you have never run an Unreal MCP demo before, this is the **one** prompt to start with. It also doubles as a regression test — any change to the plugin, to Unrealer, to the contract registry, or to the wrapped-tool registration that breaks this prompt will be immediately visible in the final per-step table.
+
+**Three more demos for the extended surface.** The base demo above only drives the original editor / blueprint / node / umg verbs. Migration `0100_add_unrealer_extended_demo_prompts.py` adds three tiered prompts that put the **System / Level / Asset / Material** verbs (and `take_screenshot`) through their paces — pick them from the same Prompts dropdown:
+
+- **`idPrompt=60` — *Unreal Snapshot*** (basic): the observe→act loop — `get_current_level` → `spawn_actor` → `take_screenshot` (to `C:/Temp/unreal_snapshot.png`) → `save_current_level`.
+- **`idPrompt=61` — *Unreal Scene Forge*** (medium): content authoring — `list_assets` → `create_folder` → `create_material` → `create_material_instance` → `set_material_parameter` → `spawn_actor` → `assign_material` → `take_screenshot` → `save_all`. (It is honest that `set_material_parameter` on a freshly-created *blank* material may legitimately return `status: error` — that is expected, recorded, and not aborted.)
+- **`idPrompt=62` — *Unreal Python & Introspection*** (hard): the System escape hatch — `execute_console_command` → `get_class_info` → `list_assets` → `execute_python` (a multi-line script passed as a triple-quoted `params.code`) → `take_screenshot`.
+
+All three drive `chat_agent_unrealer` exactly like the base demo (tick only **Multi-Turn**; ACPX is not required) against the same running editor + bound plugin listener.
+
+## 57.8. Chaining Unreal calls on the visual canvas
+
+For long unattended flows that should run from a `.flw` or a Croner schedule, the **Unrealer** node on the canvas is the right surface. One node executes one command; you chain several together with **Parametrizer** nodes between them to copy a JSON field from one Unreal response into the next Unreal call's params.
+
+The canonical "scaffold a Blueprint and spawn an instance of it" canvas flow looks like this:
+
+```
+Starter
+  → Unrealer (command: create_blueprint, params.name=BP_X, params.parent_class=Actor)
+    → Parametrizer
+      → Unrealer (command: add_component_to_blueprint, params.blueprint_name=BP_X, …)
+        → Parametrizer
+          → Unrealer (command: compile_blueprint, params.blueprint_name=BP_X)
+            → Parametrizer
+              → Unrealer (command: spawn_blueprint_actor, params.blueprint_name=BP_X, …)
+                → Ender
+```
+
+The Parametrizer between each leg gives you a place to copy `response_body.result.name` (or any other JSON field the previous step returned) into the next step's `params`. Tlamatini's Agent Contract registry knows about Unrealer's six source fields — `host`, `port`, `command`, `status`, `error`, `response_body` — so the Parametrizer dialog will offer them in its dropdown when you wire the connection.
+
+If you want a branching flow — "if `compile_blueprint` failed, fire a Notifier instead of continuing" — drop a Raiser between the Unrealer and the next Parametrizer and have it watch for `status: error` in the log. That is exactly the pattern any non-Unreal agent uses; nothing about Unrealer is special there.
+
+## 57.9. The bullet-proof checklist (copy this to a sticky note)
+
+Before you start any Tlamatini-driven Unreal session:
+
+| Check | How |
+|---|---|
+| UE5 5.5+ open with a project loaded | `File → Open Project → <yours>`, leave the editor focused — not minimised to the tray |
+| Plugin enabled | `Edit → Plugins → UnrealMCP = Enabled`, editor restarted since you enabled it |
+| Listener bound | UE5 Output Log shows `UnrealMCP listening on 127.0.0.1:55557` |
+| Port not blocked | PowerShell: `Test-NetConnection -ComputerName 127.0.0.1 -Port 55557` → `TcpTestSucceeded: True` |
+| Tlamatini server up | `python Tlamatini/manage.py runserver` (or `--noreload`) shows the startup banner |
+| **Multi-Turn** ticked | The toolbar checkbox left of **Exec Report** |
+| Tool enabled | Tools dialog shows `Chat-Agent-Unrealer` ticked (it ships ticked by default after migration `0086`) |
+
+Then run the seeded **Unreal MCP End-to-End Editor Drive** demo (Prompts dropdown → idPrompt 25) as your smoke test. If the demo's final banner is ✅, everything from the wire up to the LLM's understanding is healthy and you can move on to your real work.
+
+## 57.10. When it goes wrong (and what each failure actually means)
+
+Tlamatini's Unrealer agent is designed never to raise into the caller — every failure mode turns into a `status: error` row in the response and, if the call was driven from chat, a clean error message in the Multi-Turn loop instead of a crashed conversation. Reading those messages with a clear head is half the battle.
+
+- **`Failed to connect to Unreal at 127.0.0.1:55557`.** The plugin's listener is not bound. Either UE5 is not running, the plugin is disabled, the plugin failed to rebuild for your current engine version, or — rarely — you have a second editor instance also bound to the same port. Open UE5's Output Log and find the `UnrealMCP listening on …` line; that is your ground truth.
+- **`Timeout receiving Unreal response`.** UE5's game thread is busy. Most often this happens during `compile_blueprint` on a non-trivial graph. Widen `read_timeout` in the canvas node's `config.yaml` or in the wrapped-tool call. Do not lower `connect_timeout` to compensate; the two are independent.
+- **`status: error` from a Blueprint command, no obvious reason.** Check the capitalisation of `parent_class` and similar string params — UE5 type names are case-sensitive and the plugin will not auto-resolve `actor` → `Actor`.
+- **The widget appears in the Content Browser but never shows up in the game.** `add_widget_to_viewport` queues the widget at editor level; you still need to press **Play** in the editor to enter PIE and see it. This is an Unreal MCP plugin design choice, not a Tlamatini bug.
+- **An actor spawn silently no-ops.** Most often: you spawned inside another object's collision volume. Raise `params.location` to `[0, 0, 150]` (or any sufficiently free patch of world space) and retry.
+- **Output Log shows a backtrace from the plugin, not a JSON response.** That is an upstream plugin bug. Reproduce it with the canonical Unreal MCP Python client (the upstream repo ships one in its `Python/` folder), report it upstream, and in the meantime work around it from the Tlamatini side by avoiding that verb.
+
+For the full debugging trail: pool-agent log lives at `<pool>/unrealer_<n>/unrealer_<n>.log`; chat-wrapped runs land under `agent/agents/pools/_chat_runs_/unrealer_<seq>_<id>/unrealer_<seq>_<id>.log`. Both contain the outbound JSON command and the inbound Unreal response verbatim. When you file a bug report — to us, or to the upstream plugin maintainers — paste those two lines, and the conversation gets a lot shorter.
+
+## 57.11. Why this matters
+
+A drag-and-drop workflow designer that can issue real, structured commands to a real, running Unreal Engine 5 editor is not the kind of bridge a small project usually ships. Tlamatini gets to ship it cheaply for three reasons that are worth naming explicitly, because each is the result of a design choice we made on other parts of the system long before Unreal entered the picture.
+
+1. **The pool-subprocess model.** Every workflow agent in Tlamatini already runs as its own short-lived Python interpreter, talking to the engine over plain text logs and `INI_SECTION_<TYPE><<<` blocks. The Unreal MCP plugin's TCP/JSON protocol slotted into that model without any new runtime — the Unrealer agent is just a pool subprocess that happens to open a socket instead of running `git log` or sending an email.
+2. **The Agent Contract registry.** Every agent's connection-field shape, parametrizer source fields, and `secret_paths` are declared once in `agent/services/agent_contracts.py`. Adding Unrealer was a single contract entry — and from that one entry the Flow Compiler, the canvas wiring, the Parametrizer dialog, the `.flw` save/load redaction, and the Validate dry-run all "just worked".
+3. **The wrapped chat-agent runtime.** Adding `chat_agent_unrealer` was one entry in `chat_agent_registry.py` plus two migrations (one for the Agent row, one for the Tool row). The wrapped runtime did the rest — sequencing, isolation, log capture, deduplication, exec-report integration, Parametrizer-compatibility, the lot.
+
+In other words: when a future engine — Unity, Godot, Blender, Houdini — exposes an equivalent MCP-style socket, **the cost of supporting it from Tlamatini is one new pool agent file, one contract entry, and two migrations**. The hard work is already done. That is the architectural payoff of the past year of refactoring, and Unreal MCP is the first place outside the existing 83-agent catalog where the cheque cashes for a brand-new domain.
+
+Welcome to driving Unreal Engine 5 from chat. Mind the collision volumes.
+
+---
+
+The **Keyboarder** agent sends Windows input to a bound window. Use `input_mode: text` with `text` for literal Unicode, or `input_mode: sequence` with `input_sequence` for the grammar below. Supply a verified `window_handle` or unique `window_title`; delivery stops on focus loss. `input_sent` is a delivery receipt, not proof of the application result.
+
+- **Literal strings**: enclose in single or double quotes — `'Hello World'`.
+- **Simultaneous keys**: join with `+` — `ctrl+c`, `shift+alt+delete`.
+- **Sequential commands**: separate with commas — `escape, escape, ctrl+c, 'hello'`.
+
+| Category | Supported keys |
+|---|---|
+| **Modifiers** | `ctrl`, `shift`, `alt`, `altgr`, `win`, `windows`, `command`, `option` |
+| **Arrows** | `left`, `<-(left arrow)`, `right`, `->(right arrow)`, `up`, `up arrow`, `down`, `down arrow` |
+| **Navigation** | `home`, `end`, `pageup`, `pgup`, `pagedown`, `pgdn` |
+| **Editing** | `enter`, `return`, `esc`, `escape`, `backspace`, `space`, `tab`, `del`, `delete`, `insert` |
+| **Locks** | `capslock`, `mayus`, `mayuscula`, `numlock`, `scrolllock` |
+| **Function keys** | `f1` through `f24` |
+| **Media & system** | `volumedown`, `volumeup`, `volumemute`, `playpause`, `nexttrack`, `printscreen`, `prtsc`, `pause`, `apps` |
+| **Symbols & numbers** | digits `0`–`9`, common punctuation, `\n`, `\r`, and `/`, `\\`, `[`, `]`, `-`, `=`, `,`, `.`, `;`, `'`, `` ` ``, `{`, `}`, `~`, `!`, `?`, `@`, `#`, `$`, `%`, `&`, `*`, `+`, `<`, `>` |
+
+*Commands are case-insensitive internally; literal quoted text preserves your exact capitalization.*
+
+---
+
+# Bonus Chapter — § 58. The ESP32 Template Project — a known-good ESP32 firmware baseline for ESP32er
+
+This bonus chapter documents the **ESP32 Template Project** — a small, standalone
+PlatformIO project that blinks an ESP32's onboard LED and prints the LED state
+over the serial port. It is the ESP32 counterpart of the **STM32 Template Project
+MCP** (the project STM32er drives): a clean, version-controlled,
+*guaranteed-to-compile* starting point that Tlamatini's **ESP32er** agent can
+build, flash and monitor, and that you can equally use on its own from the
+command line or the VS Code PlatformIO IDE.
+
+> **Read this if** you want to prove an ESP32 board + toolchain are healthy before
+> writing real firmware, or you want a baseline ESP32er can drive end-to-end
+> (build → upload → monitor), or you want to publish your own ESP32 firmware
+> starter to GitHub.
+
+## 58.1. Why a separate template project at all?
+
+ESP32er and STM32er solve the same problem — "let Tlamatini scaffold, build,
+flash and observe embedded firmware" — but through deliberately different plumbing:
+
+| | **STM32er** | **ESP32er** |
+|---|---|---|
+| Toolchain driver | A separate **MCP server** (the STM32 Template Project MCP), because STM32CubeIDE has no single unified CLI. | The **`pio` CLI directly** — PlatformIO already ships a complete command line, so there is **no MCP server**. |
+| What gets downloaded | The MCP repo (`git clone`/zip) + its Python deps. | PlatformIO Core itself (the official `get-platformio.py` installer), once. |
+| The "template project" | Lives *inside* the MCP repo and is F407VG-specific. | Is a self-contained project (`ESP32TemplateProject`) **bundled with ESP32er and copied by `create_project`**, and also kept standalone for publication as its own repository; board-and-framework agnostic by editing one file. |
+
+So the ESP32 Template Project is intentionally a **plain PlatformIO project**, not
+a server. ESP32er does not embed it — ESP32er can either point at a checkout of it
+(set `project_dir`) or scaffold an equivalent one from scratch with
+`action: create_project`. This repository is the **reference shape** that scaffold
+produces, kept as a maintained, CI-tested baseline.
+
+## 58.2. Where it lives and what's in it
+
+**As of 2026-09-15 the template lives in TWO places, on purpose:**
+
+1. **Bundled inside Tlamatini**, at `Tlamatini/agent/agents/esp32er/ESP32TemplateProject/`,
+   tracked in git and shipped in every build. This is the copy `action: create_project`
+   actually copies — which is what makes the scaffold *work* rather than merely exist
+   (see §58.6).
+2. **Standalone at `C:\Development\ESP32TemplateProject`**, ready to become its own
+   GitHub repository: the same files plus an MIT `LICENSE`, a `CHANGELOG.md`, a CI
+   workflow and the publish helpers in §58.5. Mirroring the STM32 one its home would be
+   **`https://github.com/XAIHT/ESP32TemplateProject`** — published 2026-09-16, public,
+   with the build workflow green on its first run. Its ESPHome sibling lives at
+   **`https://github.com/XAIHT/ESPHomeTemplateProject`**.
+
+Both copies hold the same project:
+
+```
+ESP32TemplateProject/
+├── platformio.ini             # board (esp32dev), framework (arduino), build flags
+├── src/
+│   └── main.cpp               # the blinking-LED firmware
+├── include/  lib/  test/      # standard PlatformIO directories (each with a README)
+├── .github/workflows/build.yml# CI: compiles the firmware on every push
+├── scripts/
+│   ├── create_github_repo.ps1 # one-shot "publish to GitHub" helper (Windows)
+│   └── create_github_repo.sh  # same, for bash / Git Bash / Linux / macOS
+├── .gitignore  CHANGELOG.md  LICENSE (MIT)  README.md
+```
+
+`platformio.ini` targets the generic **`esp32dev`** board with the **Arduino**
+framework — exactly the defaults ESP32er's `config.yaml` uses (`board: esp32dev`,
+`framework: arduino`) — and exposes two compile-time knobs:
+
+| Build flag | Default | Meaning |
+|---|---|---|
+| `-DBLINK_LED_PIN=2` | GPIO 2 | The GPIO the LED is wired to (GPIO 2 is the onboard blue LED on most DevKitC / WROOM-32 boards). |
+| `-DBLINK_INTERVAL_MS=500` | 500 ms | Half-period of the blink → 1 Hz. |
+
+`src/main.cpp` is the whole firmware: in `setup()` it configures the LED pin and
+opens the serial port at 115200 baud; in `loop()` it toggles the LED and prints
+`LED ON` / `LED OFF`. Printing the state means you can confirm the board is alive
+over the serial monitor even without watching the physical LED.
+
+## 58.3. Using it standalone (no Tlamatini)
+
+You need PlatformIO Core (`pip install platformio` or the official installer) and
+your board's USB-serial driver (CP210x / CH34x). Then, from the project root:
+
+```bash
+pio run                 # compile (the FIRST build also pulls the espressif32
+                        # platform + toolchain — several hundred MB — once)
+pio run -t upload       # flash over the onboard USB-serial bootloader (no JTAG)
+pio device monitor      # watch the log at 115200 baud (Ctrl+] to quit)
+```
+
+Expected serial output:
+
+```
+ESP32TemplateProject :: blink starting
+LED pin = 2, interval = 500 ms
+LED ON
+LED OFF
+LED ON
+...
+```
+
+To target a different ESP32 variant, run `pio boards espressif32`, change
+`board =` in `platformio.ini` (e.g. `esp32-s3-devkitc-1`, `esp32-c3-devkitm-1`),
+and — if the LED is on another pin — change `-DBLINK_LED_PIN=`.
+
+## 58.4. Driving it from ESP32er (the Tlamatini way)
+
+ESP32er auto-bootstraps PlatformIO Core if it is missing, so the only thing you
+install is the board's USB driver + Tlamatini. Point ESP32er at the project by
+setting its `project_dir` to the folder that holds `platformio.ini`, then run one
+`action` per invocation:
+
+| ESP32er `action` | Effect on this project |
+|---|---|
+| `validate` | Preflight — confirms `pio` resolves, `platformio.ini` exists, and (for hardware actions) a serial port is connected. Refuses fail-safe rather than mis-run. |
+| `build` | `pio run` — compiles `src/main.cpp`. Needs no board. |
+| `upload` / `build_and_upload` | `pio run -t upload` — flashes over USB. Requires a connected serial port. |
+| `monitor` | A bounded `pio device monitor` window (`monitor_seconds`, default 10 s). |
+| `monitor_session` | Composite: upload, then monitor — the end-to-end "flash and watch it blink" proof in one run. |
+| `write_source` / `read_source` / `list_sources` | Author / inspect files under `project_dir` — e.g. edit `src/main.cpp` to change the blink rate. |
+
+A natural Multi-Turn chat prompt:
+
+> *Using ESP32er, build and upload the ESP32TemplateProject at
+> `C:\Development\ESP32TemplateProject` to my board on COM5, then monitor the
+> serial port for 8 seconds and show me the LED log.*
+
+ESP32er emits an `INI_SECTION_ESP32ER` block for every run (fields `action`,
+`tool`, `ok`, `returncode`, `success`, `project_dir`, `port`, `environment`,
+`stage`) and **always** triggers its `target_agents`, so a downstream Forker can
+branch on `{success}` / `{returncode}` — making this template the first node of a
+larger firmware CI flow on the canvas.
+
+## 58.5. Publishing it to GitHub
+
+The project is ready to become its own repository. Two helper scripts wrap the
+[`gh` CLI](https://cli.github.com/) (install it and run `gh auth login` first):
+
+```powershell
+# Windows (PowerShell)
+.\scripts\create_github_repo.ps1 -RepoName ESP32TemplateProject -Owner XAIHT -Visibility public
+```
+```bash
+# bash / Git Bash / Linux / macOS
+./scripts/create_github_repo.sh ESP32TemplateProject XAIHT public
+```
+
+Each script will `git init` (if needed), make the first commit, create the GitHub
+repository under the given owner, push `main`, and print the URL. Equivalent by hand:
+
+```bash
+git init -b main && git add . && git commit -m "Initial commit: ESP32 blinking-LED template"
+gh repo create XAIHT/ESP32TemplateProject --public --source=. --remote=origin --push
+```
+
+Once pushed, the bundled GitHub Actions workflow (`.github/workflows/build.yml`)
+compiles the firmware on every push so the template never silently rots. The
+template has been verified to build clean with **PlatformIO Core 6.1.19** (it
+produces `firmware.bin` + `firmware.elf`).
+
+## 58.6. Why `create_project` copies this template (2026-09-15)
+
+For a while this chapter described a template that ESP32er did not actually use.
+`action: create_project` ran a bare `pio project init -d <dir> -b <board>`, and it
+is worth being precise about what that produces: a `platformio.ini`, and then
+**empty** `src/`, `include/`, `lib/` and `test/` directories. There is no
+`main.cpp` anywhere in it.
+
+Under the Arduino framework that is not a small gap. The framework supplies its
+own `main()`, which calls *your* `setup()` and `loop()` — so with no source of
+your own, the very next `build` does not produce an empty firmware, it fails
+outright at the link step:
+
+```
+undefined reference to `setup'
+undefined reference to `loop'
+```
+
+So `create_project` → `build`, the most obvious two steps anyone would try, was
+broken; and the one-call `scaffold_build_upload` composite died at its build stage
+unless the caller happened to pass `content` for it to write first. **A scaffold
+whose output does not build is not a scaffold** — it is a directory.
+
+The fix is the same uniform template-project scheme Arduiner already used:
+`create_project` copies `ESP32TemplateProject/` from beside `esp32er.py`, then
+stamps the requested `board` and `framework` into the copied `platformio.ini`.
+One template therefore serves every ESP32 variant — asking for
+`esp32-s3-devkitc-1` rewrites that one line rather than needing a second template.
+
+Three properties of that function are deliberate and should survive future edits:
+
+- **It never returns a project that cannot compile.** If the bundled template is
+  ever missing from an install, the `pio project init` fallback still writes a
+  minimal `src/main.cpp` before returning. The guarantee is unconditional.
+- **It never overwrites an existing project.** Pointed at a folder that already
+  has a `platformio.ini`, it reports that and leaves the contents alone. Somebody's
+  firmware is not ours to replace.
+- **It is verified, not assumed.** The shipped template was compiled for real
+  during this change: `pio run` → `[SUCCESS] Took 15.08 seconds`, `firmware.bin`
+  269,728 bytes, `firmware.elf` 6,071,200 bytes, RAM 6.6 %, Flash 20.6 %, on
+  PlatformIO Core 6.1.19 with espressif32 7.0.1.
+
+**ESPHomer had the mirror-image problem**, found in the same pass. Its
+`ESPHomeTemplateProject/` shipped beside `esphomer.py` and was tracked in git —
+but no code path ever read it, because `new_config` generates device YAML from an
+inline template instead. A template nothing can reach is documentation at best,
+and silent drift at worst: the sample users read and the output the agent produced
+were free to diverge with nothing to notice. ESPHomer now has
+`action: scaffold_template`, which copies it, and the project grew from two files
+to six — a self-contained light device, a `packages:`-and-`!secret` sensor device,
+a shared `common/base.yaml`, a `secrets.yaml.example` and a `.gitignore`.
+
+---
+
+# Bonus Chapter — § 59. The Day Tlamatini Learned to Sculpt in Blender
+
+> *A bonus chapter, narrative first, reference second. Read this if you make 3D art, motion graphics, or game assets in Blender and want a chat / canvas surface for the editor — driven by the **Blenderer** agent. The dry reference lives in **README §6.11** and in the agent's own `agents_descriptions.md` entry; this chapter is the "why it looks the way it does, and how to make it bullet-proof on your box".*
+
+## 59.1. The shape of the problem (and why Blender is *not* Unreal)
+
+Two chapters ago Tlamatini learned to drive Unreal Engine (§57). Blender is the same *kind* of problem — a **running editor process** holding a live graph of in-memory objects (meshes, materials, modifiers, collections, lights, cameras) that does not want to be poked from outside — but the **shape of the conversation is fundamentally different**, and that difference is the whole story of this chapter.
+
+Unreal MCP is a **verb** protocol: you send `{"type": "spawn_actor", "params": {...}}` and the plugin has a hand-written C++ handler for `spawn_actor`. The surface is a fixed menu of ~53 verbs.
+
+The **official Blender MCP add-on** (from blender.org) took the opposite design. Its socket speaks **one** primitive: *"here is some Python — run it inside Blender and give me back what the `result` variable holds."* The wire request is literally:
+
+```json
+{"type": "execute", "code": "import bpy\nresult = {'objects': len(bpy.data.objects)}", "strict_json": false}
+```
+
+followed by a single **NUL byte** (`\0`) as the frame delimiter, and Blender answers with another NUL-terminated JSON object:
+
+```json
+{"status": "ok", "result": {"objects": 3}, "stdout": "", "stderr": ""}
+```
+
+That is breathtakingly powerful — the "command surface" is the **entire Blender Python API**, every operator, every data block, every add-on — and slightly terrifying, because now *the caller* has to write correct `bpy` code for every single thing, and remember to assign a `result` dict, and hope it's JSON-serializable. A bare LLM client (which is what blender.org recommends) puts that whole burden on the model, every turn.
+
+Tlamatini's **Blenderer** agent splits the difference. It keeps the escape hatch — `execute_code` runs any Python you give it — but wraps the everyday operations (inspect the scene, make an object, colour it, render it) in a small **rich action catalog** of named commands that *generate* the correct, `result`-setting Python for you. You get verb-like ergonomics when you want them and the full API when you need it.
+
+## 59.2. Where Blender MCP lives (the add-on, not a Tlamatini fork)
+
+Unlike Unreal — where Tlamatini ships its own extended MCP fork — Blender's MCP is **official, first-party, and maintained by the Blender project**:
+
+- **Home / docs:** https://www.blender.org/lab/mcp-server/
+- **Source:** the `blender_mcp` repository on Blender's own Gitea (`projects.blender.org/lab/blender_mcp`). It has three parts: the **add-on** (the TCP socket server that runs *inside* Blender), the **`blmcp` MCP server** (a stdio↔socket bridge for generic MCP clients), and a bundled **`chat_client.py`** (a bare terminal chat).
+
+Here is the key architectural decision Tlamatini makes, and the reason Blenderer is a better experience than the stock setup: **Tlamatini talks to the add-on socket *directly* and ignores the `blmcp` bridge and the bundled chat client entirely.** Blenderer *is* the client. So you install exactly two things — **Blender** and **the add-on** — and skip `uv`, skip running a separate MCP-server process, skip the terminal chat. Everything you already love about Tlamatini (the canvas, Multi-Turn, the Exec Report, Parametrizer pipelines, every other agent) then composes on top of Blender with zero extra plumbing.
+
+## 59.3. Installing and enabling the add-on
+
+1. Install the **Blender MCP add-on** in Blender (Edit → Preferences → Add-ons → Install, then tick it on), following the instructions on the blender.org page above.
+2. Turn on **Online access** in *Edit → Preferences → System*. The add-on refuses to open a socket while Blender is in fully-offline mode — this is the single most common "it won't connect" cause.
+3. In the add-on's preferences panel, set the **host** and **port** (defaults `localhost` / `9876`) and **start the server** (there's an optional auto-start toggle so it comes up with Blender).
+
+That's it. Blender is now listening on `localhost:9876`. Blenderer never launches Blender — it only connects to an already-running editor, exactly like Unrealer never launches UE5.
+
+## 59.4. The thirty-second conceptual model
+
+Hold these five facts and everything else follows:
+
+1. **One primitive.** Every Blenderer run becomes one `{"type":"execute","code":…,"strict_json":…}` message to `localhost:9876`, NUL-framed, and one NUL-framed JSON reply.
+2. **The code must set `result`.** Whatever you want back, assign it to a `result` dict. (Blenderer's baked verbs do this for you; in `execute_code` *you* do it.)
+3. **`strict_json` (default `false`).** When `true`, Blender errors if `result` isn't JSON-serializable. When `false` (the robust default), non-serializable values are `repr()`'d instead of failing — friendlier for exploration.
+4. **Blenderer is a generic, deterministic forwarder.** It does not run an LLM itself; it builds the code, sends it, captures the reply into an `INI_SECTION_BLENDERER` block, and **always** triggers `target_agents` (success *or* error) so a downstream Forker can branch on `{status}`.
+5. **Direct socket.** No `blmcp`, no external client. The same `agent_id`-free socket is used by both the chat tool (`chat_agent_blenderer`) and the canvas **Blenderer** node — they produce identical artefacts.
+
+## 59.5. The action catalog, organised the way a builder thinks
+
+`command` picks what Blenderer does. Three buckets:
+
+**Look (read-only — safe, no scene changes):**
+- `ping` — is Blender alive? Returns the Blender version + the active scene.
+- `scene_info` — scene name, frame range, render engine, and the object list.
+- `get_objects` — the full tree: every object (name/type/location/parent/visibility/dimensions), plus collections, meshes and materials.
+- `get_object_detail` (`params.object_name`) — one object in depth: transform, scale, dimensions, assigned materials, modifiers, vertex count.
+- `blendfile_summary` — datablock counts for the open `.blend` (objects, meshes, materials, textures, images, cameras, lights, collections, scenes).
+
+**Make (mutating):**
+- `create_object` — `params.type` ∈ cube / sphere / cylinder / cone / plane / monkey / torus, with `params.name` and `params.location` `[x,y,z]`.
+- `delete_object` (`params.object_name`).
+- `set_material` — attach (or reuse) a Principled-BSDF material on `params.object_name` and set its base colour to `params.color` `[r,g,b]` or `[r,g,b,a]`; name it with `params.material`.
+
+**Show (output to disk):**
+- `screenshot` (`params.output_path`) — a window grab via `bpy.ops.screen.screenshot`.
+- `render` (`params.output_path`) — a full still render via `bpy.ops.render.render(write_still=True)`.
+
+For both output verbs, **omit `params.output_path`** and Blenderer writes a collision-proof `.png` under Tlamatini's **Temp** directory (`<app>/Temp/TlamatiniBlenderer/…`), in line with the 2026-06 temp-directory policy.
+
+**Escape hatch:**
+- `execute_code` (`params.code`) — runs your Python verbatim. Anything the catalog doesn't cover (modifiers, geometry nodes, animation, UV, sculpt, compositor, import/export, add-on calls…) lives here. Set a `result` dict to return data.
+
+## 59.6. The smallest possible "hello, Blender"
+
+With **Multi-Turn** ticked, type:
+
+> Run Blender command with command='ping'
+
+Blenderer connects to `localhost:9876`, runs a tiny snippet, and you get back `status: ok` with something like `blender_version_string: "4.x.x"` and the active scene name. If instead you see a `status: error` whose message mentions *Online access* / *Cannot connect*, jump to §59.11 — it's almost always the add-on server not started or Online access off.
+
+## 59.7. The full demo — "BLENDER FORGE" (built in, no setup beyond the add-on)
+
+Tlamatini ships a Catalog-of-Prompts demo called **BLENDER FORGE** (open the prompts catalog, slot 75). Run it and Tlamatini will, end to end through `chat_agent_blenderer`:
+
+1. `ping` — confirm Blender is reachable (and bail gracefully to a banner if not).
+2. `create_object` — add a **monkey** (Suzanne) named `ForgeSuzanne` at `[0,0,2]`.
+3. `set_material` — give it a warm orange Principled base colour.
+4. `render` — render a still (defaulting under the Temp dir).
+5. Print a tidy HTML **Build Report** table — one row per call, every value taken verbatim from the `INI_SECTION_BLENDERER` blocks — and a closing **✅ FORGED** / **⚙️ BLENDER UNREACHABLE** banner.
+
+It is deliberately safe to run repeatedly: it adds one object and one material and renders a small image. If Blender isn't running, it degrades to the "unreachable" banner instead of failing — the same fail-soft contract every Blenderer flow honours.
+
+## 59.8. Chaining Blender calls on the visual canvas
+
+The chat tool is great for one-offs; the **canvas** is where unattended pipelines live. Drop the **Blenderer** node (it carries a distinctive blue→orange "Blender Forge" gradient so it's easy to spot next to the cobalt Unrealer), set its `command` + `params` in the node dialog, and wire it like any other agent.
+
+Because each Blenderer emits an `INI_SECTION_BLENDERER` block whose body is Blender's full JSON response, **Parametrizer** can copy one step's output into the next step's config. The canonical pattern:
+
+```
+Starter → Blenderer(create_object) → Parametrizer → Blenderer(set_material)
+        → Parametrizer → Blenderer(render) → Notifier → Ender
+```
+
+Each Parametrizer copies the previous Blenderer's `response_body` (or a specific JSON field, via the Parametrizer dialog's interconnection-mapping UI) into the next Blenderer's `params`. Put a **Forker** after a Blenderer and branch on the section's `status` (`ok` vs `error`) for per-step exception handling — e.g. abort to a Notifier if a render fails. A **Croner** in front turns the whole thing into a nightly automated render. **FlowCreator** knows the Blenderer entry (catalog #77) and can design these flows for you from a plain-English objective.
+
+## 59.9. `execute_code` — the universal escape hatch (and its one rule)
+
+When you outgrow the catalog, reach for `execute_code`. The **one rule**: your code must assign a `result` dict. Example — count polygons across the scene and report the heaviest object:
+
+> Run Blender command with command='execute_code' and params.code="import bpy; objs=[(o.name,len(o.data.polygons)) for o in bpy.data.objects if o.type=='MESH']; objs.sort(key=lambda x:-x[1]); result={'meshes':objs,'heaviest':objs[0] if objs else None}"
+
+Tips that save you grief:
+- Keep `strict_json` at `false` unless you specifically want the serialization guard — then a stray Blender object in `result` is `repr()`'d instead of erroring the whole call.
+- Anything you `print()` comes back in the response's `stdout`, captured in the section body — handy for progress without polluting `result`.
+- `execute_code` and `render` get **longer socket read-timeout floors** (300 s and 600 s respectively) because a heavy script or a cold-start render legitimately takes a while; Blenderer raises the timeout for you so a slow-but-valid run is never killed mid-flight.
+
+## 59.10. The bullet-proof checklist (copy this to a sticky note)
+
+1. Blender is **running**, the MCP add-on is **enabled**, **Online access** is **on**, and the add-on **server is started** (host/port match — default `localhost:9876`).
+2. For a remote Blender, pass `host='<ip>'` / `port=<n>` per call (or set them in the node dialog); only one Blender can bind a given port.
+3. Start every session with `ping` — if it isn't `ok`, fix the connection before anything else.
+4. Use the **read** verbs to ground yourself (`scene_info`, `get_objects`) before mutating.
+5. Let output verbs default their path to **Temp** unless you have a reason to choose one.
+6. In Multi-Turn, the agent is gated by the **Ask Execs** toggle like any state-changer — tick it if you want a Proceed/Deny prompt before each Blender mutation.
+7. The agent **always** fires `target_agents`; branch on `{status}` with a Forker rather than assuming success.
+
+## 59.11. When it goes wrong (and what each failure actually means)
+
+- **`status: error` … "Cannot connect to Blender at localhost:9876" / ConnectionRefusedError.** Blender isn't running, the add-on isn't enabled, **Online access is off**, or the add-on server wasn't started. This is the #1 cause — walk §59.3 again.
+- **"did not reply within Ns" on a fast read verb.** Blender's main thread is busy or parked on a **modal dialog / blocking operator** (a popup waiting for a human, a long bake). Dismiss the dialog in Blender, or split the work; for genuinely long work raise `read_timeout`.
+- **A render/`execute_code` "times out" anyway.** Rare — the per-command floors are generous — but a cold GPU/CYCLES first-frame compile or an enormous scene can exceed even those. Raise `read_timeout` for that node.
+- **"Unknown command".** You wired a `command` that isn't in the catalog. Use `execute_code` for anything the catalog doesn't name — it reaches the whole API.
+- **Your `execute_code` "succeeded" but `result` is empty.** You forgot to assign `result`. Blender defaults it to `{}` when your script doesn't set it; anything you `print()` is still in `stdout`.
+
+For the full trail: the pool-agent log is `<pool>/blenderer_<n>/blenderer_<n>.log`; chat-wrapped runs land under `agent/agents/pools/_chat_runs_/blenderer_<seq>_<id>/…log`. Both contain the exact Python sent and Blender's verbatim reply.
+
+## 59.12. Why this matters
+
+blender.org's own recommendation is to point a generic MCP client (Claude Desktop, or their bundled terminal `chat_client.py`) at the `blmcp` bridge and chat with it. That works — and it's a flat, single-window, you-versus-one-model experience. Tlamatini takes the *same* official add-on and gives it a body: a visual canvas where a dozen Blender steps wire into a render pipeline, a Multi-Turn operator loop that does the modelling for you, an Exec Report that shows every command and its verdict, Parametrizer chains that pass a created object's name into the next step's material, a FlowHypervisor watching for stalls, and 81 sibling agents so a Blender render can be the *middle* of a workflow that started with a web crawl and ends with a Telegram message. Same engine underneath; an order of magnitude more leverage on top. That is the point of Blenderer.
+
+---
+
+# Bonus Chapter — § 60. The Day Tlamatini Learned to Build a House
+
+> *A bonus chapter, narrative first, reference second. Read this if you want a light you can flick from your phone, a temperature sensor that whispers its readings to a dashboard, or a doorbell that texts you — built not by soldering a weekend away over a C++ compiler, but by describing the thing you want in a few lines of YAML and letting Tlamatini's **ESPHomer** agent do the rest. The dry reference lives in **README §3.19** and in the agent's own `agents_descriptions.md` entry; this chapter is the "why it looks the way it does, and how to make it work on your kitchen table".*
+
+## 60.1. A different kind of firmware
+
+The three firmware agents you have already met in this book — STM32er, ESP32er, Arduiner — all share a quiet assumption: that *firmware is a program*. You scaffold a project, you author a `.c` or a `.cpp` or an `.ino`, you compile it into a binary, you flash that binary onto silicon, and you watch a serial port to prove it lives. It is the honest, low-level craft of embedded engineering, and Tlamatini does it beautifully across three toolchains.
+
+ESPHome refuses that assumption. Its founding idea — *Smart Home Made Simple*, in the words of the Open Home Foundation that stewards it — is that for the overwhelmingly common case of a home-automation device (a light, a switch, a sensor, a display) you should never see a line of C++ at all. You should **describe the device**, in a small, declarative YAML file, and let ESPHome *generate* the firmware for you. Under the hood it still compiles real C++ through PlatformIO and flashes a real binary; but that machinery is hidden the way an engine is hidden under a hood. What you touch is the intent, not the implementation.
+
+So ESPHomer is the fourth firmware agent, and the odd one out — by design. Where its siblings author source code, ESPHomer authors *configuration*. That single difference ripples through everything: the actions it offers, the file it cares about, even the built-in generator it carries in place of an interactive wizard. This chapter is about that difference and how to wield it.
+
+## 60.2. The foundation: ESPHome, in one breath
+
+[ESPHome](https://esphome.io) turns ESP32, ESP8266, RP2040 and BK72xx microcontrollers into smart-home devices from a YAML configuration. Four promises define it, and ESPHomer inherits all four:
+
+- **No coding required** — a device is a YAML file, not a program.
+- **Wireless updates (OTA)** — after the first USB flash, you push new firmware over WiFi.
+- **Modular** — hundreds of supported sensors, switches, lights and displays, composed by listing them.
+- **Local control** — the device runs on your own network and talks to a hub (most famously Home Assistant) over a native API, with no cloud dependency.
+
+ESPHome is a Python package — `pip install esphome` — and ships a complete command-line tool, `esphome`, covering everything ESPHomer needs: validate a config, compile it, upload it over USB or over-the-air, stream its logs, clean its build. That completeness is exactly why ESPHomer, like ESP32er and Arduiner before it, drives the CLI **directly** and needs no MCP server. (STM32er needs a server only because STM32CubeIDE has no unified CLI; ESPHome has the opposite problem — too capable a CLI to bother wrapping.)
+
+## 60.3. The thirty-second conceptual model
+
+Hold one picture in your head and the rest follows: **a device is a `*.yaml` file.** Everything ESPHomer does is in service of that file — generate it, write it, read it back, validate it, compile it into firmware, push that firmware to a board, then listen to the board talk.
+
+```
+ new_config / write_config        config              compile               upload                 logs
+   author the YAML       ──▶  validate the YAML ──▶ build firmware ──▶ flash (USB or OTA) ──▶ watch it run
+```
+
+That is the whole lifecycle. The granular actions walk it one step at a time; the composite `scaffold_compile_upload` walks the whole thing in a single call. There is no "project directory full of source" to reason about, no linker script, no `fqbn` — just a path to one YAML file (`config_path`) that every step shares.
+
+## 60.4. Zero-config: you install only the USB driver
+
+The operator promise that runs through every firmware agent in this book holds here too, and is if anything simpler. With `esphome_executable` left blank (the default), ESPHomer **installs ESPHome itself** — `pip install esphome` — the first time it needs it. There is no separate IDE to download as with STM32CubeIDE, no Go binary to fetch as with arduino-cli, no installer script as with PlatformIO; ESPHome is *just a Python package*, and Tlamatini already carries a Python. You run `action='bootstrap'` to do it explicitly, or trust `auto_bootstrap` (default `true`) to do it lazily on first use.
+
+The only thing the *human* installs is the board's USB-serial driver (so the first flash can find the board) and Tlamatini. The first `compile` afterwards is slow — once — because ESPHome, through PlatformIO underneath, downloads the platform and toolchain. Every compile after that is quick. The FlowHypervisor knows this and will not flag a long *first* compile as stuck while download progress keeps printing (see its **ESPHOMER SPECIAL NOTES**).
+
+## 60.5. The fail-safe preflight
+
+Before ESPHomer compiles or uploads anything, it runs the same kind of safety gate its siblings run — refusing, rather than producing a doomed build. `action='validate'` reports the whole environment without building; every build/upload action runs the gate implicitly. The rules:
+
+- `esphome` must be resolvable (or bootstrappable).
+- For anything that touches the YAML — `config`, `compile`, `upload`, `logs`, `clean`, `list_artifacts` — the device YAML must exist. (Don't have one? `new_config` or `write_config` first.)
+- For anything that touches **hardware** — `upload`, `run`, `logs` — a serial port must be physically connected **or** an OTA host must be supplied in `port`. ESPHome's first flash is always over USB-serial; *after* that, because every generated device carries an `ota:` block, you can update it over WiFi by passing the device's IP as `port`. ESPHomer treats a `port` that looks like a hostname or IP as an OTA target and waives the serial requirement.
+
+A refusal is **not a crash**. A `stage: preflight` section that says "No serial port detected and no OTA host given" is the gate working exactly as designed — routable evidence a downstream Forker can branch on, never an error to flag.
+
+## 60.6. The action catalog, organised the way a builder thinks
+
+| What you want | `action` |
+|---|---|
+| Provision / check ESPHome | `bootstrap`, `validate`, `version` |
+| **Make** a device YAML (headless wizard) | `new_config` |
+| Hand-write / read / validate / clean a YAML | `write_config`, `read_config`, `config`, `clean` |
+| Build & flash | `compile`, `upload`, `run`, `list_artifacts` |
+| Watch it run (serial or OTA) | `logs` |
+| **Do it all in one call** | `scaffold_compile_upload` |
+
+Because the interactive `esphome wizard` cannot run unattended, ESPHomer ships its own **`new_config`** generator — the headless replacement. Give it a `name`, a `platform` (`esp32` / `esp8266` / `rp2040` / `bk72xx`), optionally a `board`, `led_pin`, and WiFi credentials, and it writes a minimal, *valid* device YAML to `config_path`. One call, and a flashable device exists.
+
+## 60.7. The smallest possible device — "hello, light"
+
+Here is the canonical first device, the one this book opened its ESPHomer story with: an on/off light on the board's onboard LED, exposed over the native API so a hub — and therefore your phone — can toggle it. Ask Tlamatini, with only the **Multi-Turn** toggle ticked:
+
+> *"Make me a phone-controlled light on an ESP32 at `<my Templates dir>/light/tlamatini-light.yaml`, compile it, and flash it to the board."*
+
+ESPHomer calls `new_config`, and the file it writes is this:
+
+```yaml
+esphome:
+  name: tlamatini-light
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+logger:
+api:                    # the hub discovers and controls the device over this
+ota:
+  - platform: esphome   # push new firmware over WiFi after the first USB flash
+wifi:
+  ssid: "YOUR_WIFI_SSID"
+  password: "YOUR_WIFI_PASSWORD"
+output:
+  - platform: gpio
+    pin: GPIO2          # onboard LED on most ESP32 DevKitC boards
+    id: light_output
+light:
+  - platform: binary
+    name: "Tlamatini Light"   # the entity your phone toggles
+    output: light_output
+```
+
+Edit the two WiFi lines, and the rest of the lifecycle — `config`, `compile`, `upload` — needs nothing but that one `config_path`. Adopt the device into Home Assistant, open the app, and the toggle labelled **Tlamatini Light** is the GPIO2 LED. You have built a smart-home device, and you never opened a C++ file. (This exact file ships in the repository at `agent/agents/esphomer/ESPHomeTemplateProject/tlamatini-light.yaml` as a known-good baseline.)
+
+Want a sensor instead of a light? ESPHome's modularity means you just *list* the component — for instance a DHT temperature/humidity sensor becomes:
+
+```yaml
+sensor:
+  - platform: dht
+    pin: GPIO4
+    temperature:
+      name: "Tlamatini Temperature"
+    humidity:
+      name: "Tlamatini Humidity"
+    update_interval: 60s
+```
+
+Hand that to `write_config`, then `compile` and `upload`, and the readings appear on your dashboard. The shape of the work never changes: describe, validate, compile, flash, observe.
+
+## 60.8. The one-call fast path
+
+Most of the time you do not want five round-trips; you want the device built. `scaffold_compile_upload` collapses the whole lifecycle into a single agent run — author (via `new_config`, or `write_config` when you pass `content`), then `config`, then `compile`, then `upload`, then `logs` if you set `monitor_seconds`. It is **fail-safe**: with no board connected it still authors, validates and compiles, and reports *"compiled OK, upload skipped — connect the board and run `upload`"*. One call:
+
+> *"Run ESPHomer with `action='scaffold_compile_upload'`, `config_path='<Templates>/light/tlamatini-light.yaml'`, `name='tlamatini-light'`, `platform='esp32'`, `board='esp32dev'`, `led_pin='GPIO2'`, `port='COM9'`."*
+
+Every run — granular or composite — emits one atomic `INI_SECTION_ESPHOMER` block for the Exec Report and for Parametrizer to mine:
+
+```
+INI_SECTION_ESPHOMER<<<
+action: compile
+tool: compile
+ok: true
+returncode: 0
+success: true
+config_path: C:/.../light/tlamatini-light.yaml
+name: tlamatini-light
+port:
+stage:
+
+INFO Successfully compiled program.
+Linking .esphome/build/tlamatini-light/.pioenvs/.../firmware.bin
+>>>END_SECTION_ESPHOMER
+```
+
+A downstream Forker branches on `{success}`; Parametrizer pipes `{config_path}` into the next node. A `success: false` here — a YAML that fails to validate, an upload that finds no port — is content for the next agent to act on, not a Tlamatini fault.
+
+## 60.9. Chaining ESPHomer on the visual canvas
+
+The chat is for one device; the canvas is for a device *factory*. The same capability is the green **ESPHomer** node, and it wires into a fully unattended pipeline:
+
+```
+Starter
+  → ESPHomer (new_config:  name, platform, board → writes the YAML)
+  → Parametrizer (carry {config_path} forward)
+  → ESPHomer (config:  validate the YAML)
+  → ESPHomer (compile)
+  → Forker (branch on {success})
+        ├─ success → ESPHomer (upload) → ESPHomer (logs, monitor_seconds: 8) → File-Creator (save the boot log)
+        └─ failure → Emailer (send me the compiler diagnostic)
+  → Ender
+```
+
+ESPHomer ALWAYS triggers its `target_agents` — success *or* failure — precisely so the Forker can route both outcomes.
+
+## 60.10. Two demos that ship in the box
+
+Open the **Prompts** catalog and two ESPHomer demos are waiting, each a self-contained, narrated run that drives only `chat_agent_esphomer` with only the Multi-Turn toggle:
+
+- **ESPHOME GENESIS** *(basic)* — the zero-config story end to end: `bootstrap` (ESPHomer pip-installs ESPHome itself) → `validate` → `new_config` (generate a device YAML) → `config` → `compile` → `list_artifacts`. **No board required** — it is pure provision-and-build, perfect for proving the toolchain on a fresh machine, and it closes with a green "ESPHOME PROVISIONED & FIRMWARE BUILT" banner and a build report.
+- **SMART LIGHT** *(medium)* — the phone-controlled light of §60.7, built for real: `validate` → `new_config` → `config` → `compile` → `list_artifacts` → `upload`. The upload is board-*optional*: with no board attached, ESPHomer's preflight refuses it cleanly ("BUILT, NO BOARD"), and with a board attached it flashes and lights up.
+
+Both are deliberately **safe to run repeatedly** — they write only into your Templates directory and never touch anything destructive.
+
+## 60.11. When it goes wrong (and what each failure actually means)
+
+- **`overall : FAILED` in a `stage: bootstrap` section.** ESPHomer could not `pip install esphome` — almost always no internet on the host. This *is* a legitimate error to flag; everything downstream depends on the CLI existing.
+- **A `stage: preflight` section that REFUSES with "No serial port detected and no OTA host given".** Not a crash — the fail-safe gate doing its job. Connect the board over USB, or pass `port='<device-ip>'` for an OTA update.
+- **The first `compile` seems to hang for minutes.** Normal, once. ESPHome is downloading the platform + toolchain through PlatformIO. As long as new progress keeps printing, it is working; only total silence beyond ~10 minutes (or an explicit error) is a real stall.
+- **`config` reports the YAML is invalid.** ESPHome's validator is strict and *helpful* — it names the offending key. This is a `success: false` you should read, not fear: fix the YAML (`write_config`) and re-run.
+- **An OTA `upload` can't reach the device.** The `port` IP is wrong, the device isn't on the network yet, or it has never had its *first* USB flash (OTA only works once the device is already running ESPHome with the `ota:` block). The first flash is always USB.
+
+For the full trail, the pool-agent log is `<pool>/esphomer_<n>/esphomer_<n>.log`; chat-wrapped runs land under `agent/agents/pools/_chat_runs_/esphomer_<seq>_<id>/…log`, and contain the exact `esphome` command and its verbatim output.
+
+## 60.12. Why this matters
+
+The other firmware agents make Tlamatini an *embedded engineer*. ESPHomer makes her a *home builder*. The distance between "I wish that lamp turned on when I got home" and a working device used to be measured in soldering irons, Arduino sketches, and an evening lost to a serial monitor. ESPHome compressed that distance to a YAML file; ESPHomer compresses it again, to a sentence in chat — and then, because it lives inside Tlamatini, hands the result to the same canvas, Exec Report, Parametrizer chains, FlowHypervisor and 81 sibling agents as everything else. A light you flick from your phone can be the *first* step of a flow that ends in a dashboard, a notification, or a Telegram message. Same simple foundation underneath; the whole of Tlamatini on top. That is the point of ESPHomer.
+
+---
+
+# Appendix B — Glossary
+
+| Term | Definition |
+|---|---|
+| **ACPX** | Agent Communication Protocol eXtension — Tlamatini's runtime for spawning external coding-agent CLIs as child processes and brokering them as LLM tools. |
+| **Agent** | An autonomous Python process that performs a specific workflow task. |
+| **Apirer** | HTTP/REST API agent. |
+| **Arduiner** | Tlamatini agent that scaffolds, builds, flashes, and observes Arduino firmware by driving the **Arduino CLI** (`arduino-cli`) directly — no MCP server. The microcontroller is chosen by `fqbn`. Zero-config bootstrap downloads the arduino-cli Go binary + auto-installs the FQBN's core; ships an `ArduinoTemplateProject` scaffold. Available both as the wrapped Multi-Turn tool `chat_agent_arduiner` and as a visual canvas node. The 70th entry in the agent catalog; the direct-CLI sibling of ESP32er. |
+| **ArduinoTemplateProject** | The bundled Arduino sketch scaffold Arduiner's `create_project` copies and stamps with the chosen FQBN/port in a `sketch.yaml` profile — the Arduino analog of the STM32 Template Project MCP and the ESP32 Template Project. |
+| **Asker** | Interactive A/B path chooser; pauses for user dialog. |
+| **ASGI** | Asynchronous Server Gateway Interface — Python standard for async web servers. |
+| **Barrier** | Synchronization barrier; fires when ALL N source agents have started. |
+| **BM25** | Best Matching 25 — probabilistic keyword retrieval algorithm. |
+| **Camcorder** | Tlamatini agent that captures from a physical camera (webcam) via OpenCV — a photo (default) or a short video — and saves it to `Pictures/TlamatiniCamcorder`. The hardware-camera sibling of Shoter (screen capture); observational, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears). Available both as the wrapped Multi-Turn tool `chat_agent_camcorder` and as a visual canvas node. The 71st entry in the agent catalog. |
+| **Recorder** | Tlamatini agent that records audio from a system input device (microphone) via `sounddevice` and saves a WAV to `Music/TlamatiniRecords` — the SOUND sibling of the capture trio (Shoter = screen, Camcorder = camera, Recorder = audio); observational, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears). Records from the default mic by default (`device_index`/`device_name` to pick another); `sample_rate: 0` = device-native. Available both as the wrapped Multi-Turn tool `chat_agent_recorder` and as a visual canvas node. The 72nd entry in the agent catalog. |
+| **AudioPlayer** | Tlamatini agent that PLAYS an audio file (`audio_file`) through a system output device (speakers) via `soundfile` (decode) + `sounddevice` (stream) — the PLAYBACK counterpart of Recorder (mic-in → speakers-out); observational/output, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears). Plays to the default output by default (`device_index`/`device_name` to pick another); `volume_percent` is a software gain; **`time_played`** sets the length — `0` plays the whole file once, a positive value plays exactly that long, TRUNCATING a longer file or LOOPING a shorter one (whole repeats + a final partial segment); `sample_rate: 0` uses the file's own native rate (correct pitch). Available both as the wrapped Multi-Turn tool `chat_agent_audioplayer` and as a visual canvas node. The 73rd entry in the agent catalog. |
+| **VideoPlayer** | Tlamatini agent that PLAYS a video file (`video_file`: .mp4/.mov/.mkv/.avi/.webm) WITH audio on a chosen display via `ffpyplayer` (decode + synced audio + volume; its pip wheel bundles ffmpeg+SDL, so nothing external is needed) and OpenCV for the window — the on-screen sibling of AudioPlayer; observational/output, but STILL captured in the Exec Report (2026-06-07 completeness contract: EVERY Multi-Turn agent appears) (falls back to silent OpenCV video if ffpyplayer is absent). `display_index` picks the monitor (`-1` = primary); `volume_percent` the audio level; **`time_played`** TRUNCATES a longer video or LOOPS a shorter one; `window_width`/`window_height` size the window (`0` = native), `fullscreen` fills the screen, `keep_aspect` letterboxes. Available both as the wrapped Multi-Turn tool `chat_agent_videoplayer` and as a visual canvas node. The 74th entry in the agent catalog. |
+| **Video-Analyzer** | Video-Analyzer supports `analysis_type: robotics` (default), `transcription`, and `summary`. Robotics preserves the deterministic motion gate and dual-vision/merge verdict, with `PASS_OK` only on two explicit independent passes. Transcription reads selected video audio tracks (`audio_tracks: all` or `0,1`) using Whisperer's local faster-whisper backend, GPU auto/CPU fallback and timestamped segments; it never opens a microphone. Summary combines speech with two independent visual observers over frame batches spanning the whole clip, then synthesizes an overview, chronology, readable screen text, facts, steps, decisions, action items and limitations. Content modes accept static scenes, bypass the motion gate, and emit `TLM_ANALYSIS::` tokens rather than robotics verdicts. Missing audio/speech and partial failures are explicit. Each content run saves transcript, segments, report and full analysis artifacts. Parametrizer and wrapped chat results expose `analysis_type`, `analysis_token`, `transcript`, `summary`, `audio_status`, timestamped `segments_json` and artifact paths; the body remains `response_body`. Input remains a file, wildcard, newest video in a folder or Camcorder pool name, or a web link (YouTube and other sites): Video-Analyzer downloads it itself (one item; sound only for transcription), joins picture and sound with PyAV when ffmpeg is absent, keeps a self-updating private yt-dlp, names every download failure, and adds `source_url`/`source_title` to its result. Always starts downstream agents; sampled perception is not exhaustive. |
+| **NetSpeed-Calculator** | Tlamatini agent that measures the machine's real Internet connection and reports the answer **with its error bar** — download, upload, latency, jitter, packet loss and **bufferbloat** (the RTT increase under load, graded A+ to F, and usually the real reason a "fast" link has choppy video calls). It does not trust one speed-test site: it measures against several keyless public providers at once and fuses them with a DerSimonian-Laird random-effects meta-analysis, publishing a 95% confidence interval and an I² heterogeneity figure that says plainly whether the providers agreed. Follows RFC 6349 — parallel TCP streams, the slow-start ramp discarded, throughput sampled as a derivative rather than total÷elapsed, outliers rejected. A provider whose endpoint moved or died is skipped **with a named reason**, never as a silent `0.00 Mbps`. Available both as the wrapped Multi-Turn tool `chat_agent_netspeed_calculator` and as a visual canvas node. The 88th entry in the agent catalog. |
+| **Canvas** | The right-hand code panel in the chat *and* the drag-and-drop area in the designer. Context-dependent. |
+| **Cardinal** | Numeric suffix added to deployed agents to support multiple instances (e.g. `monitor_log_1`). |
+| **Chunk** | A segment of a document after splitting for processing. |
+| **Context Budget** | Allocation strategy that distributes the token limit across document types. |
+| **Counter** | Persistent counter agent with L/G threshold routing. |
+| **Crawler** | Developer-oriented web reader (raw or text mode + LLM analysis); reads exactly the given page by default, never hangs, and names a refusal (`blocked`) or a dead server (`timeout`) instead of analyzing it. |
+| **Daphne** | HTTP/HTTP2/WebSocket protocol server for ASGI. |
+| **Discoverer** | Tlamatini agent that runs the **ProjectDiscovery** recon / attack-surface / vuln-discovery suite — `subfinder` / `httpx` / `naabu` / `katana` / `nuclei` / `cvemap`→`vulnx` (cvemap's API was retired Aug 2025, so the CVE search runs `vulnx`), one tool per run — by invoking each CLI directly (no MCP server), like Kalier / ESP32er / Arduiner. Zero-config: a self-installing PRIVATE Go toolchain under `<install_dir>/Go` compiles the tools on first use (no system Go, no PATH change); the PDCP key is optional — set it once in **Config ▸ Access Keys Wizard ▸ "Security Recon (ProjectDiscovery)"** (auto-injected on every run; redacted from `.flw` exports and by `regen_secrets.py` before a push) — naabu defaults to a Windows-safe CONNECT scan, and a fail-safe preflight refuses rather than mis-scan. Available both as the wrapped Multi-Turn tool `chat_agent_discoverer` and as a visual canvas node. **Authorized targets only.** |
+| **Dockerer** | Docker container management agent. |
+| **Drop** | The button on every chat card (2026-09-30) that erases that ONE message from the chat AND from the history the model reads, after a themed confirmation. No reconnect; the messages before and after it stay untouched. A saved note in the `memory` External MCP is separate and stays. |
+| **Embedding** | Numerical vector representation of text for similarity comparison. |
+| **ESP32er** | Tlamatini agent that scaffolds, builds, flashes, and monitors ESP32 firmware by driving **PlatformIO Core** (`pio`) directly — no MCP server (unlike STM32er). Zero-config bootstrap downloads PlatformIO via `get-platformio.py`; the `scaffold_build_upload` composite collapses create→write→build→upload into one run. Available both as the wrapped Multi-Turn tool `chat_agent_esp32er` and as a visual canvas node. The 69th entry in the agent catalog; the direct-CLI sibling of Arduiner. |
+| **FAISS** | Facebook AI Similarity Search — vector similarity library. |
+| **File-Creator / File-Extractor / File-Interpreter** | File creation / raw-text extraction / LLM-aided document parsing. |
+| **Flow Validation** | Pre-execution structural check (no orphans, no self-connections, terminal agents reachable). |
+| **FlowBacker** | Post-Ender backup of session logs/configs. |
+| **FlowCreator** | LLM that designs flows from natural-language objectives. |
+| **FlowHypervisor** | LLM watchdog over running agents; outputs `OK` or `ATTENTION NEEDED { … }`. |
+| **Forker** | Automatic A/B path router based on log patterns. |
+| **Gitter** | Git operations agent. |
+| **Googler** | Block- and hang-proof search + extraction/URL lists under one deadline: six plain-HTTP routes first, eight real-Chrome routes second, open knowledge sources third, with poisoned-answer/refusal detection, engine cooldowns, a truthful `search_status`, and a structured dork compiler/lawful-source presets on the visual/pool agent. |
+| **Image-Interpreter** | LLM vision agent for image analysis. |
+| **J-Decompiler** | Java JAR/WAR decompiler using bundled `jd-cli`. |
+| **De-Compresser** | Deterministic short-running compression / decompression agent (`.gz` / `.zip` / `.7z` / `.tar.gz` / `.gz.tar`). |
+| **jd-cli** | Java Decompiler CLI tool bundled with the application. |
+| **Jenkinser** | CI/CD pipeline trigger agent. |
+| **Kalier** | Kali Linux / MCP-Kali-Server bridge agent for AI-assisted pentesting (nmap, gobuster, dirb, nikto, sqlmap, metasploit, hydra, john, wpscan, enum4linux, raw commands). |
+| **Keyboarder** | Deterministic PyAutoGUI-based keyboard automation. |
+| **Kyber-KeyGen / Cipher / DeCipher** | CRYSTALS-Kyber post-quantum encryption agents. |
+| **LangChain** | Framework for LLM applications. |
+| **LangGraph** | Stateful, multi-actor LangChain extension. |
+| **Logic Gate** | Agent that performs boolean operations (AND/OR/Barrier) on events. |
+| **MCP** | Model Context Protocol — standard for tool/context communication. |
+| **Mouser** | PyAutoGUI-based pointer movement agent. |
+| **Unreal MCP** | Open-source UE5 plugin (upstream `https://github.com/chongdashu/unreal-mcp`, MIT, UE5.5+) that listens on `127.0.0.1:55557` for JSON commands and dispatches them onto the editor's game thread. Tlamatini is a client of this plugin — it does not embed it. The build Tlamatini recommends and is tested against is its own extended fork, **`https://github.com/XAIHT/XaihtUnrealEngineMCP.git`** (the Unreal Engine MCP modified specifically for Tlamatini; ships the full 53-verb, nine-category surface). |
+| **Unrealer** | Tlamatini agent that drives Unreal Engine 5 through the Unreal MCP plugin's TCP/JSON protocol. Available both as a wrapped Multi-Turn tool (`chat_agent_unrealer`) and as a visual canvas node. The 62nd entry in the agent catalog. |
+| **Notifier** | LangGraph-based notification agent — in-browser popup + optional sound. |
+| **output_agents** | Config field used by Ender, Stopper, Cleaner for downstream canvas wiring (vs `target_agents` for "agents to start"). |
+| **Parametrizer** | Strict single-lane queue that maps source-agent log segments into target-agent config.yaml. |
+| **Playwrighter** | Tlamatini agent that drives a REAL browser (Playwright — Chromium/Firefox/WebKit) through a scripted, interactive step list (goto/click/fill/wait_for/extract/assert/screenshot/download). Set `headless: false` to watch it and `hold_open_seconds: N` (alias `hold_open_ms`) to keep the browser visible N seconds after the last step before it closes. Available both as the wrapped Multi-Turn tool `chat_agent_playwrighter` and as a visual canvas node. The 65th entry in the agent catalog. |
+| **PDFer** | Document composer with 24 explicit visual styles in five families alongside 20 semantic content themes. `mode: styles` discovers the catalog; atelier composes measured, audited layouts with original vector art. [Style guide](Tlamatini/agent/agents/pdfer/STYLES.md). |
+| **Pool** | Directory where deployed agent instances are stored. |
+| **Prompt Flow Panel** | The canvas for chains of prompts (2026-09-25): Prompt, Programmed Prompt, Decision, Feed/Flush embeddings, Clean History, User Input and Terminater, plus static customizable User Commentary notes that never run, played against your own models with an isolated conversation per run. Opened from **Panels ▸ Prompt Flow Panel**. |
+| **`.fpmt`** | A Prompt Flow Panel diagram file (JSON, `format: "tlamatini-prompting-flow"`, version 2; version 1 reply steps migrate to User Input). Not to be confused with **`.pmt`**, Tlamatini's plain-text system prompt. |
+| **Panels menu** | The chat navbar menu (since 2026-09-25) that opens the Agentic Control Panel, the Prompt Flow Panel and, for staff, the Admin Panel. |
+| **PSer** | LLM-powered fuzzy process finder. |
+| **Pythonxer** | Inline-Python agent behind a strict `compile()` + blocking-Ruff gate; ALWAYS triggers downstream regardless of outcome (exit code drives only the LED + Multi-Turn retry loop). |
+| **PyAutoGUI** | Python library for mouse/keyboard control, used by Mouser and Keyboarder. |
+| **RAG** | Retrieval-Augmented Generation. |
+| **Reanimation Offset** | Saved log-file position to handle restarts and rotation. |
+| **RecMailer** | LangGraph IMAP receiver with LLM keyword analysis. |
+| **RRF** | Reciprocal Rank Fusion — method for combining ranked lists. |
+| **Ruff** | Fast Python linter used by Pythonxer. |
+| **Skill** | Markdown-driven extension package — a directory under `agent/skills_pkg/<name>/` with a `SKILL.md` (YAML frontmatter + body). 27 seed skills ship. |
+| **STM32er** | Tlamatini agent that scaffolds, builds, flashes, and observes STM32F407VG firmware through the STM32 Template Project MCP (`https://github.com/XAIHT/STM32TemplateProjectMCP`), via a self-contained inline MCP stdio JSON-RPC client. Zero-config auto-bootstrap downloads the MCP itself and a safety preflight refuses to build/flash on a bad toolchain or wrong device family. Available both as the wrapped Multi-Turn tool `chat_agent_stm32er` and as a visual canvas node. Joined as the 68th entry in the agent catalog (now 70 with ESP32er #69 and Arduiner #70); the first of the microcontroller-firmware trio (STM32er drives an MCP server; ESP32er and Arduiner drive a CLI directly). |
+| **STM32 Template Project MCP** | FastMCP stdio server (`https://github.com/XAIHT/STM32TemplateProjectMCP`) exposing 23 tools for STM32F407VG firmware scaffolding, build, flash, and serial observation. STM32er is a client of it — it does not embed it — and auto-downloads it on first use. |
+| **ESP32 Template Project** | A PlatformIO project that blinks an ESP32's onboard LED and prints the LED state over serial — the ESP32 counterpart of the STM32 Template Project MCP. Unlike the STM32 one it is a plain PlatformIO project, not a server, because ESP32er drives the `pio` CLI directly. It lives in two places: **bundled with ESP32er** (`agent/agents/esp32er/ESP32TemplateProject/`), which `action: create_project` copies and re-stamps with your `board`/`framework`; and standalone at `C:\Development\ESP32TemplateProject`, **published 2026-09-16 as the public repository `https://github.com/XAIHT/ESP32TemplateProject`** (CI green on its first run). ESP32er can equally build/flash/monitor an existing checkout via `project_dir`. See bonus chapter §58. |
+| **ESPHome Template Project** | The ESPHome counterpart: a smart-home baseline of **two** device configs — `tlamatini-light.yaml`, deliberately self-contained, and `tlamatini-sensor.yaml`, showing the multi-device shape with `packages:` and `!secret` — plus a shared `common/base.yaml`, a `secrets.yaml.example` and a `.gitignore`. Bundled with ESPHomer (`agent/agents/esphomer/ESPHomeTemplateProject/`) and copied by `action: scaffold_template`; also standalone at `C:\Development\ESPHomeTemplateProject` for publication. Distinct from `new_config`, which generates ONE device from parameters rather than copying the surrounding structure. See §58.6. |
+| **ESPHome** | The Open Home Foundation system (`https://esphome.io`) that turns ESP32 / ESP8266 / RP2040 / BK72xx boards into smart-home devices from a **simple YAML config — no C++**. It ships the `esphome` CLI (validate / compile / upload over USB or OTA / logs / clean) and exposes devices to a hub (e.g. Home Assistant) over a native API for local control. The foundation ESPHomer is built on. |
+| **ESPHomer** | Tlamatini agent that authors, validates, compiles, uploads, and observes ESPHome smart-home device firmware by driving the `esphome` CLI directly — no MCP server. A device is a YAML file, not a program; ESPHomer ships a built-in `new_config` generator (the headless replacement for `esphome wizard`) and a zero-config `pip install esphome` bootstrap, and runs a fail-safe preflight (serial OR OTA host) before any flash. The fourth microcontroller-firmware agent and the direct-CLI sibling of ESP32er / Arduiner. Available both as the wrapped Multi-Turn tool `chat_agent_esphomer` and as a visual canvas node. See bonus chapter §60. |
+| **ESPHomeTemplateProject** | The bundled ESPHome sample (`agent/agents/esphomer/ESPHomeTemplateProject/tlamatini-light.yaml`) — a known-good, phone-controllable on/off light on the onboard LED, with the native API / OTA / WiFi blocks — the ESPHome analog of the ESP32 Template Project and the ArduinoTemplateProject. |
+| **PPTXer** | Deck composer — creates editable presentations with embedded media, charts, diagrams, and tables. Offers 36 named treatments (24 automatic + 12 explicit via `nuance`) and 17 font pairings. Measures complete content, paginates dense layouts, and reports geometry/native-render audit findings. [Style guide and dated verification scope](Tlamatini/agent/agents/pptxer/STYLES.md). |
+| **LaTeXer** | LaTeX typesetter for mathematics, bibliographies, cross-references and indexes, with 30 optional visual styles across six families and eight independent document templates. `list_styles` works without TeX; PDF compilation needs a TeX distribution, preferably MiKTeX. [Style guide](Tlamatini/agent/agents/latexer/STYLES.md). |
+| **MiKTeX** | The TeX distribution recommended for LaTeXer PDF compilation (https://miktex.org/download). Tlamatini ships no TeX distribution — a full one is several gigabytes — and MiKTeX is preferred over TeX Live/MacTeX because it downloads a missing LaTeX package *on demand, mid-compile*, so a document needing an uninstalled package still builds. |
+| **Stopper** | Single-threaded pattern-based agent terminator. |
+| **Summarizer** | LLM polls source logs for events. |
+| **Tlamatini** | Nahuatl for "one who knows" — and the name of this assistant. The LLM responds to it as a self-reference. |
+| **WebSocket** | Full-duplex protocol over TCP. |
+| **Terminater** | Visible, user-supervised CMD / PowerShell terminals the user watches; Tlamatini types every key like a person, waits, and reads the output back; the keyboard can be handed over (`<<USER:hint>>`) or taken back (Esc). |
+| **Windower** | Deterministic Win32 window manager — locates an application window by title and runs one window-lifecycle operation (focus / minimize / maximize / restore / move / resize / close / topmost / arrange / list). The third member of the desktop-UI trio (Windower = the window, Mouser = clicks, Keyboarder = typing). |
+
+---
+
+# Appendix C — Changelog
+
+### Recent Updates
+
+- **Added Terminater — Visible, User-Supervised Terminals — 2026-10-19 (shipped in v1.88.0)** — The agent catalog grows to **86** with **Terminater**, the visible sibling of Executer: real CMD / PowerShell terminals in a new Terminals area (Views ▸ Terminals, Ctrl+`) on the chat, Agentic Control Panel and Prompt Flow Panel pages, typed key by key like a person, with a hand-over (`<<USER:hint>>`), Esc to take the keyboard, hung-command detection, a deterministic advisor and one shared hub in the Django process (WebSocket for the browser, a token-protected loopback API for pool agents). It is the 67th wrapped agent, the 8th Prompt Flow Panel operation and has three safe catalog cards (127-129). `build.py` now runs a `check_terminater` gate inside the frozen app. Migrations 0215-0217; 774 unit tests passed on 2026-10-19. See [docs/terminater.md](docs/terminater.md) and [the change record](docs/changes/2026-10-19-terminater.md).
+- **The private release carries your data — 2026-10-19 (shipped in v1.88.0)** — `build_complete_private_release.py` now merges every External MCP server (and the active selection) of the installed Tlamatini into the gitignored `external_mcps.private.json`, and ships the whole `data.keys` vault as `<install>/data.keys`; the public builder refuses both. See [the record](docs/changes/2026-10-19-private-release-data.md).
+
+**In v1.76.0 — graphical commentary and Run output (2026-10-04):** Notes now use inline rich text, a floating selection toolbar and all-edge/corner resizing with full containment and no configuration dialog. Run output has a 5–95% divider with independent scrolling and a separate saved layout. Committed to `main` on 2026-10-04. Subsequent isolated frozen builds and runtime acceptance are tracked in [release validation](docs/changes/2026-10-04-release-validation.md). See the [commentary verification](docs/changes/2026-10-04-commentary-graphical-redesign.md), [Run output verification](docs/changes/2026-10-04-run-output-resize.md) and [documentation refresh](docs/changes/2026-10-04-prompt-flow-documentation.md).
+
+**Historical source update — static User Commentary and separate User Input (2026-10-03):** The existing question/reply/cancel operation is now User Input with the supplied notched figure. User Commentary is an independent speech-bubble review note: inline writing, palette/font/size choices, resizing, Undo/Redo and complete content containment without internal scrollbars. Notes save with the diagram and never enter playback or model history. New `.fpmt` saves are version 2; version 1 executable commentary migrates to User Input without losing settings or connections. Verified by 61 backend/packaging tests and nine visible Chrome checkpoints. At that verification point the change was uncommitted source work; no executable/installer was rebuilt. The older release entries below retain their historical names/format versions. [Implementation and verification](docs/changes/2026-10-03-prompt-commentary-input.md).
+
+**v1.90.0 (tagged and published 2026-10-22)** brings Interactor: a live tutor inside the editable chat canvas. It reads the exact unsaved buffer, types a small teaching segment, hands the next field to the learner and offers optional local completions. It carries v1.89.0’s CodeMirror editor and native Save As, plus tab-visibility recovery, narrow-canvas layout and account-wizard intent fixes. The source has **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 + 67 + 12 + 10), and 219 migrations**. Interactor is a module/tool, not an additional workflow agent. The tag resolves to `ebc5c3b4`; its GitHub release ("Tlamatini v1.90.0 Win11x64") was published on 2026-10-22 and is marked Latest. `main`/`origin/main` continues after the tag (`d274f89c`, `8c577d3a`, `939acf6b`, `5403fa49`) and still reports 1.90.0; migration 0219 makes the catalog's account wizard ask for local Notifier pop-ups at its checkpoints. Source tests and an existing frozen-package check are dated separately; this documentation does not certify a newly built executable. See the [v1.90.0 release record](docs/changes/2026-10-22-v1.90.0.md).
+
+**In `v1.83.0` (tagged 2026-10-14):** a page-wide **file-drop router** (`file_drop_router.js`): one capture-phase listener in the `<head>` of every page — the chat, the Agentic Control Panel, the Prompt Flow Panel, the welcome and login pages, the Django admin and the PDF viewer frame — that claims only file drags, recognises each file by its bytes (extension, MIME type, magic numbers, a byte-order-mark-aware text test and a real JSON parse that finds an MCP config in every shape, UTF-16 from PowerShell included) and sends each kind to its own mechanism: an MCP `.json` to a confirmation and then the External ▸ MCPs catalog, a `.flw` to the Agentic Control Panel or a new tab, a `.fpmt` to the Prompt Flow Panel or a new tab, a picture to the chat message, a PDF, Markdown file, source code or plain JSON to the chat canvas, and a folder, archive or other binary to a note in plain words. Pages register what they can do with `TlamatiniFileDrop.register(kinds, fn, {label})`, and the label also drives the overlay shown while dragging. It replaced four per-page handlers — the chat column's image listeners and overlay, the canvas's blind open-as-text drop, the External ▸ MCPs dialog's private import and the Prompt Flow Panel's viewport drop — which is why an MCP `.json` used to report an error on the chat, open as text on the canvas and navigate the browser away on the other pages. Checked by 138 router cases, 22 Python tests (319 Django tests in the touched suites), ESLint with no errors, and a headed Chrome run of 58 of 58 checks with 24 Shoter photos. With it come two changes credited to Tlamatini's-AutoBot: the **docked avatar follows both composer dividers** (`63a62cc1`, 2026-10-13) — the vertical divider now shrinks the docked portrait as well as the message box, from 282 px to 120 px at 1440 CSS px, verified by 19 docked-avatar and 18 existing composer checkpoints ([record](docs/changes/2026-10-13-docked-avatar-divider.md)); and a request Image-Interpreter or Video-Analyzer refuses for a wrong or missing setting (`91ff8453`, 2026-10-12) no longer raises the red fatal-analysis dialog — the launcher returns `error_kind: "request"` and the model just corrects the call — while Video-Analyzer's description says it has no `transcription.engine` setting. The frontend now counts 59 JS modules and 26 stylesheets, the cache suffix is `-file-drop-router-1`, and there is no new migration (the count stays 213).
+
+**`v1.82.0` (tagged 2026-10-12):** annotated tag `v1.82.0` at `880a335e`, pushed — *"Release v1.82.0 Installation/Uninstallation mechanisms: way too improved!."* It carries the changes described in the next entry. It was **published on GitHub on 2026-10-12** ("Tlamatini Release v1.82.0 Win11x64"; it was marked Latest until v1.83.0 replaced it on 2026-10-14), so **About ▸ Check for updates** delivered v1.82.0 until then. The three changes of v1.83.0 came after it.
+
+**In `v1.82.0` (tagged 2026-10-12):** the Installer and Uninstaller share one setup window (`setup_wizard.py`) that prepares and verifies a recovery copy before changing any file (`setup_recovery.py`, journal in `Temp/.setup-recovery`), restores an interrupted run on the next start, keeps errors on screen with **Retry** and **Change folder**, names a locked file and the program holding it after a five-second retry, touches only its own registry values and Desktop shortcut (`setup_windows.py`), bounds every PowerShell helper to 120 s inside a Windows job, and writes a private log to `%LOCALAPPDATA%\Tlamatini\SetupLogs` ([guide](docs/setup-wizards.md)). And Markdown files open in the chat canvas as a rendered **Preview** with a **Source** view, through locally vendored Marked and DOMPurify; Copy, Use as context and Save always take the original source ([guide](docs/markdown-canvas.md)).
+
+**`v1.80.0` (tagged 2026-10-11, no published release):** annotated tag at `82099963` — *"Release v1.80.0 Standarization stage completed of the GUI elements in every HTML page of Tlamatini."* Every first-party page shares one slate/teal theme (`ui_tokens.css`, `ui_shell.css`, `ui_splitters.css`, `entry_pages.css` and a themed Django admin), all five pane dividers share one grip and one keyboard model (`ui_splitters.js`), and every resizable dialog resizes from all eight edges and corners ([record](docs/changes/2026-10-11-ui-sweep.md)).
+
+**`v1.79.0` (tagged 2026-10-11, no published release):** annotated tag at `5f549868` — *"Release v1.79.0 Video-Analizer agent way too improved!."* Video-Analyzer downloads and transcribes or summarizes a YouTube or other web link by itself (`video_fetch.py`, a private self-updating yt-dlp, named failures, `source_url` / `source_title` in its result), and the chat parser no longer reads a link's `?v=` as a setting.
+
+**`v1.78.0` (tagged and published 2026-10-10):** annotated tag `v1.78.0`, pushed — *"Release v1.78.0 Implementing the About -> Usage dialog."* It carries the three changes described in the next entry. The tag points to `0e6fc72d`; the Usage commit `7460a147` and `113eddc4` landed on `main` right after it, so a build of `main` (it reported `1.78.0` until the v1.79.0 tag) carried them all. It was **published on GitHub on 2026-10-10** (marked Latest), so **About ▸ Check for updates** delivered v1.78.0 until v1.82.0 was published on 2026-10-12; the published zip was built from `main` at `113eddc4`.
+
+**In `v1.78.0` (tagged 2026-10-10):** **About ▸ Usage** shows your Ollama cloud credits — balance, monthly usage, allowance and refill date, read from `/api/balance` — beside your own measured chat activity and models, stays open while she answers, and retries a brief Ollama outage after 15 seconds (migration 0213 `UsageDaily`; [guide](docs/usage-dashboard.md)). With her avatar undocked the message box can be dragged down to its own buttons, and docking her gives the portrait its room back ([record](docs/changes/2026-10-10-composer-resize.md)). And Image-Interpreter reads a comma-separated list of images — a change credited to Tlamatini's-AutoBot, her own self-repair.
+
+**`v1.77.0` (tagged and published 2026-10-09):** annotated tag `v1.77.0` at `052bfe0f`, pushed — *"Release v1.77.0 Making Tlamatini speak every fixed chat line in the first person and to the user by name, with the word matchers, the avatar and the Telegram bridge updated to recognise both the new and the old wording."* It carries the two changes described in the next entry. A build of `main` reported `1.77.0` until the v1.78.0 tag. It was **published on GitHub on 2026-10-09** (marked Latest), so **About ▸ Check for updates** delivered v1.77.0 until v1.78.0 was published on 2026-10-10.
+
+**In `v1.77.0` (tagged 2026-10-09):** two changes on `main` after the v1.76.0 release. Tlamatini's fixed chat lines speak in the first person and to the user by name (*"I'm ready, Angela! You can start chatting with me now."*; `agent/constants.py`'s `display_name()` and `say()`), with every matcher that recognises those lines by their words still accepting the old wording. And the uninstaller keeps `application`, `applications`, `content_generated`, `context_files`, `doc_generated` and `Templates` whenever they hold a file, keeps `agents/` always and erases `Temp/` — `Templates/` had been missing, so uninstalling erased the projects the firmware and document agents create. Only an `Uninstaller.exe` from a new Installer carries that fix; an in-app update keeps the old one.
+
+**`v1.76.0` (tagged 2026-10-08):** annotated tag `v1.76.0`, pushed — *"Release v1.76.0 Implementin the Model Brain tunning system (comes into action everytime user config any model."* It names the **Model Brain**: every model Tlamatini calls is now tuned from formal sources, and **Config ▸ Models ▸ Save** shows the tuning live in an Auto-tuning dialog (see the first entry below). ⚠️ The tag points to `953ad2d8` (LaTeXer's `<name>.DEGRADED.pdf` naming and region-only model repair); the Model Brain commit `72799950` — which also carries the coloured console and its console-type check, the PDF account-mismatch message, the Compact-mode verdict fix and File-Creator `append` — landed on `main` ONE commit after the tag and is pushed too. A build or source run of `main` made before the `v1.77.0` tag reported the bare `1.76.0` and carried all of it; the tag is pushed, so it is never moved. It was **published on GitHub on 2026-10-09** ("Tlamatini Release v1.76.0 Win11x64", marked Latest; checked with `gh release list` the same day), and its release notes describe the Model Brain, which exists only on `main` after the tag, so the published build was made from `main` and carries it. **About ▸ Check for updates** delivered v1.76.0 until v1.77.0 was published on 2026-10-09.
+
+**Previous version — `v1.75.0` (tagged and published 2026-10-03):** annotated tag `v1.75.0` points to `f7eb53ff` — *"Release v1.75.0 Making Compact mode a real checkbox: it unticks the real Configure rows, locks ON for a small model, prices every row, and warns when a request is cut."* Compact mode is now a box in the chat toolbar that you drive: ticking it unticks every Configure row except System-Metrics, Files-Search and Current-Time so you tick back only what you need, a model too small to hold everything you activated locks it ON (🔒), saved rows apply at once with no restart, every row shows its token price, and an answer from a cut request carries a CONTEXT-WINDOW warning (see the Compact-switch entry below). It was **published on GitHub on 2026-10-03** ("Tlamatini Release v1.75.0 Win11x64", marked Latest; checked with `gh release list` the same day), so **About ▸ Check for updates** delivered v1.75.0 until v1.76.0 was published on 2026-10-09. Angela's own v1.75.0 install, built from `main` that morning just before the release went up, already carries the Self-modify switch (migration 0212) and the four-stop-sequence fix; the annotated tag itself still points to `f7eb53ff`. It carries **`v1.74.0`** (tag at `c1fadb90`, tagged 2026-10-01) — *"Release v1.74.0 Making every request fit the model it is sent to: Compact mode for small models, the complete context for big ones, and readable answer tables."* In v1.74.0 a model too small to read everything Tlamatini sends got Compact mode (live metrics, file search and the current time kept working; agents, ACPX and external MCPs paused; a dialog and a badge said so), a big model still gets the complete context, and answer tables are always readable. It carries **`v1.73.1`** (`757b0edc`, a tag with no published release) — Config ▸ Models lists the models of the Ollama server you configured, with its token — which stands on **`v1.73.0`** (tag at `606470bb`, published 2026-09-30) — *"Release v1.73.0 Implemented the Drop button, which erases one message from the chat AND from the history the model reads."* Every chat card, yours and hers, has a **Drop** button beside Copy; after a themed confirmation (Cancel focused, Escape and ✕ cancel) that one message is deleted, so from your next question on she answers as if it had never existed while the messages before and after it stay untouched — no reconnect, refused while she is still answering, and a note in the `memory` External MCP is NOT erased (see the Drop entry below). It was the latest *published* release ("Tlamatini Release v1.73.0 Win11x64", marked Latest; checked with `gh release list` on 2026-09-30) until v1.74.0 was published on 2026-10-01. It carries **`v1.72.4`** (`323c1051`, published 2026-09-29) — Crawler and Googler read a page's text with a stack of open tags instead of a counter, so a void element, an omitted `</head>` or a stray `<svg/>` can no longer swallow the rest of the page, and a plain-text safety net replaces any parse that kept less than a quarter of the page's text — and logs a WARNING saying so. That in turn carries two tags with no published release of their own: **`v1.72.3`** (`87db1df8`) — the chat avatar's lips now open and close clearly while she speaks, never wider than her own open-mouth portrait, plus a small refinement of the general prompt — and **`v1.72.2`** (`524a67ff`) — Googler and Crawler became block- and hang-proof: one deadline bounds every run, a CAPTCHA, bot wall or rate limit is reported as `blocked` instead of being read as content, and a search or crawl that read nothing says so plainly instead of returning silence. Those stand on **`v1.72.1`** (`df709d78`, published 2026-09-28): the REAL context gauge — the ring beside the message box shows Ollama's own token count for the exact request (`N tokens REAL`), exact in both one-shot and Multi-Turn — plus the removal of the one-shot System-Metrics "No system context required for this question." line. It follows `v1.72.0` (tag at `e3668a47`, published 2026-09-28): the direct chat microphone and the **Config ▸ Mic** settings. `v1.71.0` (`512973fb`) predates the microphone and has no published release. Runtime version comes from the resolver; feature availability also depends on build contents. Right after the `v1.75.0` tag, commit `70aeeb87` on `main` (2026-10-03) added the **Self-modify** switch, which ships in `v1.76.0`. The v1.76.0 changes, the Self-modify switch and the v1.75.0 Compact switch are the first entries below.
+
+
+- **The Model Brain — v1.76.0, 2026-10-08.** Angela: *"MAKE IT DYNAMIC BY MODEL IN TLAMATINI brain … do not hardwire code in Tlamatini for using GLM-5.3 OR GLM-5.2!!!"* and *"Taken from the formal documentation from the models from ollama dont just put idiot stupid timers in Tlamatini"*. Until then every model got the same fixed sampling, and stall timers gave up on calls that were only thinking. `agent/model_brain.py` (with `model_brain_chat.py`, `model_brain_views.py` and the sourced knowledge base `model_profiles.json`) now configures EVERY model Tlamatini calls, in this order: an explicit `model_brain_overrides` entry › the knowledge base (GLM-5, DeepSeek-V4, MiniMax-M3, Gemma 4, Qwen 3.5, Qwen 2.5, gpt-oss, Kimi, Mistral Large 3 and Nemotron 3 — every entry cites its vendor model card, Hugging Face `generation_config.json` or API docs) › a profile learned once, in the background, for an unknown model (saved to `%LOCALAPPDATA%\Tlamatini\model_brain\model_profiles.learned.json`, outside the install, so it survives updates) › the Modelfile parameters Ollama publishes (`/api/show`) › the model's own defaults. Sampling and the `think` level come from that profile, and `num_ctx` is clamped to the model's REAL `context_length`. `BrainChatOllama` hands a thinking model its own reasoning back inside the current tool loop, as Z.ai interleaved thinking, OpenAI harmony, DeepSeek, Moonshot and Gemma 4 all require (live: glm-5.3's second step generated 170 tokens after 3,277 at the first), and the context gauge counts that reasoning. **Config ▸ Models ▸ Save** opens an Auto-tuning dialog (`model_brain_tuning.js` / `.css`, `GET /agent/model_brain/models/`, `POST /agent/model_brain/tune/`) that shows every configured model being tuned, with the source of each value. `llm_liveness.py` and the "write long files in pieces" prompt rule were erased: measured with Ollama's own numbers, reading even a 169K-token prompt is not the bottleneck on Ollama cloud (5.5 s to first byte on glm-5.2, 11.2 s cold on glm-5.3); the time is the generated reasoning, and a timer cannot tell a dead call from a slow one. `model_brain: off` restores the old fixed values exactly; an explicit override always wins. Proved by `agent/test_model_brain.py` and visibly by `model_brain_visible.py`, **25 of 25 checks** in a source run.
+- **The console is coloured by level and knows what draws it — v1.76.0, 2026-10-08.** Angela asked for the log *"rendered with multicolor depending on debug, info, warn, error, fatals"* and for the type of console to be *"assured"*. `manage.py::_ConsoleColorizer` paints the WINDOW only (`console_colors`, ships `true`): errors and tracebacks red, CRITICAL/FATAL white on red, warnings yellow, debug grey, successes green; plain INFO keeps the console's own colour with `--- [TAG]` cyan and the user tag `[a3]` magenta. `tlamatini.log` stays plain text, and `_TeeStream._plain` even strips the codes Django prints into its access log. At startup `_console_host()` measures which program draws the window (window class `ConsoleWindowClass` = the classic console; `PseudoConsoleWindow` = a terminal app, named by its owner process: Windows Terminal, VS Code, Antigravity) and logs `--- [CONSOLE] host: … | code page …`. Windows Terminal is Windows 11's default console and ignores the QuickEdit flag, so the queue shield is what protects it. Painting runs only on the drain thread, a pipe or a file never receives a colour code, and `NO_COLOR` is honoured. Proved by `agent/test_console_colors.py`.
+- **A refused PDF says why — v1.76.0, 2026-10-08.** Angela's install refused `tutorial_6.pdf` with only *"This PDF context is unavailable"*, and the header stayed on *"pending context"*, even after Clear canvas. It was not a regression: a second account had signed in from the same browser. A sign-in replaces the session cookie of EVERY open tab, while an open chat WebSocket keeps its first user, so the upload went out as one account and the chat of another rightly refused it. Now `PdfContextAccountMismatch` names the cause and the fix (reload the page with F5), the consumer logs `--- [PDF-CONTEXT] refused for user N: …`, the header comes back, and the progress dialog marks the step that was running **Failed** instead of leaving "Working…" with a moving bar. Proved by `agent/test_pdf_context.py` and visibly by `pdf_context_visible.py`, **20 of 20 checks**.
+- **Two chat pages on two models stop re-measuring each other — v1.76.0, 2026-10-08.** Compact mode keeps ONE shared note of the current model's verdict, so a page on one model and a page on another overwrote it in turn, and each change made every page re-send its rows and measure again, forever: Angela's install logged 61,779 lines in one evening, and on dev two idle pages produced 1,081 row re-sends and 209,006 log lines in 60 seconds. Now `compact_mode.VERDICT_KINDS` (`capacity`, `self_modify_fit`) updates every tab's box and stops there; real changes (ticking the box, saving rows, the Self-modify choice) still re-send and re-measure. After the fix: none. Proved by `agent/test_compact_mode_pingpong.py` and visibly by `compact_pingpong_visible.py`.
+- **LaTeXer, Mover and the document agents report only what happened — v1.76.0, 2026-10-07/08.** LaTeXer reports `compiled`, `compiled_with_errors` or `degraded` only when a real, non-empty PDF exists (a stale byte count from the compiler log no longer counts as delivery), flags a delivered PDF whose text runs more than 5 pt past the margin as `created_with_findings`, refuses a "repair" that replaces the whole body with a code listing, and — when the blocks it had to cut held at least a quarter of the body — saves the PDF as `<name>.DEGRADED.pdf`, never under the requested name; for a large document the model repairs only the region around the compiler's error, with a capped request. Mover merges into a destination folder instead of erasing it, refuses overlapping or root transfers, and reports exactly what it moved, left unchanged or could not move ([incident record](docs/changes/2026-10-07-pdf-mover-incident.md)). Document and capture agents keep a finished file when Windows Controlled Folder Access blocks the folder they were asked to write to, and the security whitelist script now finds every Tlamatini install, frozen and source, and lets its Python save files past Controlled Folder Access.
+- **Smaller fixes carried by v1.76.0 — 2026-10-03/05.** No Ollama request carries more than four stop sequences (Ollama's cloud refuses five or more with HTTP 400), and a failed chat-history summary can no longer fail the answer; the Files-Search and System-Metrics helpers have a time limit on their own Ollama calls, so a slow answer or the user's Cancel makes them skip their context instead of freezing the chat; the uninstaller finishes cleanly when Windows still holds `Uninstaller.exe` (retry, move it aside, delete it after exit); and File-Creator gained `append`, which adds content to the end of a file instead of overwriting it. The Prompt Flow Panel changes of 2026-10-03/04 (static User Commentary, the separate User Input step, rich-text comments, the resizable Run output) and Windows opening of `.flw` / `.fpmt` files are described at the top of this appendix.
+- **Self-modify becomes a switch — v1.76.0, 2026-10-03.** Angela asked for a way to enable and disable self-modify *"if and only if the model can fit it (similar to Compact mode)"*, visible only where self-modify really exists — and *"THE DEV MODE MUST ALWAYS BE LIKE --self-modify MODE"*. Until then her self-knowledge was decided once, at load: a build carrying `TlamatiniSourceCode/` sent `Tlamatini.md` (115,711 characters, about 28.9K tokens) with every request, whatever the model. Now a **Self-modify** box sits right after Compact mode in the chat toolbar. A source run of the checkout always has it; a frozen build has it only when `build.py --self-modify` bundled her source, and any other build renders neither the box nor its script. ON (the default) sends her self-knowledge exactly as before; OFF replaces it with one line telling her not to read, edit or rebuild her own code until the box is ticked again, and no marker is ever left behind in the prompt. The request fitter measures whether the self-knowledge fits: a model that cannot hold it shows the box unticked, greyed and **Self-modify 🔒**, a click explains why in a themed popup, and the server refuses a forged tick — yet her choice is never rewritten, so a bigger model unlocks the box by itself. Compact mode's strict check is measured without the self-knowledge, so this switch can never lock Compact mode on by itself. The choice lives in `CompactState.self_modify` (migration 0212, ON by default). Proved by 473 unit tests — including tests that render the real chat page as a frozen build with and without `--self-modify` — and visibly by `self_modify_visible.py`, **28 of 28 checks**: on the local `qwen2.5` the box is locked OFF and a forged tick is refused; on `nemotron-3-ultra:cloud`, with the same 119 tools, ON is 117,517 bytes bigger at rest than OFF. It landed on `main` right after the v1.75.0 tag (commit `70aeeb87`) and ships in v1.76.0; Angela's own v1.75.0 install, built from `main` just before v1.75.0 was published on 2026-10-03, already has the switch.
+- **Compact mode becomes a switch you drive — v1.75.0, 2026-10-02.** Compact mode as tagged in v1.74.0 was an invisible verdict: it bound Current-Time only, behind the user's back, while the Configure dialogs still showed every agent ticked, nothing could be added, and a saved dialog asked for a restart. Angela's design, approved in her words: in strict compact mode the user must not be able to untick it, yet *"THE USER MUST BE ABLE TO FOR EXAMPLE DEACTIVATE System Metrics, DEACTIVATE Files Search, BUT ACTIVATE FOR EXAMPLE ESPHomer"*. Now **Compact mode** is a real toolbar box. Ticking it really unticks every MCP, tool, agent and skill row in Config ▸ Configure MCPs, Configure Agents and ACPX-Skills except System-Metrics, Files-Search and Current-Time, and pauses the External MCPs (their active list is saved and restored); unticking it ticks every row again. A model that cannot hold everything activated switches the box ON by itself and locks it (greyed, 🔒) — a click explains why and the server refuses a forged untick — while a big model unlocks it and keeps Compact ON with her picks until she unticks it. Saved rows apply at once, with no restart: ticking an agent chains its tool (PDFer ticks Chat-Agent-PDFer), and each agent's choice survives a restart. Every Configure row shows its token price, with a live green/amber/red line saying whether the selection fits; the gauge is labelled **CONTEXT-WINDOW**, may pass 100% (**OVER**) and shows `CUT · read X of ≈Y tokens` when Ollama cut a request; and an answer built from a cut request carries a **CONTEXT-WINDOW exceeded** warning. The v1.74.0 badge and ACPX lock are gone — ACPX follows the rows she ticks — and every new built-in tool must be registered in `tools.tool_gate_table()`, the one gate list. The state lives in `CompactState` (migration 0211). Proved visibly by `compact_switch_visible.py` — **all 57 checks passed** — on the local `qwen2.5:latest` (auto-lock, dialog, Configure rows, ESPHomer chained, gauge past the window, the warned answer) and on the free `nemotron-3-ultra:cloud` (unlocked, choices survived the restart, untick brings every row back); 221 unit tests passed alongside. Tagged as v1.75.0 on 2026-10-03 (commit `f7eb53ff`) and published on GitHub the same day.
+- **Compact mode — v1.74.0, 2026-10-01.** A small model (Angela's local `qwen2.5:latest`) was being handed Tlamatini's complete ~52K-token request; Ollama silently kept only the end of it, the live metrics were lost, and a CPU question got the time. Now each request is fitted to the model it goes to: a model that can read everything gets the complete request exactly as before; a smaller one gets **Compact mode** — System-Metrics, Files-Search and Current-Time only, ACPX and external MCPs paused, her rules by priority — with a dialog and a badge that say so. Every answer table is now readable too. Proved visibly on qwen2.5 (37/37 checks) and on `nemotron-3-ultra:cloud` (every request complete, ~103K tokens read). v1.74.0 was published on GitHub on 2026-10-01 ("Tlamatini Release v1.74.0 Win11x64", marked Latest). *(Superseded in v1.75.0 (2026-10-02): the badge and the ACPX lock are gone and Compact mode is a toolbar switch the user drives — see the entry above.)*
+- **Config ▸ Models asks the Ollama you configured — v1.73.1, 2026-10-01.** Pointed at another Ollama server (a rented GPU, say) with its own token, Config ▸ Models now asks that server, with that token, for its models, instead of the browser's local Ollama — so they are no longer marked red and refused.
+- **Drop a message — v1.73.0, 2026-09-30.** Every chat card, yours and hers, now has a **Drop** button beside Copy. A themed dialog explains what happens and asks if you are sure (Cancel is the default; Escape and ✕ also cancel). Drop erases the message from the chat AND from the database history the model reads on every question, so from your next message on she answers as if it had never existed. The messages before and after it stay exactly as they are, the eight-message history window slides back to include an older one, and no reconnection is needed. Dropping your own prompt also removes the hidden `Referenced Rephrase:` rows that came from it, so the words cannot sneak back in; a status line is removed from the screen only. Drop is refused while she is still answering. A note she saved with the `memory` External MCP lives apart from the chat and stays — ask her to forget it too. Visible proof: `drop_message_visible.py` (42/42, including the context ring: after each drop it shows a new REAL token count, and it ends lower than before).
+- **HTML text extraction can no longer lose a page in silence — v1.72.4, 2026-09-29.** Crawler and Googler strip a page down to its words by skipping scripts, styles and similar blocks. They used to COUNT those blocks, so one that never closed — a page that leaves out the optional `</head>`, a stray `<svg/>`, a cut-off download — swallowed everything after it, and the page came back with zero text and no warning. Both agents now keep a stack of open blocks, and a second, plain reading of the page replaces any result that kept less than a quarter of the page's text, with a WARNING in `tlamatini.log` saying so. Published on GitHub; v1.73.0 carries it.
+- **Her lips move — v1.72.3, 2026-09-29.** The chat avatar's mouth used to stay a faint, half-open blur while she spoke. Now it opens and closes clearly with the words — and it can never open wider than her own open-mouth portrait, so she moves more without gaping. A small refinement of the general prompt came with it. Tagged without a GitHub release of its own; v1.72.4 carries it.
+- **Googler and Crawler never hang and never pass off a refusal as content — v1.72.2, 2026-09-29.** One deadline bounds every search and every crawl, and each network call can be abandoned rather than waited on. A CAPTCHA, a "verify you are human" page or a rate limit is reported as `blocked` instead of being read as content, and a run that read nothing tells the model so plainly. Crawler now reads exactly the page it is given by default. Tagged without a GitHub release of its own; v1.72.4 carries it.
+- **The context gauge is REAL — v1.72.1, 2026-09-28.** The ring beside the message box now reports what Tlamatini's main chain really sends. Bytes are measured; the token figure is Ollama's own `prompt_eval_count` for that exact request (`N tokens REAL`, paired by a per-request `seq`), and the ceiling is the context length Ollama's `/api/show` reports (1,048,576 for glm-5.3:cloud). A chars/4 estimate appears only until Ollama answers and is labelled `est.`. At rest the ring shows the NEXT request: `agent/context_baseline.py` rebuilds it with the chain's own builders and probes Ollama once (`num_predict=1`, cached by a hash of the wire body) at every change point — page open, Reconnect, Clear history, Clear context, a context loaded, an answer finished, a Multi-Turn / ACPX / Step-by-Step toggle, a skills change, Cancel. It meters only the main chain, per connected user; out-of-band calls (Prompter-style agents, the question rewriter, the history summarizer, ACPX children) never reach it. Accounting is exact in both modes: the live request equals the at-rest prediction plus the question's own bytes plus, in Multi-Turn only, the planner's plan (`bytes_plan`). The same work stopped sending the current question twice and removed the System-Metrics "No system context required for this question." line from every one-shot question (65 bytes, 11 tokens each). The probe costs one small real request per changed state; `context_gauge_probe_enable: false` turns it off. Proof: the visible lab `context_gauge_real_lab.py` passed 60/60, every REAL number equal to `prompt_eval_count` in `tlamatini.log`; unit coverage `agent/test_context_real_tokens.py`. [Contract](docs/claude/architecture.md#the-real-context-gauge--ollamas-own-numbers-2026-09-28).
+- **Required build files use one inventory — 2026-09-27, shipped in v1.72.1.** The release verifier rejected a build that had dropped `chat_voice_settings.py`: `build.py` kept its own copy list, separate from the inventory the verifier checks. `copy_root_sources()` now copies that same `ROOT_SOURCES` inventory, so the two lists can no longer drift. [Evidence](docs/build-root-assets-verification.md).
+- **Direct chat dictation — v1.72.0, 2026-09-27.** The microphone beside Send starts Whisperer directly, displays real recording/gate progress in chat, transcribes and either submits through the existing form or leaves an editable draft according to Config ▸ Mic, preserves selected modes and acknowledges via the avatar. Its resident worker opens no extra console; logs use the main app logger. 108 voice regressions and 42 existing dialog-theme tests passed; headed browser checks cover both modes, settings and control styles. Real host capture/cancellation was previously checked; updated metadata refresh and two windowless restart cycles were checked. Installer and live Ollama response behavior were not newly certified. [Contract and evidence](docs/chat-microphone-design.md).
+- **Dependency completeness — source audit, 2026-09-27.** All 85 agents and 743 Python files were scanned; five missing main-environment declarations were added, with ESPHome declared separately for its incompatible private runtime. A source-wide regression guard now complements the older agent-only check. [Audit](docs/dependency-coverage-audit.md).
+
+- **The Prompt Flow Panel, a reorganized menu bar, and an editable Agentic Control Panel — 2026-09-25 (`v1.70.0`)** — **Prompt Flow Panel:** a new page at `/agent/prompt_flow_panel/` (**Panels ▸ Prompt Flow Panel**, or the ACP's **File** menu) for drawing and playing chains of *prompts*: Prompt, Programmed Prompt, Decision, Feed embeddings, Flush embeddings, Clean History and User Commentary, saved as **`.fpmt`** JSON (`format: "tlamatini-prompting-flow"`, version 1). The extension was chosen so it can never be mistaken for the plain-text system prompt `prompt.pmt`; the panel refuses to open a `.pmt`, and legacy flow names are converted to `.fpmt`. Each run has its own chain, conversation, embeddings and cancellation key, never loads the shared `application/` corpus (`setup_llm(..., include_application_context=False)`), and drains its model worker on Stop instead of abandoning it. New backend `prompt_flow_panel_consumer.py` (`ws/prompt-flow-panel/`), `prompt_flow_panel_runtime.py`, `services/prompt_flow_panel.py`; new frontend `prompt-flow-panel-model.js`, `prompt-flow-panel.js`, `prompt_flow_panel.css`; frozen-build gate `check_prompt_flow_panel`. **Menus:** the chat navbar lost its separate *MCPs*, *Agents* and *Admin* menus — **Configure MCPs** and **Configure Agents** moved into **Config**, and a new **Panels** menu holds the Agentic Control Panel, the Prompt Flow Panel and (staff) the Admin Panel; Panels stays usable during a long operation, and one helper, `restoreMenuControlsAfterOperation()`, now re-arms the menus after completion, Reconnect, Clean History, Cancel or a dropped socket. **Agentic Control Panel:** a new `acp-editor-tools.js` toolbar (Undo/Redo, Configure, Duplicate with settings and inner connections, Delete, Starters, Flow settings, zoom 25–200 % and Fit), an agent search box, an empty-canvas example, a Help dialog, an unsaved-changes `•` in the tab title, undo that restores an agent's settings, and an edit lock while a flow runs. Tests: `test_prompt_flow_panel*.py` (four modules), `test_chain_readiness.py::ContextFreeChainTests`, a scope-aware const-poison check (`scripts/menu_reference_graph.mjs`), and the visible runners `scripts/run_menu_state_checks.py`, `scripts/acp_editor_visible.py`, `scripts/panel_search_title_visible.py` and `scripts/prompt_flow_extension_visible.py` (15 checkpoints, all passing on 2026-09-25). Guide: [docs/prompting-flow-designer.md](docs/prompting-flow-designer.md).
+- **PDF in the canvas, and the whole document as context — 2026-09-16 (`v1.62.0`)** — The chat canvas now opens `.pdf` files in a vendored **Mozilla PDF.js 6.3.289** viewer (Apache-2.0, no npm and no CDN at runtime; reproduce it with `python scripts/vendor_pdfjs.py`, which checks SHA-512 first). Pages, text selection, navigation, zoom, fit, rotation and in-viewer passwords all work; **Copy** returns the text of every page and **Save As** returns the original bytes. Reading is local — `File.slice()` ranges off the user's disk — so there is no file-size or page-count cutoff, and opening a PDF uploads nothing and calls no model. **Use as context** prepares the complete document: an authenticated, CSRF-protected upload, then a background job that uses the already-shipped **PyMuPDF** to extract every page's text, plus — only when the **Process images** box is ticked, which it never is by default — every embedded image and a rendered preview of every page, each analysed by the existing **Image-Interpreter** engine (reused, not duplicated) with a document-specific OCR/chart/table prompt. A **user-bound signed token** hands the resulting UTF-8 index to the normal contextual RAG path. Nothing runs until **Continue**; four progress rows report real bytes, pages, images and loading; **Cancel** aborts the browser requests and signals the worker; partial or failed image analyses are reported rather than hidden; a scan with no text layer is refused with an explanation instead of loading an empty document. Packages live at `context_files/pdf_canvas/<user-id>/<document-uuid>/` and delete themselves on failure or cancellation; **PDF passwords are used in memory only and never reach storage, context text or the log.** New backend: `pdf_context.py`, `pdf_image_analysis.py`, `pdf_context_jobs.py`, `pdf_context_views.py`; new frontend: `agent_page_pdf.js`, `pdf_canvas_viewer.js`, `pdf_context_progress.js`, `pdf/canvas.html`. **No new Python dependency.** Frozen builds explicitly collect the PDF backend and PyMuPDF (`pyinstaller_hooks/hook-pymupdf.py`), and Django/WhiteNoise serve `.mjs` as JavaScript and `.wasm` as WebAssembly even where the Windows registry disagrees. Tests: `Tests/test_pdf_canvas_browser.py` and `Tests/test_pdf_canvas_assets.py` (real Chromium, real markup, generated fixtures, external-asset requests rejected) plus `agent/test_pdf_context.py`. Contract: [docs/pdf-canvas.md](docs/pdf-canvas.md).
+- **PDFer: 24 signature styles and measured cover/layout improvements — 2026-09-15** — Adds `style` independently of the existing 20 `nuance` themes: six playful/nursery, four cyberpunk, five cosmic, four electronics and five Tlamatini identities. `mode: styles` returns the catalog without a PDF; `style` and `style_family` join the structured output contract. Original vector cover art respects existing decoration limits. Opaque measured cover text, long-title continuation, footer fitting, small-text contrast, sparse-font face mapping, deterministic ornament seeds/cache keys and a table-width rounding margin improve the rendered result. Development validation: **130 PDFer tests passed; all 24 two-page samples passed their audits** (48 pages, no overlap, bleed, blank-page or contrast findings). Preview PDFs, PNGs, gallery and atlas were removed after inspection and are reproducible ignored outputs. [Source guide and commands](Tlamatini/agent/agents/pdfer/STYLES.md).
+
+- **PPTXer styles and visibility — 2026-09-15** — Added 12 explicit styles (36 named treatments total, 17 font pairings), repaired full-text measurement/pagination and native audit handling, and retained reproducible checks after removing generated assets. Recorded validation: 126 regressions; 151 new-style native slides with 252 complete 256-character checks and zero findings. See [scope and reproduction commands](Tlamatini/agent/agents/pptxer/STYLES.md). This entry assigns no release tag.
+
+- **LaTeXer signature collection — 2026-09-15** — Added 30 opt-in styles across six families, engine-free `list_styles`, screen/print modes, cover and decoration controls, a hex color seed, and separate Beamer rendering. Chat, canvas and Parametrizer carry the settings and canonical style metadata. Verification on this date: 483 automated tests and 132 fresh real-engine builds passed; the 60-page atlas was rendered and visually reviewed. See the [guide](Tlamatini/agent/agents/latexer/STYLES.md) for scope, reproduction and local artifacts. This entry does not assign a release tag.
+
+- **The firmware scaffolds: one produced a project that would not build, the other was never read — 2026-09-15** — Angela asked whether ESP32er and ESPHomer needed template projects of their own, so that people cloning her work could start from something rather than nothing. The answer turned out to be yes for both, for opposite reasons. **ESP32er's `create_project` ran a bare `pio project init`**, and it is worth stating exactly what that produces: a `platformio.ini`, and then *empty* `src/`, `include/`, `lib/` and `test/` directories. Under the Arduino framework the framework supplies `main()` and calls *your* `setup()` and `loop()`, so with no source of your own the very next `build` does not produce an empty firmware — it fails outright at the link step with `undefined reference to 'setup'`. The two most obvious steps anybody would try, scaffold then build, were broken, and the one-call `scaffold_build_upload` composite died at its build stage unless the caller happened to supply `content` for it to write first. A scaffold whose output does not build is not a scaffold; it is a directory. The repair is the uniform template-project scheme Arduiner already used: a bundled `ESP32TemplateProject/` sits beside `esp32er.py`, `create_project` copies it, and the requested `board` and `framework` are stamped into the copied `platformio.ini` afterwards, so one template serves every ESP32 variant. Two properties of that function are deliberate — it **never returns a project that cannot compile** (a `_MINIMAL_MAIN_CPP` fallback covers a damaged install where the template is missing), and it **never overwrites an existing project**, because somebody's firmware is not ours to replace. It was verified rather than assumed: `pio run` on the shipped template produced `[SUCCESS] Took 15.08 seconds`, a 269,728-byte `firmware.bin` and a 6,071,200-byte `firmware.elf` on PlatformIO Core 6.1.19. **ESPHomer had the mirror-image problem.** Its `ESPHomeTemplateProject/` shipped beside the agent and was tracked in git, but no code path ever read it — `new_config` generates device YAML from an inline template instead — so the sample users read and the output the agent produced were free to diverge with nothing to notice. A template nothing can reach is documentation at best and silent drift at worst. A new `action: scaffold_template` copies it, and the project grew from two files to six: a **self-contained** light device that can be pasted anywhere, a sensor device showing the grown-up multi-device shape with `packages:` and `!secret` (using only on-board sensors, so it runs on a bare board with nothing wired to it), a shared `common/base.yaml`, a `secrets.yaml.example` and a `.gitignore`. `new_config` also gained **`use_secrets`**, which splits credentials into a sibling `secrets.yaml` so the device file stays safe to publish — and it defaults to *false* deliberately, because `!secret` is a custom YAML tag that a plain `yaml.safe_load` can no longer read, which would break every downstream parser including this repository's own tests. Both templates also exist standalone at `C:\Development\ESP32TemplateProject` and `C:\Development\ESPHomeTemplateProject`, each with an MIT licence, a changelog, CI that compiles or validates on every push so "known-good" stays true rather than aspirational, and one-shot publish-to-GitHub helpers. That finally makes §58 of this book honest: it has described an ESP32 template at that exact path since 2026-05-31, and the folder was not on disk and had never been in git. **A side-finding worth its own sentence:** `test_esp32er_agent` had been sitting at **four hard failures** before any of this work began, verified by restoring the pristine file and re-running it. The log-capture helper adds a handler to the root logger but never forces its *level*, and a record below that level is discarded before any handler sees it — so whether the capture worked depended entirely on whether the agent module happened to be imported before Django configured logging. The fix went into the harness, never the assertions, exactly as `create_new_agent.md` pitfall #15 prescribes. Four more test files carry the identical helper and will drift red the same way. Coverage across both agents went 66 → **83 tests**, all green.
+
+- **The Console Shield: a mouse click could freeze the whole application — 2026-09-10** — Angela reported that users who clicked Tlamatini's console window, whether to copy a line of the log or merely to bring the window forward, watched the core stop responding and concluded the program had hung. They were describing the symptom accurately. Windows consoles ship with **QuickEdit Mode enabled**, and a click or drag inside one puts the console into selection mode, at which point `WriteConsoleW` **stops returning** — it does not raise, it blocks, for as long as the selection is held. That distinction is why the existing `try/except` around the console write had never caught anything: a block is not an exception. The damage was wider than a paused window, because `_TeeStream.write()` wrote the console *first* and `tlamatini.log` *second*. One click therefore parked the calling thread inside `WriteConsoleW`, held the durable log file hostage to the cosmetic one so the log stopped growing too, and then took every other thread in turn as each reached the same line — Django, Channels, the Multi-Turn executor, and every pool agent that logs. The repair is two independent defences that deliberately differ in scope. `manage.py::_ConsoleWriter` makes the console **a sink that cannot apply backpressure**: chunks are handed to a bounded ten-thousand-entry queue and drained by a single daemon thread, while the log file is written first on the caller's own thread, so a held selection now costs only the console *display*. That shield runs in **both frozen and source builds**, because the freeze is a conhost property rather than a PyInstaller one and dev is where log text gets selected most. The second defence, `console_quick_edit: false`, clears `ENABLE_QUICK_EDIT_INPUT` so a click cannot begin a selection at all, and it is **frozen-only** — console mode belongs to the console, and a source-mode terminal outlives Tlamatini, so clearing the flag there would leave the developer's own shell unable to select text after the server exited. That knob shipped `true` for a single day and Angela hit precisely the failure it existed to prevent: the shield was working, the log file was growing and the chat was answering, but the window sat still and a still window reads as a hang. Her ruling settled it — *"LOG MUST BE STILL INCREMENTING, I DONT CARE IF THE STUPID USER CANT COPY CONTENT FROM THE CONSOLE WINDOW"* — and the lesson generalises: **invisible correctness is indistinguishable from a hang**. Copying is now done with right-click ▸ Mark. Ctrl+C received its own guard, because `ENABLE_PROCESSED_INPUT` is a different bit living in the same DWORD as QuickEdit, which is exactly how programs lose it silently; losing it here would also lose the SIGINT that runs the Tier-3 orphan reaper and the pool-directory cleanup, so the bit is forced on rather than merely preserved, the mode is read back after the write, and any host that drops it gets the original mode restored verbatim while QuickEdit is abandoned. Coverage is `agent/test_console_shield.py` with **28 tests**, including the regression that `write()` returns while the console is blocked, that the log keeps growing throughout, that a dropped console chunk is never silent, and that the only bit the policy may ever clear is QuickEdit itself. The full audit record lives at `TlamatiniConsoleShieldByClaude.md`.
+
+- **Enter is the default action on the welcome page — 2026-09-10** — The post-login page offers exactly two things, *Go to Chat* and *Logout*, and everyone who lands there is going to the chat; the keyboard simply had no way to say so without reaching for the mouse or tabbing into the link first. A new self-contained module, `agent/static/agent/js/welcome_enter_default.js`, makes **Enter** take you straight into the chat, and the template gained only two lines: an `id="go-to-chat"` on the existing link and the script tag with the usual cache-busting query. There is no backend, no view, no configuration key and no new dependency. It works in two layers on purpose. The link is focused as soon as the page is ready, so the **browser itself** activates it on Enter and its focus ring shows the user exactly where the key will go; a document-level `keydown` fallback then covers the cases where focus was never granted, such as a stray click on the card body. The fallback inspects `document.activeElement` and stands down whenever anything activatable already holds focus, which is the whole point of its existence: firing Enter blindly would send a user who had deliberately tabbed to *Logout* into the chat instead, the exact opposite of what they asked for. Enter belongs to the browser whenever the browser already has a target for it. For the same reason the handler ignores modifier chords, a mid-IME composition where Enter commits a candidate rather than meaning "go", and any event another handler has already claimed. Every step is guarded, so a missing link or a refused `focus()` leaves the page exactly as it was and both buttons still work by mouse — a broken shortcut must never cost the user the page itself.
+
+- **Release v1.51.5 — the console shield, Enter on the welcome page, and a tag that finally sits on its own tree — 2026-09-10** — The annotated `v1.51.5` tag resolves to `4a7f1cb`, which is simultaneously local `main`, `origin/main` and `origin/HEAD`, so for the first time in this line there is **no post-tag boundary**: `git describe --tags` reports a clean `v1.51.5` and everything the `v1.51.3` entry below had to describe as "trailing work" is now carried by a release. The headline repair is the **console shield**. Windows consoles ship with QuickEdit Mode ON, so a click or a drag inside the window — to copy a line of the log, or merely to make the window active — put the console into selection mode and **`WriteConsoleW` stopped returning**. It did not fail; it *blocked*, for as long as the selection was held, and because a block is not an exception the `try/except` wrapped around the write could never catch it. That is precisely why the symptom read as a hang rather than an error. The damage was wider than a paused console, because `_TeeStream.write()` wrote the console **first** and `tlamatini.log` **second**: one mouse click froze the calling thread, then the durable log file itself — the permanent record held hostage by the cosmetic one — and then every other thread in turn as each reached the same line, which is how Django, Channels, the Multi-Turn executor and every pool agent stopped together. Two deliberately layered defences answer it. `console_quick_edit: false` clears `ENABLE_QUICK_EDIT_INPUT` so a click cannot begin a selection at all, and it is **frozen-only** on purpose, because console mode belongs to the console rather than the process and a source-mode terminal outlives Tlamatini — clearing the flag there would leave a developer's own shell unable to select text after the server exits. `_ConsoleWriter` then makes the console a sink that cannot apply backpressure, queueing every chunk onto one bounded daemon-drained queue in **both** modes, since the freeze is identical in development and this is the only defence that also covers Windows Terminal (which ignores the flag) and a stalled pipe. The log is written before the console is queued, dropped console chunks are never silent, log lines are never dropped at all, and Ctrl+C is forced on, read back and rolled back on doubt because it shares its DWORD with QuickEdit and losing it would also lose the SIGINT that runs the Tier-3 orphan reaper. Alongside it, `welcome_enter_default.js` makes **Enter** the default action on the post-login page in two layers, deferring to `document.activeElement` so that a user who deliberately tabbed to *Logout* is never sent to the chat instead. Coverage: `agent/test_console_shield.py` (28 tests); full record in `TlamatiniConsoleShieldByClaude.md`.
+
+- **Release v1.51.3 tag and post-tag work — 2026-09-07 onward** — The annotated `v1.51.3` tag resolves to `3148ace`, the same commit as `v1.51.2`; the launcher implementation named by the tag message landed immediately afterward at `00ecdc9`, followed by the dossier refresh at `5f96a2f`, the console shield and welcome keyboard default at `c8cf369`, and documentation reconciliations at `0d2c09c` and `d8f21f3`. Local `main`, `origin/main`, and `origin/HEAD` now resolve to `d8f21f3`. Source-mode version resolution reports the newest reachable bare tag, `1.51.3`, without concealing the five-commit boundary. The launcher repair adds `agent/win_shim.py` as the common decision point for direct executables, frozen `.exe` launchers, Python entry points, and `.cmd`/`.bat` wrappers, with Windows-correct quoting, shell selection, hidden-window flags, and environment propagation shared by ACPX and runtime provisioning. `agent/test_win_shim.py` adds 404 focused tests, ACPX coverage grows from 92 to 126 tests, and the standalone ACPX plus MCP-server surfaces carry the same delivery-verdict behavior. The refreshed repository snapshot contains **1,069 tracked files**, **339,750 physical text lines**, **237,527 effective lines**, **64 binary/media assets**, **88 workflow agents**, **66 wrapped chat agents**, **108 built-in Multi-Turn tools**, **29 skills**, **38 JavaScript modules**, and **199 migrations**.
+
+- **Release v1.51.2 — ACPX stops lying: `--version` is not health, and exit 0 is not success — 2026-09-07** — A five-peer ACPX research relay collapsed while every diagnostic said the system was fine. The transcripts on disk told the real story: gemini could not authenticate (`IneligibleTierError`), codex refused its own `config.toml`, claude had no credit balance, kimi and copilot produced no drainable output, and claude's first leg answered *"the web search was blocked — permission wasn't granted"* **while exiting 0** — so `acp_spawn` returned `ok: true`, the Exec Report row rendered green, and the orchestrating model built six further tool calls on research that had never happened. Two lies, one bug class: `acp_doctor` probed presence rather than readiness (all eight installed CLIs answered `--version` with exit 0 while four were dead), and a one-bit exit code was trusted to describe what a coding agent did. The repair introduces `agent/acpx/child_health.py`, a stdlib-only module holding the single definition of "did this child deliver?" with a closed non-delivery vocabulary — `PERMISSION_BLOCKED`, `WORKSPACE_NOT_TRUSTED`, `NO_CREDIT`, `USAGE_LIMIT`, `AUTH_FAILED`, `CONFIG_INVALID`, `UPSTREAM_ERROR`, `NO_OUTPUT`, `CHILD_ERROR` — consumed by both the turn runtime and a new `acp_doctor(deep=True)` that sends a real one-line prompt down each agent's real transport and names the cause. The deep probe is deliberately opt-in and cached for ten minutes because it spends the user's model quota, and it reports `ready: null` for transports that cannot be probed without opening a session rather than inventing a verdict. `acp_spawn` / `acp_send` / `acp_send_and_wait` now return `ok: false` with the named code when a child produced nothing usable, preserving the session id and transcript path so the caller can still investigate and clean up. Two guards define the discipline: a long, real answer is never re-read for refusal markers, and a short correct answer — the first draft flagged a valid seven-character reply as silence — is never mistaken for chrome. The same release makes `config.json` able to retune an agent's `args`, `transport`, `prompt_arg_flag`, `prompt_subcommand_args`, drain budgets and `spawn_returns_immediately`, not merely `command` and `env`, so repairing a misconfigured peer becomes a text edit instead of a rebuild — five installed peers had each sat one flag away from working. `agent/acpx/tests.py` grows from 65 to **92 tests**, every failure string copied verbatim from the transcripts of the run that broke. The active source inventory is **88 workflow agents**, **66 wrapped chat agents**, **108 built-in Multi-Turn tools**, **29 skills**, and **199 migrations**.
+
+- **PDFer upgrade after the v1.51.0 tag, carried by v1.51.1 and later — 2026-09-06** — Ten flat sibling modules read the content before rendering it, pick one of twenty design treatments, derive a full 38-role palette from a single colour in OKLab, register the host's TrueType families, solve table column widths from real font metrics so cells cannot collide, draw their own on-palette artwork with Pillow, and then re-open the finished PDF to measure it — because a renderer reporting `err=0` over eight overlapping cells is not evidence. Git places commit `9c876aa` after the `v1.51.0` tag and before `v1.51.1`, so this book records the actual containment boundary. The visual-dossier delta adds 15 small ornament PNGs and 18 text files; those added text assets total **10,512 physical lines / 7,053 effective lines** before this documentation refresh.
+
+- **Release v1.51.1 — stable program/snippet persistence — 2026-09-06** — Migration 0199 deduplicates conflicting LLM-program/snippet names, while the canvas load, response parser, filesystem, RAG, consumer, and view paths preserve stable program identity instead of selecting or overwriting the wrong row during `load_x_in_canvas`. The fix is pinned by `agent/test_program_name_collisions.py`.
+
+- **Release v1.50.6 — Public builds work from a pristine clone without weakening the privacy gate — 2026-08-30** — The annotated release, local `HEAD`, and `origin/main` all resolve to `6e4ffa73`. `build_complete_public_release.py` no longer requires the gitignored `.private_targets.json` on a fresh clone or CI machine. A new target-independent `privacy_preflight()` inspects the tree itself: a clean committed tree enters explicitly labelled structural-only mode and still runs every target-independent scrub/verification layer; private evidence, a malformed probe, or an unreadable file fails toward refusal and names how to recover. The tracked `private_targets.example.json` is shape-only documentation and is deliberately inert, while both real targets-file spellings are ignored, excluded from self-modify snapshots, and build-time only. The same audit found and fixed a restoration hole: the backup list for configs touched by `regen_secrets.py` is now derived from source, so Discoverer, and future managed configs cannot be scrubbed without a recoverable copy. Coverage is `agent.test_public_release_targets` (26 tests), including reconstructed committed configs from a real fresh-clone state. The active source inventory remains **88 workflow agents**, **66 wrapped chat agents**, **108 built-in Multi-Turn tools**, **29 skills**, and **197 migrations**.
+
+- **Release v1.50.5 — Ctrl+C always quits, and the Prompt Designer reference asset is tracked — 2026-08-29** — A frozen Windows process could deadlock permanently because the signal handler ran process-wide cleanup directly on the interrupted main thread and allowed repeated Ctrl+C signals to re-enter non-reentrant `threading`/`psutil` internals. The fix makes the handler minimal: it sets a shutdown Event before logging, a daemon worker created at boot performs cleanup, a watchdog hard-exits after the bounded grace period, and a second Ctrl+C exits immediately without touching buffered logging locks. `agent.test_ctrl_c_shutdown` pins the source contract, and `tests_e2e/test_ctrl_c_quits_visible.py` sends a genuine Windows `CTRL_C_EVENT` to the real server and proves termination. `PromptDesigner.jpg` is also added as a tracked visual design reference showing the Prompt Designer shell; because no runtime source currently references it, this book records it as artwork/evidence rather than advertising a shipped Prompt Designer feature. The carried `v1.50.4` wave keeps optional Transformers/Torch out of the frozen web process while retaining Torch in carried Python for Talker, and `v1.50.3` fixes Bing tracker decoding plus Mojeek self-result filtering in Googler.
+
+- **Release v1.49.1 — Measured networking, WAL-safe data movement, resilient structured web discovery, guided MCP onboarding, and synchronized private contacts — 2026-08-23** — The annotated release tag resolves to `6adf3623`; local and remote `HEAD` are aligned one commit later at `abc7899a`, with the same reachable bare release identity. NetSpeed-Calculator becomes workflow agent 88 and wrapped launcher 66, measuring download/upload/latency/jitter/loss/bufferbloat across keyless providers with slow-start exclusion, derivative sampling, outlier rejection, confidence intervals, random-effects fusion, I² heterogeneity reporting, named zero-byte failures, and an Ask-Execs tier-D bandwidth warning. `agent/sqlite_copy.py` moves Backup DB, Set DB, and pre-Django hot-swap onto SQLite's online backup API, self-contained DELETE-journal destinations, `quick_check`, and WAL/SHM/journal sidecar hygiene. Googler gains a structured Google-dork compiler with syntax normalization, aliases, presets for ordinary and lawful/open-source discovery, grouped site/filetype alternatives, and URL-only file-hunt output. Its execution path now runs four server-rendered routes through plain `urllib` first, then falls back to visible installed Chrome/bundled Chromium across seven direct-results routes with bounded retries and answer-route logging; advanced Google-only operators may broaden on fallback engines. Its dedicated 73-test suite pins query correctness, HTTP-before-browser behavior, browser/config defaults, chain order, retry/fallback stopping, redirect unwrapping, and the direct-tool/canvas contract. The 29th runtime skill adds the guarded External-MCP classify/import/doctor/activate/wait/list/call lifecycle; migration 0194 adds the append-only Deep Internet Research starter; migrations 0195-0197 add NetSpeed's agent/tool/prompt rows. The private builder synchronizes same-machine contacts into gitignored `contacts.private.json`, while public builds and self-modify snapshots remain contact-empty. The source-verified release surface is **88 workflow agents**, **66 wrapped chat agents**, **108 built-in Multi-Turn tools**, **29 skills**, and **197 migrations**.
+
+- **Release v1.49.1 — A Zero Must Always Say Why: NetSpeed-Calculator and the four dead endpoints — 2026-08-23** — This release adds the **88th workflow agent**, and the story of building it is really the story of one rule. **NetSpeed-Calculator** measures the machine's own Internet connection and reports the answer *with its error bar*: RFC 6349 for throughput and RFC 3550 §6.4.1 for jitter, several parallel TCP flows per provider in each direction, the slow-start ramp **discarded**, throughput sampled as **d(bytes)/dt** rather than the naive total÷elapsed, Tukey-IQR outlier rejection, a trimmed mean and a Student-t interval — and then, across providers, a **DerSimonian-Laird random-effects meta-analysis** that publishes a 95 % confidence interval and the **I²** heterogeneity figure. That last number is the point of the whole agent: one CDN can be fast for reasons that have nothing to do with your link, so agreement between *independent* providers is evidence, and disagreement is a peering story the report tells you about instead of quietly picking the flattering number. **Bufferbloat** — the RTT increase measured *while the link is saturated*, graded A+ to F — is the figure most speed tests never show you, and it is usually the real reason a "fast" connection has choppy video calls. But the first live run returned **0.00 Mbps for download**, and finding out why took a whole session, because the workers swallowed every exception: a dead endpoint printed a confident zero **with no reason at all**. That is the most expensive defect this kind of agent can ship, because a silent zero is indistinguishable from a slow link — it sends the user hunting a fault in their own house. So the architectural fix came first and outranks the rest: `_record_error` keeps the first five *distinct* failures (bounded, because six streams retrying for eight seconds would otherwise bury the log — bounded is not the same as hidden), and `_report_dead_transfer` prints every reason **and stores it in the saved artifact**. Only then did the four real bugs become visible, and every one of them was **measured, never guessed**: Cloudflare answers **HTTP 403** to an oversized `bytes=` (100 MB refused, 25 MB fine); LibreSpeed's hardcoded `librespeed.org/backend/` is **404** on both its download and upload endpoints, its live surface now being the project's *published server list*; `speed.hetzner.de` **no longer resolves at all**, its live surface being the per-datacentre `.com` mirror mesh; and — the subtle one — **the cache-buster was killing Hetzner**. `_bust()` exists to stop a CDN edge serving the same cached object to every stream, that is, to *protect* the measurement; against a static mirror that rejects unknown query strings it destroyed it instead, resetting all six streams instantly and forever. The fix is a per-provider `cache_bust` flag plus a runtime self-heal that drops the buster after a zero-byte failure, and the trade is deliberate and one-sided: **a cached object can only make a result look too good, while a connection reset makes a working link look like no Internet at all.** Mirror choice is now by *measured* RTT rather than list order, because a published list is geography and geography is only a proxy for network distance — from Mexico City, Hetzner's US mirrors answer in ~265 ms and its German ones in ~391 ms. Proven live end to end: 4/4 providers, **92.82 Mbps ± 0.74**, bufferbloat graded, artifact saved. Wiring the agent across ~30 surfaces then surfaced three traps worth remembering. The database briefly held **two** rows — `Netspeed Calculator` *(spaced)* and `NetSpeed-Calculator` — because a server boot had happened while the agent directory existed but its naming override did not, and a spaced name matches nothing in the canvas connection handlers, so every wire drawn would have been silently dropped; the boot rebuild self-heals it, but the lesson is to **restart once and re-check the row** before believing naming work is done (and it is exactly why the display name is hyphenated: with a hyphen the canvas literal and the CSS key are the same string, so the trap cannot occur at all). `collectstatic` turned out to be part of *wiring the frontend*, not a deployment afterthought: all six JavaScript edits existed on disk but not in the collected copies the server actually serves, so in a browser the node would have had no connector and nothing would have explained why. And bumping every "87 → 88" still left **eleven per-agent tables** stale, because they sit *beside* the counts rather than in them — the lesson being to grep for a sibling agent's **name**, never for the old number. The agent ships gated on **Ask-Execs tier D**: it reaches remote hosts like Crawler *and* deliberately saturates the link with roughly 100–200 MB of real, possibly metered traffic, so Angela decides when it runs. Coverage: **262 tests** in `agent/test_netspeed_calculator_agent.py` — the statistics, the outlier rejection, the meta-analysis and its honest `unweighted_mean` fallback, every bufferbloat band, the cache-buster self-heal, the error surfacing, all four endpoint regressions, the registry integration and the static JS/CSS/documentation contracts — plus a re-runnable twelve-pass, ninety-one-check wiring audit, and both inclusion sweeps clean. Migrations 0195/0196/0197; catalog prompt 119.
+
+- **Release v1.48.17 — Search every real text encoding and make every agent status accountable — 2026-08-16** — Grepper's new BOM-first decoder recognizes UTF-8/16/32 before checking for NUL bytes, then falls back through cp1252 and Latin-1; PowerShell-captured UTF-16 logs and accented Windows/Spanish sources are searchable instead of being silently skipped as binary, while genuine binaries remain excluded. `agent_verdict.py` now defines five disjoint status classes and names intact completions, degraded results, work-not-done outcomes, diagnostics, and agent errors explicitly; degraded deliverables are red, unknown statuses remain fail-open but visible under `R8b`, and `test_status_vocabulary.py` statically sweeps every pool agent so undeclared tokens cannot ship unnoticed. Kuberneter moves kubectl's number to `returncode`, adds `success`, and emits `status: ok|failed`. Self-update preserves the separately built `Uninstaller.exe`, and its source-parser guard no longer mistakes apostrophes in comments for preserve entries. External-MCP supervisor-count and prompt-order tests now derive their expectations from source rather than stale hand-written numbers. Public builds forcibly clear the private catalog opt-in, while the explicit private builder remains the only keyed path. This release also standardizes dialog dismissal on both pages: **Escape now dismisses every dialog and carries exactly the meaning of the titlebar ✕**, while an outside click still never dismisses anything. A single bubble-phase dispatcher locates the topmost open dialog and activates that dialog's own dismiss control rather than hiding it blindly, so an Ask-Execs prompt still answers Deny, confirmations still resolve to "no", scroll locks are still released, and a sealed update step still refuses to close; `closeOnEscape: false` is now a forbidden pattern tree-wide. The last native browser pop-ups in the contacts book and the External-MCP dialog became themed `tlmAlert` / `tlmConfirm` panels, so no OS chrome is ever painted over a themed dialog. Finally, `build.py` proves its own payload: because modules such as the runtime provisioner, the External-MCP defaults and client, and the verdict engine are reached only through fail-open imports — which cannot report their own absence — a post-build step opens the archive PyInstaller just wrote and aborts the build unless all seven required modules are genuinely inside it. The active surface was **87 workflow agents**, **65 wrapped chat agents**, and **107 built-in Multi-Turn tools**.
+
+> **Current Exec Report correction for historical entries below:** since the 2026-06-07 automatic-capture change, every wrapped `chat_agent_*` appears in Multi-Turn Exec Report, including Shoter, Camcorder, Recorder, AudioPlayer, VideoPlayer, Talker, Whisperer, and other observational/read-only agents. Older release notes that say an observational agent was “NOT in the Exec Report” describe its original release state only; `_EXEC_REPORT_TOOLS` is now optional styling/grouping, not a capture allowlist.
+
+- **Release v1.48.14 — Private External-MCP runtimes, safe built-in Memory, and lossless diagrams — 2026-08-15** — `agent/runtime_provisioner.py` gives Tlamatini a no-admin, per-user Node/npm/npx/pnpm and uv/uvx toolchain under `%LOCALAPPDATA%\Tlamatini\runtimes`; it never blocks startup, never changes the system `PATH`, installs atomically from official upstreams, verifies Node checksums, and rewrites Windows `npx.cmd` launches to direct `node.exe` execution without a shell. `agent/external_mcp_defaults.py` ships official `memory` and `sequential-thinking` entries to fresh and upgraded installations, both inactive; edits are preserved, deletes are tombstoned, and Memory survives updates in `%LOCALAPPDATA%\Tlamatini\memory\memory.json`. The External MCP dialog adds a runtime readiness strip and **Install now** action; Multi-Turn adds `external_mcp_runtime_status` / `external_mcp_runtime_install`, bringing the complete built-in surface to **107 tools** (20 core + 65 wrapped + 12 ACPX/Skill + 10 External-MCP supervisors). Public builds generate the secret-free default catalog and refuse live-looking credentials, while private/keyed builds retain their separate path. `response_parser.py` also restores nested diagram sentinels to a fixed point and distinguishes Markdown thematic breaks, preventing empty diagrams or leaked `DGRM_*` text. Coverage includes 44 runtime/default-catalog tests plus the diagram regression suite.
+
+- **Release v1.48.13 — Fixing default files placement in Mover and Deleter — 2026-08-15** — Mover now treats empty, relative, and legacy `C:/Temp/...` destinations as application scratch paths and safely re-roots them beneath Tlamatini's own `<app>/Temp` directory. An explicit absolute destination supplied by the user remains authoritative and is never silently redirected. Deleter's defaults and examples follow the same application-owned Temp policy without broadening its deletion scope, so no implicit root-level `C:/Temp` target is introduced. This release is also the documentation baseline for the reliability work accumulated since the previous visual dossier: `dialog_theme.css` gives jQuery UI, Bootstrap, and custom overlays one visual language; `dialog_policy.js` centralizes safe dismissal so an outside click cannot accidentally close guarded work (that release also swallowed Escape — **superseded on 2026-08-16 by v1.48.17**, where Escape became a first-class dismissal that routes through each dialog's own ✕/Cancel control; outside clicks still never dismiss); the updater renders release notes through a dedicated safe renderer; long operations disable and restore the exact navigation controls that could corrupt in-flight state; application logs carry user, request, stream, and source-line identity; DB backup/reaper paths are more defensive; and LaTeXer's repair/verdict pipeline remains deterministic and auditable. Inventory recorded for that release: **87 workflow agents**, **65 wrapped chat agents**, **97 core/wrapped/ACPX tools before the External-MCP supervisor layer was included in the headline count**, **37 JavaScript modules**, and **28 runtime skills**.
+
+- **Release v1.48.2 — A Finding Is Not a Failure: the Execution Report Learns to Read What Each Agent Actually Says — 2026-08-06** — Angela's demand was exactly two sentences long: *if the execution really succeeded, the table must say **SUCCESS**; if it really errored and did not do the designated task at all, it must say **FAILED***. Both directions, every agent, no exceptions. What she had found was the opposite in the wild: LaTeXer's linter, pointed at a deliberately broken document in the wizard's STEP 4, found the bug **exactly as designed** — right error, right line number, right explanation — and the Execution Report printed a red **FAILURE** across that row. The cause was that two completely different questions had been collapsed into a single string. The **process** question — *"did the child exit 0?"* — is worth one bit. The **agent** question — *"did it do the job, and what did it FIND?"* — is a typed record, and every Tlamatini agent already publishes one in its `INI_SECTION` self-report. But `tools._launch_wrapped_chat_agent` set `status` from the exit code, and the code meant to lift the agent's own `status:` back in used `payload.setdefault(...)` — a **silent no-op on precisely the key that mattered**, so the agent's truthful account of its own run was thrown away. Worse, a `_DIAGNOSTIC_COMPLETED_STATUSES` set had already been written in `mcp_agent.py` to prevent this exact mislabelling, and it was **unreachable dead code**, because the value it tested had been overwritten with `"failed"` further upstream. The fix is a small expert system, `agent/agent_verdict.py`: a lexer/parser turns the self-report into a typed syntax tree, and an **ordered** production-rule table walks it — no self-report falls back to the exit code; a declared `error`/`failed` is FAILED; `refused` / `not_found` / `not_unique` / `engine_unavailable` are FAILED because the work genuinely did not happen; **a read-only diagnostic that ran to completion (`invalid`, `findings`, `no_matches`, `listed`, …) is a SUCCESS**; then an explicit `success:`/`ok:`, then a non-zero `errors:` count, then the exit code, then success. **The order IS the algorithm**, and the diagnostic rule must outrank the `success:`/`errors:` rules — a linter that worked perfectly reports `status: invalid` *and* `success: False` *and* `errors: 2` in the same breath, and the last two describe the **document**, not the agent; testing them first is the very bug the engine was written to kill. The contract is deliberately strict: the agent's self-report **outranks** the exit code; it is never dropped or overwritten (on a key collision the process view stays under `<key>` and the agent's under `agent_<key>`, so **both** survive); a red row must mean *"the tool malfunctioned"*, never *"the tool found something"*; everything **fails open**, because a verdict engine that can break the chat path is worse than the mislabelled row it fixes; and it is **100 % deterministic** — a probabilistic judge could not be trusted to say whether something failed, and would cost a round-trip on every tool call. The status vocabulary has exactly one definition, aliased rather than copied, since a drifted second copy would silently mis-colour rows. Stdlib only, importing nothing from `agent.*`, so it cannot create a cycle between `tools.py` and `mcp_agent.py` — both import it — and behaves identically frozen or from source. Pinned by `agent/test_agent_verdict.py` (25 tests covering the parser, every rule, the rule **order**, auditable provenance, totality, both call sites, the single-vocabulary contract, and the live STEP-4 payload end to end) plus `agent/test_exec_report_verdict.py`. Tlamatini herself was taught the same lesson in `prompt.pmt` (new rule 18b): a check that ran and reported a problem **succeeded**, and she must never tell you a tool failed merely because it found something.
+
+- **Release v1.48.1 — LaTeXer Must Never Fail: an Eight-Rung Repair Ladder, and the Rung That Was Moved Last on Purpose — 2026-08-05/06** — A LaTeX build has always had two outcomes — a PDF, or a wall of log noise — and the second is where most people give up. This release adds a third and turns as much of the second into the first as a machine possibly can. When a compile fails, LaTeXer now escalates through **eight rungs, strictly in order**, each firing only if the one before it produced no PDF: **lint** (static structural repair before any compiler runs), **preamble** (infer the `\usepackage` lines the body actually needs), **rules** (deterministic rewrites of known-bad constructs), **log_directed** (compile, read the *real* error, fix that exact line), **acquire** (install a genuinely missing package), **engine_swap** (retry under xelatex / lualatex, which take UTF-8 and system fonts natively), **model** (ask an LLM, whose answer then **re-enters the ladder at rung 1** and must pass the same lint gate as any other repair), and finally **bisect** (quarantine the offending block and build the rest). The first ordering put bisect at seven and the model at eight, reasoning that deterministic beats probabilistic — and that was **wrong**, because it ranked the rungs on one axis only. Bisect is deterministic, yes; it is also **the only rung that deletes the author's content**. Reaching it first meant a document a model could have repaired completely was instead shipped with a paragraph cut out of it, and because bisect almost always "succeeds" at producing *something*, the model rung became unreachable in practice. **Losing the user's work is the worst outcome available**, so the destructive rung is now strictly last, and the model's answer is still gated by lint, by a truncation check, and by having to actually compile. The safety contract around all of it is what makes it trustworthy rather than merely clever: every repair is applied to a **copy** and re-linted, and one that makes the static lint *worse* is reverted and recorded as rejected — a fixer that can damage a document is worse than no fixer; your own `.tex` file is never overwritten unless you explicitly ask (`repair_write_back`), the build running instead from a sibling `*.latexer-fixed.tex`; every rung that fires is written into an audit trace saying what it changed and whether it helped; and a quarantined block is **reported by name and line number**, because silently dropping content would make the agent a liar. A build that only produced a PDF because content was removed is reported as **degraded** and never claims a clean success. The same wave fixed the companion honesty bug: `validate_tex` had tied the **agent's** verdict to the **document's** verdict (`ok = report["ok"]`), so a linter that caught a bug exited non-zero and rendered red — the outlier among its own read-only siblings. `ok` now means *"the agent did the job it was asked to do"*, never *"your document is clean"*; the document's real state stays fully truthful in `status` (`validated` / `invalid`) and in `errors` / `warnings`, which is what a downstream Forker actually branches on. Pinned by `agent/test_latexer_repair_ladder.py` and `agent/test_latexer_agent.py`.
+
+- **Added LaTeXer Agent — the Typesetter, and the Second Half of the Document Family — 2026-08-05** — The agent catalog grows to **87** with **LaTeXer**, the typesetting sibling of PDFer. The two are not rivals and the choice between them is decided by the SOURCE, not by the fact that both end in a PDF: **PDFer COMPOSES** a document out of Markdown, HTML, plain text and pictures — the right tool for turning Tlamatini's own answer into a report — while **LaTeXer TYPESETS** one out of real `.tex` source, which is what you want the moment the document needs proper mathematics, a bibliography, numbered cross-references or an index. Between them the document family is finally complete in both directions: File-Extractor and File-Interpreter *read* documents, PDFer *composes* them, LaTeXer *typesets* them. **LaTeXer embeds the entire tool surface of the `mcp-latex-server` MCP natively, as an agent** — `create_latex_file`, `create_from_template`, `edit_latex_file`, `read_latex_file`, `list_latex_files`, `validate_latex`, `get_latex_structure` and `compile_latex` are all present — but with **no MCP server, no FastMCP/pydantic/uv, no stdio child to babysit and no catalog entry to activate**. `agent/agents/latexer/latexer.py` is stdlib-only (`subprocess` + `shutil` + `glob` + `re` + `urllib`) and never imports `agent.*`, so it behaves identically in a source checkout and in a frozen build, exactly like Kalier, Nmapper and ESP32er. And it goes well beyond what it embeds: whole-**PROJECT** compilation where the master document is auto-detected (the one `.tex` holding both `\documentclass` and `\begin{document}`, so `\input` children are excluded automatically) and every `\input` is followed; a **real convergence loop** — pass one, then `biber` or `bibtex` chosen automatically from the source (`\addbibresource` → biber, `\bibliography` → bibtex), then `makeindex`, then `makeglossaries`, then keep re-running while the log still says the references have not settled, up to `max_passes`; and a parser that turns the famously unreadable LaTeX log into named errors with line numbers, the missing **packages**, the warnings and the box counts — quoting the raw tool output when a build fails with no LaTeX-shaped error, so "0 errors, no PDF" is never reported with nothing to act on. **It requires MiKTeX, and that is the only thing it requires.** Tlamatini deliberately ships **no** TeX distribution: a full one is several gigabytes and the release must stay under the 2 GB ceiling. So the user installs **MiKTeX** once from https://miktex.org/download and LaTeXer is functional forever after — and MiKTeX is *strongly* preferred over TeX Live or MacTeX for one concrete reason: `--enable-installer` (exposed as `auto_install_packages`, default **true**) makes MiKTeX **download a missing `.sty` on demand, in the middle of the compile**, so a document that needs a package the user never installed still builds. TeX Live and MacTeX are detected and used when already present, but they cannot self-heal. With no distribution at all LaTeXer REFUSES cleanly (`status: refused`) naming MiKTeX rather than crashing, and `action: install` downloads and launches the official installer — the same "USE, never redistribute" model Nmapper uses for nmap. **One trap was found and disarmed during development:** `latexmk` ships with *every* MiKTeX install, so a naive presence check would have made it the default build path — but it is a **Perl script**, and most Windows machines have no Perl. It is therefore probed for **usability, not presence**, and an unusable or empty-handed latexmk silently falls back to the built-in convergence loop and says so. `-interaction=nonstopmode` and `stdin=DEVNULL` are non-negotiable — they are what stop LaTeX hanging forever on an error. `auto_preamble` (default true) wraps a bare fragment, so `$E = mc^2$` is a complete, valid one-call request. `shell_escape` is **OFF by default and must stay off**: `\write18` lets a `.tex` file execute arbitrary commands. Builds run *in* the source's own directory so `\input`, `\graphicspath` and BibTeX resolve exactly as they would for any LaTeX user, and the finished PDF is then delivered to **Documents/TlamatiniLaTeX** under a collision-proof timestamped name (the filename is `basename`-sanitized so it can never escape `output_dir`), while scaffolded projects default to **Templates/LaTeXer** per the Temp/Templates policy. `keep_aux: false` tidies up after a SUCCESSFUL build and deliberately KEEPS the `.aux`/`.log` after a failure — that is how you debug — and `clean` removes only auxiliary extensions, never a `.tex`, `.bib` or `.pdf`. The status vocabulary is honest by design: `compiled_with_errors` means a PDF exists but LaTeX complained, and it is reported as exactly that, never as a clean success. LaTeXer sits on the **Ask-Execs tier-A allowlist** on *both* counts at once — it writes and edits `.tex` sources plus a PDF at free-form paths, AND it runs a real compiler over source that can itself execute commands — and it is captured in the Exec Report like every Multi-Turn agent. Wiring follows the full agent pattern: migrations `0191_add_latexer` (Agent row) / `0192_add_chat_agent_latexer_tool` (Tool row) / `0193_add_latexer_demo_prompts`; the `update_latexer_connection` view + route; Parametrizer source fields in `agent_contracts.py` + `parametrizer.py`; a new four-stop **"Scholar's Vellum"** canvas gradient, chosen to read as cool and scholarly beside PDFer's warm "Crimson Parchment"; the connector across the four ACP JS files plus the `eslint.config.mjs` global; the Flow-Generator mapping; FlowCreator (`agentic_skill.md` #87) and FlowHypervisor (`monitoring-prompt.pmt` LATEXER SPECIAL NOTES, which teaches the watchdog that repeated compiler passes are the design and not a stall); the display-name override in `agent_paths.py` — without it `str.title()` would have shipped it as **"Latexer"** instead of **LaTeXer**; and two new rules in `prompt.pmt` — a routing rule that sends `.tex`, mathematics and bibliographies to LaTeXer rather than PDFer or a hand-rolled `pdflatex`, and an entry in the Templates rule so scaffolded projects land inside Tlamatini. The Catalog of Prompts gains **four** LaTeXer demos (ids **114-117**) inside the existing *Documents & PDF* section at ranks 60/70/80/90 — deliberately placed **after** every PDFer card, because the section must read least-complex first and PDFer needs nothing installed while LaTeXer needs MiKTeX. Coverage is `agent/test_latexer_agent.py` (99 tests) and `agent/test_latexer_suite.py` (316 tests) — **415 tests across 47 classes** for a 2,273-line agent. Forward-only.
+
+- **Agent display names are now decided in ONE place (2026-07-26).** The `Agent` table is deleted and rebuilt from the `agents/` folder on every startup, so a migration's `agentDescription` was being overwritten by `str.title()` — which is why PDFer appeared on the canvas as **"Pdfer"**, and why 22 of 86 agents carried a mangled label (Sqler, Ssher, Pser, Scper, Acpxer, Esp32Er, Esphomer, Audioplayer, Videoplayer, Flowcreator, Teletlamatini, …). The boot repopulate now resolves through `agent/services/agent_paths.py::display_name_from_agent_type` (fail-open). The same pass repaired **eleven canvas connections that were silently never being saved**: `acp-canvas-core.js` lowercases a display name *without collapsing spaces* and for Kyber-KeyGen, Kyber-Cipher, Kyber-DeCipher, J-Decompiler, Video-Analyzer, De-Compresser, File-Creator, File-Extractor, File-Interpreter, Image-Interpreter and Monitor-Log it only ever tested the hyphenated literal — so a spaced name matched nothing. Those five file/monitor agents were renamed in `agent_paths` **and** `chat_agent_registry` together, because the registry name keys the per-agent enable gate. Locked by `agent/test_agent_display_names.py` and by a headed-Chrome walk of the whole prompt catalog (`tests_e2e/test_prompts_catalog_visual.py`).
+
+- **Added PDFer Agent — the Document Composer, and a New "Documents & PDF" Section in the Catalog of Prompts — 2026-07-26** — The agent catalog grows to **86** with **PDFer**, the agent that finally closes an obvious gap: Tlamatini could *read* documents from the very beginning — File-Extractor pulls raw text out of a PDF or a DOCX, File-Interpreter reads and explains one — but she could never *write* one. PDFer is the WRITE side of that family. Hand it Tlamatini's own answer, some Markdown, some HTML, plain text, a folder of pictures, or a handful of existing PDFs, and it binds them into ONE styled document with a cover page, real tables, page numbers and an optional table of contents. The headline use is a single sentence — *"turn your last answer into a PDF"* — and it works because `mode: auto` sniffs the content itself: Tlamatini's answers already emit HTML tables (prompt rule 6), so `auto` routes them through the HTML path and they print as genuine tables rather than a wall of text. The other modes are explicit: `markdown` (fenced code, tables, optional TOC), `html`, `text` (escaped and preserved exactly), `images` (one-per-page, `fit` — where each page takes the picture's own aspect ratio — or a `grid`), `mixed` (a cover, your prose, and the pictures embedded as captioned figures), `merge` (append several PDFs), `info` (read-only: pages, bytes, metadata) and `validate` (probe the engines, write nothing). **The whole thing needs zero new dependencies.** `markdown`, `xhtml2pdf`, `PyMuPDF`, `reportlab`, `Pillow` and `pypdf` were already pinned in `requirements.txt` and already used by `agent/doc_generation`, so PDFer ships without adding a single package — and because a pool subprocess has no path back into the Django app, the Markdown→HTML→PDF pipeline and its stylesheet were ported **inline** from `agent/doc_generation/mardown_to_pdf.py` rather than imported, exactly as ACPXer ports the ACPX runtime. Every backend is imported lazily, so a machine missing one degrades to a clear `engine_unavailable` report instead of crashing. An **optional Ollama polish** (`ollama_polish`, **off** by default) will let a model restructure raw text into clean Markdown before rendering; when it is off, your words are rendered verbatim, and when it is on and the model is unreachable the raw content is kept and the fallback is stated out loud — a failed polish never loses the document. Finished PDFs land in **Documents/TlamatiniPDF** under a collision-proof timestamped name (`overwrite` is `false` by default, so a name clash becomes `_2`/`_3` rather than a silent clobber), and the filename is basename-sanitized so it can never escape the chosen folder. A **fail-safe preflight** refuses — `status: refused`, never a crash and never an empty file — when the content is missing, the mode is unknown, a backend is absent or the destination is unwritable, and `target_agents` fire on success, failure *and* refusal so a downstream Forker can always branch on `{status}`. PDFer is deliberately placed on the **Ask-Execs tier-A allowlist**: it only ever *writes* a new file, but `output_dir` and `filename` are free-form, so it can overwrite something you care about exactly like File-Creator can — unlike the media agents (Shoter/Camcorder/Recorder), which stay ungated because they only write collision-proof names into one fixed known-folder. Wiring follows the full agent pattern — migrations `0188_add_pdfer` (Agent row) / `0189_add_chat_agent_pdfer_tool` (Tool row) / `0190_add_pdfer_demo_prompts`; the `update_pdfer_connection` view + route; Parametrizer source fields in `agent_contracts.py` + `parametrizer.py`; a new four-stop **"Crimson Parchment"** canvas gradient (ink-black → PDF-crimson → parchment-gold → paper-white) plus its matching Exec-Report caption; the connector across the four ACP JS files and the `eslint.config.mjs` global; the Flow-Generator mapping; FlowCreator (`agentic_skill.md` #86) and FlowHypervisor (`monitoring-prompt.pmt` PDFER SPECIAL NOTES); and a new LLM routing rule in `prompt.pmt` telling her to reach for PDFer — never File-Creator, never a hand-rolled script — whenever a document is asked for. The Catalog of Prompts also gains its **first new section since the categories were introduced**: **"Documents & PDF"**, opening with a Step-by-Step wizard in the reserved rank-10 slot and followed by four samples that climb from a one-call Markdown render, through turning Tlamatini's own answer into a report, to an illustrated screenshot report. Coverage is `agent/test_pdfer_agent.py` — 74 tests that drive the **real** renderers rather than fakes (faking them would hide the one failure that matters: a backend missing from the carried Python), and which caught two genuine defects during development: the contract registry was rendering the display name as *"Pdfer"* instead of **PDFer**, and the `fit` image layout was silently producing A4-shaped pages for every picture. Forward-only.
+
+- **Release v1.45.1 — FlowCreator, Now Callable From Chat End-to-End (and a Guided Opener to Prove It) — 2026-07-23** — This release makes official, and tags, the work described in the entry just below. **v1.45.0** turned **FlowCreator** — the AI that *designs* whole agent workflows — into a **wrapped chat-agent** (`chat_agent_flowcreator`), so you can now simply *ask* for a flow in plain language and get a real, canvas-loadable **`.flw`** file back, instead of only reaching FlowCreator as a node on the visual canvas. **v1.45.1** then adds its **Step-by-Step section opener** to the Catalog of Prompts (migration **0187**, the reserved rank-10 slot at the head of the *Agents & Flows* section), so a newcomer is walked through building their very first flow one concrete action at a time. The public version moves to **1.45.1** across every static surface that quotes it (the README badge, `package.json`, `VERSIONING.md`, this book, `agent/Tlamatini.md`, `KIMI.md`, and the dossier generator); as always it stays git-tag-derived and never hardcoded (`agent/version.py`), and every historical entry below was left untouched. Forward-only.
+
+- **A Flow From a Sentence: FlowCreator Becomes Chat-Callable — 2026-07-22** — FlowCreator, the AI that *designs* whole agent workflows, had always lived behind glass: you could only reach it as a node on the visual canvas, click **Save**, and watch the browser paint the result. There was no way to simply *ask* — *"build me a flow that watches the GlassFish server log at `C:/glassfish/domains/domain1/logs/server.log`, and when it sees an ERROR line, summarize it and send me the summary on Telegram"* — and get a file back. Now there is. FlowCreator is a **wrapped chat-agent**, `chat_agent_flowcreator`: give it a plain-language `prompt` and a `flow_filename`, and it writes a real, canvas-loadable **`.flw` file** to disk (by default into Tlamatini's own `Temp` folder, or wherever you point `output_dir`), which you then open in the Agentic Control Panel. Angela's exact example produced, on the first try, a seven-agent flow — `Starter → Monitor-Log → Raiser → Summarizer → Parametrizer → Telegrammer → Ender` — the shape she described, in one call. Making it honest took more than wiring: FlowCreator's script used to end with `sys.exit(0)` on *every* path, including "no prompt given", "Ollama unreachable", and "unparseable answer" — and because the wrapped runtime reads success from the exit code, a run that built **nothing** would have been reported to you as a triumphant success, green row and all. That lie is now fixed: a `_FAILED` flag is latched on every failure path and `main()` exits non-zero when a flow was not actually created, so a failure reads as a failure — while the canvas path, which keys off `flow_result.json` and the PID file rather than the exit code, is left completely untouched. The converter that turns FlowCreator's internal `flow_result.json` into a proper `.flw` (mapping index-keyed connections to id-keyed ones, minting node ids, honouring the singleton and display-casing rules) is **vendored into the agent's own folder** as `result_to_flw.py`, because a pool subprocess can never import the main app — it must carry its tools with it. The new tool is registered in `chat_agent_registry.py`, seeded by migration **0186** (its Tool row plus the mandatory Catalog-of-Prompts demo, in *Agents & Flows*), captured automatically in the Exec Report, and its expanded `INI_SECTION_FLOWCREATOR` header (`status`, `flw_path`, `flow_filename`, `agent_count`, `connection_count`) is now addressable by a downstream Parametrizer. It writes the file; it does **not** run the flow — that stays your decision. Forward-only.
+
+- **Release v1.44.0 — One Grammar for the Catalog of Prompts: `[[ ]]` You Fill, `{{ }}` Runtime Fills, `< >` Is Report-Only — 2026-07-21** — The **Catalog of Prompts** (the `#prompts-catalog` modal) had grown to hundreds of example prompts written in as many little dialects — some told you to type a value inline, some hid a machine placeholder that looked identical, and a couple even hard-coded a throwaway path like `C:/Temp` that broke Tlamatini's own Temp policy. This release gives every card **one parameter grammar**, so a human and the machine can never confuse whose job a blank is: **`[[ ... ]]`** marks a value **you** fill in — always collected in a fill-in block at the **top** of the prompt, followed by an unfilled-guard line so a one-click demo still runs on the stated defaults; **`{{ ... }}`** marks a value Tlamatini fills at **runtime**; and **`< ... >`** is reserved for **report slots only** (a place the answer prints into), never an input. The standardization shipped as four migrations that touch **only `promptContent`** — `idPrompt`, `promptName`, `category`, `sort_rank`, and `hidden` are all left alone, so catalog ordering and contiguity are preserved byte-for-byte: **0181** adds the `sort_rank` column and switches in-section ordering from `idPrompt` to `sort_rank` (you still *append* a new prompt at `max(id)+1`, but its rank decides where the card actually appears, so no renumber is ever needed again — **rank 10 is reserved in every section for that section's Step-by-Step opener**, and an unranked `sort_rank = 0` sorts *last*, never first); **0182** seeds a guided **Step-by-Step section opener** at the head of each category so every section now opens with a wizard; and **0183 / 0184 / 0185** rewrite the existing prompts across all thirteen categories onto the shared `[[ ]]`/`{{ }}`/`< >` contract in batches (0183 also fixed the `C:/Temp` policy break in the Nmapper prompt #75). Pinned by `agent/test_prompt_catalog_contiguous.py`, which asserts the section-rank ordering and the reserved rank-10 opener. The public version moves to **1.44.0** across every static surface that quotes it (README badge, `package.json`, `VERSIONING.md`, this book, `agent/Tlamatini.md`, and the dossier generator); as always it stays git-tag-derived and never hardcoded (`agent/version.py`), and the historical entries below were left untouched. Forward-only.
+
+- **The Three Recon Gods Run Free: OOB_shift_reaper + NAMU — 2026-07-19** — Kalier (remote Kali), Nmapper (local nmap), and Discoverer (the ProjectDiscovery suite) do work that legitimately takes *minutes* — a full-port nmap sweep, a subdomain enumeration, a nuclei run — but Tlamatini's idle-child watchdog was tuned for chat-latency shell calls and would reap them mid-scan, so a long recon read as a "hung" child and got killed. The fix is a deliberate **free-run window**: each of those three agents may run **uninterrupted up to `OOB_shift_reaper` seconds (default 3600)** before the watchdog is even allowed to consider it idle, because a scan that is silently grinding on a remote box is *working*, not stuck. Guarding that permissiveness is **NAMU — the "God of Gods"**: when Tlamatini herself is shutting down, the free-run window is **VOID** — NAMU runs *first*, before the generic sweeps, and tree-kills every recon child **immediately**, regardless of how much of its window remained, so nothing survives her exit. Authorized targets only, and this is a developer-tuned knob. Forward-only.
+
+- **Screenshot → Chat: Paste (Ctrl+V) or Drop an Image Straight Into the Prompt — 2026-07-14** — Handing Tlamatini a picture used to mean leaving the conversation: save the screenshot somewhere, find its path, type the path. Now you just **paste it**. Print Screen (or a snip) → Alt+Tab back to Tlamatini → **Ctrl+V**, and the clipboard bitmap is uploaded to a new endpoint, `POST /agent/paste_image/`, which re-encodes it to JPEG with Pillow (transparency flattened onto white, 25 MB ceiling) and writes it into her **own `Temp` directory** as `image_<YYYYmmdd>_<HHMMSS>_<ms>.jpg` — obeying the 2026-06-02 Temp policy through `path_guard.resolve_temp_path()`, so nothing is ever scattered outside Tlamatini. The browser then splices the image's **absolute path into the chat box at the caret** — mid-sentence, exactly where you left the cursor — and shows a **thumbnail chip** above the input whose `×` removes both the chip and the path again. Dragging image files from Explorer onto the chat column does the same; the drop zone is deliberately scoped to `#main-chat-container` so it never fights the External-MCP dialog's document-level `.json` drop handler. (Since v1.83.0 those chat-column listeners and the `#chat-drop-overlay` are gone: the page-wide file-drop router recognises a dropped image by its bytes and hands it to `chat_image_paste.js`, and the same router imports an MCP `.json` on every page.) The design choice that makes it *useful* rather than merely pretty is that she is handed a **path, not an attachment**: a path is precisely what **Image-Interpreter** eats, so the very next thing you type — *"…what's wrong in this screenshot?"* — is a complete, actionable Multi-Turn prompt, and `prompt.pmt` now teaches her to recognise an `image_<timestamp>.jpg` under Temp as *the* image the user means, interpret it immediately, and never ask them to re-attach something they already gave her. Two implementation truths were learned the hard way in the live visible test and are now pinned in the fix log: the **paste listener lives on `document`, not on the textarea** (after Alt+Tab the focus is on `<body>`, so a textarea-scoped listener would never fire — the caret is remembered separately), and **`agent_page_layout.js::computeFormMinHeight()` must count the new chips row**, because that function pins `#tools-chat-form-container` to an explicit pixel height and any uncounted row silently pushes the textarea and the Send button off the bottom of the screen. New surfaces: `agent/static/agent/js/chat_image_paste.js` (a self-contained IIFE that declares **no** cross-file globals — the const-poison contract is respected), `views.paste_image_view` + the `paste_image/` route, `#chat-image-chips` / `#chat-drop-overlay` in `agent_page.html`, and the `.chat-img-*` styling. Proven live 16/16 on Angela's real desktop with real keystrokes: a 2560×1600 clipboard bitmap landed in Temp as a 199 KB JPEG, its path inserted mid-sentence, thumbnail rendered, chip-removal clean, and the input bar still fully on screen.
+
+- **Release v1.40.1 — The Port Is Yours: Tlamatini's Web Port Becomes Configurable — 2026-07-13** — Until now Tlamatini's web port was **8000, and only 8000** — the number was baked into `manage.py`, so on a machine where Windows had *reserved* that port there was no escape from a frozen install short of rebuilding her from source. It is a real and nasty failure: when Hyper-V / WSL / Docker claims 8000 inside one of Windows' dynamic-port **exclusion ranges** (`netsh interface ipv4 show excludedportrange protocol=tcp`), Daphne cannot bind it and Tlamatini dies at startup with **`WinError 10013`** — *"an attempt was made to access a socket in a way forbidden by its access permissions"* — a message that tells a user nothing about what to do next. So the port moved out of the code and into her configuration: **`config.json` → `django_port`** (default `8000`). Change one line, restart, and she comes up wherever you asked — **no rebuild, no code edit**. Three stdlib-only helpers in `manage.py` do the work, deliberately written to run *before* Django is even imported: `_resolve_config_path()` (honours `CONFIG_PATH`, else the frozen exe's neighbour, else `agent/config.json`), `_resolve_django_port()` (reads and range-validates the key), and `_apply_configured_port()` (injects it into `sys.argv`). The completion pass on the same day closed the half that was still missing: the first cut had only taught the **frozen** launch paths to read the key, so `python manage.py runserver` and `manage.py startserver` were **still silently binding 8000 and ignoring it** — `main()` now applies the resolver once, outside the frozen branch, so all five paths finally agree (frozen double-click, `.flw` file association, the browser she auto-opens, source `runserver`, and `startserver`). Two invariants are load-bearing and pinned by **24 tests** (`agent/test_django_port_config.py`): the resolution is **fail-open** — a missing key, a missing file, unparseable JSON, a non-numeric value or one outside `1–65535` all fall back to 8000 and print a `--- [PORT] …` line, because a typo in a config file must never be able to stop her from starting — and an **explicit command-line port always wins** (`runserver 9100` is never second-guessed, and the injector never double-appends onto the frozen rewrite). What the key deliberately does *not* reach: a direct `daphne`/`uvicorn` launch bypasses `manage.py` entirely, her two MCP helper listeners (`:8765`, `:50051`) are a separate axis with their own keys, and the TeleTlamatini bridge keeps its own `tlamatini.base_url`. Documented everywhere it matters — `README.md` (a user-facing "port 8000 already taken?" recipe), `CLAUDE.md`, `docs/claude/architecture.md`, `docs/claude/gotchas.md`, the fix log, and `agent/Tlamatini.md`, where she is now told never to say *"Tlamatini runs on 8000"* as though it were fixed. The public version moves to **1.40.1** across every static surface that quotes it (README badge, `package.json`, `VERSIONING.md`, this book, `agent/Tlamatini.md`); as always it stays git-tag-derived and never hardcoded (`agent/version.py`), and the historical v1.40.0 / v1.39.5 entries below were left untouched. Forward-only.
+
+- **Release v1.40.0 — Tlamatini-FlowPills Companion-App Discovery: Tlamatini Publishes Where Her Agents Live — 2026-07-12** — A sister XAIHT application, **Tlamatini-FlowPills**, must find Tlamatini's agent-template catalog at startup **without importing Python, running Tlamatini, or scanning drives**. So Tlamatini now publishes three read-only, **HKCU-only, fail-open** discovery surfaces plus a documented lookup contract. (1) A per-user registry key **`HKCU\Software\XAIHT\Tlamatini`** carrying six values — `InstallLocation`, `AgentsRoot` (the exact root, read first), `SourceAgentsRoot`, `AgentManifestPath`, `Version`, and `AgentCatalogVersion` (`<count>-<sha8>`) — written by the installer and refreshed on **every launch**, so even a source checkout that has run once is discoverable. (2) A machine-readable **`_tlamatini_agents_manifest.json`** written next to the agents: every complete template (`<type>.py` + `config.yaml`; `pools`/`__pycache__` excluded) with a per-file `sha256`, re-hashed on each launch and rewritten only when the content actually changes. (3) A **`.tlamatini-preserved-agents.json`** marker the uninstaller leaves when it preserves the `agents/` directory — carrying the manifest path and a `manifest_sha256` — with the discovery key intentionally **kept** so companion apps still find the preserved agents. The engine is `agent/agent_manifest.py` + `agent/windows_app_registration.py`, wired into `apps.py`, `install.py`, `uninstall.py`, and `build.py`; the full contract lives in `docs/companion-app-discovery.md`. A second hardening sprint made it bullet-proof: discovery is **scheduled FIRST in `AgentConfig.ready()`**, before any MCP / model / ACPX import, on its own daemon thread with a dedicated idempotency gate, so an import or startup failure anywhere else can never suppress publication; the installer registers discovery **independently** of the Windows Installed-Apps entry (a missing `Uninstaller.exe` or an ARP hiccup no longer hides a valid catalog); all six registry values are **always rewritten** (empty when unknown) so no stale metadata survives; and manifest reads are BOM-tolerant (`utf-8-sig`). Coverage grew to **17 focused tests** that run secret-safely (`python -m unittest agent.test_agent_manifest`) and change **zero** tracked config files. Everything stays HKCU-only, no admin, fail-open, and read-only with respect to Tlamatini except her own manifest file and her own key. The public version moves to **1.40.0** across every static surface that quotes it (README badge, `package.json`, `VERSIONING.md`, this book, `agent/Tlamatini.md`); as always it stays git-tag-derived and never hardcoded (`agent/version.py`), and the historical v1.39.5 / v1.39.4 entries below were left untouched. Forward-only.
+
+- **Release v1.39.5 — One Prompt to a Ready-to-Build Unreal Engine 5.8 Project — 2026-07-12** — Tlamatini can now stand up a **brand-new Unreal Engine 5.8 C++ project** from a single Catalog-of-Prompts card. You fill in only two `[[ ]]` markers — the project's NAME and the DIRECTORY it goes in (the same fill-in-the-blank shape as the add-a-contact prompt, `prompt-106`) — and Tlamatini runs a deterministic scaffolder (`scaffold_unreal_project.py`, in the `XaihtUnrealEngineMCP` repo) that copies and renames the `MCPGameProject` template, pins EngineAssociation to 5.8, finds the installed UE 5.8 on disk even when it is not registered, wires in the **UnrealMCP** editor plugin, and generates the **Visual Studio 2026** solution — then hands you a project you open, build, and run. Once the editor is up, the UnrealMCP plugin auto-starts its TCP listener on `127.0.0.1:55557`, so the **Unrealer** agent can drive the live editor immediately (proven end-to-end: scaffold → green build on 5.8 → `get_actors_in_level`). Getting there meant teaching the template a handful of genuine UE-5.8 / VS-2026 truths, each caught by a real build rather than guessed: the build-settings version had to move to **V7 / `IncludeOrderVersion.Unreal5_8`** (V6 is a hard reject against 5.8's installed engine); a project-root **`Directory.Build.targets`** keeps VS 2026's new `SetEnv` step from stuffing Unreal's ~35,000-character include list into the `INCLUDE` environment variable and blowing past Windows' 32,767-character limit (the infamous *"The SetEnv task failed unexpectedly"*); the `FImageUtils` screenshot call moved to `PNGCompressImageArray`; and Microsoft's **Visual Studio Tools** plugin — which VS 2026 silently injects on first open and which no longer compiles on 5.8 because Epic deleted the `BlueprintGraphClasses.h` aggregate header — is now **bundled pre-fixed** in the template (a one-line swap to `K2Node_CallFunction.h`, Angela's own fix from `AngysLastChance`), since Visual Studio never overwrites a plugin that is already present. The prompt tells you to build the **project**, never the whole solution, so unrelated engine targets can't clutter the Error List. The Unrealer agent itself gained two correctness fixes verified against the plugin's C++: `assign_material` now sends the slot under the wire key the plugin actually reads (`slot_index`), and material content paths are `/Content`→`/Game` normalized. The public version is now **1.39.5** in every static surface that quotes it; as always it stays git-tag-derived and never hardcoded (`agent/version.py`), and historical statements — the v1.39.4 version-line entry, the v1.38.x milestones — were left untouched. Forward-only.
+
+- **Release v1.39.4 — The Version Line Catches Up: Nmapper's Cyber-Security Wave, Then a Closeable Startup Dialog — 2026-07-11** — The public version is now **1.39.4** in every corner that declares one. Three tags landed in quick succession: **v1.39.2** was a bulk content-and-version synchronization pass; **v1.39.3** shipped the **Nmapper** agent (#85) — the local, authorized-targets-only `nmap` bridge for pentesters and CTF players, described in full in the entry below — together with general cyber-security improvements; and **v1.39.4** fixed the **startup dialog that could not be closed**, so a fresh launch is no longer blocked behind an unclosable overlay. HEAD now carries one further commit, the Catalog-of-Prompts localization fix. The version itself remains **git-tag-derived and never hardcoded** (`agent/version.py` → `git describe`), so the About dialog, the `--- [VERSION]` startup banner, `GET /agent/version/`, and the `.exe` ProductVersion all resolve to `1.39.4` on their own; what this pass aligned is every *static* surface that quotes it — `package.json`, the README version badge, the `VERSIONING.md` worked example, the release-cut chapter of this book, Tlamatini's own self-knowledge file (`agent/Tlamatini.md`), and the PDF/PPTX doc generator's "current release" prose. Historical statements were deliberately left untouched: the v1.38.1 const-poison entries, the v1.38.0 robotic-loop milestone, and the recorded v1.36.0 build measurements still say what actually happened. Forward-only — no history rewritten.
+
+- **Added Nmapper Agent — the LOCAL, Use-Only nmap Bridge for Pentesters & CTF (Download → Copy a Prompt → Parametrize → Send → Win) — 2026-07-11** — The agent catalog grows to **85** with **Nmapper**, a local `nmap` bridge built for the moment a pentester most needs speed: a CTF. The brief was *"no long install"* — download Tlamatini, copy an example prompt, parametrize `{TARGET}`, send, win — and the honest engineering answer turned out to be **use-only**, not bundling. Nmap's license (the **NPSL**) forbids embedding nmap inside a redistributed product without a paid **OEM** license, and the freely-redistributable Windows ZIP is itself OEM-gated now, so Tlamatini **never ships nmap**. Instead Nmapper RUNS a real `nmap` the user already installed, resolving it in order — explicit `nmap_executable` → PATH → `C:\Program Files (x86)\Nmap\nmap.exe` / `C:\Program Files\Nmap\nmap.exe` → a `%LOCALAPPDATA%\Tlamatini\nmap` copy. When none is found it **REFUSES gracefully** (a fail-safe preflight, never a crash) with one-time install guidance, and `action='install'` (or `auto_install`) downloads + launches the **OFFICIAL FREE** nmap self-installer from nmap.org — the user's own download and admin install, which also brings **Npcap** and thereby unlocks SYN / OS-detection / raw UDP. That is *use, not redistribution*: legally clean, and still one-click. The **default is an unprivileged TCP connect scan** (`-sT -sV -sC -Pn -T4`) that needs **no Npcap and no admin**, so a freshly-installed nmap scans immediately; on Windows without Npcap the raw-packet features degrade gracefully — a requested SYN scan **auto-downgrades to `-sT`** and `-O` is dropped (both warned), a `udp` scan is refused (no connect fallback) — exactly the Discoverer/naabu discipline. `action` selects ONE capability per run: **quick** (the CTF opener, `--top-ports 1000`), **full** (all 65535 TCP ports), **top_ports**, **version**, **scripts** (targeted NSE), **host_discovery** (`-sn`), **udp**, **custom** (a safe base plus `custom_args` validated to reject shell metacharacters), **validate**, and **install**. It runs with `-oX` (parsed with stdlib `xml.etree` into `hosts_up` / `open_ports`) plus `-oN` (the human report), emits an atomic `INI_SECTION_NMAPPER<<<` block (`action`, `target`, `scan_technique`, `ports`, `return_code`, `success`, `hosts_up`, `open_ports`, `npcap_present`, `xml_path`, `output_path`, `stage`) and ALWAYS triggers `target_agents` (even on a fail-safe refusal) so a downstream Forker can branch on `{success}` / `{open_ports}`. It is a direct-CLI, stdlib-only sibling of Kalier and Discoverer (never imports `agent.*`) and is deliberately **DISTINCT** from both: **Kalier** is a thin transport to a REMOTE Kali box (needs a whole Kali install + a running server) and **Discoverer** is the ProjectDiscovery passive/attack-surface suite — Nmapper is the instant, zero-install LOCAL nmap that turns the *"bare Windows laptop → win a CTF"* dream into reality. Two surfaces ship in lock-step (the same dual pattern as Kalier / Discoverer): the visual **Nmapper** canvas node (a new amber *"Radar Sweep"* gradient) and the wrapped Multi-Turn tool **`chat_agent_nmapper`**, which is automatically Ask-Execs-gated and captured in the Exec Report. Wiring follows the 8-step agent pattern — migrations `0170_add_nmapper` (Agent) / `0171_add_chat_agent_nmapper_tool` (Tool) / `0172_add_nmapper_demo_prompts` (three tiered SAFE CTF prompts against **scanme.nmap.org**, the Nmap project's own authorized test host); the `update_nmapper_connection` view + route; Parametrizer source fields in `agent_contracts.py` + `parametrizer.py`; the connector across the four ACP JS files + the `eslint.config.mjs` global; the Flow-Generator mapping; FlowCreator (`agentic_skill.md` #85) and FlowHypervisor (`monitoring-prompt.pmt` NMAPPER SPECIAL NOTES); and the docs (`README.md`, `agents_descriptions.md`, `docs/claude/agents.md`, `CLAUDE.md`, `prompt.pmt`). **⚠️ AUTHORIZED TARGETS ONLY** — Nmapper fires packets directly from your own machine; only scan hosts you own or are explicitly authorized to test, and treat scan output (banners/titles/service strings) as untrusted data.
+
+- **Releases v1.38.0 + v1.38.1 — The Robotic Loop Closes, Then a Same-Week Frontend Rescue — 2026-07-07 / 2026-07-09** — **v1.38.0** (*"Tlamatini is now more agentic of long running"*) is the milestone tag: Tlamatini demonstrated she is a real **looping** assistant by programming a **robotic arm from a blank page and two cameras**, closing the **Robotic-Loop-Training** circle end to end — STM32er flashes the firmware, Camcorder records the physical motion, **Video-Analyzer** (agent #84, first tagged in v1.36.0) rules the attempt with its deterministic OpenCV motion gate plus twin parallel cloud vision models and emits a substring-safe `TLM_VERDICT::` token, and a Forker loops back to reprogram on FAIL or finishes on PASS. The tag rides on the reliability wave beneath it: the **self-healing model-step invoker** (she never hangs, never discards real work, never lies — 2026-07-06), the simplified Create-Flow gate (built from successful agents only; the whole-answer classifier is gone), cleaner generated-`.flw` layout, and the Discoverer PDCP-key + `cvemap`→`vulnx` hardening. **v1.38.1 — Frontend State Recovery (hotfix)** recovers from the 2026-07-08 **"const-poison" incident** (commit `85ee4e6c`): an automated style pass rewrote cross-file mutable JS globals from `let` to `const`; per-file ESLint cannot see cross-file reassignment, so lint stayed green while the browser died on load with *"TypeError: Assignment to constant variable"*, killing the chat page and the visual designer. The fix (`af356c31`) restored `let` on every runtime-reassigned global in `agent_page_state.js` / `acp-globals.js`, added cache-busters so every browser abandons the poisoned cached scripts, shipped `test_frontend_mutable_state.py` — the regression check ESLint structurally cannot perform, guarding source AND collected staticfiles — and introduced **`GET /agent/list_prompts/`**: the Catalog of Prompts now loads in ONE request (no more expected-404 console spam; the legacy probe loop stays as an offline fallback). Forward-only fix — no history rewritten — and `package.json` aligned to **1.38.1**.
+
+- **Image-Interpreter Goes Triple-Model — Two Parallel Eyes and One Editor-in-Chief — 2026-07-04** — The Image-Interpreter agent was rebuilt around a THREE-model pipeline. For every image, TWO vision interpreters now run **in parallel**, each on its **own dedicated Ollama connection**: `interpreter_model_1` (default **jcyhsiao/qwen3.5cloud:latest**) works as a forensic measurement engine — best-in-class OCR, every mockup/GUI element inventoried with position % / size % / colors / fonts / verbatim text — while `interpreter_model_2` (default **gemma4:cloud**) reads the image holistically — design intent, visual hierarchy, people described exhaustively with reasoned identity hypotheses. A **barrier** waits until BOTH interpretations have arrived, and only then `merging_model` (default **glm-5.3:cloud**) fuses them into ONE definitive report (union of facts, conflict-resolution rules, discrepancy log). All FOUR prompts — the three engineered per-model prompts plus `prompt_user` — ship as complete, fully-rendered defaults in the agent's canvas config dialog, and every one of them receives the image **file name** as an identity clue (a file named after a person often depicts that person). Fail-safe by design: one failed interpreter still merges from the survivor, a failed merger delivers both raw interpretations concatenated, and the `INI_SECTION_IMAGE_INTERPRETER` block now carries `interpreter_model_1/2`, `merging_model` and `status` for downstream Parametrizer/Forker routing.
+
+- **Release v1.32.0 — Faster, Safer, and Properly Credited to Angela López Mendoza — 2026-06-29** — The releases from v1.27 through **v1.32.0** are a maintenance-and-identity wave layered on top of the messaging rebuild below, in four threads. **(1) Performance — the "3X" levers.** The chat path got materially faster: an Ollama serving-layer detector, a warmed embeddings handle, and `keep_alive` carried onto the basic and retrieval chains (so the stable system-prompt prefix's KV cache is reused between turns), plus an O(N²)→O(N) rewrite of the orphan-process reaper that had been pegging a core and stalling long chats — together with roughly **140** new tests. **(2) Private-data guard.** A forward-only privacy discipline: sensitive data is removed only in NEW commits — git history is never rewritten — backed by automated `test_private_data_guard.py` tests and a global CAPS SessionStart banner shown at the start of every Claude Code session on the machine. **(3) Public-release build hardening.** `build.py` keeps delicate dev-repo data out of shipped releases, the public-release verifier blocks only true PII (emails / handles / phone numbers) rather than ordinary names, and it never scrubs the operational files it actually needs (`data.keys`, `.private_targets.json`). **(4) Authorship — Angela López Mendoza, everywhere.** Angela is now stamped as the creator across the whole product: the About window credits **ANGELA LÓPEZ MENDOZA** in caps, the generated PDF and PPTX carry her name both visibly and in their document metadata, the build and package metadata embed her, `prompt.pmt` instructs the LLM to always respect her as the creator, and every source file carries an author banner. The public-release builder is explicitly forbidden from ever scrubbing her name — it may mask other PII, never that.
+
+- **One Switch, Two Voices — Telegrammer and Whatsapper Now Choose WHO Sends ("as me" vs "as the bot") — 2026-06-27** — The two messaging agents gained the single feature people ask for first: *send this from MY account, not from a bot*. Both now carry a `provider` knob that chooses the **identity** the message goes out under, and you set it in plain English — literally say *"send it as me"* or *"as the bot"* in chat — no IDs to memorize. The mechanics differ per platform because the platforms differ, and the difference is worth understanding once.
+
+  **Telegrammer — two official voices.** Telegram is generous: it offers *two* official APIs, so Telegrammer can send under either, cleanly, with no unofficial tricks.
+    - `provider=bot` → sends **as the bot** (the Bot API, with a `@BotFather` token). Good for channels, groups, and anyone who has pressed *Start* on your bot.
+    - `provider=user` → sends **as your own Telegram account** (the official user-session / MTProto API). This is the one that can DM a private `@username` directly, exactly as if you typed it on your phone.
+    - `provider=auto` (the default) → your account for private `@usernames` and `+phone` numbers, the bot for numeric ids and channels.
+    - Plain words map straight through: *me / myself / personal / "from my account"* → `user`; *bot / "as the bot" / "as a bot"* → `bot`. ("send as me" == "as me" == "me".)
+    - **One-time login:** the first time you send *as you*, Telegrammer pops a small login window asking for your phone and the code Telegram texts you (it uses your own `api_id` / `api_hash` from <https://my.telegram.org>). After that the session is remembered forever on that install — every later "as me" send goes straight through, and your **bot is never touched** by this login.
+
+    Functional samples — chat:
+    ```text
+    Tlamatini, send a Telegram to Ana as me: "running 10 min late".
+    Tlamatini, send a Telegram to the @build_alerts channel as the bot: "main is green ✅".
+    Tlamatini, telegram Mom from my own account and say I landed safely.
+    ```
+    The exact tool-call the model makes for the first one:
+    ```text
+    chat_agent_telegrammer(mode='send', provider='me', contact_name='Ana', message='running 10 min late')
+    ```
+    Functional sample — a canvas / `.flw` node's `config.yaml` (send as you):
+    ```yaml
+    mode: send
+    provider: user            # auto | bot | user  ("me"/"personal" also resolve to user)
+    message: "Hi from my own account"
+    contact_name: "Ana"       # resolved from contacts.json (telegram: "@ana_lazcano")
+    telegram:
+      bot_token: <TELEGRAM_BOT_TOKEN goes here>     # still used by bot/auto routes
+      api_id:   1234567                             # from https://my.telegram.org
+      api_hash: 0123456789abcdef0123456789abcdef
+      session_name: telegrammer_user_session        # remembers your login
+      chat_id: "@your_telegram_username"             # default recipient (contact_name='me')
+    ```
+
+  **Whatsapper — your own number, the unofficial way.** WhatsApp is the opposite of Telegram here: Meta offers **only one** official API — the business Cloud API, with its System User, message templates, and 24-hour-window rules. There is **no** official "send from my personal number" API. So Whatsapper now offers a deliberate choice:
+    - `provider=cloud` (the default, unchanged) → the **official** Meta WhatsApp Cloud API. Sends from your **business** number; cold first messages need an approved `template`; free-form text only delivers inside the 24-hour customer-service window. Stable and supported.
+    - `provider=web` → sends from your **own personal number** by automating **WhatsApp Web** through a real, logged-in Playwright browser profile — the same thing you do by hand at <https://web.whatsapp.com>. No templates. No System User. No business verification.
+    - Plain words: *me / myself / personal / "from my own WhatsApp"* → `web`; *official / business / "as the business"* → `cloud`.
+    - **One-time QR login:** the first `web` send opens a real browser window showing the WhatsApp **QR code**. On your phone: **WhatsApp → Linked devices → Link a device**, scan it once, and the login is remembered in a private profile folder — later sends go straight through, exactly like WhatsApp Web/Desktop.
+    - **The honest trade-off** (this is unofficial — know it before you lean on it):
+
+      | | `provider=web` (personal) | `provider=cloud` (official) |
+      |---|---|---|
+      | Sends from | **Your own number** | The business number |
+      | Templates / System User | **Not needed** | Required for cold sends |
+      | 24-hour-window rule | None | Applies |
+      | Meta-approved? | **No** — automates WhatsApp Web | Yes |
+      | Risk | Meta can **ban the number**; breaks if WhatsApp changes its web app | Stable, supported |
+      | Setup | One QR scan | The full Cloud-API onboarding |
+
+    Functional samples — chat:
+    ```text
+    Tlamatini, WhatsApp Ana as me: "I'm outside, come down 🙂".
+    Tlamatini, send a WhatsApp from my own number to Dad and say dinner's ready.
+    Tlamatini, WhatsApp the customer as the business using template hello_world (en_US).
+    ```
+    Functional sample — `config.yaml` (send from your own number):
+    ```yaml
+    mode: send
+    provider: web             # cloud (default) | web   ("me"/"personal" => web)
+    message: "Hi from my own WhatsApp"
+    contact_name: "Ana"       # resolved from contacts.json (whatsapp: "+52 1 55 5555 5555")
+    whatsapp:
+      web:
+        headless: false       # FIRST run MUST be headed so you can scan the QR
+        login_wait_seconds: 120
+        settle_seconds: 8
+        profile_dir: ""       # blank = a managed, remembered per-install login profile
+    ```
+
+  **Catalog of Prompts** gained three ready-to-run demos so you can try it in one click (all send only to *yourself*, and stop cleanly if the identity isn't set up yet): *"TELEGRAM 'AS ME'"* (`provider='me'`), *"TELEGRAM 'AS THE BOT'"* (`provider='bot'`), and *"WHATSAPP 'AS ME'"* (`provider='me'` → WhatsApp Web). Seeded by migrations `0156` (two Telegram prompts) and `0157` (one WhatsApp prompt), kept contiguous in the catalog.
+
+  **Under the hood / for builders:** the chooser is a tiny, forgiving resolver in each agent (`_resolve_provider` + `_normalize_provider_word`) that lowercases, collapses spaces/hyphens, strips a leading `send`/`as`, and maps a generous word-list onto the canonical routes; an unknown word falls back safely (Telegram → `auto`, WhatsApp → `cloud`) rather than erroring. WhatsApp's personal path is a self-contained `WhatsAppWebClient` (Playwright persistent context, `web.whatsapp.com/send` deep link, fallback selectors for the compose box and Send button, clear `login_required` / `invalid_number` statuses) — Playwright was chosen because Tlamatini already ships it (Googler/Playwrighter), so **no Node runtime was added**. The chat tool descriptions and both `HOW_TO_GET_YOUR_*_ASSETS.md` guides were updated (WhatsApp's now has an *"Option B: Send From Your Own Number"* section). Coverage: **37 new automated tests** (`agent/test_telegrammer_identity.py` + `agent/test_whatsapper_identity.py`) pinning provider resolution, normalization, send-routing, the WhatsApp-Web deep link, the no-browser guards, and the demo prompts — all green, ruff clean, migration graph valid. The live "as me" sends (Telegram phone-code login; WhatsApp QR scan) are the one step done interactively with the operator. It ships in every release built after it landed; a frozen install picks it up with the update and its post-update `migrate`.
+
+- **Two Messaging Agents, Official APIs Only — Telegrammer + Whatsapper Consolidated to Send/Receive, Third-Party Gateways Retired — 2026-06-22; @username Contract Hardened + Instant Messaging Doctor Added — 2026-06-23** — The messaging surface was reduced to exactly **two** send/receive agents, each on the platform's own official API, each a single send-or-receive worker. **Telegramer was renamed to Telegrammer** and now uses **official Telegram surfaces only**: Bot API with a `bot_token` from @BotFather, plus an optional official Telegram user session (`api_id` / `api_hash` / `session_name` or `session_string`) for private `@username` sends that a bot cannot cold-DM. It carries a `mode` (`auto` / `send` / `receive`): `send` posts `message` (or a resolved `contact_name`) to a visible `telegram.chat_id` / `@username`; `receive` waits up to `rx_max_seconds` for an inbound Bot API update (optionally filtered by `rx_from_chat_id` / `rx_match`). Contacts should keep people as `telegram: "@username"`; Bot API numeric routes are internal cache entries under `.tlamatini`, never the human contact-book contract. Either way it does its one job, starts `target_agents`, and dies — and as a Parametrizer source it emits `INI_SECTION_TELEGRAMMER<<<` (`mode`, `direction`, `chat_id`, `status`, `message_id`, body = `response_body`) with the visible recipient preserved. **Whatsapper kept its name but was rebuilt onto the official Meta WhatsApp Cloud API** (Graph API): the same three modes, `send` posting `message` / a `template` (`template_language` / `template_params`) / a `contact_name` to `whatsapp.to` via `whatsapp.phone_number_id` + `whatsapp.access_token`, and `receive` standing up the official webhook (`whatsapp.webhook_host` / `webhook_port` / `webhook_path`, verified by `whatsapp.verify_token`). It now **starts `target_agents`** — so it is no longer a terminal agent — and emits `INI_SECTION_WHATSAPPER<<<` (`mode`, `direction`, `recipient`, `status`, `message_id`, body = `response_body`). **Instant Messaging Doctor** was added as the diagnostic/repair companion and wrapped Multi-Turn tool `chat_agent_instant_messaging_doctor`: Telegrammer/Whatsapper failures automatically launch it with the same contact/message/failure-log context, and critical flows can call it first to validate tokens, contacts, Telegram `@username` reachability, Meta phone-number/template/webhook readiness, and next repair actions through `INI_SECTION_INSTANT_MESSAGING_DOCTOR<<<`. Two agents were **retired completely**: **TelegramRX** (receiving is now just Telegrammer's `receive` mode) and **WhatsTlamatini** (TeleTlamatini stays as the long-running Telegram bridge). Every **third-party gateway was removed** — **no Twilio, no TextMeBot, no WhatsApp Web gateway** — leaving the comms stack on first-party APIs only. **Historical scope:** that last sentence describes the June 22 release; the later personal-identity feature explicitly added the optional, unofficial `provider=web` route while keeping `provider=cloud` as the default and only receive path.
+
+- **The External MCPs Era — Tlamatini Plugs Into Any MCP From a JSON File, Across Four Transports, With a Doctor at the Door — June 2026** — Until now Tlamatini's tool surface was *her* tools: the 78 pool agents, the ACPX child-CLIs, the Skills. This is the release where the walls come down. Drop a JSON config in front of her — the same `mcpServers` block you already paste into a desktop MCP client, a single-server `{ "command": ..., "args": ... }` snippet, or just a `{ "url": ... }` — and Tlamatini connects to **any external MCP server** and binds its remote tools as her own, named `ext__<server>__<tool>`. The engine is a config-driven **universal MCP client** (`agent/external_mcp_manager.py`, catalogued in `agent/external_mcps.json`) that speaks **four transports**: `stdio` for local processes, **Streamable HTTP** for already-running HTTP endpoints, legacy **HTTP+SSE**, and **WebSocket** JSON-RPC — so a Roblox Studio bridge, a Redis server, a knowledge-graph **memory**, **SQLite**, a web **fetch** server, all reach her the same way regardless of how they happen to talk. Servers connect **lazily on a background thread** so a slow one never blocks the chat, at most **five** stay active at once (a deliberate, sane cap), and the whole thing is administered from a new **"External ▸ MCPs"** navbar dialog — searchable, with **drag-a-`.json`-to-import** (since v1.83.0 on every page, through the file-drop router) — backed by three endpoints and eight LLM-facing supervisor tools (`external_mcp_status` / `reconnect` / `doctor` / `list_tools` / `call` / `import` / `set_active` / `wait`) so the model can inspect, choose, call, and add MCPs *herself*. The full design contract lives in `docs/external_mcp_bulletproof_architecture.md`.
+
+  Riding in alongside is a new agent — **MCP Doctor** (the **78th**), the triage nurse you consult *before* you wire a new MCP up. It reads the catalog and, **without connecting to anything**, tells you the truth about an entry: which transport it uses, what runtime it needs (Docker, Node/NPX, UVX, Python, Java, .NET, …), whether that command is actually on your PATH, whether the secrets are still placeholders, what is blocking it, and the single next step you should take. It ships on both surfaces — the visual **MCP Doctor** canvas node and the wrapped Multi-Turn tool **`chat_agent_mcp_doctor`** — emits an `INI_SECTION_MCP_DOCTOR` block so a downstream Forker can branch on `{status}`, and arrived with migrations `0141`–`0143` (catalog demo prompt 81). Pair it with the new **Step-by-Step** toolbar mode — Tlamatini hands you *one* concrete action at a time and waits for your `READY` (or a screenshot, a log, a command's output) before the next — and onboarding a brand-new MCP stops being a wall of guesswork and becomes a calm, READY-gated conversation: import, doctor, fix the one blocker she names, activate, smoke-test.
+
+  Two quieter changes make the whole thing actually work in practice. First, **Multi-Turn now binds her *entire* enabled toolset** — the old request-scoped planner that narrowed the bound tools down to a keyword-scored subset was starving the operator loop (the "I don't seem to have a file-writing tool" bug); now the full surface is in front of her every turn (ACPX is still filtered by its own checkbox), and the cost of carrying it is trimmed by one-line tool descriptions in the prompt plus Ollama `keep_alive` prefix reuse. Second, the proof: a **visible 10-MCP Playwright suite** (`.claude/skills/tlamatini-daily-chat-test/harness/mcp_playwright_suite.py`, reusing the daily-chat-test harness) drives the *live* chat UI through ten no-key MCPs — **memory, sqlite, redis, fetch, time, everything, sequentialthinking, filesystem, git, puppeteer** — each one chaining an external-MCP tool into a File-Creator write, with Multi-Turn and Exec Report both on. The scoreboard at the end: **10 / 10 PASS**.
+
+- **The Self-Modify Snapshot Grows Teeth — `copy_source_assets.py` Generates a Complete, Rebuildable Source Tree — 2026-06-12** — The `--self-modify` build flag used to copy a static, nearly-empty placeholder tree; now it builds the real thing. A new auxiliary script at the repo root, **`copy_source_assets.py`**, is invoked by `build.py --self-modify` to **generate the `TlamatiniSourceCode/` snapshot fresh from the live repository** straight into the distribution — a complete mirror of everything a rebuild needs: every `.py`, `.js`, `.css`, `.html`, `.yaml` and `.pmt`, all five PowerShell helpers, the entire build pipeline (`build.py`, `build_installer.py`, `build_uninstaller.py`, `versioning.py`, `install.py`, `uninstall.py`, `pyinstaller_hooks/`), all 76 agent templates, the SKILL.md packages, the docs, the tests — plus the *small* binaries a rebuild genuinely requires (`.ico` icons, `.wav` sounds, the spinner `.svg`). What it deliberately leaves out is just as important: the heavy media (`.pdf`, `.pptx`, the `agent/images` gallery and demo videos — about 44 MB), `jd-cli.jar` (already sitting at the install root), regenerable state (`staticfiles/`, pools, caches, logs, databases), and **every secret** — `data.keys` is excluded outright and the API keys in `config.json` / agent `config.yaml` files are scrubbed to the familiar `<KEY goes here>` placeholders. The snapshot self-documents: a `_SOURCE_SNAPSHOT_MANIFEST.json` records counts, sizes and the restore list, and a `_REBUILD_INSTRUCTIONS.md` spells out the full take → modify → integrate → **regenerate-`Tlamatini.exe`** runbook — copy the two omitted binaries and the live keys back from the install root, `pip install -r requirements.txt`, `collectstatic`, then `python build.py --self-modify` (which regenerates the *next* snapshot in turn, so the loop closes). A self-able-modify Tlamatini can now follow those instructions end-to-end and rebuild herself when a user asks her to change her own functionality. The first live generation: **685 files, 9.84 MB, zero errors, zero leaked keys**. If snapshot generation ever fails, the build falls back to the legacy static-tree copy rather than aborting.
+
+- **Zero-Latency Microphone "REC" Indicator + a CPU-Only/CUDA-Free Build Proof — v1.19.0, 2026-06-08** — Recording audio is no longer a black box. **Whisperer**'s mic-record path *and* the **Recorder** agent now pop a live console **"REC" light** the instant they start listening — a blinking red dot beside a colored VU bar fed by the *real* audio samples — driven by a callback `InputStream`: the light turns **ON at the first real audio block** (~20 ms, comfortably under a 50 ms budget) and **OFF the instant the stream stops**, so you can see at a glance that the microphone is actually capturing. Because pool agents are spawned **detached with no console**, the agent now `AllocConsole()`s (or reveals) its own window and paints the indicator to `CONOUT$` rather than silently recording into the void. Riding along, **Whisperer's default `record_seconds` changed from 5 to 30**, so an off-the-cuff "transcribe what I say" run captures a useful clip without the user having to bump the knob. The release also adds a build-test class **`NoGpuCudaFreeContractTests`** that *proves* the build is **CPU-only / CUDA-free** and that both audio agents run on a machine with no GPU: it verifies the torch CPU wheel is the one bundled, that the `nvidia*` wheels are pruned, and that faster-whisper / CTranslate2 take their CPU fallback path. No new agents — the catalog holds at **76**; this is a usability + verification release for the two audio agents.
+
+- **Added Whisperer Agent — Self-Contained Speech-to-Text, the Sibling of Talker — v1.18.0, 2026-06-08** — The agent catalog grows to **76** with **Whisperer**, Tlamatini's **speech-to-text (STT / voice recognition)** agent and the natural counterpart to Talker's text-to-speech: it turns spoken audio into a plain text string. It is **100% self-sufficient for the microphone** — it opens, configures (channels, sample rate, software gain) and records the mic *itself* (`sounddevice` + `numpy`, downmix to mono + resample to 16 kHz), with **no dependency on the Recorder agent** — or it transcribes a given audio **file** instead (`input_source` ∈ mic / file / auto, `audio_file`); the mic-record default is **`record_seconds: 30`**. Recognition runs on **faster-whisper LOCALLY by default**: it **auto-detects an NVIDIA GPU** via CTranslate2 and **ALWAYS falls back to CPU (int8)** on a machine without one — and auto-retries on CPU if the GPU path fails for any reason — so a PC with no usable GPU *always* still gets a transcript; `model` ∈ tiny / base / small / medium / large-v3 / large-v3-turbo (default `base`). Cloud engines `cloud-groq` / `cloud-openai` are also supported. A crucial honesty note baked into the design: **Ollama cannot do speech-to-text** (it has no audio input), so recognition is *always* done by the ASR engine — an optional Ollama pass only tidies the *finished* transcript's punctuation and casing (and if that pass fails, the raw transcript stands). Whisperer is **observational** (audio in → text out), so it is **NOT** in the Exec Report. Two surfaces ship in lock-step, the same dual pattern as the rest of the media family: the visual **Whisperer** canvas node and the wrapped Multi-Turn tool **`chat_agent_whisperer`** (the LLM passes the operation as a free-form key=value request). It emits one atomic `INI_SECTION_WHISPERER<<<` block whose **body is the transcript text** so a downstream Parametrizer can pipe the words onward, and it ALWAYS triggers `target_agents` (even on error — a Forker can branch on `{status}` ∈ transcribed / empty / engine_unavailable / error). It needs `sounddevice` + `numpy` for the mic and `faster-whisper` for local transcription (absent + no cloud key → `status: engine_unavailable`, *not* a crash). Wiring follows the established 8-step agent pattern with migrations `0123` / `0124` / `0125`; `requirements.txt` now pins `faster-whisper==1.1.1`; coverage is 40 tests green (ruff / ESLint / migrate clean).
+
+- **Added Talker Agent — Female-Voice-Only Text-to-Speech via Ollama + SNAC — v1.17.2, 2026-06-07** — The agent catalog grows to **75** with **Talker**, Tlamatini's **text-to-speech (TTS)** agent: it speaks `input_text` aloud through the speakers by driving an **OLLAMA** connection running a neural TTS model (default **`Orpheus-3b-FT`**). It builds an Orpheus prompt, streams the model's audio **tokens** over the Ollama HTTP API, decodes them to a 24 kHz mono waveform with the **SNAC** neural codec, saves a WAV, and plays it — the voice-synthesis sibling of the media family (AudioPlayer plays an existing *file*; Talker *generates* speech from text). It is **FEMALE-VOICE-ONLY by design** — Tlamatini is female, and a male voice is **FORBIDDEN**: asking for one makes Talker **close its execution** with "male voice is forbidden by design — NOW CLOSING.. BYE", never substituting a different voice and never sounding male. The permitted voices are the female set `tara` (default) / `leah` / `jess` / `mia` / `zoe`, and `gender` accepts only `female`. The surface is rich: `emotion` weaves one of **8 paralinguistic tags** (`<laugh>` / `<sigh>` / …) into the speech, `language` is a hint, the generation knobs `temperature` / `top_p` / `top_k` / `min_p` / `repetition_penalty` / `max_tokens` / `seed` are all exposed, and playback is tuned with `device_index` / `volume_percent` / `sample_rate`. Talker is **observational/output**, so it is **NOT** in the Exec Report. Two surfaces ship in lock-step: the visual **Talker** canvas node and the wrapped Multi-Turn tool **`chat_agent_talker`**; it emits one atomic `INI_SECTION_TALKER<<<` block for Parametrizer and always triggers `target_agents`. Fetching tokens needs only the stdlib, but **rendering audible audio needs `snac` + `torch`** (CPU is fine) — without them Talker saves the tokens and reports `status: tokens_only` (graceful degradation, not a crash). Wiring follows the established 8-step agent pattern with migrations `0120` / `0121`; coverage is 56 tests green (ruff / ESLint / migrate clean).
+
+- **Bullet-proof installation — the installer now carries its own Python, plus prompting-chain fixes — v1.17.0, 2026-06-05** — The release re-engineers the install process to be **bullet-proof**: the installer ships a **self-contained Python 3.12.10** (with every pool-agent dependency already installed) into `<install_dir>\python\`, and **all** pool agents now run on that carried interpreter unconditionally — immune to a missing, wrong-version, or PATH-shadowed system Python and to a stale `PYTHON_HOME`. `build.py` bundles and verifies the carried interpreter (`bundle_carried_python` + a hard `CARRIED_PYTHON_VERSION = 3.12.10` preflight), every agent's `get_user_python_home` / `get_python_command` / `_resolve_python_executable` now **always prefer `<install_dir>\python`**, and an end user installs **only Ollama + the models** — no separate Python install anymore. Riding along: an **improvement to the prompting chain** and assorted README / install-flow fixes. The **Quickstart** (chapters §3–§7) and the model list (chapter §4) were refreshed for this release; the default model set is now `glm-5.1:cloud`, `gpt-oss:120b-cloud`, `qwen3.5:397b-cloud`, `jcyhsiao/qwen3.5cloud:latest`, `kimi-k2.6:cloud`, and the local `Nomic-Embed-Text:latest`. Frozen installs are produced by a fresh `python build.py` → `build_uninstaller.py` → `build_installer.py` (the carried-Python bundle is created during `build.py`).
+
+- **Added the VideoPlayer Agent — On-screen Video Playback (with audio) over `ffpyplayer` + OpenCV, the 74th Agent — v1.15.0, 2026-06-04** — The agent catalog reaches **74** with **VideoPlayer**, the on-screen sibling of AudioPlayer: where AudioPlayer drives the *speakers*, VideoPlayer plays a **video file with sound on a chosen display**. It decodes + plays audio via **`ffpyplayer`** — whose pip wheel **bundles ffmpeg + SDL inside the package**, so it ships entirely through `requirements.txt` and PyInstaller's `--collect-all ffpyplayer` with **no external ffmpeg and no runtime download** — and draws the window with the already-bundled **OpenCV** (`cv2`); if ffpyplayer is ever unavailable it degrades gracefully to **silent OpenCV-only** video (so the core honors the "bundles with no problems" bar even worst-case). `video_file` (required) accepts any ffmpeg container (`.mp4`/`.mov`/`.mkv`/`.avi`/`.webm`); `display_index` picks the monitor (`-1` = primary; the monitors are enumerated via the Win32 `EnumDisplayMonitors` API and logged at startup); `volume_percent` is the audio level (capped at 100). **`time_played`** shapes the length: `0` plays the whole video once, while a positive value plays for *exactly* that long — a longer video is **TRUNCATED**, a shorter one is **LOOPED** (whole repeats plus a final partial segment), driven by a wall-clock loop. `window_width`/`window_height` size the window (`0` = the video's native size, centered on the chosen display), `fullscreen` fills the monitor, and `keep_aspect` (default true) letterboxes via cv2 `WINDOW_KEEPRATIO` instead of stretching. *(Additional-video-params analysis: playback-speed/fps, decode-resolution/codec, and audio-track/subtitle selection are deliberately OMITTED — the file's native timing is used, the window size controls only display scaling, and track selection is advanced/rarely needed.)* Observational/output (it changes no persistent state), so it is **NOT in the Exec Report**. Two surfaces ship in lock-step: the visual **VideoPlayer** canvas node and the wrapped Multi-Turn tool **`chat_agent_videoplayer`** — wrapped chat-agent count moves to **49** (Multi-Turn tool total → **81**). It emits one atomic `INI_SECTION_VIDEOPLAYER<<<` block (`input_path`, `display_index`, `display_geometry`, `video_width`/`video_height`, `window_width`/`window_height`, `fullscreen`, `volume_percent`, `backend`, `has_audio`, `file_duration_seconds`, `time_played_requested`, `played_seconds`, `play_mode`, `loops`, `partial_segment`, `format`, `status`, `response_body`) for Parametrizer and ALWAYS triggers `target_agents` (the error path emits `status: error`). Agent + Tool rows via migrations `0118` / `0119`; `requirements.txt` adds `ffpyplayer` and `build.py` adds `--collect-all ffpyplayer` plus a `_agent_libs` verify. Coverage: 38 tests (a fake clock + fake backend drive the real truncate/loop math; fake ffpyplayer/cv2 backends), all green; verified **end-to-end** by looping a real 2-second clip to fill a 5-second `time_played` in a window on the desktop. Frozen installs need a `python build.py` + `migrate`.
+
+- **Added the AudioPlayer Agent — Audio Playback to the Speakers over `soundfile` + `sounddevice`, the 73rd Agent — v1.15.0, 2026-06-04** — The agent catalog reaches **73** with **AudioPlayer**, the **playback counterpart of Recorder**: where Recorder captures the *microphone*, AudioPlayer plays an audio file to a system **output device (speakers)** — completing the media-I/O family (Shoter = screen, Camcorder = camera-in, Recorder = mic-in, AudioPlayer = speakers-out). It decodes the file with **`soundfile`** (libsndfile — WAV/FLAC/OGG/AIFF, and MP3 with a recent libsndfile) and streams it with **`sounddevice`**; both ship as pip wheels with their native binaries bundled (no external dependency). `audio_file` (required) is the path to play; it plays to the system **DEFAULT output device** by default (`device_index`/`device_name` to pick another — the agent logs the numbered output-device list at startup). `volume_percent` is a **software (digital) gain** (`100` = unity, `200` = louder, `0` = silence) applied to the decoded samples — *not* the OS volume slider — and the count of samples that hit the rail is reported as `clipped_samples`. **`time_played`** shapes the length: `0` plays the whole file once, a positive value plays for *exactly* that long — a longer file is **TRUNCATED**, a shorter one is **LOOPED** (whole repeats plus a final partial segment) using a **streaming wrap-around callback** so a huge `time_played` over a tiny file never allocates a giant buffer. **Sample-rate policy**: `sample_rate` defaults to **`0` = the file's OWN native rate** — the rate is read from the file, so the user need not supply it and the audio plays at correct pitch; a non-zero value forces the output rate and alters pitch/tempo (it is not resampled). It does **not** change the Windows OS default audio endpoint (a per-playback choice only). Observational/output, so it is **NOT in the Exec Report**. Two surfaces ship in lock-step: the visual **AudioPlayer** canvas node and the wrapped Multi-Turn tool **`chat_agent_audioplayer`**. It emits one atomic `INI_SECTION_AUDIOPLAYER<<<` block (`input_path`, `input_dir`, `filename`, `device_index`, `device_name`, `file_sample_rate`, `play_sample_rate`, `channels`, `volume_percent`, `clipped_samples`, `file_duration_seconds`, `time_played_requested`, `played_seconds`, `play_mode`, `loops`, `partial_segment`, `format`, `status`, `response_body`) for Parametrizer and ALWAYS triggers `target_agents` (the error path emits `status: error`). Agent + Tool rows via migrations `0116` / `0117`; `requirements.txt` adds `soundfile`. Coverage: 43 tests (fake soundfile + sounddevice drive the real truncate/loop math frame-exact), all green; verified **end-to-end** by looping a real 1-second tone to fill a 3-second `time_played` through the default speakers. Frozen installs need a `python build.py` + `migrate`.
+
+- **Added the Recorder Agent — Microphone Audio Capture to WAV over `sounddevice`, the 72nd Agent — v1.14.0, 2026-06-04** — The agent catalog reaches **72** with **Recorder**, Tlamatini's bridge to a system **audio input device** (microphone) built on `sounddevice`, with the WAV written by the stdlib `wave` module. It is the **audio sibling** of the capture pair shipped alongside it in this same `v1.14.0` release: where **Shoter** captures the *screen* and **Camcorder** the *camera*, **Recorder** captures *sound* — completing the screen / camera / microphone trio. Like both, it is purely **observational** — it records and changes nothing on the machine — so, exactly like Shoter and Camcorder, it is **NOT in the Exec Report**. By default it records from the **system default input device** for `record_seconds` seconds; pick a specific mic on a multi-microphone machine with `device_index` (the agent logs the numbered PortAudio input-device list at startup) or by a case-insensitive name substring with `device_name`. **Sample-rate policy**: `sample_rate` defaults to **`0` = the device's native default rate** (the robust, recommended default — forcing a rate the driver does not support raises a PortAudio error; the rate actually used is read back, logged, and written into the output block); set `44100` / `48000` / `16000` to force one. `channels` defaults to mono (`1`) and is clamped down to the device's reported max so an over-request can never crash the capture. `input_gain_percent` applies a POST-capture digital gain (`100` = unity/byte-identical, `200` = +6 dB, `50` = −6 dB, `0` = silence) — it amplifies the noise floor and a hot signal CLIPS, so the count of samples that hit the int16 rail is reported as `clipped_samples` in the output block for a downstream Forker to react to. The result is saved to the **Music known-folder** (`~/Music`, localized e.g. "Música") under a `TlamatiniRecords` subfolder, with a collision-proof timestamped filename (override the parent with `output_dir`). It emits one atomic `INI_SECTION_RECORDER<<<` block (`output_path`, `output_dir`, `filename`, `device_index`, `device_name`, `sample_rate`, `channels`, `duration_seconds`, `gain_percent`, `clipped_samples`, `format`, `response_body`) so a downstream Parametrizer can pipe the captured path onward, and it ALWAYS triggers `target_agents` once the file is written. Two surfaces ship in lock-step (the same dual pattern as Camcorder): the visual **Recorder** canvas node and the wrapped Multi-Turn tool **`chat_agent_recorder`** — wrapped chat-agent count moves to **47** (Multi-Turn tool total → **79**). Wiring follows the established 8-step agent pattern, with the Agent + Tool rows added via migrations `0114` / `0115`; `requirements.txt` adds `sounddevice`. The **FlowHypervisor monitoring prompt** was also extended to cover Recorder (and its siblings ESP32er / Arduiner / Camcorder) across its agent categorization, timing, startup markers, and do-not-flag rules. Coverage: 30 tests, all green; verified **end-to-end against a real microphone** and through the wrapped tool. Frozen installs need a `python build.py` (it bundles `sounddevice` and the new agent directory) plus a `migrate` to seed the rows.
+
+- **Added the Camcorder Agent — Webcam Photo & Video Capture over OpenCV, the 71st Agent — v1.14.0, 2026-06-03** — The agent catalog grows to **71** with **Camcorder**, Tlamatini's bridge to a physical **camera** (webcam) built on **OpenCV** (`cv2`). It is deliberately the hardware-camera sibling of **Shoter**: where Shoter captures the *screen*, Camcorder captures the *camera*, and like Shoter it is purely **observational** — it only records what the lens sees and changes nothing on the machine — so, exactly like Shoter, it is **NOT in the Exec Report**. Its `capture_mode` field selects one of two behaviours per run: **`photo`** (the **DEFAULT** — a single still, saved as `.jpg`) or **`video`** (a segment of `video_duration_seconds`, no audio, saved as `.mp4` via the `mp4v` codec at a `video_fps` target that is read back from the device when sane). `camera_index` picks the device (0 = the system default camera; 1, 2, … for additional cameras). A short **resolution analysis** drove the design: webcams only support a *discrete* set of capture modes, and forcing an unsupported one makes OpenCV silently snap to the nearest — so `resolution_width`/`resolution_height` default to **`0×0` = the camera's native mode** (the robust, recommended default), and when you DO request a `W×H` the value the driver actually applied is read back and written to both the log and the output block. A `warmup_seconds` window lets cheap sensors auto-expose before the shot (so the first frame isn't black). The result is saved to the **Pictures known-folder** (resolved via `SHGetKnownFolderPath` FOLDERID_Pictures through `ctypes`, falling back to `~/Pictures`) under a `TlamatiniCamcorder` subfolder, with a collision-proof `camcorder_<media>_<YYYYmmdd>_<HHMMSS>_<ms>_cam<idx>.<ext>` filename (override the parent with `output_dir`). It emits one atomic `INI_SECTION_CAMCORDER<<<` block (`output_path`, `output_dir`, `filename`, `media_type`, `camera_index`, `duration_seconds`, `resolution`, `fps`, `response_body`) so a downstream Parametrizer can pipe the captured path into the next agent, and it ALWAYS triggers `target_agents` once the file is written. Two surfaces ship in lock-step (the same dual pattern as every recent agent): the visual **Camcorder** canvas node and the wrapped Multi-Turn tool **`chat_agent_camcorder`** — wrapped chat-agent count moves to **46**. Wiring follows the established 8-step agent pattern, with the Agent + Tool rows added via migrations `0112` / `0113`; `requirements.txt` now pins `opencv-python==4.13.0.92`. Coverage: 22 tests, all green; ruff / ESLint / `manage.py check` clean — and it was verified **end-to-end against a real camera** (a 640×480 JPEG photo and a 3-second MP4, both saved to the user's `Pictures/TlamatiniCamcorder`). Frozen installs need a `python build.py` (it bundles OpenCV and the new agent directory) plus a `migrate` to seed the rows.
+
+- **Added the Arduiner Agent — Arduino Firmware over `arduino-cli`, the 70th Agent — v1.13.0, 2026-06-03** — The agent catalog grows to **70** with **Arduiner**, Tlamatini's bridge to the **Arduino CLI** (`https://arduino.github.io/arduino-cli/`) and the third member of the microcontroller-firmware family. Like ESP32er's PlatformIO `pio` — and unlike STM32er, which drives a separate MCP server because STM32CubeIDE has no unified CLI — `arduino-cli` is itself a complete CLI, so Arduiner invokes `arduino-cli` subcommands **directly** (the Kalier / Executer / ESP32er pattern; **no MCP server**) over a stdlib-only agent (`subprocess` + `urllib` + `zipfile`/`tarfile`). **The microcontroller is selected by `fqbn`** (Fully Qualified Board Name — `arduino:avr:uno`, `arduino:avr:mega2560`, `arduino:samd:mkr1000`, `esp32:esp32:esp32`, …), with `port` + `baud` setting the upload/monitor link. Its `action` field selects ONE capability per run across environment/meta (`bootstrap`, `validate`, `system_info`, `boards`, `device_list`), cores & libraries (`core_*`, `lib_*`), project lifecycle (`create_project`, `write_source`, `read_source`, `list_sources`), build & flash (`build`, `upload`, `build_and_upload`, `clean`, `list_artifacts`), and serial HIL (`monitor`, `monitor_session` = upload→monitor). **Zero-config auto-bootstrap**: with no on-disk `arduino_cli_executable` and `auto_bootstrap: true`, Arduiner downloads the arduino-cli binary itself — the platform release archive from `downloads.arduino.cc`, unzipped into `%LOCALAPPDATA%/Tlamatini/arduino-cli`, then `config init` + `core update-index` — a *binary* download, not a pip install — so a user installs **only the board USB driver + Tlamatini**. **Auto-core-install**: arduino-cli, unlike PlatformIO, does NOT auto-install platforms on compile, so before a build/upload Arduiner derives the FQBN's platform and, when missing and `auto_core_install: true`, runs `core update-index` + `core install` (honoring `additional_urls` for third-party ESP32/STM32/RP2040 cores); when off it REFUSES with the exact `core install` to run. **Safety preflight** (fail-safe): it validates `arduino-cli` is resolvable + a sketch (`.ino`) + an FQBN exist, and for an upload/monitor that a serial port is connected (`arduino-cli board list`), and REFUSES rather than run a build/upload that cannot succeed; a malformed FQBN is a warning, not a refusal (arduino-cli is multi-vendor — no shared-linker-script risk like STM32). **Uniform template project**: `create_project` scaffolds from the bundled `ArduinoTemplateProject/` — the Arduino analog of STM32er's STM32 Template Project and ESP32er's `pio` scaffold — copying it, renaming the `.ino`, and stamping the FQBN/port into the template's `sketch.yaml` profile (the Arduino-native peer of `platformio.ini`). It emits an `INI_SECTION_ARDUINER<<<` block and ALWAYS triggers `target_agents`, so a downstream Forker can branch on `{success}` / `{returncode}`. Two surfaces ship in lock-step (the same dual pattern as STM32er / ESP32er): the visual **Arduiner** canvas node and the wrapped Multi-Turn tool **`chat_agent_arduiner`** — wrapped chat-agent count moves to **45**. Wiring follows the established 8-step agent pattern, with the Agent + Tool rows added via migrations `0109` / `0110` / `0111`; the NOTE that the FIRST core install + compile downloads the board toolchain (so it is slow). Coverage: 39 tests, all green; ruff / ESLint / `manage.py check` clean. Riding along in this release: the **`flow-making` skill** (2026-06-01, skill catalog → **27**) that turns a plain objective into a canvas-loadable `.flw` by wrapping the FlowCreator engine, and the **Temp & Templates directory policy** (2026-06-02) — every *transient* file Tlamatini writes now lives under one app-root `Temp` directory (`TLAMATINI_TEMP`; never `C:\Temp`, `%TEMP%`, or the system temp), while the firmware/engine agents (STM32er / ESP32er / **Arduiner** / Unrealer) default their scaffolded project trees to an app-root `Templates` directory (`TLAMATINI_TEMPLATES`) unless the user names another path. `manage.py` + `settings.py` pin `TMP`/`TEMP`/`TMPDIR` + `tempfile.tempdir` to `<app>/Temp` and every spawned pool agent inherits it; `prompt.pmt` Rules 15/16 inject the absolute paths so the LLM honours the policy too. Frozen installs need a `python build.py` to ship the new agent + template scaffold and a `migrate` to seed the rows.
+
+- **Added the ESP32er Agent — Zero-Config ESP32 Firmware over PlatformIO, the 69th Agent — v1.12.0, 2026-05-31** — The agent catalog grows to **69** with **ESP32er**, Tlamatini's bridge to **PlatformIO Core** (`https://platformio.org`) and the second member of the microcontroller-firmware family. The architectural choice that defines it: unlike STM32er — which drives a separate MCP server because STM32CubeIDE has no unified CLI — PlatformIO already ships a complete `pio` CLI, so ESP32er invokes `pio` subcommands **directly** (the Kalier / Executer pattern; **no MCP server**) over a stdlib-only agent (`subprocess` + `urllib`, no `pio` dependency in the pool). Its `action` field selects ONE capability per run across environment/meta (`bootstrap`, `validate`, `system_info`, `boards`), project lifecycle (`create_project`, `write_source`, `read_source`, `list_sources`, `clean`), build & flash (`build`, `upload`, `build_and_upload`, `list_artifacts`, and the one-call lifecycle composite **`scaffold_build_upload`** = create_project→write_source→build→upload→optional-monitor in a SINGLE agent run — the fast path that collapses the old four-separate-call chain and its Multi-Turn round-trips; fail-safe, it skips only the upload leg with a "built OK" result when no board is connected), serial HIL (`device_list`, `monitor`, `monitor_session` = upload→monitor), and packages/QA (`pkg_install`, `pkg_list`, `pkg_update`, `check`, `test`). **Zero-config auto-bootstrap**: with no on-disk `pio_executable` and `auto_bootstrap: true`, ESP32er downloads PlatformIO Core itself — the official `get-platformio.py` installer (with a `pip install platformio` fallback) into `%LOCALAPPDATA%/Tlamatini/platformio` — so a user installs **only the board USB driver + Tlamatini**. **Safety preflight** (fail-safe): before any build/upload it validates `pio` is resolvable + a `platformio.ini` exists, and for an upload/monitor that a serial port is connected (`pio device list`; ESP32 flashes over its onboard USB-serial bootloader, so NO external JTAG probe is needed for upload — only `debug` would), and REFUSES rather than run a build/upload that cannot succeed; a non-espressif32 platform is a warning, not a refusal (PlatformIO is multi-target — no shared-linker-script risk like STM32). It emits an `INI_SECTION_ESP32ER<<<` block and ALWAYS triggers `target_agents`. Two surfaces ship in lock-step: the visual **ESP32er** canvas node and the wrapped Multi-Turn tool **`chat_agent_esp32er`**; the Agent + Tool rows are added via migrations `0105` / `0106`. NOTE: the FIRST build downloads the espressif32 platform + toolchain (hundreds of MB); headless step-debug (`pio debug -x`, needs JTAG) is a planned fast-follow. Coverage: 31 tests, all green; ruff / ESLint clean. A companion **ESP32 Template Project** (a standalone PlatformIO blink baseline; see this book's bonus chapter §58) gives ESP32er a known-good reference shape to build/flash/monitor or scaffold from. Frozen installs need a `python build.py` + `migrate`.
+
+- **Added the `flow-making` Skill — Turn a Plain Prompt into a Canvas-Loadable `.flw`, plus a Dedicated Skill-Authoring Guide — 2026-06-01** — The skill catalog grows to **27** with **`flow-making`**, an in-process `SKILL.md` package that turns a one-line objective into a real, ACP-canvas-loadable `.flw` workflow. The design question — *wrap the FlowCreator agent, or build an ACPX skill?* — was settled in favour of **wrapping FlowCreator**: that agent already encodes the full 69-agent catalog, the connection contracts, and the design rules in its `agentic_skill.md`, and its `flow_result.json` is already the canvas nodes/connections payload — so reusing it buys correctness for free, where a from-scratch LLM synthesis (or a foreign ACPX CLI that has never seen Tlamatini's catalog) would hallucinate agent types and emit a flow that will not load. The skill ships two stdlib-only helpers under `scripts/`: **`make_flow.py`** (the one-shot driver — it copies the FlowCreator template into an isolated runtime dir, writes its `config.yaml` as JSON-which-is-valid-YAML, runs `flowcreator.py`, then converts the result) and **`result_to_flw.py`** (the deterministic `flow_result.json → .flw` converter that emits the exact `schemaVersion: 2` `{nodes, connections, artifacts}` shape `acp-file-io.js::loadDiagram` consumes — node `text` is a hyphen-preserving display name that lowercases back to the canvas classMap + connection-restoration `switch`, and connections are keyed by integer index), plus a `references/flw_schema.md` schema-of-record. The driver is **fail-safe**: when Ollama is down or the model is missing it returns a clean `ERROR …` line, never a half-baked `.flw`. The legacy **`tlamatini-flow-from-objective`** skill — whose body specified an *obsolete* `.flw` shape (`{version, agents, connections:[{from,to,kind}]}`) that would never load — was **superseded**: its body now delegates to `flow-making` and carries the corrected schema. A new repo-root guide **`Tlamatini/.skills/create_new_skill.md`** (sibling of `.agents/workflows/create_new_agent.md` and `.mcps/create_new_mcp.md`) documents authoring any `SKILL.md` end-to-end — the two runtimes (`in-process` vs `acpx`), the frontmatter contract and schema ranges, discovery + the 30 s staleness cache, `_meta/lint.py` + `quick_validate.py`, and the ACPX-surface gotchas — with `flow-making` cited as the canonical worked example. Finally, a new **Catalog-of-Prompts** demo, **`idPrompt=69` ALARM FLOW FORGE** (migration `0108_add_flow_making_demo_prompt.py`, catalog now contiguous **1–69**), builds `alarm_every_3_hours.flw` (an "every 3 hours, Telegram me that another 3-hour lap passed" flow) and saves it to the Desktop. Two non-obvious contracts were nailed down so it works from the catalog: (1) `execute_command` runs with **no `cwd`**, inheriting the Django root, so the runbook's script path is `agent/skills_pkg/…`, **not** the repo-root `Tlamatini/agent/…` prefix; and (2) `invoke_skill` / `list_skills` are ACPX-surface tools, so a catalog prompt must **literally name `invoke_skill`** for `tools_dialog.js::classifyPromptModes` to auto-enable **Multi-Turn + ACPX** (otherwise the skill is filtered out of the planner's tool list entirely). Docs refreshed in lock-step (`README` §3.12 / §5.3, `CLAUDE.md`, `KIMI.md`, `docs/claude/{acpx,mcp-tools,recent-fixes}.md`, this book). Verified: skill lint 27/27 pass (body < 8 KiB), the converter round-trips through the backend's own `normalize_flow_payload`, ruff clean, migration applied (catalog gap-free 1–69). No new agents/tools — this is a new skill + guide + demo prompt; frozen installs pick up the demo prompt after a `migrate`/rebuild.
+
+- **Added the ESP32 Template Project — a Standalone, GitHub-Ready ESP32 Firmware Baseline for ESP32er — 2026-05-31** — A new independent project, **ESP32TemplateProject** (scaffolded at `C:\Development\ESP32TemplateProject`, intended home `https://github.com/XAIHT/ESP32TemplateProject`), gives **ESP32er** the same kind of known-good baseline that the STM32 Template Project MCP gives STM32er — but built to ESP32er's grain. Where STM32er drives a separate MCP server (STM32CubeIDE has no unified CLI), ESP32er drives the **`pio` CLI directly**, so the ESP32 template is a **plain PlatformIO project, not a server**: a generic `esp32dev` / Arduino-framework project whose `src/main.cpp` blinks the onboard LED (GPIO 2) and prints `LED ON` / `LED OFF` over serial at 115200 baud, with `BLINK_LED_PIN` / `BLINK_INTERVAL_MS` exposed as `platformio.ini` build flags. It ships the standard PlatformIO layout (`src/`, `include/`, `lib/`, `test/`), an MIT `LICENSE`, a `README.md` and `CHANGELOG.md`, a GitHub Actions CI workflow that compiles the firmware on every push so it never silently rots, and one-shot **publish-to-GitHub** helpers (`scripts/create_github_repo.ps1` / `.sh`) that wrap the `gh` CLI to `git init` → commit → `gh repo create` → push in a single command. ESP32er can either point at a checkout (set `project_dir`, then run `build` / `upload` / `monitor` / `monitor_session`) or scaffold an equivalent from scratch (`action: create_project`); this repo is the maintained reference shape that scaffold produces. Verified to build clean with **PlatformIO Core 6.1.19** (produces `firmware.bin` + `firmware.elf`). Documented in full in this book's new bonus chapter **§58 — The ESP32 Template Project**, with a matching Glossary entry.
+
+
+
+- **Pythonxer — Strict Correctness Gate + It NEVER Dead-Ends a Flow — 2026-05-29** — Two deliberate behaviour changes to the **Pythonxer** agent, both at the user's emphatic request. **First, a strict pre-execution correctness gate.** Before Pythonxer runs a single line it now (a) `compile()`-parses the script — a script that doesn't even parse is *refused outright*, logged with the exact line/column/snippet, and never executed; then (b) validates with Ruff, and when `ruff_blocking` is true (the new default) **any** real Ruff finding *aborts execution* with `⛔ RUFF FAILED` and the `[Ruff]` findings written to the log. Previously Ruff ran but its result was discarded ("non-blocking"), so a broken script ran anyway. Ruff being absent or timing out *fails open* — the `compile()` syntax floor still protects you — and setting `ruff_blocking: false` restores the old advisory behaviour (findings logged, script still runs). **Second — and this is the part that changes flow design — Pythonxer now ALWAYS triggers its downstream/output agents, no matter what:** success, a gate refusal, *or* a runtime failure. The old "exit code 0 → start downstream, non-zero → skip" gating is *gone* for Pythonxer; the exit code (0/1) still drives the LED and the Multi-Turn fix-and-retry loop, but it no longer decides whether the next agent starts. Pythonxer never silently dead-ends a flow again — and because downstream always fires, **conditional branching must now be done by a downstream agent reading Pythonxer's result/log** (a Forker/Raiser on a marker the script printed), not by relying on Pythonxer to skip. Riding along: a failed *wrapped* Pythonxer run (`chat_agent_pythonxer`) now tells the Multi-Turn LLM to read the log, rewrite the script in full, and retry — fix → re-ruff → re-run until it passes — closing the loop end-to-end (the repetition breaker blocks identical re-sends, so only a *corrected* script proceeds). And `build.py` now hard-verifies `ruff --version` against **both** the build Python and the frozen-agent Python so the strict gate is guaranteed to have Ruff in frozen *and* source modes. The `agentic_skill.md` (FlowCreator's reference), `agents_descriptions.md`, `docs/claude/agents.md`, `KIMI.md`, and this book's catalog rows were all updated so the AI flow-designer no longer assumes downstream is skipped on failure. Frozen installs need a `python build.py` to pick this up.
+
+- **`execute_file` — The Window Opens Only When YOU Ask, and a Broken Script No Longer Reports "Success" — 2026-05-29** — A real, evidence-backed fix (diagnosed from `tlamatini.log`, not from theory) for a frustrating Multi-Turn behaviour: you'd ask Tlamatini to run a script "in a foreground window", no window would open, and she'd cheerfully report success anyway. The root cause was that Multi-Turn deliberately suppresses visible consoles (so background tool calls don't litter your desktop with windows), and `execute_file` had no way to opt back out — every launch silently went headless, and the result string said "executed successfully in a new terminal window" regardless. The fix puts the choice back in **your** hands: `execute_file` gains a `foreground` flag, and the tool's instructions tell the LLM to set it **only when you explicitly ask for a visible / foreground / forked window** — *if you say nothing, the script runs in the background with no window* (your stated rule). On top of that, before launching a `.py`/`.pyw` file Tlamatini now `compile()`-checks it: a script with a syntax error is **not launched** — instead she returns the exact error (line, column, snippet) and rewrites it, rather than firing a broken file into a window and calling it done. And the result text is now honest: "Launched … (confirms the launch, not that the script ran to completion)", never a false "executed successfully". The change is confined to `agent/tools.py` (two functions); `execute_command`'s analogous behaviour was intentionally left alone. Frozen installs need a `python build.py`.
+
+- **Added the "Ask Execs" Toggle — Approve Every Multi-Turn Execution Before It Runs — 2026-05-29** — A fifth chat-toolbar checkbox, **Ask Execs**, sits between **ACPX** and **Add internet context** and turns Multi-Turn into a human-in-the-loop operator: when it is on, Tlamatini *pauses before every state-changing Tool / MCP / Agent* and shows a modal dialog (the same look-and-feel as every other Tlamatini dialog) naming exactly what is about to execute — the Tool/MCP/Agent and its kind, the underlying tool name, the **parameters of execution**, the **program to be executed**, and the **shell to be executed** — with **Proceed** (green) and **Deny** (red) buttons. **Proceed** runs that step and the chain continues (prompting again at the next step); **Deny** halts the *entire* chain immediately and the answer carries back the prose so far, the **Exec Report** tables of whatever already ran (only if Exec Report is also ticked), and — *always* — a big red **⛔ "Execution interrupted"** banner naming the exact Tool/MCP/Agent you denied plus its program, shell, and parameters. It is a **Multi-Turn-only modifier**: the checkbox is disabled and greyed until Multi-Turn is ticked, and every backend read gates it on `multi_turn_enabled` (exactly like Exec Report); unticked, behaviour is byte-for-byte the legacy Multi-Turn flow. Read-only / polling tools (`chat_agent_run_status`, `chat_agent_run_log`, `get_current_time`, `window_present`, …) are *not* prompted — they only observe. The hard part is architectural: the Multi-Turn executor is **synchronous** and runs in a worker thread, so it cannot `await` a browser reply. A new module **`agent/exec_permission.py`** (`ExecPermissionBroker` + a user-id-keyed registry) bridges the gap — the executor emits an `exec_permission_request` frame onto the consumer's event loop via `asyncio.run_coroutine_threadsafe` and **blocks on a `threading.Event`** until the browser's `exec-permission-response` (routed through `consumers.receive` → `resolve_permission`) sets it. The round-trip is **fail-safe**: an emit failure, a mid-flight Cancel, or a broker `close()` (browser disconnected) all resolve to **Deny**, so an unconfirmed action never runs, and the wait loop polls `cancel_generation` on a short tick so a Cancel never deadlocks the thread. The flag is threaded through the *same* `UnifiedAgentChain.invoke` payload-rebuild whitelist that once dropped `exec_report_enabled` — `ask_execs_enabled` **and** `conversation_user_id` (the executor finds its broker by user id) must stay in it — and the denial detail flows executor → both chains → `interface.ask_rag` (`global_state['last_exec_report_denied']`) → consumer → `services/response_parser` which appends the banner *after* the Exec Report tables but *before* `save_message` (so a chat reload restores it; the banner is independent of the Exec Report toggle). The gate is placed *after* dedup + quota in the tool loop, so skipped calls never prompt, and only already-executed tools land in the Exec Report (the denied one never ran). Surfaces moved in lock-step: `agent_page.html` (checkbox `#ask-execs-enabled` + the `#exec-permission-dialog-message` dialog), `agent_page_state.js` (`isAskExecsEnabled`/`persist`/`applyStored`/`syncAskExecsAvailability`, availability tied to Multi-Turn), `agent_page_init.js` (sends `ask_execs_enabled`, wires the checkbox, re-syncs on Multi-Turn change), `agent_page_dialogs.js` (`showExecPermissionDialog` — Proceed[green]/Deny[red], titlebar-X hidden + Esc off, close==Deny, idempotent decision), `agent_page_chat.js` (the `exec-permission-request` handler), `agent_page.css` (`.exec-denied-*` banner + `.exec-perm-*` dialog + `.toolbar-toggle-disabled`), and `eslint.config.mjs` globals. One gotcha worth knowing: both `exec-permission-response` frames include a `message` key because `consumers.receive` reads `text_data_json['message']` unconditionally before branching. Coverage: 20 new tests (`ExecPermissionBrokerTests`, `AskExecsExecutorGateTests`, `AskExecsHelperTests`, `AskExecsDenialBannerTests`, `AskExecsChainPropagationTests`) — ruff + ESLint clean (0 errors); source and frozen need no `build.py` change (everything is read at runtime). No new agents/tools/skills — counts unchanged; this is a chat-safety modifier, not new capability.
+
+- **STM32 HIL Observatory Demo — Honest About the Discovery Board's Unbridged Serial Port — 2026-05-27** — A live run of the third STM32er catalog demo, **#65 STM32 HIL OBSERVATORY**, on a real **STM32F407G-DISC1** surfaced a board-specific flaw in the demo *as written* — not a bug in the agent. The board flashed perfectly (the green LED blinked) and the firmware was provably running: the `live_monitor` step read the global `g_blink_count` climbing 30 → 31 → 32 straight out of the running MCU's RAM over **SWD**. But the demo had made the **serial Virtual-COM-Port boot-banner read a *primary* proof step**, and that read returns **zero bytes forever** on this board, because **the STM32F4-Discovery family's on-board ST-LINK does not internally bridge its USB Virtual COM Port to any of the target STM32F407's USART pins** — *unlike ST Nucleo boards, which wire VCP ↔ USART2 on PA2/PA3*. A firmware printing on USART2 has nowhere to send those bytes on the Discovery PCB. With no "an empty VCP read is expected here, do **not** retry" guidance, the model thrashed — about six `serial_session` retries with escalating timeouts (5/6/8/10/12 s, even injecting a newline), plus `serial_connect` / `serial_read` and a stray `reset`: 21 STM32er calls for what should have been ~9. The fix (migration **`0104_fix_stm32er_hil_serial_proof.py`**, a content-only rewrite of prompt #65 via `update_or_create`) makes the demo honest about the hardware: the **SWD `live_monitor` read is now the *primary*, authoritative hardware-in-the-loop proof** (it works on any ST-LINK board, no wiring), the **serial VCP read is demoted to a best-effort, board-aware, at-most-once bonus** (the prompt states the VCP-not-routed fact up front, calls an empty read *expected*, and forbids the retry/connect-read loop), and the **"✅ SILICON VERIFIED" verdict is re-keyed on build + flash + live-memory** so the demo reaches a clean success on a bare Discovery board. **To actually exercise the serial banner**, the user must **bridge the port themselves** with an external USB-to-UART (USB-TTL) adapter — cross-wire adapter **RX ← PA2 (USART2_TX)**, adapter **TX → PA3 (USART2_RX)**, **GND ↔ GND** — and aim `serial_session` at *that adapter's* COM port; on a Nucleo board the on-board VCP already carries it. Docs updated in lock-step (README §3 STM32er callout, this book's agent-catalog row); the running frozen install's `agent_prompt` row 65 was patched directly so the corrected prompt is live without a rebuild (prompts are read fresh from the DB on each catalog selection — no restart needed).
+
+- **Added STM32er Agent — Zero-Config STM32 Firmware Bridge with a Fail-Safe Preflight — v1.9.0, 2026-05-26** — The agent catalog grows to **68** with **STM32er**, Tlamatini's bridge to the **STM32 Template Project MCP** (`https://github.com/XAIHT/STM32TemplateProjectMCP`) — a FastMCP stdio server that scaffolds, builds, flashes, and observes STM32F407VG firmware. STM32er talks to it through a **self-contained inline MCP stdio JSON-RPC client** (no `mcp` dependency in the agent-pool subprocess, the same self-contained discipline as ACPXer / Windower / Kalier), so it works identically in source and frozen builds. Its `action` field selects ONE capability per run from the **23 MCP tools** plus two convenience composites (`serial_session`, `live_monitor`) and two meta-actions (`bootstrap`, `validate`). Two pillars make this agent special. First, **zero-config auto-bootstrap**: the on-disk `server_script` now defaults to *empty*, and when it is empty STM32er **downloads the MCP itself** — a shallow `git clone`, falling back to the GitHub zip when git isn't installed — into `%LOCALAPPDATA%/Tlamatini/STM32TemplateProjectMCP`, pip-installs `mcp` + `pyserial` if they're missing, and validates the result. The net effect is that a user installs **only STM32CubeIDE and Tlamatini** and everything else materializes on first use (new `action: bootstrap`; new `config.yaml` keys `auto_bootstrap` (default true) / `mcp_repo_url` / `mcp_ref` / `mcp_install_dir` / `auto_update` / `pip_install`; new `config.json` globals `stm32_mcp_server_script` (now `""`) / `stm32_mcp_repo_url` / `stm32_mcp_install_dir`). Second — and this is the part that matters for anyone flashing real silicon — a **safety preflight, the critical-mission fail-safe**: before any compile or flash, STM32er validates the compiler, CubeIDE, `make`, the programmer, the ST-LINK driver *and* a connected probe, and the device family, and it **REFUSES rather than mis-build or mis-flash**. The hardware requirement is conditional and honest about it: a *compile* needs no board at all, while *flash / erase / reset / serial / SWD / `live_*`* require a connected ST-LINK, and a cross-STM32F-family device is refused outright (new `action: validate`; new `config.yaml` keys `preflight` (default true) / `device`). The MCP template is still STM32F407VG-specific, so STM32er safely refuses other families — a multi-family fork is future work, deliberately scoped out rather than half-supported. It emits one atomic `INI_SECTION_STM32ER<<<` block and ALWAYS triggers `target_agents`, so a downstream Forker can branch on the result. Two surfaces ship in lock-step, the same dual pattern as Playwrighter / Unrealer / Windower / Kalier: the visual **STM32er** canvas node and the wrapped Multi-Turn tool **`chat_agent_stm32er`** (the LLM passes the operation as a free-form key=value request). Wiring follows the established 8-step agent pattern, with the Agent and Tool rows added via migrations `0101` / `0102`; `requirements.txt` now pins `pyserial==3.5` (`mcp==1.25.0` was already present). Three new seeded demo prompts via migration `0103` show the surface off across difficulty tiers — **63 STM32 GENESIS**, **64 STM32 BLINKY**, and **65 STM32 HIL OBSERVATORY** (the third a genuine real-hardware hardware-in-the-loop run). Coverage: 122 tests, and the whole thing was verified **zero-config end-to-end — download → build → flash → reset — on a real STM32F407G-DISC1**. Wrapped chat-agent count moves to **43**.
+
+- **Self-Knowledge & Self-Modification — Tlamatini Learns Who She Is and Can Read Her Own Source — 2026-05-25** — Tlamatini's-AutoBot turned the assistant's attention inward, in two cooperating moves committed back-to-back (`a927f5c` then `2aab751`) and authored by the bot itself. The first is a **self-knowledge map**: a new file `Tlamatini/agent/Tlamatini.md`, written in the first person, that tells the LLM exactly who and what she is — the two runtime modes (frozen next to the `.exe` vs. source under `Tlamatini/agent/`) and how to tell which one she is running in, the ports she opens (`8000` for the web app, `8765` for the System-Metrics MCP, `50051` for the Files-Search gRPC service), her main pages, her tech stack, the full sweep of her capability surface, and how she might go about improving herself. Its audience is the LLM alone — so, unlike everything else she emits, it deliberately does **not** follow `prompt.pmt`'s HTML / contrast styling rules; it is private self-reference, never rendered to a user. The map reaches the model through a new `<self_knowledge>{self_knowledge}</self_knowledge>` block in `prompt.pmt`, filled in at prompt-build time by `agent/rag/config.py`: the constants `SELF_KNOWLEDGE_FILENAME='Tlamatini.md'` and `SELF_KNOWLEDGE_PLACEHOLDER='{self_knowledge}'` anchor the contract, `_load_self_knowledge_block(application_path)` reads the file and brace-escapes it (`{`→`{{`, `}`→`}}`) so its embedded code snippets can't collide with the f-string template's own variables, and the whole thing **fails open** — a missing, empty, or unreadable file degrades to a short literal notice and never raises. The substitution happens once, at the single prompt-load site in `load_config_and_prompt()`, so every chain inherits it for free (basic, history-aware, unified, and prompt-only) with no new input variable threaded through the pipeline. The file resolves from the application directory exactly the way `prompt.pmt` and `config.json` already do — the install root beside the executable in frozen mode, `Tlamatini/agent/` in source mode — and `build.py` ships it both via `--add-data` *and* by copying it to the install root so frozen resolution next to the exe always finds it. The renumbered identity rules in `prompt.pmt` now tell her to consult it whenever a prompt concerns who or what she is, her architecture / modes / ports / pages / internals, or improving herself. The second move gives that last clause real teeth: a new **optional** directory `Tlamatini/agent/TlamatiniSourceCode/` that, when present, carries Tlamatini's own source tree so she can read, inspect, and modify herself. This is a *second capability axis*, independent of the frozen-vs-source one — present means a "self-able-modify" build, absent means "not-self-able-modify" — and it ships only when `build.py` is invoked with the new `--self-modify` flag, which copies the tree recursively to the install root (so it resolves like `prompt.pmt`); without the flag the directory is omitted entirely, and the build announces which way it went with a `Self-modify build : YES/no` line. `prompt.pmt` is explicit about the discipline here: she must **always verify the directory actually exists** — e.g. a quick Multi-Turn directory listing — before claiming she can read or edit her own code, and if it is absent she says so plainly and falls back to the injected self-knowledge block plus her docs. Riding along in the same window (commit `1f36217`) is a quieter but consequential bump: the Multi-Turn iteration ceiling, `unified_agent_max_iterations` and the matching executor defaults, was raised from **256 to 4096**, giving long autonomous flows far more room before they hit the turn limit. (One number that did *not* move: the separate 256 tool-quota hard-stop is a different cap and stays at 256.) No new agents, tools, or skills — counts hold at **67** agents / **42** wrapped chat-agents / **74** Multi-Turn tools / **24** skills; this release is about Tlamatini knowing herself and, when built for it, being able to reach in and change herself.
+
+- **Nested-Directory Context via the Native Folder Picker — 2026-05-25** — The chat **Context ▸ Set directory as context** action can finally load a project that lives at *any* depth under the app root, not just a top-level folder. The culprit was the browser's `showDirectoryPicker()`, which for privacy reasons hands JavaScript only the *leaf* folder name — never the real absolute path — so a deeply nested project couldn't be resolved on the backend. The fix swaps that browser API for a real backend **native Win32 folder picker**: a new `views.pick_context_directory_view` behind the `pick_context_directory/` route opens the OS folder dialog and returns the genuine absolute path, while `path_guard.is_within_application_root()` and `resolve_runtime_agent_path` were loosened to accept the application root **or any descendant of it** rather than only the root itself. On the frontend, `agent_page_init.js` now fetches that endpoint, with a graceful manual-entry fallback for non-Windows hosts where the native dialog isn't available. Net effect: point Tlamatini at `…/big-monorepo/services/auth/src` and she actually indexes *that* directory, not a path she had to guess from a bare folder name.
+
+- **Loaded-Context Priority — She No Longer Summarizes Herself by Mistake — 2026-05-25** — A subtle interaction fell out of the new always-injected `<self_knowledge>` block: when a user loaded a project as context and then asked something generic like "summarize the project" or "summarize the source code" or "summarize the provided context", Tlamatini sometimes summarized *herself* (her own freshly-injected self-knowledge) instead of the code the user had actually loaded. The fix makes the user-loaded `<context>` decisively outrank the always-on `<self_knowledge>` for those generic requests. It lands as a coordinated trio: a new **"Loaded-context priority"** clause in `prompt.pmt`'s Rule 5, a matching **"CRITICAL SCOPE"** clause on the `self_knowledge` block telling her that block is only about *herself* and is not the subject of a generic "summarize what I gave you" request, and a deterministic scope header emitted by `agent/rag/utils.py::prepend_loaded_context_scope()` that is applied uniformly across all four chains (history-aware, both unified chains, and basic). So "summarize the provided context" now reliably means the project on the table — not the assistant reading it.
+
+- **The Extended Unreal MCP Plugin Has a Public Home — `XAIHT/XaihtUnrealEngineMCP` — 2026-05-24** — The improved Unreal Engine MCP plugin the **Unrealer** agent targets — the one that grew the System / Level / Asset / Material command families and the `take_screenshot` / `focus_viewport` / `set_pawn_properties` / `find_blueprint_nodes` verbs on top of the canonical `chongdashu/unreal-mcp` base — is now published as **the Unreal Engine MCP modified specifically for Tlamatini** at **`https://github.com/XAIHT/XaihtUnrealEngineMCP.git`**. It is the build we recommend and develop against: a drop-in for the upstream (identical wire protocol, identical `127.0.0.1:55557` port, identical `UnrealMCP` plugin-folder name), and the source of the full **53-verb, nine-category** surface that the bonus chapter §57 and the seeded demos `idPrompt 60/61/62` exercise. Install the upstream alone if you only need the base 28 verbs; install this fork for everything from in-editor Python (`execute_python`) to material authoring. Nothing in Tlamatini's client changes — the docs now name this fork as the canonical "MCP git location" across README §6.2, this book's §57.1 / §57.2 / §57.5 / glossary, `agents_descriptions.md`, `docs/claude/agents.md`, `agentic_skill.md` #60, and `KIMI.md`. Doc-reference pass only — no code, agent, or migration changes.
+
+- **Unrealer Grows Up — the Full 53-Command Unreal MCP Surface + Three New Demos — 2026-05-24** — The **Unrealer** agent learned everything the *improved* Unreal MCP plugin can now do. Where it originally spoke the base 28-verb surface (editor / blueprint / node / project / umg), the plugin fork it targets grew four whole new command families — **system** (`execute_python`, the universal in-editor escape hatch that reaches all of UE5's `unreal` Python API, plus `execute_console_command`, `get_class_info`, `list_assets`), **level** (`open_level` / `new_level` / `get_current_level` / `save_current_level` / `save_all`), **asset** (`import_asset` / `duplicate_asset` / `rename_asset` / `delete_asset` / `save_asset` / `create_folder`), and **material** (`create_material` / `create_material_instance` / `set_material_parameter` / `assign_material`) — plus new editor/blueprint/node verbs (`take_screenshot`, `focus_viewport`, `create_actor`, `set_pawn_properties`, `find_blueprint_nodes`). That is **53 verbs across nine categories**. Because `unrealer.py` forwards whatever `command` + `params` you give it, the agent needed no new verbs — but it gained three defensive fixups so the new commands actually work from chat and canvas: content-path normalization now covers the asset/material path params (while leaving real *disk* paths like `import_asset`'s `source_file` and `take_screenshot`'s `filepath` untouched); `params.console_command` is remapped to the wire's `params.command` for `execute_console_command` (whose param name would otherwise collide with the agent's own `command:` selector); and the catalog of placeholder params each new command needs (added to `config.yaml` so the Flow Compiler's dotted `params.X` overrides resolve into existing leaves) is pruned of empty placeholders before the command is sent. Three new seeded demo prompts show the surface off: **`idPrompt=60` Unreal Snapshot** (basic — spawn → `take_screenshot` → save, the observe→act loop), **`idPrompt=61` Unreal Scene Forge** (medium — folder → material → instance → tint → spawn → assign → screenshot → save), and **`idPrompt=62` Unreal Python & Introspection** (hard — console → reflect → list → `execute_python` → screenshot). One boundary worth knowing: the plugin's *headless* tools (`build_project` / `run_automation_tests` / `run_macro`) are **not** part of this editor socket — they shell out to `UnrealEditor-Cmd` and are unreachable from Unrealer; chain Unrealer nodes through a Parametrizer for the `run_macro` equivalent. Docs refreshed end-to-end (README §6, `agents_descriptions.md`, `agentic_skill.md`, `docs/claude/agents.md`, this book's bonus §57), coverage in `agent/test_unrealer_agent.py` (29 tests), migration `0100_add_unrealer_extended_demo_prompts.py` (catalog now contiguous 1-62). Agent count unchanged at **67** — this is reach, not a new agent.
+
+- **Kalier "Embedded Client" — Configure the Kali Box Once (v1.7.1) — 2026-05-23** — A usability refinement that turns the chat-side Kalier experience into "set it once, then just ask." Before this, every Multi-Turn pentest prompt had to spell out the Kali box URL (*"using Kali at http://127.0.0.1:5000, run an nmap…"*) — the same friction as Claude Desktop's `client.py --server http://IP:5000`. Now **Tlamatini itself is the embedded MCP-Kali-Server client**: a new top-level **`kali_server_url`** key in `config.json` (default `http://127.0.0.1:5000`, a non-secret that works out of the box for WSL2 localhost-forwarding or an SSH tunnel) is editable through the navbar's **`Config ▸ URLs → Kali server (Kalier)`** dialog, and the wrapped **`chat_agent_kalier`** tool auto-injects it as the default `server_url` on every run. So *"scan 10.0.0.5 and give me a report"* now Just Works — the user (and the LLM) never repeats the address. The injection happens in **`tools.py::_seed_global_agent_defaults(template_dir, runtime_config)`**, called from `_launch_wrapped_chat_agent` **before** the LLM's per-call assignments are applied, so an explicit `server_url=` in the request still wins (override a one-off box); it is Kalier-only, reads via `get_config_value`, and **fails open** (a blank/None/broken config read leaves the template default — a config error must never crash a wrapped-tool launch). Plumbed end-to-end: `views.CONFIG_URL_KEYS` + `CONFIG_URL_URL_FIELDS` register the key, `agent_page.html` adds the `data-config-key="kali_server_url"` input, and the registry `purpose` flipped from "ALWAYS pass server_url" to "DO NOT pass server_url normally — Tlamatini injects the configured box; only override for a one-off." The standalone canvas **Kalier** node and its `config.yaml` are **unchanged** — `.flw`/canvas runs still set `server_url` in the node dialog. A new repo-root guide **`Tlamatini-Kali-Setup.md`** documents the zero-client walkthrough (the legacy Claude-Desktop path lives on in `Claude-Desktop-KALI-MCP-Session.md`). Coverage: `EmbeddedClientConfigTests` + `EmbeddedClientEndpointTests` in `agent/test_kalier_agent.py` (25 new tests; that module now 83 green), ruff clean. Agent / tool / skill counts unchanged (**67** agents / **74** Multi-Turn tools / **42** wrapped / **24** skills) — this is a configuration-UX refinement, not new capability. **⚠️ Authorized targets only.**
+
+- **Added Kalier Agent — The Kali Linux / MCP-Kali-Server Bridge — 2026-05-22** — The agent catalog grows to **67** with **Kalier**, Tlamatini's integration of the **MCP-Kali-Server** (`https://www.kali.org/tools/mcp-kali-server/`) for AI-assisted **penetration testing, recon, and CTF solving**. The upstream project ships two halves — `server.py` (a Flask HTTP API that runs ON the Kali box exposing `/api/command`, `/api/tools/{nmap,gobuster,dirb,nikto,sqlmap,metasploit,hydra,john,wpscan,enum4linux}`, and `/health`) and `client.py` (a thin FastMCP stdio bridge that just forwards to that API). Kalier talks **directly to the Flask API over HTTP using only the Python stdlib (`urllib`)** — exactly like Apirer — so it is fully self-contained, needs no `requests`/`mcp` packages in the agent-pool subprocess, and works identically in source and frozen builds (it does NOT import `agent.*` or the mcp-kali-server code, the same self-contained discipline as ACPXer/Windower). Point `server_url` at the running API server (default `http://127.0.0.1:5000`; for a remote Kali box tunnel it with `ssh -L 5000:localhost:5000 user@KALI_IP`). The `action` field selects ONE capability per run: `command` (any shell command on the Kali box), `nmap`, `gobuster`, `dirb`, `nikto`, `sqlmap`, `metasploit`, `hydra`, `john`, `wpscan`, `enum4linux`, or `health` (probe the server + which tools are installed). It captures the tool's stdout/stderr into one atomic `INI_SECTION_KALIER<<<` block (header `action`, `endpoint`, `method`, `subject`, `return_code`, `success`, `timed_out`, `server_url`; body = the tool output) and ALWAYS triggers `target_agents` (success OR failure) so a downstream Forker can branch on `{success}` / `{return_code}`. Two surfaces ship in lock-step, the same dual pattern as Playwrighter/Unrealer/Windower: the visual **Kalier** canvas node and the wrapped Multi-Turn tool **`chat_agent_kalier`** (the LLM passes the operation as a free-form key=value request; metasploit `options` may be passed as a JSON string). Wiring follows the established 8-step agent pattern: migrations `0097_add_kalier` (Agent row) + `0098_add_chat_agent_kalier_tool` (Tool row); `views.update_kalier_connection_view` + the `POST /update_kalier_connection/<agent_name>/` route; Parametrizer source fields registered in `agent/services/agent_contracts.py` (`_PARAMETRIZER_OUTPUT_FIELDS` + a builtin contract with `secret_paths=('password',)` so the hydra single-password is redacted from `.flw` exports) and `parametrizer.py` (`SECTION_AGENT_TYPES`); `_EXEC_REPORT_TOOLS` under `agent_key="kalier"` (state-changing — it runs live offensive tooling); planner capability hints in `capability_registry.py` so it out-scores generic `execute_command`/`apirer` on pentest prompts; the canvas gradient — deliberately the **only monochromatic ramp** in the whole 67-agent palette: a single-hue black→neon-green "matrix terminal" ramp (`#000000` → `#00471B` → `#00892A` → `#39FF14`). Because every other agent is a multi-hue gradient, a single-hue black→neon ramp is structurally unmistakable at a glance, the black-terminal/neon-green aesthetic is the canonical Kali offensive-security cliché, and the black base keeps it clear of both the mid-green agents (Starter/Whatsapper/Mongoxer) and the red+green agents (Mouser/J-Decompiler/FlowCreator); the four ACP JS files plus the `eslint.config.mjs`-style cross-file global; FlowCreator (`agentic_skill.md` #66) and FlowHypervisor (`monitoring-prompt.pmt` KALIER SPECIAL NOTES — a silent scan up to ~3 min is normal, `success:false`/`timed_out:true` is routable content not an error, only "Cannot reach MCP-Kali-Server" is a real fault). It is an Action agent (starts downstream). Wrapped chat-agent tools move to **42** and total Multi-Turn tools to **74** (20 core + 42 wrapped + 12 ACPX/Skill). The skill catalog also grows to **24** with a new `kali-pentest` SKILL.md — the chat-surface procedural runbook companion (authorized scoped assessment: health → nmap recon → service enumeration → confirm-then-exploit), the same agent+skill dual pattern as Reviewer→code-review and Analyzer→security-audit. **⚠️ Authorized use only** — Kalier is a thin transport to offensive-security tooling; the operator is responsible for ensuring every target is owned or explicitly in-scope. Verified end-to-end: ruff clean, ESLint 0 errors, both migrations applied, `manage.py check` clean, 19 targeted tests (Exec-Report + flow contracts) green, and the planner selects `chat_agent_kalier` on pentest prompts. Reference companions live in README §3.14 + §9.5, `agents_descriptions.md`, `docs/claude/agents.md`, and `agentic_skill.md` entry #66.
+
+- **Playwrighter "Hold the Browser Open" Knob — 2026-05-21** — Fixes a reported bug where Playwrighter closed the browser the *instant* the last step finished, so a user running the **BROWSER SPOTLIGHT** demo with "please wait 10 seconds before closing the browser so I can see it" never got to watch anything — the whole `headless=false` run flashed by in ~2 seconds. The root cause was that `run_browser_flow`'s `finally` block tore the browser down with no delay, and the only way to linger was for the LLM to *happen* to append a `{"action":"wait"}` step (it didn't, and depending on that is fragile). The fix adds a dedicated **`hold_open_seconds`** knob (with **`hold_open_ms`** as a finer-grained alias that wins when both are set) that the agent honors *after* the last step and *before* it closes the browser — on success **or** a mid-flow error, since a failed run is exactly when you want to look at the screen. It is honored regardless of `headless` (harmless when `headless=true`). Because the wrapped-tool config writer only accepts request keys that already exist in `config.yaml`, both fields were added to `agent/agents/playwrighter/config.yaml` (default `0` = close immediately); a new `_coerce_int` helper means a malformed value can never abort an otherwise-good run. Five surfaces move together so the capability is discoverable and reachable: the pool agent (`playwrighter.py`), the template `config.yaml`, the wrapped-tool `purpose` in `agent/chat_agent_registry.py` (which now tells the LLM to pass `hold_open_seconds=<N>` whenever you ask it to keep the browser open / wait before closing), the Create-Flow node mapping in `agent_page_chat.js`, and migration `0095`'s **BROWSER SPOTLIGHT** (#53) + **BROWSER WIZARD** demos (now `hold_open_seconds=10`). Six new tests land in `agent/test_playwrighter_agent.py` (60 total green); ruff + ESLint clean. Agent/skill counts unchanged (**66** / **23**) — this is a behavioural fix, not new capability. Note for existing frozen installs: the agent files were patched on disk so the linger works immediately, but the LLM only *automatically* maps natural-language "wait 10 seconds" → `hold_open_seconds` after a rebuild (the tool description + demo prompts are baked into the executable); until then, include `hold_open_seconds=10` explicitly in the request.
+
+- **Catalog-of-Prompts Demos & Full Test Suites for Windower + Playwrighter — 2026-05-21** — Two follow-ups that make the desktop/browser pair *demonstrable* and *regression-proof*. First, migration `0095_add_windower_playwrighter_demo_prompts.py` seeds **four new fancy demo prompts** into the Catalog of Prompts (the chat **Prompts** dropdown), two per agent — one basic, one medium — each designed so the agent *physically performs on screen* while the user watches: **51 WINDOW SPOTLIGHT** (Windower basic — launch Notepad, maximize it to the foreground, `list`, close) and **52 WINDOW CHOREOGRAPHY** (Windower medium — restore → arrange left half → right half → top-left quadrant → explicit `move_resize` → enumerate every window → close, one move per call so the window visibly dances around the screen); **53 BROWSER SPOTLIGHT** (Playwrighter basic — open `example.com` with `headless=false` so the real browser is visible, extract the heading, assert the link, full-page screenshot) and **54 BROWSER WIZARD** (Playwrighter medium — a multi-step Wikipedia search with `headless=false`: fill the search box → click → wait for the article → extract the title + first paragraph → assert → screenshot). Each prompt renders the agent's house-style HTML report (banner in the agent's own canvas gradient + an `exec-report-table` + a closing banner, all WCAG-contrast-safe per the Prime Directive) and reminds the user to tick **only the Multi-Turn checkbox** — NOT ACPX, because `chat_agent_windower` / `chat_agent_playwrighter` are standard wrapped Multi-Turn tools, not behind the ACPX/Skill surface (unlike the 0090 Reviewer/Analyzer *skill* demos). The four prompts **append** at slots 51-54 with no renumber, preserving the catalog's gap-free `prompt-1..54` contiguity contract (the dropdown breaks at the first missing slot); forward+reverse migration round-trips were verified clean. Second, two comprehensive automated test suites land: `agent/test_windower_agent.py` (**54 tests**) and `agent/test_playwrighter_agent.py` (**54 tests**), both following the established `test_de_compresser.py` pattern — the pool-agent module is loaded via `importlib.util.spec_from_file_location` with a cwd save/restore, and the Win32 API / a real browser are NEVER touched (Windower's `enum_windows` + `win32gui` are mocked; Playwrighter runs against a fake `playwright.sync_api` injected into `sys.modules`). They cover title-matching modes, arrange/tile geometry, the `AttachThreadInput` focus dance, every Windower action verb and every Playwrighter step verb, the `main()` end-stage contract (downstream always triggered + exactly one INI_SECTION block), and full registry/contract/migration integration. Verified: ruff clean, ESLint 0 errors, all 108 new tests green (162 with the related suites), no migration drift. Agent/skill counts unchanged (**66** / **23**) — this is demonstration + test hardening, not new capability.
+
+- **Added Windower Agent — The Win32 Window Manager — 2026-05-21** — The agent catalog grows to **66** with **Windower**, the third member of the desktop-UI trio: where **Mouser** clicks inside a window and **Keyboarder** types into one, **Windower** manages the *window itself*. On trigger it locates an application window by title — `match_mode` ∈ `substring` (default) / `exact` / `regex`, with `match_index` to pick among same-titled windows — and runs exactly ONE window-lifecycle operation: `focus` (raise / bring to front), `minimize`, `maximize`, `restore`, `move`, `resize`, `move_resize`, `close` (by title), `topmost` / `untopmost` (always-on-top), or `arrange` (snap / tile to a screen region: left / right / top / bottom halves, the four quadrants, center, or full). It can also `list` every open window with its position, size, and state. It is **deterministic** (no LLM), implemented **self-contained on the Win32 API** (pywin32 — `win32gui` / `win32con` / `win32process` — plus `ctypes`), porting the window-management subset of Microsoft's **Windows-MCP** (`https://github.com/CursorTouch/Windows-MCP`) — including the reliable cross-process focus-transfer **`AttachThreadInput`** dance that lets a background process raise a foreground window without the OS rejecting the request. It emits one atomic `INI_SECTION_WINDOWER<<<` block (header `action`, `window_title`, `matched`, `match_count`, `state`, `left`, `top`, `width`, `height`; body = a result description or the formatted window list), so Parametrizer can chain its output (e.g. read `state` / geometry) into a downstream agent, and it ALWAYS triggers `target_agents` (success OR failure) so a Forker can branch on `{matched}` / `{state}`. Two surfaces ship in lock-step, the same dual pattern as Playwrighter and Unrealer: the visual **Windower** canvas node (`config.yaml` fields `action`, `window_title`, `match_mode`, `match_index`, `pos_x`, `pos_y`, `width`, `height`, `arrange_mode`, `activate_after`, `fail_if_absent`, `target_agents`) and the wrapped Multi-Turn tool **`chat_agent_windower`** (the LLM passes the operation as a free-form key=value request). It is **state-changing** (it moves, resizes, focuses, and closes real windows), so its row appears in the Exec Report. Wiring follows the established 8-step agent pattern: migrations `0093` (Agent row) + `0094` (Tool row); `views.update_windower_connection_view` + the `POST /update_windower_connection/<agent_name>/` route; Parametrizer source fields registered in `agent/services/agent_contracts.py` and `parametrizer.py`; the desktop-UI canvas gradient; the four ACP JS files plus the `eslint.config.mjs` cross-file global. As an Action agent it starts downstream agents. Wrapped chat-agent tools move to **41** and total Multi-Turn tools to **73** (20 core + 41 wrapped + 12 ACPX/Skill). The reference companions live in README §9.5, `agents_descriptions.md`, `docs/claude/agents.md`, and `agent/agents/flowcreator/agentic_skill.md`.
+
+- **Added Playwrighter Agent — Scripted Interactive Browser Automation — 2026-05-20** — The agent catalog grows to **65** with **Playwrighter**, the first agent that drives a *real* browser through a scripted, interactive flow. Where **Crawler** does a one-shot static `urllib` fetch and **Googler** only runs a web search, Playwrighter (built on **Playwright** — Chromium / Firefox / WebKit) walks an ordered list of declarative steps — `goto`, `click`, `dblclick`, `fill`, `type`, `press`, `select`, `check`/`uncheck`, `wait_for`, `wait`, `extract_text`, `extract_attr`, `screenshot`, `assert_visible`, `assert_text`, `download` — so it can log into a site, submit a multi-step form, click through a wizard, scrape a JavaScript-rendered single-page-app behind a login, run an end-to-end UI check, or capture a screenshot of a specific post-interaction state. It is **deterministic** (no LLM), supports a `headless` toggle (set `false` to watch it drive) and `storage_state_in`/`storage_state_out` for carrying a logged-in session across runs, emits one atomic `INI_SECTION_PLAYWRIGHTER<<<` block (`start_url`, `final_url`, `status`, `steps_run`, `assert_result`, plus a `response_body` of extracted values + step trace), and ALWAYS triggers `target_agents` (success OR failure) so a downstream Forker can branch on `{status}` / `{assert_result}` and Parametrizer can pipe scraped data onward. Two surfaces ship in lock-step, the same dual pattern as Unrealer: the wrapped Multi-Turn tool **`chat_agent_playwrighter`** (the LLM passes the whole script as a single JSON string in `steps_json`, because the flat key=value request grammar cannot express a list-of-dicts; the agent `json.loads` it and it wins over the YAML `steps`) and the visual **Playwrighter** canvas node (the YAML `steps` list is the canvas authoring form). Wiring follows the established 8-step agent pattern: migrations `0091_add_playwrighter` (Agent row) + `0092_add_chat_agent_playwrighter_tool` (Tool row); `views.update_playwrighter_connection_view` + URL route; Parametrizer source fields registered in `agent/services/agent_contracts.py` (`_PARAMETRIZER_OUTPUT_FIELDS`, auto-discovered contract) and `parametrizer.py` (`SECTION_AGENT_TYPES`); `_EXEC_REPORT_TOOLS` under `agent_key="playwrighter"` (state-changing — it submits forms, logs in, downloads files); planner capability hints tuned so it out-scores Googler/Crawler only on interactive/authenticated/multi-step prompts; the "Theatre Spotlight" canvas gradient (curtain-violet → spotlight-magenta → peacock-teal → aqua-mint, a nod to Playwright's two-theatre-masks logo, distinct from every other 4-color gradient); the four ACP JS files plus the `eslint.config.mjs` cross-file global. Self-contained pool subprocess: it calls `playwright.sync_api` directly (no `ThreadPoolExecutor` — that is only needed by the in-process `googler` tool, which runs inside Django Channels' asyncio loop). Tool counts move to **72** Multi-Turn tools (20 core + **40** wrapped chat-agent + 12 ACPX/Skill). Verified end-to-end: ruff clean, ESLint 0 errors, both migrations applied, 19 targeted tests (Exec-Report capture + flow contracts) green, and `get_mcp_tools()` binds `chat_agent_playwrighter` for a total of 72. The reference companions live in README §9.5, `agents_descriptions.md`, `docs/claude/agents.md`, and `agent/agents/flowcreator/agentic_skill.md` entry #64.
+
+- **Reviewer Commit-State & Secret-Handling Precision — v1.4.2, 2026-05-20** — A focused patch (commit `2e1c2d0`, tag `v1.4.2`) that fixes the Reviewer agent's most common false positive: reporting the developer's *local* working-copy credentials as "API keys committed to source". `agent/agents/reviewer/reviewer.py::build_review_prompt` now takes the `diff_ref` and prepends two grounding blocks to the LLM prompt. The first is a **COMMIT-STATE** block: when `diff_ref` is empty the diff is the UNCOMMITTED working tree + staged area (`git diff HEAD` + `git diff --staged`), so the model is told it MUST NOT call anything in it "committed" or "pushed" — at most "staged" or "in the working tree"; only a non-empty `diff_ref` that names committed history may be described as "committed". The second is a **SECRET-HANDLING CONVENTION** block teaching the model Tlamatini's own scrub convention: `agent/config.json` and `agent/agents/*/config.yaml` legitimately hold local credentials in the "keyed" working copy and are scrubbed back to `<NAME goes here>` placeholders by `regen_secrets.py --mode push-able` before any commit (the real values live only in gitignored `data.keys`), so the committed/pushed copies contain only placeholders — therefore a placeholder or empty string is never a secret, and real-looking credentials in those managed files inside an uncommitted diff are the expected local state (at most one low-severity reminder to scrub before committing), while genuine secrets hard-coded into source code or in any file outside that managed set are still hard-flagged. The same two rules are mirrored into the chat-surface twin `agent/skills_pkg/code_review/SKILL.md` (a new "Secret findings — read before flagging credentials" section plus commit-state wording in the diff-resolution and Security steps), so the `code-review` skill and the canvas Reviewer agent stay in lock-step. Bundled alongside: migration `0090_add_reviewer_analyzer_demo_prompts.py` seeds two demo prompts (idPrompt 26 code-review, 27 security-audit) ahead of the Multi-Turn samples. No agent/skill count change (still **64** / **23**) — this is a behavioural-accuracy patch, not a new capability.
+
+- **Reviewer & Analyzer — Code Review and Security Audit on Both Surfaces — v1.4.2, 2026-05-20** — The agent catalog grows to **64** and the skill catalog to **23**, delivering the roadmap's long-standing Reviewer (#2) and Analyzer (#3) recommendations in one release (commit `efb8c13`, tag `v1.4.2`). **Reviewer** (`agent/agents/reviewer/`) is an LLM-powered code reviewer: on trigger it resolves a `git diff` for the configured `repo_path` — a ref like `HEAD~1` or `origin/main`, or the uncommitted working-tree + staged changes when `diff_ref` is empty — sends the diff to an Ollama model with a rigorous senior-engineer prompt, and emits an `INI_SECTION_REVIEWER<<<` block whose first field is a `verdict` (`APPROVE` / `REQUEST_CHANGES` / `COMMENT`) followed by line-anchored findings. **Analyzer** (`agent/agents/analyzer/`) is its deterministic counterpart — no LLM, reproducible output — running whichever of `bandit`, `semgrep`, `ruff`, `eslint`, `gitleaks`, and `pip-audit` are installed on PATH over `target_path`, aggregating their findings into an `INI_SECTION_ANALYZER<<<` block whose `status` is `clean` / `findings` / `error` and whose `total_findings` count is a routable header field; scanners that aren't installed are reported as skipped rather than failing the run. Both agents ALWAYS trigger `target_agents`, so a downstream Forker can branch the flow on `{verdict}` or `{status}` — auto-merge on APPROVE, block a deploy on findings, email a report otherwise. They are deliberately **canvas-only** (no wrapped `chat_agent_*` tool, hence not in `_EXEC_REPORT_TOOLS`): their LLM/chat surface is covered instead by two new `SKILL.md` packages — `code-review` (senior-engineer git-diff review with a verdict) and `security-audit` (multi-scanner SAST/secret/dependency sweep) — so the same capability is reachable both from a `.flw` canvas and from `invoke_skill` in a Multi-Turn chat, without a redundant third surface. Wiring follows the established 8-step agent pattern: migrations `0088_add_reviewer` / `0089_add_analyzer`; per-agent connection views + routes; Parametrizer source fields registered in `agent/services/agent_contracts.py` (`_PARAMETRIZER_OUTPUT_FIELDS`) and `parametrizer.py` (`SECTION_AGENT_TYPES`); two new canvas gradients (Reviewer = teal→indigo→violet, Analyzer = a dark-red→amber→yellow severity heatmap); and the four ACP JS files plus the `eslint.config.mjs` cross-file globals (the real source of truth for connector functions — not the per-file `/* global */` comments). Skills auto-discover from disk, so they need no migration. Verified end-to-end in both source and frozen modes: `build.py` copies the whole `agent/agents` and `agent/skills_pkg` trees wholesale, runs `migrate` + `collectstatic`, and ships `agents_descriptions.md`, so the new agents, DB rows, skills, and static assets all land exactly where the frozen path resolvers (`get_agents_root`, `skill_registry._default_roots`, `views._find_path`) look — there is no enumerated allow-list anywhere that could silently drop a new agent type. The reference companion lives in README §9.5, `docs/claude/agents.md`, and `agent/agents/flowcreator/agentic_skill.md` entries #62/#63.
+
+- **Prime Directive on Visual Readability + Sorted Prompt Catalog — v1.3.2, 2026-05-19** — Two changes ship together in `v1.3.2` (commit `141d104`). First, `agent/prompt.pmt` gains a **Prime Directive** banner at the top of the rules block that outranks every other styling concern in the file: text must be readable on its background, every styled HTML element the LLM emits MUST carry BOTH an explicit `background` AND an explicit `color:` on the SAME element AND on every text-bearing child, body text is `#0f172a` on any light background and `#ffffff` on any dark background, the medium-grey list (`#94a3b8` / `#9ca3af` / `#a0a0a0` / `#c0c0c0` / etc.) is HARD-BANNED for body text on a coloured background, and every `<tbody> <td>` MUST be `background:#ffffff;color:#0f172a;…` (even rows) or `background:#f1f5f9;color:#0f172a;…` (odd rows) — header rows can be dark + white but body cells cannot. The Prime Directive is paired with a full styling contract in the renumbered Rule 14 (palette pairings ≥ 7:1 / WCAG AAA, banner & table templates, banned-grey hex list, the `'background:transparent'` → grey-on-dark failure pattern, the mandatory silent self-check before `END-RESPONSE`); the old Rule 14 (conflict resolution) becomes Rule 15. The Directive was forced into existence by three consecutive user-reported failures (`image.png`, `image copy.png`, `image copy 2.png`) where the LLM emitted light-on-light banners and dark `<tbody>` rows with grey body text — all three exact failure patterns are now hard-banned by name. Second, the seeded `Prompts` dropdown catalog is sorted along the learner's path documented in BookOfTlamatini.md chapters 9-14 — Tier 1 context-only Q&A → Tier 2 system metrics → Tier 3 files-search → Tier 4 single shell command → Tier 5 code generation → Tier 6 vision → Tier 7 specialized single-tool actions → Tier 8 agent control → Tier 9 Unrealer → Tier 10-12 Multi-Turn / ACPX flavours of increasing setup cost — so a first-time user picks prompts top-down without bouncing across difficulty levels. The change touches migrations `0002_populate_db.py` (ranges 1-20 and 26-28), `0062_sync_agent_control_tools_and_prompts.py` (21-24), `0063_add_agent_parametrizer_prompt.py`, `0067_add_multi_turn_demo_prompts.py`, `0072_add_acpx_demo_prompts.py`, `0073_acpx_demo_gemini_uplift.py`, `0074_simplify_demo_prompts.py`, and `0087_add_unrealer_demo_prompt.py` — the canonical home of each idPrompt range is documented in the `populate_initial_values` docstring so a future migration knows which range it owns. Net effect: every chat answer the LLM produces is forced through a contrast-checked HTML emission path AND the Prompts dropdown reads as a guided curriculum instead of a chronological log of demos. Coverage: existing `agent/tests.py` rule-numbering and answer-rendering tests still green.
+
+- **Tool-Choice Rule: Executer / Pythonxer / File-Creator Preferred Over Keyboarder / Mouser — v1.3.1, 2026-05-18** — A bundle of three coordinated changes (commits `9392af4` + `fae830c`) that fix the failure mode where the LLM was driving Keyboarder to type Python source into Notepad and Mouser to click through an IDE's File → Save menu instead of just writing the file. `agent/prompt.pmt` gains a **Code-authorship tool-choice rule** at the top of Rule 8 plus a **Keyboarder / Mouser explicit-instruction rule** that codifies: to AUTHOR or WRITE code, scripts, configs, or any text-based artefact, ALWAYS prefer (in this order) `chat_agent_file_creator` (atomic, one-call), `chat_agent_pythonxer` (inline Python for computed content), and `chat_agent_executer` (shell/build CLIs); NEVER drive `chat_agent_keyboarder` or `chat_agent_mouser` to type source code or click through editors. Keyboarder/Mouser are reserved for genuine desktop-UI automation explicitly named by the user (Notepad demo, GUI replay, hotkey injection into a third-party app, anti-idle motion) or when there is no programmatic alternative. The same guidance is mirrored into `chat_agent_registry.py` (Executer / Pythonxer / File-Creator gain "PREFERRED over chat_agent_keyboarder for ..." in their `purpose` strings; Keyboarder / Mouser gain "DO NOT use this tool as part of a code-authoring or script-creation flow ..."), `agent/tools.py` (`execute_file` and `execute_command` direct `@tool` docstrings get the same paragraph), and `agents_descriptions.md` (the sidebar tooltips for Executer / Pythonxer / File-Creator / Keyboarder / Mouser carry the new guidance verbatim so the canvas hover text matches the chat behaviour). Net effect: a request like "write a Python script that prints hello" reliably produces `chat_agent_file_creator(filepath='C:\Temp\hello.py' and content='print(\"hello\")')` (optionally followed by `chat_agent_executer(script='python C:\Temp\hello.py')`) instead of the previous "launch Notepad → type each character through pyautogui → click Save → click OK in the Save dialog" parade.
+
+- **Ruff Availability Across Multi-Turn Execution — v1.3.1, 2026-05-18** — `Tlamatini/agent/agents/pythonxer/pythonxer.py` and `Tlamatini/agent/tools.py` were hardened so the Ruff lint step inside Pythonxer runs even when the tool is invoked from a Multi-Turn wrapped runtime where the user's `venv\Scripts\ruff.exe` is not on PATH (commit `2c707e3`). The agent now resolves Ruff via a four-tier lookup (`sys.executable` → `python -m ruff` → bundled lint binary → bare `ruff` from PATH) and treats "ruff not found" as a non-fatal warning instead of a script failure, so a Pythonxer call in a flow that the user copy-pasted from `.flw` into a frozen install no longer dies on a missing lint binary.
+
+- **ACPX-Skills Admin Menu — Browse / Configure / Diagnostics / Reload — 2026-05-17** — The chat navbar gained a fourth dropdown — **ACPX-Skills** — sitting between **Agents** and **Config**, and with it Tlamatini finally has an operator-grade surface for the 21 SKILL.md packages it ships. Until now the only way to see what skills existed, decide which ones the LLM should actually be allowed to call, or reload the catalog after editing a SKILL.md on disk was to ask the LLM itself — `list_skills`, then `invoke_skill`, both gated behind the ACPX toolbar checkbox and behind whatever the planner felt like surfacing on that particular turn. That worked, but it required the LLM to be the eyes and hands for a piece of catalog hygiene that belongs to the person sitting at the keyboard. So the dropdown was built to mirror the existing Mcps / Tools / Agents pattern as closely as possible: one entry for browsing (the **Browse Skills** modal — a left-pane list of every skill with a green-dot / red-dot enabled indicator and a search box, and a right-pane detail view that pulls the full SKILL.md body, frontmatter, requires, inputs/outputs, permissions, and budgets fresh from the registry on every click), one entry for toggling (the **Configure Skills** modal — the same checkbox-grid idiom the Mcps and Agents dialogs already use, sending its result over the same WebSocket channel as `set-mcps` / `set-agents` / `set-tools` with the payload encoded as `name=description=true/false,...`, decoded by a new `set-skills` branch in `consumers.AgentConsumer.receive` and written to `Skill.enabled` via `save_skill(name, enabled)`), one entry for cross-checking (the **Diagnostics** modal — a four-section report that flags every skill whose `requires_tools` references a Tool you've disabled, every skill whose `requires_mcps` references an MCP you've disabled, every `runtime: acpx` skill whose `acpx_agent` isn't in the `AcpAgent` registry, and every orphan `Skill` row whose SKILL.md was deleted from disk without a Reload), and one entry for the dev loop (the **Reload Registry** button — a single POST to `/agent/skills/_/reload/` that re-runs `agent/acpx/service.py::boot_skills()` so an edited SKILL.md shows up immediately, no server restart). The Configure-dialog toggle has real teeth: when `Skill.enabled = False`, the tool-surface gating in `agent/acpx/tools.py::_disabled_skill_names()` (called from both `list_skills` and `invoke_skill`) filters the row out of enumeration and rejects invocation with a `{"ok": false, "code": "SKILL_DISABLED"}` envelope — and it fails OPEN on any DB exception so a broken admin layer can never silently hide skills from the LLM, which is the opposite of the failure mode that would worry me. The single biggest design decision was deliberate restraint on the database: the `Skill` model already existed from migration `0071_acpx_skills.py` and had a richer schema than the `Tool` / `Mcp` / `Agent` toggle rows (cached `frontmatter_json`, `body_sha256`, `last_loaded_at`, `runtime`, `acpx_agent`), but the admin UI *only* ever writes the `enabled` boolean — the cached fields are owned by `boot_skills()` and refreshed from the on-disk SKILL.md on every reload, so the disk stays the only source of truth for permissions, budgets, and body. The user's stated rule is "DB only for enumeration and enable/disable like MCPs/Agents", and the implementation honors it: if you want to change a skill's network policy or its iteration cap, you edit the SKILL.md and click Reload, not a database row that the next backup would silently archive. Skills key on `Skill.name` directly (the SKILL.md frontmatter `name`, already unique) — there is no `skill-N` ID-prefix shim like the `mcp-N` / `tool-N` / `agent-N` pattern uses, because there was no reason to introduce one. Files touched: `agent/views.py` (`list_skills_view`, `skill_detail_view`, `reload_skills_view`, `skills_diagnostics_view`), `agent/urls.py` (4 routes under `/agent/skills/`), `agent/consumers.py` (`skill_establishment`, `get_all_skills`, `save_skill`, `set-skills` handler, establishment loops in both the session-restore path and the rebuild path), `agent/acpx/tools.py` (`_disabled_skill_names` helper + gating in `list_skills` and `invoke_skill`), `agent/templates/agent/agent_page.html` (navbar dropdown + 3 dialog containers + asset includes for `skills_dialog.js` and `skills_dialog.css`), `agent/static/agent/js/skills_dialog.js` (the four jQuery-UI dialogs — full implementation in ~360 lines, mirrors the existing tools_dialog.js pattern), `agent/static/agent/js/agent_page_init.js` (`OpenSkillsConfigureDialog`, `OpenSkillsBrowseDialog`, `OpenSkillsDiagnosticsDialog`, `ReloadSkillRegistry` entry points), `agent/static/agent/js/agent_page_chat.js` (`type: 'skill'` system-message handler that hydrates the module-level `skills = []` cache), `agent/static/agent/js/agent_page_state.js` (the `let skills = []` declaration alongside `tools` and `agents`), `agent/static/agent/css/skills_dialog.css` (styling), `eslint.config.mjs` (11 new globals — `skills`, `computeCheckboxGridLayout`, and the `OpenSkills*Dialog` / `preRender` / `render` / `open` / `reload` family — so the new JS lints clean with zero errors), and a full update pass across the documentation surface (`README.md` §3.11, `CLAUDE.md` Skills bullet, `docs/claude/{architecture,acpx,frontend,gotchas,INDEX,mcp-tools}.md`, and this Book entry). Coverage: 14 new tests in three classes — `SkillsAdminEndpointTests` (7 — list / detail / 404 / reload / get-rejection / diagnostics shape), `SkillsToolSurfaceGatingTests` (3 — list filters disabled, invoke rejects with SKILL_DISABLED, invoke unknown returns UNKNOWN_SKILL), `SkillsNavbarTemplateContractTests` (4 — pins the dropdown HTML so a careless template edit doesn't silently drop the menu). All 14 pass; the full agent-tests run shows the same 5 pre-existing failures it had before (multi-turn / parametrizer / acpx-config / prompt-validation) and zero new regressions. The narrative companion lives in Book §17.5; the reference companion lives in README §3.11 and `docs/claude/acpx.md`.
+
+- **Unreal MCP Integration — Driving Unreal Engine 5 from Tlamatini — 2026-05-16** — Tlamatini grew a 62nd agent — **Unrealer** — and with it a brand-new MCP surface: the canonical open-source **Unreal MCP** plugin (`https://github.com/chongdashu/unreal-mcp`, MIT, UE5.5+) that runs inside an Unreal Engine 5 editor instance and accepts one JSON command per TCP connection on `127.0.0.1:55557`. Tlamatini is the *client* — `agent/agents/unrealer/unrealer.py` is a self-contained pool subprocess (no `agent.*` imports, mirrors the upstream `UnrealConnection` adapter inline in ~80 lines) that opens a fresh TCP socket per turn, sends `{"type": <command>, "params": {...}}`, captures the engine's JSON response, normalizes Unity-style `{"success": false}` into the registry's `{"status": "error"}` shape, and emits the whole exchange as one atomic `INI_SECTION_UNREALER<<<` block so Parametrizer can wire it into downstream agents. Two surfaces ship in lock-step: the wrapped Multi-Turn tool **`chat_agent_unrealer`** (`chat_agent_registry.py::ChatWrappedAgentSpec(key="unrealer", …)`, with the full 28-command surface documented in the tool `purpose` string so the LLM understands its taxonomy without extra prompting) and the visual **Unrealer** canvas node (one node = one command, chainable through Parametrizer into multi-step flows like *create_blueprint → compile_blueprint → spawn_blueprint_actor*). Three migrations land together: `0085_add_unrealer` (the Agent row), `0086_add_chat_agent_unrealer_tool` (the Tool row), and `0087_add_unrealer_demo_prompt` (a seeded end-to-end demo prompt at `idPrompt=25` that exercises every command category — editor sanity probe, actor spawn, Blueprint scaffold-compile-instance, UMG widget build, and a per-step HTML report table — in one guided Multi-Turn run). Exec Report integration: `chat_agent_unrealer` is registered in `_EXEC_REPORT_TOOLS` under `agent_key="unrealer"` so every call shows up as one row in a dedicated **List of Unrealer Operations** table at the bottom of the answer. Parametrizer source fields registered in `agent/services/agent_contracts.py`: `host`, `port`, `command`, `status`, `error`, `response_body`. Full coverage: README §6 (the new reference chapter) and Book bonus §57 (the narrative companion). Supports the full 28-command Unreal MCP surface across five categories (8 editor verbs, 7 blueprint verbs, 7 node-graph verbs, 1 project verb, 6 UMG verbs) — and because the wrapped tool forwards `command` + `params` verbatim, any fork that adds a new verb (`https://github.com/CrispyW0nton/Unreal-MCP-Ghost`, `https://github.com/gingerol/vhcilab-unreal-engine-mcp`, or your own) works with no client-side changes.
+
+- **The Orphan Reaper — Quietly Closing the `conhost.exe` Loose End — 2026-05-16** — For most of Tlamatini's life, anyone who ran a long Multi-Turn session on Windows could end up staring at the Task Manager and counting little ghosts. Each ghost wore Tlamatini's icon — a yellow-and-black mask of *one who knows* — and each ghost was, in plain process-table terms, a `conhost.exe`: the console-host companion Windows insists on attaching to every command-line child. When the console child finished and its parent died before the operating system reaped the pair, the conhost lingered. The icon was inherited from whichever EXE had originally spawned the console; the EXE in our case was Tlamatini.exe; the inheritance was loyal; the user's reasonable conclusion was that Tlamatini was leaking processes — or, more darkly, that something had taken up residence and refused to leave. Neither was true, but the truth did not help the appearances. This release closes the gap on both sides at once. A new module — `Tlamatini/agent/orphan_reaper.py` — installs a three-tier broom that sweeps after every Multi-Turn tool call that may have spawned a child (Tier 1, silent and cheap, after each `execute_command`, `chat_agent_*`, `acp_*`, and a short list of allies), again after each final answer is delivered to the chat (Tier 2, with the wider agent-pool scan, running in a thread so the user never feels the pause), and one last time as Tlamatini.exe itself bows out (Tier 3, registered on the same `atexit` / SIGINT / SIGBREAK path that already tidied up the pools directory). Each tier escalates `terminate → wait → kill` on every candidate it finds, and each tier promises — in code and in spirit — to never raise an exception back into the chat path: a cleanup that crashes a conversation is worse than the orphans it tries to evict. When the reaper truly cannot kill something, the user does not have to discover the survivor on their own. A second chat bubble appears beneath the answer, in the same voice the rest of the application uses, listing each surviving `name` and `PID` so the user can finish the job from Task Manager themselves — informed, never blamed. And on the prevention side, the spawn sites were rewritten. `views.py`'s Starter, Ender, FlowCreator, and Restart paths now launch their Python children with `CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW | DETACHED_PROCESS` and stdio piped to `DEVNULL`; the ACPX runtime grew a `_kill_process_tree()` helper that walks past the top-level CLI wrapper and ends the `node.exe` helpers underneath it; and every pool-agent script (Ender first, the other fifty-odd siblings in lockstep) installs a top-of-module `subprocess.Popen.__init__` monkey-patch that quietly adds `CREATE_NO_WINDOW` to any descendant `Popen` whose caller forgot to ask for it. The seatbelt is now fastened by default. As a result, the orphan survivor list — the second chat bubble Tlamatini's reaper is prepared to send — should almost always be empty, which is exactly the point: most users will never know any of this happened, and that is the loudest a piece of plumbing should ever be allowed to speak. Documented in Book §17 of intent and the new README §10 of record; commit `dcd1613` carries the full diff.
+
+- **Added De-Compresser Agent — 2026-05-15** — A new short-running deterministic action agent that COMPRESSES or DECOMPRESSES an archive (61st agent in the catalog). Direction is inferred from the file extensions: if `input` ends in `.gz`, `.7z`, `.zip`, `.tar.gz`, or `.gz.tar` the agent extracts into the `output` directory; if `output` ends in those extensions the agent packs `input` (a file OR a directory) into `output`. Per-format engines: `.gz` uses the stdlib `gzip` module; `.zip` uses the stdlib `zipfile` module; `.7z` uses the `7z` CLI when available (LZMA / LZMA2 + `-mhe=on` AES-encrypted headers) and falls back to `py7zr`; `.tar.gz` / `.gz.tar` decompresses through a temp `.tar` then untars (and routes through `7z` when a password is supplied since stdlib tar/gz has no native encryption). Password handling: pass `passwordless=true` to skip, or `passwordless=false` and the agent reads the password from the OS env var `DE_COMPRESSER_PWD` (a missing env var fails fast to the end-stage). The end-stage ALWAYS starts every agent in `target_agents`, even on failure, so a Raiser on a downstream Parametrizer can branch on the `success=true|false` field of the emitted `INI_SECTION_DE_COMPRESSER<<<` block. Files involved: `agent/agents/de_compresser/{de_compresser.py, config.yaml}` (the agent itself), `agent/views.py::update_de_compresser_connection_view` + `agent/urls.py` (canvas wiring), `agent/migrations/0083_add_de_compresser.py` (Agent row) + `0084_add_chat_agent_de_compresser_tool.py` (Tool row for the Multi-Turn wrapper), `agent/chat_agent_registry.py` (`ChatWrappedAgentSpec(key="de_compresser", ...)`), `agent/mcp_agent.py::_EXEC_REPORT_TOOLS` (registered under `agent_key="decompresser"`), `agent/static/agent/css/agentic_control_panel.css` (Vault-Unsealed gradient — slate-indigo → archival-bronze → sealing-wax-red → spring-mint, intentionally distinct from every other 4-color gradient in the file), `agent/static/agent/css/agent_page.css` (Exec Report caption + cmd-border accent + dark-header membership), `agent/static/agent/js/{acp-agent-connectors.js, acp-canvas-core.js, acp-canvas-undo.js, acp-file-io.js, agent_page_chat.js}` (full canvas wiring + Flow-Generator mapping for `chat_agent_de_compresser`), `agents_descriptions.md` (sidebar tooltip + canvas Description dialog), `agent/agents/flowcreator/agentic_skill.md` (FlowCreator AI catalog entry #54b), `agent/agents/flowhypervisor/monitoring-prompt.pmt` (watchdog knows the new startup banner and the Parametrizer-section it emits), `README.md` + `docs/claude/agents.md`. The agent is fully accessible through Multi-Turn via `chat_agent_de_compresser` (security_hints cover "compress", "decompress", "unzip", "extract archive", "zip up", "pack folder", "tar gz", "7z").
+
+- **DB menu — Backup database + Set DB + start-up swap-in — 2026-05-14** — A new top-of-page **DB** dropdown adds two safe, GUI-first database operations and a third invisible one. **This paragraph records the original implementation and is superseded by the v1.49.1 WAL-safe engine described in §17 and Recent Updates:** current Backup DB and Set DB use `sqlite_copy.consistent_copy()` (SQLite online backup, DELETE-journal destination, and `quick_check`), while pre-Django swap-in archives sidecars and clears stale WAL/SHM/journal files. The original **Backup database** (`DB → Backup database`, commit `47df564`) opened a dialog with a live-validated target-directory input (`GET /agent/check_backup_directory/`) and copied the live `db.sqlite3` to a directory of your choice via `POST /agent/backup_db/`, keeping the live database untouched. **Set DB** (`DB → Set DB`, the new entry) did the harder direction: a live-validated file-path input (`GET /agent/check_set_db_file/` — checks existence, basename, and the `SQLite format 3\x00` magic header) staged your pick into `<base>/DB/ToLoad/db.sqlite3` via `POST /agent/set_db/`, and a yellow ⚠ warning dialog told you the file would be loaded on the next session (or restart now for immediate effect). The invisible third leg was `Tlamatini/manage.py::_apply_pending_db_swap` — a function that runs BEFORE Django is imported, detects frozen vs source mode, and (only when `DB/ToLoad/db.sqlite3` is present) (1) creates `DB/Older/<YYYY-MM-DD_HHMMSS>/`, (2) moves the current live database into that timestamped archive, (3) promotes the staged database, then returns and lets Django open it. A re-launch with empty `ToLoad/` is automatically a no-op — no "stuck flag" to clear. Pre-Django timing is the entire safety story: a simple **Reconnect** from the navbar does NOT trigger the swap-in, because the swap window is only open before the Django process opens its SQLite connection pool. The deployment-aware path resolution mirrors Django's own `BASE_DIR / 'db.sqlite3'`, while the user-facing `DB/` tree always lives next to the executable (frozen) or next to `manage.py` (source), where the user can browse to it in Explorer. `build.py` extends its `empty_dirs` tuple with `"DB/ToLoad"` and `"DB/Older"` so frozen installs ship with both directories on day one; `Tlamatini/Tlamatini/DB/{ToLoad,Older}/README.md` are checked into the repo as the "git keepers" that prevent the empty directories from being lost in source mode. The Older archive is never auto-pruned — it is the built-in rollback path. A corrupt / locked / mismatched ToLoad file logs `--- [DB SWAP] Skipped due to error: …` and lets Tlamatini start normally with the previous database. Documented end-to-end in Book chapter §17 and README §3.10.
+
+- **Embedding-Memory Pre-Flight Guard — 2026-05-12** — A new module (`agent/embedding_memory_guard.py`) catches the "context loading hangs for hours" failure mode on GPU hosts before the embed burst starts. The guard is wired into `agent/consumers.py::setup_contextual_rag_chain` exactly once: after the consumer broadcasts `MSG_AGENT_LOADING_CONTEXT` and before it schedules the heavy `asyncio.to_thread(setup_llm_with_context, …)` call that drives `FAISS.from_documents(...)`. It runs **only** when an NVIDIA GPU is detected via the cached `gpu_perf._has_nvidia_gpu()` probe — CPU-only, AMD, and Apple Silicon hosts skip the check silently and the legacy load path is unchanged. Three-tier VRAM prediction: Tier A reads `size_vram` verbatim from `GET /api/ps` when the model is already resident (exact daemon ground truth); Tier B computes `parameter_count × bits_per_weight(quant) / 8 × overhead` from `POST /api/show`, with a standard llama.cpp / GGUF bits-per-weight table (`F16`=16, `Q8_0`=8.5, `Q4_K_M`=4.83, `Q2_K`=2.96 …) and a 2-tier overhead multiplier (×1.40 for ≥1B-param models, ×2.20 for sub-1B) calibrated against measurements on the dev box's RTX 4070 Laptop (`qwen3-embedding:8b` predicts 6.36 GB vs measured 6.24 GB, +1.9 %; `Nomic-Embed-Text:latest` predicts 603 MB vs measured 600 MB, +0.5 %); Tier C returns `None` for cloud models (`:cloud` suffix), missing Ollama, or any probe failure (fail-open). When predicted VRAM is at least **80 %** of the *smallest* GPU's total VRAM (smallest because Ollama loads each model into a single device by default), the consumer broadcasts an HTML chat-bubble warning naming the model, the percent, the threshold, and a projected FAISS index size — informational and non-blocking. Test coverage: **49 tests** in `agent/test_embedding_memory_guard.py`, organized into seven `SimpleTestCase` classes; the `NoGpuCompatibilityTests` class alone is **28 tests** covering every `nvidia-smi` / Ollama / path-input / driver-crash failure mode, with `test_real_entry_point_call_never_raises` as the CI gate that exercises the live subprocess + urllib paths and asserts the return is **either** `None` **or** a well-formed warning dict on any host. Book chapter §34 documents the full user-facing surface; README chapter 9 mirrors it as the reference companion.
+
+- **Chat-page configuration dialogs + restore-flow reliability + canvas/stop polish — 2026-05-09 to 2026-05-11** — The `/agent/` navbar now includes **Config -> Models** and **Config -> URLs** (commit `ac747e3`). These dialogs load a validated subset of `config.json`, let the user edit the common model-name and endpoint fields from the browser, then save through `config_loader.save_config_updates()` so source-mode and frozen-mode builds write to the same effective config file. The views `load_config_section_view`, `save_config_models_view`, and `save_config_urls_view` enforce server-side validation for strings, URLs, hosts, and ports. Companion UI work enlarged and cleaned up the **Configure MCPs** dialog (`b286cd6`) and improved the chat/canvas vertical divider behavior on the main page (`1e62faa`). Another reliability fix (`484b8ec`) closes the old initial context-load race: when a saved session is restored, the frontend now keeps the input disabled until the contextual RAG chain is really ready, instead of briefly unlocking after the welcome-back banner. On the workflow side, dialog edits now win over stale pool wiring during compilation (`04502c3`), and the mixed-flow stop path is better at killing lingering processes before the next run (`6b0e3aa`).
+
+- **Emailer / RecMailer quoting, placeholder cleanup, and TeleTlamatini copy polish — 2026-05-09** — A smaller but user-visible reliability pass landed across the messaging agents. Emailer and RecMailer quoting mechanics were corrected (`c1088bb`) so generated payloads survive nested quoting more predictably, placeholder handling was cleaned up (`2d27fa0`) so parametrized values are less likely to drift into malformed marker text, and TeleTlamatini's dynamic welcome / guidance strings were polished (`8c2e5a6`) so first-contact Telegram conversations read more naturally.
+
+- **Flow Compiler + Agent Contracts + 60-agent catalog — May 2026** — A backend pipeline that turns the live ACP canvas snapshot OR a Chat-generated Create-Flow draft into validated, secret-redacted, source-and-frozen-portable `config.yaml` files (commit `0bea21d`). Four new modules under `agent/services/`: `agent_contracts.py` (the `AgentContract` registry — per-agent connection-field shape per slot, parametrizer source-fields, `secret_paths`, plus `singleton` / `long_running` / `never_starts_targets` / `exclude_from_validation` flags; lru-cached, alias-normalized, disk-discovered + builtin overrides), `agent_paths.py` (frozen/source-aware pool resolution + canvas-id normalization that handles `Monitor Netstat` → `monitor_netstat`, `(2)` cardinal stripping), `flow_spec.py` (`FlowNode` / `FlowConnection` / `FlowSpec` dataclasses + `normalize_flow_payload()` / `flow_spec_to_legacy_json(redact=True)` — schema_version=2 in-memory representation that both browser surfaces compile through), and `flow_compiler.py` (`compile_flow_spec()` / `compile_flow_payload()` / `list_pool_agents_for_validation()` — wires every connection per its contract, clears stale wiring before re-writing, redacts secrets, and writes `config.yaml` + `interconnection-scheme.csv` into the session pool when called with `write=True`). Three new endpoints expose the pipeline: `POST /agent/compile_flow/` (called from the new `acp-flow-snapshot.js::compileCurrentACPFlow` with `mode='write'` from Start and `mode='dry_run'` from Validate), `POST /agent/flow_from_tool_calls/` (called from `agent_page_chat.js::_normalizeChatFlowBeforeDownload`), and `GET /agent/agent_contracts/` (registry diagnostics). **User-visible effect**: Start now compiles the live canvas before launching agents, so an edited-but-unsaved canvas behaves identically to a fresh `.flw` load; Create Flow downloads are now registry-canonical and have known secret fields stripped server-side; Validate previews the same compiled output Start would write, without touching disk. The catalog count is now **60** (was 59 — FlowCreator was always present on disk and in `agents_descriptions.md` but missing from the AI-onboarding catalog list). Coverage: `Tlamatini/agent/test_flow_contracts.py` pins source-mode resolution, alias normalization, the Ender kill-list contract, and Parametrizer-mappings-as-CSV-artifact behavior.
+
+- **`agents_descriptions.md` becomes the authoritative source for sidebar tooltips and canvas Description dialogs — May 2026** — A new file at the repo root (commit `88dd99b`) holds the human-readable description for every workflow agent in `## Workflow Agents` Markdown tables. The Django view `agent.views.agentic_control_panel` parses it via `_load_agent_purpose_map()` → `_resolve_agent_descriptions_search_paths()`, probing `agents_descriptions.md` first (next to `manage.py` in source mode, next to `sys.executable` in frozen mode) and falling back to `README.md` only if it's absent or yields zero rows. The lookup is case- and punctuation-insensitive — `re.sub(r'[^a-z0-9]+', '', name.lower())` keys "Kyber-KeyGen", "Kyber KeyGen", and "kyberkeygen" to the same row. Editing a row changes both human docs AND the live UI text — **there is no other source of truth**. `build.py` ships `agents_descriptions.md` next to the executable in frozen mode (`required_file_copies` was extended). UI fallback strings in `acp-canvas-core.js::showAgentPurposeTooltip` and `contextual_menus.js::openDescriptionDialog` were updated to mention the new file. The legacy alias `_load_agent_purpose_map_from_readme = _load_agent_purpose_map` is preserved so any out-of-tree caller keeps working. Companion change: `regen_secrets.py` was extended to scrub `emailer/config.yaml` and `recmailer/config.yaml` (Gmail app-password fields). Coverage: `agent/tests.py::AgentPurposeMapResolutionTests`.
+
+- **TeleTlamatini Three-Flag Bridging (Multi-Turn + Exec Report + ACPX) — May 2026** — Each Telegram message TeleTlamatini forwards to Tlamatini now carries `multi_turn_enabled`, `exec_report_enabled`, AND `acpx_enabled` verbatim (commit `1287e56`), so a Telegram user gets exactly the operational surface a browser user with all three checkboxes ticked would. `TlamatiniBridge.__init__` accepts `acpx_enabled`, includes it in the request envelope, and logs it; `agent/agents/teletlamatini/config.yaml` ships `acpx_enabled: true` so a fresh deploy can drive the full ACPX scheme out of the box. The resolver-level default stays `False` — that's the legacy-deploy backstop, not the user-facing knob. Practical pairing for users wiring TeleTlamatini today: leave all three flags `true` in `config.yaml`, and Telegram becomes a full ACPX-aware Tlamatini console — "use ACPX to spawn claude and ask it to summarize the current branch" works the same from a phone. WhatsTlamatini was later retired; WhatsApp send/receive now belongs to the short-lived Whatsapper agent, while TeleTlamatini remains the only current long-running remote full-chat bridge.
+
+- **Autonomous Multi-Turn Mode + 4 New Wrapped Tools (Sleeper, Mouser, run_wait, window_present) — May 2026** — A focused pass to make Multi-Turn fully autonomous on desktop-UI tasks ("open notepad, type X, wait 30 s, close it" — five tool calls, no vision LLM, no polling). Eight changes landed together (commit `84de29b`):
+    1. **Repetition-breaker exemption** for the new background-friendly waiters so they don't get short-circuited as duplicates.
+    2. **`filetype_exclusions` analyzer fix** so the parameter is correctly forwarded across File-Interpreter / Image-Interpreter / File-Extractor / Mover / Deleter.
+    3. **Tighter prompt rule 11 (Desktop-UI lifecycle)** — codifies the canonical pattern `launch → interact → close (alt+f4) → handle save dialog (alt+n / alt+s) → optional verify`, **forbids** the Shoter+Image-Interpreter "did the window open?" gate between launch and the first Keyboarder/Mouser action, and adds the locate-then-click decision matrix (window-title click / locate_image / vision pipeline / drag / scroll / chain-click).
+    4. **Capability-registry boost** for the desktop-UI siblings so the planner reliably co-selects Keyboarder + Mouser + Sleeper on Notepad-style requests.
+    5. **Shoter `output_path`** exposed so the LLM can pass the screenshot path directly into the next tool call.
+    6. **`chat_agent_sleeper`** registered (migration `0080_add_chat_agent_sleeper_tool`) — canonical millisecond waiter; do NOT spin Pythonxer for `time.sleep`, do NOT use `execute_command` with `timeout /t`.
+    7. **`window_present(title)`** — fast (<100 ms) yes/no helper backed by `pyautogui.getWindowsWithTitle`. Reserve `chat_agent_image_interpreter` for genuine vision tasks (reading content, OCR), never for "is X visible?" gates that exhaust the 4096-iteration budget waiting on 20-30 s vision calls.
+    8. **`chat_agent_run_wait`** — blocks until a wrapped run reaches a terminal status (or `max_seconds` fires); replaces busy-poll loops over `chat_agent_run_status`. Migration `0081_add_window_present_and_run_wait_tools` seeds both `Tool` rows. Keyboarder and Mouser quote-decoding got a precise lookahead fix in the same pass (`''Hi!, I''m Tlamatini''` now types `Hi!, I'm Tlamatini` correctly across all 5 input variants the LLM produces).
+
+    **Test coverage:** 266-test suite green, zero regressions, ruff clean.
+
+- **Mouser Wrapped for Multi-Turn (`chat_agent_mouser`) — May 2026** — Mouser becomes a first-class Multi-Turn tool (commit `4eb6fc7`, migration `0079_add_chat_agent_mouser_tool`). Six movement modes: `click_at_window` (focuses a window by title substring + anchor — bullet-proof for "click into Notepad before typing", no screenshot/vision call), `locate_image` (`pyautogui.locateCenterOnScreen` against a reference PNG with configurable confidence), `localized` (smooth-easing move to absolute coordinates with optional click), `random` (across-screen movement for a configurable duration), `drag` (button held between two points), and `scroll`. Wrapped result exposes `movement_type`, `end_posx`, `end_posy`, `button_click`, `clicked` (bool), and `located_via` as top-level fields. Mouser is state-changing (it switches the foreground window and fires button events), so the row is captured under `agent_key="mouser"` in `_EXEC_REPORT_TOOLS` with its own caption gradient mirroring `.canvas-item.mouser-agent`.
+
+- **Keyboarder + Shoter Wrapped for Multi-Turn (`chat_agent_keyboarder` / `chat_agent_shoter`) — May 2026** — Both desktop-UI agents become Multi-Turn tools (commit `93804e7`, migration `0078_add_chat_agent_keyboarder_tool`). Shoter (`chat_agent_shoter`) is read-only screenshot capture; Keyboarder (`chat_agent_keyboarder`) accepts `input_sequence` (literal text in single/double quotes; key names and `+`-joined chords go bare; comma-separated tokens) and `stride_delay` (ms between strokes). Unblocks the canonical "open notepad → verify → type into it" flow. Keyboarder is state-changing (keystrokes target the foreground window) so its row appears in the Exec Report under `agent_key="keyboarder"`; Shoter remains read-only and stays out of the report on purpose. pyautogui hotkey names are normalized via `get_pyautogui_key()` (`escape→esc`, `windows→win`, `altgr→altright`, `mayus/caps→capslock`); pass `'win+r'`, `'ctrl+alt+t'`, etc.
+
+- **ASCII / Box-Drawing Diagrams Rule (Rule 13) — May 2026** — A new prompt rule (#13 in `agent/prompt.pmt`) and a corresponding renderer in `agent/services/response_parser.py` ensure that LLM-generated ASCII art / box-drawing flowcharts / column layouts render in the chat with a fixed-width font and preserved whitespace. The LLM is instructed to wrap diagrams in `BEGIN-DIAGRAM` / `END-DIAGRAM` markers (mirroring the `BEGIN-CODE` / `END-CODE` pair, but without a filename slot). Two pipelines feed the same renderer: explicit `BEGIN-DIAGRAM` blocks AND auto-detection of consecutive lines that contain box-drawing characters (`│┃|─━┌┐└┘├┤┬┴┼╭╮╯╰`), arrow glyphs (`▲▼►◄→←↑↓`), or ASCII-art runs (`+`, `-`, `=`, `|`). Both replace the matched region with a `\x00DGRM_<idx>\x00` placeholder so the bold/inline-code/lang-marker substitutions that run later cannot corrupt the diagram contents — placeholders are restored last as `<pre class="ascii-diagram">…</pre>` in the rendered HTML. New regex `REGEX_DIAGRAM_BLOCK` lives in `agent/constants.py`. Coverage: `agent/tests.py` adds 178 lines of regression tests covering box-drawing, arrow, piped-box, and pure ASCII-art runs.
+
+- **`tlamatini.log` HTTP-GET Noise Filter — May 2026** — `Tlamatini/tlamatini/logging_filters.py` now silences successful `"GET /…" 200` and `"GET /…" 304` lines (the per-poll runtime status pings that flooded the unified log every ~3 s when the runtime poller was active) but keeps any GET that returned a non-2xx/3xx status, so real failures stay visible. Combined with the earlier fix that promoted `disappearing boring log lines` (commit `8bb4047`), the application log is now a near-zero-noise debugging artefact during normal operation.
+
+- **ACPX Toolbar Toggle (Per-Request Enable/Disable, defaults to OFF) — May 2026** — The chat toolbar now exposes three checkboxes side-by-side: **Multi-Turn**, **Exec Report**, and **ACPX**. The new ACPX checkbox (`#acpx-enabled` in `agent/templates/agent/agent_page.html`) **defaults to unchecked** — JS hydration in `agent_page_state.js::applyStoredAcpxState` falls back to `false` when sessionStorage has no prior value, and every backend read site defaults `acpx_enabled` to `False` (`rag/interface.py::ask_rag` dict + raw-string paths, `rag/factory.py`, `rag/chains/unified.py` payload-rebuild whitelist in three places, `mcp_agent.py::CapabilityAwareToolAgentExecutor.invoke`, and `consumers.py::receive` plus the `queue_llm_retrieval` signature). The flag is sent on every WebSocket request; the planner / executor call `agent.acpx.filter_acpx_tools(tools, acpx_enabled)` to strip the entire 12-tool ACPX/Skill surface from the bound tool list when the flag is `False`. Net result: the default Multi-Turn request behaves exactly like the legacy pre-ACPX Multi-Turn flow — the planner never even sees the ACPX tools — and the user must explicitly tick the box to opt into the ACPX-aided flow.
+
+- **Summarizer One-Shot Mode + `chat_agent_summarize_text` Tool — May 2026** — `agent/agents/summarizer/summarizer.py` now accepts a one-shot path: when `input_text` is non-empty AND `source_agents` is empty, the agent skips the polling loop entirely, sends `input_text` directly to the LLM with the resolved prompt (built from `target_words` if no `system_prompt` is provided), emits exactly one `INI_SECTION_SUMMARIZER<<<` block, and triggers `target_agents` whenever the summary is non-empty. The wrapped chat tool `chat_agent_summarize_text` is the canonical caller — its `example_request` is `Summarize with input_text='<full text>' and target_words=40`.
+
+- **`setup-new-acpx-key` Skill — May 2026** — A new in-process skill (`agent/skills_pkg/setup_new_acpx_key/SKILL.md`, registered as skill #21) that walks the LLM through credential injection for any `agent_id` from the ACPX registry end-to-end: writes `data.keys`, patches both layers of `config.json` (top-level for callers like `image_interpreter.py` / `opus_client.py`; `acpx.agents.<id>.env` for the spawned child), optionally extends `regen_secrets.py` when introducing a brand-new key, then verifies via `acp_doctor`. Documents the canonical env-var map (claude → `ANTHROPIC_API_KEY`, gemini → `GEMINI_API_KEY` + `GOOGLE_API_KEY` alias, codex → `OPENAI_API_KEY`, qwen → `DASHSCOPE_API_KEY`) and the `{**os.environ, **spec.env}` merge order so explicit `acpx.agents.<id>.env` always wins over an exported shell variable.
+
+- **`regen_secrets.py` Two-Mode Scrubber/Restorer — May 2026** — A new repo-root script (`regen_secrets.py`) that toggles `Tlamatini/agent/config.json` between two states: `--mode push-able` rewrites real secrets (top-level `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` / `OLLAMA_TOKEN` and the `acpx.agents.<id>.env` blocks) into `<KEY goes here>` placeholders so the file is safe to commit; `--mode keyed` restores values from `data.keys` (gitignored, `KEY=VALUE` format) so the local working tree stays usable.
+
+- **Console Window + App-Icon Polish, Restrictive-Policy-Friendly Shortcut — May 2026** — `Tlamatini/manage.py` now sets the console window title to `Tlamatini` and binds the `Tlamatini.ico`. The same icon is wired into `build.py` (PyInstaller exe icon), `templates/agent/{login,welcome,agent_page,agentic_control_panel}.html` (favicon for every web page), and `register_flw.ps1`. `CreateShortcut.ps1` was rewritten to fall back to user-scoped paths when machines have restrictive Group Policies that disallow Public Desktop / All-Users Start Menu writes.
+
+- **ACPX `oneshot-prompt` Transport — Capturing Claude / Gemini / Cursor / Qwen / Codex Responses on Windows — May 2026** — The previous transport-aware drain landed sub-second spawns and a fast idle rule, but on Windows the actual answer text from TUI agents (Gemini CLI, Cursor, Qwen, Claude Code) was **never captured**. Their JS-based TUIs detect a piped stdout and refuse to flush — so the transcript only carried the outbound prompt. Fix: new `transport="oneshot-prompt"` profile re-spawns the CLI fresh per turn with the prompt as a CLI argument; stdin is closed immediately, and `proc.communicate(timeout=180)` captures stdout and stderr to EOF — the same non-interactive mode each CLI ships for unattended use. Five agents migrated. Generous defaults (180 s timeout / 10 s idle / 2 s grace). No inter-turn child state — each `acp_send` is a brand-new CLI invocation. ACPXer canvas counterpart updated in lockstep.
+
+- **ACPXer — Visual ACPX Session Driver — May 2026** — A new workflow agent (#59 in the visual ACP designer; migration `0076_add_acpxer`) that brings ACPX mechanics into the canvas. One ACPXer node = one ACPX session lifecycle. Self-contained; does NOT import `agent.acpx` (mirrors runtime mechanics inline because pool subprocesses can't import `agent.*`). Byte-compatible NDJSON transcripts. Parametrizer-compatible `INI_SECTION_ACPXER<<<` output enables visual multi-CLI relay flows like `Starter → ACPXer(claude) → Parametrizer → ACPXer(gemini) → File-Creator → Ender`. Aurora Conduit gradient (cosmic-navy → electric-violet → luminous-magenta → cyan-radiance) distinct from the `.acpx-agent` exec-report row.
+
+- **ACPX Reliability Pass — May 2026** — Cross-cutting changes that took ACPX execution from "hangs at 45 s per spawn on TUI agents" to "sub-second spawn + 2 s idle on silent REPLs". Per-leg latency dropped from ~91 s to **~9 s** (~10× faster end-to-end). Bundles eight related improvements: expanded ACPX tool surface (5 new tools, migration `0075`); `acp_spawn` drain-knob exposure; `acp_kill` returns transcript_path + agent_id + pid; `acp_doctor` enriched envelope; per-event payload trimming (`max_event_chars`, default 2048); capability-registry boost for ACPX tools; transport-aware drain redesign; authoritative ACPX documentation in `docs/claude/acpx.md` and `prompt.pmt` rule 12. **127 ACPX-adjacent tests green, 0 regressions, ruff clean.**
+
+- **Added ACPX Runtime + 20-Skill Catalog** - New `agent/acpx/` package implements an OpenClaw-compatible runtime that spawns external coding-agent CLIs (Claude Code, Cursor, Codex, Copilot, Gemini, Qwen, Pi, Droid, iFlow, Kilocode, Kimi, Kiro, OpenCode, plus a reserved `tlamatini` self-host slot) as child processes. Seven new LangChain `@tool`s seeded as togglable rows by migration `0071_acpx_skills`. Permission gating with three modes plus a non-interactive policy. API keys injected per-agent through `acpx.agents.<id>.env`. 20 seed `SKILL.md` packages cover hello-world, skill-creator, acp-router, eight Tlamatini-specific maintenance skills, and ten OpenClaw-format ports.
+
+- **Added WhatsTlamatini Agent** - Historical WhatsApp counterpart of TeleTlamatini. It exposed the full Tlamatini chat (`agent_page.html` Multi-Turn behavior, including the per-agent Exec Report tables) over **WhatsApp**, via Meta's WhatsApp Cloud API, and used a stdlib webhook server for inbound messages. Migration `0077_add_whatstlamatini.py`. This bridge was later retired on 2026-06-22; the current WhatsApp surface is **Whatsapper**, a short-lived official Meta Cloud API send/receive worker.
+
+- **Added TeleTlamatini Agent** - Long-running active agent that exposes the full Tlamatini chat over Telegram. Stays alive waiting for messages, password-gates each chat on first contact, uses an Ollama-backed completeness classifier to decide whether each user message is a clear and complete request (asking follow-up questions until it is), proxies the request into the local Tlamatini WebSocket chat with `multi_turn_enabled=true` and `exec_report_enabled=true`, sends the assembled answer back to the Telegram user, and starts the configured `target_agents` after every completed user request cycle.
+
+- **Multi-Turn Planner Max-Tool Cap Lowered 50 → 20** - `build_global_execution_plan()` and `_select_planner_tool_names()` now default to `max_selected_tools=20`. After observing MXNet-installation sessions where the planner selected every tool at once due to keyword inflation, the default was reduced to 20 to force the scoring threshold to do the real filtering.
+
+- **Planner Short Follow-Up Scoring Fix** - Short follow-up messages like "continue", "go ahead", "proceed" used to score near-zero for every capability. The planner now accepts a `chat_history_text` argument and applies a history-aware boost of up to +15 points per capability when the current request has ≤4 meaningful tokens.
+
+- **Wrapped Chat-Agent Deduplication** - `MultiTurnToolAgentExecutor.invoke()` now tracks a per-request `_wrapped_agent_signatures` set keyed on `tool_name + sorted-JSON args`. When the LLM attempts to relaunch the same `chat_agent_*` tool with identical arguments, the executor short-circuits with a `ToolMessage` explaining the skip.
+
+- **Googler Playwright Async-Loop Fix** - `googler` tool now runs its `sync_playwright()` block inside a dedicated `ThreadPoolExecutor(max_workers=1)` with a 120-second timeout. `sync_playwright()` cannot be invoked from within Django Channels' running asyncio event loop.
+
+- **Cancel-Current RAG Rebuild Race Fix** - `consumers.py` now `await`s `setup_rag_chain()` during cancel-current handling instead of firing it with `asyncio.create_task(...)`. Otherwise the `MSG_LLM_REESTABLISHED` confirmation reached the client before the httpx rebuild completed.
+
+- **Multi-Turn Answer SUCCESS/FAILURE Classifier** *(REMOVED 2026-07-06)* - Originally added `agent/services/answer_analizer.py` — a LangChain-based binary classifier that asked the configured `chained-model` whether the final answer reflected a successful outcome or a failure, gating the "Create Flow" button. It was **dropped entirely** on 2026-07-06 to save the extra LLM round-trip: the button no longer depends on any whole-answer verdict.
+
+- **Create-Flow-From-Answer Button** - After a Multi-Turn run in which **≥1 agent executed successfully**, the chat message header renders a **"Create Flow"** button (no answer-classifier gate as of 2026-07-06). Clicking it walks the executor's per-request `_tool_calls_log`, keeps **only the successfully-executed** calls (failed executions are dropped), maps each to its sidebar agent display name, lays out nodes left-to-right, wires the sequential `target_agents` chain, and downloads a `.flw` workflow file the user can re-open in the ACP designer.
+
+- **Unified Application Log (`tlamatini.log`)** - `manage.py` defines a `_TeeStream` wrapper that replaces `sys.stdout` and `sys.stderr` before Django initializes, so every print, Django logger, and third-party stdout line lands in both the console and a single `tlamatini.log` file.
+
+- **Documentation Regeneration Pipeline** - Added `agent/doc_generation/refresh_project_docs.py` and `agent/doc_generation/mardown_to_pdf.py` (sic) to rebuild the repository-root `tlamatini_app_summary.pdf` from the current source tree.
+
+- **Sequenced Runtime Directories for Wrapped Chat-Agent Runs** - Each `chat_agent_*` tool invocation now creates a unique, sequenced directory under `_chat_runs_/{agent}_{seq:03d}_{short_id}/`. Failed runs are never overwritten.
+
+- **Planner Tool Selection Fix** - Fixed a critical bug where the Global Execution Planner excluded wrapped agent tools from Multi-Turn requests. Run-control tools no longer inflate the scoring floor since they are auto-injected.
+
+- **Comprehensive Multi-Turn Runtime Logging** - Added INFO-level logging across the entire wrapped chat-agent launch pipeline: `chat_agent_runtime.py`, `tools.py`, `mcp_agent.py`, and `global_execution_planner.py`. All loggers configured in `tlamatini/settings.py` with timestamped console output.
+
+- **Multi-Turn UI Toggle and Explicit Opt-In Path** - The main chat toolbar now includes a dedicated **Multi-Turn** checkbox beside **Clear history**, persists it per browser session, and forwards `multi_turn_enabled` with each request.
+
+- **Phase 1 Capability Selection** - `capability_registry.py` now scores request/tool affinity and lets checked Multi-Turn requests bind only the relevant tools or wrapped agents instead of exposing the entire enabled tool universe.
+
+- **Phase 2 Context Capability Selection** - `rag/factory.py` now selectively prefetches `system_context` and `files_context` for checked Multi-Turn requests.
+
+- **Phase 3 Global Execution Planner** - `global_execution_planner.py` now builds request-scoped execution DAGs with `prefetch`, `execute`, `monitor`, and `answer` nodes, plus `direct_model`, `context_only`, and `tool_augmented` execution modes.
+
+- **Focused File-Context Hardening for Multi-Turn** - Project-home requests such as root `README.md` lookups are narrowed more deterministically.
+
+- **Checked-Mode Runtime Hardening** - Checked Multi-Turn requests suppress visible console popups for wrapped/background launches.
+
+- **Verification Status Raised to Full Green** - `agent/tests.py` now includes Multi-Turn planner, gating, background-launch, and frozen-mode regression coverage.
+
+- **Main Chat Context UI State Sync** - `agent_page_ui.js` now centralizes restored context handling.
+
+- **RAG Loaded-Documents Fallback Hardening** - `rag/factory.py` now preserves successfully loaded documents as a packed fallback context with a file manifest when retrieval-chain construction fails.
+
+- **Configurable Runtime Limits and Demo Prompts** - `config.json` now sets `unified_agent_max_iterations` and `chat_agent_limit_runs` to `100`, `config_loader.py` centralizes frozen/source-aware config loading.
+
+- **Keyboarder Canvas Wiring** - `keyboarder` is now a first-class ACP auto-configuration participant.
+
+- **Mouser Localized Click Actions** - Mouser now supports `button_click` values such as `left`, `right`, `middle`, and `double-left/right/middle`.
+
+- **Added Keyboarder Agent** - Issues a sequence of keys to emulate human typing on the keyboard.
+
+- **Added Googler Agent** - Searches Google for a configured query using Playwright, fetches top N result pages, extracts readable text, and saves results to an output file.
+
+- **ACP Agent Descriptions and Instance Context Menus** - `agentic_control_panel()` now parses the `## Workflow Agents` Purpose column from `README.md`, injects an `agent_purpose_map` into the ACP template, and the frontend uses it for sidebar hover tooltips and the new canvas **Description** dialog. The right-click menu for deployed agents now also exposes **`Explore dir...`** and **`Open cmd...`**.
+
+- **Parametrizer Nested Target Mapping** - The Parametrizer dialog now flattens nested target `config.yaml` dictionaries into dot-notation keys.
+
+- **Build and Installer Robustness** - `build.py` now treats `README.md` and `jd-cli/` as required release payloads.
+
+- **Extension Query Parsing Hardening** - `history_aware.py` and `unified.py` now require a non-word boundary before `.ext`-style extension matches.
+
+- **J-Decompiler Development Path Fix** - `agent/agents/j_decompiler/j_decompiler.py` now climbs one more directory level before locating the bundled `jd-cli/` payload in development mode.
+
+- **Main Chat Multi-Turn Tool Loop** - `agent/mcp_agent.py` now builds a `MultiTurnToolAgentExecutor` for the unified chat path.
+
+- **Wrapped Chat-Agent Runtime Layer** - Added `chat_agent_registry.py`, `chat_agent_runtime.py`, migration `0064_add_chat_agent_run_model.py`, migration `0065_add_chat_wrapped_agent_tools.py`, and the `ChatAgentRun` model. The chat surface can now launch 32 isolated `chat_agent_*` runtime copies of template agents plus 4 run-management tools.
+
+- **Chat Runtime Isolation from ACP Flow Control** - ACP/session process scans now skip the `agent/agents/pools/_chat_runs_/` runtime root.
+
+- **Added J-Decompiler Agent** - Short-running deterministic action agent that decompiles `.class`, `.jar`, `.war`, and `.ear` artifacts using the bundled `jd-cli`.
+
+- **Added Barrier Agent** - Short-running passive utility flow-control agent that acts as a synchronization barrier.
+
+- **Added Parametrizer Agent** - Short-running active utility interconnection agent that maps structured outputs from source agent logs to target agent config.yaml parameters.
+
+- **Added Kyber-DeCipher / Kyber-Cipher / Kyber-KeyGen Agents** - CRYSTALS-Kyber post-quantum cryptography agents.
+
+- **Added `filetype_exclusions` and `recursive` parameters** to File-Interpreter, Image-Interpreter, File-Extractor, Mover, and Deleter.
+
+- **Added File-Extractor / File-Creator Agents**.
+
+- **FlowHypervisor User Instructions / Core Auto-Stop**.
+
+- **Crawler Substantially Improved** - Now captures **raw content** by default.
+
+- **Ender Reanimation Asset Clearing**.
+
+- **Concurrency Guard for All Starter-Capable Agents**.
+
+- **Chat History Per-User Isolation** (migration 0043).
+
+- **FlowHypervisor Monitoring Prompt Enhanced**.
+
+- **Stopper Refactored to Single-Threaded**.
+
+- **Added Image-Interpreter / File-Interpreter / Counter Agents**.
+
+- **Added Flow Validation System** - Structural verification engine (`acp-validate.js`).
+
+- **Added FlowHypervisor Agent**.
+
+- **Added Mouser Agent**.
+
+- **Improved Gitter / Apirer Agent Content Reporting** - Structured `<command> RESPONSE { ... }` format.
+
+- **jd-cli Bundled in Installation**.
+
+- **FlowCreator Skill Enhancements**.
+
+- **Added PyAutoGUI Dependency**.
+
+- **New API Endpoints** (the app now exposes 103 routes).
+
+- **P0/P1/P2 Security Hardening** - Comprehensive tiered security test suite covering user isolation, CSRF, login enforcement, path traversal prevention, and prompt injection defense.
+
+- **Added Path Guard Module** (`path_guard.py`) - Centralized path validation layer.
+
+- **Improved File Search Chain** - Integrates with `path_guard.py`.
+
+- **Enhanced RAG Interface Security** - LLM-based indirect file access detection and prompt-level path validation.
+
+- **Improved Crawler Agent** - Raw content capture mode.
+
+- **UI Refinements** - MCP/agents dialog improved with golden-ratio styled columns.
+
+- **ESLint Configuration** - Added `eslint.config.mjs` for frontend JavaScript quality assurance.
+
+- **Added Summarizer / FlowHypervisor / Crawler / Jenkinser / Apirer / Pser / Dockerer / Telegramer / Telegramrx Agents**. Telegramer and Telegramrx were later retired into the current **Telegrammer** send/receive agent.
+
+- **Enhanced Security Guardrails** - Local file system access strictly limited to explicitly allowed paths.
+
+- **Smart Prompts Improvement** - Enhanced LLM lookup prompts for Monitor-Log and Monitor-Netstat.
+
+- **Interpreter Path Improvements** - Avoided hardcoded Python interpreter path execution dependencies within workflows.
+
+- **Added Forker / Asker / Pythonxer / Stopper / Recmailer / Whatsapper / Notifier / Executer / Deleter / Mover / Sleeper / Croner / Cleaner Agents**.
+
+- **Added Qwen Image Analysis** - Dual-backend image analysis supporting both Claude (cloud) and Qwen/Ollama (local) vision models.
+
+- **Modular Frontend** - Split `agent_page.js` into 8 focused modules (init, chat, canvas, context, dialogs, layout, state, ui).
+
+- **Canvas Auto-Configuration** - Agent connections on the workflow designer auto-populate config.yaml files.
+
+- **Improved Session Persistence** - 24-hour session state with automatic restoration.
+
+- **Enhanced RAG Pipeline** - Better context budgeting, metadata extraction, and advanced retrieval strategies.
+
+- **Workflow Save/Load** - Export and import workflows as `.flw` files.
+
+- **Tools Dialog** - Per-tool enable/disable via the chat interface.
+
+- **Image Format Conversion** - Added `converter.py` module.
+
+- **Chat History Management** - Added `chat_history_loader.py` for persistent conversation history.
+
+- **103 HTTP Endpoints** - Comprehensive REST API for agent management, connection updates, session control.
+
+---
+
+# Appendix D — Acknowledgments / Contributing / License
+
+## Acknowledgments
+
+- [Django](https://www.djangoproject.com/) — Web framework
+- [LangChain](https://github.com/langchain-ai/langchain) — LLM orchestration
+- [LangGraph](https://github.com/langchain-ai/langgraph) — Stateful agent workflows
+- [Ollama](https://ollama.ai/) — Local LLM inference
+- [FAISS](https://github.com/facebookresearch/faiss) — Vector similarity search
+- [Anthropic](https://www.anthropic.com/) — Claude API
+- [Bootstrap](https://getbootstrap.com/) — Frontend framework
+- [Ruff](https://github.com/astral-sh/ruff) — Python linter
+- [PyAutoGUI](https://github.com/asweigart/pyautogui) — Mouse/keyboard automation
+- [JD-CLI](https://github.com/intoolswetrust/jd-cli) — Java decompiler CLI
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/your-feature`.
+3. Commit your changes: `git commit -m 'Add your feature'`.
+4. Push to the branch: `git push origin feature/your-feature`.
+5. Open a Pull Request.
+
+Development guidelines:
+
+- Follow PEP 8.
+- Add tests for new features (the suite lives in `Tlamatini/agent/tests.py`).
+- Update documentation when API or behavior changes (this file, plus `docs/claude/*.md`, plus `agentic_skill.md` for new agents).
+- Use meaningful commit messages.
+
+## License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+
+---
+
+*For support or questions, please open an issue on GitHub.*
+
+## Desktop control and flow contracts — 2026-09-15
+
+Mouser now resolves explicit physical, window and screenshot coordinates; Keyboarder binds Unicode/key delivery to a verified window; Shoter publishes capture geometry. `input_sent` is delivery evidence, not application success, and a failed or interrupted input segment must be observed before replay.
+
+Parametrizer derives its parser registry from current contracts and validates complete typed mappings. FlowCreator selects from all 85 installed agents and validates the generated graph before publishing; FlowHypervisor separates execution, kill and observation relationships and uses current desktop receipts/timing. GUI-Manager remains design only.
+
+See [configuration, examples and limitations](docs/desktop-input-and-flow-contracts.md), the [complete generated coverage inventory](docs/agent-coverage.md), and the [GUI-Manager design](docs/GUI-Manager-design.md).
+
+## Video-Analyzer content analysis
+
+Video-Analyzer supports `analysis_type: robotics` (default), `transcription`, and `summary`. Robotics preserves the deterministic motion gate and dual-vision/merge verdict, with `PASS_OK` only on two explicit independent passes. Transcription reads selected video audio tracks (`audio_tracks: all` or `0,1`) using Whisperer's local faster-whisper backend, GPU auto/CPU fallback and timestamped segments; it never opens a microphone. Summary combines speech with two independent visual observers over frame batches spanning the whole clip, then synthesizes an overview, chronology, readable screen text, facts, steps, decisions, action items and limitations. Content modes accept static scenes, bypass the motion gate, and emit `TLM_ANALYSIS::` tokens rather than robotics verdicts. Missing audio/speech and partial failures are explicit. Each content run saves transcript, segments, report and full analysis artifacts. Parametrizer and wrapped chat results expose `analysis_type`, `analysis_token`, `transcript`, `summary`, `audio_status`, timestamped `segments_json` and artifact paths; the body remains `response_body`. Input remains a file, wildcard, newest video in a folder or Camcorder pool name, or a web link (YouTube and other sites): Video-Analyzer downloads it itself (one item; sound only for transcription), joins picture and sound with PyAV when ffmpeg is absent, keeps a self-updating private yt-dlp, names every download failure, and adds `source_url`/`source_title` to its result. Always starts downstream agents; sampled perception is not exhaustive.
+
+See [configuration, routing, Parametrizer mappings and limitations](Tlamatini/agent/agents/video_analyzer/README.md).
+
+## Image/video error reporting and recovery (2026-09-26)
+
+Image/video model failures accumulate in one shared, themed, non-modal fatal-error dialog with an audible notification. Tlamatini keeps running: preserve its retry/tactic ladder, cancellation controls and configured flow recovery routes. Keep the configured model identities; never report a surviving observer or raw concatenation as successful analysis. Dismiss hides the dialog while retaining its history; new failures reopen it. See [the shared behavior and verification contract](docs/visual-analysis-errors.md).

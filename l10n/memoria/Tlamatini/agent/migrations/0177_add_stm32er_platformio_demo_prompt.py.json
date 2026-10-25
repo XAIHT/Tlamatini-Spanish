@@ -1,0 +1,140 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0177_add_stm32er_platformio_demo_prompt.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini, run the **STM32er BLUE PILL DEMO** — build (and flash it if a board is \"",
+   "es": "\"Tlamatini, ejecuta la **STM32er BLUE PILL DEMO** — construye (y flashéalo si hay una placa \"",
+   "n": 1
+  },
+  {
+   "en": "\"connected) a classic LED blink for an **STM32F103 \\\"Blue Pill\\\"** using your new \"",
+   "es": "\"conectada) un clásico blink de LED para una **STM32F103 \\\"Blue Pill\\\"** usando tu nuevo \"",
+   "n": 1
+  },
+  {
+   "en": "\"PlatformIO backend, in ONE call.\\n\"",
+   "es": "\"backend de PlatformIO, en UNA sola llamada.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"In Multi-Turn, using ONLY the chat_agent_stm32er tool, call it EXACTLY ONCE with:\\n\"",
+   "es": "\"En Multi-Turn, usando SÓLO el tool chat_agent_stm32er, llámalo EXACTAMENTE UNA VEZ con:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  - action='scaffold_build_flash'\\n\"",
+   "es": "\"  - action='scaffold_build_flash'\\n\""
+  },
+  {
+   "en": "\"  - stm32_backend='platformio'   (this routes to the PlatformIO backend — no MCP server)\\n\"",
+   "es": "\"  - stm32_backend='platformio'   (esto enruta al backend de PlatformIO — sin servidor MCP)\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  - board='bluepill_f103c8'      (the pio board id for the Blue Pill; it fixes the memory map/linker)\\n\"",
+   "es": "\"  - board='bluepill_f103c8'      (el pio board id de la Blue Pill; fija el mapa de memoria/linker)\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  - framework='arduino'          (stm32duino — a board-agnostic LED_BUILTIN blink)\\n\"",
+   "es": "\"  - framework='arduino'          (stm32duino — un blink de LED_BUILTIN agnóstico de la placa)\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  - project_dir='<your Templates directory>/bluepill_blink'  (default to YOUR Templates directory unless I name another path)\\n\"",
+   "es": "\"  - project_dir='<your Templates directory>/bluepill_blink'  (usa de forma predeterminada TU directorio Templates salvo que yo indique otro path)\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"  - content= this Arduino sketch, passed VERBATIM:\\n\"",
+   "es": "\"  - content= este sketch de Arduino, pasado VERBATIM:\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"ZERO-CONFIG: if PlatformIO Core is not installed yet, STM32er auto-installs it (shared \"",
+   "es": "\"ZERO-CONFIG: si PlatformIO Core todavía no está instalado, STM32er lo instala solo (compartido \"",
+   "n": 1
+  },
+  {
+   "en": "\"with ESP32er) on first use — and the FIRST build also downloads the STM32 Arduino \"",
+   "es": "\"con ESP32er) en el primer uso — y el PRIMER build también descarga el toolchain de STM32 Arduino, \"",
+   "n": 1
+  },
+  {
+   "en": "\"toolchain, so it can take a few minutes; that is normal, let it finish.\\n\"",
+   "es": "\"así que puede tardar unos minutos; eso es normal, déjalo terminar.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"FAIL-SAFE: this creates the project and COMPILES the firmware; it flashes over the \"",
+   "es": "\"FAIL-SAFE: esto crea el proyecto y COMPILA el firmware; sólo flashea sobre el \"",
+   "n": 1
+  },
+  {
+   "en": "\"ST-LINK only when a probe is connected. With NO board it reports 'built OK — connect the \"",
+   "es": "\"ST-LINK cuando hay una probe conectada. Sin placa reporta 'built OK — connect the \"",
+   "n": 1
+  },
+  {
+   "en": "\"ST-LINK and run action=flash', which is a SUCCESS. Do NOT loop-retry a failed toolchain \"",
+   "es": "\"ST-LINK and run action=flash', que es un SUCCESS. NO reintentes en bucle una descarga de toolchain \"",
+   "n": 1
+  },
+  {
+   "en": "\"download — report the stderr and stop.\\n\"",
+   "es": "\"fallida — reporta el stderr y detente.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"When it returns, read the INI_SECTION_STM32ER result and give me a short, tidy HTML \"",
+   "es": "\"Cuando regrese, lee el resultado INI_SECTION_STM32ER y dame un resumen HTML corto y \"",
+   "n": 1
+  },
+  {
+   "en": "\"summary of: the backend used, the board, whether the BUILD succeeded, and whether it \"",
+   "es": "\"ordenado de: el backend usado, la placa, si el BUILD funcionó y si \"",
+   "n": 1
+  },
+  {
+   "en": "\"FLASHED or skipped the flash (and why). If you want to double-check the environment \"",
+   "es": "\"FLASHEÓ u omitió el flash (y por qué). Si quieres revisar primero el entorno, \"",
+   "n": 1
+  },
+  {
+   "en": "\"first, you MAY do a quick action='validate' with the same board before the scaffold.\\n\"",
+   "es": "\"PUEDES hacer un action='validate' rápido con la misma placa antes del scaffold.\\n\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tick ONLY the Multi-Turn checkbox; use ONLY chat_agent_stm32er. End with END-RESPONSE.\"",
+   "es": "\"Marca SÓLO la casilla Multi-Turn; usa SÓLO chat_agent_stm32er. Termina con END-RESPONSE.\"",
+   "n": 1
+  }
+ ],
+ "conservar": [
+  {
+   "en": "\"        #include <Arduino.h>\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"        void setup() { pinMode(LED_BUILTIN, OUTPUT); }\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"        void loop() {\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"          digitalWrite(LED_BUILTIN, HIGH); delay(500);\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "\"          digitalWrite(LED_BUILTIN, LOW);  delay(500);\\n\"",
+   "motivo": "código Arduino (verbatim)"
+  },
+  {
+   "en": "'Prompt'",
+   "motivo": "nombre de modelo Django"
+  }
+ ]
+}
