@@ -43,11 +43,11 @@ import sys
 logger = logging.getLogger(__name__)
 
 # The registry sub-key name under ...\\CurrentVersion\\Uninstall\\.
-ARP_KEY_NAME = "Tlamatini"
+ARP_KEY_NAME = "Tlamatini-Spanish"
 ARP_UNINSTALL_ROOT = r"Software\Microsoft\Windows\CurrentVersion\Uninstall"
-DISPLAY_NAME = "Tlamatini"
+DISPLAY_NAME = "Tlamatini-Spanish"
 PUBLISHER = "XAIHT"
-ABOUT_URL = "https://github.com/XAIHT/Tlamatini"
+ABOUT_URL = "https://github.com/XAIHT/Tlamatini-Spanish"
 
 
 def is_supported() -> bool:
@@ -89,7 +89,7 @@ def register_uninstall_entry(
 ) -> bool:
     """Write the per-user ARP entry so Tlamatini shows in "Installed apps".
 
-    ``install_dir`` is the folder containing ``Tlamatini.exe`` /
+    ``install_dir`` is the folder containing ``Tlamatini-Spanish.exe`` /
     ``Tlamatini.ico`` / ``Uninstaller.exe``. The entry is written only when an
     ``Uninstaller.exe`` is actually present there (so Windows' Uninstall button
     has something to launch); otherwise this is a no-op returning False.
@@ -109,7 +109,7 @@ def register_uninstall_entry(
             return False
 
         icon = os.path.join(install_dir, "Tlamatini.ico")
-        exe = os.path.join(install_dir, "Tlamatini.exe")
+        exe = os.path.join(install_dir, "Tlamatini-Spanish.exe")
         display_icon = icon if os.path.isfile(icon) else (
             f"{exe},0" if os.path.isfile(exe) else uninstaller
         )
@@ -198,7 +198,7 @@ def self_heal_for_frozen(version: str = "") -> bool:
 # uninstall intentionally KEEPS this key (so companion apps still find the preserved
 # agents); only an explicit FULL removal calls ``unregister_discovery_entry()``.
 # Same ADMIN/SAFETY contract as above: HKCU only, no admin, fail-open, idempotent.
-XAIHT_DISCOVERY_KEY = r"Software\XAIHT\Tlamatini"
+XAIHT_DISCOVERY_KEY = r"Software\XAIHT\Tlamatini-Spanish"
 XAIHT_PARENT_KEY = r"Software\XAIHT"
 
 

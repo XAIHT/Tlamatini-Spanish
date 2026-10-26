@@ -75,7 +75,7 @@ def owned_processes(root):
 
 
 def main_application(row, root):
-    return os.path.normcase(row["path"]) == os.path.normcase(os.path.join(os.path.abspath(root), "Tlamatini.exe"))
+    return os.path.normcase(row["path"]) == os.path.normcase(os.path.join(os.path.abspath(root), "Tlamatini-Spanish.exe"))
 
 
 def stop_owned_workers(root):

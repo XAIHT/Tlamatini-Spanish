@@ -27,6 +27,12 @@
    "es": "        # -> Step-by-Step (hyphenated form + intent word; the spaced \"step by step\"\n        #    used elsewhere in the catalog must NOT trip the same detector).\n        #    Spanish edition: the same detector also accepts \"wizard/casillas ... Paso a paso\".\n        self.assertRegex(\n            c,\n            r'[Ss]tep-by-[Ss]tep\\s+(?:setup|wizard|checkbox)'\n            r'|(?i:(?:casillas?|modo|wizard|asistente)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b)'\n            r'|(?i:\\bpaso\\s+a\\s+paso\\s+(?:wizard|asistente|mode|modo)\\b)'\n            r'|(?i:\\b(?:marca|activa)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b)',\n        )",
    "codigo": "la prueba refleja el detector de tools_dialog.js, que en español también acepta «wizard/casillas … Paso a paso»",
    "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
   }
  ],
  "conservar": []

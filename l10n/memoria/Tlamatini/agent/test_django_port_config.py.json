@@ -1,0 +1,78 @@
+{
+ "archivo": "Tlamatini/agent/test_django_port_config.py",
+ "segmentos": [
+  {
+   "en": "_DEFAULT_PORT = 8000",
+   "es": "_DEFAULT_PORT = 8052",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "(default 8000).",
+   "es": "(default 8052).",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "def test_shipped_default_is_8000",
+   "es": "def test_shipped_default_is_8052",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "must stay 8000 —",
+   "es": "must stay 8052 —",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "http://127.0.0.1:8000/.",
+   "es": "http://127.0.0.1:8052/.",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "falls_back_to_8000",
+   "es": "falls_back_to_8052",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 4
+  },
+  {
+   "en": "fall_back_to_8000",
+   "es": "fall_back_to_8052",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "must still boot on 8000.",
+   "es": "must still boot on 8052.",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "['manage.py', 'runserver', '8000']",
+   "es": "['manage.py', 'runserver', '8052']",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "\"'0.0.0.0:8000'\"",
+   "es": "\"'0.0.0.0:8052'\"",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "'\"0.0.0.0:8000\"'",
+   "es": "'\"0.0.0.0:8052\"'",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  },
+  {
+   "en": "'http://localhost:8000/'",
+   "es": "'http://localhost:8052/'",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

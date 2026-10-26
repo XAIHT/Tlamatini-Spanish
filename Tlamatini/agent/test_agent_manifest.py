@@ -152,7 +152,7 @@ class DiscoveryRegistryFailOpenTests(unittest.TestCase):
 
     def test_key_path_is_stable(self):
         # uninstall.py / installer read these exact paths — keep them in lockstep.
-        self.assertEqual(war.XAIHT_DISCOVERY_KEY, r"Software\XAIHT\Tlamatini")
+        self.assertEqual(war.XAIHT_DISCOVERY_KEY, r"Software\XAIHT\Tlamatini-Spanish")
         self.assertEqual(war.XAIHT_PARENT_KEY, r"Software\XAIHT")
 
 

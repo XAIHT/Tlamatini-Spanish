@@ -36,9 +36,9 @@ def registry_context(phase):
         data = {"phase": phase, "pid": os.getpid(), "thread": threading.get_native_id()}
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software") as current:
             data["current_user_hive"] = key_name(current)
-        path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini"
+        path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini-Spanish"
         data["registry_reads"] = []
-        for selected in (path, path.rsplit("\\", 1)[0], r"Software\Classes\Tlamatini.FlowFile"):
+        for selected in (path, path.rsplit("\\", 1)[0], r"Software\Classes\TlamatiniSpanish.FlowFile"):
             for view in (0, winreg.KEY_WOW64_32KEY, winreg.KEY_WOW64_64KEY):
                 row = {"path": selected, "view": view}
                 try:
@@ -56,7 +56,7 @@ def registry_context(phase):
 
 def configure(operation):
     global LOG_PATH
-    folder = Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "Tlamatini/SetupLogs"
+    folder = Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "Tlamatini-Spanish/SetupLogs"
     try:
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / f"{datetime.now():%Y%m%d-%H%M%S}-{operation}-{os.getpid()}.log"
@@ -92,7 +92,7 @@ def configure(operation):
     sys.stdout = Transcript(sys.stdout)
     sys.stderr = Transcript(sys.stderr)
     LOG_PATH = path
-    print(f"Tlamatini {operation} | {datetime.now().isoformat(timespec='seconds')} | PID {os.getpid()}", flush=True)
+    print(f"Tlamatini-Spanish {operation} | {datetime.now().isoformat(timespec='seconds')} | PID {os.getpid()}", flush=True)
     registry_context("client startup")
 
 

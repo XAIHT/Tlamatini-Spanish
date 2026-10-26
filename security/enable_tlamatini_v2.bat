@@ -52,7 +52,7 @@ exit /b %errorlevel%
 #
 # What it DOES grant:
 #   1. Defender exclusions for the Tlamatini install folder (auto-detected)
-#   2. Controlled Folder Access whitelist for Tlamatini.exe AND its Python
+#   2. Controlled Folder Access whitelist for Tlamatini-Spanish.exe AND its Python
 #      (the agents run as python.exe; without it no PDF/document can be saved
 #      into Documents, Desktop, Pictures, Music or Videos)
 #   3. Per-program ASR exceptions; global AuditMode only with -AuditCompatibility
@@ -78,12 +78,12 @@ exit /b %errorlevel%
 #   - NEW DISCOVERY step: no hard-coded program paths. It finds every
 #     installation route (the folder this script lives in + the install that
 #     Tlamatini registers in HKCU\Software\XAIHT\Tlamatini) and classifies each
-#     as FROZEN (Tlamatini.exe + its carried python\python.exe) or SOURCE
+#     as FROZEN (Tlamatini-Spanish.exe + its carried python\python.exe) or SOURCE
 #     (Tlamatini\manage.py + the Python that runs it: live processes, venv,
 #     PATH). Steps 1, 2 and 5 all use that one list.
 #   - STEP 2 allows those programs through Controlled Folder Access, then reads
 #     the list back and reports [OK]/[FAIL] per program. v2.1 allowed only
-#     Tlamatini.exe, so LaTeXer/PDFer could not save into Documents/Desktop.
+#     Tlamatini-Spanish.exe, so LaTeXer/PDFer could not save into Documents/Desktop.
 #   - STEP 5 adds one outbound rule per discovered program, never duplicates.
 #
 # REQUIREMENTS:
@@ -244,7 +244,7 @@ $ErrorActionPreference = "Continue"
 # $PSScriptRoot = the folder where this .ps1 lives (e.g. ...\Tlamatini\security)
 # Tlamatini root = parent of that folder. Works on any drive / directory name.
 $TlamatiniPath = Split-Path -Parent $securityDir
-$TlamatiniExe = Join-Path $TlamatiniPath "Tlamatini.exe"
+$TlamatiniExe = Join-Path $TlamatiniPath "Tlamatini-Spanish.exe"
 $ScriptVersion = "2.3"
 
 Write-Host ""
@@ -292,7 +292,7 @@ try {
 # DISCOVERY: every Tlamatini installation route, and the programs it runs
 # -----------------------------------------------------------------------------
 # No program path below is hard-coded. A route is classified by what is on disk:
-#   FROZEN  <root>\Tlamatini.exe exists. The workflow agents (LaTeXer, PDFer,
+#   FROZEN  <root>\Tlamatini-Spanish.exe exists. The workflow agents (LaTeXer, PDFer,
 #           PPTXer, ...) run under the carried <root>\python\python.exe.
 #   SOURCE  <root>\Tlamatini\manage.py exists. The agents run under the SAME
 #           Python that runs manage.py: found from the running processes, a
@@ -313,7 +313,7 @@ function Add-UniqueExistingPath {
 $TlamatiniRoots = New-Object System.Collections.Generic.List[string]
 Add-UniqueExistingPath -List $TlamatiniRoots -Path $TlamatiniPath
 try {
-    $registeredRoot = (Get-ItemProperty -Path 'HKCU:\Software\XAIHT\Tlamatini' -ErrorAction Stop).InstallLocation
+    $registeredRoot = (Get-ItemProperty -Path 'HKCU:\Software\XAIHT\Tlamatini-Spanish' -ErrorAction Stop).InstallLocation
     Add-UniqueExistingPath -List $TlamatiniRoots -Path $registeredRoot
 } catch {}
 
@@ -326,7 +326,7 @@ $sourceRouteFound = $false
 # Never exclude an arbitrary directory or drive merely because it exists.
 for ($i = $TlamatiniRoots.Count - 1; $i -ge 0; $i--) {
     $candidate = $TlamatiniRoots[$i]
-    if (-not (Test-Path -LiteralPath (Join-Path $candidate 'Tlamatini.exe') -PathType Leaf) -and
+    if (-not (Test-Path -LiteralPath (Join-Path $candidate 'Tlamatini-Spanish.exe') -PathType Leaf) -and
         -not (Test-Path -LiteralPath (Join-Path $candidate 'Tlamatini\manage.py') -PathType Leaf)) {
         $TlamatiniRoots.RemoveAt($i)
     }
@@ -339,7 +339,7 @@ foreach ($root in $TlamatiniRoots) {
     foreach ($pyName in @('python.exe', 'pythonw.exe')) {
         Add-UniqueExistingPath -List $TlamatiniCarriedPythons -Path (Join-Path $root ("python\" + $pyName))
     }
-    $frozenExe = Join-Path $root "Tlamatini.exe"
+    $frozenExe = Join-Path $root "Tlamatini-Spanish.exe"
     if (Test-Path -LiteralPath $frozenExe) {
         $TlamatiniRouteReport.Add("FROZEN  $root")
         Add-UniqueExistingPath -List $TlamatiniPrograms -Path $frozenExe
@@ -360,7 +360,7 @@ foreach ($root in $TlamatiniRoots) {
             }
         }
     } else {
-        $TlamatiniRouteReport.Add("SKIPPED $root (neither Tlamatini.exe nor Tlamatini\manage.py)")
+        $TlamatiniRouteReport.Add("SKIPPED $root (neither Tlamatini-Spanish.exe nor Tlamatini\manage.py)")
     }
 }
 
@@ -394,7 +394,7 @@ if ($sourceRouteFound) {
 foreach ($py in $TlamatiniCarriedPythons) { Add-UniqueExistingPath -List $TlamatiniPrograms -Path $py }
 foreach ($py in $TlamatiniDevPythons) { Add-UniqueExistingPath -List $TlamatiniPrograms -Path $py }
 
-# Agents launch these runtimes too; an allowance for Tlamatini.exe is not inherited.
+# Agents launch these runtimes too; an allowance for Tlamatini-Spanish.exe is not inherited.
 # Named, existing executable paths only. No recursive trust of arbitrary programs.
 foreach ($name in @('node.exe','git.exe','ffmpeg.exe','ffprobe.exe','pdflatex.exe',
     'xelatex.exe','lualatex.exe','latexmk.exe','biber.exe','bibtex.exe','makeindex.exe',
@@ -444,7 +444,7 @@ foreach ($root in $TlamatiniRoots) {
     try { Add-VerifiedDefenderEntry 'ExclusionPath' $root }
     catch { Write-EnablementWarning $_.Exception.Message }
 }
-foreach ($prog in @($TlamatiniPrograms | Where-Object { [IO.Path]::GetFileName($_) -ieq 'Tlamatini.exe' }) + @($TlamatiniCarriedPythons)) {
+foreach ($prog in @($TlamatiniPrograms | Where-Object { [IO.Path]::GetFileName($_) -ieq 'Tlamatini-Spanish.exe' }) + @($TlamatiniCarriedPythons)) {
     try { Add-VerifiedDefenderEntry 'ExclusionProcess' $prog }
     catch { Write-EnablementWarning $_.Exception.Message }
 }

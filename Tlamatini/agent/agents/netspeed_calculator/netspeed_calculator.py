@@ -1265,7 +1265,7 @@ def _app_root() -> str:
         base = os.environ.get("LOCALAPPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Local")
     else:
         base = os.environ.get("XDG_DATA_HOME") or os.path.join(os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini")
+    return os.path.join(base, "Tlamatini-Spanish")
 
 
 def _default_output_dir(config: dict) -> str:

@@ -38,17 +38,29 @@
   },
   {
    "en": "f\"Tlamatini Uninstaller v{self.version}\"",
-   "es": "f\"Desinstalador de Tlamatini v{self.version}\"",
+   "es": "f\"Desinstalador de Tlamatini-Spanish v{self.version}\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Tlamatini Uninstaller\"",
-   "es": "\"Desinstalador de Tlamatini\"",
+   "es": "\"Desinstalador de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Select the Tlamatini installation directory\"",
-   "es": "\"Selecciona el directorio de instalación de Tlamatini\"",
+   "es": "\"Selecciona el directorio de instalación de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -78,7 +90,11 @@
   },
   {
    "en": "\"Select the installed Tlamatini folder. A drive root, shared system \"",
-   "es": "\"Selecciona la carpeta instalada de Tlamatini. Una raíz de unidad, una carpeta de sistema \"",
+   "es": "\"Selecciona la carpeta instalada de Tlamatini-Spanish. Una raíz de unidad, una carpeta de sistema \"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -88,7 +104,11 @@
   },
   {
    "en": "\"Not a Tlamatini installation\"",
-   "es": "\"No es una instalación de Tlamatini\"",
+   "es": "\"No es una instalación de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -98,7 +118,11 @@
   },
   {
    "en": "f\"Tlamatini installation:\\n{raw}\\n\\nSelect the installed application folder.\"",
-   "es": "f\"instalación de Tlamatini:\\n{raw}\\n\\nSelecciona la carpeta de la aplicación instalada.\"",
+   "es": "f\"instalación de Tlamatini-Spanish:\\n{raw}\\n\\nSelecciona la carpeta de la aplicación instalada.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -108,7 +132,11 @@
   },
   {
    "en": "f\"Tlamatini was already removed from:\\n{raw}\\n\\n\"",
-   "es": "f\"Tlamatini ya se quitó de:\\n{raw}\\n\\n\"",
+   "es": "f\"Tlamatini-Spanish ya se quitó de:\\n{raw}\\n\\n\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -128,7 +156,11 @@
   },
   {
    "en": "f\"This will remove Tlamatini from:\\n{raw}\\n\\n\"",
-   "es": "f\"Esto quitará Tlamatini de:\\n{raw}\\n\\n\"",
+   "es": "f\"Esto quitará Tlamatini-Spanish de:\\n{raw}\\n\\n\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -163,12 +195,20 @@
   },
   {
    "en": "\"Tlamatini is still running\"",
-   "es": "\"Tlamatini sigue en ejecución\"",
+   "es": "\"Tlamatini-Spanish sigue en ejecución\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Close Tlamatini to continue.\"",
-   "es": "\"Cierra Tlamatini para continuar.\"",
+   "es": "\"Cierra Tlamatini-Spanish para continuar.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -178,7 +218,11 @@
   },
   {
    "en": "\"In the Tlamatini console, Ctrl+C requests a clean shutdown. Then select Retry.\"",
-   "es": "\"En la consola de Tlamatini, Ctrl+C pide un cierre limpio. Después selecciona Reintentar.\"",
+   "es": "\"En la consola de Tlamatini-Spanish, Ctrl+C pide un cierre limpio. Después selecciona Reintentar.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -188,12 +232,20 @@
   },
   {
    "en": "f\"{len(found)} Tlamatini process(es) in:\\n{target}\"",
-   "es": "f\"{len(found)} proceso(s) de Tlamatini en:\\n{target}\"",
+   "es": "f\"{len(found)} proceso(s) de Tlamatini-Spanish en:\\n{target}\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "f\"{len(found)} Tlamatini process(es) are running in:\\n{target}\"",
-   "es": "f\"{len(found)} proceso(s) de Tlamatini en ejecución en:\\n{target}\"",
+   "es": "f\"{len(found)} proceso(s) de Tlamatini-Spanish en ejecución en:\\n{target}\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -429,6 +481,48 @@
   {
    "en": "\"is left in it.\"",
    "es": "\"en ella.\"",
+   "n": 1
+  },
+  {
+   "en": "STAGING_PREFIX = \"Tlamatini-Uninstaller-\"",
+   "es": "STAGING_PREFIX = \"Tlamatini-Spanish-Uninstaller-\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su carpeta de instalación propia, junto a la de Tlamatini (inglés)",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.FlowFile",
+   "es": "TlamatiniSpanish.FlowFile",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.PromptFlowFile",
+   "es": "TlamatiniSpanish.PromptFlowFile",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 5
+  },
+  {
+   "en": "'tlamatini.exe'",
+   "es": "'tlamatini-spanish.exe'",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 1
+  },
+  {
+   "en": "CurrentVersion\\Uninstall\\Tlamatini\"",
+   "es": "CurrentVersion\\Uninstall\\Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "\"product\": \"Tlamatini\",",
+   "es": "\"product\": \"Tlamatini-Spanish\",",
+   "codigo": "Identidad de Tlamatini-Spanish: su llave de descubrimiento propia (HKCU Software\\XAIHT\\Tlamatini-Spanish)",
    "n": 1
   }
  ],

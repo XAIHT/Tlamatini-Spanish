@@ -196,7 +196,7 @@ class FancyInstaller:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.version = resolve_version()
-        title = f"Instalador de Tlamatini v{self.version}" if self.version else "Instalador de Tlamatini"
+        title = f"Instalador de Tlamatini-Spanish v{self.version}" if self.version else "Instalador de Tlamatini-Spanish"
         self.root.title(title)
         self.zip_path = self._find_zip()
 
@@ -245,13 +245,13 @@ class FancyInstaller:
     def _on_path_change(self, *_):
         raw = self.install_path.get().strip()
         if raw:
-            full = os.path.join(raw, "Tlamatini")
+            full = os.path.join(raw, "Tlamatini-Spanish")
             self.target_label.config(text=f"➜  {full}")
         else:
             self.target_label.config(text="")
 
     def _browse(self):
-        path = filedialog.askdirectory(title="Elige un directorio padre para Tlamatini")
+        path = filedialog.askdirectory(title="Elige un directorio padre para Tlamatini-Spanish")
         if path:
             self.install_path.set(path)
 
@@ -273,7 +273,7 @@ class FancyInstaller:
             )
             return None
 
-        target = os.path.join(raw, "Tlamatini")
+        target = os.path.join(raw, "Tlamatini-Spanish")
 
         target = os.path.abspath(target)
         if (os.path.normcase(os.path.realpath(target)) != os.path.normcase(target)
@@ -412,14 +412,14 @@ class FancyInstaller:
                         f"Detalles: {exc}"
                     ) from exc
                 if owned_processes(target):
-                    raise RuntimeError("Cierra Tlamatini y los agents que sigan activos antes de instalar en esta carpeta, y vuelve a intentarlo.")
+                    raise RuntimeError("Cierra Tlamatini-Spanish y los agents que sigan activos antes de instalar en esta carpeta, y vuelve a intentarlo.")
                 recovery = Recovery(target, lambda message: self._set_progress(0, message))
                 recovery.recover_previous()
                 self._existing_preserved = {name for name in self._preserved_names()
                                             if os.path.exists(os.path.join(target, name))}
                 names = [name for name in document["files"] if not self._is_preserved_member(
                     name, target, self._existing_preserved)]
-                names += ["runtime-assets.json", "CreateShortcut.json", "Uninstaller.exe", "Tlamatini.lnk", "CreateShortcut_Temp.vbs"]
+                names += ["runtime-assets.json", "CreateShortcut.json", "Uninstaller.exe", "Tlamatini-Spanish.lnk", "CreateShortcut_Temp.vbs"]
                 # Reinstall clears the uninstall-only marker. Include it in
                 # recovery so a later failure restores the preserved catalog.
                 names.append(PRESERVED_AGENTS_MARKER)
@@ -668,7 +668,7 @@ class FancyInstaller:
                 return
 
             icon = os.path.join(install_dir, "Tlamatini.ico")
-            exe = os.path.join(install_dir, "Tlamatini.exe")
+            exe = os.path.join(install_dir, "Tlamatini-Spanish.exe")
             display_icon = icon if os.path.isfile(icon) else (
                 f"{exe},0" if os.path.isfile(exe) else uninstaller
             )
@@ -694,9 +694,9 @@ class FancyInstaller:
             except Exception:
                 size_kb = 0
 
-            key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini"
+            key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini-Spanish"
             with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path) as key:
-                winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Tlamatini")
+                winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Tlamatini-Spanish")
                 if self.version:
                     winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, self.version)
                 winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "XAIHT")
@@ -709,7 +709,7 @@ class FancyInstaller:
                 except FileNotFoundError:
                     pass
                 winreg.SetValueEx(key, "URLInfoAbout", 0, winreg.REG_SZ,
-                                  "https://github.com/XAIHT/Tlamatini")
+                                  "https://github.com/XAIHT/Tlamatini-Spanish")
                 winreg.SetValueEx(key, "NoModify", 0, winreg.REG_DWORD, 1)
                 winreg.SetValueEx(key, "NoRepair", 0, winreg.REG_DWORD, 1)
                 if size_kb > 0:
@@ -749,7 +749,7 @@ class FancyInstaller:
             except Exception:
                 catalog_version = ""
 
-            disc_key = r"Software\XAIHT\Tlamatini"
+            disc_key = r"Software\XAIHT\Tlamatini-Spanish"
             # REQ-S2-INSTALL-004 / REQ-S2-REG-001: write ALL SIX values, empty string
             # when unknown, so no stale value from a previous install survives.
             with winreg.CreateKey(winreg.HKEY_CURRENT_USER, disc_key) as dkey:
@@ -822,8 +822,8 @@ class FancyInstaller:
     def _show_success(self, target: str):
         self._installing = False
         self.ui.finish(success=True, target=target, detail=(
-            "Tlamatini quedó instalada.\n\nLos accesos directos del escritorio están listos.\n"
-            "Los archivos de flow .flw y .fpmt ya están asociados con Tlamatini."
+            "Tlamatini-Spanish quedó instalada.\n\nLos accesos directos del escritorio están listos.\n"
+            "Los archivos de flow .flw y .fpmt ya están asociados con Tlamatini-Spanish."
             + ("\n\n" + self.setup_notice if getattr(self, "setup_notice", "") else "")
         ))
 

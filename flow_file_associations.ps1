@@ -15,19 +15,19 @@ $ErrorActionPreference = 'Stop'
 # Windows PowerShell -File binds defaults before $PSScriptRoot is available.
 # Resolve here, after the script scope has been initialized.
 if (-not $PSBoundParameters.ContainsKey('InstallDir')) { $InstallDir = $PSScriptRoot }
-if ($RegistryRoot -ne 'HKCU:\Software' -and $RegistryRoot -notmatch '^HKCU:\\Software\\XAIHT\\Tlamatini\\FileAssociationTests\\[a-zA-Z0-9_-]+$') {
+if ($RegistryRoot -ne 'HKCU:\Software' -and $RegistryRoot -notmatch '^HKCU:\\Software\\XAIHT\\Tlamatini-Spanish\\FileAssociationTests\\[a-zA-Z0-9_-]+$') {
     throw 'RegistryRoot must be HKCU:\Software or an isolated Tlamatini FileAssociationTests key.'
 }
 if ([string]::IsNullOrWhiteSpace($InstallDir)) { throw 'InstallDir must identify the Tlamatini installation directory.' }
 $InstallDir = [IO.Path]::GetFullPath($InstallDir)
 if ($InstallDir -ne [IO.Path]::GetPathRoot($InstallDir)) { $InstallDir = $InstallDir.TrimEnd('\') }
 $classes = "$RegistryRoot\Classes"
-$capabilities = "$RegistryRoot\Tlamatini\FlowCapabilities"
+$capabilities = "$RegistryRoot\Tlamatini-Spanish\FlowCapabilities"
 $registered = "$RegistryRoot\RegisteredApplications"
-$preferences = "$RegistryRoot\Tlamatini\FileTypes"
+$preferences = "$RegistryRoot\Tlamatini-Spanish\FileTypes"
 $definitions = @{
-    '.flw' = @{ ProgId = 'Tlamatini.FlowFile'; Name = 'Tlamatini Agent Flow' }
-    '.fpmt' = @{ ProgId = 'Tlamatini.PromptFlowFile'; Name = 'Tlamatini Prompting Flow' }
+    '.flw' = @{ ProgId = 'TlamatiniSpanish.FlowFile'; Name = 'Flow de agents de Tlamatini-Spanish' }
+    '.fpmt' = @{ ProgId = 'TlamatiniSpanish.PromptFlowFile'; Name = 'Flow de prompts de Tlamatini-Spanish' }
 }
 function Read-Value([string]$Path, [string]$Name = '') {
     if (Test-Path -LiteralPath $Path) { return (Get-Item -LiteralPath $Path).GetValue($Name, $null) }
@@ -56,16 +56,16 @@ function Test-Owned([string]$ProgPath) {
     if ($owner) { return $owner -ieq $InstallDir }
     # Upgrade compatibility with the old registration that lacked owner metadata.
     $oldCommand = Read-Value "$ProgPath\shell\open\command"
-    return $oldCommand -and ($oldCommand.Contains('"' + (Join-Path $InstallDir 'Tlamatini.exe') + '"') -or
+    return $oldCommand -and ($oldCommand.Contains('"' + (Join-Path $InstallDir 'Tlamatini-Spanish.exe') + '"') -or
                             $oldCommand.Contains('"' + (Join-Path $InstallDir 'Tlamatini.ps1') + '"'))
 }
 if ($Action -eq 'DefaultApps') {
     if ($RegistryRoot -ne 'HKCU:\Software') { throw 'DefaultApps is unavailable for a test registry.' }
-    Start-Process 'ms-settings:defaultapps?registeredAppUser=TlamatiniFlows'
+    Start-Process 'ms-settings:defaultapps?registeredAppUser=TlamatiniSpanishFlows'
     return
 }
 if ($Action -in @('Register', 'Repair')) {
-    $executable = Join-Path $InstallDir 'Tlamatini.exe'
+    $executable = Join-Path $InstallDir 'Tlamatini-Spanish.exe'
     if ($Source) {
         $entry = Join-Path $InstallDir 'Tlamatini\manage.py'
         if (-not $PythonExe) { $PythonExe = (Get-Command python.exe -ErrorAction Stop).Source }
@@ -91,7 +91,7 @@ if ($Action -in @('Register', 'Repair')) {
         Set-Value $progPath '' $definition.Name
         Set-Value $progPath 'TlamatiniInstallDir' $InstallDir
         Set-Value "$progPath\DefaultIcon" '' ('"' + $icon + '",0')
-        Set-Value "$progPath\shell\open" 'FriendlyAppName' 'Tlamatini'
+        Set-Value "$progPath\shell\open" 'FriendlyAppName' 'Tlamatini-Spanish'
         Set-Value "$progPath\shell\open\command" '' $command
         # Retain a user-selected legacy ProgID only when it belongs to this install.
         $legacyPath = "$classes\SystemAgent.FlowFile"
@@ -104,11 +104,11 @@ if ($Action -in @('Register', 'Repair')) {
         $current = Read-Value $extensionPath
         if (-not $current -or $current -eq $progId) { Set-Value $extensionPath '' $progId }
         Set-Value "$extensionPath\OpenWithProgids" $progId ([byte[]]@()) 'None'
-        Set-Value $capabilities 'ApplicationName' 'Tlamatini'
-        Set-Value $capabilities 'ApplicationDescription' 'Edit agent flows and prompting flows in Tlamatini.'
+        Set-Value $capabilities 'ApplicationName' 'Tlamatini-Spanish'
+        Set-Value $capabilities 'ApplicationDescription' 'Edita flows de agents y flows de prompts en Tlamatini-Spanish.'
         Set-Value $capabilities 'ApplicationIcon' ('"' + $icon + '",0')
         Set-Value "$capabilities\FileAssociations" $extension $progId
-        Set-Value $registered 'TlamatiniFlows' 'Software\Tlamatini\FlowCapabilities'
+        Set-Value $registered 'TlamatiniSpanishFlows' 'Software\Tlamatini-Spanish\FlowCapabilities'
         Remove-Value "$preferences\$extension" 'Disabled'
         Write-Host "Registered $extension - $($definition.Name)" -ForegroundColor Green
     }
@@ -148,7 +148,7 @@ if ($Action -in @('Register', 'Repair')) {
         Remove-EmptyKey "$capabilities\FileAssociations"
         foreach ($name in @('ApplicationName', 'ApplicationDescription', 'ApplicationIcon')) { Remove-Value $capabilities $name }
         Remove-EmptyKey $capabilities
-        if ((Read-Value $registered 'TlamatiniFlows') -eq 'Software\Tlamatini\FlowCapabilities') { Remove-Value $registered 'TlamatiniFlows' }
+        if ((Read-Value $registered 'TlamatiniSpanishFlows') -eq 'Software\Tlamatini-Spanish\FlowCapabilities') { Remove-Value $registered 'TlamatiniSpanishFlows' }
     }
 } elseif ($Action -eq 'Status') {
     @($Extensions | ForEach-Object {

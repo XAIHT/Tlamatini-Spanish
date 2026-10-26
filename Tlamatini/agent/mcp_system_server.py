@@ -217,7 +217,7 @@ async def main(config_path=None):
         config = json.load(f)
 
     host = config.get("mcp_system_server_host", "127.0.0.1")
-    port = config.get("mcp_system_server_port", 8765)
+    port = config.get("mcp_system_server_port", 8752)
 
     server = await websockets.serve(system_handler, host, port)
     print(f"MCP Server started on ws://{host}:{port}")

@@ -43,7 +43,7 @@ class PromptFlowPanelCarriageTests(unittest.TestCase):
     def test_release_receipt_rejects_each_missing_panel_asset(self):
         # A minimally complete non-self-modify receipt; no actual release is built.
         names = set(assets.ROOT_SOURCES.values()) | {
-            "Tlamatini.exe", "python/python.exe", "jre/bin/java.exe", "git/cmd/git.exe",
+            "Tlamatini-Spanish.exe", "python/python.exe", "jre/bin/java.exe", "git/cmd/git.exe",
             "jd-cli/jd-cli.jar", "_internal/db.sqlite3", "_internal/pymupdf/_mupdf.pyd",
             "_internal/pymupdf/_extra.pyd", "_internal/pymupdf/mupdfcpp64.dll",
             "_internal/staticfiles/agent/vendor/frontend/manifest.json",

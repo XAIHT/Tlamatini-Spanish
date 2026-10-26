@@ -110,6 +110,30 @@
    "en": "f\"Warning: low free disk space ({_human(free)}). The update may fail.\"",
    "es": "f\"Advertencia: queda poco espacio libre en el disco ({_human(free)}). Es posible que la actualización no se complete.\"",
    "n": 1
+  },
+  {
+   "en": "GITHUB_REPO = \"Tlamatini\"",
+   "es": "GITHUB_REPO = \"Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
+   "n": 1
+  },
+  {
+   "en": "_USER_AGENT = \"Tlamatini-Updater\"",
+   "es": "_USER_AGENT = \"Tlamatini-Spanish-Updater\"",
+   "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
+   "n": 1
+  },
+  {
+   "en": "os.path.join(base, \"Tlamatini\", \"updater\")",
+   "es": "os.path.join(base, \"Tlamatini-Spanish\", \"updater\")",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 8
   }
  ],
  "conservar": [

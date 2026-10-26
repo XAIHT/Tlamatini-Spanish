@@ -1,0 +1,36 @@
+{
+ "archivo": "Tlamatini/agent/config.json",
+ "segmentos": [
+  {
+   "en": "\"django_port\": 8000,",
+   "es": "\"django_port\": 8052,",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  },
+  {
+   "en": "\"mcp_system_server_port\": 8765,",
+   "es": "\"mcp_system_server_port\": 8752,",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  },
+  {
+   "en": "\"mcp_system_client_uri\": \"ws://127.0.0.1:8765\",",
+   "es": "\"mcp_system_client_uri\": \"ws://127.0.0.1:8752\",",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  },
+  {
+   "en": "\"mcp_files_search_server_port\": 50051,",
+   "es": "\"mcp_files_search_server_port\": 50052,",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  },
+  {
+   "en": "\"mcp_files_search_client_uri\": \"ws://127.0.0.1:50051\",",
+   "es": "\"mcp_files_search_client_uri\": \"ws://127.0.0.1:50052\",",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

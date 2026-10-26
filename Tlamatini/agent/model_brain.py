@@ -254,7 +254,7 @@ def _learned_dir() -> str:
         return override
     base = os.environ.get("LOCALAPPDATA", "").strip()
     if base:
-        return os.path.join(base, "Tlamatini", "model_brain")
+        return os.path.join(base, "Tlamatini-Spanish", "model_brain")
     return os.path.join(os.path.expanduser("~"), ".tlamatini", "model_brain")
 
 

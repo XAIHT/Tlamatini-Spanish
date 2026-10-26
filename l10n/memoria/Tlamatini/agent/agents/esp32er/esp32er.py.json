@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/agents/esp32er/esp32er.py",
+ "segmentos": [
+  {
+   "en": "os.path.join(base, \"Tlamatini\", \"platformio\")",
+   "es": "os.path.join(base, \"Tlamatini-Spanish\", \"platformio\")",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

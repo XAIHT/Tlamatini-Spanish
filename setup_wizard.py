@@ -91,7 +91,7 @@ class SetupDialog:
         window.rowconfigure(1, weight=1)
         header = tk.Frame(window, bg=BG, padx=24, pady=20)
         header.grid(row=0, column=0, sticky="ew")
-        tk.Label(header, text="TLAMATINI  /  ANTES DE CONTINUAR", bg=BG, fg=AMBER,
+        tk.Label(header, text="TLAMATINI-SPANISH  /  ANTES DE CONTINUAR", bg=BG, fg=AMBER,
                  font=(FONT, 9, "bold")).pack(anchor="w", pady=(0, 12))
         title_label = tk.Label(header, text=heading, bg=BG, fg=TEXT, font=(FONT, 18, "bold"), anchor="w", justify="left")
         title_label.pack(fill="x")
@@ -161,7 +161,7 @@ class WizardView:
         tk.Label(header, text="✦", bg=BG, fg=TEAL, font=(FONT, 24)).pack(side="left", padx=(0, 12))
         brand = tk.Frame(header, bg=BG)
         brand.pack(side="left")
-        tk.Label(brand, text="TLAMATINI", font=(FONT, 13, "bold"), bg=BG, fg=TEXT).pack(anchor="w")
+        tk.Label(brand, text="TLAMATINI-SPANISH", font=(FONT, 13, "bold"), bg=BG, fg=TEXT).pack(anchor="w")
         tk.Label(brand, text="LA QUE SABE", font=(FONT, 8), bg=BG, fg=MUTED).pack(anchor="w")
         badge = f"{self.operation.upper()}  /  v{version}" if version else self.operation.upper()
         tk.Label(header, text=badge, bg=BG, fg=MUTED, font=(FONT, 9)).pack(side="right")
@@ -242,7 +242,7 @@ class WizardView:
                                   + ", ".join(name + "/" for name in preserved)
                                   + "\n\nTodo lo demás, incluida Temp/, se elimina.") if removal else (
             "Tu espacio de trabajo local, listo para crear.\n\n"
-            "El instalador extrae Tlamatini, configura sus agents, crea los accesos directos del escritorio "
+            "El instalador extrae Tlamatini-Spanish, configura sus agents, crea los accesos directos del escritorio "
             "y conecta los archivos de flow .flw y .fpmt.")
         self.label(self.info, self.preservation_text, 10, MUTED).pack(fill="x")
 
@@ -313,8 +313,8 @@ class WizardView:
     def _path_changed(self, *_):
         import os
         raw = self.path.get().strip()
-        target = raw if self.removal else os.path.join(raw, "Tlamatini") if raw else ""
-        self.target_label.configure(text=("Seleccionado: " if self.removal else "Instalar en: ") + target if target else "Se creará una carpeta Tlamatini dentro del directorio que elegiste.")
+        target = raw if self.removal else os.path.join(raw, "Tlamatini-Spanish") if raw else ""
+        self.target_label.configure(text=("Seleccionado: " if self.removal else "Instalar en: ") + target if target else "Se creará una carpeta Tlamatini-Spanish dentro del directorio que elegiste.")
 
     def _resize_content(self, event):
         self.canvas.itemconfigure(self.content_id, width=event.width)
@@ -389,7 +389,7 @@ class WizardView:
         self._phase(0)
         self.eyebrow.configure(text="TU TRABAJO. TU DECISIÓN." if self.removal else "TU SIGUIENTE CAPÍTULO", fg=self.accent)
         self.heading.configure(text="Llévate tu trabajo." if self.removal else "Hazle espacio a la posibilidad.", fg=TEXT)
-        self.subtitle.configure(text="Revisa lo que se queda antes de quitar Tlamatini de esta computadora." if self.removal else "Trae Tlamatini a tu espacio de trabajo. Elige su lugar; nosotros nos encargamos de la instalación.")
+        self.subtitle.configure(text="Revisa lo que se queda antes de quitar Tlamatini-Spanish de esta computadora." if self.removal else "Trae Tlamatini-Spanish a tu espacio de trabajo. Elige su lugar; nosotros nos encargamos de la instalación.")
         self.footer_label.configure(text="Confirmarás antes de eliminarla." if self.removal else "Cuando quieras.", fg=MUTED)
         self.primary_btn.configure(text=self.action, command=self.start, state="normal")
         self.cancel_btn.configure(text="Cancelar", command=self.close)
@@ -405,11 +405,11 @@ class WizardView:
         self.phases[1].configure(text=f"02    {self.operation}")
         self.phases[2].configure(text="03    Completado")
         self.recovery_detail.pack_forget()
-        self.root.title(f"Tlamatini — {self.operation} en progreso")
+        self.root.title(f"Tlamatini-Spanish — {self.operation} en progreso")
         if reset_clock:
             self._started = time.monotonic()
         self._phase(1)
-        self.eyebrow.configure(text="QUITANDO TLAMATINI" if self.removal else "PONIENDO TODO EN MARCHA", fg=self.accent)
+        self.eyebrow.configure(text="QUITANDO TLAMATINI-SPANISH" if self.removal else "PONIENDO TODO EN MARCHA", fg=self.accent)
         self.heading.configure(text="Una despedida pensada." if self.removal else "Tu espacio de trabajo va tomando forma.", fg=TEXT)
         self.subtitle.configure(text=target)
         self.button_row.grid_remove()
@@ -447,7 +447,7 @@ class WizardView:
         pct = None if indeterminate else max(0, min(int(value*100), 100))
         progress_text = "Trabajando…" if indeterminate else f"{pct}%"
         if self.state == "working":
-            self.root.title(f"Tlamatini — {self._working_label} · {progress_text}")
+            self.root.title(f"Tlamatini-Spanish — {self._working_label} · {progress_text}")
         if not indeterminate:
             self.progress_bar["value"] = pct
         self.pct_label.configure(text=progress_text)
@@ -486,13 +486,13 @@ class WizardView:
         detail = result_detail(detail)
         self.state = "cleanup_pending" if pending else "complete" if success else "error"
         self.progress_bar.stop()
-        self.root.title(f"Tlamatini — {self.operation} {'completa' if success else 'necesita atención'}")
+        self.root.title(f"Tlamatini-Spanish — {self.operation} {'completa' if success else 'necesita atención'}")
         self._stop_timer()
         self._phase(2 if success else 1)
         self.phases[2].configure(text="03    Limpieza pendiente" if pending else "03    Completado")
         self.eyebrow.configure(text="TODO LISTO" if success else "VAMOS A RESOLVER ESTO", fg=GREEN if success else RED)
-        self.heading.configure(text=("Tu siguiente capítulo te espera." if self.removal else "Te damos la bienvenida a Tlamatini.") if success else f"{self.operation} necesita atención.", fg=TEXT)
-        self.subtitle.configure(text=("Tlamatini se quitó. Revisa abajo los archivos que se conservaron." if self.removal else "La instalación terminó. Abre Tlamatini desde su acceso directo del escritorio.") if success else "La operación se detuvo antes de terminar. Revisa los detalles y vuelve a intentarlo.")
+        self.heading.configure(text=("Tu siguiente capítulo te espera." if self.removal else "Te damos la bienvenida a Tlamatini-Spanish.") if success else f"{self.operation} necesita atención.", fg=TEXT)
+        self.subtitle.configure(text=("Tlamatini-Spanish se quitó. Revisa abajo los archivos que se conservaron." if self.removal else "La instalación terminó. Abre Tlamatini-Spanish desde su acceso directo del escritorio.") if success else "La operación se detuvo antes de terminar. Revisa los detalles y vuelve a intentarlo.")
         self.result_label.configure(text=target if success else "Qué pasó", fg=GREEN if success else RED)
         self.details.configure(state="normal")
         self.details.delete("1.0", "end")
@@ -506,7 +506,7 @@ class WizardView:
         self.cancel_btn.pack_forget() if success else self.cancel_btn.pack(side="left", padx=(0, 10), before=self.primary_btn)
         self.footer_label.configure(text="Listo." if success else "Puedes reintentar, cambiar la carpeta o cerrar esta ventana.", fg=GREEN if success else MUTED)
         if pending:
-            self.root.title("Tlamatini — Aplicación quitada; limpieza incompleta")
+            self.root.title("Tlamatini-Spanish — Aplicación quitada; limpieza incompleta")
             self.eyebrow.configure(text="LA LIMPIEZA NECESITA ATENCIÓN", fg=AMBER)
             self.heading.configure(text="Aplicación quitada. Quedan archivos.")
             self.subtitle.configure(text="Cierra los programas que usan los archivos de abajo y vuelve a intentar la limpieza. El contenido que conservaste se queda intacto.")

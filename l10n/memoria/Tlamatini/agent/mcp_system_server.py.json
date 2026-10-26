@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/mcp_system_server.py",
+ "segmentos": [
+  {
+   "en": "config.get(\"mcp_system_server_port\", 8765)",
+   "es": "config.get(\"mcp_system_server_port\", 8752)",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

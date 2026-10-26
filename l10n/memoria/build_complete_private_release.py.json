@@ -1,0 +1,30 @@
+{
+ "archivo": "build_complete_private_release.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini_Release_v*\"",
+   "es": "\"Tlamatini-Spanish_Release_v*\"",
+   "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
+   "n": 1
+  },
+  {
+   "en": "/ \"Tlamatini\" / \"contacts.json\"",
+   "es": "/ \"Tlamatini-Spanish\" / \"contacts.json\"",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "/ \"Tlamatini\" / \"external_mcps.json\"",
+   "es": "/ \"Tlamatini-Spanish\" / \"external_mcps.json\"",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "Path(r\"C:\\Tlamatini\")",
+   "es": "Path(r\"C:\\XAIHT\\Tlamatini-Spanish\")",
+   "codigo": "Identidad de Tlamatini-Spanish: su carpeta de instalación propia, junto a la de Tlamatini (inglés)",
+   "n": 2
+  }
+ ],
+ "conservar": []
+}

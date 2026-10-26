@@ -16,11 +16,11 @@ if ($window -eq [IntPtr]::Zero -or -not [FlowRegistryTestWindow]::IsWindowVisibl
 }
 $repo = Split-Path -Parent $PSScriptRoot
 $id = [Guid]::NewGuid().ToString('N')
-$testRoot = "HKCU:\Software\XAIHT\Tlamatini\FileAssociationTests\$id"
+$testRoot = "HKCU:\Software\XAIHT\Tlamatini-Spanish\FileAssociationTests\$id"
 $fixture = Join-Path $repo "Temp\flow-registry-tests\$id\Install with spaces"
 $helper = Join-Path $repo 'flow_file_associations.ps1'
 $null = New-Item -ItemType Directory -Path $fixture -Force
-$null = New-Item -ItemType File -Path (Join-Path $fixture 'Tlamatini.exe')
+$null = New-Item -ItemType File -Path (Join-Path $fixture 'Tlamatini-Spanish.exe')
 Copy-Item -LiteralPath (Join-Path $repo 'Tlamatini.ico') -Destination $fixture
 $passed = 0
 function Assert-True($Condition, $Message) {
@@ -53,19 +53,19 @@ try {
     Assert-True ($status.Count -eq 2 -and @($status | Where-Object Registered).Count -eq 2) 'Both formats register idempotently'
     foreach ($row in $status) {
         Assert-True ($row.OwnedByThisInstallation) "$($row.Extension) owner is recorded"
-        Assert-True ($row.Command -match '^".+conhost.exe" ".+Tlamatini.exe" "%1"$') 'Executable and file arguments are quoted'
+        Assert-True ($row.Command -match '^".+conhost.exe" ".+Tlamatini-Spanish.exe" "%1"$') 'Executable and file arguments are quoted'
         Assert-True ($row.UserChoice -eq 'OtherApp.Flow' -and $row.DefaultProgId -eq 'OtherApp.Flow') 'Other application defaults survive'
     }
-    Assert-True ((Value "$testRoot\Tlamatini\FlowCapabilities\FileAssociations" '.fpmt') -eq 'Tlamatini.PromptFlowFile') 'Default Apps capabilities include prompting flows'
-    Assert-True ((Value "$testRoot\RegisteredApplications" 'TlamatiniFlows') -eq 'Software\Tlamatini\FlowCapabilities') 'Application is discoverable in Default Apps'
+    Assert-True ((Value "$testRoot\Tlamatini-Spanish\FlowCapabilities\FileAssociations" '.fpmt') -eq 'TlamatiniSpanish.PromptFlowFile') 'Default Apps capabilities include prompting flows'
+    Assert-True ((Value "$testRoot\RegisteredApplications" 'TlamatiniSpanishFlows') -eq 'Software\Tlamatini-Spanish\FlowCapabilities') 'Application is discoverable in Default Apps'
     # Old uninstallers cannot remove a newer installation registration.
     & $helper -Action Unregister -InstallDir ($fixture + ' old') -RegistryRoot $testRoot
-    Assert-True ([bool](Value "$testRoot\Classes\Tlamatini.PromptFlowFile\shell\open\command")) 'A different installation cannot unregister this one'
+    Assert-True ([bool](Value "$testRoot\Classes\TlamatiniSpanish.PromptFlowFile\shell\open\command")) 'A different installation cannot unregister this one'
     & $helper -Action Unregister -InstallDir $fixture -Extensions '.fpmt' -RegistryRoot $testRoot
-    Assert-True (-not (Test-Path "$testRoot\Classes\Tlamatini.PromptFlowFile")) 'Prompt flow registration removed'
-    Assert-True ([bool](Value "$testRoot\Classes\Tlamatini.FlowFile\shell\open\command")) 'Removing prompt flows preserves agent flows'
+    Assert-True (-not (Test-Path "$testRoot\Classes\TlamatiniSpanish.PromptFlowFile")) 'Prompt flow registration removed'
+    Assert-True ([bool](Value "$testRoot\Classes\TlamatiniSpanish.FlowFile\shell\open\command")) 'Removing prompt flows preserves agent flows'
     & $helper -Action Repair -InstallDir $fixture -RegistryRoot $testRoot
-    Assert-True (-not (Test-Path "$testRoot\Classes\Tlamatini.PromptFlowFile")) 'Update repair respects explicit unregistration'
+    Assert-True (-not (Test-Path "$testRoot\Classes\TlamatiniSpanish.PromptFlowFile")) 'Update repair respects explicit unregistration'
     & $helper -Action Unregister -InstallDir $fixture -RegistryRoot $testRoot
     & $helper -Action Unregister -InstallDir $fixture -RegistryRoot $testRoot
     foreach ($extension in @('.flw', '.fpmt')) {
@@ -74,21 +74,21 @@ try {
         Assert-True ($null -ne (Value "$testRoot\Classes\$extension\OpenWithProgids" 'OtherApp.Flow')) 'Uninstall preserves other Open With candidates'
     }
     Assert-True (-not (Test-Path "$testRoot\Classes\SystemAgent.FlowFile")) 'Owned legacy ProgID is removed'
-    Assert-True ($null -eq (Value "$testRoot\RegisteredApplications" 'TlamatiniFlows')) 'Empty application capability entry removed'
+    Assert-True ($null -eq (Value "$testRoot\RegisteredApplications" 'TlamatiniSpanishFlows')) 'Empty application capability entry removed'
     # Extensions without a default receive our ProgID; removal prunes only ours.
     $key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey(($testRoot + '\Classes\.fpmt').Substring(6), $true)
     try { $key.DeleteValue('', $false) } finally { $key.Close() }
     & $helper -Action Register -InstallDir $fixture -Extensions '.fpmt' -RegistryRoot $testRoot
-    Assert-True ((Value "$testRoot\Classes\.fpmt") -eq 'Tlamatini.PromptFlowFile') 'Unclaimed extension gets its own default'
+    Assert-True ((Value "$testRoot\Classes\.fpmt") -eq 'TlamatiniSpanish.PromptFlowFile') 'Unclaimed extension gets its own default'
     & $helper -Action Unregister -InstallDir $fixture -Extensions '.fpmt' -RegistryRoot $testRoot
     Assert-True ($null -eq (Value "$testRoot\Classes\.fpmt")) 'Removal clears only our default'
     & (Join-Path $repo 'register_fpmt.ps1') -InstallDir $repo -Source -PythonExe (Get-Command python.exe).Source -RegistryRoot $testRoot
-    Assert-True ((Value "$testRoot\Classes\Tlamatini.PromptFlowFile\shell\open\command") -match '".+python.exe" ".+Tlamatini\\manage.py" "%1"$') 'Source registration targets manage.py without a shell command string'
+    Assert-True ((Value "$testRoot\Classes\TlamatiniSpanish.PromptFlowFile\shell\open\command") -match '".+python.exe" ".+Tlamatini\\manage.py" "%1"$') 'Source registration targets manage.py without a shell command string'
     & (Join-Path $repo 'unregister_fpmt.ps1') -InstallDir $repo -RegistryRoot $testRoot
     & (Join-Path $repo 'register_flw.ps1') -InstallDir $fixture -RegistryRoot $testRoot
-    Assert-True ([bool](Value "$testRoot\Classes\Tlamatini.PromptFlowFile\shell\open\command")) 'Legacy installer entry point registers both formats'
+    Assert-True ([bool](Value "$testRoot\Classes\TlamatiniSpanish.PromptFlowFile\shell\open\command")) 'Legacy installer entry point registers both formats'
     & (Join-Path $repo 'unregister_flw.ps1') -InstallDir $fixture -RegistryRoot $testRoot
-    Assert-True (-not (Test-Path "$testRoot\Classes\Tlamatini.PromptFlowFile")) 'Legacy uninstaller entry point removes both formats'
+    Assert-True (-not (Test-Path "$testRoot\Classes\TlamatiniSpanish.PromptFlowFile")) 'Legacy uninstaller entry point removes both formats'
     # Exercise the real installer invocation: a fresh Windows PowerShell process,
     # -File, no InstallDir argument, and an unrelated current directory.
     foreach ($name in @('flow_file_associations.ps1', 'register_flw.ps1', 'register_fpmt.ps1', 'unregister_flw.ps1', 'unregister_fpmt.ps1')) {
@@ -99,7 +99,7 @@ try {
         foreach ($name in @('register_flw.ps1', 'unregister_flw.ps1', 'register_fpmt.ps1', 'unregister_fpmt.ps1')) {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $fixture $name) -RegistryRoot $testRoot
             Assert-True ($LASTEXITCODE -eq 0) "$name works with the installer's -File/default-directory invocation"
-            $id = if ($name -match 'fpmt') { 'Tlamatini.PromptFlowFile' } else { 'Tlamatini.FlowFile' }
+            $id = if ($name -match 'fpmt') { 'TlamatiniSpanish.PromptFlowFile' } else { 'TlamatiniSpanish.FlowFile' }
             $actual = Value "$testRoot\Classes\$id" 'TlamatiniInstallDir'
             if ($name.StartsWith('unregister')) {
                 Assert-True ($null -eq $actual) "$name actually removes the owned registration"

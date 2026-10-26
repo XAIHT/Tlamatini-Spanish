@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/chain_system_lcel.py",
+ "segmentos": [
+  {
+   "en": "\"ws://127.0.0.1:8765\")",
+   "es": "\"ws://127.0.0.1:8752\")",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

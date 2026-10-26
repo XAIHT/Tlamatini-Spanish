@@ -67,10 +67,10 @@ if (-not (Test-Path $LogDir)) {
 # Parent of this \security folder = the install/dev root (works from either).
 $script:SelfRoots = @(
     (Split-Path -Parent $PSScriptRoot),
-    (Join-Path $env:LOCALAPPDATA "Tlamatini")
+    (Join-Path $env:LOCALAPPDATA "Tlamatini-Spanish")
 ) | Where-Object { $_ -and (Test-Path -LiteralPath $_) }
 try {
-    $registered = (Get-ItemProperty 'HKCU:\Software\XAIHT\Tlamatini' -ErrorAction Stop).InstallLocation
+    $registered = (Get-ItemProperty 'HKCU:\Software\XAIHT\Tlamatini-Spanish' -ErrorAction Stop).InstallLocation
     if ($registered -and (Test-Path -LiteralPath $registered -PathType Container)) { $script:SelfRoots += $registered }
 } catch {}
 

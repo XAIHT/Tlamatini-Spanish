@@ -44,7 +44,7 @@ _MANAGE_PY = os.path.join(_PROJECT_DIR, 'manage.py')
 _CONFIG_JSON = os.path.join(_PROJECT_DIR, 'agent', 'config.json')
 
 _WANTED_FUNCS = ('_resolve_config_path', '_resolve_django_port', '_apply_configured_port')
-_DEFAULT_PORT = 8000
+_DEFAULT_PORT = 8052
 
 
 def _read(path):
@@ -120,15 +120,15 @@ class ConfigJsonDjangoPortContractTests(unittest.TestCase):
 
     def test_django_port_key_present_and_valid(self):
         self.assertIn('django_port', self.config,
-                      "config.json must ship a 'django_port' key (default 8000).")
+                      "config.json must ship a 'django_port' key (default 8052).")
         port = self.config['django_port']
         self.assertIsInstance(port, int)
         self.assertTrue(1 <= port <= 65535)
 
-    def test_shipped_default_is_8000(self):
+    def test_shipped_default_is_8052(self):
         self.assertEqual(self.config['django_port'], _DEFAULT_PORT,
-                         "The SHIPPED default must stay 8000 — users who never touch "
-                         "config.json must keep the documented http://127.0.0.1:8000/.")
+                         "The SHIPPED default must stay 8052 — users who never touch "
+                         "config.json must keep the documented http://127.0.0.1:8052/.")
 
     def test_section_note_explains_the_winerror_10013_case(self):
         note = self.config.get('_section_django_port', '')
@@ -152,23 +152,23 @@ class ResolveDjangoPortTests(_PortHelperCase):
         self._write_config(raw_text='﻿{"django_port": 9200}')
         self.assertEqual(self._resolve(), 9200)
 
-    def test_missing_key_falls_back_to_8000(self):
+    def test_missing_key_falls_back_to_8052(self):
         self._write_config(chained_model='glm-5.3:cloud')
         self.assertEqual(self._resolve(), _DEFAULT_PORT)
 
-    def test_missing_file_falls_back_to_8000(self):
+    def test_missing_file_falls_back_to_8052(self):
         os.environ['CONFIG_PATH'] = os.path.join(self._tmp.name, 'nope.json')
         self.assertEqual(self._resolve(), _DEFAULT_PORT)
 
-    def test_unparseable_json_falls_back_to_8000(self):
+    def test_unparseable_json_falls_back_to_8052(self):
         self._write_config(raw_text='{ this is not json')
         self.assertEqual(self._resolve(), _DEFAULT_PORT)
 
-    def test_non_numeric_port_falls_back_to_8000(self):
+    def test_non_numeric_port_falls_back_to_8052(self):
         self._write_config(django_port='not-a-port')
         self.assertEqual(self._resolve(), _DEFAULT_PORT)
 
-    def test_out_of_range_ports_fall_back_to_8000(self):
+    def test_out_of_range_ports_fall_back_to_8052(self):
         for bad in (0, -1, 65536, 999999):
             with self.subTest(port=bad):
                 self._write_config(django_port=bad)
@@ -219,10 +219,10 @@ class ApplyConfiguredPortTests(_PortHelperCase):
                 self.assertEqual(self._apply(argv), argv)
 
     def test_a_broken_config_still_yields_a_startable_argv(self):
-        """Fail-open, end to end: a corrupt config must still boot on 8000."""
+        """Fail-open, end to end: a corrupt config must still boot on 8052."""
         self._write_config(raw_text='{ broken')
         self.assertEqual(self._apply(['manage.py', 'runserver']),
-                         ['manage.py', 'runserver', '8000'])
+                         ['manage.py', 'runserver', '8052'])
 
 
 class ManagePyWiringTests(unittest.TestCase):
@@ -236,15 +236,15 @@ class ManagePyWiringTests(unittest.TestCase):
         self.assertIn('sys.argv = _apply_configured_port(sys.argv)', self.src)
 
     def test_no_hardcoded_bind_address_survives(self):
-        self.assertNotIn("'0.0.0.0:8000'", self.src)
-        self.assertNotIn('"0.0.0.0:8000"', self.src)
+        self.assertNotIn("'0.0.0.0:8052'", self.src)
+        self.assertNotIn('"0.0.0.0:8052"', self.src)
 
     def test_frozen_paths_resolve_the_port(self):
         self.assertIn("f'0.0.0.0:{_resolve_django_port()}'", self.src)
 
     def test_browser_auto_open_uses_the_resolved_port(self):
         self.assertIn("f'http://localhost:{_resolve_django_port()}/'", self.src)
-        self.assertNotIn("_schedule_browser_open('http://localhost:8000/'", self.src)
+        self.assertNotIn("_schedule_browser_open('http://localhost:8052/'", self.src)
 
     def test_config_path_resolution_honors_the_env_override(self):
         self.assertIn("os.environ.get('CONFIG_PATH')", self.src)

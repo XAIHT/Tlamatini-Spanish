@@ -185,7 +185,7 @@ def runtimes_root():
         base = os.environ.get('LOCALAPPDATA') or os.path.join(os.path.expanduser('~'), 'AppData', 'Local')
     else:
         base = os.environ.get('XDG_DATA_HOME') or os.path.join(os.path.expanduser('~'), '.local', 'share')
-    return os.path.join(base, 'Tlamatini', 'runtimes')
+    return os.path.join(base, 'Tlamatini-Spanish', 'runtimes')
 
 
 def private_dir():

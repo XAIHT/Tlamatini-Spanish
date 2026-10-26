@@ -49,20 +49,20 @@ def file_lock_description(path):
 class WindowsSnapshot:
     """Restore product keys and selected shared values, never UserChoice."""
     TREES = (
-        r"Software\Classes\Tlamatini.FlowFile",
-        r"Software\Classes\Tlamatini.PromptFlowFile",
+        r"Software\Classes\TlamatiniSpanish.FlowFile",
+        r"Software\Classes\TlamatiniSpanish.PromptFlowFile",
         r"Software\Classes\SystemAgent.FlowFile",
-        r"Software\Tlamatini\FlowCapabilities",
-        r"Software\Tlamatini\FileTypes",
-        r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini",
+        r"Software\Tlamatini-Spanish\FlowCapabilities",
+        r"Software\Tlamatini-Spanish\FileTypes",
+        r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini-Spanish",
     )
-    VALUES = [(r"Software\RegisteredApplications", "TlamatiniFlows")] + [
-        (r"Software\XAIHT\Tlamatini", name) for name in (
+    VALUES = [(r"Software\RegisteredApplications", "TlamatiniSpanishFlows")] + [
+        (r"Software\XAIHT\Tlamatini-Spanish", name) for name in (
             "InstallLocation", "AgentsRoot", "SourceAgentsRoot", "AgentManifestPath", "Version", "AgentCatalogVersion")
     ] + [(rf"Software\Classes\{ext}", "") for ext in (".flw", ".fpmt")] + [
         (prefix+rf"\{ext}\OpenWithProgids", prog)
         for prefix in (r"Software\Classes", r"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts")
-        for ext, prog in ((".flw", "Tlamatini.FlowFile"), (".flw", "SystemAgent.FlowFile"), (".fpmt", "Tlamatini.PromptFlowFile"))
+        for ext, prog in ((".flw", "TlamatiniSpanish.FlowFile"), (".flw", "SystemAgent.FlowFile"), (".fpmt", "TlamatiniSpanish.PromptFlowFile"))
     ]
 
     def __init__(self, folder):
@@ -75,7 +75,7 @@ class WindowsSnapshot:
         result = ctypes.windll.shell32.SHGetFolderPathW(None, 0x10, None, 0, buffer)
         if result != 0 or not buffer.value:
             raise RuntimeError("Windows no pudo ubicar la carpeta del escritorio")
-        return Path(buffer.value) / "Tlamatini.lnk"
+        return Path(buffer.value) / "Tlamatini-Spanish.lnk"
 
     @staticmethod
     def _encode(value, kind):

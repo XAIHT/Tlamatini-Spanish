@@ -71,7 +71,7 @@ class CreateSuperuserWizardPromptTests(TestCase):
 
     def test_runs_in_both_frozen_and_source(self):
         c = self._wizard().promptContent
-        self.assertIn('Tlamatini.exe" createsuperuser', c)      # frozen branch
+        self.assertIn('Tlamatini-Spanish.exe" createsuperuser', c)      # frozen branch
         self.assertIn('python manage.py createsuperuser', c)    # source branch
         self.assertIn('execute_forked_window=true', c)          # visible console
         self.assertIn('non_blocking=true', c)                   # detached, returns

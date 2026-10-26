@@ -1,0 +1,18 @@
+{
+ "archivo": "security/tlamatini_defender.ps1",
+ "segmentos": [
+  {
+   "en": "XAIHT\\Tlamatini'",
+   "es": "XAIHT\\Tlamatini-Spanish'",
+   "codigo": "Identidad de Tlamatini-Spanish: su llave de descubrimiento propia (HKCU Software\\XAIHT\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "(Join-Path $env:LOCALAPPDATA \"Tlamatini\")",
+   "es": "(Join-Path $env:LOCALAPPDATA \"Tlamatini-Spanish\")",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

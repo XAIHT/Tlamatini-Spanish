@@ -1,0 +1,30 @@
+{
+ "archivo": "Tlamatini/agent/version.py",
+ "segmentos": [
+  {
+   "en": "product_name: str = \"Tlamatini\",",
+   "es": "product_name: str = \"Tlamatini-Spanish\",",
+   "codigo": "Identidad de Tlamatini-Spanish: VERSIONINFO del .exe (ProductName, FileDescription, OriginalFilename)",
+   "n": 1
+  },
+  {
+   "en": "file_description: str = \"Tlamatini —",
+   "es": "file_description: str = \"Tlamatini-Spanish —",
+   "codigo": "Identidad de Tlamatini-Spanish: VERSIONINFO del .exe (ProductName, FileDescription, OriginalFilename)",
+   "n": 1
+  },
+  {
+   "en": "internal_name: str = \"Tlamatini\",",
+   "es": "internal_name: str = \"Tlamatini-Spanish\",",
+   "codigo": "Identidad de Tlamatini-Spanish: VERSIONINFO del .exe (ProductName, FileDescription, OriginalFilename)",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

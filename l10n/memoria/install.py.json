@@ -43,12 +43,20 @@
   },
   {
    "en": "f\"Tlamatini Installer v{self.version}\"",
-   "es": "f\"Instalador de Tlamatini v{self.version}\"",
+   "es": "f\"Instalador de Tlamatini-Spanish v{self.version}\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Tlamatini Installer\"",
-   "es": "\"Instalador de Tlamatini\"",
+   "es": "\"Instalador de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -63,7 +71,11 @@
   },
   {
    "en": "\"Choose a parent directory for Tlamatini\"",
-   "es": "\"Elige un directorio padre para Tlamatini\"",
+   "es": "\"Elige un directorio padre para Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -153,7 +165,11 @@
   },
   {
    "en": "\"Close Tlamatini and its remaining agents before installing into this folder, then retry.\"",
-   "es": "\"Cierra Tlamatini y los agents que sigan activos antes de instalar en esta carpeta, y vuelve a intentarlo.\"",
+   "es": "\"Cierra Tlamatini-Spanish y los agents que sigan activos antes de instalar en esta carpeta, y vuelve a intentarlo.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -218,17 +234,67 @@
   },
   {
    "en": "\"Tlamatini is installed.\\n\\nDesktop shortcuts are ready.\\n\"",
-   "es": "\"Tlamatini quedó instalada.\\n\\nLos accesos directos del escritorio están listos.\\n\"",
+   "es": "\"Tlamatini-Spanish quedó instalada.\\n\\nLos accesos directos del escritorio están listos.\\n\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\".flw and .fpmt flow files are now associated with Tlamatini.\"",
-   "es": "\"Los archivos de flow .flw y .fpmt ya están asociados con Tlamatini.\"",
+   "es": "\"Los archivos de flow .flw y .fpmt ya están asociados con Tlamatini-Spanish.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Loading installer…\"",
    "es": "\"Cargando el instalador…\"",
+   "n": 1
+  },
+  {
+   "en": "os.path.join(raw, \"Tlamatini\")",
+   "es": "os.path.join(raw, \"Tlamatini-Spanish\")",
+   "codigo": "Identidad de Tlamatini-Spanish: su carpeta de instalación propia, junto a la de Tlamatini (inglés)",
+   "n": 2
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.lnk",
+   "es": "Tlamatini-Spanish.lnk",
+   "codigo": "Identidad de Tlamatini-Spanish: su acceso directo propio (Tlamatini-Spanish.lnk)",
+   "n": 1
+  },
+  {
+   "en": "CurrentVersion\\Uninstall\\Tlamatini\"",
+   "es": "CurrentVersion\\Uninstall\\Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "winreg.REG_SZ, \"Tlamatini\")",
+   "es": "winreg.REG_SZ, \"Tlamatini-Spanish\")",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "\"https://github.com/XAIHT/Tlamatini\")",
+   "es": "\"https://github.com/XAIHT/Tlamatini-Spanish\")",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "r\"Software\\XAIHT\\Tlamatini\"",
+   "es": "r\"Software\\XAIHT\\Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su llave de descubrimiento propia (HKCU Software\\XAIHT\\Tlamatini-Spanish)",
    "n": 1
   }
  ],

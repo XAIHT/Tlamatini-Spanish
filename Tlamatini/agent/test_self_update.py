@@ -131,24 +131,24 @@ class StagingHelperTests(unittest.TestCase):
 
     def test_flatten_to_exe_flat(self):
         with tempfile.TemporaryDirectory() as d:
-            open(os.path.join(d, "Tlamatini.exe"), "wb").close()
+            open(os.path.join(d, "Tlamatini-Spanish.exe"), "wb").close()
             self.assertEqual(self_update._flatten_to_exe(d), d)
 
     def test_flatten_to_exe_single_wrapper(self):
         with tempfile.TemporaryDirectory() as d:
             inner = os.path.join(d, "manage")
             os.makedirs(inner)
-            open(os.path.join(inner, "Tlamatini.exe"), "wb").close()
+            open(os.path.join(inner, "Tlamatini-Spanish.exe"), "wb").close()
             self.assertEqual(self_update._flatten_to_exe(d), inner)
 
     def test_select_and_extract_roundtrip(self):
-        # Build a fake release bundle (release.zip -> pkg.zip -> Tlamatini.exe)
+        # Build a fake release bundle (release.zip -> pkg.zip -> Tlamatini-Spanish.exe)
         with tempfile.TemporaryDirectory() as d:
-            inner_exe = os.path.join(d, "Tlamatini.exe")
+            inner_exe = os.path.join(d, "Tlamatini-Spanish.exe")
             open(inner_exe, "wb").close()
             pkg = os.path.join(d, "pkg.zip")
             with zipfile.ZipFile(pkg, "w") as zf:
-                zf.write(inner_exe, "Tlamatini.exe")
+                zf.write(inner_exe, "Tlamatini-Spanish.exe")
             self.assertTrue(os.path.isfile(pkg))
             self.assertEqual(self_update._locate_pkg_zip(d), pkg)
 

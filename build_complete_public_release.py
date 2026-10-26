@@ -645,7 +645,7 @@ def scrub_tree(values: list[str], extra: list[str], backup: Backup) -> int:
 
 
 def newest_release_dir() -> Path | None:
-    cands = sorted(glob.glob(str(DIST / "Tlamatini_Release_v*")),
+    cands = sorted(glob.glob(str(DIST / "Tlamatini-Spanish_Release_v*")),
                    key=lambda p: os.path.getmtime(p), reverse=True)
     for c in cands:
         if Path(c).is_dir():

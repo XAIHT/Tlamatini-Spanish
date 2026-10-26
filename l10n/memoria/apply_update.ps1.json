@@ -3,7 +3,11 @@
  "segmentos": [
   {
    "en": "\"Tlamatini Updater\"",
-   "es": "\"Actualizador de Tlamatini\"",
+   "es": "\"Actualizador de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -13,7 +17,11 @@
   },
   {
    "en": "\"         TLAMATINI  --  APPLYING UPDATE\"",
-   "es": "\"         TLAMATINI  --  APLICANDO EL UPDATE\"",
+   "es": "\"         TLAMATINI-SPANISH  --  APLICANDO EL UPDATE\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -43,7 +51,11 @@
   },
   {
    "en": "\"Invalid application PID.\"",
-   "es": "\"El PID de Tlamatini no es correcto.\"",
+   "es": "\"El PID de Tlamatini-Spanish no es correcto.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -63,7 +75,11 @@
   },
   {
    "en": "\"Verifying every staged file before closing Tlamatini...\"",
-   "es": "\"Verificando cada archivo del update antes de cerrar Tlamatini...\"",
+   "es": "\"Verificando cada archivo del update antes de cerrar Tlamatini-Spanish...\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -73,7 +89,11 @@
   },
   {
    "en": "\"Database backup helper or carried Python is missing. Aborting before closing Tlamatini.\"",
-   "es": "\"Falta el helper de backup de la base de datos o el Python incluido. Se cancela antes de cerrar Tlamatini.\"",
+   "es": "\"Falta el helper de backup de la base de datos o el Python incluido. Se cancela antes de cerrar Tlamatini-Spanish.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -83,7 +103,11 @@
   },
   {
    "en": "\"Closing Tlamatini (PID $ParentPid) and its child processes...\"",
-   "es": "\"Cerrando Tlamatini (PID $ParentPid) y sus procesos hijos...\"",
+   "es": "\"Cerrando Tlamatini-Spanish (PID $ParentPid) y sus procesos hijos...\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -93,12 +117,20 @@
   },
   {
    "en": "\"Could not safely enumerate the application process tree; application files were not replaced.\"",
-   "es": "\"No se pudo revisar con seguridad los procesos de Tlamatini; los archivos siguen igual.\"",
+   "es": "\"No se pudo revisar con seguridad los procesos de Tlamatini-Spanish; los archivos siguen igual.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Tlamatini closed.\"",
-   "es": "\"Tlamatini: cerrada.\"",
+   "es": "\"Tlamatini-Spanish: cerrada.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -213,7 +245,11 @@
   },
   {
    "en": "\"Starting the new Tlamatini...\"",
-   "es": "\"Iniciando el nuevo Tlamatini...\"",
+   "es": "\"Iniciando el nuevo Tlamatini-Spanish...\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -240,6 +276,12 @@
    "en": "\"Press Enter to close\"",
    "es": "\"Presiona Enter para cerrar\"",
    "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 8
   }
  ],
  "conservar": [

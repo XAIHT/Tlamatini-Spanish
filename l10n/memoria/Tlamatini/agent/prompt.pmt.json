@@ -12,6 +12,12 @@
    "es": "(\"🔁 Táctica #N … NO me voy a colgar; sólo tú puedes detenerme (con el botón Cancelar)\", \"⏱️ … ABANDONO esa llamada para no colgarme y cambio a otra táctica\", \"⚠️ … hubo un error de red pasajero … cambio a otra táctica\", \"✅ Táctica '…': funcionó; sigo la ejecución justo donde me quedé\"), and it prepends a truthful \"NOTA DE AUTORREPARACIÓN: tuve problemas en esta ejecución y los resolví:\" banner",
    "maquina": "cita textual de las líneas de self_healing.py (ya en español)",
    "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 1
   }
  ],
  "conservar": []

@@ -1175,6 +1175,12 @@
    "en": ">Reset<",
    "es": ">Restablecer<",
    "n": 1
+  },
+  {
+   "en": "href=\"https://github.com/XAIHT/Tlamatini/releases\"",
+   "es": "href=\"https://github.com/XAIHT/Tlamatini-Spanish/releases\"",
+   "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
+   "n": 1
   }
  ],
  "conservar": [

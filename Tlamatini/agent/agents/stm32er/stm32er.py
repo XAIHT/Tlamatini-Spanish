@@ -1074,7 +1074,7 @@ def _default_install_dir() -> str:
     else:
         base = os.environ.get("XDG_DATA_HOME") or os.path.join(
             os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini", "STM32TemplateProjectMCP")
+    return os.path.join(base, "Tlamatini-Spanish", "STM32TemplateProjectMCP")
 
 
 def _run_cmd(cmd: list, env: dict = None, cwd: str = None, timeout: float = 120.0):
@@ -1679,7 +1679,7 @@ def _pio_default_core_dir() -> str:
     else:
         base = os.environ.get("XDG_DATA_HOME") or os.path.join(
             os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini", "platformio")
+    return os.path.join(base, "Tlamatini-Spanish", "platformio")
 
 
 def _pio_run_cmd(cmd: list, env: dict = None, cwd: str = None, timeout: float = 900.0):

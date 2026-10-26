@@ -68,12 +68,12 @@ class UninstallerLifecycleTests(unittest.TestCase):
 
     def test_drive_root_and_source_checkout_are_rejected(self):
         self.assertIsNone(self.validate(self.temp.anchor))
-        (self.temp / 'Tlamatini.exe').touch()
+        (self.temp / 'Tlamatini-Spanish.exe').touch()
         (self.temp / '.git').mkdir()
         self.assertIsNone(self.validate(self.temp))
 
     def test_installed_folder_is_accepted(self):
-        (self.temp / 'Tlamatini.exe').touch()
+        (self.temp / 'Tlamatini-Spanish.exe').touch()
         self.assertEqual(self.validate(self.temp), str(self.temp))
 
     def test_removal_keeps_retry_support_until_registry_cleanup_succeeds(self):
@@ -206,7 +206,7 @@ class UninstallerLifecycleTests(unittest.TestCase):
     def test_relocation_failure_runs_in_place_instead_of_crashing(self):
         exe = self.temp / "Uninstaller.exe"
         exe.write_bytes(b"test binary")
-        (self.temp / "Tlamatini.exe").write_bytes(b"test application")
+        (self.temp / "Tlamatini-Spanish.exe").write_bytes(b"test application")
         stage = self.temp.parent / (self.temp.name + "-failed-worker")
         stage.mkdir()
         self.addCleanup(shutil.rmtree, stage, True)
@@ -259,7 +259,7 @@ class UninstallerLifecycleTests(unittest.TestCase):
     def test_frozen_worker_uses_independent_bootloader_and_original_target(self):
         exe = self.temp / "Uninstaller.exe"
         exe.write_bytes(b"test binary")
-        (self.temp / "Tlamatini.exe").write_bytes(b"test application")
+        (self.temp / "Tlamatini-Spanish.exe").write_bytes(b"test application")
         stage = self.temp.parent / (self.temp.name + "-worker")
         stage.mkdir()
         self.addCleanup(shutil.rmtree, stage, True)

@@ -25,7 +25,7 @@ class MCPSystemClient:
             with open(config_path, 'r', encoding='utf-8-sig') as f:
                 config = json.load(f)
 
-            self.uri = config.get("mcp_system_client_uri", "ws://127.0.0.1:8765")
+            self.uri = config.get("mcp_system_client_uri", "ws://127.0.0.1:8752")
         else:
             self.uri = uri
 

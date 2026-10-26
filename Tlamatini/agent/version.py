@@ -293,11 +293,11 @@ def write_version_module(
 def render_pyinstaller_version_file(
     version: str,
     *,
-    product_name: str = "Tlamatini",
+    product_name: str = "Tlamatini-Spanish",
     company_name: str = "XAIHT",
-    file_description: str = "Tlamatini — created by Angela López Mendoza (XAIHT)",
-    internal_name: str = "Tlamatini",
-    original_filename: str = "Tlamatini.exe",
+    file_description: str = "Tlamatini-Spanish — created by Angela López Mendoza (XAIHT)",
+    internal_name: str = "Tlamatini-Spanish",
+    original_filename: str = "Tlamatini-Spanish.exe",
     legal_copyright: str = "Copyright (c) 2026 Angela López Mendoza · XAIHT. MIT License.",
     author: str = "Angela López Mendoza",
 ) -> str:

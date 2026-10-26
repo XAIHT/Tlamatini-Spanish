@@ -3,7 +3,7 @@
 # Runs OUTSIDE the install directory (a copy is placed under
 # %LOCALAPPDATA%\Tlamatini\updater by self_update.py) so it can safely
 # replace the whole install — including python\, jre\, git\ and
-# Tlamatini.exe — without locking the files it is overwriting.
+# Tlamatini-Spanish.exe — without locking the files it is overwriting.
 #
 # Sequence:
 #   1. Validate install/staging boundaries and every staged file's receipt.
@@ -26,7 +26,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-try { $Host.UI.RawUI.WindowTitle = "Actualizador de Tlamatini" } catch {}
+try { $Host.UI.RawUI.WindowTitle = "Actualizador de Tlamatini-Spanish" } catch {}
 
 # Top-level names in the install root that must NEVER be deleted or
 # overwritten. 'agents' is intentionally NOT here: it is renamed to
@@ -88,7 +88,7 @@ function Assert-NoReparseAncestors {
 
 Write-Host ""
 Write-Host "  ==================================================" -ForegroundColor Cyan
-Write-Host "         TLAMATINI  --  APLICANDO EL UPDATE" -ForegroundColor Cyan
+Write-Host "         TLAMATINI-SPANISH  --  APLICANDO EL UPDATE" -ForegroundColor Cyan
 Write-Host "  ==================================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Log "Carpeta destino : $InstallDir"
@@ -109,13 +109,13 @@ try {
     }
     Assert-NoReparseAncestors $InstallDir
     Assert-NoReparseAncestors $StagingDir
-    if (-not (Test-Path -LiteralPath (Join-Path $InstallDir "Tlamatini.exe") -PathType Leaf)) {
-        throw "La carpeta destino no tiene el Tlamatini.exe existente. Se cancela."
+    if (-not (Test-Path -LiteralPath (Join-Path $InstallDir "Tlamatini-Spanish.exe") -PathType Leaf)) {
+        throw "La carpeta destino no tiene el Tlamatini-Spanish.exe existente. Se cancela."
     }
-    if ($ParentPid -le 0 -or $ParentPid -eq $PID) { throw "El PID de Tlamatini no es correcto." }
-    $newExe = Join-Path $StagingDir "Tlamatini.exe"
+    if ($ParentPid -le 0 -or $ParentPid -eq $PID) { throw "El PID de Tlamatini-Spanish no es correcto." }
+    $newExe = Join-Path $StagingDir "Tlamatini-Spanish.exe"
     if (-not (Test-Path -LiteralPath $newExe)) {
-        throw "El paquete del update no sirve -- falta Tlamatini.exe en '$newExe'. Se cancela; todo sigue igual."
+        throw "El paquete del update no sirve -- falta Tlamatini-Spanish.exe en '$newExe'. Se cancela; todo sigue igual."
     }
     if (-not (Test-Path -LiteralPath $InstallDir)) {
         throw "No existe la carpeta destino '$InstallDir'. Se cancela."
@@ -130,7 +130,7 @@ try {
             throw "Falta un archivo requerido del update: '$required'. Todo sigue igual."
         }
     }
-    Write-Log "Verificando cada archivo del update antes de cerrar Tlamatini..."
+    Write-Log "Verificando cada archivo del update antes de cerrar Tlamatini-Spanish..."
     # -B prevents the verifier from adding .pyc files to the tree it is checking;
     # -S avoids unrelated site-package startup hooks. Both helpers use stdlib only.
     & $backupPython -I -B -S $integrityHelper --verify-tree $StagingDir
@@ -139,19 +139,19 @@ try {
     if ((Test-Path -LiteralPath $userDb -PathType Leaf) -and
         (-not (Test-Path -LiteralPath $backupPython -PathType Leaf) -or
          -not (Test-Path -LiteralPath $backupHelper -PathType Leaf))) {
-        throw "Falta el helper de backup de la base de datos o el Python incluido. Se cancela antes de cerrar Tlamatini."
+        throw "Falta el helper de backup de la base de datos o el Python incluido. Se cancela antes de cerrar Tlamatini-Spanish."
     }
     Write-Log "Update y archivos de backup de la base de datos validados." "Green"
 
     # 2) Close the running Tlamatini and its whole process tree -- but NEVER
     #    this updater process. The updater is launched by self_update.py as a
-    #    child of $ParentPid (the Tlamatini.exe). A blind
+    #    child of $ParentPid (the Tlamatini-Spanish.exe). A blind
     #    `taskkill /T /PID $ParentPid` walks the recorded parent/child tree --
     #    which CREATE_BREAKAWAY_FROM_JOB does NOT change -- so it would also
     #    kill US, and the update would abort right here after "Closing
     #    Tlamatini..." (the exact symptom of the 1.19.5 -> 1.20.0 failure).
     #    So we enumerate the descendant tree ourselves and skip our own $PID.
-    Write-Log "Cerrando Tlamatini (PID $ParentPid) y sus procesos hijos..."
+    Write-Log "Cerrando Tlamatini-Spanish (PID $ParentPid) y sus procesos hijos..."
     Start-Sleep -Seconds 2
     try {
         $procs   = Get-CimInstance Win32_Process -ErrorAction Stop
@@ -181,11 +181,11 @@ try {
     }
     catch {
         # Never fall back to /T: it can kill this updater, leaving a half-run swap.
-        throw "No se pudo revisar con seguridad los procesos de Tlamatini; los archivos siguen igual."
+        throw "No se pudo revisar con seguridad los procesos de Tlamatini-Spanish; los archivos siguen igual."
     }
     # Let Windows release the file handles (python\, git\, jre\, exe).
     Start-Sleep -Seconds 3
-    Write-Log "Tlamatini: cerrada." "Green"
+    Write-Log "Tlamatini-Spanish: cerrada." "Green"
 
     # 3a) Preserve the user's DATABASE across the update. The live db.sqlite3
     #     lives INSIDE _internal\ (PyInstaller _MEIPASS), which step 4 deletes,
@@ -333,13 +333,13 @@ try {
     Write-Log "UPDATE COMPLETO." "Green"
 
     # 7) Relaunch Tlamatini.
-    if (-not $RelaunchExe) { $RelaunchExe = Join-Path $InstallDir "Tlamatini.exe" }
+    if (-not $RelaunchExe) { $RelaunchExe = Join-Path $InstallDir "Tlamatini-Spanish.exe" }
     if (Test-Path -LiteralPath $RelaunchExe) {
-        Write-Log "Iniciando el nuevo Tlamatini..." "Cyan"
+        Write-Log "Iniciando el nuevo Tlamatini-Spanish..." "Cyan"
         Start-Process -FilePath $RelaunchExe -WorkingDirectory $InstallDir -WindowStyle Hidden
     }
     else {
-        Write-Log "Falta Tlamatini.exe tras el update -- hay que iniciarlo a mano." "Yellow"
+        Write-Log "Falta Tlamatini-Spanish.exe tras el update -- hay que iniciarlo a mano." "Yellow"
     }
     Start-Sleep -Seconds 4
     exit 0

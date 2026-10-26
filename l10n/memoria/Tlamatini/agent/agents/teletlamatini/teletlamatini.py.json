@@ -168,6 +168,12 @@
    "en": "\"🟢 Already authenticated. Send a request to Tlamatini.\"",
    "es": "\"🟢 Ya tienes acceso. Envía una solicitud a Tlamatini.\"",
    "n": 1
+  },
+  {
+   "en": "'http://127.0.0.1:8000'",
+   "es": "'http://127.0.0.1:8052'",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
   }
  ],
  "conservar": [

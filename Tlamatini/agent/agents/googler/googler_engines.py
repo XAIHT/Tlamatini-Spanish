@@ -1379,7 +1379,7 @@ def default_profile_dir() -> str:
     so it survives updates, like Tlamatini's private runtimes)."""
     base = (os.environ.get("LOCALAPPDATA") or "").strip() or os.path.join(
         os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini", "googler", "chrome-profile")
+    return os.path.join(base, "Tlamatini-Spanish", "googler", "chrome-profile")
 
 
 def describe_refusals(attempts) -> list:

@@ -34,7 +34,7 @@ class SurfaceTests(unittest.TestCase):
 
     def test_key_name_and_root_are_stable(self):
         # The uninstaller deletes this exact path — keep them in lockstep.
-        self.assertEqual(war.ARP_KEY_NAME, "Tlamatini")
+        self.assertEqual(war.ARP_KEY_NAME, "Tlamatini-Spanish")
         self.assertIn(r"CurrentVersion\Uninstall", war.ARP_UNINSTALL_ROOT)
 
 
@@ -59,7 +59,7 @@ class GatingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d, \
              patch.object(war, "is_supported", return_value=True), \
              patch.object(sys, "frozen", True, create=True), \
-             patch.object(sys, "executable", os.path.join(d, "Tlamatini.exe")):
+             patch.object(sys, "executable", os.path.join(d, "Tlamatini-Spanish.exe")):
             self.assertFalse(war.self_heal_for_frozen())
 
 
@@ -81,7 +81,7 @@ class LiveRoundTripTests(unittest.TestCase):
             # Minimal "install": an Uninstaller.exe + an exe so DisplayIcon
             # resolves. Contents are irrelevant to the registry write.
             open(os.path.join(d, "Uninstaller.exe"), "wb").close()
-            open(os.path.join(d, "Tlamatini.exe"), "wb").close()
+            open(os.path.join(d, "Tlamatini-Spanish.exe"), "wb").close()
 
             self.assertTrue(
                 war.register_uninstall_entry(d, version="9.9.9", compute_size=False)
@@ -90,7 +90,7 @@ class LiveRoundTripTests(unittest.TestCase):
             try:
                 with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path) as key:
                     name, _ = winreg.QueryValueEx(key, "DisplayName")
-                    self.assertEqual(name, "Tlamatini")
+                    self.assertEqual(name, "Tlamatini-Spanish")
                     ver, _ = winreg.QueryValueEx(key, "DisplayVersion")
                     self.assertEqual(ver, "9.9.9")
                     uninst, _ = winreg.QueryValueEx(key, "UninstallString")

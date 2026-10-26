@@ -35,6 +35,54 @@
    "en": "f\"{script.name} failed (exit {process.returncode}):\\n{(error.strip() or output.strip())[-4000:]}\"",
    "es": "f\"{script.name}: error (salida {process.returncode}):\\n{(error.strip() or output.strip())[-4000:]}\"",
    "n": 1
+  },
+  {
+   "en": "Tlamatini.FlowFile",
+   "es": "TlamatiniSpanish.FlowFile",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 2
+  },
+  {
+   "en": "Tlamatini.PromptFlowFile",
+   "es": "TlamatiniSpanish.PromptFlowFile",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 2
+  },
+  {
+   "en": "\\Tlamatini\\FlowCapabilities",
+   "es": "\\Tlamatini-Spanish\\FlowCapabilities",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 1
+  },
+  {
+   "en": "\\Tlamatini\\FileTypes",
+   "es": "\\Tlamatini-Spanish\\FileTypes",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 1
+  },
+  {
+   "en": "CurrentVersion\\Uninstall\\Tlamatini\"",
+   "es": "CurrentVersion\\Uninstall\\Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "XAIHT\\Tlamatini\"",
+   "es": "XAIHT\\Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su llave de descubrimiento propia (HKCU Software\\XAIHT\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.lnk",
+   "es": "Tlamatini-Spanish.lnk",
+   "codigo": "Identidad de Tlamatini-Spanish: su acceso directo propio (Tlamatini-Spanish.lnk)",
+   "n": 1
+  },
+  {
+   "en": "\"TlamatiniFlows\")",
+   "es": "\"TlamatiniSpanishFlows\")",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 1
   }
  ],
  "conservar": [

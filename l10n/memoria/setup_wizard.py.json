@@ -3,7 +3,11 @@
  "segmentos": [
   {
    "en": "\"TLAMATINI  /  BEFORE WE CONTINUE\"",
-   "es": "\"TLAMATINI  /  ANTES DE CONTINUAR\"",
+   "es": "\"TLAMATINI-SPANISH  /  ANTES DE CONTINUAR\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -93,7 +97,11 @@
   },
   {
    "en": "\"Setup extracts Tlamatini, configures its agents, creates Desktop shortcuts \"",
-   "es": "\"El instalador extrae Tlamatini, configura sus agents, crea los accesos directos del escritorio \"",
+   "es": "\"El instalador extrae Tlamatini-Spanish, configura sus agents, crea los accesos directos del escritorio \"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -123,7 +131,11 @@
   },
   {
    "en": "\"A Tlamatini folder will be created inside your selected directory.\"",
-   "es": "\"Se creará una carpeta Tlamatini dentro del directorio que elegiste.\"",
+   "es": "\"Se creará una carpeta Tlamatini-Spanish dentro del directorio que elegiste.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -148,12 +160,20 @@
   },
   {
    "en": "\"Review what stays before removing Tlamatini from this computer.\"",
-   "es": "\"Revisa lo que se queda antes de quitar Tlamatini de esta computadora.\"",
+   "es": "\"Revisa lo que se queda antes de quitar Tlamatini-Spanish de esta computadora.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Bring Tlamatini to your workspace. Choose its home; we’ll take care of the setup.\"",
-   "es": "\"Trae Tlamatini a tu espacio de trabajo. Elige su lugar; nosotros nos encargamos de la instalación.\"",
+   "es": "\"Trae Tlamatini-Spanish a tu espacio de trabajo. Elige su lugar; nosotros nos encargamos de la instalación.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -173,12 +193,20 @@
   },
   {
    "en": "f\"Tlamatini — {self.operation} in progress\"",
-   "es": "f\"Tlamatini — {self.operation} en progreso\"",
+   "es": "f\"Tlamatini-Spanish — {self.operation} en progreso\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"REMOVING TLAMATINI\"",
-   "es": "\"QUITANDO TLAMATINI\"",
+   "es": "\"QUITANDO TLAMATINI-SPANISH\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -238,7 +266,11 @@
   },
   {
    "en": "f\"Tlamatini — {self.operation} {'complete' if success else 'needs attention'}\"",
-   "es": "f\"Tlamatini — {self.operation} {'completa' if success else 'necesita atención'}\"",
+   "es": "f\"Tlamatini-Spanish — {self.operation} {'completa' if success else 'necesita atención'}\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -263,7 +295,11 @@
   },
   {
    "en": "\"Welcome to Tlamatini.\"",
-   "es": "\"Te damos la bienvenida a Tlamatini.\"",
+   "es": "\"Te damos la bienvenida a Tlamatini-Spanish.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -273,12 +309,20 @@
   },
   {
    "en": "\"Tlamatini has been removed. Review the retained files below.\"",
-   "es": "\"Tlamatini se quitó. Revisa abajo los archivos que se conservaron.\"",
+   "es": "\"Tlamatini-Spanish se quitó. Revisa abajo los archivos que se conservaron.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "\"Setup is complete. Open Tlamatini from your Desktop shortcut.\"",
-   "es": "\"La instalación terminó. Abre Tlamatini desde su acceso directo del escritorio.\"",
+   "es": "\"La instalación terminó. Abre Tlamatini-Spanish desde su acceso directo del escritorio.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -318,7 +362,11 @@
   },
   {
    "en": "\"Tlamatini — Application removed; cleanup incomplete\"",
-   "es": "\"Tlamatini — Aplicación quitada; limpieza incompleta\"",
+   "es": "\"Tlamatini-Spanish — Aplicación quitada; limpieza incompleta\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -349,6 +397,24 @@
   {
    "en": "f\"{self.operation} is still running.\\nThis window will be ready to close when it finishes.\"",
    "es": "f\"{self.operation} sigue en ejecución.\\nEsta ventana se podrá cerrar cuando termine.\"",
+   "n": 1
+  },
+  {
+   "en": "os.path.join(raw, \"Tlamatini\") if raw",
+   "es": "os.path.join(raw, \"Tlamatini-Spanish\") if raw",
+   "codigo": "Identidad de Tlamatini-Spanish: su carpeta de instalación propia, junto a la de Tlamatini (inglés)",
+   "n": 1
+  },
+  {
+   "en": "text=\"TLAMATINI\", font=",
+   "es": "text=\"TLAMATINI-SPANISH\", font=",
+   "codigo": "Identidad de Tlamatini-Spanish: su carpeta de instalación propia, junto a la de Tlamatini (inglés)",
+   "n": 1
+  },
+  {
+   "en": "f\"Tlamatini — {self._working_label}",
+   "es": "f\"Tlamatini-Spanish — {self._working_label}",
+   "codigo": "Identidad de Tlamatini-Spanish: su carpeta de instalación propia, junto a la de Tlamatini (inglés)",
    "n": 1
   }
  ],

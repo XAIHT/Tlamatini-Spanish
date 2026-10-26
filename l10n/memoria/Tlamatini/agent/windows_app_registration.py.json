@@ -1,6 +1,37 @@
 {
  "archivo": "Tlamatini/agent/windows_app_registration.py",
- "segmentos": [],
+ "segmentos": [
+  {
+   "en": "ARP_KEY_NAME = \"Tlamatini\"",
+   "es": "ARP_KEY_NAME = \"Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "DISPLAY_NAME = \"Tlamatini\"",
+   "es": "DISPLAY_NAME = \"Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "ABOUT_URL = \"https://github.com/XAIHT/Tlamatini\"",
+   "es": "ABOUT_URL = \"https://github.com/XAIHT/Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 2
+  },
+  {
+   "en": "XAIHT_DISCOVERY_KEY = r\"Software\\XAIHT\\Tlamatini\"",
+   "es": "XAIHT_DISCOVERY_KEY = r\"Software\\XAIHT\\Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su llave de descubrimiento propia (HKCU Software\\XAIHT\\Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
  "conservar": [
   {
    "en": "\"Tlamatini\"",

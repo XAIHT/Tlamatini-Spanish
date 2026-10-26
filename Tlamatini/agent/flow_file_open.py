@@ -52,19 +52,19 @@ def instance_id() -> str:
 
 def configured_port() -> int:
     try:
-        value = int(json.loads(config_path().read_text(encoding='utf-8-sig')).get('django_port', 8000))
+        value = int(json.loads(config_path().read_text(encoding='utf-8-sig')).get('django_port', 8052))
         if 1 <= value <= 65535:
             return value
     except (OSError, ValueError, TypeError, AttributeError):
         pass
-    return 8000
+    return 8052
 
 
 def request_directory() -> Path:
     # The user's profile supplies the Windows ACL; no shared installation folder
     # or world-readable Temp location stores a user's flow contents.
     profile = Path(os.environ.get('LOCALAPPDATA') or Path.home() / '.local/share')
-    return profile / 'Tlamatini' / 'FlowFileOpen' / instance_id()
+    return profile / 'Tlamatini-Spanish' / 'FlowFileOpen' / instance_id()
 
 
 def validate_agent_flow(value: object) -> dict:
@@ -72,7 +72,7 @@ def validate_agent_flow(value: object) -> dict:
     if not isinstance(value, dict) or 'format' in value:
         raise FlowError('Este no es un archivo .flw de Agentic Control Panel.')
     if value.get('schemaVersion', 1) not in (1, 2):
-        raise FlowError('Esta versión de .flw no es compatible con este Tlamatini.')
+        raise FlowError('Esta versión de .flw no es compatible con este Tlamatini-Spanish.')
     nodes, connections = value.get('nodes'), value.get('connections')
     if not isinstance(nodes, list) or not isinstance(connections, list):
         raise FlowError('Un archivo .flw debe contener los arreglos nodes y connections.')
@@ -207,7 +207,7 @@ def consume_request(token: str, user_id, extension: str) -> dict:
 
 
 def status_payload() -> dict:
-    return {'application': 'Tlamatini', 'flow_file_open': 1, 'instance': instance_id()}
+    return {'application': 'Tlamatini-Spanish', 'flow_file_open': 1, 'instance': instance_id()}
 
 
 def running_instance(port: int) -> str:
@@ -240,7 +240,7 @@ def acquire_launch_mutex() -> bool:
     kernel.CreateMutexW.argtypes = [wintypes.LPVOID, wintypes.BOOL, wintypes.LPCWSTR]
     kernel.CreateMutexW.restype = wintypes.HANDLE
     kernel.CloseHandle.argtypes = [wintypes.HANDLE]
-    handle = kernel.CreateMutexW(None, False, 'Local\\Tlamatini.FlowFile.' + instance_id())
+    handle = kernel.CreateMutexW(None, False, 'Local\\TlamatiniSpanish.FlowFile.' + instance_id())
     if not handle:
         raise OSError(ctypes.get_last_error(), 'No se pudo coordinar el inicio del prompt flow')
     if ctypes.get_last_error() == 183:
@@ -295,9 +295,9 @@ def prepare_launch(filename: str) -> tuple[str, int, bool]:
                 if not webbrowser.open(url, new=2):
                     raise FlowError('Windows no pudo abrir un browser. Elige un browser predeterminado y vuelve a intentarlo.')
                 return url, port, True
-            raise FlowError('Tlamatini no terminó de iniciar. Revisa su consola principal y vuelve a abrir el archivo.')
+            raise FlowError('Tlamatini-Spanish no terminó de iniciar. Revisa su consola principal y vuelve a abrir el archivo.')
         if state == 'occupied':
-            raise FlowError(f'El puerto {port} ya lo usa otra aplicación o un Tlamatini anterior. Cierra ese programa o configura otro puerto web para Tlamatini.')
+            raise FlowError(f'El puerto {port} ya lo usa otra aplicación o un Tlamatini-Spanish anterior. Cierra ese programa o configura otro puerto web para Tlamatini-Spanish.')
         return url, port, False
     except Exception:
         (request_directory() / (token + '.json')).unlink(missing_ok=True)
@@ -309,4 +309,4 @@ def launch_error(error: Exception) -> None:
     print('--- [FLOW] ' + message, flush=True)
     if os.name == 'nt':
         import ctypes
-        ctypes.windll.user32.MessageBoxW(None, message, 'Tlamatini — Abrir archivo de flow', 0x10)
+        ctypes.windll.user32.MessageBoxW(None, message, 'Tlamatini-Spanish — Abrir archivo de flow', 0x10)

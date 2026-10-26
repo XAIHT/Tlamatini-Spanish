@@ -899,7 +899,7 @@ def _resolve_completeness_cfg(config: Dict[str, Any]) -> Dict[str, Any]:
 
 def _resolve_tlamatini_cfg(config: Dict[str, Any]) -> Dict[str, Any]:
     tla = config.get('tlamatini') or {}
-    base = (tla.get('base_url') or 'http://127.0.0.1:8000').rstrip('/')
+    base = (tla.get('base_url') or 'http://127.0.0.1:8052').rstrip('/')
     ws_url = tla.get('ws_url')
     if not ws_url:
         # Derive ws:// from http:// automatically — one less thing to keep in

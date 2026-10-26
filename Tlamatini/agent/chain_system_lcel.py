@@ -83,7 +83,7 @@ class SystemRAGChain:
         )
 
         # Initialize MCP client with URI from config
-        mcp_uri = config.get("mcp_system_client_uri", "ws://127.0.0.1:8765")
+        mcp_uri = config.get("mcp_system_client_uri", "ws://127.0.0.1:8752")
         self.mcp_client = MCPSystemClient(uri=mcp_uri)
 
         # Available resources cache (fetched once)

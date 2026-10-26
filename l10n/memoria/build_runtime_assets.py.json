@@ -1,0 +1,18 @@
+{
+ "archivo": "build_runtime_assets.py",
+ "segmentos": [
+  {
+   "en": "\"tlamatini.exe\",",
+   "es": "\"tlamatini-spanish.exe\",",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 2
+  }
+ ],
+ "conservar": []
+}

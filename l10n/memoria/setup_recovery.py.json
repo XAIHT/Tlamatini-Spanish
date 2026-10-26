@@ -38,7 +38,11 @@
   },
   {
    "en": "\"Another Tlamatini installation or removal is running. Close it or wait for it to finish, then retry.\"",
-   "es": "\"Ya se está ejecutando otra instalación o eliminación de Tlamatini. Ciérrala o espera a que termine, y vuelve a intentarlo.\"",
+   "es": "\"Ya se está ejecutando otra instalación o eliminación de Tlamatini-Spanish. Ciérrala o espera a que termine, y vuelve a intentarlo.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -234,6 +238,18 @@
   {
    "en": "f\"Deleted {removed:,} files and folders ({path.name})\"",
    "es": "f\"Se eliminaron {removed:,} archivos y carpetas ({path.name})\"",
+   "n": 1
+  },
+  {
+   "en": "\"Local\\\\XAIHT.Tlamatini.Setup.v1\"",
+   "es": "\"Local\\\\XAIHT.TlamatiniSpanish.Setup.v1\"",
+   "codigo": "Identidad de Tlamatini-Spanish: sus mutex, AppUserModelID y título de consola propios",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.lnk",
+   "es": "Tlamatini-Spanish.lnk",
+   "codigo": "Identidad de Tlamatini-Spanish: su acceso directo propio (Tlamatini-Spanish.lnk)",
    "n": 1
   }
  ],

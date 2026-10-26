@@ -8,13 +8,13 @@ $ErrorActionPreference = 'Stop'
 # SHChangeNotify C# interop code (may fail in Constrained Language Mode)
 $csharpCode = 'using System; using System.Runtime.InteropServices; public class ShellNotify { [DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = true)] public static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2); }'
 
-Write-Host "Eliminador de accesos directos de Tlamatini" -ForegroundColor Cyan
+Write-Host "Eliminador de accesos directos de Tlamatini-Spanish" -ForegroundColor Cyan
 Write-Host "============================" -ForegroundColor Cyan
 Write-Host ""
 
 # ── Remove desktop shortcut ──────────────────────────────────────────────────
 $desktopPath = [Environment]::GetFolderPath("Desktop")
-$desktopShortcut = Join-Path $desktopPath "Tlamatini.lnk"
+$desktopShortcut = Join-Path $desktopPath "Tlamatini-Spanish.lnk"
 
 if (Test-Path $desktopShortcut) {
     $shell = New-Object -ComObject WScript.Shell
@@ -24,14 +24,14 @@ if (Test-Path $desktopShortcut) {
         Remove-Item -LiteralPath $desktopShortcut -Force -ErrorAction Stop
         Write-Host "[OK] Acceso directo del escritorio eliminado: $desktopShortcut" -ForegroundColor Green
     } else {
-        Write-Host '[--] Se deja el acceso directo del escritorio: es de otra copia de Tlamatini.'
+        Write-Host '[--] Se deja el acceso directo del escritorio: es de otra copia de Tlamatini-Spanish.'
     }
 } else {
     Write-Host "[--] No hay acceso directo en el escritorio: $desktopShortcut" -ForegroundColor DarkGray
 }
 
 # ── Remove local shortcut in the install directory ───────────────────────────
-$localShortcut = Join-Path $scriptDir "Tlamatini.lnk"
+$localShortcut = Join-Path $scriptDir "Tlamatini-Spanish.lnk"
 
 if (Test-Path $localShortcut) {
         Remove-Item -LiteralPath $localShortcut -Force -ErrorAction Stop

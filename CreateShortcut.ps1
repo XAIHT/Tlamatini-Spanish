@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 $scriptDir = $PSScriptRoot
 $configPath = Join-Path $scriptDir "CreateShortcut.json"
 
-Write-Host "Creador de accesos directos de Tlamatini" -ForegroundColor Cyan
+Write-Host "Creador de accesos directos de Tlamatini-Spanish" -ForegroundColor Cyan
 Write-Host "============================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -19,7 +19,7 @@ Write-Host ""
 if (-not (Test-Path $configPath)) {
     Write-Host "Error: no existe CreateShortcut.json en: $configPath" -ForegroundColor Red
     Write-Host "Hay que crearlo con un contenido como este:" -ForegroundColor Yellow
-    Write-Host '  { "InstallDir": "D:\\Tlamatini" }' -ForegroundColor Yellow
+    Write-Host '  { "InstallDir": "D:\\Tlamatini-Spanish" }' -ForegroundColor Yellow
     exit 1
 }
 
@@ -43,7 +43,7 @@ if (-not (Test-Path $installDir)) {
 }
 
 $installDir = (Resolve-Path $installDir).Path
-$exePath = Join-Path $installDir "Tlamatini.exe"
+$exePath = Join-Path $installDir "Tlamatini-Spanish.exe"
 $iconPath = Join-Path $installDir "Tlamatini.ico"
 $conhostPath = Join-Path $env:SystemRoot "System32\conhost.exe"
 
@@ -51,20 +51,20 @@ Write-Host "Carpeta destino: $installDir" -ForegroundColor White
 
 # Two launch strategies:
 #   * conhost.exe wrapper -- the shortcut target is conhost.exe and the
-#     argument is Tlamatini.exe.  Forces the legacy Console Host to own the
+#     argument is Tlamatini-Spanish.exe.  Forces the legacy Console Host to own the
 #     window even when Windows Terminal is the default host, so WM_SETICON
 #     and the embedded .exe icon take effect on the title bar.
-#   * Direct Tlamatini.exe -- the shortcut targets the .exe straight.  Works
+#   * Direct Tlamatini-Spanish.exe -- the shortcut targets the .exe straight.  Works
 #     on machines with restrictive Group Policy / AppLocker / WDAC where
 #     conhost.exe is allowed to run but is silently prevented from launching
 #     arbitrary child executables, which made earlier "always wrap" versions
 #     produce shortcuts that did nothing when clicked.
 # We probe end-to-end at install time and pick the right one for THIS host.
 if (-not (Test-Path $exePath)) {
-    Write-Host "Error: falta Tlamatini.exe en: $exePath" -ForegroundColor Red
+    Write-Host "Error: falta Tlamatini-Spanish.exe en: $exePath" -ForegroundColor Red
     exit 1
 }
-Write-Host "[OK] Tlamatini.exe encontrado: $exePath" -ForegroundColor Green
+Write-Host "[OK] Tlamatini-Spanish.exe encontrado: $exePath" -ForegroundColor Green
 
 # Check icon
 if (Test-Path $iconPath) {
@@ -111,8 +111,8 @@ $useConhost = Test-ConhostWrapperUsable
 if ($useConhost) {
     Write-Host "[OK] el wrapper conhost.exe sirve -- el acceso directo va a forzar el console host de siempre (el icono se ve bien aunque Windows Terminal sea el predeterminado)." -ForegroundColor Green
 } else {
-    Write-Host "[!] el wrapper conhost.exe NO sirve en esta computadora -- el acceso directo va a apuntar directo a Tlamatini.exe." -ForegroundColor Yellow
-    Write-Host "    En la barra de la ventana se va a leer 'Tlamatini', pero el icono de la ventana puede ser el del host." -ForegroundColor Yellow
+    Write-Host "[!] el wrapper conhost.exe NO sirve en esta computadora -- el acceso directo va a apuntar directo a Tlamatini-Spanish.exe." -ForegroundColor Yellow
+    Write-Host "    En la barra de la ventana se va a leer 'Tlamatini-Spanish', pero el icono de la ventana puede ser el del host." -ForegroundColor Yellow
 }
 $useConhostFlag = if ($useConhost) { '1' } else { '0' }
 
@@ -134,7 +134,7 @@ End If
 
 strInstallDir = WScript.Arguments(0)
 bUseConhost = (WScript.Arguments(1) = "1")
-strExePath = objFSO.BuildPath(strInstallDir, "Tlamatini.exe")
+strExePath = objFSO.BuildPath(strInstallDir, "Tlamatini-Spanish.exe")
 strIconPath = objFSO.BuildPath(strInstallDir, "Tlamatini.ico")
 strConhostPath = objShell.ExpandEnvironmentStrings("%SystemRoot%\System32\conhost.exe")
 
@@ -143,7 +143,7 @@ strConhostPath = objShell.ExpandEnvironmentStrings("%SystemRoot%\System32\conhos
 '                          is the .exe's embedded Tlamatini icon under any
 '                          terminal host (Windows Terminal ignores
 '                          WM_SETICON, so the wrapper is the only way).
-'   bUseConhost = False -> target Tlamatini.exe directly; required on
+'   bUseConhost = False -> target Tlamatini-Spanish.exe directly; required on
 '                          AppLocker / WDAC / restrictive-policy machines
 '                          where the wrapper produces dead shortcuts.
 
@@ -158,7 +158,7 @@ Sub CreateShortcut(shortcutPath)
         objShortcut.Arguments = ""
     End If
     objShortcut.WorkingDirectory = strInstallDir
-    objShortcut.Description = "Servidor de desarrollo de Tlamatini"
+    objShortcut.Description = "Servidor de desarrollo de Tlamatini-Spanish"
     objShortcut.WindowStyle = 1
 
     ' Set icon: prefer the standalone .ico (sharper at all sizes for the
@@ -181,10 +181,10 @@ End Sub
 
 ' Create desktop shortcut
 strDesktop = objShell.SpecialFolders("Desktop")
-Call CreateShortcut(objFSO.BuildPath(strDesktop, "Tlamatini.lnk"))
+Call CreateShortcut(objFSO.BuildPath(strDesktop, "Tlamatini-Spanish.lnk"))
 
 ' Create local shortcut in install directory
-Call CreateShortcut(objFSO.BuildPath(strInstallDir, "Tlamatini.lnk"))
+Call CreateShortcut(objFSO.BuildPath(strInstallDir, "Tlamatini-Spanish.lnk"))
 
 WScript.Echo ""
 WScript.Echo "Listo: accesos directos creados."
@@ -227,7 +227,7 @@ if (-not $vbsSuccess) {
                 $sc.Arguments = ""
             }
             $sc.WorkingDirectory = $script:installDir
-            $sc.Description = "Servidor de desarrollo de Tlamatini"
+            $sc.Description = "Servidor de desarrollo de Tlamatini-Spanish"
             $sc.WindowStyle = 1
             if (Test-Path $script:iconPath) {
                 $sc.IconLocation = "$script:iconPath,0"
@@ -241,10 +241,10 @@ if (-not $vbsSuccess) {
 
         # Desktop shortcut
         $desktopPath = [Environment]::GetFolderPath("Desktop")
-        New-TlamatiniShortcut (Join-Path $desktopPath "Tlamatini.lnk")
+        New-TlamatiniShortcut (Join-Path $desktopPath "Tlamatini-Spanish.lnk")
 
         # Local shortcut in install directory
-        New-TlamatiniShortcut (Join-Path $installDir "Tlamatini.lnk")
+        New-TlamatiniShortcut (Join-Path $installDir "Tlamatini-Spanish.lnk")
 
         Write-Host ""
         Write-Host "Listo: accesos directos creados." -ForegroundColor Green
@@ -260,5 +260,5 @@ $global:LASTEXITCODE = 0
 Write-Host ""
 Write-Host "Ahora puedes:" -ForegroundColor Cyan
 Write-Host "  1. Hacer doble clic en el acceso directo del escritorio" -ForegroundColor White
-Write-Host "  2. Hacer doble clic en 'Tlamatini.lnk' dentro de $installDir" -ForegroundColor White
+Write-Host "  2. Hacer doble clic en 'Tlamatini-Spanish.lnk' dentro de $installDir" -ForegroundColor White
 Write-Host "  3. Anclar el acceso directo a la barra de tareas o a Inicio" -ForegroundColor White

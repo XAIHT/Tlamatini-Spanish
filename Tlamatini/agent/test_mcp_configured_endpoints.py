@@ -123,7 +123,7 @@ class ConfiguredMCPTests(unittest.TestCase):
             ({'mcp_files_search_client_uri': 'localhost:51236',
               'mcp_files_search_grpc_target': 'localhost:51235'}, 'localhost:51236'),
             ({'mcp_files_search_server_host': '127.0.0.1', 'mcp_files_search_server_port': 50053}, '127.0.0.1:50053'),
-            ({}, 'localhost:50051'),
+            ({}, 'localhost:50052'),
         ]
         for config, expected in cases:
             with self.subTest(config=config), patch.object(client, '_CONFIG_CACHE', config):

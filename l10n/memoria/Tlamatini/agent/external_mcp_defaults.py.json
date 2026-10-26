@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/external_mcp_defaults.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini\", \"memory\", \"memory.json\"",
+   "es": "\"Tlamatini-Spanish\", \"memory\", \"memory.json\"",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 2
+  }
+ ],
+ "conservar": []
+}

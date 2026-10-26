@@ -7,7 +7,7 @@
         "@modelcontextprotocol/server-memory"
       ],
       "env": {
-        "MEMORY_FILE_PATH": "C:\\Users\\angel\\AppData\\Local\\Tlamatini\\memory\\memory.json"
+        "MEMORY_FILE_PATH": "C:\\Users\\angel\\AppData\\Local\\Tlamatini-Spanish\\memory\\memory.json"
       },
       "transport": "stdio",
       "description": "Persistent knowledge graph — durable, cross-session memory of entities, relations and observations. Official @modelcontextprotocol reference server. Needs Node (Tlamatini provisions it automatically).",

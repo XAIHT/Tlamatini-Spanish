@@ -117,8 +117,8 @@ def resolve_build_version(cli_arg: Optional[str] = None) -> str:
 def emit_build_artifacts(
     version: str,
     *,
-    product_name: str = "Tlamatini",
-    original_filename: str = "Tlamatini.exe",
+    product_name: str = "Tlamatini-Spanish",
+    original_filename: str = "Tlamatini-Spanish.exe",
 ) -> Path:
     """Write ``_version.py`` and the Win32 VERSIONINFO file to disk.
 

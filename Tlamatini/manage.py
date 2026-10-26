@@ -54,7 +54,7 @@ def _set_app_user_model_id():
     try:
         import ctypes
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-            "XAIHT.Tlamatini.Server"
+            "XAIHT.TlamatiniSpanish.Server"
         )
     except Exception:
         pass
@@ -86,7 +86,7 @@ def _brand_console_window():
         user32 = ctypes.windll.user32
 
         # 1. Window title — works under any host (conhost / WT / future).
-        kernel32.SetConsoleTitleW("Tlamatini")
+        kernel32.SetConsoleTitleW("Tlamatini-Spanish")
 
         # 2. Window icon — locate Tlamatini.ico next to the .exe (frozen) or
         # at the project root (source mode).
@@ -1598,7 +1598,7 @@ def _enable_console_colors():
         print(f"--- [CONSOLE-COLORS] skipped (non-fatal): {exc}")
 
 
-def _resolve_django_port(default_port: int = 8000) -> int:
+def _resolve_django_port(default_port: int = 8052) -> int:
     """Django/Daphne listen port, read from config.json's ``django_port``.
 
     Lets a machine where Windows/Hyper-V has reserved port 8000 (``WinError

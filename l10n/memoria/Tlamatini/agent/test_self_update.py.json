@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/test_self_update.py",
+ "segmentos": [
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 5
+  }
+ ],
+ "conservar": []
+}

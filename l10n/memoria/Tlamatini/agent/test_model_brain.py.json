@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/test_model_brain.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini\", \"model_brain\")",
+   "es": "\"Tlamatini-Spanish\", \"model_brain\")",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

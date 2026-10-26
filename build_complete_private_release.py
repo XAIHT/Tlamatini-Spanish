@@ -70,8 +70,8 @@ CONTACTS_DEV_TREE = REPO_ROOT / "Tlamatini" / "agent" / "contacts.json"
 # Tried via env var TLAMATINI_INSTALL, then common install roots.
 _CONTACTS_RUNNING_CANDIDATES = [
     Path(os.environ.get("TLAMATINI_INSTALL", "")) / "contacts.json",
-    Path(os.path.expandvars(r"%LOCALAPPDATA%")) / "Tlamatini" / "contacts.json",
-    Path(r"C:\Tlamatini") / "contacts.json",
+    Path(os.path.expandvars(r"%LOCALAPPDATA%")) / "Tlamatini-Spanish" / "contacts.json",
+    Path(r"C:\XAIHT\Tlamatini-Spanish") / "contacts.json",
 ]
 # The DEV External-MCP catalog. It is TRACKED (with `<... goes here>` placeholders)
 # and `regen_secrets.py --mode keyed` — which this builder runs first — restores the
@@ -91,8 +91,8 @@ _EXTERNAL_MCPS_RUNNING_CANDIDATES = (
     ([Path(os.environ["TLAMATINI_INSTALL"]) / "external_mcps.json"]
      if os.environ.get("TLAMATINI_INSTALL") else [])
     + [
-        Path(os.path.expandvars(r"%LOCALAPPDATA%")) / "Tlamatini" / "external_mcps.json",
-        Path(r"C:\Tlamatini") / "external_mcps.json",
+        Path(os.path.expandvars(r"%LOCALAPPDATA%")) / "Tlamatini-Spanish" / "external_mcps.json",
+        Path(r"C:\XAIHT\Tlamatini-Spanish") / "external_mcps.json",
     ]
 )
 # Same cap as external_mcp_manager.MAX_ACTIVE (a test keeps the two equal).
@@ -456,7 +456,7 @@ def run(cmd: list[str], *, cwd: Path = REPO_ROOT) -> int:
 
 
 def newest_release_dir() -> Path | None:
-    cands = sorted(glob.glob(str(DIST / "Tlamatini_Release_v*")),
+    cands = sorted(glob.glob(str(DIST / "Tlamatini-Spanish_Release_v*")),
                    key=lambda p: os.path.getmtime(p), reverse=True)
     for c in cands:
         if Path(c).is_dir():

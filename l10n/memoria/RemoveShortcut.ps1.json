@@ -3,7 +3,11 @@
  "segmentos": [
   {
    "en": "\"Tlamatini Shortcut Remover\"",
-   "es": "\"Eliminador de accesos directos de Tlamatini\"",
+   "es": "\"Eliminador de accesos directos de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -13,7 +17,11 @@
   },
   {
    "en": "'[--] Kept desktop shortcut belonging to another installation.'",
-   "es": "'[--] Se deja el acceso directo del escritorio: es de otra copia de Tlamatini.'",
+   "es": "'[--] Se deja el acceso directo del escritorio: es de otra copia de Tlamatini-Spanish.'",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -55,6 +63,12 @@
    "en": "\"SUCCESS: Shortcuts have been removed.\"",
    "es": "\"SUCCESS: se eliminaron los accesos directos.\"",
    "n": 1
+  },
+  {
+   "en": "Tlamatini.lnk",
+   "es": "Tlamatini-Spanish.lnk",
+   "codigo": "Identidad de Tlamatini-Spanish: su acceso directo propio (Tlamatini-Spanish.lnk)",
+   "n": 2
   }
  ],
  "conservar": [

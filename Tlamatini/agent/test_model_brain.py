@@ -255,7 +255,7 @@ class ResearchTests(SimpleTestCase):
 
     def test_the_learned_file_lives_outside_the_install_folder(self):
         with mock.patch.dict(os.environ, {"TLAMATINI_MODEL_BRAIN_DIR": "", "LOCALAPPDATA": r"C:\Users\x\AppData\Local"}):
-            self.assertEqual(model_brain._learned_dir(), os.path.join(r"C:\Users\x\AppData\Local", "Tlamatini", "model_brain"))
+            self.assertEqual(model_brain._learned_dir(), os.path.join(r"C:\Users\x\AppData\Local", "Tlamatini-Spanish", "model_brain"))
 
 
 # ── the reasoning, over a REAL HTTP round trip ───────────────────────────────

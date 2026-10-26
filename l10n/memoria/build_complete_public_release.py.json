@@ -1,0 +1,12 @@
+{
+ "archivo": "build_complete_public_release.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini_Release_v*\"",
+   "es": "\"Tlamatini-Spanish_Release_v*\"",
+   "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

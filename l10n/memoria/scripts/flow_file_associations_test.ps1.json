@@ -1,0 +1,42 @@
+{
+ "archivo": "scripts/flow_file_associations_test.ps1",
+ "segmentos": [
+  {
+   "en": "XAIHT\\Tlamatini\\FileAssociationTests",
+   "es": "XAIHT\\Tlamatini-Spanish\\FileAssociationTests",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 1
+  },
+  {
+   "en": "\\Tlamatini\\FlowCapabilities",
+   "es": "\\Tlamatini-Spanish\\FlowCapabilities",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 2
+  },
+  {
+   "en": "Tlamatini.FlowFile",
+   "es": "TlamatiniSpanish.FlowFile",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 2
+  },
+  {
+   "en": "Tlamatini.PromptFlowFile",
+   "es": "TlamatiniSpanish.PromptFlowFile",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 9
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 2
+  },
+  {
+   "en": "'TlamatiniFlows'",
+   "es": "'TlamatiniSpanishFlows'",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 2
+  }
+ ],
+ "conservar": []
+}

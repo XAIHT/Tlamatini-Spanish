@@ -190,7 +190,7 @@ def main():
     version_file_path = render_versioninfo_for(
         tlamatini_version,
         root / "Uninstaller.version.txt",
-        product_name="Tlamatini Uninstaller",
+        product_name="Tlamatini-Spanish Uninstaller",
         original_filename="Uninstaller.exe",
     )
     print(f"Tlamatini version : {tlamatini_version}")

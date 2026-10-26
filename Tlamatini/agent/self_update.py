@@ -21,7 +21,7 @@ detect corruption/omissions; they are not publisher signatures.
 
 Why an external script does the swap
 ------------------------------------
-A running Windows application cannot replace its own files — ``Tlamatini.exe``,
+A running Windows application cannot replace its own files — ``Tlamatini-Spanish.exe``,
 ``python\\``, ``jre\\``, ``git\\`` and ``ms-playwright\\`` are all locked while
 the process is alive. So this module only does the *safe-while-running* part
 (check → download → unzip → stage) and then launches a copy of
@@ -84,10 +84,10 @@ from typing import Optional
 # ── Constants ───────────────────────────────────────────────────────────────
 
 GITHUB_OWNER = "XAIHT"
-GITHUB_REPO = "Tlamatini"
+GITHUB_REPO = "Tlamatini-Spanish"
 GITHUB_API_LATEST = f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/releases/latest"
 RELEASES_PAGE = f"https://github.com/{GITHUB_OWNER}/{GITHUB_REPO}/releases"
-_USER_AGENT = "Tlamatini-Updater"
+_USER_AGENT = "Tlamatini-Spanish-Updater"
 
 # Approx. free space we want before downloading (release zip + extracted
 # bundle + staged pkg ≈ 4×1.35 GB). Soft check — only warns.
@@ -129,7 +129,7 @@ def is_frozen() -> bool:
 
 
 def install_dir() -> Optional[str]:
-    """The install root (the folder that holds ``Tlamatini.exe``).
+    """The install root (the folder that holds ``Tlamatini-Spanish.exe``).
 
     Only meaningful in a frozen build; returns ``None`` in source mode.
     """
@@ -156,7 +156,7 @@ def _updater_home() -> str:
     that the swap is about to replace.
     """
     base = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA") or os.path.expanduser("~")
-    return os.path.join(base, "Tlamatini", "updater")
+    return os.path.join(base, "Tlamatini-Spanish", "updater")
 
 
 def _current_version() -> str:
@@ -346,8 +346,8 @@ def _run_update() -> None:
             except OSError:
                 pass
 
-        if not os.path.isfile(os.path.join(staging, "Tlamatini.exe")):
-            raise RuntimeError("El build preparado no es válido: falta Tlamatini.exe después de la extracción.")
+        if not os.path.isfile(os.path.join(staging, "Tlamatini-Spanish.exe")):
+            raise RuntimeError("El build preparado no es válido: falta Tlamatini-Spanish.exe después de la extracción.")
 
         # 4) Hand off to the external PowerShell updater and let it swap + relaunch.
         log_path = _launch_updater(install_dir(), staging)
@@ -371,7 +371,7 @@ def _launch_updater(target_install: str, staging: str) -> str:
     shutil.copy2(script_src, script_dst)
     log_path = os.path.join(home, "update.log")
 
-    relaunch_exe = os.path.join(target_install, "Tlamatini.exe")
+    relaunch_exe = os.path.join(target_install, "Tlamatini-Spanish.exe")
     args = [
         "powershell", "-ExecutionPolicy", "Bypass", "-NoProfile", "-File", script_dst,
         "-InstallDir", target_install,
@@ -449,16 +449,16 @@ def _locate_pkg_zip(folder: str) -> Optional[str]:
 
 
 def _flatten_to_exe(folder: str) -> str:
-    """Return the directory that directly contains ``Tlamatini.exe``.
+    """Return the directory that directly contains ``Tlamatini-Spanish.exe``.
 
     pkg.zip normally extracts the install tree flat, but tolerate a single
     wrapping folder just in case.
     """
-    if os.path.isfile(os.path.join(folder, "Tlamatini.exe")):
+    if os.path.isfile(os.path.join(folder, "Tlamatini-Spanish.exe")):
         return folder
     entries = [os.path.join(folder, n) for n in os.listdir(folder)]
     subdirs = [p for p in entries if os.path.isdir(p)]
-    if len(subdirs) == 1 and os.path.isfile(os.path.join(subdirs[0], "Tlamatini.exe")):
+    if len(subdirs) == 1 and os.path.isfile(os.path.join(subdirs[0], "Tlamatini-Spanish.exe")):
         return subdirs[0]
     return folder
 

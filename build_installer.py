@@ -272,7 +272,7 @@ def main():
     version_file_path = render_versioninfo_for(
         tlamatini_version,
         root / "Installer.version.txt",
-        product_name="Tlamatini Installer",
+        product_name="Tlamatini-Spanish Installer",
         original_filename="Installer.exe",
     )
     print(f"Tlamatini version : {tlamatini_version}")
@@ -457,7 +457,7 @@ def main():
         c if (c.isalnum() or c in "._-") else "_"
         for c in tlamatini_version.replace("+", "_")
     )
-    release_dir = root / "dist" / f"Tlamatini_Release_v{safe_version}"
+    release_dir = root / "dist" / f"Tlamatini-Spanish_Release_v{safe_version}"
     if release_dir.exists():
         clean_directory(release_dir)
 

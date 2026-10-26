@@ -185,7 +185,7 @@ def validate_preservation_contract(repo):
     ):
         raise RuntimeError("Invalid top-level preserved-user-state contract")
     app_code = {"_internal", "agents", "agent", "python", "jre", "git", "ms-playwright",
-                "images", "security", "tlamatinisourcecode", "tlamatini.md", "tlamatini.exe",
+                "images", "security", "tlamatinisourcecode", "tlamatini.md", "tlamatini-spanish.exe",
                 "build_runtime_assets.py", "apply_update.ps1", MANIFEST_NAME}
     if expected & app_code:
         raise RuntimeError("Preservation contract pins application code: " + ", ".join(expected & app_code))
@@ -330,7 +330,7 @@ def write_runtime_manifest(dist_root, expected, *, version, self_modify):
         target = root / name
         if not target.is_file() or file_record(target) != record:
             raise RuntimeError(f"Frozen release lost or changed a required source asset: {name}")
-    for name in ("Tlamatini.exe", "python/python.exe", "jre/bin/java.exe",
+    for name in ("Tlamatini-Spanish.exe", "python/python.exe", "jre/bin/java.exe",
                  "git/cmd/git.exe", "jd-cli/jd-cli.jar", "_internal/db.sqlite3",
                  "_internal/pymupdf/_mupdf.pyd", "_internal/pymupdf/_extra.pyd",
                  "_internal/pymupdf/mupdfcpp64.dll"):
@@ -390,7 +390,7 @@ def validate_runtime_document(document, *, expected_version=None):
             f"Runtime package version {document.get('version')!r} differs from the requested "
             f"release {expected_version!r}; rebuild pkg.zip with that version before assembling the installer"
         )
-    floor = {"Tlamatini.exe", "python/python.exe", "config.json", "prompt.pmt",
+    floor = {"Tlamatini-Spanish.exe", "python/python.exe", "config.json", "prompt.pmt",
              "apply_update.ps1", "sqlite_copy.py", "preserved_user_state.json",
              "build_runtime_assets.py", "jre/bin/java.exe", "git/cmd/git.exe",
              "_internal/agent/templates/agent/prompt_flow_panel.html",

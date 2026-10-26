@@ -1,0 +1,12 @@
+{
+ "archivo": "build_uninstaller.py",
+ "segmentos": [
+  {
+   "en": "product_name=\"Tlamatini Uninstaller\",",
+   "es": "product_name=\"Tlamatini-Spanish Uninstaller\",",
+   "codigo": "Identidad de Tlamatini-Spanish: VERSIONINFO del .exe (ProductName, FileDescription, OriginalFilename)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

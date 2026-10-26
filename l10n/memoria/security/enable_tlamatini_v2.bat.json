@@ -1,0 +1,18 @@
+{
+ "archivo": "security/enable_tlamatini_v2.bat",
+ "segmentos": [
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 10
+  },
+  {
+   "en": "XAIHT\\Tlamatini'",
+   "es": "XAIHT\\Tlamatini-Spanish'",
+   "codigo": "Identidad de Tlamatini-Spanish: su llave de descubrimiento propia (HKCU Software\\XAIHT\\Tlamatini-Spanish)",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -77,7 +77,7 @@ def memory_store_path() -> str:
         base = os.environ.get("LOCALAPPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Local")
     else:
         base = os.environ.get("XDG_DATA_HOME") or os.path.join(os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini", "memory", "memory.json")
+    return os.path.join(base, "Tlamatini-Spanish", "memory", "memory.json")
 
 
 def _ensure_memory_dir() -> None:
@@ -215,7 +215,7 @@ def shipped_catalog_document() -> Dict[str, Any]:
     # per-user at first use.
     servers["memory"]["env"]["MEMORY_FILE_PATH"] = os.path.join(
         "%LOCALAPPDATA%" if os.name == "nt" else "$HOME/.local/share",
-        "Tlamatini", "memory", "memory.json",
+        "Tlamatini-Spanish", "memory", "memory.json",
     )
     return {
         "_README": (

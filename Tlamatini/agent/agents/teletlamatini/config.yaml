@@ -75,7 +75,7 @@ password: "<TELETLAMATINI_PASSWORD goes here>"
 #                            true`, which gives the Telegram user the full
 #                            "Tlamatini-as-operator" experience over the bot.
 tlamatini:
-  base_url: "http://127.0.0.1:8000"
+  base_url: "http://127.0.0.1:8052"
   username: "<TLAMATINI_USERNAME goes here>"
   password: "<TLAMATINI_PASSWORD goes here>"
   multi_turn_enabled: true

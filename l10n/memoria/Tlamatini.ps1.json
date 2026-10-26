@@ -3,7 +3,11 @@
  "segmentos": [
   {
    "en": "\"Starting Tlamatini Development Server...\"",
-   "es": "\"Iniciando el servidor de desarrollo de Tlamatini...\"",
+   "es": "\"Iniciando el servidor de desarrollo de Tlamatini-Spanish...\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -65,6 +69,12 @@
    "en": "\"Press Enter to close this window\"",
    "es": "\"Presiona Enter para cerrar esta ventana\"",
    "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 7
   }
  ],
  "conservar": []

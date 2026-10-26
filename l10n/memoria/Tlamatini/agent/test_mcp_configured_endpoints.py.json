@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/test_mcp_configured_endpoints.py",
+ "segmentos": [
+  {
+   "en": "({}, 'localhost:50051'),",
+   "es": "({}, 'localhost:50052'),",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

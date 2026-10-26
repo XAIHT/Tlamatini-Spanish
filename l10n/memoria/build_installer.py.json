@@ -1,0 +1,18 @@
+{
+ "archivo": "build_installer.py",
+ "segmentos": [
+  {
+   "en": "product_name=\"Tlamatini Installer\",",
+   "es": "product_name=\"Tlamatini-Spanish Installer\",",
+   "codigo": "Identidad de Tlamatini-Spanish: VERSIONINFO del .exe (ProductName, FileDescription, OriginalFilename)",
+   "n": 1
+  },
+  {
+   "en": "f\"Tlamatini_Release_v{safe_version}\"",
+   "es": "f\"Tlamatini-Spanish_Release_v{safe_version}\"",
+   "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

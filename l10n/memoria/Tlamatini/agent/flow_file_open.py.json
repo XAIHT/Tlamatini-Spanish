@@ -8,7 +8,11 @@
   },
   {
    "en": "'This .flw version is not supported by this Tlamatini.'",
-   "es": "'Esta versión de .flw no es compatible con este Tlamatini.'",
+   "es": "'Esta versión de .flw no es compatible con este Tlamatini-Spanish.'",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -138,12 +142,20 @@
   },
   {
    "en": "'Tlamatini did not finish starting. Check its main console, then open the file again.'",
-   "es": "'Tlamatini no terminó de iniciar. Revisa su consola principal y vuelve a abrir el archivo.'",
+   "es": "'Tlamatini-Spanish no terminó de iniciar. Revisa su consola principal y vuelve a abrir el archivo.'",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
    "en": "f'Port {port} is already used by another application or an older Tlamatini. Close it or configure a different Tlamatini web port.'",
-   "es": "f'El puerto {port} ya lo usa otra aplicación o un Tlamatini anterior. Cierra ese programa o configura otro puerto web para Tlamatini.'",
+   "es": "f'El puerto {port} ya lo usa otra aplicación o un Tlamatini-Spanish anterior. Cierra ese programa o configura otro puerto web para Tlamatini-Spanish.'",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -153,7 +165,41 @@
   },
   {
    "en": "'Tlamatini — Open flow file'",
-   "es": "'Tlamatini — Abrir archivo de flow'",
+   "es": "'Tlamatini-Spanish — Abrir archivo de flow'",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
+   "n": 1
+  },
+  {
+   "en": "profile / 'Tlamatini' / 'FlowFileOpen'",
+   "es": "profile / 'Tlamatini-Spanish' / 'FlowFileOpen'",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "{'application': 'Tlamatini',",
+   "es": "{'application': 'Tlamatini-Spanish',",
+   "codigo": "Identidad de Tlamatini-Spanish: su llave de descubrimiento propia (HKCU Software\\XAIHT\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "'Local\\\\Tlamatini.FlowFile.'",
+   "es": "'Local\\\\TlamatiniSpanish.FlowFile.'",
+   "codigo": "Identidad de Tlamatini-Spanish: sus mutex, AppUserModelID y título de consola propios",
+   "n": 1
+  },
+  {
+   "en": ".get('django_port', 8000))",
+   "es": ".get('django_port', 8052))",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  },
+  {
+   "en": "    return 8000\n",
+   "es": "    return 8052\n",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
    "n": 1
   }
  ],

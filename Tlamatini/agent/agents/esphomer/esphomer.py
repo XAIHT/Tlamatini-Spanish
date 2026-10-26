@@ -494,7 +494,7 @@ def _esphome_lib_dir() -> str:
     else:
         base = os.environ.get("XDG_DATA_HOME") or os.path.join(
             os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini", "esphome-lib")
+    return os.path.join(base, "Tlamatini-Spanish", "esphome-lib")
 
 
 def _env_with_esphome_lib(env: dict) -> dict:

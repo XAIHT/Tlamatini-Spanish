@@ -1,0 +1,24 @@
+{
+ "archivo": "build.py",
+ "segmentos": [
+  {
+   "en": "product_name=\"Tlamatini\",",
+   "es": "product_name=\"Tlamatini-Spanish\",",
+   "codigo": "Identidad de Tlamatini-Spanish: VERSIONINFO del .exe (ProductName, FileDescription, OriginalFilename)",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 5
+  },
+  {
+   "en": "else \"Tlamatini\")",
+   "es": "else \"Tlamatini-Spanish\")",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

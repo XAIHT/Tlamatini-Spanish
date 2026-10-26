@@ -206,7 +206,7 @@ class FileSearcherServicer(filesearch_pb2_grpc.FileSearcherServicer):
 
 def serve():
     host = str(CONFIG.get('mcp_files_search_server_host', 'localhost'))
-    port = int(CONFIG.get('mcp_files_search_server_port', 50051))
+    port = int(CONFIG.get('mcp_files_search_server_port', 50052))
     workers = int(CONFIG.get('mcp_files_search_server_max_workers', 10))
     if not 1 <= port <= 65535 or workers < 1:
         raise ValueError('Files-Search requires a valid port and positive worker count.')

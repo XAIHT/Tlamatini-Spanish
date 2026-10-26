@@ -99,7 +99,7 @@ def setup_lock():
     kernel.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
     kernel.ReleaseMutex.argtypes = [ctypes.c_void_p]
     kernel.CloseHandle.argtypes = [ctypes.c_void_p]
-    handle = kernel.CreateMutexW(None, False, "Local\\XAIHT.Tlamatini.Setup.v1")
+    handle = kernel.CreateMutexW(None, False, "Local\\XAIHT.TlamatiniSpanish.Setup.v1")
     if not handle:
         raise ctypes.WinError(ctypes.get_last_error())
     acquired = False
@@ -107,7 +107,7 @@ def setup_lock():
         result = kernel.WaitForSingleObject(handle, 0)
         # WAIT_ABANDONED also transfers ownership; the journal handles recovery.
         if result not in (0, 0x80):
-            raise RuntimeError("Ya se está ejecutando otra instalación o eliminación de Tlamatini. Ciérrala o espera a que termine, y vuelve a intentarlo.")
+            raise RuntimeError("Ya se está ejecutando otra instalación o eliminación de Tlamatini-Spanish. Ciérrala o espera a que termine, y vuelve a intentarlo.")
         acquired = True
         yield
     finally:
@@ -297,7 +297,7 @@ class Recovery:
             path = checked_path(self.target, item.name)
             info = path.stat(follow_symlinks=False)
             moves[item.name] = {"state": "waiting", "identity": [info.st_dev, info.st_ino]}
-        metadata = ["Tlamatini.lnk"]
+        metadata = ["Tlamatini-Spanish.lnk"]
         if (self.target / "agents").is_dir():
             metadata += ["agents/.tlamatini-preserved-agents.json",
                          "agents/_tlamatini_agents_manifest.json"]

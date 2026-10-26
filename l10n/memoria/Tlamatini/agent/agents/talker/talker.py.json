@@ -18,6 +18,12 @@
    "es": "    text = str(config.get('input_text') or '').strip()\n    if not text:\n        raise RuntimeError(\"No input_text configured — set input_text to the words to speak.\")\n\n    # Engine dispatch. The Spanish edition uses the LOCAL Piper backend for a\n    # genuine Mexican-Spanish female voice; English keeps the Ollama/Orpheus path.\n    # resolve_voice() above has ALREADY enforced the female-only guard; the Piper\n    # path re-checks as defence in depth and never substitutes a non-female voice.\n    engine = str(config.get('tts_engine') or 'orpheus').strip().lower()\n    if engine == 'piper':\n        return synthesize_piper(config, text, voice, gender)\n\n    model = str(config.get('model') or 'Orpheus-3b-FT').strip()",
    "codigo": "adaptacion de la voz al espanol latino (edicion Tlamatini-Spanish)",
    "n": 1
+  },
+  {
+   "en": "os.path.join(base, 'Tlamatini', 'piper')",
+   "es": "os.path.join(base, 'Tlamatini-Spanish', 'piper')",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
   }
  ],
  "conservar": []

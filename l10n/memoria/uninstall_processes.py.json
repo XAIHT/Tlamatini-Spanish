@@ -1,0 +1,12 @@
+{
+ "archivo": "uninstall_processes.py",
+ "segmentos": [
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

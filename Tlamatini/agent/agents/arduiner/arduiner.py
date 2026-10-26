@@ -499,7 +499,7 @@ def _default_install_dir() -> str:
     else:
         base = os.environ.get("XDG_DATA_HOME") or os.path.join(
             os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini", "arduino-cli")
+    return os.path.join(base, "Tlamatini-Spanish", "arduino-cli")
 
 
 def _run_cmd(cmd: list, env: dict = None, cwd: str = None, timeout: float = 900.0):

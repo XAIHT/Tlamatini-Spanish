@@ -3,7 +3,11 @@
  "segmentos": [
   {
    "en": "\"Tlamatini Shortcut Creator\"",
-   "es": "\"Creador de accesos directos de Tlamatini\"",
+   "es": "\"Creador de accesos directos de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -93,7 +97,11 @@
   },
   {
    "en": "\"    Title bar will read 'Tlamatini' but the running-window icon may show the host's default glyph.\"",
-   "es": "\"    En la barra de la ventana se va a leer 'Tlamatini', pero el icono de la ventana puede ser el del host.\"",
+   "es": "\"    En la barra de la ventana se va a leer 'Tlamatini-Spanish', pero el icono de la ventana puede ser el del host.\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -113,7 +121,11 @@
   },
   {
    "en": "\"Tlamatini Development Server\"",
-   "es": "\"Servidor de desarrollo de Tlamatini\"",
+   "es": "\"Servidor de desarrollo de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -168,7 +180,11 @@
   },
   {
    "en": "objShortcut.Description = \"Tlamatini Development Server\"",
-   "es": "objShortcut.Description = \"Servidor de desarrollo de Tlamatini\"",
+   "es": "objShortcut.Description = \"Servidor de desarrollo de Tlamatini-Spanish\"",
+   "libres": [
+    "TLAMATINI",
+    "Tlamatini"
+   ],
    "n": 1
   },
   {
@@ -184,6 +200,24 @@
   {
    "en": "WScript.Echo \"Shortcuts created successfully!\"",
    "es": "WScript.Echo \"Listo: accesos directos creados.\"",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
+   "n": 8
+  },
+  {
+   "en": "Tlamatini.lnk",
+   "es": "Tlamatini-Spanish.lnk",
+   "codigo": "Identidad de Tlamatini-Spanish: su acceso directo propio (Tlamatini-Spanish.lnk)",
+   "n": 5
+  },
+  {
+   "en": "\"D:\\\\Tlamatini\" }",
+   "es": "\"D:\\\\Tlamatini-Spanish\" }",
+   "codigo": "Identidad de Tlamatini-Spanish: su carpeta de instalación propia, junto a la de Tlamatini (inglés)",
    "n": 1
   }
  ],

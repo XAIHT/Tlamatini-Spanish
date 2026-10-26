@@ -7,13 +7,13 @@ param(
     [string]$FlowFile
 )
 
-Write-Host "Iniciando el servidor de desarrollo de Tlamatini..." -ForegroundColor Cyan
+Write-Host "Iniciando el servidor de desarrollo de Tlamatini-Spanish..." -ForegroundColor Cyan
 Write-Host "===========================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Resolve paths relative to this script's directory
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-$TlamatiniExe = Join-Path $scriptDir "Tlamatini.exe"
+$TlamatiniExe = Join-Path $scriptDir "Tlamatini-Spanish.exe"
 
 # Resolve an incoming relative path BEFORE changing the working directory.
 if ($FlowFile) {
@@ -25,16 +25,16 @@ if ($FlowFile) {
 Set-Location $scriptDir
 Write-Host "Directorio de trabajo: $scriptDir" -ForegroundColor Gray
 
-# Check if Tlamatini.exe exists
+# Check if Tlamatini-Spanish.exe exists
 if (-not (Test-Path $TlamatiniExe)) {
-    Write-Host "Error: falta Tlamatini.exe" -ForegroundColor Red
+    Write-Host "Error: falta Tlamatini-Spanish.exe" -ForegroundColor Red
     Write-Host "Debe estar en: $TlamatiniExe" -ForegroundColor Yellow
     Read-Host "Presiona Enter para salir"
     exit 1
 }
 
 # Build argument list depending on whether a flow file was passed
-# When a flow file is given, pass ONLY the file path to Tlamatini.exe
+# When a flow file is given, pass ONLY the file path to Tlamatini-Spanish.exe
 # (manage.py detects either flow format and internally rewrites argv to runserver --noreload)
 # When no flow file is given, pass runserver --noreload explicitly.
 if ($FlowFile) {
@@ -51,7 +51,7 @@ else {
     $serverArgs = @('runserver', '--noreload')
 }
 
-Write-Host "Ejecutando: Tlamatini.exe $($serverArgs -join ' ')" -ForegroundColor Green
+Write-Host "Ejecutando: Tlamatini-Spanish.exe $($serverArgs -join ' ')" -ForegroundColor Green
 Write-Host ""
 
 Write-Host "Arrancando el servidor..." -ForegroundColor Cyan
@@ -60,10 +60,10 @@ Write-Host ""
 
 # manage.py opens the correct editor once, using the configured web port.
 
-# Run Tlamatini.exe directly so all output and errors are visible in this console
+# Run Tlamatini-Spanish.exe directly so all output and errors are visible in this console
 & $TlamatiniExe $serverArgs
 
 # If we get here, the process has exited
 Write-Host ""
-Write-Host "Tlamatini.exe se detuvo (exit code: $LASTEXITCODE)." -ForegroundColor Red
+Write-Host "Tlamatini-Spanish.exe se detuvo (exit code: $LASTEXITCODE)." -ForegroundColor Red
 Read-Host "Presiona Enter para cerrar esta ventana"

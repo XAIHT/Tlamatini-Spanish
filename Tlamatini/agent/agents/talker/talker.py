@@ -1135,7 +1135,7 @@ _PIPER_VOICE_REL = {                                  # official rhasspy/piper-v
 
 def _piper_home() -> str:
     base = os.environ.get('LOCALAPPDATA') or os.path.expanduser('~')
-    return os.path.join(base, 'Tlamatini', 'piper')
+    return os.path.join(base, 'Tlamatini-Spanish', 'piper')
 
 
 def _piper_voices_dir(config: Dict) -> str:

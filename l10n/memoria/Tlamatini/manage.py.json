@@ -1,0 +1,24 @@
+{
+ "archivo": "Tlamatini/manage.py",
+ "segmentos": [
+  {
+   "en": "SetConsoleTitleW(\"Tlamatini\")",
+   "es": "SetConsoleTitleW(\"Tlamatini-Spanish\")",
+   "codigo": "Identidad de Tlamatini-Spanish: sus mutex, AppUserModelID y título de consola propios",
+   "n": 1
+  },
+  {
+   "en": "\"XAIHT.Tlamatini.Server\"",
+   "es": "\"XAIHT.TlamatiniSpanish.Server\"",
+   "codigo": "Identidad de Tlamatini-Spanish: sus mutex, AppUserModelID y título de consola propios",
+   "n": 1
+  },
+  {
+   "en": "def _resolve_django_port(default_port: int = 8000)",
+   "es": "def _resolve_django_port(default_port: int = 8052)",
+   "codigo": "Identidad de Tlamatini-Spanish: puertos propios (8052 web, 8752 System-Metrics, 50052 Files-Search) para correr al mismo tiempo que el inglés",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

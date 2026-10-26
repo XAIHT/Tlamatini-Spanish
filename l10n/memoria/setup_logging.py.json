@@ -1,0 +1,30 @@
+{
+ "archivo": "setup_logging.py",
+ "segmentos": [
+  {
+   "en": "CurrentVersion\\Uninstall\\Tlamatini\"",
+   "es": "CurrentVersion\\Uninstall\\Tlamatini-Spanish\"",
+   "codigo": "Identidad de Tlamatini-Spanish: su entrada propia en Aplicaciones instaladas (HKCU Uninstall)",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.FlowFile",
+   "es": "TlamatiniSpanish.FlowFile",
+   "codigo": "Identidad de Tlamatini-Spanish: sus ProgIDs y capacidades de .flw/.fpmt propios; no toca los del inglés",
+   "n": 1
+  },
+  {
+   "en": "/ \"Tlamatini/SetupLogs\"",
+   "es": "/ \"Tlamatini-Spanish/SetupLogs\"",
+   "codigo": "Identidad de Tlamatini-Spanish: sus carpetas por usuario propias (%LOCALAPPDATA%\\Tlamatini-Spanish)",
+   "n": 1
+  },
+  {
+   "en": "f\"Tlamatini {operation}",
+   "es": "f\"Tlamatini-Spanish {operation}",
+   "codigo": "Identidad de Tlamatini-Spanish: sus mutex, AppUserModelID y título de consola propios",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

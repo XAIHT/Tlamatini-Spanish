@@ -72,7 +72,7 @@ class ReleaseIntegrityTests(unittest.TestCase):
         # Synthetic runtime binaries: these tests exercise package/staging
         # integrity, not whether an executable can launch.
         required = {
-            "Tlamatini.exe", "python/python.exe", "jre/bin/java.exe", "git/cmd/git.exe",
+            "Tlamatini-Spanish.exe", "python/python.exe", "jre/bin/java.exe", "git/cmd/git.exe",
             "jd-cli/jd-cli.jar", "_internal/db.sqlite3", "_internal/pymupdf/_mupdf.pyd",
             "_internal/pymupdf/_extra.pyd", "_internal/pymupdf/mupdfcpp64.dll",
             "_internal/staticfiles/agent/vendor/frontend/manifest.json",

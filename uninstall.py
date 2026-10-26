@@ -64,7 +64,7 @@ SUPPORT_DELETE_RETRY_SECONDS = 8.0
 UNINSTALL_TARGET_SECONDS = 180
 UNINSTALL_LIMIT_SECONDS = 300
 CLEANUP_RECEIPT = ".tlamatini-removal.json"
-STAGING_PREFIX = "Tlamatini-Uninstaller-"
+STAGING_PREFIX = "Tlamatini-Spanish-Uninstaller-"
 PENDING_PREFIX = ".tlamatini-uninstall-pending-"
 CLEANUP_ATTEMPTS = 90          # one attempt every ~2 s: about three minutes
 STALE_STAGING_SECONDS = 600    # older Temp copies are leftovers of past runs
@@ -451,7 +451,7 @@ class FancyUninstaller:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.version = resolve_version()
-        title = f"Desinstalador de Tlamatini v{self.version}" if self.version else "Desinstalador de Tlamatini"
+        title = f"Desinstalador de Tlamatini-Spanish v{self.version}" if self.version else "Desinstalador de Tlamatini-Spanish"
         self.root.title(title)
         self.install_path = tk.StringVar(value=self._detect_install_path())
         self._progress_value = 0.0
@@ -499,7 +499,7 @@ class FancyUninstaller:
         # Both current conhost commands and legacy PowerShell commands are valid.
         try:
             import winreg
-            for prog_id in ('Tlamatini.FlowFile', 'Tlamatini.PromptFlowFile'):
+            for prog_id in ('TlamatiniSpanish.FlowFile', 'TlamatiniSpanish.PromptFlowFile'):
                 try:
                     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, rf'Software\Classes\{prog_id}') as key:
                         try:
@@ -511,7 +511,7 @@ class FancyUninstaller:
                     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, rf'Software\Classes\{prog_id}\shell\open\command') as key:
                         command = winreg.QueryValueEx(key, '')[0]
                     for quoted_path in re.findall(r'"([^"]+)"', command):
-                        if os.path.basename(quoted_path).lower() in ('tlamatini.exe', 'tlamatini.ps1'):
+                        if os.path.basename(quoted_path).lower() in ('tlamatini-spanish.exe', 'tlamatini.ps1'):
                             candidate = os.path.dirname(quoted_path)
                             if os.path.isdir(candidate):
                                 return candidate
@@ -551,7 +551,7 @@ class FancyUninstaller:
     # ─── Path helper ─────────────────────────────────────────────────
     def _browse(self):
         path = filedialog.askdirectory(
-            title="Selecciona el directorio de instalación de Tlamatini",
+            title="Selecciona el directorio de instalación de Tlamatini-Spanish",
         )
         if path:
             self.install_path.set(path)
@@ -591,21 +591,21 @@ class FancyUninstaller:
                 or redirected or source_checkout):
             messagebox.showerror(
                 "Directorio de instalación inválido",
-                "Selecciona la carpeta instalada de Tlamatini. Una raíz de unidad, una carpeta de sistema "
+                "Selecciona la carpeta instalada de Tlamatini-Spanish. Una raíz de unidad, una carpeta de sistema "
                 "compartida, una copia del código fuente o un directorio redirigido no se pueden desinstalar.",
             )
             return None
 
         # Check if it looks like a Tlamatini installation. Arbitrary directories
         # are never accepted, even if the user clicks through a warning.
-        markers = ["Tlamatini.exe", "Tlamatini.ps1", "CreateShortcut.json"]
+        markers = ["Tlamatini-Spanish.exe", "Tlamatini.ps1", "CreateShortcut.json"]
         found = (any(os.path.isfile(os.path.join(raw, m)) for m in markers)
                  or Recovery.pending(raw) or removal_cleanup_pending(raw))
         if not found:
             messagebox.showerror(
-                "No es una instalación de Tlamatini",
+                "No es una instalación de Tlamatini-Spanish",
                 f"El directorio que elegiste no parece contener una "
-                f"instalación de Tlamatini:\n{raw}\n\nSelecciona la carpeta de la aplicación instalada.",
+                f"instalación de Tlamatini-Spanish:\n{raw}\n\nSelecciona la carpeta de la aplicación instalada.",
             )
             return None
 
@@ -617,14 +617,14 @@ class FancyUninstaller:
         Asked AFTER the still-running gate, so the user is never made to confirm
         an uninstallation the uninstaller is about to refuse anyway.
         """
-        if removal_cleanup_pending(raw) and not os.path.isfile(os.path.join(raw, "Tlamatini.exe")):
+        if removal_cleanup_pending(raw) and not os.path.isfile(os.path.join(raw, "Tlamatini-Spanish.exe")):
             return bool(messagebox.askyesno(
-                "Terminar la desinstalación", f"Tlamatini ya se quitó de:\n{raw}\n\n"
+                "Terminar la desinstalación", f"Tlamatini-Spanish ya se quitó de:\n{raw}\n\n"
                 "¿Quieres terminar de quitar los archivos temporales de la aplicación que quedan?\n"
                 "El contenido y los agents que conservaste no se tocarán."))
         return bool(messagebox.askyesno(
             "Confirmar la desinstalación",
-            f"Esto quitará Tlamatini de:\n{raw}\n\n"
+            f"Esto quitará Tlamatini-Spanish de:\n{raw}\n\n"
             "Se conserva el directorio agents/ — y también application/, "
             "applications/, content_generated/, context_files/, doc_generated/ "
             "y Templates/ cuando contienen contenido.\n"
@@ -676,9 +676,9 @@ class FancyUninstaller:
         outcome = {"proceed": False}
 
         dialog = SetupDialog(
-            self.root, "Tlamatini sigue en ejecución", "Cierra Tlamatini para continuar.",
+            self.root, "Tlamatini-Spanish sigue en ejecución", "Cierra Tlamatini-Spanish para continuar.",
             "Cierra la aplicación principal de forma normal para que termine su trabajo. "
-            "En la consola de Tlamatini, Ctrl+C pide un cierre limpio. Después selecciona Reintentar.",
+            "En la consola de Tlamatini-Spanish, Ctrl+C pide un cierre limpio. Después selecciona Reintentar.",
         )
         dlg = dialog.window
         headline, detail = dialog.headline, dialog.detail
@@ -690,11 +690,11 @@ class FancyUninstaller:
             if self._gate_attempts:
                 headline.set(
                     f"SIGUE EN EJECUCIÓN — reintento #{self._gate_attempts} detectado "
-                    f"{len(found)} proceso(s) de Tlamatini en:\n{target}"
+                    f"{len(found)} proceso(s) de Tlamatini-Spanish en:\n{target}"
                 )
             else:
                 headline.set(
-                    f"{len(found)} proceso(s) de Tlamatini en ejecución en:\n{target}"
+                    f"{len(found)} proceso(s) de Tlamatini-Spanish en ejecución en:\n{target}"
                 )
             detail.set("\n".join(
                 f"  {rec['name']}   (PID {rec['pid']})   {rec['evidence']}"
@@ -801,7 +801,7 @@ class FancyUninstaller:
         self._cleanup_deadline = self._uninstall_started + UNINSTALL_LIMIT_SECONDS
         self.cleanup_warnings = []
         try:
-            if removal_cleanup_pending(target) and not os.path.isfile(os.path.join(target, "Tlamatini.exe")):
+            if removal_cleanup_pending(target) and not os.path.isfile(os.path.join(target, "Tlamatini-Spanish.exe")):
                 self._cleanup_recovery = Recovery(target)
                 if self._cleanup_recovery.journal.exists():
                     self._cleanup_recovery.load()
@@ -1199,7 +1199,7 @@ class FancyUninstaller:
         except Exception:
             manifest_sha256 = ""
         marker = {
-            "product": "Tlamatini",
+            "product": "Tlamatini-Spanish",
             "preserved": True,
             "note": (
                 "Tlamatini application binaries were removed by the uninstaller, "
@@ -1251,7 +1251,7 @@ class FancyUninstaller:
         registry_context("before Installed-apps removal")
         try:
             import winreg
-            key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini"
+            key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Tlamatini-Spanish"
             try:
                 key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path)
             except FileNotFoundError:
@@ -1356,7 +1356,7 @@ class FancyUninstaller:
         try:
             with setup_lock():
                 # A new install must never inherit deletion from an older run.
-                if os.path.exists(os.path.join(target, "Tlamatini.exe")):
+                if os.path.exists(os.path.join(target, "Tlamatini-Spanish.exe")):
                     raise RuntimeError("Hay una aplicación presente otra vez. Se detuvo la limpieza para proteger la instalación nueva.")
                 recovery = self._cleanup_recovery
                 if recovery.journal.exists():
@@ -1436,7 +1436,7 @@ def relocate_installed_uninstaller() -> bool:
         return False
     source = os.path.abspath(sys.executable)
     install_dir = os.path.dirname(source)
-    if not os.path.isfile(os.path.join(install_dir, "Tlamatini.exe")):
+    if not os.path.isfile(os.path.join(install_dir, "Tlamatini-Spanish.exe")):
         return False
     # Fail-open: when the copy or the launch fails, the uninstaller runs in
     # place instead of crashing; its own EXE is then left to the cleanup.

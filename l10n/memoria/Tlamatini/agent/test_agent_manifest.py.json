@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/test_agent_manifest.py",
+ "segmentos": [
+  {
+   "en": "XAIHT_DISCOVERY_KEY, r\"Software\\XAIHT\\Tlamatini\")",
+   "es": "XAIHT_DISCOVERY_KEY, r\"Software\\XAIHT\\Tlamatini-Spanish\")",
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -545,7 +545,7 @@ def _read_pyz_module_names(dist_root):
     ⚠️ WHERE THE PYZ ACTUALLY LIVES (measured, not assumed): under PyInstaller
     6 in onedir mode there is NO loose ``_internal/PYZ-00.pyz``.  The PYZ is an
     entry named ``PYZ.pyz`` INSIDE the executable's CArchive — verified against
-    the shipped C:/Tlamatini/Tlamatini.exe, whose CArchive holds 21 entries and
+    the shipped C:/Tlamatini/Tlamatini-Spanish.exe, whose CArchive holds 21 entries and
     whose PYZ holds 15,061 modules.  A glob for ``PYZ-*.pyz`` finds nothing and
     would have reported "cannot verify" forever, i.e. a check that never fails
     and never proves anything — the same silence this whole item is about.
@@ -1220,8 +1220,8 @@ def main():
     tlamatini_version = resolve_build_version(cli_version)
     version_file_path = emit_build_artifacts(
         tlamatini_version,
-        product_name="Tlamatini",
-        original_filename="Tlamatini.exe",
+        product_name="Tlamatini-Spanish",
+        original_filename="Tlamatini-Spanish.exe",
     )
     print(f"Tlamatini version : {tlamatini_version}")
     print(f"VERSIONINFO file  : {version_file_path}")
@@ -1477,7 +1477,7 @@ def main():
         icon_args.append(f'--icon={icon_path}')
         print(f"Embedding application icon: {icon_path}")
     else:
-        print(f"WARNING: {icon_path} not found — Tlamatini.exe will have no embedded icon.")
+        print(f"WARNING: {icon_path} not found — Tlamatini-Spanish.exe will have no embedded icon.")
 
     # Self-knowledge (Tlamatini.md) ships ONLY under --self-modify, in lockstep
     # with TlamatiniSourceCode/: a not-self-able-modify build carries neither her
@@ -2169,7 +2169,7 @@ def main():
 
             # 8d) Rename executable manage -> Tlamatini
             try:
-                target_name = manage_exe.with_name("Tlamatini.exe" if os.name == "nt" else "Tlamatini")
+                target_name = manage_exe.with_name("Tlamatini-Spanish.exe" if os.name == "nt" else "Tlamatini-Spanish")
                 if target_name.exists():
                     target_name.unlink()
                 manage_exe.rename(target_name)
@@ -2192,7 +2192,7 @@ def main():
                 # Port-unblock helper. When Windows/Hyper-V has RESERVED the
                 # configured web port, Daphne dies with WinError 10013 and the
                 # app never starts — so this recovery tool must sit next to
-                # Tlamatini.exe (it reads django_port from the config.json
+                # Tlamatini-Spanish.exe (it reads django_port from the config.json
                 # beside it and logs into the install's Temp).
                 "freeingport8000.ps1",
                 "Tlamatini/cat_art.py"

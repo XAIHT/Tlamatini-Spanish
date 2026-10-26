@@ -332,7 +332,7 @@ def _default_temp_output_dir() -> str:
             break
         probe = parent
 
-    return os.path.join(os.path.expanduser("~"), "Tlamatini", "Temp")
+    return os.path.join(os.path.expanduser("~"), "Tlamatini-Spanish", "Temp")
 
 
 def _tlm_dir_accepts_new_files(path: str) -> bool:

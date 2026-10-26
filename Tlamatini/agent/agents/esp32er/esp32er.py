@@ -453,7 +453,7 @@ def _default_core_dir() -> str:
     else:
         base = os.environ.get("XDG_DATA_HOME") or os.path.join(
             os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "Tlamatini", "platformio")
+    return os.path.join(base, "Tlamatini-Spanish", "platformio")
 
 
 def _run_cmd(cmd: list, env: dict = None, cwd: str = None, timeout: float = 900.0):

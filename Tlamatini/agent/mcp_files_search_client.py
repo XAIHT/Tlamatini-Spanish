@@ -138,7 +138,7 @@ def _grpc_endpoint(config=None):
         host = parsed.hostname
         return f'[{host}]:{parsed.port}' if ':' in host else f'{host}:{parsed.port}'
     host = str(config.get('mcp_files_search_server_host', 'localhost'))
-    port = int(config.get('mcp_files_search_server_port', 50051))
+    port = int(config.get('mcp_files_search_server_port', 50052))
     return f'[{host}]:{port}' if ':' in host and not host.startswith('[') else f'{host}:{port}'
 
 
