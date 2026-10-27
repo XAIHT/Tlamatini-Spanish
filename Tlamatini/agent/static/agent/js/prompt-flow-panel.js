@@ -625,7 +625,9 @@
         renderEdges(); extent();
         $id('pmt-empty').hidden = flow.nodes.length > 0;
         $id('filename').textContent = `${filename}${dirty ? ' •' : ''}`;
-        document.title = `${dirty ? '• ' : ''}${flow.name} — Prompt Flow Panel`;
+        // The tab shows the Flow name when one was set, otherwise the file it was opened from or saved as.
+        const shownName = flow.name && flow.name !== 'Untitled' ? flow.name : filename.replace(/\.fpmt$/i, '');
+        document.title = `${dirty ? '• ' : ''}${shownName} — Prompt Flow Panel`;
         const operations = flow.nodes.filter(n => !M.isComment(n));
         const counted = (n, word) => `${n} ${n === 1 ? word : ({ 'operación': 'operaciones', 'conexión': 'conexiones' }[word] || word + 's')}`;
         $id('pmt-count').textContent = `${counted(operations.length, 'operación')} · ${counted(flow.nodes.length - operations.length, 'comentario')} · ${counted(flow.edges.length, 'conexión')}`;
@@ -835,9 +837,9 @@
                 form.append(element('small', '', 'Espera hasta esta hora y luego aplica el retraso. Las horas que ya pasaron se ejecutan de inmediato. Mantén abiertos la página y Tlamatini.'));
             }
             if (kind === 'terminater') {
-                const inherited = field('use_my_defaults', 'Use my defaults (speed, shell, waiting and advisor)', 'checkbox', config.use_my_defaults);
+                const inherited = field('use_my_defaults', 'Usar mis valores predeterminados (velocidad, shell, espera y asesor)', 'checkbox', config.use_my_defaults);
                 const inheritedFields = [];
-                field('explanation', 'Spoken explanation (optional; never include private values)', 'text', config.explanation || '').maxLength = 1000;
+                field('explanation', 'Explicación hablada (opcional; nunca incluyas valores privados)', 'text', config.explanation || '').maxLength = 1000;
                 field('action', 'Qué hacer', 'select', config.action, [['run', 'Ejecutar un comando (escribirlo, esperar y leer el resultado)'], ['open', 'Abrir una terminal nueva'], ['type', 'Escribir en una terminal'], ['handover', 'Escribir parte de un comando y luego pasarle el control al usuario'], ['send_key', 'Presionar teclas (Ctrl+C, Enter, ...)'], ['wait', 'Esperar el comando en ejecución'], ['read', 'Leer el output de la terminal'], ['abort', 'Interrumpir el comando en ejecución'], ['kill', 'Cerrar una terminal'], ['force_kill', 'Forzar el cierre de una terminal'], ['kill_all', 'Forzar el cierre de todas las terminales'], ['list', 'Listar las terminales'], ['focus', 'Enfocar una terminal'], ['layout', 'Cambiar la distribución (pestañas, mosaico, ...)'], ['clear', 'Limpiar una pantalla'], ['watch_user', 'Observar lo que escribe el usuario'], ['warn_user', 'Avisar al usuario']]);
                 inheritedFields.push(field('kind', 'Tipo de terminal', 'select', config.kind, [['cmd', 'CMD'], ['powershell', 'PowerShell'], ['pwsh', 'PowerShell 7']]));
                 field('terminal', 'Terminal (id o título; vacío = la activa)', 'text', config.terminal).maxLength = 80;

@@ -7,21 +7,6 @@
    "n": 1
   },
   {
-   "en": "> Current release: **[v1.90.0](docs/changes/2026-10-22-v1.90.0.md)**. Dated records below retain their original evidence dates.",
-   "es": "> > Release actual: **[v1.90.0](docs/changes/2026-10-22-v1.90.0.md)**. Los registros fechados de abajo conservan sus fechas de evidencia originales.",
-   "n": 1
-  },
-  {
-   "en": "## v1.90.0 — editable canvas and Interactor",
-   "es": "## v1.90.0 — canvas editable e Interactor",
-   "n": 1
-  },
-  {
-   "en": "The current source has **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 direct/module + 67 wrapped + 12 ACPX/Skills + 10 supervisors), and 219 migrations**. Interactor adds a module/tool; do not register it as an Agent. The annotated tag resolves to `ebc5c3b4`; its GitHub release was published on 2026-10-22 and is marked Latest. `main` continues after the tag (`d274f89c`, `8c577d3a`, `939acf6b`, `5403fa49`) and still reports 1.90.0; migration 0219 (`939acf6b`) makes the catalog's account wizard request local Notifier pop-ups at its checkpoints (`docs/user-creation-wizard.md`). Dated source and frozen runs remain separate.",
-   "es": "El código fuente actual tiene **86 workflow agents, 67 wrapped chat agents, 110 tools integrados (21 directos/de módulo + 67 envueltos + 12 ACPX/Skills + 10 supervisores), y 219 migraciones**. Interactor agrega un módulo/tool; no lo registres como Agent. El tag anotado resuelve a `ebc5c3b4`; su release de GitHub se publicó el 2026-10-22 y está marcado como Latest. `main` continúa después del tag (`d274f89c`, `8c577d3a`, `939acf6b`, `5403fa49`) y sigue reportando 1.90.0; la migración 0219 (`939acf6b`) hace que el account wizard del catálogo pida pop-ups locales de Notifier en sus checkpoints (`docs/user-creation-wizard.md`). El código fuente fechado y las ejecuciones congeladas siguen siendo cosas distintas.",
-   "n": 1
-  },
-  {
    "en": "- **Editor:** `agent_page_editing.js` owns the CodeMirror document, dirty baseline, encoding and save snapshot. `agent_page_canvas.js` owns load/refresh generation and cancellation. Markdown Preview and Source share the buffer; HTML/SVG remain inert source; PDF saving copies the original PDF. Never read a hidden compatibility element instead of the editor.",
    "es": "- **Editor:** `agent_page_editing.js` es el dueño del documento de CodeMirror, la línea base de cambios, la codificación y el snapshot de guardado. `agent_page_canvas.js` es dueño de la generación y la cancelación de carga/refresh. La Vista previa y el Source de Markdown comparten el buffer; HTML/SVG quedan como source inerte; al guardar un PDF se copia el PDF original. Nunca leas un elemento de compatibilidad oculto en vez del editor.",
    "n": 1
@@ -650,6 +635,46 @@
    "en": "Image/video model failures accumulate in one shared, themed, non-modal fatal-error dialog with an audible notification. Tlamatini keeps running: preserve its retry/tactic ladder, cancellation controls and configured flow recovery routes. Keep the configured model identities; never report a surviving observer or raw concatenation as successful analysis. Dismiss hides the dialog while retaining its history; new failures reopen it. See [the shared behavior and verification contract](docs/visual-analysis-errors.md).",
    "es": "Las fallas de modelo de imagen/video se acumulan en un solo diálogo de error fatal compartido, temático y no modal, con una notificación audible. Tlamatini sigue corriendo: conserva su escalera de reintentos/tácticas, los controles de cancelación y las rutas de recuperación de flow configuradas. Conserva las identidades de modelo configuradas; nunca reportes un observador sobreviviente o una concatenación cruda como análisis exitoso. Descartar oculta el diálogo mientras conserva su historial; las fallas nuevas lo reabren. Ve [el contrato de comportamiento y verificación compartido](docs/visual-analysis-errors.md).",
    "n": 1
+  },
+  {
+   "en": "> Current release: **[v1.91.0](docs/changes/2026-10-23-v1.91.0.md)**. Dated records below retain their original evidence dates.",
+   "es": "> Release actual: **[v1.91.0](docs/changes/2026-10-23-v1.91.0.md)**. Los registros fechados de abajo conservan sus fechas de evidencia originales.",
+   "n": 1
+  },
+  {
+   "en": "## v1.91.0 — Live Editor and Terminater configuration",
+   "es": "## v1.91.0 — Configuración de Editor en vivo y Terminater",
+   "n": 1
+  },
+  {
+   "en": "**v1.91.0** is the current source version (2026-10-23). Its existing annotated tag\nresolves to `a771d27c` and is present on origin. The catalog remains **86 workflow\nagents, 67 wrapped chat agents and 110 built-in tools** (21 + 67 + 12 + 10), with\n**29 skills and 220 migrations**. The frontend has **64 JS modules and 29 CSS\nfiles** in the counted `static/agent/js` and `static/agent/css` directories.",
+   "es": "**v1.91.0** es la versión actual del código fuente (2026-10-23). Su tag anotado existente\nresuelve a `a771d27c` y está en origin. El catálogo sigue siendo **86 workflow\nagents, 67 wrapped chat agents y 110 tools integrados** (21 + 67 + 12 + 10), con\n**29 skills y 220 migraciones**. El frontend tiene **64 módulos JS y 29 archivos\nCSS** en los directorios contados `static/agent/js` y `static/agent/css`.",
+   "n": 1
+  },
+  {
+   "en": "**Config → Live Editor & Terminater** opens one dialog with Live Editor,\nTerminater and Voice tabs, also available from the canvas and terminal Settings\nbuttons on the chat and control-panel surfaces. Saved account preferences control\nreal action pacing, teaching suggestions, shell defaults, manual Enter, waits and\nnarration; editor/terminal appearance stays local to the account and browser.\nPresets and previews are drafts until Save; Stop, mute and tab access are immediate.",
+   "es": "**Config → Editor en vivo y Terminater** abre un diálogo con las pestañas de Editor en vivo,\nTerminater y Voz, disponible también desde los botones de Settings del canvas y de la terminal\nen las superficies del chat y de los paneles de control. Las preferencias guardadas de la cuenta controlan\nel ritmo real de las acciones, las sugerencias de enseñanza, los valores predeterminados del shell, el Enter manual, las esperas y\nla narración; la apariencia del editor/terminal se queda local a la cuenta y al browser.\nLos presets y las vistas previas son borradores hasta que Guardas; Stop, silenciar y el acceso a las pestañas son inmediatos.",
+   "n": 1
+  },
+  {
+   "en": "Migration **0220** stores account preferences and revisions. One TerminalHub applies\nthem across chat, ACP and Prompt Flow; legacy explicit flow values remain compatible.\nSpeech uses the shared browser queue, selects one focused tab and can wait for a\nreal completion receipt before typing. User interruption wins and private input is\nnot narrated. The offline editor bundle and runtime/source carriers include the new\nUI and backend modules.",
+   "es": "La migración **0220** guarda las preferencias de la cuenta y las revisiones. Un TerminalHub las aplica\nen el chat, ACP y Prompt Flow; los valores explícitos de flow heredados siguen siendo compatibles.\nLa voz usa la cola compartida del browser, selecciona una pestaña con foco y puede esperar un\nrecibo real de finalización antes de teclear. La interrupción del usuario gana y la entrada privada\nno se narra. El bundle del editor offline y los carriers de runtime/source incluyen los nuevos\nmódulos de UI y de backend.",
+   "n": 1
+  },
+  {
+   "en": "Source evidence on October 23: **17/17 visible browser checks passed; 929 of 931\nregression tests passed**, with two existing README documentation assertions failing\nbefore this documentation sweep. These are dated source results, not a new installed\npackage acceptance. No GitHub release for v1.91.0 was found during this sweep.\nSee the [release record](docs/changes/2026-10-23-v1.91.0.md) and\n[settings guide](docs/interaction-settings.md).",
+   "es": "Evidencia de código fuente del 23 de octubre: **17/17 revisiones visibles en el browser pasaron; 929 de 931\npruebas de regresión pasaron**, con dos aserciones de documentación del README existentes fallando\nantes de este barrido de documentación. Estos son resultados fechados de código fuente, no la aceptación de un\npaquete instalado nuevo. No se encontró ningún release de GitHub para v1.91.0 durante este barrido.\nVe el [registro del release](docs/changes/2026-10-23-v1.91.0.md) y la\n[guía de configuración](docs/interaction-settings.md).",
+   "n": 1
+  },
+  {
+   "en": "## Carried from v1.90.0 — editable canvas and Interactor",
+   "es": "## Heredado de v1.90.0 — canvas editable e Interactor",
+   "n": 1
+  },
+  {
+   "en": "The v1.90.0 source line had **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 direct/module + 67 wrapped + 12 ACPX/Skills + 10 supervisors), and 219 migrations** after migration 0219. Interactor added a module/tool, not an Agent. The annotated tag resolves to `ebc5c3b4` and its GitHub release was published on 2026-10-22. Later commits in that line carried the account wizard’s local Notifier checkpoints. This section preserves v1.90.0 history; current configuration and counts are described above. Dated source and frozen runs remain separate.",
+   "es": "La línea de código fuente v1.90.0 tenía **86 workflow agents, 67 wrapped chat agents, 110 tools integrados (21 directos/de módulo + 67 envueltos + 12 ACPX/Skills + 10 supervisores), y 219 migraciones** después de la migración 0219. Interactor agregó un módulo/tool, no un Agent. El tag anotado resuelve a `ebc5c3b4` y su release de GitHub se publicó el 2026-10-22. Los commits posteriores en esa línea llevaron los checkpoints locales de Notifier del account wizard. Esta sección conserva la historia de v1.90.0; la configuración y los conteos actuales se describen arriba. El código fuente fechado y las ejecuciones congeladas siguen siendo cosas distintas.",
+   "n": 1
   }
  ],
  "conservar": [
@@ -662,8 +687,8 @@
    "motivo": "encabezado que lee el código (agent.views.agentic_control_panel); debe quedar exacto en inglés"
   },
   {
-   "en": "| **Terminater** | Raises REAL `cmd.exe` / PowerShell terminals — visible terminals inside Tlamatini's Terminals area (Views ▸ Terminals, or Ctrl+`) — where the USER watches the work, can interrupt it, answer a question the command asks, or finish a line Tlamatini only started. The visible sibling of Executer: Executer runs a command and returns text; Terminater TYPES every key like a person (default 50 words per minute, never pasted, never instant) and then reads the output back in full. Runs ONE `action` per run (`run` is the default: open-or-reuse a terminal, type, wait, read) — `open`, `type`, `send_key`, `wait`, `read`, `commands`, `abort` (Ctrl+C, then the command's processes), `kill`, `force_kill`, `kill_all`, `list`, `focus`, `rename`, `layout` (`tabs`, `tile`, `tile-h`, `tile-v`, `grid`), `watch_user`, `warn_user` and `handover` — and terminals persist between runs, so a flow can open one in one step and close it in another. `<<USER:hint>>` inside the text hands the keyboard to the user at that point (`ping <<USER:host>> -n 2`). A command that hangs (no output for `hang_seconds`) is detected and can be aborted; a deterministic advisor warns about dangerous or mistyped commands. Emits an `INI_SECTION_TERMINATER` block (`status`, `exit_code`, `typed`, `user_part`, `terminal_id`, …) and ALWAYS starts its `target_agents`, so a downstream Forker can branch on `{status}` (`completed`, `command_failed`, `hung`, `operator_required`, `aborted`). Windows 10 1809+ (ConPTY). |",
-   "motivo": "fila de Terminater con un backtick impar (el atajo Ctrl+acento grave) que vuelve impar el conteo de backticks de la línea; al traducir la prosa, la verificación de código en línea se rompe, así que se conserva en inglés"
+   "en": "| **Terminater** | Raises REAL `cmd.exe` / PowerShell terminals — visible terminals inside Tlamatini's Terminals area (Views ▸ Terminals, or Ctrl+`) — where the USER watches the work, can interrupt it, answer a question the command asks, or finish a line Tlamatini only started. The visible sibling of Executer: Executer runs a command and returns text; Terminater TYPES every key like a person (default 50 words per minute, never pasted, never instant) and then reads the output back in full. Config → Live Editor & Terminater controls saved pace, shell, manual Enter, waits, narration and appearance; new flows can use account defaults while older explicit flows remain compatible. Runs ONE `action` per run (`run` is the default: open-or-reuse a terminal, type, wait, read) — `open`, `type`, `send_key`, `wait`, `read`, `commands`, `abort` (Ctrl+C, then the command's processes), `kill`, `force_kill`, `kill_all`, `list`, `focus`, `rename`, `layout` (`tabs`, `tile`, `tile-h`, `tile-v`, `grid`), `watch_user`, `warn_user` and `handover` — and terminals persist between runs, so a flow can open one in one step and close it in another. `<<USER:hint>>` inside the text hands the keyboard to the user at that point (`ping <<USER:host>> -n 2`). A command that hangs (no output for `hang_seconds`) is detected and can be aborted; a deterministic advisor warns about dangerous or mistyped commands. Emits an `INI_SECTION_TERMINATER` block (`status`, `exit_code`, `typed`, `user_part`, `terminal_id`, …) and ALWAYS starts its `target_agents`, so a downstream Forker can branch on `{status}` (`completed`, `command_failed`, `hung`, `operator_required`, `aborted`). Windows 10 1809+ (ConPTY). |",
+   "motivo": "fila con un backtick suelto en Ctrl+` que en Markdown envuelve toda la prosa como un fragmento de código; se conserva en inglés como en el porte anterior"
   }
  ]
 }

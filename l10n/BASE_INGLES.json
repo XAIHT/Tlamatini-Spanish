@@ -1,9 +1,9 @@
 {
  "ingles": "C:/Development/XAIHT/Tlamatini",
- "commit": "a771d27cf23a33a4d0cce93c0cb5a1880c00564e",
- "fecha_commit": "2026-10-23T10:45:45-06:00",
- "titulo_commit": "Implemented the configuration menu entry and all the mechnism to configure the Live Editor & Terminater parameters for Tlamatini's GUI, by Tlamatini's-AutoBot.",
- "copiado": "2026-10-24T09:26:00",
+ "commit": "9915938aca55060980f1b0245f02cae67fbffdd0",
+ "fecha_commit": "2026-10-27T07:46:21-06:00",
+ "titulo_commit": "Fix on prompting flow correction with conversation_user_id, and answering handling, ans some additional GUI fixes, by Tñamaitni's-AutoBot.",
+ "copiado": "2026-10-27T07:56:32",
  "archivos": [
   ".claude/hooks/announce_skills.py",
   ".claude/hooks/test_announce_skills.py",
@@ -1663,6 +1663,7 @@
   "docs/changes/2026-10-22-documentation-refresh.md",
   "docs/changes/2026-10-22-release-version-pinning.md",
   "docs/changes/2026-10-22-v1.90.0.md",
+  "docs/changes/2026-10-23-v1.91.0.md",
   "docs/chat-microphone-design.md",
   "docs/claude/INDEX.md",
   "docs/claude/acpx.md",

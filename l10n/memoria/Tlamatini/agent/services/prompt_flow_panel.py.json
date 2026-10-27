@@ -397,6 +397,18 @@
   {
    "en": "\"User Commentary\"",
    "motivo": "valor que se compara (migración de documentos v1, igual que en prompt-flow-panel-model.js)"
+  },
+  {
+   "en": "\"\\n\\n(This answer is read by an automatic Decision. Put your short answer - \"",
+   "motivo": "instrucción que se le envía al modelo (texto para el LLM; se queda en inglés)"
+  },
+  {
+   "en": "\"exactly the word or phrase this request asks for - alone on the first line, \"",
+   "motivo": "instrucción que se le envía al modelo (texto para el LLM; se queda en inglés)"
+  },
+  {
+   "en": "\"then any explanation.)\"",
+   "motivo": "instrucción que se le envía al modelo (texto para el LLM; se queda en inglés)"
   }
  ]
 }

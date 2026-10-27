@@ -191,7 +191,9 @@
   "Tlamatini/agent/agents/terminater/config.yaml::Wait for the running command",
   "Tlamatini/agent/agents/terminater/terminater_engine.py::is not installed on this machine",
   "Tlamatini/agent/agents/whisperer/chat_worker.py::No words recognized. Your draft is unchanged",
+  "Tlamatini/agent/chat_agent_registry.py::action='scaffold_build_flash",
   "Tlamatini/agent/chat_agent_registry.py::answer in the terminal",
+  "Tlamatini/agent/chat_agent_registry.py::rel_path='src/main.cpp' and content=",
   "Tlamatini/agent/compact_mode.py::Compact mode is locked ON",
   "Tlamatini/agent/compact_mode.py::Self-modify is locked OFF",
   "Tlamatini/agent/config.json::Set file type omissions",
@@ -200,6 +202,7 @@
   "Tlamatini/agent/doc_generation/dossier_content.py::Keep in the chat input",
   "Tlamatini/agent/doc_generation/dossier_content.py::start chatting with me",
   "Tlamatini/agent/doc_generation/dossier_content.py::the model's own defaults",
+  "Tlamatini/agent/doc_generation/dossier_editor_content.py::I always press Enter",
   "Tlamatini/agent/migrations/0095_add_windower_playwrighter_demo_prompts.py::font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL",
   "Tlamatini/agent/migrations/0096_add_director_virtuoso_demo_prompts.py::font-weight:800;background:CHIP_BG;color:#ffffff;'>LABEL",
   "Tlamatini/agent/migrations/0145_insert_createsuperuser_wizard_prompt_at_1.py::After you launch it, tell me — in one short, friendly block — exactly this",
@@ -229,7 +232,7 @@
   "Tlamatini/agent/agents/terminater/config.yaml::Force-kill every terminal": "texto para el LLM / descripción de tool: carga técnica en inglés por diseño (NEPANTLA)",
   "Tlamatini/agent/agents/terminater/config.yaml::Interrupt the running command": "texto para el LLM / descripción de tool: carga técnica en inglés por diseño (NEPANTLA)",
   "Tlamatini/agent/agents/terminater/config.yaml::Wait for the running command": "texto para el LLM / descripción de tool: carga técnica en inglés por diseño (NEPANTLA)",
-  "Tlamatini/agent/chat_agent_registry.py::answer in the terminal": "texto para el LLM / descripción de tool: carga técnica en inglés por diseño (NEPANTLA)",
+  "Tlamatini/agent/chat_agent_registry.py::answer in the terminal": "chat_agent_registry.py es texto para el LLM; sus acoplamientos son literales de codigo (snippets ESP32er/STM32er) que se quedan en ingles",
   "Tlamatini/agent/context_fitter.py::I can't do that right now - Tlamatini is in Compact mode": "texto para el LLM / descripción de tool: carga técnica en inglés por diseño (NEPANTLA)",
   "Tlamatini/agent/context_fitter.py::because Compact mode is switched on": "texto para el LLM / descripción de tool: carga técnica en inglés por diseño (NEPANTLA)",
   "Tlamatini/agent/terminater_tool.py::Wait for the command to finish": "texto para el LLM / descripción de tool: carga técnica en inglés por diseño (NEPANTLA)",
@@ -269,6 +272,9 @@
   "Tlamatini/agent/migrations/0145_insert_createsuperuser_wizard_prompt_at_1.py::If I reply NOWINDOW → give me this manual fallback and WAIT": "texto antiguo del wizard de usuarios (0145/0146): migraciones posteriores lo reemplazan y la tarjeta final ya está en español",
   "Tlamatini/agent/migrations/0145_insert_createsuperuser_wizard_prompt_at_1.py::Step 0 (banner and the username)": "texto antiguo del wizard de usuarios (0145/0146): migraciones posteriores lo reemplazan y la tarjeta final ya está en español",
   "Tlamatini/agent/migrations/0145_insert_createsuperuser_wizard_prompt_at_1.py::then RE-OPEN the console exactly as in Step 2 and WAIT again": "texto antiguo del wizard de usuarios (0145/0146): migraciones posteriores lo reemplazan y la tarjeta final ya está en español",
-  "Tlamatini/agent/migrations/0146_update_createsuperuser_wizard_continuation.py::Step 0 (banner and the username)": "texto antiguo del wizard de usuarios (0145/0146): migraciones posteriores lo reemplazan y la tarjeta final ya está en español"
+  "Tlamatini/agent/migrations/0146_update_createsuperuser_wizard_continuation.py::Step 0 (banner and the username)": "texto antiguo del wizard de usuarios (0145/0146): migraciones posteriores lo reemplazan y la tarjeta final ya está en español",
+  "Tlamatini/agent/doc_generation/dossier_editor_content.py::I always press Enter": "contenido del dossier de documentacion generada; se queda en ingles (no es interfaz de la app)",
+  "Tlamatini/agent/chat_agent_registry.py::action='scaffold_build_flash": "chat_agent_registry.py es texto para el LLM; sus acoplamientos son literales de codigo (snippets ESP32er/STM32er) que se quedan en ingles",
+  "Tlamatini/agent/chat_agent_registry.py::rel_path='src/main.cpp' and content=": "chat_agent_registry.py es texto para el LLM; sus acoplamientos son literales de codigo (snippets ESP32er/STM32er) que se quedan en ingles"
  }
 }

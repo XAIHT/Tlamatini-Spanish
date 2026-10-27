@@ -937,6 +937,16 @@
    "en": "counted(flow.edges.length, 'connection')",
    "es": "counted(flow.edges.length, 'conexión')",
    "n": 1
+  },
+  {
+   "en": "'Use my defaults (speed, shell, waiting and advisor)'",
+   "es": "'Usar mis valores predeterminados (velocidad, shell, espera y asesor)'",
+   "n": 1
+  },
+  {
+   "en": "'Spoken explanation (optional; never include private values)'",
+   "es": "'Explicación hablada (opcional; nunca incluyas valores privados)'",
+   "n": 1
   }
  ],
  "conservar": [
@@ -1011,6 +1021,10 @@
   {
    "en": "'Prompting kickoff.fpmt'",
    "motivo": "nombre de archivo del ejemplo"
+  },
+  {
+   "en": "`${dirty ? '• ' : ''}${shownName} — Prompt Flow Panel`",
+   "motivo": "título de pestaña: sólo variables de máquina y el nombre del producto Prompt Flow Panel"
   }
  ]
 }

@@ -20,26 +20,26 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/XAIHT/Tlamatini/releases/latest"><img src="https://img.shields.io/badge/DOWNLOAD-v1.90.0-38BDF8?style=for-the-badge&labelColor=101827" alt="Download Tlamatini v1.90.0" /></a>
+  <a href="https://github.com/XAIHT/Tlamatini/tree/v1.91.0"><img src="https://img.shields.io/badge/SOURCE-v1.91.0-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini source v1.91.0" /></a>
   <a href="#installation"><img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-14B8A6?style=for-the-badge&labelColor=101827" alt="Windows 10 and 11" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/OPEN%20SOURCE-MIT-E9C46A?style=for-the-badge&labelColor=101827" alt="MIT open source" /></a>
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-818CF8?style=for-the-badge&labelColor=101827&logo=discord&logoColor=white" alt="Join the community on Discord" /></a>
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s"><b>▶ Ver el teaser</b></a> ·
+  <a href="https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s"><b>▶ Mira el teaser</b></a> ·
   <a href="https://xaiht.org">Sitio web</a> ·
   <a href="BookOfTlamatini.md">Guía completa</a> ·
   <a href="Tlamatini-Architecture.pdf">Atlas de arquitectura</a> ·
-  <a href="docs/changes/2026-10-22-v1.90.0.md">Novedades</a>
+  <a href="docs/changes/2026-10-23-v1.91.0.md">Novedades</a>
 </p>
 
 > > [!IMPORTANT]
 > **EL PODER COMPLETO EMPIEZA CON OLLAMA PRO.** Una **suscripción Ollama Pro o superior** activa es un prerrequisito para la experiencia completa que Tlamatini busca ofrecer. Tlamatini en sí es **gratis y de código abierto**; la suscripción de Ollama es una compra aparte que se hace directamente con [Ollama](https://ollama.com/pricing). Las ejecuciones largas de agents, los contextos grandes de proyecto, las llamadas repetidas a tools y el trabajo de visión en paralelo necesitan una capacidad de nube considerable. Pro es el nivel mínimo previsto; las cargas de trabajo más pesadas pueden necesitar más capacidad. [Entiende los requisitos →](#requirements)
 
 <p align="center">
-  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que puedes llamar desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />
-  <sub>Inventario del código fuente actual v1.90.0. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores External MCP activados agregan sus propios tools.</sub>
+  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />
+  <sub>Inventario del código fuente v1.91.0 actual. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores MCP externos activos agregan sus propios tools.</sub>
 </p>
 
 <p align="center">
@@ -96,6 +96,19 @@ Activa **Multi-Turn**, habilita **Interactor** en **Config ▸ Configurar MCPs/T
 Abre **Views ▸ Terminals** para trabajar con sesiones reales de **CMD y PowerShell**. Tlamatini escribe los comandos tecla por tecla, espera el resultado y lo lee de vuelta. Puedes usar pestañas, vistas divididas o una cuadrícula, y presionar **Esc** para tomar el teclado.
 
 Terminater funciona desde el **chat Multi-Turn**, el **Agentic Control Panel** y el **Prompt Flow Panel**. Empieza con **Catálogo de prompts ▸ Run & Execute** para un primer vistazo, una entrega y un recorrido guiado. [Explora Terminater →](docs/terminater.md)
+
+### Elige cómo escribe, enseña y habla
+
+Abre **Config → Editor en vivo y Terminater** para fijar el ritmo de una lección o un comando.
+Elige la velocidad de tecleo, las pausas, las sugerencias y la apariencia; selecciona un shell predeterminado
+y si **siempre presionas Enter**. Activa la narración para cada comando o
+segmento de enseñanza, elige qué dice y cuándo, y deja que la voz termine antes de
+teclear. Los presets **Estándar** y **Aprendizaje guiado** te dan un punto de partida;
+la Vista previa te deja probar el borrador antes de guardar. [Explora la configuración →](docs/interaction-settings.md)
+
+**Nuevo en [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración
+compartido controla el comportamiento real del editor y de la terminal en el chat y en ambos paneles
+de control. Este tag de código fuente está disponible; el vínculo de Downloads se refiere a los paquetes publicados.
 
 **Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El registro de releases distingue el código fuente etiquetado, los cambios posteriores en `main` y la evidencia fechada del build instalado.
 
@@ -272,8 +285,9 @@ Elige una puerta de entrada y profundiza tanto como lo necesite tu proyecto.
 | :--- | :--- |
 | [Book of Tlamatini](BookOfTlamatini.md) | La guía completa, la arquitectura, los workflows y la historia del desarrollo. |
 | [Todos los agents](agents_descriptions.md) | El catálogo de especialistas y el rol de cada agent. |
-| [Registro del release v1.90.0](docs/changes/2026-10-22-v1.90.0.md) | Desarrollos recientes, inventario del código fuente y evidencia de verificación fechada. |
+| [Registro del release v1.91.0](docs/changes/2026-10-23-v1.91.0.md) | Desarrollos recientes, inventario del código fuente y evidencia de verificación fechada. |
 | [Edición en el canvas](docs/canvas-editing.md) · [Interactor](docs/interactor.md) · [Terminater](docs/terminater.md) | Edita, aprende y ejecuta con control directo. |
+| [Configuración de Editor en vivo y Terminater](docs/interaction-settings.md) | Tecleo, enseñanza, narración, comportamiento de la terminal, presets y apariencia. |
 | [Configuración de modelos](docs/model_configuration.md) · [Voz](docs/chat-microphone-design.md) · [Uso](docs/usage-dashboard.md) | Modelos, voz, uso de nube y configuración. |
 | [Prompt Flow Panel](docs/prompting-flow-designer.md) · [Contratos de escritorio y de flow](docs/desktop-input-and-flow-contracts.md) | Los procesos visuales y las reglas detrás de su ejecución. |
 | [Canvas de PDF](docs/pdf-canvas.md) · [Canvas Refresh](docs/canvas-refresh.md) | El contexto de documentos y mantener al día los archivos abiertos. |
@@ -306,6 +320,14 @@ Cuando habilitas, configuras, modificas, encadenas o ejecutas un agent, **ese ag
 El toolkit opcional Blue-hat puede cambiar la política persistente de Windows y, en modos explícitamente armados, bloquear IPs o terminar procesos. Lee [su guía completa](security/README.md), empieza con la observación en modo sólo reporte y usa el tooling de seguridad únicamente en sistemas que te pertenecen o que tienes autorización explícita de evaluar.
 
 </details>
+
+### Activa Tlamatini como agent Blue-hat
+
+Usa la [guía del toolkit Blue-hat](security/README.md) para configurar la defensa opcional de
+Windows y la observación en modo sólo reporte. Durante una actualización dentro de la app, el código
+de seguridad se reemplaza mientras la evidencia local existente se conserva mediante `_security_logs_carryover`
+y se restaura en la nueva instalación. Conservar la evidencia no certifica el estado de
+seguridad de una máquina; la guía explica los scripts y su alcance.
 
 ## Construye con nosotros
 
