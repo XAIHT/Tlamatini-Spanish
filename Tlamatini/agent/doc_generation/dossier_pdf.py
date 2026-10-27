@@ -265,12 +265,12 @@ class DossierDoc(BaseDocTemplate):
     def __init__(self, filename, facts: dict):
         super().__init__(
             filename, pagesize=A4, leftMargin=ML, rightMargin=MR, topMargin=MT, bottomMargin=MB,
-            title="Tlamatini — Complete Project Dossier",
+            title="Tlamatini — Dossier completo del proyecto",
             author="Angela López Mendoza",
-            subject=f"Tlamatini {facts['version']}: what she is, how she works, how to use her, and the "
-                    f"complete repository inventory",
-            creator="Tlamatini dossier generator (refresh_project_docs.py)",
-            keywords="Tlamatini, AI developer assistant, agents, Multi-Turn, ACPX, MCP, workflow designer")
+            subject=f"Tlamatini {facts['version']}: qué es, cómo funciona, cómo usarla y el "
+                    f"inventario completo del repositorio",
+            creator="Generador del dossier de Tlamatini (refresh_project_docs.py)",
+            keywords="Tlamatini, asistente de desarrollo con IA, agents, Multi-Turn, ACPX, MCP, diseñador de workflows")
         self.facts = facts
         full = Frame(0, 0, W, H, leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0, id="full")
         body = Frame(ML, MB, FRAME_W, H - MT - MB, leftPadding=0, rightPadding=0, topPadding=0,
@@ -299,7 +299,7 @@ class DossierDoc(BaseDocTemplate):
         draw_text(canv, ML, H - 58, "TLAMATINI", "sans-semibold", 7.2, "copper_deep", space=1.8)
         if label:
             draw_text(canv, ML + 64, H - 58, "·  " + label.upper(), "sans", 7.0, "muted", space=1.0)
-        draw_text(canv, W - MR, H - 58, "COMPLETE PROJECT DOSSIER", "sans", 7.0, "muted", space=1.0,
+        draw_text(canv, W - MR, H - 58, "DOSSIER COMPLETO DEL PROYECTO", "sans", 7.0, "muted", space=1.0,
                   anchor="right")
         canv.saveState()
         canv.setStrokeColor(c("rule"))
@@ -309,7 +309,7 @@ class DossierDoc(BaseDocTemplate):
         canv.restoreState()
         diamond(canv, W / 2, 30, 11, fill="ivory", stroke="copper", width=0.8)
         draw_text(canv, W / 2, 27.4, str(doc.page), "sans-semibold", 7.6, "copper_deep", anchor="center")
-        draw_text(canv, ML, 27.4, f"Version {self.facts['version']}  ·  {self.facts['generated_date']}",
+        draw_text(canv, ML, 27.4, f"Versión {self.facts['version']}  ·  {self.facts['generated_date']}",
                   "sans", 7.0, "muted")
         draw_text(canv, W - MR, 27.4, "github.com/XAIHT/Tlamatini", "sans", 7.0, "muted", anchor="right")
 
@@ -561,15 +561,15 @@ def styled_table(columns, rows, ratios, st: Styles, align=None):
 
 class Planes(Flowable):
     SPEC = [
-        ("jade", "Local control plane", "Your machine",
-         ["Django, Channels and Daphne", "Chat, canvases and dialogs", "SQLite database and settings",
-          "Agent programs and permissions", "Files, tools and hardware"]),
-        ("gold", "Local retrieval", "Your machine",
-         ["nomic-embed-text embeddings", "FAISS vectors and BM25 keywords", "Context budgeting",
-          "Binary-content guard"]),
-        ("copper", "Cloud reasoning", "Ollama cloud models",
-         ["Chat and tool calling", "Long context", "Vision observers and mergers",
-          "Multi-Turn planning"]),
+        ("jade", "Plano de control local", "Tu máquina",
+         ["Django, Channels y Daphne", "Chat, canvases y diálogos", "Base de datos SQLite y configuración",
+          "Programas de agents y permisos", "Archivos, tools y hardware"]),
+        ("gold", "Recuperación local", "Tu máquina",
+         ["embeddings de nomic-embed-text", "Vectores FAISS y palabras clave BM25", "Presupuesto de contexto",
+          "Protección de contenido binario"]),
+        ("copper", "Razonamiento en la nube", "Modelos de Ollama en la nube",
+         ["Chat y llamadas a tools", "Contexto largo", "Observadores de visión y combinadores",
+          "Planeación de Multi-Turn"]),
     ]
 
     def wrap(self, aw, ah):
@@ -624,7 +624,7 @@ class LayerStack(Flowable):
         top = self.height
         rounded(canv, 0, top - 26, self.aw, 26, 5, fill="stone")
         draw_text(canv, 12, top - 17, "BROWSER", "sans-semibold", 7.4, "gold", space=1.4)
-        draw_text(canv, 90, top - 17, "Chat page  ·  Agentic Control Panel  ·  Prompt Flow Panel  "
+        draw_text(canv, 90, top - 17, "Página del chat  ·  Agentic Control Panel  ·  Prompt Flow Panel  "
                   "·  WebSockets", "sans", 8.4, "light")
         y = top - 34
         tones = ["jade", "gold", "copper", "cyan", "magenta"]
@@ -644,8 +644,8 @@ class LayerStack(Flowable):
         y += 6
         y -= 30
         rounded(canv, 0, y, self.aw, 26, 5, fill="stone")
-        draw_text(canv, 12, y + 9, "MODELS", "sans-semibold", 7.4, "gold", space=1.4)
-        draw_text(canv, 90, y + 9, "Ollama (local and cloud)  ·  Anthropic Claude  ·  Qwen vision",
+        draw_text(canv, 12, y + 9, "MODELOS", "sans-semibold", 7.4, "gold", space=1.4)
+        draw_text(canv, 90, y + 9, "Ollama (local y en la nube)  ·  Anthropic Claude  ·  visión de Qwen",
                   "sans", 8.4, "light")
 
 
@@ -755,14 +755,14 @@ class Cascade(Flowable):
             row, col = divmod(index, per_row)
             x = col * (box_w + gap)
             y = self.height - (row + 1) * box_h - row * 22
-            tone = "jade" if name in ("BOM", "Empty") else ("copper" if index in (0, 4, 5, 6, 7) else "gold")
+            tone = "jade" if name in ("BOM", "Vacío") else ("copper" if index in (0, 4, 5, 6, 7) else "gold")
             rounded(canv, x, y, box_w, box_h, 5, fill="paper", stroke=tone, width=0.9)
             draw_text(canv, x + 8, y + box_h - 15, f"{index + 1}  {name}", "sans-semibold", 8.8, "ink")
             draw_text(canv, x + 8, y + 9, note, "sans", 7.4, "ink2")
             if col < per_row - 1:
                 arrow(canv, x + box_w + 1, y + box_h / 2, x + box_w + gap - 1, y + box_h / 2, "copper", 0.8, 3)
-        draw_text(canv, 0, 1, "Copper stages can drop a binary file; jade stages can only keep a file as text. "
-                  "Any doubt keeps the file.", "sans-italic", 7.6, "ink2")
+        draw_text(canv, 0, 1, "Las etapas cobrizas pueden quitar un archivo binario; las etapas de jade sólo pueden conservarlo como texto. "
+                  "Ante cualquier duda, el archivo se conserva.", "sans-italic", 7.6, "ink2")
 
 
 def _glyph(canv, kind, x, y, w, h, tone):
@@ -1068,19 +1068,19 @@ class CoverPage(FullPage):
         canv.setLineWidth(0.7)
         canv.circle(cx, cy, r + 7, stroke=1, fill=0)
         canv.restoreState()
-        draw_text(canv, cx, H - 72, "THE COMPLETE PROJECT DOSSIER", "sans-semibold", 8.6, "copper", space=3.2,
+        draw_text(canv, cx, H - 72, "EL DOSSIER COMPLETO DEL PROYECTO", "sans-semibold", 8.6, "copper", space=3.2,
                   anchor="center")
         stepfret(canv, cx - 70, H - 92, 140, 2.2, "copper", 0.6, 0.7)
         draw_text(canv, cx, 238, "Tlamatini", "serif", 62, "ivory", anchor="center")
-        draw_text(canv, cx, 210, "the one who knows", "serif-italic", 17, "jade", anchor="center", space=0.6)
+        draw_text(canv, cx, 210, "la que sabe", "serif-italic", 17, "jade", anchor="center", space=0.6)
         sub = style("cover_sub", "sans-light", 11.4, 16.2, "light_muted", alignment=TA_CENTER)
-        p = para("A self-hosted AI developer assistant with a visual agent-workflow designer, a universal MCP "
-                 "client, and the reach to drive real boards, engines and networks.", sub, "sans-light")
+        p = para("Una asistente de desarrollo con IA alojada por ti, con un diseñador visual de workflows de agents, un cliente MCP "
+                 "universal y el alcance para manejar tarjetas, motores y redes reales.", sub, "sans-light")
         pw, ph = p.wrap(380, 200)
         p.drawOn(canv, cx - 190, 196 - 12 - ph)
-        metrics = [(str(f["agents"]), "agent types"), (str(f["tools"]), "Multi-Turn tools"),
+        metrics = [(str(f["agents"]), "tipos de agent"), (str(f["tools"]), "tools de Multi-Turn"),
                    (str(f["skills"]), "skills"), (f"v{f['version']}",
-                    "current release" if f"v{f['version']}" == (f.get("release") or {}).get("latest_published")
+                    "release actual" if f"v{f['version']}" == (f.get("release") or {}).get("latest_published")
                     else "version")]
         span = 400
         step = span / len(metrics)
@@ -1096,9 +1096,9 @@ class CoverPage(FullPage):
                 canv.line(x0 + step * index, 94, x0 + step * index, 132)
                 canv.restoreState()
         stepfret(canv, 60, 70, W - 120, 2.4, "copper", 0.6, 0.55)
-        draw_text(canv, cx, 50, "Created by Angela López Mendoza  ·  @angelahack1", "sans-semibold", 9.4,
+        draw_text(canv, cx, 50, "Creada por Angela López Mendoza  ·  @angelahack1", "sans-semibold", 9.4,
                   "ivory", anchor="center")
-        draw_text(canv, cx, 35, f"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini  ·  MIT license",
+        draw_text(canv, cx, 35, f"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini  ·  licencia MIT",
                   "sans", 7.6, "light_muted", anchor="center", space=0.4)
 
 
@@ -1113,7 +1113,7 @@ class ChapterOpener(FullPage):
         canv = self.canv
         ch = self.chapter
         sunstone(canv, W * 0.86, H * 0.62, 250, "jade", "copper", 0.35)
-        draw_text(canv, 64, H - 112, "CHAPTER" if ch.numeral[0] in "IVX" else "APPENDIX", "sans-semibold",
+        draw_text(canv, 64, H - 112, "CAPÍTULO" if ch.numeral[0] in "IVX" else "APÉNDICE", "sans-semibold",
                   8.4, ch.accent, space=3.0)
         draw_text(canv, 60, H - 236, ch.numeral, "serif", 118, "copper", alpha=0.92)
         title_st = style("op_title", "serif", 36, 41, "ivory")
@@ -1134,7 +1134,7 @@ class ChapterOpener(FullPage):
         y = y - 16 - gh - 40
         titles = [s.title for s in ch.sections]
         if titles:
-            draw_text(canv, 64, y, "IN THIS CHAPTER", "sans-semibold", 7.4, "gold", space=2.2)
+            draw_text(canv, 64, y, "EN ESTE CAPÍTULO", "sans-semibold", 7.4, "gold", space=2.2)
             y -= 12
             two_cols = len(titles) > 8
             col_w = 230 if two_cols else 440
@@ -1162,7 +1162,7 @@ class ChapterOpener(FullPage):
                     ip.drawOn(canv, x + 12, cy - ih)
                     cy -= ih + gap
         stepfret(canv, 60, 64, W * 0.55, 2.4, "copper", 0.6, 0.55)
-        draw_text(canv, W - 60, 36, f"Tlamatini · Complete Project Dossier · page {canv.getPageNumber()}",
+        draw_text(canv, W - 60, 36, f"Tlamatini · Dossier completo del proyecto · página {canv.getPageNumber()}",
                   "sans", 7.2, "light_muted", anchor="right")
 
 
@@ -1190,16 +1190,16 @@ class ClosingPage(FullPage):
         canv.circle(cx, H * 0.62, 88, stroke=1, fill=0)
         canv.restoreState()
         draw_text(canv, cx, H * 0.62 - 190, "Tlamatini", "serif", 40, "ivory", anchor="center")
-        draw_text(canv, cx, H * 0.62 - 214, "one who knows", "serif-italic", 14, "jade", anchor="center")
+        draw_text(canv, cx, H * 0.62 - 214, "la que sabe", "serif-italic", 14, "jade", anchor="center")
         body = style("close", "sans-light", 10.6, 16, "light", alignment=TA_CENTER)
-        p = para("Conceived, designed and built by **Angela López Mendoza**. Every fact in this dossier was "
-                 "counted from the source tree when it was generated; regenerate it at any time with "
-                 "`refresh_project_docs.py` and it will tell the truth again.", body, "sans-light", "gold")
+        p = para("Concebida, diseñada y construida por **Angela López Mendoza**. Cada dato de este dossier se "
+                 "contó a partir del árbol del source cuando se generó; regenéralo en cualquier momento con "
+                 "`refresh_project_docs.py` y volverá a decir la verdad.", body, "sans-light", "gold")
         pw, ph = p.wrap(380, 200)
         p.drawOn(canv, cx - 190, H * 0.62 - 246 - ph)
         colophon = style("colo", "sans", 7.6, 11.2, "light_muted", alignment=TA_CENTER)
-        q = para(f"Set in Palatino Linotype, Segoe UI and Consolas. Generated {self.facts['generated_at']} from "
-                 f"commit {self.facts['head_short']}. MIT license · github.com/XAIHT/Tlamatini", colophon,
+        q = para(f"Compuesto en Palatino Linotype, Segoe UI y Consolas. Generado el {self.facts['generated_at']} a partir del "
+                 f"commit {self.facts['head_short']}. Licencia MIT · github.com/XAIHT/Tlamatini", colophon,
                  "sans")
         qw, qh = q.wrap(400, 100)
         q.drawOn(canv, cx - 200, 70)
@@ -1282,7 +1282,7 @@ def section_flow(section, facts, st: Styles, chapter) -> list:
     flow: list = []
     kicker = section.kicker
     if section.deck == "family":
-        kicker = f"AGENT FAMILY  ·  {section.visual_data['count']} AGENTS"
+        kicker = f"FAMILIA DE AGENTS  ·  {section.visual_data['count']} AGENTS"
     head = [Kicker(kicker, "copper_deep"), Spacer(1, 3), para(section.title, st.h1, "serif"),
             TitleRule(section.visual_data.get("accent", chapter.accent)), Spacer(1, 4),
             para(section.lede, st.lede, "sans-semilight")]
@@ -1398,14 +1398,14 @@ def build_visual(section, facts, st: Styles):
 
 def metric_tiles(facts) -> list[tuple[str, str]]:
     return [
-        (str(facts["agents"]), "agent types"),
-        (str(facts["tools"]), "Multi-Turn tools"),
-        (str(facts["wrapped"]), "wrapped agents"),
+        (str(facts["agents"]), "tipos de agent"),
+        (str(facts["tools"]), "tools de Multi-Turn"),
+        (str(facts["wrapped"]), "agents wrapped"),
         (str(facts["skills"]), "skills"),
-        (str(len(facts["acpx_peers"])), "ACPX peers"),
-        (str(facts["migrations"]), "migrations"),
-        (f"{facts['tracked_count']:,}", "tracked files"),
-        (f"{facts['total_effective']:,}", "effective lines"),
+        (str(len(facts["acpx_peers"])), "pares de ACPX"),
+        (str(facts["migrations"]), "migraciones"),
+        (f"{facts['tracked_count']:,}", "archivos en Git"),
+        (f"{facts['total_effective']:,}", "líneas efectivas"),
     ]
 
 
@@ -1413,41 +1413,41 @@ def language_series(facts, limit: int) -> list[tuple[str, int]]:
     rows = [(row.language, row.effective_lines) for row in facts["languages"]]
     head, tail = rows[:limit - 1], rows[limit - 1:]
     if tail:
-        head.append((f"{len(tail)} more", sum(value for _, value in tail)))
+        head.append((f"{len(tail)} más", sum(value for _, value in tail)))
     return head
 
 
 def about_flow(facts, st: Styles) -> list:
-    flow = [ChapterMarker("About this dossier"), Anchor(0, "About this dossier", "about"),
-            Kicker("BEFORE YOU BEGIN"), Spacer(1, 3), para("About this dossier", st.h1, "serif"),
+    flow = [ChapterMarker("Acerca de este dossier"), Anchor(0, "Acerca de este dossier", "about"),
+            Kicker("ANTES DE EMPEZAR"), Spacer(1, 3), para("Acerca de este dossier", st.h1, "serif"),
             TitleRule("copper"), Spacer(1, 4),
-            para("This is the complete dossier of Tlamatini: what she is, how she works, how to use her, every "
-                 "agent she can run, the promises she keeps, and an inventory of her application source tree.",
+            para("Este es el dossier completo de Tlamatini: qué es, cómo funciona, cómo usarla, cada "
+                 "agent que puede ejecutar, las promesas que cumple y un inventario del árbol de source de su aplicación.",
                  st.lede, "sans-semilight")]
     for text in [
-        "It is written for three readers at once. A **newcomer** can read the first three chapters and know "
-        "what Tlamatini is and how to start. An **operator** will find the surfaces, the bestiary and the "
-        "configuration chapters. A **maintainer** will find the architecture, the contracts behind the "
-        "honesty rules and the application inventory and database-history count.",
-        "Nothing here is typed from memory. Counts, versions, commits, the language inventory and the file "
-        "tree were derived from Git and the source files when this edition was generated, and the generator "
-        "then reopened this document to prove that no text overflows or is clipped and that the file tree "
-        "matches its declared application scope. Database history is summarized; configuration values, credentials and private addresses are never "
-        "reproduced.",
+        "Está escrito para tres lectores a la vez. Alguien **nuevo** puede leer los tres primeros capítulos y saber "
+        "qué es Tlamatini y cómo empezar. Quien **opera** encontrará las superficies, el bestiario y los "
+        "capítulos de configuración. Quien **mantiene** encontrará la arquitectura, los contratos detrás de las "
+        "reglas de honestidad, el inventario de la aplicación y el conteo de la historia de la base de datos.",
+        "Nada aquí se escribió de memoria. Los conteos, las versiones, los commits, el inventario de lenguajes y el árbol "
+        "de archivos se derivaron de Git y de los archivos del source cuando se generó esta edición, y el generador "
+        "luego volvió a abrir este documento para probar que ningún texto se desborda ni se recorta y que el árbol de archivos "
+        "coincide con el alcance declarado de la aplicación. La historia de la base de datos se resume; los valores de configuración, las credenciales y las direcciones privadas nunca se "
+        "reproducen.",
     ]:
         flow.append(para(text, st.body, "sans"))
     flow.append(Spacer(1, 6))
-    flow.append(styled_table(["This edition", ""], [
-        ["Generated", facts["generated_at"]],
-        ["Inspected commit", f"{facts['head_short']} — {facts['head_subject']}"],
-        ["Version", facts['version']],
-        ["Current source release", facts["release"]["latest_published"] or "unknown"],
-        ["Companion deck", "Tlamatini_eXtended_Artificial_Intelligence_Humanly_Tempered.pptx"],
+    flow.append(styled_table(["Esta edición", ""], [
+        ["Generado", facts["generated_at"]],
+        ["Commit inspeccionado", f"{facts['head_short']} — {facts['head_subject']}"],
+        ["Versión", facts['version']],
+        ["Release actual del source", facts["release"]["latest_published"] or "unknown"],
+        ["Presentación complementaria", "Tlamatini_eXtended_Artificial_Intelligence_Humanly_Tempered.pptx"],
     ], [0.30, 0.70], st))
     flow.append(Spacer(1, 12))
-    flow.append(Callout("A note on the numbers",
-                        "Figures that move with every release — agents, tools, skills, migrations, lines — "
-                        "describe this edition only. Regenerate the dossier and they update themselves.", st,
+    flow.append(Callout("Una nota sobre los números",
+                        "Las cifras que cambian con cada release (agents, tools, skills, migraciones, líneas) "
+                        "describen sólo esta edición. Regenera el dossier y se actualizan solas.", st,
                         "gold"))
     return flow
 
@@ -1458,8 +1458,8 @@ def build_pdf(facts: dict, chapters, output) -> int:
     doc = DossierDoc(str(output), facts)
     story: list = [CoverPage(facts), NextPageTemplate("body"), PageBreak()]
     story += about_flow(facts, st)
-    story += [PageBreak(), ChapterMarker("Contents"), Kicker("CONTENTS"), Spacer(1, 3),
-              para("Contents", st.h1, "serif"), TitleRule("jade"), Spacer(1, 10)]
+    story += [PageBreak(), ChapterMarker("Contenido"), Kicker("CONTENIDO"), Spacer(1, 3),
+              para("Contenido", st.h1, "serif"), TitleRule("jade"), Spacer(1, 10)]
     toc = TableOfContents(dotsMinLevel=0)
     toc.levelStyles = [
         ParagraphStyle("toc0", fontName=RL["serif"], fontSize=12.4, leading=15, textColor=c("ink"),
@@ -1476,17 +1476,17 @@ def build_pdf(facts: dict, chapters, output) -> int:
 
     from dossier_content import Chapter
 
-    appendix = Chapter("tree", "A", "The Application File Tree",
-                       f"{facts['tree_count']:,} application files, with {facts['tree_history_count']} database-history files summarized. "
-                       "Directories are shown in jade.", [], accent="gold")
+    appendix = Chapter("tree", "A", "El árbol de archivos de la aplicación",
+                       f"{facts['tree_count']:,} archivos de la aplicación, con {facts['tree_history_count']} archivos de la historia de la base de datos resumidos. "
+                       "Los directorios se muestran en jade.", [], accent="gold")
     story += [NextPageTemplate("dark"), PageBreak(),
-              ChapterOpener(appendix, st, "appendix_tree", "Appendix A  ·  The application file tree"),
-              NextPageTemplate("body"), PageBreak(), ChapterMarker("Appendix A · File tree")]
-    intro = [Kicker("APPENDIX A"), Spacer(1, 3), para("The application file tree", st.h1, "serif"),
+              ChapterOpener(appendix, st, "appendix_tree", "Apéndice A  ·  El árbol de archivos de la aplicación"),
+              NextPageTemplate("body"), PageBreak(), ChapterMarker("Apéndice A · Árbol de archivos")]
+    intro = [Kicker("APÉNDICE A"), Spacer(1, 3), para("El árbol de archivos de la aplicación", st.h1, "serif"),
              TitleRule("gold"), Spacer(1, 4),
-             para(f"{facts['tree_count']:,} listed application files at commit `{facts['head_short']}`. Within each "
-                  "directory, files come first and sub-directories follow; a line too long for its column "
-                  "continues on the next line after a » mark.", st.lede, "sans-semilight"), Spacer(1, 8)]
+             para(f"{facts['tree_count']:,} archivos de la aplicación listados en el commit `{facts['head_short']}`. Dentro de cada "
+                  "directorio, los archivos van primero y los subdirectorios después; una línea demasiado larga para su columna "
+                  "continúa en la línea siguiente después de una marca ».", st.lede, "sans-semilight"), Spacer(1, 8)]
     intro_height = sum(item.wrap(FRAME_W, 1000)[1] + item.getSpaceAfter() for item in intro) + 14
     frame_h = H - MT - MB
     pages = tree_pages(facts["tree_text"], frame_h - intro_height, frame_h)

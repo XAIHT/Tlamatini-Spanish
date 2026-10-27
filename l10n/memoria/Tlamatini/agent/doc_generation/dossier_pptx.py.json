@@ -1,0 +1,321 @@
+{
+ "archivo": "Tlamatini/agent/doc_generation/dossier_pptx.py",
+ "segmentos": [
+  {
+   "en": "\"Local control plane\"",
+   "es": "\"Plano de control local\"",
+   "n": 1
+  },
+  {
+   "en": "\"YOUR MACHINE\"",
+   "es": "\"TU MÁQUINA\"",
+   "n": 2
+  },
+  {
+   "en": "\"Django, Channels and Daphne\"",
+   "es": "\"Django, Channels y Daphne\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat, canvases and dialogs\"",
+   "es": "\"Chat, canvases y diálogos\"",
+   "n": 1
+  },
+  {
+   "en": "\"SQLite database and settings\"",
+   "es": "\"Base de datos SQLite y configuración\"",
+   "n": 1
+  },
+  {
+   "en": "\"Agent programs and permissions\"",
+   "es": "\"Programas de agents y permisos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Local retrieval\"",
+   "es": "\"Recuperación local\"",
+   "n": 1
+  },
+  {
+   "en": "\"nomic-embed-text embeddings\"",
+   "es": "\"embeddings de nomic-embed-text\"",
+   "n": 1
+  },
+  {
+   "en": "\"FAISS vectors and BM25\"",
+   "es": "\"Vectores FAISS y BM25\"",
+   "n": 1
+  },
+  {
+   "en": "\"Context budgeting\"",
+   "es": "\"Presupuesto de contexto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Binary-content guard\"",
+   "es": "\"Protección de contenido binario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Cloud reasoning\"",
+   "es": "\"Razonamiento en la nube\"",
+   "n": 1
+  },
+  {
+   "en": "\"OLLAMA CLOUD\"",
+   "es": "\"OLLAMA EN LA NUBE\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat and tool calling\"",
+   "es": "\"Chat y llamadas a tools\"",
+   "n": 1
+  },
+  {
+   "en": "\"Long context\"",
+   "es": "\"Contexto largo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Vision observers and mergers\"",
+   "es": "\"Observadores de visión y combinadores\"",
+   "n": 1
+  },
+  {
+   "en": "\"Multi-Turn planning\"",
+   "es": "\"Planeación de Multi-Turn\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat page  ·  Agentic Control Panel  ·  Prompt Flow Panel\"",
+   "es": "\"Página del chat  ·  Agentic Control Panel  ·  Prompt Flow Panel\"",
+   "n": 1
+  },
+  {
+   "en": "\"MODELS   \"",
+   "es": "\"MODELOS   \"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama (local and cloud)  ·  Anthropic Claude  ·  Qwen \"",
+   "es": "\"Ollama (local y en la nube)  ·  Anthropic Claude  ·  visión de Qwen \"",
+   "n": 1
+  },
+  {
+   "en": "\"Empty\"",
+   "es": "\"Vacío\"",
+   "n": 1
+  },
+  {
+   "en": "\"Copper stages can drop a binary file; jade stages can only keep a file as text. Any doubt keeps the \"",
+   "es": "\"Las etapas cobrizas pueden quitar un archivo binario; las etapas de jade sólo pueden conservarlo como texto. Ante cualquier duda, el \"",
+   "n": 1
+  },
+  {
+   "en": "\"file, and every omission is logged under `--- [BINARY-GUARD]`.\"",
+   "es": "\"archivo se conserva, y cada omisión se registra con `--- [BINARY-GUARD]`.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A portable JSON diagram: `tlamatini-prompting-flow`, version 2. Opening a file never \"",
+   "es": "\"Un diagrama JSON portátil: `tlamatini-prompting-flow`, versión 2. Abrir un archivo nunca \"",
+   "n": 1
+  },
+  {
+   "en": "\"runs it; Validate, then Play.\"",
+   "es": "\"lo ejecuta; Validar, y luego Ejecutar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Value\"",
+   "es": "\"Valor\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini: the complete project dossier. Created by Angela López Mendoza.\"",
+   "es": "\"Tlamatini: el dossier completo del proyecto. Creada por Angela López Mendoza.\"",
+   "n": 1
+  },
+  {
+   "en": "\"THE COMPLETE PROJECT DOSSIER\"",
+   "es": "\"EL DOSSIER COMPLETO DEL PROYECTO\"",
+   "n": 1
+  },
+  {
+   "en": "\"the one who knows\"",
+   "es": "\"la que sabe\"",
+   "n": 1
+  },
+  {
+   "en": "\"A self-hosted AI developer assistant with a visual agent-workflow designer, a universal MCP client, \"",
+   "es": "\"Una asistente de desarrollo con IA alojada por ti, con un diseñador visual de workflows de agents, un cliente MCP universal \"",
+   "n": 1
+  },
+  {
+   "en": "\"and the reach to drive real boards, engines and networks.\"",
+   "es": "\"y el alcance para manejar tarjetas, motores y redes reales.\"",
+   "n": 1
+  },
+  {
+   "en": "\"agent types\"",
+   "es": "\"tipos de agent\"",
+   "n": 1
+  },
+  {
+   "en": "\"Multi-Turn tools\"",
+   "es": "\"tools de Multi-Turn\"",
+   "n": 1
+  },
+  {
+   "en": "\"current release\"",
+   "es": "\"release actual\"",
+   "n": 1
+  },
+  {
+   "en": "\"Created by Angela López Mendoza  ·  @angelahack1\"",
+   "es": "\"Creada por Angela López Mendoza  ·  @angelahack1\"",
+   "n": 1
+  },
+  {
+   "en": "\"What this dossier covers, chapter by chapter.\"",
+   "es": "\"Lo que cubre este dossier, capítulo por capítulo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"What this dossier covers\"",
+   "es": "\"Lo que cubre este dossier\"",
+   "n": 1
+  },
+  {
+   "en": "\"Nine chapters from identity to inventory, and the application file tree at the end.\"",
+   "es": "\"Nueve capítulos de la identidad al inventario, y el árbol de archivos de la aplicación al final.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The application file tree\", \"Application files; database history is summarized.\", \"gold\"",
+   "es": "\"El árbol de archivos de la aplicación\", \"Archivos de la aplicación; la historia de la base de datos se resume.\", \"gold\"",
+   "n": 1
+  },
+  {
+   "en": "\"Contents\"",
+   "es": "\"Contenido\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chapter {chapter.numeral}: {chapter.title}. {chapter.tagline}\"",
+   "es": "\"Capítulo {chapter.numeral}: {chapter.title}. {chapter.tagline}\"",
+   "n": 1
+  },
+  {
+   "en": "\"“one who knows”\"",
+   "es": "\"“la que sabe”\"",
+   "n": 1
+  },
+  {
+   "en": "\"AGENT FAMILY  ·  {len(members)} AGENTS\"",
+   "es": "\"FAMILIA DE AGENTS  ·  {len(members)} AGENTS\"",
+   "n": 1
+  },
+  {
+   "en": "\"Effective lines\"",
+   "es": "\"Líneas efectivas\"",
+   "n": 1
+  },
+  {
+   "en": "\"Settings\"",
+   "es": "\"Configuración\"",
+   "n": 1
+  },
+  {
+   "en": "\"From “{plain(section.title)}”\"",
+   "es": "\"De “{plain(section.title)}”\"",
+   "n": 1
+  },
+  {
+   "en": "\"Appendix A: the application file tree, continued.\"",
+   "es": "\"Apéndice A: el árbol de archivos de la aplicación, continúa.\"",
+   "n": 1
+  },
+  {
+   "en": "\"APPENDIX A  ·  APPLICATION FILE TREE  ·  {page + 1} / {total}\"",
+   "es": "\"APÉNDICE A  ·  ÁRBOL DE ARCHIVOS DE LA APLICACIÓN  ·  {page + 1} / {total}\"",
+   "n": 1
+  },
+  {
+   "en": "\"{deck.facts['tree_count']:,} listed files at commit \"",
+   "es": "\"{deck.facts['tree_count']:,} archivos listados en el commit \"",
+   "n": 1
+  },
+  {
+   "en": "\"{deck.facts['head_short']}; {deck.facts['tree_history_count']} database-history files summarized.\"",
+   "es": "\"{deck.facts['head_short']}; {deck.facts['tree_history_count']} archivos de la historia de la base de datos resumidos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Appendix A · File tree\"",
+   "es": "\"Apéndice A · Árbol de archivos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini — one who knows. Created by Angela López Mendoza.\"",
+   "es": "\"Tlamatini, la que sabe. Creada por Angela López Mendoza.\"",
+   "n": 1
+  },
+  {
+   "en": "\"one who knows\", \"serif-italic\", 24, \"jade\"), label=\"closing tagline\"",
+   "es": "\"la que sabe\", \"serif-italic\", 24, \"jade\"), label=\"closing tagline\"",
+   "n": 1
+  },
+  {
+   "en": "\"Conceived, designed and built by **Angela López Mendoza**. Every number in this deck was counted \"",
+   "es": "\"Concebida, diseñada y construida por **Angela López Mendoza**. Cada número de esta presentación se contó \"",
+   "n": 1
+  },
+  {
+   "en": "\"from the source tree when it was generated.\"",
+   "es": "\"a partir del árbol del source cuando se generó.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Regenerate with  refresh_project_docs.py\"",
+   "es": "\"Regenérala con  refresh_project_docs.py\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chapter {chapter.numeral}\"",
+   "es": "\"Capítulo {chapter.numeral}\"",
+   "n": 1
+  },
+  {
+   "en": "\"The application file tree\"",
+   "es": "\"El árbol de archivos de la aplicación\"",
+   "n": 1
+  },
+  {
+   "en": "\"{facts['tree_count']:,} application files, with {facts['tree_history_count']} database-history files summarized.\"",
+   "es": "\"{facts['tree_count']:,} archivos de la aplicación, con {facts['tree_history_count']} archivos de la historia de la base de datos resumidos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Appendix A\"",
+   "es": "\"Apéndice A\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini — Complete Project Dossier\"",
+   "es": "\"Tlamatini — Dossier completo del proyecto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini; agents; Multi-Turn; ACPX; MCP; workflow designer\"",
+   "es": "\"Tlamatini; agents; Multi-Turn; ACPX; MCP; diseñador de workflows\"",
+   "n": 1
+  },
+  {
+   "en": "\"Generated by refresh_project_docs.py from the source tree.\"",
+   "es": "\"Generado por refresh_project_docs.py a partir del árbol del source.\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

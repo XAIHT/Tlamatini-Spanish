@@ -137,7 +137,7 @@ def verify_pptx_structure(facts: dict, path: Path) -> dict:
     lines: list[str] = []
     for slide in prs.slides:
         notes = slide.notes_slide.notes_text_frame.text if slide.has_notes_slide else ""
-        if not notes.startswith("Appendix A: the application file tree"):
+        if not notes.startswith("Apéndice A: el árbol de archivos de la aplicación"):
             continue
         columns = []
         for shape in slide.shapes:

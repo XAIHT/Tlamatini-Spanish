@@ -1,0 +1,472 @@
+{
+ "archivo": "Tlamatini/agent/doc_generation/dossier_pdf.py",
+ "segmentos": [
+  {
+   "en": "\"Tlamatini — Complete Project Dossier\"",
+   "es": "\"Tlamatini — Dossier completo del proyecto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini {facts['version']}: what she is, how she works, how to use her, and the \"",
+   "es": "\"Tlamatini {facts['version']}: qué es, cómo funciona, cómo usarla y el \"",
+   "n": 1
+  },
+  {
+   "en": "\"complete repository inventory\"",
+   "es": "\"inventario completo del repositorio\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini dossier generator (refresh_project_docs.py)\"",
+   "es": "\"Generador del dossier de Tlamatini (refresh_project_docs.py)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini, AI developer assistant, agents, Multi-Turn, ACPX, MCP, workflow designer\"",
+   "es": "\"Tlamatini, asistente de desarrollo con IA, agents, Multi-Turn, ACPX, MCP, diseñador de workflows\"",
+   "n": 1
+  },
+  {
+   "en": "\"COMPLETE PROJECT DOSSIER\"",
+   "es": "\"DOSSIER COMPLETO DEL PROYECTO\"",
+   "n": 1
+  },
+  {
+   "en": "\"Version {self.facts['version']}  ·  {self.facts['generated_date']}\"",
+   "es": "\"Versión {self.facts['version']}  ·  {self.facts['generated_date']}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Local control plane\"",
+   "es": "\"Plano de control local\"",
+   "n": 1
+  },
+  {
+   "en": "\"Your machine\"",
+   "es": "\"Tu máquina\"",
+   "n": 2
+  },
+  {
+   "en": "\"Django, Channels and Daphne\"",
+   "es": "\"Django, Channels y Daphne\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat, canvases and dialogs\"",
+   "es": "\"Chat, canvases y diálogos\"",
+   "n": 1
+  },
+  {
+   "en": "\"SQLite database and settings\"",
+   "es": "\"Base de datos SQLite y configuración\"",
+   "n": 1
+  },
+  {
+   "en": "\"Agent programs and permissions\"",
+   "es": "\"Programas de agents y permisos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Files, tools and hardware\"",
+   "es": "\"Archivos, tools y hardware\"",
+   "n": 1
+  },
+  {
+   "en": "\"Local retrieval\"",
+   "es": "\"Recuperación local\"",
+   "n": 1
+  },
+  {
+   "en": "\"nomic-embed-text embeddings\"",
+   "es": "\"embeddings de nomic-embed-text\"",
+   "n": 1
+  },
+  {
+   "en": "\"FAISS vectors and BM25 keywords\"",
+   "es": "\"Vectores FAISS y palabras clave BM25\"",
+   "n": 1
+  },
+  {
+   "en": "\"Context budgeting\"",
+   "es": "\"Presupuesto de contexto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Binary-content guard\"",
+   "es": "\"Protección de contenido binario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Cloud reasoning\"",
+   "es": "\"Razonamiento en la nube\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama cloud models\"",
+   "es": "\"Modelos de Ollama en la nube\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat and tool calling\"",
+   "es": "\"Chat y llamadas a tools\"",
+   "n": 1
+  },
+  {
+   "en": "\"Long context\"",
+   "es": "\"Contexto largo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Vision observers and mergers\"",
+   "es": "\"Observadores de visión y combinadores\"",
+   "n": 1
+  },
+  {
+   "en": "\"Multi-Turn planning\"",
+   "es": "\"Planeación de Multi-Turn\"",
+   "n": 1
+  },
+  {
+   "en": "\"Chat page  ·  Agentic Control Panel  ·  Prompt Flow Panel  \"",
+   "es": "\"Página del chat  ·  Agentic Control Panel  ·  Prompt Flow Panel  \"",
+   "n": 1
+  },
+  {
+   "en": "\"MODELS\"",
+   "es": "\"MODELOS\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ollama (local and cloud)  ·  Anthropic Claude  ·  Qwen vision\"",
+   "es": "\"Ollama (local y en la nube)  ·  Anthropic Claude  ·  visión de Qwen\"",
+   "n": 1
+  },
+  {
+   "en": "\"Empty\"",
+   "es": "\"Vacío\"",
+   "n": 1
+  },
+  {
+   "en": "\"Copper stages can drop a binary file; jade stages can only keep a file as text. \"",
+   "es": "\"Las etapas cobrizas pueden quitar un archivo binario; las etapas de jade sólo pueden conservarlo como texto. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Any doubt keeps the file.\"",
+   "es": "\"Ante cualquier duda, el archivo se conserva.\"",
+   "n": 1
+  },
+  {
+   "en": "\"THE COMPLETE PROJECT DOSSIER\"",
+   "es": "\"EL DOSSIER COMPLETO DEL PROYECTO\"",
+   "n": 1
+  },
+  {
+   "en": "\"the one who knows\"",
+   "es": "\"la que sabe\"",
+   "n": 1
+  },
+  {
+   "en": "\"A self-hosted AI developer assistant with a visual agent-workflow designer, a universal MCP \"",
+   "es": "\"Una asistente de desarrollo con IA alojada por ti, con un diseñador visual de workflows de agents, un cliente MCP \"",
+   "n": 1
+  },
+  {
+   "en": "\"client, and the reach to drive real boards, engines and networks.\"",
+   "es": "\"universal y el alcance para manejar tarjetas, motores y redes reales.\"",
+   "n": 1
+  },
+  {
+   "en": "\"agent types\"), (str(f[\"tools\"]), \"Multi-Turn tools\"",
+   "es": "\"tipos de agent\"), (str(f[\"tools\"]), \"tools de Multi-Turn\"",
+   "n": 1
+  },
+  {
+   "en": "\"current release\"",
+   "es": "\"release actual\"",
+   "n": 1
+  },
+  {
+   "en": "\"Created by Angela López Mendoza  ·  @angelahack1\"",
+   "es": "\"Creada por Angela López Mendoza  ·  @angelahack1\"",
+   "n": 1
+  },
+  {
+   "en": "\"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini  ·  MIT license\"",
+   "es": "\"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini  ·  licencia MIT\"",
+   "n": 1
+  },
+  {
+   "en": "\"CHAPTER\"",
+   "es": "\"CAPÍTULO\"",
+   "n": 1
+  },
+  {
+   "en": "\"APPENDIX\"",
+   "es": "\"APÉNDICE\"",
+   "n": 1
+  },
+  {
+   "en": "\"IN THIS CHAPTER\"",
+   "es": "\"EN ESTE CAPÍTULO\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini · Complete Project Dossier · page {canv.getPageNumber()}\"",
+   "es": "\"Tlamatini · Dossier completo del proyecto · página {canv.getPageNumber()}\"",
+   "n": 1
+  },
+  {
+   "en": "\"one who knows\", \"serif-italic\", 14, \"jade\", anchor=\"center\"",
+   "es": "\"la que sabe\", \"serif-italic\", 14, \"jade\", anchor=\"center\"",
+   "n": 1
+  },
+  {
+   "en": "\"Conceived, designed and built by **Angela López Mendoza**. Every fact in this dossier was \"",
+   "es": "\"Concebida, diseñada y construida por **Angela López Mendoza**. Cada dato de este dossier se \"",
+   "n": 1
+  },
+  {
+   "en": "\"counted from the source tree when it was generated; regenerate it at any time with \"",
+   "es": "\"contó a partir del árbol del source cuando se generó; regenéralo en cualquier momento con \"",
+   "n": 1
+  },
+  {
+   "en": "\"`refresh_project_docs.py` and it will tell the truth again.\"",
+   "es": "\"`refresh_project_docs.py` y volverá a decir la verdad.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Set in Palatino Linotype, Segoe UI and Consolas. Generated {self.facts['generated_at']} from \"",
+   "es": "\"Compuesto en Palatino Linotype, Segoe UI y Consolas. Generado el {self.facts['generated_at']} a partir del \"",
+   "n": 1
+  },
+  {
+   "en": "\"commit {self.facts['head_short']}. MIT license · github.com/XAIHT/Tlamatini\"",
+   "es": "\"commit {self.facts['head_short']}. Licencia MIT · github.com/XAIHT/Tlamatini\"",
+   "n": 1
+  },
+  {
+   "en": "\"AGENT FAMILY  ·  {section.visual_data['count']} AGENTS\"",
+   "es": "\"FAMILIA DE AGENTS  ·  {section.visual_data['count']} AGENTS\"",
+   "n": 1
+  },
+  {
+   "en": "\"agent types\"",
+   "es": "\"tipos de agent\"",
+   "n": 1
+  },
+  {
+   "en": "\"Multi-Turn tools\"",
+   "es": "\"tools de Multi-Turn\"",
+   "n": 1
+  },
+  {
+   "en": "\"wrapped agents\"",
+   "es": "\"agents wrapped\"",
+   "n": 1
+  },
+  {
+   "en": "\"ACPX peers\"",
+   "es": "\"pares de ACPX\"",
+   "n": 1
+  },
+  {
+   "en": "\"tracked files\"",
+   "es": "\"archivos en Git\"",
+   "n": 1
+  },
+  {
+   "en": "\"effective lines\"",
+   "es": "\"líneas efectivas\"",
+   "n": 1
+  },
+  {
+   "en": "\"{len(tail)} more\"",
+   "es": "\"{len(tail)} más\"",
+   "n": 1
+  },
+  {
+   "en": "\"About this dossier\"), Anchor(0, \"About this dossier\", \"about\"",
+   "es": "\"Acerca de este dossier\"), Anchor(0, \"Acerca de este dossier\", \"about\"",
+   "n": 1
+  },
+  {
+   "en": "\"BEFORE YOU BEGIN\"",
+   "es": "\"ANTES DE EMPEZAR\"",
+   "n": 1
+  },
+  {
+   "en": "\"About this dossier\", st.h1, \"serif\"",
+   "es": "\"Acerca de este dossier\", st.h1, \"serif\"",
+   "n": 1
+  },
+  {
+   "en": "\"This is the complete dossier of Tlamatini: what she is, how she works, how to use her, every \"",
+   "es": "\"Este es el dossier completo de Tlamatini: qué es, cómo funciona, cómo usarla, cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"agent she can run, the promises she keeps, and an inventory of her application source tree.\"",
+   "es": "\"agent que puede ejecutar, las promesas que cumple y un inventario del árbol de source de su aplicación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"It is written for three readers at once. A **newcomer** can read the first three chapters and know \"",
+   "es": "\"Está escrito para tres lectores a la vez. Alguien **nuevo** puede leer los tres primeros capítulos y saber \"",
+   "maquina": true,
+   "n": 1
+  },
+  {
+   "en": "\"what Tlamatini is and how to start. An **operator** will find the surfaces, the bestiary and the \"",
+   "es": "\"qué es Tlamatini y cómo empezar. Quien **opera** encontrará las superficies, el bestiario y los \"",
+   "n": 1
+  },
+  {
+   "en": "\"configuration chapters. A **maintainer** will find the architecture, the contracts behind the \"",
+   "es": "\"capítulos de configuración. Quien **mantiene** encontrará la arquitectura, los contratos detrás de las \"",
+   "n": 1
+  },
+  {
+   "en": "\"honesty rules and the application inventory and database-history count.\"",
+   "es": "\"reglas de honestidad, el inventario de la aplicación y el conteo de la historia de la base de datos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Nothing here is typed from memory. Counts, versions, commits, the language inventory and the file \"",
+   "es": "\"Nada aquí se escribió de memoria. Los conteos, las versiones, los commits, el inventario de lenguajes y el árbol \"",
+   "n": 1
+  },
+  {
+   "en": "\"tree were derived from Git and the source files when this edition was generated, and the generator \"",
+   "es": "\"de archivos se derivaron de Git y de los archivos del source cuando se generó esta edición, y el generador \"",
+   "n": 1
+  },
+  {
+   "en": "\"then reopened this document to prove that no text overflows or is clipped and that the file tree \"",
+   "es": "\"luego volvió a abrir este documento para probar que ningún texto se desborda ni se recorta y que el árbol de archivos \"",
+   "n": 1
+  },
+  {
+   "en": "\"matches its declared application scope. Database history is summarized; configuration values, credentials and private addresses are never \"",
+   "es": "\"coincide con el alcance declarado de la aplicación. La historia de la base de datos se resume; los valores de configuración, las credenciales y las direcciones privadas nunca se \"",
+   "n": 1
+  },
+  {
+   "en": "\"reproduced.\"",
+   "es": "\"reproducen.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This edition\"",
+   "es": "\"Esta edición\"",
+   "n": 1
+  },
+  {
+   "en": "\"Generated\"",
+   "es": "\"Generado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Inspected commit\"",
+   "es": "\"Commit inspeccionado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Version\"",
+   "es": "\"Versión\"",
+   "n": 1
+  },
+  {
+   "en": "\"Current source release\"",
+   "es": "\"Release actual del source\"",
+   "n": 1
+  },
+  {
+   "en": "\"Companion deck\"",
+   "es": "\"Presentación complementaria\"",
+   "n": 1
+  },
+  {
+   "en": "\"A note on the numbers\"",
+   "es": "\"Una nota sobre los números\"",
+   "n": 1
+  },
+  {
+   "en": "\"Figures that move with every release — agents, tools, skills, migrations, lines — \"",
+   "es": "\"Las cifras que cambian con cada release (agents, tools, skills, migraciones, líneas) \"",
+   "n": 1
+  },
+  {
+   "en": "\"describe this edition only. Regenerate the dossier and they update themselves.\"",
+   "es": "\"describen sólo esta edición. Regenera el dossier y se actualizan solas.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Contents\"), Kicker(\"CONTENTS\"",
+   "es": "\"Contenido\"), Kicker(\"CONTENIDO\"",
+   "n": 1
+  },
+  {
+   "en": "\"Contents\", st.h1, \"serif\"), TitleRule(\"jade\"",
+   "es": "\"Contenido\", st.h1, \"serif\"), TitleRule(\"jade\"",
+   "n": 1
+  },
+  {
+   "en": "\"The Application File Tree\"",
+   "es": "\"El árbol de archivos de la aplicación\"",
+   "n": 1
+  },
+  {
+   "en": "\"{facts['tree_count']:,} application files, with {facts['tree_history_count']} database-history files summarized. \"",
+   "es": "\"{facts['tree_count']:,} archivos de la aplicación, con {facts['tree_history_count']} archivos de la historia de la base de datos resumidos. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Directories are shown in jade.\"",
+   "es": "\"Los directorios se muestran en jade.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Appendix A  ·  The application file tree\"",
+   "es": "\"Apéndice A  ·  El árbol de archivos de la aplicación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Appendix A · File tree\"",
+   "es": "\"Apéndice A · Árbol de archivos\"",
+   "n": 1
+  },
+  {
+   "en": "\"APPENDIX A\"",
+   "es": "\"APÉNDICE A\"",
+   "n": 1
+  },
+  {
+   "en": "\"The application file tree\"",
+   "es": "\"El árbol de archivos de la aplicación\"",
+   "n": 1
+  },
+  {
+   "en": "\"{facts['tree_count']:,} listed application files at commit `{facts['head_short']}`. Within each \"",
+   "es": "\"{facts['tree_count']:,} archivos de la aplicación listados en el commit `{facts['head_short']}`. Dentro de cada \"",
+   "n": 1
+  },
+  {
+   "en": "\"directory, files come first and sub-directories follow; a line too long for its column \"",
+   "es": "\"directorio, los archivos van primero y los subdirectorios después; una línea demasiado larga para su columna \"",
+   "n": 1
+  },
+  {
+   "en": "\"continues on the next line after a » mark.\"",
+   "es": "\"continúa en la línea siguiente después de una marca ».\"",
+   "n": 1
+  },
+  {
+   "en": "(str(facts[\"migrations\"]), \"migrations\")",
+   "es": "(str(facts[\"migrations\"]), \"migraciones\")",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

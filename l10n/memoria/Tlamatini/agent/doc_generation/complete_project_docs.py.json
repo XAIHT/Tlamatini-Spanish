@@ -1,0 +1,284 @@
+{
+ "archivo": "Tlamatini/agent/doc_generation/complete_project_docs.py",
+ "segmentos": [
+  {
+   "en": "\"JavaScript module\"",
+   "es": "\"Módulo JavaScript\"",
+   "n": 1
+  },
+  {
+   "en": "\"Prompt template\"",
+   "es": "\"Plantilla de prompt\"",
+   "n": 1
+  },
+  {
+   "en": "\"Text\"",
+   "es": "\"Texto\"",
+   "n": 1
+  },
+  {
+   "en": "\"January\"",
+   "es": "\"enero\"",
+   "n": 1
+  },
+  {
+   "en": "\"February\"",
+   "es": "\"febrero\"",
+   "n": 1
+  },
+  {
+   "en": "\"March\"",
+   "es": "\"marzo\"",
+   "n": 1
+  },
+  {
+   "en": "\"April\"",
+   "es": "\"abril\"",
+   "n": 1
+  },
+  {
+   "en": "\"May\"",
+   "es": "\"mayo\"",
+   "n": 1
+  },
+  {
+   "en": "\"June\"",
+   "es": "\"junio\"",
+   "n": 1
+  },
+  {
+   "en": "\"July\"",
+   "es": "\"julio\"",
+   "n": 1
+  },
+  {
+   "en": "\"August\"",
+   "es": "\"agosto\"",
+   "n": 1
+  },
+  {
+   "en": "\"September\"",
+   "es": "\"septiembre\"",
+   "n": 1
+  },
+  {
+   "en": "\"October\"",
+   "es": "\"octubre\"",
+   "n": 1
+  },
+  {
+   "en": "\"November\"",
+   "es": "\"noviembre\"",
+   "n": 1
+  },
+  {
+   "en": "\"December\"",
+   "es": "\"diciembre\"",
+   "n": 1
+  },
+  {
+   "en": "\"{MONTHS[moment.month - 1]} {moment.day}, {moment.year}\"",
+   "es": "\"{moment.day} de {MONTHS[moment.month - 1]} de {moment.year}\"",
+   "codigo": true,
+   "n": 1
+  },
+  {
+   "en": "\"Other text\"",
+   "es": "\"Otro texto\"",
+   "n": 1
+  },
+  {
+   "en": "\"**{rel['latest_published']} is the current tagged source version.** The application, user guides \"",
+   "es": "\"**{rel['latest_published']} es la versión actual del source con tag.** La aplicación, las guías del usuario \"",
+   "n": 1
+  },
+  {
+   "en": "\"and both dossiers use the same version, **{version}**.\"",
+   "es": "\"y ambos dossiers usan la misma versión, **{version}**.\"",
+   "n": 1
+  },
+  {
+   "en": "\"This audit inspected commit `{rel['head_short']}`. The existing annotated tag `{rel['tag']}` \"",
+   "es": "\"Esta auditoría inspeccionó el commit `{rel['head_short']}`. El tag anotado existente `{rel['tag']}` \"",
+   "n": 1
+  },
+  {
+   "en": "\"was created on {rel['tag_date']} and resolves to `{rel['tag_commit']}`. Git history is preserved.\"",
+   "es": "\"se creó el {rel['tag_date']} y apunta a `{rel['tag_commit']}`. La historia de Git se conserva.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A source tag identifies the implementation. GitHub publication and installed-package acceptance \"",
+   "es": "\"Un tag del source identifica la implementación. La publicación en GitHub y la aceptación del paquete instalado \"",
+   "n": 1
+  },
+  {
+   "en": "\"require separate evidence; documentation generation does not build or install an executable.\"",
+   "es": "\"necesitan evidencia aparte; la generación de la documentación no construye ni instala un ejecutable.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Current release\"",
+   "es": "\"Release actual\"",
+   "n": 2
+  },
+  {
+   "en": "\"Audit commit\"",
+   "es": "\"Commit de la auditoría\"",
+   "n": 1
+  },
+  {
+   "en": "\"Runtime version\"",
+   "es": "\"Versión del runtime\"",
+   "n": 2
+  },
+  {
+   "en": "\"Existing annotated tag\"",
+   "es": "\"Tag anotado existente\"",
+   "n": 1
+  },
+  {
+   "en": "\"Inspected commit\"",
+   "es": "\"Commit inspeccionado\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tag on remote\"",
+   "es": "\"Tag en el remoto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Yes\"",
+   "es": "\"Sí\"",
+   "n": 1
+  },
+  {
+   "en": "\"{MONTHS[now.month - 1]} {now.day}, {now.year} at {now.strftime('%H:%M')} \"",
+   "es": "\"{now.day} de {MONTHS[now.month - 1]} de {now.year} a las {now.strftime('%H:%M')} \"",
+   "codigo": true,
+   "n": 1
+  },
+  {
+   "en": "\"{MONTHS[now.month - 1]} {now.day}, {now.year}\"",
+   "es": "\"{now.day} de {MONTHS[now.month - 1]} de {now.year}\"",
+   "codigo": true,
+   "n": 1
+  },
+  {
+   "en": "\"Inspected commit\", f\"{head_short} · {facts['head_date']} · branch {facts['branch']}\"",
+   "es": "\"Commit inspeccionado\", f\"{head_short} · {facts['head_date']} · branch {facts['branch']}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Version\"",
+   "es": "\"Versión\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tracked files\"",
+   "es": "\"Archivos con seguimiento\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unignored working-tree additions\"",
+   "es": "\"Adiciones no ignoradas del árbol de trabajo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Text files counted\"",
+   "es": "\"Archivos de texto contados\"",
+   "n": 1
+  },
+  {
+   "en": "\"Binary assets (counted, not measured)\"",
+   "es": "\"Assets binarios (contados, no medidos)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Physical text lines\"",
+   "es": "\"Líneas físicas de texto\"",
+   "n": 1
+  },
+  {
+   "en": "\"Effective lines\"",
+   "es": "\"Líneas efectivas\"",
+   "n": 1
+  },
+  {
+   "en": "\"Workflow agent types\"",
+   "es": "\"Tipos de agents de workflow\"",
+   "n": 1
+  },
+  {
+   "en": "\"Wrapped chat-agent tools\"",
+   "es": "\"Tools wrapped de agents de chat\"",
+   "n": 1
+  },
+  {
+   "en": "\"Built-in Multi-Turn tools\"",
+   "es": "\"Tools integrados de Multi-Turn\"",
+   "n": 1
+  },
+  {
+   "en": "\"{tools} = {len(core)} core + {len(wrapped)} wrapped + \"",
+   "es": "\"{tools} = {len(core)} núcleo + {len(wrapped)} wrapped + \"",
+   "n": 1
+  },
+  {
+   "en": "\"{len(acpx_tools)} ACPX/Skill + {len(supervisors)} supervisors\"",
+   "es": "\"{len(acpx_tools)} ACPX/Skill + {len(supervisors)} supervisores\"",
+   "n": 1
+  },
+  {
+   "en": "\"ACPX peers\"",
+   "es": "\"Pares de ACPX\"",
+   "n": 1
+  },
+  {
+   "en": "\"Database migrations\"",
+   "es": "\"Migraciones de la base de datos\"",
+   "n": 1
+  },
+  {
+   "en": "\"JavaScript modules · stylesheets · templates\"",
+   "es": "\"Módulos JavaScript · hojas de estilo · plantillas\"",
+   "n": 1
+  },
+  {
+   "en": "\"Pinned Python requirements\"",
+   "es": "\"Requirements de Python fijados\"",
+   "n": 1
+  },
+  {
+   "en": "\"Catalog sections\"",
+   "es": "\"Secciones del catálogo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Central model settings\"",
+   "es": "\"Configuraciones centrales de modelos\"",
+   "n": 1
+  },
+  {
+   "en": "\"{fields} for {model_agents} model-backed agents\"",
+   "es": "\"{fields} para {model_agents} agents con modelo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini-authored text (application, agents, docs, tests)\"",
+   "es": "\"Texto escrito por Tlamatini (aplicación, agents, docs, pruebas)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Vendored frontend libraries (PDF.js, Bootstrap, jQuery …)\"",
+   "es": "\"Librerías de frontend de terceros (PDF.js, Bootstrap, jQuery …)\"",
+   "n": 1
+  },
+  {
+   "en": "\"All text files\"",
+   "es": "\"Todos los archivos de texto\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

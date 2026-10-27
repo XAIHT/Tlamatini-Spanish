@@ -1,0 +1,1214 @@
+{
+ "archivo": "Tlamatini/agent/doc_generation/dossier_editor_content.py",
+ "segmentos": [
+  {
+   "en": "\"CONFIGURATION · v1.91.0\"",
+   "es": "\"CONFIGURACIÓN · v1.91.0\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose how she types and teaches\"",
+   "es": "\"Elige cómo escribe y cómo enseña\"",
+   "n": 1
+  },
+  {
+   "en": "\"Config → Live Editor & Terminater opens one shared dialog on the chat and control panels.\"",
+   "es": "\"Config → Live Editor & Terminater abre un diálogo compartido en el chat y en los paneles de control.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Live Editor controls 40–160 WPM, a 0–3 second pause after each segment, teaching detail, \"",
+   "es": "\"Live Editor controla de 40 a 160 WPM, una pausa de 0 a 3 segundos después de cada segmento, el detalle de la enseñanza, \"",
+   "n": 1
+  },
+  {
+   "en": "\"field suggestions, ghost text versus choices, and following the typed cursor. Manual \"",
+   "es": "\"las sugerencias de campos, texto fantasma contra opciones, y seguir el cursor que escribe. Desplazarte a \"",
+   "n": 1
+  },
+  {
+   "en": "\"scrolling suspends following for that segment. Font, line numbers and wrapping affect \"",
+   "es": "\"mano suspende el seguimiento en ese segmento. La fuente, los números de línea y el ajuste de líneas afectan \"",
+   "n": 1
+  },
+  {
+   "en": "\"the real editor. Teaching detail instructs the model; exact wording still varies.\"",
+   "es": "\"al editor real. El detalle de la enseñanza le da instrucciones al modelo; la redacción exacta todavía varía.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Standard and Guided learning presets populate a draft. Preview types and speaks a harmless \"",
+   "es": "\"Los presets Estándar y Aprendizaje guiado llenan un borrador. Vista previa escribe y dice una muestra inofensiva \"",
+   "n": 1
+  },
+  {
+   "en": "\"sample without editing files or executing commands. Save applies behavior to the next action. \"",
+   "es": "\"sin editar archivos ni ejecutar comandos. Guardar aplica el comportamiento a la siguiente acción. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Cancel, Escape and Close discard the draft. Stop, mute and current-tab editor access are immediate.\"",
+   "es": "\"Cancelar, Escape y Cerrar descartan el borrador. Detener, silenciar y el acceso al editor de la pestaña actual son inmediatos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Pace\"",
+   "es": "\"Ritmo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Separate speeds or a linked 40–160 WPM setting; no instant typing.\"",
+   "es": "\"Velocidades separadas o un ajuste ligado de 40 a 160 WPM; sin escribir de golpe.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Teaching\"",
+   "es": "\"Enseñanza\"",
+   "n": 1
+  },
+  {
+   "en": "\"Brief, balanced or detailed guidance with optional local suggestions.\"",
+   "es": "\"Guía breve, equilibrada o detallada, con sugerencias locales opcionales.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Appearance\"",
+   "es": "\"Apariencia\"",
+   "libres": [
+    "Editor"
+   ],
+   "n": 1
+  },
+  {
+   "en": "\"Editor and terminal presentation saved per account/browser.\"",
+   "es": "\"La presentación del editor y de la terminal se guarda por cuenta/browser.\"",
+   "libres": [
+    "Editor"
+   ],
+   "n": 1
+  },
+  {
+   "en": "\"Account\"",
+   "es": "\"Cuenta\"",
+   "n": 1
+  },
+  {
+   "en": "\"Behavior persists on the server; concurrent saves detect revision conflicts.\"",
+   "es": "\"El comportamiento persiste en el servidor; los guardados simultáneos detectan conflictos de revisión.\"",
+   "n": 1
+  },
+  {
+   "en": "\"TERMINATER SETTINGS\"",
+   "es": "\"CONFIGURACIÓN DE TERMINATER\"",
+   "n": 1
+  },
+  {
+   "en": "\"A command follows the learner's controls\"",
+   "es": "\"Un comando sigue los controles de quien aprende\"",
+   "n": 1
+  },
+  {
+   "en": "\"One TerminalHub resolves account preferences across chat, ACP, Prompt Flow and browser actions.\"",
+   "es": "\"Un solo TerminalHub resuelve las preferencias de la cuenta en el chat, el ACP, el Prompt Flow y las acciones del browser.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose 20–160 WPM, an available default shell, advisor for new terminals, a command wait \"",
+   "es": "\"Elige de 20 a 160 WPM, un shell predeterminado disponible, el asesor para terminales nuevas, una ventana de espera \"",
+   "n": 1
+  },
+  {
+   "en": "\"window, a no-output threshold and a user handoff wait. Shell and advisor defaults affect \"",
+   "es": "\"del comando, un umbral sin output y una espera para entregar el teclado al usuario. Los valores predeterminados de shell y asesor afectan \"",
+   "n": 1
+  },
+  {
+   "en": "\"new terminals. A wait timeout does not kill the process. Layout, font and cursor changes \"",
+   "es": "\"a las terminales nuevas. Agotar una espera no mata el proceso. Los cambios de distribución, fuente y cursor \"",
+   "n": 1
+  },
+  {
+   "en": "\"apply to existing views; resized prompts retain honest screen-based read-back.\"",
+   "es": "\"se aplican a las vistas existentes; los prompts redimensionados conservan una lectura honesta basada en la pantalla.\"",
+   "n": 1
+  },
+  {
+   "en": "\"I always press Enter prevents automated submission, including aliases, encoded text and \"",
+   "es": "\"Yo siempre presiono Enter impide el envío automático, incluidos alias, texto codificado y \"",
+   "n": 1
+  },
+  {
+   "en": "\"control characters; the user's keyboard still works. New flows can use account defaults. \"",
+   "es": "\"caracteres de control; el teclado del usuario sigue funcionando. Los flows nuevos pueden usar los valores predeterminados de la cuenta. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Older flow files retain explicit values. Manual Enter and narration remain account choices, \"",
+   "es": "\"Los archivos de flow más viejos conservan sus valores explícitos. El Enter manual y la narración siguen siendo elecciones de la cuenta, \"",
+   "n": 1
+  },
+  {
+   "en": "\"and typed chat preserves a shell explicitly requested by the task.\"",
+   "es": "\"y el chat tecleado respeta un shell que la tarea pidió explícitamente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Type\", \"One key at a time, 20–160 WPM; no paste or instant mode.\"",
+   "es": "\"Escribir\", \"Una tecla a la vez, de 20 a 160 WPM; sin pegar ni escribir de golpe.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Submit\"",
+   "es": "\"Enviar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Task-controlled execution or user-only Enter enforced by the hub.\"",
+   "es": "\"Ejecución controlada por la tarea o Enter sólo del usuario, que el hub hace cumplir.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Wait\", \"Command, no-output and handoff windows have separate meanings.\"",
+   "es": "\"Esperar\", \"Las ventanas de comando, sin output y de entrega del teclado tienen significados distintos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Inherit\"",
+   "es": "\"Heredar\"",
+   "n": 1
+  },
+  {
+   "en": "\"use_my_defaults applies account preferences without rewriting older flows.\"",
+   "es": "\"use_my_defaults aplica las preferencias de la cuenta sin reescribir flows más viejos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"COMMAND AND LESSON VOICE\"",
+   "es": "\"VOZ PARA COMANDOS Y LECCIONES\"",
+   "libres": [
+    "AND"
+   ],
+   "n": 1
+  },
+  {
+   "en": "\"Hear the step before the first key\"",
+   "es": "\"Escucha el paso antes de la primera tecla\"",
+   "n": 1
+  },
+  {
+   "en": "\"Narration uses the existing browser voice and a shared, cancellable speech queue.\"",
+   "es": "\"La narración usa la voz existente del browser y una cola de voz compartida y cancelable.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Enable narration independently for Terminater commands and Live Editor segments. Choose \"",
+   "es": "\"Activa la narración por separado para los comandos de Terminater y para los segmentos de Live Editor. Elige \"",
+   "n": 1
+  },
+  {
+   "en": "\"an explanation, literal command/code or both, spoken before, during or after typing. When \"",
+   "es": "\"una explicación, el comando/código literal o ambos, dichos antes, durante o después de escribir. Cuando \"",
+   "n": 1
+  },
+  {
+   "en": "\"waiting before typing is enabled, a real speech-completion receipt or explicit skip is \"",
+   "es": "\"está activado esperar antes de escribir, se necesita un recibo real de que la voz terminó o un salto \"",
+   "n": 1
+  },
+  {
+   "en": "\"required. An unavailable voice offers Continue without voice or Stop.\"",
+   "es": "\"explícito. Una voz no disponible ofrece Continuar sin voz o Detener.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A single focused account tab speaks each terminal event. Receipts belong to that exact \"",
+   "es": "\"Una sola pestaña enfocada de la cuenta dice cada evento de la terminal. Los recibos pertenecen a esa \"",
+   "n": 1
+  },
+  {
+   "en": "\"connection; disconnect, Stop and the bounded deadline can cancel before any key. A reconnect \"",
+   "es": "\"conexión exacta; desconectar, Detener y el plazo acotado pueden cancelar antes de cualquier tecla. Una reconexión \"",
+   "n": 1
+  },
+  {
+   "en": "\"never replays a command. Secret-marked text and user handoff values are excluded. Outcome \"",
+   "es": "\"nunca repite un comando. El texto marcado como secreto y los valores que entrega el usuario se excluyen. Los avisos \"",
+   "n": 1
+  },
+  {
+   "en": "\"notices describe command-action status without reading terminal output aloud.\"",
+   "es": "\"de resultado describen el status de la acción del comando sin leer en voz alta el output de la terminal.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Shared voice\"",
+   "es": "\"Voz compartida\"",
+   "n": 1
+  },
+  {
+   "en": "\"Reuse voice choice, rate, volume and pitch from Config → Voice.\"",
+   "es": "\"Reutiliza la elección de voz, la velocidad, el volumen y el tono de Config → Voz.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Priority\"",
+   "es": "\"Prioridad\"",
+   "n": 1
+  },
+  {
+   "en": "\"Global mute and microphone listening override narration.\"",
+   "es": "\"El silencio global y la escucha del micrófono tienen prioridad sobre la narración.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Timing\"",
+   "es": "\"Momento\"",
+   "n": 1
+  },
+  {
+   "en": "\"Before/during/after; optional completion before typing.\"",
+   "es": "\"Antes/durante/después; opcionalmente, terminar antes de escribir.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Control\"",
+   "es": "\"Control\""
+  },
+  {
+   "en": "\"Escape stops speech; Ctrl+Shift+M toggles global mute.\"",
+   "es": "\"Escape detiene la voz; Ctrl+Shift+M activa o desactiva el silencio global.\"",
+   "n": 1
+  },
+  {
+   "en": "\"CANVAS EDITOR · v1.89.0\"",
+   "es": "\"EDITOR DEL CANVAS · v1.89.0\"",
+   "n": 1
+  },
+  {
+   "en": "\"Edit the document you are discussing\"",
+   "es": "\"Edita el documento del que estás hablando\"",
+   "n": 1
+  },
+  {
+   "en": "\"A local CodeMirror 6 editor keeps text, code, JSON and Markdown Source editable in the chat canvas.\"",
+   "es": "\"Un editor CodeMirror 6 local mantiene editables el texto, el código, el JSON y el Source de Markdown en el canvas del chat.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Open or drop a file, make a change, and use the filename bar: Save, Save as, Undo, Redo, \"",
+   "es": "\"Abre o suelta un archivo, haz un cambio y usa la barra del nombre del archivo: Guardar, Guardar como, Deshacer, Rehacer, \"",
+   "n": 1
+  },
+  {
+   "en": "\"Find/replace and Wrap. Copy and Use as context take the edited source. Ctrl/Cmd+S saves; \"",
+   "es": "\"Buscar/reemplazar y Ajustar líneas. Copiar y Usar como contexto toman el source editado. Ctrl/Cmd+S guarda; \"",
+   "n": 1
+  },
+  {
+   "en": "\"Ctrl/Cmd+Shift+S chooses a destination. Tab normally navigates; Ctrl+[ and Ctrl+] indent.\"",
+   "es": "\"Ctrl/Cmd+Shift+S elige un destino. Tab normalmente navega; Ctrl+[ y Ctrl+] cambian la sangría.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Markdown Preview is sanitized with the existing Marked/DOMPurify renderer. Source and Preview \"",
+   "es": "\"La Vista previa de Markdown se sanitiza con el renderizador existente de Marked/DOMPurify. Source y Vista previa \"",
+   "n": 1
+  },
+  {
+   "en": "\"share one buffer and undo history. HTML and SVG remain text, never an active web page. PDFs \"",
+   "es": "\"comparten un buffer y un historial de deshacer. HTML y SVG se quedan como texto, nunca como una página web activa. Los PDFs \"",
+   "n": 1
+  },
+  {
+   "en": "\"remain read-only viewers and export their original bytes; flows and images keep their own routes.\"",
+   "es": "\"siguen siendo visores de sólo lectura y exportan sus bytes originales; los flows y las imágenes conservan sus propios caminos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The dirty marker survives failed or cancelled saves. Open, Clear and Refresh ask before \"",
+   "es": "\"La marca de cambios sin guardar sobrevive a los guardados con error o cancelados. Abrir, Limpiar y Actualizar preguntan antes de \"",
+   "n": 1
+  },
+  {
+   "en": "\"discarding edits. Unsaved text lives in memory, so save before closing. Automatic sizing \"",
+   "es": "\"descartar ediciones. El texto sin guardar vive en memoria, así que guarda antes de cerrar. El tamaño automático \"",
+   "n": 1
+  },
+  {
+   "en": "\"reserves 320 CSS pixels for the canvas and wraps controls; manual splits remain the user's choice.\"",
+   "es": "\"reserva 320 píxeles de CSS para el canvas y acomoda los controles; las divisiones manuales siguen siendo elección del usuario.\"",
+   "n": 1
+  },
+  {
+   "en": "\"One document\"",
+   "es": "\"Un solo documento\"",
+   "n": 1
+  },
+  {
+   "en": "\"Code, configuration and plain text share the same editing authority.\"",
+   "es": "\"El código, la configuración y el texto plano comparten la misma autoridad de edición.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Editable source and sanitized preview preserve undo history.\"",
+   "es": "\"El source editable y la vista previa sanitizada conservan el historial de deshacer.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Controls\"",
+   "es": "\"Controles\"",
+   "n": 1
+  },
+  {
+   "en": "\"Save, Save as, Undo/Redo, Find/replace and Wrap.\"",
+   "es": "\"Guardar, Guardar como, Deshacer/Rehacer, Buscar/reemplazar y Ajustar líneas.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Layout\"",
+   "es": "\"Distribución\"",
+   "n": 1
+  },
+  {
+   "en": "\"A reserved canvas width and an editor that fills its available height.\"",
+   "es": "\"Un ancho reservado para el canvas y un editor que llena su altura disponible.\"",
+   "n": 1
+  },
+  {
+   "en": "\"NATIVE SAVING\"",
+   "es": "\"GUARDADO NATIVO\"",
+   "n": 1
+  },
+  {
+   "en": "\"Save into the project folder you choose\"",
+   "es": "\"Guarda en la carpeta del proyecto que elijas\"",
+   "n": 1
+  },
+  {
+   "en": "\"The local native Windows picker makes Downloads optional.\"",
+   "es": "\"El selector nativo local de Windows hace que Descargas sea opcional.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Save uses a browser-granted writable handle or an already authorized native destination. \"",
+   "es": "\"Guardar usa un handle de escritura que concede el browser o un destino nativo ya autorizado. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Without one, it asks. Save as and the navbar Save open a native Windows Save As dialog on \"",
+   "es": "\"Sin uno, pregunta. Guardar como y el Guardar de la barra de navegación abren un diálogo nativo Guardar como de Windows en \"",
+   "n": 1
+  },
+  {
+   "en": "\"a local connection; subsequent toolbar Save writes there and Refresh reads it. PDF exports \"",
+   "es": "\"una conexión local; los Guardar siguientes de la barra de herramientas escriben ahí y Actualizar lo lee. Las exportaciones de PDF \"",
+   "n": 1
+  },
+  {
+   "en": "\"stay copies. Remote browsers need their own supported File System Access picker.\"",
+   "es": "\"siguen siendo copias. Los browsers remotos necesitan su propio selector soportado de File System Access.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A complete revision check refuses external changes. Writes stage on the destination volume, \"",
+   "es": "\"Una revisión completa de la revisión rechaza los cambios externos. Las escrituras se preparan en el volumen de destino, \"",
+   "n": 1
+  },
+  {
+   "en": "\"flush and recheck before replacement. ReplaceFileW preserves existing Windows security, named \"",
+   "es": "\"se vacían y se vuelven a revisar antes de reemplazar. ReplaceFileW conserva la seguridad existente de Windows, los streams \"",
+   "n": 1
+  },
+  {
+   "en": "\"streams and creation time; partial failure retains a recoverable original. The protected \"",
+   "es": "\"con nombre y la hora de creación; una falla parcial conserva un original recuperable. El camino protegido \"",
+   "n": 1
+  },
+  {
+   "en": "\"database backup/restore path is unchanged.\"",
+   "es": "\"de backup/restauración de la base de datos no cambia.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Unedited files keep exact bytes. Edited files retain encoding/BOM and existing line endings; \"",
+   "es": "\"Los archivos sin editar conservan los bytes exactos. Los archivos editados conservan la codificación/BOM y los saltos de línea existentes; \"",
+   "n": 1
+  },
+  {
+   "en": "\"new lines use the original first terminator. UTF-8 and BOM-marked UTF-16 are decoded strictly. \"",
+   "es": "\"las líneas nuevas usan el primer terminador original. UTF-8 y UTF-16 marcado con BOM se decodifican estrictamente. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Malformed/binary data is refused. Text editing and native saving are limited to 64 MiB.\"",
+   "es": "\"Los datos mal formados/binarios se rechazan. La edición de texto y el guardado nativo se limitan a 64 MiB.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Choose\"",
+   "es": "\"Elegir\"",
+   "n": 1
+  },
+  {
+   "en": "\"Native Save As to any writable local folder.\"",
+   "es": "\"Guardar como nativo en cualquier carpeta local con permiso de escritura.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Authorize\"",
+   "es": "\"Autorizar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Account/session-bound capability; 12 idle hours, lost on restart.\"",
+   "es": "\"Capacidad ligada a la cuenta/sesión; 12 horas de inactividad, se pierde al reiniciar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Compare\"",
+   "es": "\"Comparar\"",
+   "n": 1
+  },
+  {
+   "en": "\"External disk changes refuse overwrite; Save As keeps a separate copy.\"",
+   "es": "\"Los cambios externos en el disco rechazan la sobrescritura; Guardar como conserva una copia aparte.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Preserve\"",
+   "es": "\"Conservar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Encoding, BOM, line endings and existing Windows metadata.\"",
+   "es": "\"Codificación, BOM, saltos de línea y metadatos existentes de Windows.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Teach inside the live, unsaved document\"",
+   "es": "\"Enseña dentro del documento vivo sin guardar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Interactor is a module and a built-in tool, not a workflow agent or a terminal.\"",
+   "es": "\"Interactor es un módulo y un tool integrado, no un agent de workflow ni una terminal.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Enable Multi-Turn, Interactor in Configure MCPs/Tools and Live editor above the canvas. \"",
+   "es": "\"Activa Multi-Turn, Interactor en Configurar MCPs/Tools y el Live editor sobre el canvas. \"",
+   "n": 1
+  },
+  {
+   "en": "\"Ask: Help me create a Dockerfile for a Java servlet application using your text editor; \"",
+   "es": "\"Pide: Ayúdame a crear un Dockerfile para una aplicación de servlets de Java usando tu editor de texto; \"",
+   "n": 1
+  },
+  {
+   "en": "\"teach one step at a time. The English/Spanish editor aliases are taught in prompt.pmt.\"",
+   "es": "\"enséñame un paso a la vez. Los alias del editor en inglés/español se enseñan en prompt.pmt.\"",
+   "n": 1
+  },
+  {
+   "en": "\"First read the exact current buffer, selection, document ID and revision. With no requested \"",
+   "es": "\"Primero lee el buffer actual exacto, la selección, el ID del documento y la revisión. Si no se pide un \"",
+   "n": 1
+  },
+  {
+   "en": "\"path, new creates an empty file under Temp/interactor/<account>/<random>/ using the requested \"",
+   "es": "\"path, new crea un archivo vacío en Temp/interactor/<account>/<random>/ con el nombre de archivo \"",
+   "n": 1
+  },
+  {
+   "en": "\"filename. Existing files are never overwritten. Tlamatini types a short known segment, then \"",
+   "es": "\"pedido. Los archivos existentes nunca se sobrescriben. Tlamatini escribe un segmento corto conocido, y luego \"",
+   "n": 1
+  },
+  {
+   "en": "\"guide hands the next field to the learner and prevents further mutations in that turn.\"",
+   "es": "\"guide le entrega el siguiente campo a quien aprende e impide más cambios en ese turno.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Continue sends a normal new chat request and reads again before reviewing the learner's \"",
+   "es": "\"Continuar envía una nueva solicitud normal al chat y vuelve a leer antes de revisar la respuesta de quien \"",
+   "n": 1
+  },
+  {
+   "en": "\"answer. Another hint and Explain selection also use normal chat without replacing an existing \"",
+   "es": "\"aprende. Otra pista y Explicar selección también usan el chat normal sin reemplazar un borrador \"",
+   "n": 1
+  },
+  {
+   "en": "\"draft. Typing does not save or execute code. The ordinary Use as context snapshot is separate \"",
+   "es": "\"existente. Escribir no guarda ni ejecuta código. El snapshot normal de Usar como contexto es aparte \"",
+   "n": 1
+  },
+  {
+   "en": "\"from Interactor's fresh read of unsaved text.\"",
+   "es": "\"de la lectura fresca que hace Interactor del texto sin guardar.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Read\"",
+   "es": "\"Leer\"",
+   "n": 1
+  },
+  {
+   "en": "\"Exact unsaved text and selection, never a stale disk substitute.\"",
+   "es": "\"Texto y selección exactos sin guardar, nunca un sustituto viejo del disco.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Type\", \"One small visible teaching segment; one undoable edit.\"",
+   "es": "\"Escribir\", \"Un pequeño segmento visible de enseñanza; una edición que se puede deshacer.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Hand over\"",
+   "es": "\"Entregar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Explain the learner's next field, then stop tool mutations.\"",
+   "es": "\"Explica el siguiente campo de quien aprende, y luego detiene los cambios del tool.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Review\"",
+   "es": "\"Revisar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Continue starts a fresh read in a new chat turn.\"",
+   "es": "\"Continuar empieza una lectura fresca en un nuevo turno del chat.\"",
+   "n": 1
+  },
+  {
+   "en": "\"TUTOR COMPLETION\"",
+   "es": "\"COMPLETADO DEL TUTOR\"",
+   "n": 1
+  },
+  {
+   "en": "\"Immediate help while the learner types\"",
+   "es": "\"Ayuda inmediata mientras quien aprende escribe\"",
+   "n": 1
+  },
+  {
+   "en": "\"The model plans the next field once; local matching avoids a model request on every keystroke.\"",
+   "es": "\"El modelo planea el siguiente campo una vez; la coincidencia local evita una solicitud al modelo en cada tecla.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ghost text appears only for a matching prefix among bounded choices prepared for the current \"",
+   "es": "\"El texto fantasma aparece sólo con un prefijo que coincide entre opciones acotadas preparadas para el campo \"",
+   "n": 1
+  },
+  {
+   "en": "\"field. Tab accepts, Ctrl+Right accepts a word and Escape dismisses. Suggestions are optional; \"",
+   "es": "\"actual. Tab acepta, Ctrl+Derecha acepta una palabra y Escape descarta. Las sugerencias son opcionales; \"",
+   "n": 1
+  },
+  {
+   "en": "\"the learner can write an alternative value. This is contextual teaching support, not a claim \"",
+   "es": "\"quien aprende puede escribir un valor alternativo. Es apoyo de enseñanza con contexto, no una afirmación \"",
+   "n": 1
+  },
+  {
+   "en": "\"of unrestricted predictive autocomplete or vendor benchmark latency.\"",
+   "es": "\"de autocompletado predictivo sin límites ni de la latencia de benchmarks de proveedores.\"",
+   "n": 1
+  },
+  {
+   "en": "\"User input, selection, Stop, Escape, chat cancellation and disconnect interrupt AI typing. \"",
+   "es": "\"El input del usuario, la selección, Detener, Escape, la cancelación del chat y la desconexión interrumpen la escritura de la IA. \"",
+   "n": 1
+  },
+  {
+   "en": "\"The typed prefix stays editable. A temporarily hidden or occluded tab pauses the same action \"",
+   "es": "\"El prefijo escrito sigue siendo editable. Una pestaña oculta o tapada temporalmente pausa la misma acción \"",
+   "n": 1
+  },
+  {
+   "en": "\"for up to two extra minutes and resumes at the exact next character when visible. Timeout \"",
+   "es": "\"hasta dos minutos extra y continúa exactamente en el siguiente carácter cuando es visible. Agotar el tiempo \"",
+   "n": 1
+  },
+  {
+   "en": "\"never replays a partial edit. Switching Markdown to Preview or hiding the canvas returns control.\"",
+   "es": "\"nunca repite una edición parcial. Cambiar Markdown a Vista previa u ocultar el canvas regresa el control.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Live tutoring accepts at most 262,144 UTF-16 units and checks document/revision before \"",
+   "es": "\"La enseñanza en vivo acepta a lo más 262,144 unidades UTF-16 y revisa el documento/la revisión antes de \"",
+   "n": 1
+  },
+  {
+   "en": "\"mutations. A smaller configured tool-result/context budget can refuse the receipt. Oversized \"",
+   "es": "\"los cambios. Un presupuesto configurado más pequeño de resultado del tool/contexto puede rechazar el recibo. El contenido \"",
+   "n": 1
+  },
+  {
+   "en": "\"content is refused explicitly, never truncated into misleading context.\"",
+   "es": "\"demasiado grande se rechaza explícitamente, nunca se recorta para dar un contexto engañoso.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Local matching\"",
+   "es": "\"Coincidencia local\"",
+   "n": 1
+  },
+  {
+   "en": "\"Prepared field choices; no model call per key.\"",
+   "es": "\"Opciones de campo preparadas; sin llamada al modelo por tecla.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Optional\"",
+   "es": "\"Opcional\"",
+   "n": 1
+  },
+  {
+   "en": "\"Accept a suggestion, take one word, dismiss it or type your own value.\"",
+   "es": "\"Acepta una sugerencia, toma una palabra, descártala o escribe tu propio valor.\"",
+   "n": 1
+  },
+  {
+   "en": "\"User priority\"",
+   "es": "\"Prioridad del usuario\"",
+   "n": 1
+  },
+  {
+   "en": "\"Interruptions preserve the typed prefix and invalidate stale work.\"",
+   "es": "\"Las interrupciones conservan el prefijo escrito e invalidan el trabajo viejo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Honest latency\"",
+   "es": "\"Latencia honesta\"",
+   "n": 1
+  },
+  {
+   "en": "\"New questions still wait on chat/model processing.\"",
+   "es": "\"Las preguntas nuevas todavía esperan el procesamiento del chat/modelo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"LIVE EDITOR BRIDGE\"",
+   "es": "\"PUENTE DEL LIVE EDITOR\"",
+   "n": 1
+  },
+  {
+   "en": "\"One authenticated tab, one exact buffer\"",
+   "es": "\"Una pestaña autenticada, un buffer exacto\"",
+   "n": 1
+  },
+  {
+   "en": "\"The browser editor and the synchronous tool loop share an account/session-bound bridge.\"",
+   "es": "\"El editor del browser y el ciclo síncrono de tools comparten un puente ligado a la cuenta/sesión.\"",
+   "n": 1
+  },
+  {
+   "en": "\"CodeMirror is authoritative; bridge.js sends receipts/access/stop, not host-path commands.\"",
+   "es": "\"CodeMirror es la autoridad; bridge.js envía recibos/acceso/detener, no comandos con paths del host.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Transport\"",
+   "es": "\"Transporte\"",
+   "n": 1
+  },
+  {
+   "en": "\"ws/interactor/ authenticates the session and exact Origin/Host; the server issues tab identity.\"",
+   "es": "\"ws/interactor/ autentica la sesión y el Origin/Host exactos; el servidor asigna la identidad de la pestaña.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tool context\"",
+   "es": "\"Contexto del tool\"",
+   "n": 1
+  },
+  {
+   "en": "\"ContextVar carries tab/account/session identity into workers; read gets the live buffer.\"",
+   "es": "\"ContextVar lleva la identidad de pestaña/cuenta/sesión a los workers; read obtiene el buffer vivo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Bounded queues, command IDs, deadlines, revision checks and full-buffer verification.\"",
+   "es": "\"Colas acotadas, IDs de comandos, plazos, revisiones de la revisión y verificación del buffer completo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Persistence\"",
+   "es": "\"Persistencia\"",
+   "n": 1
+  },
+  {
+   "en": "\"Ask Execs gates new/save; loopback host access uses the existing path and file-capability guards.\"",
+   "es": "\"Ask Execs controla new/save; el acceso al host por loopback usa las protecciones existentes de paths y de capacidades de archivo.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Carriage\"",
+   "es": "\"Transporte al release\"",
+   "n": 1
+  },
+  {
+   "en": "\"Migration 0218, tool_gate_table, prompt rules, frozen modules and offline source/static inventories.\"",
+   "es": "\"Migración 0218, tool_gate_table, reglas del prompt, módulos congelados e inventarios sin conexión de source/estáticos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"INTENT GUARDS · v1.90.0\"",
+   "es": "\"PROTECCIONES DE INTENCIÓN · v1.90.0\"",
+   "n": 1
+  },
+  {
+   "en": "\"A password prompt must not divert the wizard\"",
+   "es": "\"Un aviso de contraseña no debe desviar al asistente\"",
+   "n": 1
+  },
+  {
+   "en": "\"The account wizard launches createsuperuser through Executer and waits for input in its console.\"",
+   "es": "\"El asistente de cuentas lanza createsuperuser por medio de Executer y espera el input en su consola.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The installed log showed two independent false positives. 'I will type it' referred to a \"",
+   "es": "\"El log instalado mostró dos falsos positivos independientes. 'I will type it' se refería a una \"",
+   "n": 1
+  },
+  {
+   "en": "\"password but reserved all commands for the user. A completion phrase plus the optional \"",
+   "es": "\"contraseña pero reservaba todos los comandos para el usuario. Una frase de término más el campo opcional \"",
+   "n": 1
+  },
+  {
+   "en": "\"email field falsely created notification debt. These runtime guards overrode an initially \"",
+   "es": "\"de email creaban por error una deuda de notificación. Estas protecciones del runtime anularon una selección \"",
+   "n": 1
+  },
+  {
+   "en": "\"correct Executer selection and diverted the wizard.\"",
+   "es": "\"inicialmente correcta de Executer y desviaron al asistente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Typing/entering ownership now requires a command object; ambiguous input is neutral. An \"",
+   "es": "\"La propiedad de escribir/teclear ahora exige un objeto de comando; el input ambiguo es neutral. Un \"",
+   "n": 1
+  },
+  {
+   "en": "\"explicit assistant launch of a named program lifts a prior lesson. Genuine user-runs \"",
+   "es": "\"lanzamiento explícito, por la asistente, de un programa con nombre levanta una lección anterior. Los tutoriales genuinos \"",
+   "n": 1
+  },
+  {
+   "en": "\"tutorials still refuse command runners and keep Terminater's Enter disabled.\"",
+   "es": "\"donde el usuario ejecuta siguen rechazando los ejecutores de comandos y mantienen desactivado el Enter de Terminater.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A completion notification requires a positive outbound instruction tied to completion \"",
+   "es": "\"Una notificación de término exige una instrucción positiva de envío ligada al término \"",
+   "n": 1
+  },
+  {
+   "en": "\"in the same sentence. Email fields, ordinary chat explanations, quoted examples, negations \"",
+   "es": "\"en la misma oración. Los campos de email, las explicaciones normales del chat, los ejemplos citados, las negaciones \"",
+   "n": 1
+  },
+  {
+   "en": "\"and the user's DONE reply do not authorize sending. Passwords stay out of chat. The catalog \"",
+   "es": "\"y la respuesta DONE del usuario no autorizan el envío. Las contraseñas se quedan fuera del chat. El asistente \"",
+   "n": 1
+  },
+  {
+   "en": "\"wizard creates an administrative superuser, not a restricted ordinary account.\"",
+   "es": "\"del catálogo crea un superusuario administrativo, no una cuenta común restringida.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Launch\"",
+   "es": "\"Lanzar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Executer opens the interactive source or frozen command in a visible console.\"",
+   "es": "\"Executer abre el comando interactivo de source o congelado en una consola visible.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Username, optional email and password belong to the user's console interaction.\"",
+   "es": "\"El nombre de usuario, el email opcional y la contraseña pertenecen a la interacción del usuario con la consola.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Wait\", \"DONE / ERROR / NOWINDOW drive the next step; no automatic success claim.\"",
+   "es": "\"Esperar\", \"DONE / ERROR / NOWINDOW manejan el siguiente paso; sin afirmar éxito automáticamente.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Notify\"",
+   "es": "\"Notificar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Only an explicit outbound request creates completion-notification debt.\"",
+   "es": "\"Sólo una solicitud explícita de envío crea una deuda de notificación de término.\"",
+   "n": 1
+  },
+  {
+   "en": "\"CURRENT VERSION · v1.91.1\"",
+   "es": "\"VERSIÓN ACTUAL · v1.91.1\"",
+   "n": 1
+  },
+  {
+   "en": "\"Prompt Flow fixes and short tool names\"",
+   "es": "\"Arreglos del Prompt Flow y nombres cortos de tools\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tag 9915938a, dated October 27, 2026; published as the Latest release.\"",
+   "es": "\"Tag 9915938a, con fecha del 27 de octubre de 2026; publicado como el release Latest.\"",
+   "n": 1
+  },
+  {
+   "en": "\"A patch on v1.91.0. Every chain loads the history of its own conversation, so a Prompt \"",
+   "es": "\"Un parche sobre v1.91.0. Cada chain carga el historial de su propia conversación, así que una ejecución de Prompt \"",
+   "n": 1
+  },
+  {
+   "en": "\"Flow run keeps its own memory and is never answered with another conversation.\"",
+   "es": "\"Flow conserva su propia memoria y nunca se contesta con otra conversación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"An equals Decision accepts an answer that opens with the expected word, and the Prompt \"",
+   "es": "\"Una Decisión equals acepta una respuesta que empieza con la palabra esperada, y el Prompt \"",
+   "n": 1
+  },
+  {
+   "en": "\"before it asks for that word alone on the first line. A flow run's usage is recorded for \"",
+   "es": "\"anterior pide sólo esa palabra en la primera línea. El uso de una ejecución de flow se registra para \"",
+   "n": 1
+  },
+  {
+   "en": "\"the account that owns it.\"",
+   "es": "\"la cuenta dueña de ella.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Telegrammer sends as the bot when the request says 'using the bot'. A wrapped agent \"",
+   "es": "\"Telegrammer envía como el bot cuando la solicitud dice 'using the bot'. Un agent wrapped \"",
+   "n": 1
+  },
+  {
+   "en": "\"called by its short name is resolved and logged as [TOOL-ALIAS]. No agent, tool, skill \"",
+   "es": "\"llamado por su nombre corto se resuelve y se registra como [TOOL-ALIAS]. No se agregó ningún agent, tool, skill \"",
+   "n": 1
+  },
+  {
+   "en": "\"or migration was added.\"",
+   "es": "\"ni migración.\"",
+   "n": 1
+  },
+  {
+   "en": "\"History\"",
+   "es": "\"Historial\"",
+   "n": 1
+  },
+  {
+   "en": "\"Each run and each user reads only its own conversation.\"",
+   "es": "\"Cada ejecución y cada usuario leen sólo su propia conversación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Decisions\"",
+   "es": "\"Decisiones\"",
+   "n": 1
+  },
+  {
+   "en": "\"'## YES - ...' equals YES; 'Yesterday' does not.\"",
+   "es": "\"'## YES - ...' es igual a YES; 'Yesterday' no.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Routing\"",
+   "es": "\"Enrutamiento\"",
+   "n": 1
+  },
+  {
+   "en": "\"'Using the bot' sends as the bot; short tool names still run.\"",
+   "es": "\"'Using the bot' envía como el bot; los nombres cortos de tools siguen funcionando.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Inventory\", f\"{facts['agents']} agents; {facts['tools']} tools; {facts['migrations']} migrations; \"",
+   "es": "\"Inventario\", f\"{facts['agents']} agents; {facts['tools']} tools; {facts['migrations']} migraciones; \"",
+   "n": 2
+  },
+  {
+   "en": "\"{facts['js']} JS modules; {facts['css']} stylesheets.\"",
+   "es": "\"{facts['js']} módulos JS; {facts['css']} hojas de estilo.\"",
+   "n": 2
+  },
+  {
+   "en": "\"CARRIED FROM v1.91.0\"",
+   "es": "\"HEREDADO DE v1.91.0\"",
+   "n": 1
+  },
+  {
+   "en": "\"Real settings for editor and terminal behavior\"",
+   "es": "\"Configuraciones reales para el comportamiento del editor y de la terminal\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tag a771d27c, dated October 23, 2026, and published on GitHub that day.\"",
+   "es": "\"Tag a771d27c, con fecha del 23 de octubre de 2026, y publicado en GitHub ese día.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The Live Editor, Terminater and Voice tabs share one schema, authenticated account storage \"",
+   "es": "\"Las pestañas Live Editor, Terminater y Voz comparten un esquema, almacenamiento autenticado por cuenta \"",
+   "n": 1
+  },
+  {
+   "en": "\"and optimistic revisions. Migration 0220 adds InteractionSettings. Account behavior reaches \"",
+   "es": "\"y revisiones optimistas. La migración 0220 agrega InteractionSettings. El comportamiento de la cuenta llega \"",
+   "n": 1
+  },
+  {
+   "en": "\"the actual editor and the one TerminalHub; browser/account appearance stays local.\"",
+   "es": "\"al editor real y al único TerminalHub; la apariencia del browser/cuenta se queda local.\"",
+   "n": 1
+  },
+  {
+   "en": "\"October 23 source evidence: 17 visible browser checks passed, including genuine OS speech \"",
+   "es": "\"Evidencia del source del 23 de octubre: pasaron 17 revisiones visibles en el browser, incluida voz genuina del sistema operativo \"",
+   "n": 1
+  },
+  {
+   "en": "\"finishing before the first terminal key. The implementation regression run passed 929 of \"",
+   "es": "\"terminando antes de la primera tecla de la terminal. La ejecución de regresión de la implementación pasó 929 de \"",
+   "n": 1
+  },
+  {
+   "en": "\"931 tests; two existing README documentation assertions failed. This documentation sweep \"",
+   "es": "\"931 pruebas; fallaron dos aserciones existentes de la documentación del README. Esta revisión de la documentación \"",
+   "n": 1
+  },
+  {
+   "en": "\"restores those sections; its 94 focused tests passed, including both README assertions.\"",
+   "es": "\"restaura esas secciones; sus 94 pruebas enfocadas pasaron, incluidas las dos aserciones del README.\"",
+   "n": 1
+  },
+  {
+   "en": "\"v1.91.0 was published on GitHub on October 23, 2026. These regenerated documents do not \"",
+   "es": "\"v1.91.0 se publicó en GitHub el 23 de octubre de 2026. Estos documentos regenerados no \"",
+   "n": 1
+  },
+  {
+   "en": "\"claim a new executable build or installed acceptance. The existing tag is preserved.\"",
+   "es": "\"afirman un nuevo build del ejecutable ni una aceptación instalada. El tag existente se conserva.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Dialog\"",
+   "es": "\"Diálogo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Pacing, teaching, terminal behavior, narration, appearance and draft previews.\"",
+   "es": "\"Ritmo, enseñanza, comportamiento de la terminal, narración, apariencia y vistas previas del borrador.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Real settings snapshots, revision checks and cancellable narration receipts.\"",
+   "es": "\"Snapshots reales de la configuración, revisiones de la revisión y recibos de narración cancelables.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Compatibility\"",
+   "es": "\"Compatibilidad\"",
+   "n": 1
+  },
+  {
+   "en": "\"Legacy explicit flows keep their values; new flows can inherit defaults.\"",
+   "es": "\"Los flows heredados con valores explícitos los conservan; los flows nuevos pueden heredar los valores predeterminados.\"",
+   "n": 1
+  },
+  {
+   "en": "\"CARRIED FROM v1.90.0\"",
+   "es": "\"HEREDADO DE v1.90.0\"",
+   "n": 1
+  },
+  {
+   "en": "\"Edit, teach and preserve the learner's control\"",
+   "es": "\"Editar, enseñar y conservar el control de quien aprende\"",
+   "n": 1
+  },
+  {
+   "en": "\"v1.89.0 introduced editing and native saving; v1.90.0 carries Interactor and the intent corrections.\"",
+   "es": "\"v1.89.0 introdujo la edición y el guardado nativo; v1.90.0 lleva Interactor y las correcciones de intención.\"",
+   "n": 1
+  },
+  {
+   "en": "\"The annotated v1.90.0 tag resolves to ebc5c3b4; this documentation refresh began at d274f89c, \"",
+   "es": "\"El tag anotado v1.90.0 apunta a ebc5c3b4; esta actualización de la documentación empezó en d274f89c, \"",
+   "n": 1
+  },
+  {
+   "en": "\"the follow-up commit also present on origin/main. A tag and source tests do not establish that \"",
+   "es": "\"el commit siguiente, también presente en origin/main. Un tag y las pruebas del source no establecen que \"",
+   "n": 1
+  },
+  {
+   "en": "\"a separately installed executable has been rebuilt or accepted.\"",
+   "es": "\"un ejecutable instalado por separado se haya recompilado o aceptado.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Interactor adds one module tool, not a workflow-agent template. Migration 0218 seeds its \"",
+   "es": "\"Interactor agrega un tool de módulo, no una plantilla de agent de workflow. La migración 0218 siembra su \"",
+   "n": 1
+  },
+  {
+   "en": "\"Tool row and catalog example. Full enabled-tool binding, Compact-mode selection and cost \"",
+   "es": "\"fila de Tool y un ejemplo del catálogo. La vinculación completa de los tools habilitados, la selección de Compact mode y las etiquetas \"",
+   "n": 1
+  },
+  {
+   "en": "\"labels share tool_gate_table. The offline editor bundle includes the tutoring extension.\"",
+   "es": "\"de costo comparten tool_gate_table. El bundle del editor sin conexión incluye la extensión de enseñanza.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Editing\"",
+   "es": "\"Edición\"",
+   "n": 1
+  },
+  {
+   "en": "\"Native Save As, exact source, undo history and conflict-aware persistence.\"",
+   "es": "\"Guardar como nativo, source exacto, historial de deshacer y persistencia que detecta conflictos.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tutoring\"",
+   "es": "\"Enseñanza\"",
+   "n": 1
+  },
+  {
+   "en": "\"Fresh unsaved reads, small typing segments, learner fields and local suggestions.\"",
+   "es": "\"Lecturas frescas sin guardar, segmentos cortos de escritura, campos para quien aprende y sugerencias locales.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recovery\"",
+   "es": "\"Recuperación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Bounded tab-visibility pauses and usable narrow-canvas layout.\"",
+   "es": "\"Pausas acotadas por visibilidad de la pestaña y una distribución usable con el canvas angosto.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Inventory\", f\"{facts['agents']} agents; {facts['wrapped']} wrapped; {facts['tools']} built-in tools; \"",
+   "es": "\"Inventario\", f\"{facts['agents']} agents; {facts['wrapped']} wrapped; {facts['tools']} tools integrados; \"",
+   "n": 1
+  },
+  {
+   "en": "\"{facts['migrations']} migrations. Counts describe the inspected source.\"",
+   "es": "\"{facts['migrations']} migraciones. Los conteos describen el source inspeccionado.\"",
+   "n": 1
+  },
+  {
+   "en": "\"DATED VERIFICATION\"",
+   "es": "\"VERIFICACIÓN FECHADA\"",
+   "n": 1
+  },
+  {
+   "en": "\"Keep source, model and frozen evidence separate\"",
+   "es": "\"Mantén separadas las evidencias del source, del modelo y del congelado\"",
+   "n": 1
+  },
+  {
+   "en": "\"These are recorded runs from October 21–22, not tests silently rerun by documentation generation.\"",
+   "es": "\"Son ejecuciones registradas del 21 al 22 de octubre, no pruebas que la generación de la documentación vuelve a correr en silencio.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Scope\"",
+   "es": "\"Alcance\"",
+   "n": 1
+  },
+  {
+   "en": "\"Recorded result and limit\"",
+   "es": "\"Resultado registrado y límite\"",
+   "n": 1
+  },
+  {
+   "en": "\"Canvas editing / Oct 21\"",
+   "es": "\"Edición en el canvas / 21 oct\"",
+   "n": 1
+  },
+  {
+   "en": "\"29 distinct visible checkpoints; native saving, file types, encoding, conflicts and PDF copies.\"",
+   "es": "\"29 puntos de revisión visibles distintos; guardado nativo, tipos de archivo, codificación, conflictos y copias de PDF.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Interactor / Oct 21\"",
+   "es": "\"Interactor / 21 oct\"",
+   "n": 1
+  },
+  {
+   "en": "\"35/35 checks including three configured real-model cases; later UI runs add interruption and recovery coverage.\"",
+   "es": "\"35/35 revisiones, incluidos tres casos configurados con un modelo real; ejecuciones posteriores de la UI agregan cobertura de interrupción y recuperación.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Final DEV modes / Oct 21\"",
+   "es": "\"Modos DEV finales / 21 oct\"",
+   "n": 1
+  },
+  {
+   "en": "\"19/19 visible checks; 136 passed + 2 skipped among 138 focused Django tests.\"",
+   "es": "\"19/19 revisiones visibles; 136 pasaron + 2 saltadas entre 138 pruebas enfocadas de Django.\"",
+   "n": 1
+  },
+  {
+   "en": "\"Older frozen v1.89.0\"",
+   "es": "\"v1.89.0 congelado más viejo\"",
+   "n": 1
+  },
+  {
+   "en": "\"Real frozen-loader run: 16 passed, 2 failed after visual review (tab absence and narrow layout).\"",
+   "es": "\"Ejecución real del cargador congelado: 16 pasaron, 2 fallaron después de la revisión visual (ausencia de pestaña y distribución angosta).\"",
+   "n": 1
+  },
+  {
+   "en": "\"Wizard guards / Oct 22\"",
+   "es": "\"Protecciones del asistente / 22 oct\"",
+   "n": 1
+  },
+  {
+   "en": "\"179 tests passed; exact installed-request replay passed. Controlled tool effects; no real account or notification.\"",
+   "es": "\"179 pruebas pasaron; la repetición exacta de la solicitud instalada pasó. Efectos de tools controlados; sin cuenta ni notificación reales.\"",
+   "n": 1
+  },
+  {
+   "en": "\"New v1.90.0 package\"",
+   "es": "\"Paquete nuevo de v1.90.0\"",
+   "n": 1
+  },
+  {
+   "en": "\"No new installed-package acceptance is claimed by this documentation pass.\"",
+   "es": "\"Esta revisión de la documentación no afirma ninguna nueva aceptación del paquete instalado.\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

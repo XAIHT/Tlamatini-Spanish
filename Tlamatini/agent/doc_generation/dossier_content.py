@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════
-#   ✦  T L A M A T I N I  ✦   —   "one who knows"
+#   ✦  T L A M A T I N I  ✦   —   "la que sabe"
 #
 #   Created by  Angela López Mendoza   ·   @angelahack1
 #   Developer · Architect · Creator of Tlamatini
@@ -53,115 +53,115 @@ class Chapter:
 # Families group the installed agent directories; the generator verifies that
 # every installed agent appears exactly once, so a new agent cannot be missed.
 AGENT_FAMILIES: list[tuple[str, str, str, list[tuple[str, str]]]] = [
-    ("Flow control", "jade", "Begin, pause, schedule and end a flow.", [
-        ("starter", "The entry point of every flow; launches its targets when you press Start."),
-        ("ender", "Ends a flow gracefully: kills its targets, then starts backups and cleaners."),
-        ("stopper", "Watches logs for a pattern and stops exactly those source agents."),
-        ("cleaner", "Post-run janitor that removes the logs and PID files of finished agents."),
-        ("sleeper", "Waits a configured number of milliseconds, then starts its targets."),
-        ("croner", "A daily clock trigger that starts its targets at a configured HH:MM."),
+    ("Control del flow", "jade", "Inicia, pausa, agenda y termina un flow.", [
+        ("starter", "El punto de entrada de cada flow; lanza sus targets cuando presionas Iniciar."),
+        ("ender", "Termina un flow con gracia: mata sus targets, luego inicia los backups y los cleaners."),
+        ("stopper", "Vigila los logs buscando un pattern y detiene exactamente esos source agents."),
+        ("cleaner", "Conserje de post-ejecución que quita los logs y los archivos PID de los agents terminados."),
+        ("sleeper", "Espera una cantidad configurada de milisegundos, luego inicia sus targets."),
+        ("croner", "Un disparador de reloj diario que inicia sus targets a una hora HH:MM configurada."),
     ]),
-    ("Routing and logic", "copper", "Decide where the flow goes next.", [
-        ("raiser", "Fires its targets the moment a pattern appears in a watched log."),
-        ("forker", "Automatic A/B router: whichever of two patterns appears first picks the path."),
-        ("asker", "Asks you in the chat to choose Path A or Path B: a human in the loop."),
-        ("counter", "A persistent tally that routes below, or at and above, a threshold."),
-        ("and", "Two-input gate that fires once both sources have matched."),
-        ("or", "Two-input gate that fires as soon as either source matches."),
-        ("barrier", "N-input fan-in that releases once every configured source has arrived."),
+    ("Ruteo y lógica", "copper", "Deciden a dónde va el flow después.", [
+        ("raiser", "Dispara sus targets en el momento en que aparece un pattern en un log vigilado."),
+        ("forker", "Ruteador A/B automático: el primero de dos patterns en aparecer elige el camino."),
+        ("asker", "Te pregunta en el chat que elijas el Camino A o el Camino B: un humano en el loop."),
+        ("counter", "Un conteo persistente que rutea por debajo, o en y por encima, de un umbral."),
+        ("and", "Compuerta de dos entradas que dispara cuando ambos sources han coincidido."),
+        ("or", "Compuerta de dos entradas que dispara en cuanto cualquiera de los dos sources coincide."),
+        ("barrier", "Fan-in de N entradas que se libera cuando ha llegado cada source configurado."),
     ]),
-    ("Orchestration and intelligence", "gold", "Design, connect, supervise and reason.", [
-        ("parametrizer", "Maps one agent's structured output into the next agent's configuration."),
-        ("flowcreator", "Designs a complete, validated .flw workflow from a plain objective."),
-        ("flowhypervisor", "A model watchdog that reads a running flow: OK or ATTENTION NEEDED."),
-        ("flowbacker", "Backs up a session's logs and configurations before clean-up."),
-        ("prompter", "Sends one prompt to a model and logs a structured answer."),
-        ("summarizer", "Summarizes text once, or watches logs and fires on a detected event."),
-        ("acpxer", "Runs one external coding-agent CLI turn on the canvas and captures its answer."),
-        ("mcp_doctor", "Diagnoses an external MCP server on paper, before any live connection."),
+    ("Orquestación e inteligencia", "gold", "Diseña, conecta, supervisa y razona.", [
+        ("parametrizer", "Mapea el output estructurado de un agent hacia la configuración del siguiente agent."),
+        ("flowcreator", "Diseña un workflow .flw completo y validado a partir de un objetivo simple."),
+        ("flowhypervisor", "Un watchdog de modelo que lee un flow en ejecución: OK o ATTENTION NEEDED."),
+        ("flowbacker", "Hace backup de los logs y las configuraciones de una sesión antes de la limpieza."),
+        ("prompter", "Envía un prompt a un modelo y registra una respuesta estructurada."),
+        ("summarizer", "Resume el texto una vez, o vigila los logs y dispara ante un evento detectado."),
+        ("acpxer", "Ejecuta un turno de un CLI de coding-agent externo en el canvas y captura su respuesta."),
+        ("mcp_doctor", "Diagnostica un servidor MCP externo en papel, antes de cualquier conexión en vivo."),
     ]),
-    ("Code, files and shell", "cyan", "Find, read, change and run.", [
-        ("executer", "Runs a shell command, optionally in its own visible console."),
-        ("pythonxer", "Runs inline Python behind a compile() and Ruff correctness gate."),
-        ("terminater", "Types commands into a real CMD or PowerShell terminal the user watches, and can hand the keyboard over."),
-        ("editor", "Byte-exact find-and-replace in one file; refuses an ambiguous match."),
-        ("grepper", "Encoding-aware regex search, plus verbatim reads of a line range."),
-        ("globber", "Finds files by glob pattern, newest first."),
-        ("file_creator", "Creates a file with exact content, including a base64 channel."),
-        ("mover", "Moves or copies files by glob pattern."),
-        ("deleter", "Deletes by glob inside a guarded working directory."),
-        ("file_interpreter", "Reads DOCX, PPTX, XLSX, PDF and more, optionally summarizing them."),
-        ("file_extractor", "Extracts raw text from PDF, DOCX and similar documents."),
-        ("de_compresser", "Compresses or decompresses .zip, .7z, .gz and tar archives."),
-        ("j_decompiler", "Decompiles JAR and WAR archives with the bundled jd-cli."),
-        ("gitter", "Runs git operations and custom git commands."),
+    ("Código, archivos y shell", "cyan", "Encuentra, lee, cambia y ejecuta.", [
+        ("executer", "Ejecuta un comando de shell, opcionalmente en su propia consola visible."),
+        ("pythonxer", "Ejecuta Python inline detrás de una compuerta de corrección con compile() y Ruff."),
+        ("terminater", "Escribe comandos en una terminal real de CMD o PowerShell que el usuario observa, y puede entregar el teclado."),
+        ("editor", "Buscar-y-reemplazar byte-exacto en un archivo; rechaza una coincidencia ambigua."),
+        ("grepper", "Búsqueda regex consciente de la codificación, más lecturas literales de un rango de líneas."),
+        ("globber", "Encuentra archivos por glob pattern, del más nuevo al más viejo."),
+        ("file_creator", "Crea un archivo con contenido exacto, incluyendo un canal base64."),
+        ("mover", "Mueve o copia archivos por glob pattern."),
+        ("deleter", "Elimina por glob dentro de un directorio de trabajo protegido."),
+        ("file_interpreter", "Lee DOCX, PPTX, XLSX, PDF y más, opcionalmente resumiéndolos."),
+        ("file_extractor", "Extrae texto crudo de PDF, DOCX y documentos similares."),
+        ("de_compresser", "Comprime o descomprime archivos .zip, .7z, .gz y tar."),
+        ("j_decompiler", "Descompila archivos JAR y WAR con el jd-cli incluido."),
+        ("gitter", "Ejecuta operaciones de git y comandos git personalizados."),
     ]),
-    ("Documents", "magenta", "Compose, typeset and present.", [
-        ("pdfer", "Composes PDFs from text, Markdown, HTML and images: 24 styles, 20 themes."),
-        ("pptxer", "Builds editable PowerPoint decks whose text is measured, never truncated."),
-        ("latexer", "Typesets LaTeX projects, with a self-healing eight-rung repair ladder."),
+    ("Documentos", "magenta", "Componen, tipografían y presentan.", [
+        ("pdfer", "Compone PDFs a partir de texto, Markdown, HTML e imágenes: 24 estilos, 20 temas."),
+        ("pptxer", "Construye decks editables de PowerPoint cuyo texto se mide, nunca se trunca."),
+        ("latexer", "Tipografía proyectos de LaTeX, con una escalera de reparación auto-sanadora de ocho peldaños."),
     ]),
-    ("Web, data and APIs", "jade", "Search, browse, call and measure.", [
-        ("googler", "Resilient two-tier web search with a structured Google-dork builder."),
-        ("crawler", "Fetches a page raw or as text and analyzes it with a model."),
-        ("playwrighter", "Drives a real browser through scripted steps: log in, fill, click, extract."),
-        ("apirer", "Calls REST APIs with any method, headers, body and timeout."),
-        ("sqler", "Runs Python against Microsoft SQL Server with a ready cursor."),
-        ("mongoxer", "Runs Python against MongoDB with a ready database handle."),
-        ("netspeed_calculator", "Measures your connection with confidence intervals and bufferbloat."),
+    ("Web, datos y APIs", "jade", "Busca, navega, llama y mide.", [
+        ("googler", "Búsqueda web resiliente de dos niveles con un constructor estructurado de Google-dorks."),
+        ("crawler", "Trae una página en crudo o como texto y la analiza con un modelo."),
+        ("playwrighter", "Maneja un browser real a través de pasos con script: inicia sesión, llena, hace clic, extrae."),
+        ("apirer", "Llama APIs REST con cualquier método, headers, body y timeout."),
+        ("sqler", "Ejecuta Python contra Microsoft SQL Server con un cursor listo."),
+        ("mongoxer", "Ejecuta Python contra MongoDB con un handle de base de datos listo."),
+        ("netspeed_calculator", "Mide tu conexión con intervalos de confianza y bufferbloat."),
     ]),
-    ("DevOps and infrastructure", "copper", "Containers, clusters, pipelines and hosts.", [
-        ("dockerer", "A Docker and docker-compose front-end."),
-        ("kuberneter", "A kubectl front-end with a structured, truthful result."),
-        ("jenkinser", "Triggers Jenkins jobs, handling the CSRF crumb."),
-        ("ssher", "Runs a command on a remote host over SSH."),
-        ("scper", "Sends or receives files over SCP."),
-        ("pser", "Finds a running process from a fuzzy name with a model's help."),
+    ("DevOps e infraestructura", "copper", "Containers, clusters, pipelines y hosts.", [
+        ("dockerer", "Un front-end de Docker y docker-compose."),
+        ("kuberneter", "Un front-end de kubectl con un resultado estructurado y veraz."),
+        ("jenkinser", "Dispara jobs de Jenkins, manejando el crumb de CSRF."),
+        ("ssher", "Ejecuta un comando en un host remoto por SSH."),
+        ("scper", "Envía o recibe archivos por SCP."),
+        ("pser", "Encuentra un proceso en ejecución a partir de un nombre difuso con ayuda de un modelo."),
     ]),
-    ("Quality and security", "rose", "Review, analyze, assess and protect.", [
-        ("reviewer", "Model-driven review of a git diff with an APPROVE or REQUEST_CHANGES verdict."),
-        ("analyzer", "Deterministic static analysis: bandit, semgrep, ruff, eslint, gitleaks, pip-audit."),
-        ("kalier", "Authorized Kali Linux tooling through MCP-Kali-Server."),
-        ("discoverer", "The ProjectDiscovery recon suite on a private, self-installing Go toolchain."),
-        ("nmapper", "A local, use-only nmap bridge; unprivileged connect scan by default."),
-        ("kyber_keygen", "Generates CRYSTALS-Kyber post-quantum key pairs."),
-        ("kyber_cipher", "Encrypts with Kyber post-quantum cryptography."),
-        ("kyber_decipher", "Decrypts Kyber-protected data."),
+    ("Calidad y seguridad", "rose", "Revisa, analiza, evalúa y protege.", [
+        ("reviewer", "Revisión guiada por modelo de un git diff con un veredicto APPROVE o REQUEST_CHANGES."),
+        ("analyzer", "Análisis estático determinista: bandit, semgrep, ruff, eslint, gitleaks, pip-audit."),
+        ("kalier", "Herramientas autorizadas de Kali Linux a través de MCP-Kali-Server."),
+        ("discoverer", "La suite de reconocimiento de ProjectDiscovery sobre un toolchain de Go privado y autoinstalable."),
+        ("nmapper", "Un puente de nmap local y de sólo uso; escaneo connect sin privilegios de forma predeterminada."),
+        ("kyber_keygen", "Genera pares de claves poscuánticas CRYSTALS-Kyber."),
+        ("kyber_cipher", "Cifra con criptografía poscuántica Kyber."),
+        ("kyber_decipher", "Descifra datos protegidos con Kyber."),
     ]),
-    ("Firmware and engines", "gold", "Real boards and live editors.", [
-        ("stm32er", "STM32 firmware from Blue Pill to H7: build, flash, observe, fail-safe."),
-        ("esp32er", "ESP32 firmware through PlatformIO, from a template that compiles at once."),
-        ("arduiner", "Arduino firmware through arduino-cli, with cores installed automatically."),
-        ("esphomer", "ESPHome smart-home devices from YAML, no C++ required."),
-        ("unrealer", "Drives a live Unreal Engine 5 editor: 53 commands in nine categories."),
-        ("blenderer", "Drives Blender over the official Blender MCP add-on socket."),
+    ("Firmware y engines", "gold", "Placas reales y editores en vivo.", [
+        ("stm32er", "Firmware de STM32 desde la Blue Pill hasta la H7: compilar, flashear, observar, fail-safe."),
+        ("esp32er", "Firmware de ESP32 a través de PlatformIO, desde una plantilla que compila de inmediato."),
+        ("arduiner", "Firmware de Arduino a través de arduino-cli, con los cores instalados automáticamente."),
+        ("esphomer", "Dispositivos de domótica ESPHome desde YAML, sin C++ requerido."),
+        ("unrealer", "Maneja un editor de Unreal Engine 5 en vivo: 53 comandos en nueve categorías."),
+        ("blenderer", "Maneja Blender a través del socket del add-on oficial de Blender MCP."),
     ]),
-    ("Desktop and capture", "cyan", "See the screen, move the pointer, type.", [
-        ("mouser", "Moves and clicks in explicitly declared coordinate spaces."),
-        ("keyboarder", "Types Unicode into a verified foreground window."),
-        ("windower", "Focuses, tiles, resizes, lists and closes windows by title."),
-        ("shoter", "Whole-desktop screenshots with published capture geometry."),
-        ("camcorder", "Webcam photo or video at the camera's native resolution."),
+    ("Escritorio y captura", "cyan", "Ve la pantalla, mueve el puntero, escribe.", [
+        ("mouser", "Mueve y hace clic en espacios de coordenadas declarados explícitamente."),
+        ("keyboarder", "Escribe Unicode en una ventana de primer plano verificada."),
+        ("windower", "Enfoca, acomoda en mosaico, redimensiona, lista y cierra ventanas por título."),
+        ("shoter", "Screenshots de todo el escritorio con geometría de captura publicada."),
+        ("camcorder", "Foto o video de webcam a la resolución nativa de la cámara."),
     ]),
-    ("Voice, audio and vision", "magenta", "Hear, speak, play and look.", [
-        ("recorder", "Microphone capture to WAV at the device's native sample rate."),
-        ("whisperer", "Speech to text that keeps listening until you stop talking."),
-        ("talker", "Text to speech, always in Tlamatini's female voice."),
-        ("audioplayer", "Plays audio files with volume, truncate and loop control."),
-        ("videoplayer", "Plays video with its audio on a chosen display."),
-        ("image_interpreter", "Two vision models in parallel, merged by a third into one report."),
-        ("video_analyzer", "Rules on robot motion, transcribes audio tracks, or summarizes a video."),
+    ("Voz, audio y visión", "magenta", "Oye, habla, reproduce y mira.", [
+        ("recorder", "Captura de micrófono a WAV a la frecuencia de muestreo nativa del dispositivo."),
+        ("whisperer", "De voz a texto que sigue escuchando hasta que dejas de hablar."),
+        ("talker", "De texto a voz, siempre en la voz femenina de Tlamatini."),
+        ("audioplayer", "Reproduce archivos de audio con control de volumen, truncado y loop."),
+        ("videoplayer", "Reproduce video con su audio en una pantalla elegida."),
+        ("image_interpreter", "Dos modelos de visión en paralelo, fusionados por un tercero en un solo reporte."),
+        ("video_analyzer", "Dictamina sobre el movimiento de un robot, transcribe pistas de audio, o resume un video."),
     ]),
-    ("Messaging and monitoring", "rose", "Reach people and watch systems.", [
-        ("notifier", "Shows an in-browser notification, optionally with a sound."),
-        ("emailer", "Sends email over SMTP."),
-        ("recmailer", "Watches an IMAP mailbox for new messages."),
-        ("telegrammer", "Telegram as the bot or as your own account."),
-        ("whatsapper", "WhatsApp through Meta's Cloud API, or explicitly from your own number."),
-        ("teletlamatini", "Brings the full Tlamatini chat, Multi-Turn included, into Telegram."),
-        ("instant_messaging_doctor", "Diagnoses and safely repairs Telegram and WhatsApp readiness."),
-        ("monitor_log", "Model-powered log monitor."),
-        ("monitor_netstat", "Model-powered network-port monitor."),
+    ("Mensajería y monitoreo", "rose", "Alcanza personas y vigila sistemas.", [
+        ("notifier", "Muestra una notificación dentro del browser, opcionalmente con un sonido."),
+        ("emailer", "Envía correo por SMTP."),
+        ("recmailer", "Vigila un buzón IMAP en busca de mensajes nuevos."),
+        ("telegrammer", "Telegram como el bot o como tu propia cuenta."),
+        ("whatsapper", "WhatsApp a través de la Cloud API de Meta, o explícitamente desde tu propio número."),
+        ("teletlamatini", "Lleva el chat completo de Tlamatini, Multi-Turn incluido, a Telegram."),
+        ("instant_messaging_doctor", "Diagnostica y repara de forma segura la disponibilidad de Telegram y WhatsApp."),
+        ("monitor_log", "Monitor de logs impulsado por modelo."),
+        ("monitor_netstat", "Monitor de puertos de red impulsado por modelo."),
     ]),
 ]
 
@@ -192,341 +192,341 @@ def build_chapters(f: dict) -> list[Chapter]:
     model_agents = f["model_agents"]
     groups_text = ", ".join(f"{name} {count}" for name, count in model_groups)
 
-    identity = Chapter("identity", "I", "Who She Is",
-        "A self-hosted developer assistant that reads, reasons, builds and acts, and lets you design how.",
+    identity = Chapter("identity", "I", "Quién es ella",
+        "Una asistente de desarrollo self-hosted que lee, razona, construye y actúa, y te deja diseñar el cómo.",
         accent="jade", sections=[
-        Section("identity", "IDENTITY", "Tlamatini, the one who knows",
-            "Tlamatini is a self-hosted AI developer assistant for Windows 10 and 11: a Django application "
-            "that converses, retrieves, plans, runs agents, and lets you draw whole agent workflows on a canvas.",
+        Section("identity", "IDENTIDAD", "Tlamatini, la que sabe",
+            "Tlamatini es una asistente de desarrollo con IA, self-hosted, para Windows 10 y 11: una aplicación de Django "
+            "que conversa, recupera, planea, ejecuta agents y te deja dibujar workflows completos de agents en un canvas.",
             body=[
-                "Her name is Nahuatl. In the Nahua world a _tlamatini_ was a sage, literally “one who "
-                "knows”: a keeper of the painted books who carried knowledge and taught others to see. The "
-                "name is a promise about behaviour. She should know what she is doing, say what she actually "
-                "did, and never pretend.",
-                "Tlamatini was conceived, designed and built by **Angela López Mendoza** (`@angelahack1`), "
-                "who gave her the name. Her birthday is October 29, 2025. She is female by design, including "
-                "her spoken voice, which is always a female voice, and she refers to herself as _she_.",
-                f"She is free, open-source software under the MIT license, published at "
-                f"`github.com/XAIHT/Tlamatini`. The repository carries the application and every one of its "
-                f"{agents} workflow-agent programs as plain, readable Python.",
+                "Su nombre es náhuatl. En el mundo nahua una _tlamatini_ era una sabia, literalmente “la que "
+                "sabe”: guardiana de los libros pintados que cargaba el conocimiento y enseñaba a otros a ver. El "
+                "nombre es una promesa sobre su comportamiento. Debe saber lo que hace, decir lo que de verdad "
+                "hizo, y nunca fingir.",
+                "Tlamatini fue concebida, diseñada y construida por **Angela López Mendoza** (`@angelahack1`), "
+                "quien le dio el nombre. Su cumpleaños es el 29 de octubre de 2025. Es femenina por diseño, incluida "
+                "su voz hablada, que siempre es una voz femenina, y se refiere a sí misma como _ella_.",
+                f"Es software libre y de código abierto bajo la licencia MIT, publicada en "
+                f"`github.com/XAIHT/Tlamatini`. El repositorio lleva la aplicación y cada uno de sus "
+                f"{agents} programas de workflow-agent como Python simple y legible.",
             ],
             points=[
-                ("Creator", "Angela López Mendoza · @angelahack1"),
-                ("Born", "October 29, 2025"),
-                ("Platform", "Windows 10 and 11 · Python 3.12.10 · Django 5.2.15"),
-                ("License", "MIT: free and open source"),
+                ("Creadora", "Angela López Mendoza · @angelahack1"),
+                ("Nacida", "29 de octubre de 2025"),
+                ("Plataforma", "Windows 10 y 11 · Python 3.12.10 · Django 5.2.15"),
+                ("Licencia", "MIT: libre y de código abierto"),
             ], deck="identity"),
-        Section("planes", "WHERE THINGS RUN", "Local control, cloud reasoning",
-            "“Local-first” describes where control lives: the application, database, workflows, "
-            "credentials, agent code and the small embedding model stay on your machine, while the demanding "
-            "reasoning is done by cloud models reached through Ollama.",
+        Section("planes", "DÓNDE CORREN LAS COSAS", "Control local, razonamiento en la nube",
+            "“Local-first” describe dónde vive el control: la aplicación, la base de datos, los workflows, "
+            "las credenciales, el código de los agents y el modelo de embedding pequeño se quedan en tu máquina, mientras que el "
+            "razonamiento exigente lo hacen modelos en la nube a los que se llega por Ollama.",
             body=[
-                "Three planes cooperate. The **local control plane** is the Django application with its chat, "
-                "canvases, SQLite database, agent programs, permissions, files and hardware connections. "
-                "**Local retrieval** builds embeddings with `nomic-embed-text` so project context is found "
-                "quickly. **Cloud reasoning** — configured `:cloud` models served through Ollama — performs "
-                "chat, tool calling, long context, vision and Multi-Turn planning. A smaller local model also works: "
-                "a request it cannot hold is sent in Compact mode, and the Model Brain tunes every model from its "
-                "maker's published settings.",
-                "Because the complete experience was engineered around Ollama's cloud-model capacity, an active "
-                "**Ollama Pro plan or higher** is part of the intended system requirements. This is an "
-                "independent technical recommendation: Tlamatini and XAIHT are not sponsored by, affiliated "
-                "with or compensated by Ollama.",
-                "Whatever you send to a configured cloud model is processed by that provider. Direct Claude API "
-                "use, external coding-agent CLIs and remote MCP servers are configured separately, so you "
-                "decide what material leaves your machine.",
+                "Tres planos cooperan. El **plano de control local** es la aplicación de Django con su chat, "
+                "canvases, base de datos SQLite, programas de agents, permisos, archivos y conexiones de hardware. "
+                "La **recuperación local** construye embeddings con `nomic-embed-text` para que el contexto del proyecto se encuentre "
+                "rápido. El **razonamiento en la nube** — modelos `:cloud` configurados y servidos por Ollama — hace "
+                "chat, llamado de tools, contexto largo, visión y planeación de Multi-Turn. Un modelo local más pequeño también funciona: "
+                "una solicitud que no cabe se envía en Compact mode, y el Model Brain afina cada modelo con su "
+                "configuración publicada por su creador.",
+                "Debido a que la experiencia completa se diseñó alrededor de la capacidad de modelos en la nube de Ollama, un "
+                "**plan Ollama Pro o superior** activo es parte de los requisitos de sistema previstos. Esta es una "
+                "recomendación técnica independiente: Tlamatini y XAIHT no están patrocinados por, afiliados a ni "
+                "compensados por Ollama.",
+                "Lo que envíes a un modelo en la nube configurado lo procesa ese proveedor. El uso directo de la Claude API, "
+                "los CLIs de coding-agent externos y los servidores MCP remotos se configuran por separado, así que tú "
+                "decides qué material sale de tu máquina.",
             ],
             visual="planes", deck="visual"),
-        Section("pillars", "THE PILLARS", "Seven subsystems, one assistant",
-            "Everything Tlamatini does rests on seven cooperating subsystems.",
+        Section("pillars", "LOS PILARES", "Siete subsistemas, una asistente",
+            "Todo lo que hace Tlamatini descansa en siete subsistemas que cooperan.",
             points=[
-                ("Hybrid RAG", "FAISS vectors, BM25 keywords, metadata extraction, context budgeting and a "
-                 "binary-content guard keep answers grounded in your real project."),
-                ("Multi-Turn", f"A planner and a tool loop of up to 4,096 iterations over the full enabled "
-                 f"surface of {tools} built-in tools, self-healing steps and Compact mode for small models."),
-                ("Agentic Control Panel", f"{agents} drag-and-drop agent types wired into runnable, savable "
-                 f"`.flw` workflows."),
-                ("Prompt Flow Panel", "New in v1.70.0: prompts, decisions and embeddings drawn as a diagram, "
-                 "saved as `.fpmt`, and played against your models."),
-                ("ACPX", f"{len(peers)} external coding-agent CLIs, from Claude Code to Codex and Gemini, "
-                 f"spawned as children and brokered through 12 tools."),
-                ("External MCPs", "A universal client for any MCP server over four transports, with up to "
-                 "five servers active at once."),
-                ("Skills", f"{skills} `SKILL.md` runbooks, from code review to MCP onboarding, handed to the "
-                 f"model as complete procedures."),
+                ("RAG híbrido", "vectores FAISS, palabras clave BM25, extracción de metadatos, presupuesto de contexto y un "
+                 "guard de contenido binario mantienen las respuestas ancladas a tu proyecto real."),
+                ("Multi-Turn", f"Un planner y un tool loop de hasta 4,096 iteraciones sobre toda la superficie habilitada "
+                 f"de {tools} tools integradas, pasos auto-sanadores y Compact mode para modelos pequeños."),
+                ("Agentic Control Panel", f"{agents} tipos de agent de arrastrar-y-soltar conectados en workflows "
+                 f"`.flw` ejecutables y guardables."),
+                ("Prompt Flow Panel", "Nuevo en v1.70.0: prompts, decisiones y embeddings dibujados como un diagrama, "
+                 "guardados como `.fpmt`, y ejecutados contra tus modelos."),
+                ("ACPX", f"{len(peers)} CLIs de coding-agent externos, desde Claude Code hasta Codex y Gemini, "
+                 f"generados como hijos y brokeados a través de 12 tools."),
+                ("External MCPs", "Un cliente universal para cualquier servidor MCP sobre cuatro transportes, con hasta "
+                 "cinco servidores activos a la vez."),
+                ("Skills", f"{skills} runbooks `SKILL.md`, desde code review hasta el onboarding de MCP, entregados al "
+                 f"modelo como procedimientos completos."),
             ], deck="cards"),
-        Section("jewels", "WHAT SETS HER APART", "The jewels",
-            "Coding assistants edit text files. Tlamatini does that too, then reaches into engines, boards "
-            "and networks, and lets you wire all of it together visually.",
+        Section("jewels", "LO QUE LA DISTINGUE", "Las joyas",
+            "Las asistentes de código editan archivos de texto. Tlamatini también lo hace, y luego alcanza engines, placas "
+            "y redes, y te deja conectar todo eso de forma visual.",
             points=[
-                ("Visual workflow design", f"{agents} agent types on a canvas you connect, validate, run, "
-                 "pause and save."),
-                ("Unreal Engine", "Drive a live UE5 editor from chat or canvas: actors, Blueprints, levels, "
-                 "assets and materials."),
-                ("Blender", "Scenes, objects, materials, renders and raw bpy code over the official add-on "
-                 "socket."),
-                ("Real firmware", "Scaffold, build and flash STM32, ESP32, Arduino and ESPHome boards behind "
-                 "fail-safe preflights."),
-                ("Whole projects", "Find, read, edit and rebuild entire codebases with grounded retrieval."),
-                ("Any MCP server", "One client for the MCP ecosystem: stdio, streamable HTTP, SSE and "
+                ("Diseño visual de workflows", f"{agents} tipos de agent en un canvas que conectas, validas, ejecutas, "
+                 "pausas y guardas."),
+                ("Unreal Engine", "Maneja un editor UE5 en vivo desde el chat o el canvas: actores, Blueprints, niveles, "
+                 "assets y materiales."),
+                ("Blender", "Escenas, objetos, materiales, renders y código bpy crudo a través del socket del add-on "
+                 "oficial."),
+                ("Firmware real", "Haz scaffold, compila y flashea placas STM32, ESP32, Arduino y ESPHome detrás de "
+                 "preflights fail-safe."),
+                ("Proyectos completos", "Encuentra, lee, edita y reconstruye codebases completos con recuperación anclada."),
+                ("Cualquier servidor MCP", "Un cliente para el ecosistema MCP: stdio, streamable HTTP, SSE y "
                  "WebSocket."),
-                ("Security assessment", "Authorized Kali, ProjectDiscovery and nmap work, driven from chat."),
-                ("Blue-hat defence", "An administrator-run Windows monitoring and response toolkit."),
+                ("Evaluación de seguridad", "Trabajo autorizado de Kali, ProjectDiscovery y nmap, manejado desde el chat."),
+                ("Defensa blue-hat", "Un toolkit de monitoreo y respuesta de Windows ejecutado por un administrador."),
             ], deck="cards"),
-        Section("glance", "AT A GLANCE", "The numbers, derived from source",
-            "Every figure below was counted from the repository while this dossier was generated.",
+        Section("glance", "DE UN VISTAZO", "Los números, derivados de la fuente",
+            "Cada cifra de abajo se contó desde el repositorio mientras se generaba este dossier.",
             body=[
-                f"The built-in Multi-Turn surface is {f['core']} core tools + {wrapped} wrapped agent "
-                f"launchers + {f['acpx_tools']} ACPX and Skill tools + {f['supervisors']} External-MCP "
-                f"supervisors = **{tools} tools**. Healthy, active external MCP servers add their own "
-                f"`ext__<server>__<tool>` tools on top.",
-                f"The application ships {f['js']} JavaScript modules, {f['css']} stylesheets and "
-                f"{f['templates']} page templates, {f['migrations']} database migrations and "
-                f"{f['requirements']} pinned Python requirements.",
+                f"La superficie Multi-Turn integrada es {f['core']} tools core + {wrapped} lanzadores de agents "
+                f"wrapped + {f['acpx_tools']} tools de ACPX y Skill + {f['supervisors']} supervisores de External-MCP "
+                f"= **{tools} tools**. Los servidores MCP externos sanos y activos agregan encima sus propios "
+                f"tools `ext__<server>__<tool>`.",
+                f"La aplicación lleva {f['js']} módulos de JavaScript, {f['css']} hojas de estilo y "
+                f"{f['templates']} plantillas de página, {f['migrations']} migraciones de base de datos y "
+                f"{f['requirements']} requirements de Python fijados.",
             ],
             visual="metrics", deck="metrics"),
     ])
 
-    architecture = Chapter("architecture", "II", "How She Works",
-        "From a keystroke in the browser to a verified result on disk: the layers, the loop and the verdict.",
+    architecture = Chapter("architecture", "II", "Cómo funciona",
+        "De una tecla en el browser a un resultado verificado en el disco: las capas, el ciclo y el veredicto.",
         accent="copper", sections=[
-        Section("layers", "ARCHITECTURE", "Five layers, from toggle to tool",
-            "A request passes through five layers, each with one responsibility, between the browser above "
-            "and the model back-ends below.",
+        Section("layers", "ARQUITECTURA", "Cinco capas, de la casilla al tool",
+            "Una solicitud pasa por cinco capas, cada una con una responsabilidad, entre el browser de arriba "
+            "y los back-ends de modelo de abajo.",
             body=[
-                "Above the layers sit the browser pages — the chat, the Agentic Control Panel and the Prompt "
-                "Flow Panel — talking to Django Channels over WebSockets under the Daphne ASGI server. Below "
-                "them sit the language-model back-ends: Ollama (local and cloud), Anthropic Claude and Qwen vision.",
-                "A row in the database only switches a capability on or off. It never creates one: an MCP "
-                "provider needs its runtime service and context chain, and a tool needs its implementation.",
+                "Arriba de las capas están las páginas del browser — el chat, el Agentic Control Panel y el Prompt "
+                "Flow Panel — que hablan con Django Channels sobre WebSockets bajo el servidor ASGI Daphne. Abajo "
+                "de ellas están los back-ends de modelo de lenguaje: Ollama (local y en la nube), Anthropic Claude y Qwen vision.",
+                "Una fila en la base de datos sólo activa o desactiva una capacidad. Nunca crea una: un proveedor MCP "
+                "necesita su servicio de runtime y su context chain, y un tool necesita su implementación.",
             ],
             visual="layers",
             visual_data={"layers": [
-                ("Persisted toggles", "Mcp, Tool, Agent and Skill rows decide what is enabled; the "
-                 "Configure dialogs flip them."),
-                ("Runtime MCP services", "System-Metrics (WebSocket :8765) and Files-Search (gRPC :50051) "
-                 "start with the application."),
-                ("Context sidecars", "Chains that decide whether system or file context is needed and "
-                 "inject it into the payload."),
-                ("Answer chains", "Basic, history-aware RAG and unified-agent chains compose the prompt and "
-                 "produce the answer."),
-                ("Unified-agent tools", f"{f['core']} core, {wrapped} wrapped agents, {f['acpx_tools']} "
-                 f"ACPX/Skill and {f['supervisors']} External-MCP supervisor tools."),
+                ("Casillas persistentes", "Las filas de Mcp, Tool, Agent y Skill deciden qué está habilitado; los "
+                 "diálogos de Configurar los cambian."),
+                ("Servicios MCP", "System-Metrics (WebSocket :8765) y Files-Search (gRPC :50051) "
+                 "arrancan con la aplicación."),
+                ("Sidecars de contexto", "Chains que deciden si se necesita contexto de sistema o de archivo e "
+                 "lo inyectan en el payload."),
+                ("Chains de respuesta", "Los chains Basic, history-aware RAG y unified-agent componen el prompt y "
+                 "producen la respuesta."),
+                ("Tools de unified-agent", f"{f['core']} core, {wrapped} agents wrapped, {f['acpx_tools']} "
+                 f"tools de ACPX/Skill y {f['supervisors']} tools supervisores de External-MCP."),
             ]}, deck="visual"),
-        Section("journey", "REQUEST JOURNEY", "The life of one message",
-            "Eleven steps take a message from the browser to a verified, reported result.",
+        Section("journey", "RECORRIDO DE UNA SOLICITUD", "La vida de un mensaje",
+            "Once pasos llevan un mensaje del browser a un resultado verificado y reportado.",
             visual="steps",
             visual_data={"steps": [
-                ("Send", "The browser sends the text and its toolbar flags over the chat WebSocket."),
-                ("Route", "AgentConsumer receives it, attributes it to the user and queues retrieval."),
-                ("Context", "It decides whether RAG context is loaded and whether web search is needed."),
-                ("Chain", "The RAG, Basic or Unified-Agent chain is selected and fitted to the model."),
-                ("Gate", "Multi-Turn selects planned execution; ACPX filters its twelve tools in or out."),
-                ("Permission", "With Ask Execs on, a risky tool waits for Proceed or Deny."),
-                ("Prefetch", "System-metrics and file-search sidecars add context when it helps."),
-                ("Loop", "Tool calls run, wrapped agents launch, every model step is self-healed."),
-                ("Verdict", "Each agent's own self-report decides SUCCESS or FAILED."),
-                ("Answer", "The reply streams back with Exec Report tables and Create Flow."),
-                ("Clean-up", "The orphan reaper sweeps console hosts left by child processes."),
+                ("Enviar", "El browser envía el texto y sus flags de la barra de herramientas sobre el WebSocket del chat."),
+                ("Rutear", "AgentConsumer la recibe, la atribuye al usuario y encola la recuperación."),
+                ("Contexto", "Decide si se carga contexto RAG y si se necesita búsqueda web."),
+                ("Cadena", "Se elige el chain RAG, Basic o Unified-Agent y se ajusta al modelo."),
+                ("Compuerta", "Multi-Turn elige la ejecución planeada; ACPX filtra sus doce tools dentro o fuera."),
+                ("Permiso", "Con Ask Execs activado, un tool riesgoso espera Permitir o Denegar."),
+                ("Precarga", "Los sidecars de System-metrics y file-search agregan contexto cuando ayuda."),
+                ("Ciclo", "Las llamadas a tools corren, los agents wrapped se lanzan, cada paso del modelo se auto-sana."),
+                ("Veredicto", "El auto-reporte de cada agent decide SUCCESS o FAILED."),
+                ("Respuesta", "La respuesta regresa en streaming con las tablas del Exec Report y Create Flow."),
+                ("Limpieza", "El orphan reaper barre los console hosts que dejan los procesos hijos."),
             ]}, deck="visual"),
-        Section("multiturn", "MULTI-TURN", "The operator loop",
-            "With Multi-Turn checked, Tlamatini stops being an advisor and becomes an operator: she plans, "
-            "calls tools, reads their results and continues until the task is done.",
+        Section("multiturn", "MULTI-TURN", "El loop del operador",
+            "Con Multi-Turn marcado, Tlamatini deja de ser una asesora y se vuelve una operadora: planea, "
+            "llama tools, lee sus resultados y continúa hasta que la tarea está hecha.",
             body=[
-                "A global execution planner builds a request-scoped plan and capability hints, but the executor "
-                "binds the **full enabled tool surface**: every enabled tool, wrapped agent and skill, with ACPX "
-                "still filtered by its own checkbox. An earlier design bound only a narrow planner subset and "
-                "could starve the loop of the one tool it needed.",
-                "The loop runs up to 4,096 iterations. Identical wrapped-agent calls in one request are "
-                "deduplicated, a repetition breaker nudges a model that circles, and each wrapped agent runs in "
-                "its own isolated runtime folder, so templates are never modified.",
-                "When at least one agent succeeded, the answer carries a **Create Flow** button. It turns exactly "
-                "the successful tool calls into a canvas-loadable `.flw` workflow, normalized and secret-redacted "
-                "by the backend, so a conversation can become a reusable workflow.",
+                "Un planner de ejecución global construye un plan con alcance de solicitud y pistas de capacidad, pero el executor "
+                "ata la **superficie completa de tools habilitada**: cada tool, agent wrapped y skill habilitado, con ACPX "
+                "todavía filtrado por su propia casilla. Un diseño anterior ataba sólo un subconjunto estrecho del planner y "
+                "podía dejar al loop sin el único tool que necesitaba.",
+                "El loop corre hasta 4,096 iteraciones. Las llamadas idénticas a un agent wrapped en una solicitud se "
+                "deduplican, un rompedor de repetición empuja a un modelo que da vueltas, y cada agent wrapped corre en "
+                "su propia carpeta de runtime aislada, así que las plantillas nunca se modifican.",
+                "Cuando al menos un agent tuvo éxito, la respuesta trae un botón **Create Flow**. Convierte exactamente "
+                "las llamadas a tools exitosas en un workflow `.flw` cargable en el canvas, normalizado y con secretos redactados "
+                "por el backend, así que una conversación puede volverse un workflow reutilizable.",
             ],
             points=[
-                ("Step-by-Step", "One concrete action at a time; she waits for your READY or output."),
-                ("Ask Execs", "A human Proceed/Deny gate before each risky step."),
-                ("Exec Report", "One table per agent family, one row per real tool call."),
-                ("ACPX", "Adds the external coding-agent and Skill tools to the surface."),
+                ("Paso a paso", "Una acción concreta a la vez; espera tu READY o tu output."),
+                ("Ask Execs", "Una compuerta humana de Permitir/Denegar antes de cada paso riesgoso."),
+                ("Exec Report", "Una tabla por familia de agent, una fila por cada llamada real a un tool."),
+                ("ACPX", "Agrega los tools de coding-agent externo y de Skill a la superficie."),
             ], deck="split"),
-        Section("healing", "SELF-HEALING", "Never hang, never discard, never lie",
-            "Every model call inside the loop goes through a per-request self-healing invoker that switches "
-            "to a genuinely different tactic each time a transient failure strikes.",
+        Section("healing", "AUTO-SANACIÓN", "Nunca colgarse, nunca descartar, nunca mentir",
+            "Cada llamada al modelo dentro del loop pasa por un invocador auto-sanador por solicitud que cambia "
+            "a una táctica genuinamente distinta cada vez que ocurre una falla transitoria.",
             body=[
-                "Each attempt runs under a watchdog. The shipped configuration allows 900 seconds, deliberately "
-                "longer than the 600-second model-client timeout, so the watchdog never abandons a call the "
-                "client would still finish; the Cancel button is polled every quarter of a second, so she never "
-                "blocks forever. The ladder cycles through six tactics and keeps going up to 4,096 of them. Only "
-                "you, with Cancel, stop her.",
-                "If the ladder is ever exhausted after agents already ran, she finishes gracefully from that real "
-                "work: the Create Flow button and the Exec Report survive, and the answer says what happened.",
-                "Recovery is narrated live. Status lines such as “Tactic #3 … I will NOT hang” stream "
-                "into the chat as they happen, and a SELF-HEALING NOTE opens the final answer.",
+                "Cada intento corre bajo un watchdog. La configuración que se envía permite 900 segundos, deliberadamente "
+                "más que el timeout de 600 segundos del cliente del modelo, así que el watchdog nunca abandona una llamada que el "
+                "cliente todavía terminaría; el botón Cancelar se sondea cada cuarto de segundo, así que nunca se "
+                "bloquea para siempre. La escalera recorre seis tácticas y sigue hasta 4,096 de ellas. Sólo "
+                "tú, con Cancelar, la detienes.",
+                "Si la escalera alguna vez se agota después de que ya corrieron agents, termina con gracia a partir de ese trabajo "
+                "real: el botón Create Flow y el Exec Report sobreviven, y la respuesta dice qué pasó.",
+                "La recuperación se narra en vivo. Las líneas de estado como “Tactic #3 … I will NOT hang” llegan en "
+                "streaming al chat conforme pasan, y una SELF-HEALING NOTE abre la respuesta final.",
             ],
-            callout=("Real bugs are not hidden",
-                     "Only transient failures — timeouts, resets, HTTP 429 and 5xx — trigger new "
-                     "tactics. A deterministic error such as a bad schema is raised at once so it gets fixed."),
+            callout=("Los bugs reales no se ocultan",
+                     "Sólo las fallas transitorias — timeouts, resets, HTTP 429 y 5xx — disparan nuevas "
+                     "tácticas. Un error determinista como un schema malo se lanza de inmediato para que se arregle."),
             visual="ladder",
             visual_data={"rungs": [
-                ("1", "normal", "The full request again."),
-                ("2", "retry", "The same tool-bound request; most blips clear here."),
-                ("3", "patient retry", "Wait, then retry with extra patience."),
-                ("4", "trim context", "Keep the system messages and the last twelve."),
-                ("5", "minimal", "Keep the last six messages; tools stay bound."),
-                ("6", "plain summary", "Last resort: summarize truthfully what was gathered."),
+                ("1", "normal", "La solicitud completa otra vez."),
+                ("2", "reintento", "La misma solicitud con tools atados; la mayoría de los parpadeos se resuelven aquí."),
+                ("3", "reintento paciente", "Espera, luego reintenta con paciencia extra."),
+                ("4", "recortar contexto", "Conserva los mensajes de sistema y los últimos doce."),
+                ("5", "mínimo", "Conserva los últimos seis mensajes; los tools quedan atados."),
+                ("6", "resumen simple", "Último recurso: resume con la verdad lo que se reunió."),
             ]}, deck="visual"),
-        Section("compact", "COMPACT MODE", "Every request fits the model it is sent to",
-            "A model whose real window cannot hold the complete request receives a compact one; a model "
-            "that can hold it receives exactly the request it always did.",
+        Section("compact", "COMPACT MODE", "Cada solicitud cabe en el modelo al que se envía",
+            "Un modelo cuya ventana real no puede contener la solicitud completa recibe una compacta; un modelo "
+            "que sí puede contenerla recibe exactamente la solicitud que siempre recibió.",
             body=[
-                "Ollama does not refuse an oversized request for a local model: it keeps the end and answers "
-                "from that. A local qwen2.5 whose 32,768 tokens were split between two request slots read "
-                "16,386 tokens of a request of about 52,000, lost the live system metrics, and answered a "
-                "CPU question with the time.",
-                "Ollama's own count is now the proof. When the characters sent cannot fit the tokens Ollama "
-                "says it read, the request was cut, and that count is learned as the model's real window. A "
-                "local model's reported context length is never taken as its per-request window, because "
-                "parallel request slots divide it.",
-                "A request that fits the usable window is sent byte for byte, as before. Otherwise Compact "
-                "mode keeps System-Metrics and Files-Search, whose context rides inside the question, and "
-                "binds only the rows you tick. Since v1.75.0 that is a toolbar switch: ticking it unticks every "
-                "Configure row but those three and pauses External MCPs, and each row shows its price. The "
-                "system prompt is rebuilt by rule priority and closed by a "
-                "seven-rule note, and history keeps the six newest messages. A first step that Ollama still "
-                "cut is re-fitted and resent before any tool runs.",
+                "Ollama no rechaza una solicitud demasiado grande para un modelo local: se queda con el final y responde "
+                "a partir de eso. Un qwen2.5 local cuyos 32,768 tokens se dividieron entre dos slots de solicitud leyó "
+                "16,386 tokens de una solicitud de unos 52,000, perdió las métricas de sistema en vivo, y respondió una "
+                "pregunta de CPU con la hora.",
+                "El propio conteo de Ollama es ahora la prueba. Cuando los caracteres enviados no caben en los tokens que Ollama "
+                "dice que leyó, la solicitud se cortó, y ese conteo se aprende como la ventana real del modelo. El "
+                "context length reportado de un modelo local nunca se toma como su ventana por solicitud, porque "
+                "los slots de solicitud paralelos la dividen.",
+                "Una solicitud que cabe en la ventana usable se envía byte por byte, como antes. Si no, el Compact "
+                "mode conserva System-Metrics y Files-Search, cuyo contexto viaja dentro de la pregunta, y "
+                "ata sólo las filas que marcas. Desde v1.75.0 eso es un switch de la barra de herramientas: marcarlo desmarca cada "
+                "fila de Configurar menos esas tres y pausa los External MCPs, y cada fila muestra su precio. El "
+                "system prompt se reconstruye por prioridad de reglas y se cierra con una "
+                "nota de siete reglas, y el historial conserva los seis mensajes más nuevos. Un primer paso que Ollama aun así "
+                "cortó se reajusta y se reenvía antes de que corra cualquier tool.",
             ],
             points=[
-                ("Full", "A model that can hold the request receives it unchanged, byte for byte."),
-                ("Compact", "A toolbar switch: only the rows you tick are bound, each with its price."),
-                ("Locked", "A model too small for everything turns Compact on by itself and locks it."),
-                ("Your choice", "`context_compact_mode` is auto by default, or always or never, obeyed exactly."),
+                ("Completo", "Un modelo que puede contener la solicitud la recibe sin cambios, byte por byte."),
+                ("Compact", "Un switch de la barra de herramientas: sólo se atan las filas que marcas, cada una con su precio."),
+                ("Bloqueado", "Un modelo demasiado pequeño para todo activa Compact por sí mismo y lo bloquea."),
+                ("Tu decisión", "`context_compact_mode` es auto de forma predeterminada, o always o never, obedecido exactamente."),
             ],
-            callout=("It fails open to the full request",
-                     "Every part of the fitter fails open: when anything is uncertain, the complete request is "
-                     "sent exactly as before."),
+            callout=("Falla hacia la solicitud completa",
+                     "Cada parte del ajustador falla abierto: cuando algo es incierto, la solicitud completa se "
+                     "envía exactamente como antes."),
             deck="cards"),
-        Section("brain", "MODEL BRAIN", "Every model tuned from formal sources",
-            "Since v1.76.0 each model receives its own sampling, thinking level and context size, taken from "
-            "formal sources, instead of one fixed set of values for every model.",
+        Section("brain", "MODEL BRAIN", "Cada modelo afinado desde fuentes formales",
+            "Desde v1.76.0 cada modelo recibe su propio sampling, nivel de thinking y tamaño de contexto, tomados de "
+            "fuentes formales, en vez de un conjunto fijo de valores para cada modelo.",
             body=[
-                "The values come, in this order, from your own `model_brain_overrides`; a built-in knowledge base "
-                "whose every profile cites its vendor model card or Hugging Face `generation_config.json` (GLM-5, "
-                "DeepSeek-V4, MiniMax-M3, Gemma 4, Qwen 3.5, Qwen 2.5, gpt-oss, Kimi, Mistral Large 3 and "
-                "Nemotron 3); a profile learned once, in the background, for a model she does not know yet and "
-                "kept outside the installation so it survives updates; the parameters Ollama publishes for the "
-                "model; and finally the model's own defaults. The requested context never exceeds what the model "
-                "can really read.",
-                "Inside one answer, between tool calls, a thinking model gets its own earlier reasoning back, as "
-                "its maker requires, instead of starting over at every step; it is dropped between your "
-                "questions, and the context gauge counts it. In Config ▸ Models, Save opens an Auto-tuning "
-                "dialog that tunes every configured model in front of you, with the source of each value.",
-                "The stall clocks that abandoned a slow model and started again from scratch were removed. "
-                "Measured with Ollama's own numbers, reading even a very long prompt is not the bottleneck on "
-                "Ollama cloud: the time is the reasoning the model generates, and a clock cannot tell a dead call "
-                "from a model that is still thinking. The self-healing watchdog and the client time limit remain.",
+                "Los valores vienen, en este orden, de tu propio `model_brain_overrides`; de una base de conocimiento integrada "
+                "cuyos perfiles citan cada uno su model card del fabricante o el `generation_config.json` de Hugging Face (GLM-5, "
+                "DeepSeek-V4, MiniMax-M3, Gemma 4, Qwen 3.5, Qwen 2.5, gpt-oss, Kimi, Mistral Large 3 y "
+                "Nemotron 3); de un perfil aprendido una vez, en segundo plano, para un modelo que todavía no conoce y "
+                "guardado fuera de la instalación para que sobreviva a las actualizaciones; de los parámetros que Ollama publica para el "
+                "modelo; y finalmente de los valores predeterminados del propio modelo. El contexto solicitado nunca excede lo que el modelo "
+                "puede leer de verdad.",
+                "Dentro de una respuesta, entre llamadas a tools, un modelo que piensa recibe de vuelta su propio razonamiento anterior, como "
+                "lo requiere su fabricante, en vez de empezar de cero en cada paso; se descarta entre tus "
+                "preguntas, y el medidor de contexto lo cuenta. En Config ▸ Models, Guardar abre un diálogo de Auto-tuning "
+                "que afina cada modelo configurado frente a ti, con la fuente de cada valor.",
+                "Los relojes de estancamiento que abandonaban un modelo lento y empezaban otra vez desde cero se quitaron. "
+                "Medido con los propios números de Ollama, leer incluso un prompt muy largo no es el cuello de botella en "
+                "Ollama cloud: el tiempo es el razonamiento que el modelo genera, y un reloj no puede distinguir una llamada muerta "
+                "de un modelo que todavía está pensando. El watchdog de auto-sanación y el límite de tiempo del cliente se mantienen.",
             ],
             points=[
-                ("Formal sources", "Your overrides, cited profiles, learned profiles, Ollama, model defaults."),
-                ("Real context", "The requested window never exceeds what the model can read."),
-                ("Reasoning kept", "Thinking models keep their train of thought between tool calls."),
-                ("Auto-tuning", "Config ▸ Models ▸ Save shows each model tuned, with its sources."),
-                ("No stall clocks", "A slow model is never thrown away and restarted."),
-                ("Your choice", "`model_brain: off` restores the legacy fixed sampler exactly."),
+                ("Fuentes formales", "Tus overrides, perfiles citados, perfiles aprendidos, Ollama, valores predeterminados del modelo."),
+                ("Contexto real", "La ventana solicitada nunca excede lo que el modelo puede leer."),
+                ("Razonamiento conservado", "Los modelos que piensan conservan su hilo de pensamiento entre llamadas a tools."),
+                ("Auto-tuning", "Config ▸ Models ▸ Guardar muestra cada modelo afinado, con sus fuentes."),
+                ("Sin relojes de estancamiento", "Un modelo lento nunca se tira y se reinicia."),
+                ("Tu decisión", "`model_brain: off` restaura el sampler fijo heredado exactamente."),
             ],
-            callout=("No model name in the code",
-                     "A new model gets its values from the knowledge base, research, Ollama or its own defaults, "
-                     "never from a branch written for one model name, and a value you set always wins."),
+            callout=("Ningún nombre de modelo en el código",
+                     "Un modelo nuevo obtiene sus valores de la base de conocimiento, la investigación, Ollama o sus propios valores predeterminados, "
+                     "nunca de un branch escrito para un nombre de modelo, y un valor que tú estableces siempre gana."),
             deck="cards"),
-        Section("verdict", "EXEC REPORT", "A verdict you can trust",
-            "An exit code is one bit. An agent's own structured self-report is a typed record, and it "
-            "outranks the exit code.",
+        Section("verdict", "EXEC REPORT", "Un veredicto en el que puedes confiar",
+            "Un código de salida es un bit. El auto-reporte estructurado del propio agent es un registro tipado, y "
+            "supera al código de salida.",
             body=[
-                "`agent_verdict.py` parses each agent's `INI_SECTION` block into a typed tree and runs an ordered "
-                "rule table over it. There is no model call and no heuristic, so the same input always yields "
-                "the same colour. The status vocabulary is closed: five disjoint sets, united as "
-                "`KNOWN_STATUSES`, and a repository-wide test rejects any status token an agent invents.",
-                "A read-only diagnostic that reports a problem has succeeded, because the finding is the "
-                "deliverable. Degraded work, work not done and agent errors stay red. A red row therefore "
-                "means that no clean requested deliverable exists, never merely that a check found something.",
+                "`agent_verdict.py` analiza el bloque `INI_SECTION` de cada agent en un árbol tipado y corre una tabla de reglas ordenada "
+                "sobre él. No hay llamada a modelo ni heurística, así que la misma entrada siempre da "
+                "el mismo color. El vocabulario de status es cerrado: cinco conjuntos disjuntos, unidos como "
+                "`KNOWN_STATUSES`, y una prueba de todo el repositorio rechaza cualquier token de status que un agent invente.",
+                "Un diagnóstico de sólo lectura que reporta un problema tuvo éxito, porque el hallazgo es el "
+                "entregable. El trabajo degradado, el trabajo no hecho y los errores de agent quedan en rojo. Una fila roja por lo tanto "
+                "significa que no existe un entregable solicitado limpio, nunca sólo que una revisión encontró algo.",
             ],
-            table={"columns": ["Rule", "Fires when", "Verdict"], "widths": [0.10, 0.66, 0.24], "rows": [
-                ["R1", "The agent wrote no self-report", "Exit code decides"],
-                ["R2", "The agent declares error or failed", "FAILED"],
-                ["R3", "Work not done: refused, not_found, engine_unavailable …", "FAILED"],
-                ["R3b", "Degraded: tokens_only, compiled_with_errors, operator_required …", "FAILED"],
-                ["R4", "A diagnostic completed: invalid, findings, no_matches, listed …", "SUCCESS"],
-                ["R5", "An explicit success or ok flag", "That flag"],
-                ["R6", "A non-zero errors count", "FAILED"],
-                ["R7", "Nothing decisive and a non-zero exit code", "FAILED"],
-                ["R7b", "A named completion: ok, created, sent …", "SUCCESS"],
-                ["R8b", "A status token outside the vocabulary", "SUCCESS, flagged"],
-                ["R8", "No failure signal at all", "SUCCESS"],
+            table={"columns": ["Regla", "Se dispara cuando", "Veredicto"], "widths": [0.10, 0.66, 0.24], "rows": [
+                ["R1", "El agent no escribió auto-reporte", "Decide el código de salida"],
+                ["R2", "El agent declara error o failed", "FAILED"],
+                ["R3", "Trabajo no hecho: refused, not_found, engine_unavailable …", "FAILED"],
+                ["R3b", "Degradado: tokens_only, compiled_with_errors, operator_required …", "FAILED"],
+                ["R4", "Un diagnóstico terminó: invalid, findings, no_matches, listed …", "SUCCESS"],
+                ["R5", "Un flag explícito de success u ok", "Ese flag"],
+                ["R6", "Un conteo de errors distinto de cero", "FAILED"],
+                ["R7", "Nada decisivo y un código de salida distinto de cero", "FAILED"],
+                ["R7b", "Una terminación nombrada: ok, created, sent …", "SUCCESS"],
+                ["R8b", "Un token de status fuera del vocabulario", "SUCCESS, marcado"],
+                ["R8", "Ninguna señal de falla en absoluto", "SUCCESS"],
             ]},
-            callout=("Why R4 outranks R5 and R6",
-                     "A linter that worked perfectly reports `status: invalid`, `success: False` and "
-                     "`errors: 2` together. The last two describe the document, not the agent."),
+            callout=("Por qué R4 supera a R5 y R6",
+                     "Un linter que funcionó perfectamente reporta `status: invalid`, `success: False` y "
+                     "`errors: 2` juntos. Los últimos dos describen el documento, no el agent."),
             deck="table"),
-        Section("askexecs", "PERMISSION", "Ask Execs: a human gate before risky steps",
-            "With Ask Execs on, the executor blocks before each risky tool and waits for Proceed or Deny in "
-            "the browser. A single Deny halts the whole chain and leaves a red “Execution interrupted” "
-            "banner.",
+        Section("askexecs", "PERMISO", "Ask Execs: una compuerta humana antes de pasos riesgosos",
+            "Con Ask Execs activado, el executor se bloquea antes de cada tool riesgoso y espera Permitir o Denegar en "
+            "el browser. Un solo Denegar detiene toda la cadena y deja un banner rojo "
+            "“Execution interrupted”.",
             body=[
-                "The gate is an explicit allowlist, chosen tier by tier. Every doubtful path resolves to Deny: a "
-                "failed prompt, a Cancel or a disconnected browser never lets a risky tool run unconfirmed. "
-                "Unchecking Ask Execs during a run relaxes that run; checking it again re-arms the prompts.",
+                "La compuerta es un allowlist explícito, elegido tier por tier. Todo camino dudoso se resuelve en Denegar: un "
+                "prompt fallido, un Cancelar o un browser desconectado nunca deja correr un tool riesgoso sin confirmar. "
+                "Desmarcar Ask Execs durante una ejecución relaja esa ejecución; marcarlo otra vez rearma los prompts.",
             ],
-            table={"columns": ["Tier", "Prompted", "Agents"], "widths": [0.26, 0.16, 0.58], "rows": [
-                ["Command and script runners", "Yes", "Terminater, Executer, Pythonxer, SSHer, Kalier, Dockerer, "
+            table={"columns": ["Nivel", "¿Pregunta?", "Agents"], "widths": [0.26, 0.16, 0.58], "rows": [
+                ["Comandos y runners de script", "Sí", "Terminater, Executer, Pythonxer, SSHer, Kalier, Dockerer, "
                  "Kuberneter, SQLer, Mongoxer, Gitter, Jenkinser, PSer, J-Decompiler"],
-                ["Editor persistence", "Yes", "Interactor new/save; reads and guided typing do not persist a file."],
-                ["A · destroys or overwrites", "Yes", "Deleter, Mover, File-Creator, Editor, De-Compresser, "
+                ["Persistencia del Editor", "Sí", "Interactor nuevo/guardar; las lecturas y la escritura guiada no persisten un archivo."],
+                ["A · destruye o sobrescribe", "Sí", "Deleter, Mover, File-Creator, Editor, De-Compresser, "
                  "unzip, PDFer, LaTeXer"],
-                ["D · remote systems", "Yes", "SCPer, Apirer, Nmapper, Discoverer, Crawler, "
+                ["D · sistemas remotos", "Sí", "SCPer, Apirer, Nmapper, Discoverer, Crawler, "
                  "NetSpeed-Calculator"],
-                ["B · messaging", "No", "Emailer, Whatsapper, Telegrammer, Instant Messaging "
-                 "Doctor: user authorization is still required"],
-                ["C · desktop and hardware", "No", "Keyboarder, Mouser, Windower, Playwrighter, firmware "
-                 "agents, Blenderer, Unrealer: visible while they act"],
+                ["B · mensajería", "No", "Emailer, Whatsapper, Telegrammer, Instant Messaging "
+                 "Doctor: todavía se requiere autorización del usuario"],
+                ["C · escritorio y hardware", "No", "Keyboarder, Mouser, Windower, Playwrighter, agents de firmware"
+                 ", Blenderer, Unrealer: visibles mientras actúan"],
             ]}, deck="table"),
-        Section("rag", "RETRIEVAL", "Grounded in your project, and only its text",
-            "Hybrid retrieval combines FAISS vectors with BM25 keywords, extracts metadata, budgets the "
-            "context and falls back gracefully when a chain cannot retrieve.",
+        Section("rag", "RECUPERACIÓN", "Anclada en tu proyecto, y sólo en su texto",
+            "La recuperación híbrida combina vectores FAISS con palabras clave BM25, extrae metadatos, presupuesta el "
+            "contexto y cae con gracia cuando un chain no puede recuperar.",
             body=[
-                "When you load a directory or file, that loaded context outranks her self-knowledge: a request "
-                "to “summarize the project” is answered from your project, not from a description of "
-                "herself.",
-                "Before any file is embedded, a binary-content guard screens its bytes in a short-circuiting "
-                "cascade that reads at most one 8 KiB block. Binary files are dropped exactly like a name you "
-                "chose to omit, and every drop is named in `tlamatini.log` under `--- [BINARY-GUARD]`.",
-                "The guard fails open: any doubt means “load it as text”, because silently deleting real "
-                "context is worse than embedding one odd file. The byte-order-mark stage runs before the NUL-byte "
-                "stage, or every UTF-16 document would vanish.",
+                "Cuando cargas un directorio o archivo, ese contexto cargado supera su auto-conocimiento: una solicitud "
+                "de “resumir el proyecto” se responde desde tu proyecto, no desde una descripción de "
+                "ella misma.",
+                "Antes de que cualquier archivo se incruste, un guard de contenido binario revisa sus bytes en una cascada de cortocircuito "
+                "que lee a lo más un bloque de 8 KiB. Los archivos binarios se descartan exactamente como un nombre que "
+                "elegiste omitir, y cada descarte se nombra en `tlamatini.log` bajo `--- [BINARY-GUARD]`.",
+                "El guard falla abierto: cualquier duda significa “cárgalo como texto”, porque borrar silenciosamente "
+                "contexto real es peor que incrustar un archivo raro. La etapa del byte-order-mark corre antes de la del byte "
+                "NUL, o cada documento UTF-16 desaparecería.",
             ],
             visual="cascade",
             visual_data={"stages": [
-                ("Extension", "Known binary suffix, no I/O"),
-                ("Sample", "One 8 KiB read"),
-                ("Empty", "Nothing to embed"),
-                ("BOM", "UTF-8/16/32 is text"),
-                ("Signature", "45 magic numbers"),
-                ("NUL byte", "Classic binary test"),
-                ("Control ratio", "Non-text byte share"),
-                ("UTF-8", "Undecodable and dirty"),
+                ("Extensión", "Sufijo binario conocido, sin I/O"),
+                ("Muestra", "Una lectura de 8 KiB"),
+                ("Vacío", "Nada que incrustar"),
+                ("BOM", "UTF-8/16/32 es texto"),
+                ("Firma", "45 números mágicos"),
+                ("Byte NUL", "Prueba binaria clásica"),
+                ("Proporción de control", "Proporción de bytes no-texto"),
+                ("UTF-8", "Indescodificable y sucio"),
             ]}, deck="visual"),
-        Section("compiler", "FLOW COMPILER", "One compiler for the canvas and the chat",
-            "Canvas snapshots and chat-generated drafts compile through the same Agent Contract registry "
-            "before any file reaches the session pool.",
+        Section("compiler", "COMPILADOR DE FLOW", "Un compilador para el canvas y el chat",
+            "Los snapshots del canvas y los borradores generados en el chat compilan a través del mismo registro de Agent Contract "
+            "antes de que cualquier archivo llegue al pool de sesión.",
             body=[
-                "Each agent's contract declares which configuration field a connection on each slot writes, "
-                "which fields Parametrizer may read, which paths are secrets to redact, and whether it is a "
-                "singleton, long-running or never starts its targets. Both surfaces normalize into one "
-                "`FlowSpec` (schema version 2).",
-                "The canvas Start button compiles the live snapshot in write mode, so an edited but unsaved flow "
-                "runs under the same validation as a freshly loaded file. Validate uses a dry run that previews "
-                "the compiled configuration without touching disk.",
-                f"Agents that feed Parametrizer emit one atomic `INI_SECTION` block per result. "
-                f"{f['parametrizer_sources']} agents currently declare structured outputs.",
+                "El contrato de cada agent declara qué campo de configuración escribe una conexión en cada slot, "
+                "qué campos puede leer Parametrizer, qué paths son secretos a redactar, y si es un "
+                "singleton, de larga duración o nunca inicia sus targets. Ambas superficies se normalizan en un solo "
+                "`FlowSpec` (schema versión 2).",
+                "El botón Iniciar del canvas compila el snapshot en vivo en modo escritura, así que un flow editado pero sin guardar "
+                "corre bajo la misma validación que un archivo recién cargado. Validar usa un dry run que previsualiza "
+                "la configuración compilada sin tocar el disco.",
+                f"Los agents que alimentan a Parametrizer emiten un bloque `INI_SECTION` atómico por resultado. "
+                f"{f['parametrizer_sources']} agents actualmente declaran outputs estructurados.",
             ],
             code=("INI_SECTION_APIRER<<<\n"
                   "url: https://example.org/status\n"
@@ -536,1099 +536,1099 @@ def build_chapters(f: dict) -> list[Chapter]:
                   ">>>END_SECTION_APIRER"),
             deck="split",
             deck_points=[
-                ("Contracts", "Connection slots, Parametrizer fields, secret paths, lifecycle flags."),
-                ("Start", "Compiles the live canvas in write mode before any agent runs."),
-                ("Validate", "A dry run that previews the compiled configuration."),
-                ("Create Flow", "Chat drafts pass the same normalizer and redaction."),
+                ("Contratos", "Slots de conexión, campos de Parametrizer, paths secretos, flags de ciclo de vida."),
+                ("Iniciar", "Compila el canvas en vivo en modo escritura antes de que corra cualquier agent."),
+                ("Validar", "Un dry run que previsualiza la configuración compilada."),
+                ("Create Flow", "Los borradores del chat pasan el mismo normalizador y redacción."),
             ]),
-        Section("resilience", "RELIABILITY", "Built to keep running",
-            "Small, deliberate mechanisms keep the core alive under the conditions that used to stop it.",
+        Section("resilience", "CONFIABILIDAD", "Construida para seguir corriendo",
+            "Mecanismos pequeños y deliberados mantienen vivo el core bajo las condiciones que antes lo detenían.",
             points=[
-                ("Console shield", "The log file is written first; console output goes through a bounded "
-                 "queue, so clicking the console cannot freeze her. Since v1.76.0 lines are coloured by level."),
-                ("Orphan reaper", "Three tiers sweep dead descendants and orphaned console hosts after tools, "
-                 "after answers and at shutdown, without ever raising into the chat."),
-                ("Per-user log lines", "Lines carry a five-character tag such as [a3] so concurrent users "
-                 "and turns never blur."),
-                ("Clean Ctrl+C", "The signal handler only sets an event; a worker cleans up, a watchdog "
-                 "guarantees exit, and a second Ctrl+C exits at once."),
-                ("Configurable port", "`django_port` moves the web port with no rebuild and falls back to "
-                 "8000 on any bad value."),
-                ("Temp and Templates", "Scratch files live under the application's Temp folder; scaffolded "
-                 "projects default to its Templates folder."),
+                ("Escudo de consola", "El archivo de log se escribe primero; la salida de consola pasa por una cola "
+                 "acotada, así que hacer clic en la consola no puede congelarla. Desde v1.76.0 las líneas se colorean por nivel."),
+                ("Limpiador de huérfanos", "Tres niveles barren descendientes muertos y console hosts huérfanos después de los tools, "
+                 "después de las respuestas y al apagar, sin nunca lanzar una excepción al chat."),
+                ("Líneas de log por usuario", "Las líneas llevan una etiqueta de cinco caracteres como [a3] para que los usuarios "
+                 "y turnos concurrentes nunca se confundan."),
+                ("Ctrl+C limpio", "El manejador de señal sólo pone un evento; un worker limpia, un watchdog "
+                 "garantiza la salida, y un segundo Ctrl+C sale de inmediato."),
+                ("Puerto configurable", "`django_port` mueve el puerto web sin recompilar y cae de vuelta a "
+                 "8000 ante cualquier valor malo."),
+                ("Temp y Templates", "Los archivos temporales viven bajo la carpeta Temp de la aplicación; los proyectos "
+                 "generados usan de forma predeterminada su carpeta Templates."),
             ], deck="cards"),
     ])
 
-    surfaces = Chapter("surfaces", "III", "Where You Work With Her",
-        "The chat, the two canvases, the catalog and the dialogs that operate everything else.",
+    surfaces = Chapter("surfaces", "III", "Dónde trabajas con ella",
+        "El chat, los dos canvases, el catálogo y los diálogos que operan todo lo demás.",
         accent="gold", sections=[
-        Section("chat", "THE CHAT PAGE", "Conversation with modes",
-            "The chat page is where you talk to her. Up to eight toolbar switches decide how each request runs.",
+        Section("chat", "LA PÁGINA DEL CHAT", "Conversación con modos",
+            "La página del chat es donde hablas con ella. Hasta ocho switches de la barra de herramientas deciden cómo corre cada solicitud.",
             body=[
-                "Beside the conversation sits a canvas that shows code, text and PDFs. Paste a screenshot with "
-                "Ctrl+V or drop images on any page: she saves them to her Temp folder and writes the full path "
-                "into your message, ready for Image-Interpreter. A context ring between the toolbar and the "
-                "message box shows how much of the model's window the real request uses, measured by the "
-                "backend in bytes. Tokens use Ollama's own prompt_eval_count for the request; an "
-                "estimate is labeled until a measured count arrives. When Ollama cut a request the ring says "
-                "so, and an answer built from a cut request carries a CONTEXT-WINDOW warning.",
-                "Her avatar speaks answers aloud when you ask. Since v1.72.3, clearer syllable movement and "
-                "faster closure make her lips easier to follow, with opening capped to her portrait. After "
-                "login, pressing Enter on the welcome page takes you straight to the chat.",
-                "Answer tables stay readable with every model: only a cell whose text would fall below 3:1 "
-                "contrast is recoloured, while readable tables, Exec Report tables and gradient backgrounds "
-                "keep their colours.",
+                "Junto a la conversación hay un canvas que muestra código, texto y PDFs. Pega un screenshot con "
+                "Ctrl+V o suelta imágenes en cualquier página: ella los guarda en su carpeta Temp y escribe el path completo "
+                "en tu mensaje, listo para Image-Interpreter. Un anillo de contexto entre la barra de herramientas y el "
+                "cuadro de mensaje muestra cuánto de la ventana del modelo usa la solicitud real, medido por el "
+                "backend en bytes. Los tokens usan el propio prompt_eval_count de Ollama para la solicitud; un "
+                "estimado se etiqueta hasta que llega un conteo medido. Cuando Ollama cortó una solicitud el anillo lo dice, "
+                "y una respuesta construida a partir de una solicitud cortada lleva una advertencia CONTEXT-WINDOW.",
+                "Su avatar dice las respuestas en voz alta cuando se lo pides. Desde v1.72.3, un movimiento de sílabas más claro y "
+                "un cierre más rápido hacen sus labios más fáciles de seguir, con la apertura limitada a su retrato. Después de "
+                "iniciar sesión, presionar Enter en la página de bienvenida te lleva directo al chat.",
+                "Las tablas de respuesta se mantienen legibles con cada modelo: sólo una celda cuyo texto caería por debajo de 3:1 "
+                "de contraste se recolorea, mientras que las tablas legibles, las tablas del Exec Report y los fondos con gradiente "
+                "conservan sus colores.",
             ],
-            table={"columns": ["Switch", "What it does"], "widths": [0.24, 0.76], "rows": [
-                ["Multi-Turn", "Planned, tool-calling operator mode; unchecked means direct one-shot answers."],
-                ["Exec Report", "Appends per-agent execution tables; available while Multi-Turn is on."],
-                ["ACPX", "Adds the twelve ACPX and Skill tools to the bound surface; off by default."],
-                ["Ask Execs", "Proceed/Deny before each risky tool; a Deny stops the chain."],
-                ["Step-by-Step", "One concrete action at a time, waiting for your reply before the next."],
-                ["Internet", "Allows a web search to add context to the answer."],
-                ["Compact mode", "Binds only the rows you tick; locked on when the model cannot hold all."],
-                ["Self-modify", "Source runs and self-modify builds; sends self-knowledge, locked off if too big."],
+            table={"columns": ["Interruptor", "Qué hace"], "widths": [0.24, 0.76], "rows": [
+                ["Multi-Turn", "Modo operador planeado con llamado de tools; sin marcar significa respuestas directas de un solo tiro."],
+                ["Exec Report", "Agrega tablas de ejecución por agent; disponible mientras Multi-Turn está activado."],
+                ["ACPX", "Agrega los doce tools de ACPX y Skill a la superficie atada; desactivado de forma predeterminada."],
+                ["Ask Execs", "Permitir/Denegar antes de cada tool riesgoso; un Denegar detiene la cadena."],
+                ["Paso a paso", "Una acción concreta a la vez, esperando tu respuesta antes de la siguiente."],
+                ["Internet", "Permite que una búsqueda web agregue contexto a la respuesta."],
+                ["Compact mode", "Ata sólo las filas que marcas; bloqueado en activado cuando el modelo no puede contener todo."],
+                ["Self-modify", "Ejecuciones de source y builds self-modify; envía el auto-conocimiento, bloqueado en desactivado si es muy grande."],
             ]}, deck="table"),
-        Section("composer", "THE MESSAGE BOX", "More room to write, or more room to read",
-            "Drag the divider above the message box. With her avatar undocked, the box can shrink to its buttons.",
+        Section("composer", "EL CUADRO DE MENSAJE", "Más espacio para escribir, o más espacio para leer",
+            "Arrastra el divisor arriba del cuadro de mensaje. Con su avatar desacoplado, el cuadro puede encogerse hasta sus botones.",
             body=[
-                "The divider between the conversation and the message box follows the pointer and the keyboard. "
-                "The arrow keys move it one step and Shift+arrows five; Home or a double-click shrinks the box to "
-                "its smallest, End makes it as tall as allowed, and Escape ends a drag. Screen readers hear the "
-                "box height. The toolbar, context gauge, attachment and dictation rows are measured, so none of "
-                "them is cut off.",
-                "Docked, her portrait keeps its room above the action buttons. Undocked, the box can shrink to "
-                "those buttons plus a six-pixel guard, and docking her again gives the portrait its room back. "
-                "In a short window the box scrolls inside itself, and on a narrow screen the workspace pans while "
-                "the page and its dialogs stay in place.",
-                "Docked, her portrait now follows the divider too: dragging the bar down shrinks it to a 120-pixel square and dragging up gives it back. Shipped in v1.83.0.",
-                "In v1.85.0, the portrait and its frame stay centered over the complete Mic-to-Send row. "
-                "Views → Canvas can give the chat the full width; Views → Reset layout restores both panes "
-                "and docks the portrait while keeping the document, draft and context.",
+                "El divisor entre la conversación y el cuadro de mensaje sigue el puntero y el teclado. "
+                "Las teclas de flecha lo mueven un paso y Shift+flechas cinco; Home o un doble clic encogen el cuadro a "
+                "su mínimo, End lo hace tan alto como se permite, y Escape termina un arrastre. Los lectores de pantalla oyen la "
+                "altura del cuadro. La barra de herramientas, el medidor de contexto, las filas de adjuntos y de dictado se miden, así que ninguna de "
+                "ellas se corta.",
+                "Acoplado, su retrato conserva su espacio arriba de los botones de acción. Desacoplado, el cuadro puede encogerse hasta "
+                "esos botones más un guardia de seis píxeles, y acoplarla de nuevo le devuelve su espacio al retrato. "
+                "En una ventana corta el cuadro se desplaza dentro de sí mismo, y en una pantalla angosta el espacio de trabajo se desplaza mientras "
+                "la página y sus diálogos se quedan en su lugar.",
+                "Acoplado, su retrato ahora también sigue el divisor: arrastrar la barra hacia abajo lo encoge a un cuadrado de 120 píxeles y arrastrar hacia arriba lo devuelve. Se envió en v1.83.0.",
+                "En v1.85.0, el retrato y su marco se quedan centrados sobre la fila completa de Mic a Send. "
+                "Vistas → Canvas puede darle al chat el ancho completo; Vistas → Restablecer distribución restaura ambos paneles "
+                "y acopla el retrato conservando el documento, el borrador y el contexto.",
             ],
             points=[
-                ("Drag or type", "Pointer, arrows, Shift+arrows, Home and End move the divider."),
-                ("Undocked", "The message box can shrink to its own action buttons."),
-                ("Docked", "A centered portrait above Mic through Send, down to a 120-pixel square."),
-                ("Small windows", "The box scrolls itself; dialogs stay inside the window."),
+                ("Arrastra o escribe", "El puntero, las flechas, Shift+flechas, Home y End mueven el divisor."),
+                ("Desacoplado", "El cuadro de mensaje puede encogerse hasta sus propios botones de acción."),
+                ("Acoplado", "Un retrato centrado arriba de Mic a Send, hasta un cuadrado de 120 píxeles."),
+                ("Ventanas chicas", "El cuadro se desplaza solo; los diálogos se quedan dentro de la ventana."),
             ], deck="cards"),
-        Section("drop", "CHAT HISTORY", "Drop a message from the conversation",
-            "Every message card has Drop beside Copy, for your prompts and Tlamatini's answers.",
+        Section("drop", "HISTORIAL DEL CHAT", "Descarta un mensaje de la conversación",
+            "Cada tarjeta de mensaje tiene Descartar junto a Copiar, para tus prompts y las respuestas de Tlamatini.",
             body=[
-                "Press Drop and read the themed confirmation. Cancel starts focused, so Enter cancels by "
-                "default. The red Drop button confirms deletion. Escape and the close button also cancel. "
-                "The saved message disappears from the chat and the database history used for future requests.",
-                "The other messages stay. Dropping only a prompt leaves its answer; dropping only an answer "
-                "leaves its prompt. Remove both cards to remove the exchange. A user prompt also takes its "
-                "directly following Referenced Rephrase rows, so a reload cannot show those duplicate words.",
-                "Connected tabs for the same user remove the saved cards after the server confirms. A status, "
-                "error or retry card without a saved message id only disappears from the current screen. "
-                "The connection refuses Drop while it is answering, and a disconnected chat asks you to reconnect.",
+                "Presiona Descartar y lee la confirmación con el tema. Cancelar empieza con el foco, así que Enter cancela de forma "
+                "predeterminada. El botón rojo Descartar confirma el borrado. Escape y el botón de cerrar también cancelan. "
+                "El mensaje guardado desaparece del chat y del historial de la base de datos que se usa para solicitudes futuras.",
+                "Los demás mensajes se quedan. Descartar sólo un prompt deja su respuesta; descartar sólo una respuesta "
+                "deja su prompt. Quita ambas tarjetas para quitar el intercambio. Un prompt del usuario también se lleva las "
+                "filas de Referenced Rephrase que lo siguen directamente, así que una recarga no puede mostrar esas palabras duplicadas.",
+                "Las pestañas conectadas del mismo usuario quitan las tarjetas guardadas después de que el servidor confirma. Una tarjeta de status, "
+                "de error o de reintento sin un id de mensaje guardado sólo desaparece de la pantalla actual. "
+                "La conexión rechaza Descartar mientras está respondiendo, y un chat desconectado te pide reconectar.",
             ],
             points=[
-                ("Choose", "Drop sits beside Copy on both user and assistant message cards."),
-                ("Confirm", "Cancel starts focused. Red Drop confirms; Escape and close cancel."),
-                ("Remove", "Delete the saved message from chat history. Its paired prompt or answer stays."),
-                ("Continue", "The next request reads the updated history without a reconnect."),
+                ("Elegir", "Descartar está junto a Copiar en las tarjetas de mensajes del usuario y de la asistente."),
+                ("Confirmar", "Cancelar empieza con el foco. Descartar en rojo confirma; Escape y cerrar cancelan."),
+                ("Quitar", "Borra el mensaje guardado del historial del chat. Su prompt o respuesta pareada se queda."),
+                ("Continuar", "La siguiente solicitud lee el historial actualizado sin reconectar."),
             ], deck="cards"),
-        Section("drop_scope", "MEMORY AND EFFECTS", "What remains after Drop",
-            "Deleting a chat card changes future conversation context. Separate saved notes and completed work remain.",
+        Section("drop_scope", "MEMORIA Y EFECTOS", "Qué queda después de Descartar",
+            "Borrar una tarjeta del chat cambia el contexto de la conversación futura. Las notas guardadas por separado y el trabajo terminado se quedan.",
             body=[
-                "Each request reloads up to eight newest AgentMessage rows through DBChatHistoryLoader, then "
-                "filters status and rephrase content. No cached conversation summary or LangGraph checkpoint "
-                "needs clearing. Removing a row lets the window reach an older row when one exists.",
-                "An enabled External MCP memory tool stores notes separately from AgentMessage. Drop does "
-                "not erase that knowledge graph; ask Tlamatini to forget the saved note too. Retained messages "
-                "may also repeat a fact from a deleted card, so Drop is not a guarantee of complete forgetting.",
-                "Files created, messages sent, agent runs and Exec Report rows remain real completed work. "
-                "Dropping their prompt or answer cannot undo those effects. A Create Flow button belongs to "
-                "its answer card and disappears with it, so download a needed .flw before deleting the card.",
+                "Cada solicitud recarga hasta las ocho filas de AgentMessage más nuevas con DBChatHistoryLoader, y luego "
+                "filtra el contenido de status y de rephrase. No hay un resumen de conversación en caché ni un checkpoint de LangGraph "
+                "que haya que limpiar. Quitar una fila deja que la ventana alcance una fila más vieja cuando existe.",
+                "Un tool de memoria de External MCP habilitado guarda notas aparte de AgentMessage. Descartar "
+                "no borra ese grafo de conocimiento; pídele a Tlamatini que también olvide la nota guardada. Los mensajes que se quedan "
+                "también pueden repetir un dato de una tarjeta borrada, así que Descartar no garantiza un olvido completo.",
+                "Los archivos creados, los mensajes enviados, las ejecuciones de agents y las filas del Exec Report siguen siendo trabajo real terminado. "
+                "Descartar su prompt o su respuesta no puede deshacer esos efectos. Un botón Create Flow pertenece a "
+                "su tarjeta de respuesta y desaparece con ella, así que descarga el .flw que necesites antes de borrar la tarjeta.",
             ],
             points=[
-                ("History", "Every request reloads a window of up to eight newest database rows."),
-                ("Saved notes", "External MCP memory is separate. Ask her to forget its note too."),
-                ("Other messages", "The paired answer or prompt stays and may repeat the same information."),
-                ("Completed work", "Files and sent messages remain. Save a needed flow before dropping its card."),
+                ("Historial", "Cada solicitud recarga una ventana de hasta las ocho filas más nuevas de la base de datos."),
+                ("Notas guardadas", "La memoria de External MCP va aparte. Pídele que también olvide su nota."),
+                ("Otros mensajes", "La respuesta o el prompt pareado se queda y puede repetir la misma información."),
+                ("Trabajo terminado", "Los archivos y los mensajes enviados se quedan. Guarda un flow que necesites antes de descartar su tarjeta."),
             ], deck="cards"),
-        Section("dictation", "DIRECT VOICE INPUT", "Speak beside Send",
-            "The microphone captures first; no model tool-selection step stands between the click and recording.",
+        Section("dictation", "INPUT DE VOZ DIRECTO", "Habla junto a Enviar",
+            "El micrófono captura primero; ningún paso de selección de tools por el modelo se interpone entre el clic y la grabación.",
             body=[
-                "Click Mic beside Send, wait for Listening, and speak into the microphone on the "
-                "Tlamatini host. Real input level, elapsed time and the silence countdown stay in the chat. "
-                "After the configured silence window (shipped default 3.5 seconds), recognition runs and the "
-                "text is appended to the existing draft. Config > Mic selects automatic normal-form submission "
-                "or an editable draft for manual Send.",
-                "Review mode starts no task until Send. A second click or Escape cancels; empty or failed "
-                "recognition sends nothing. Current modes and permission behavior remain in force. "
-                "The avatar acknowledges dispatch through browser speech and respects Silent mode.",
+                "Haz clic en Micrófono junto a Enviar, espera a que diga Escuchando, y habla al micrófono del "
+                "host de Tlamatini. El nivel real de entrada, el tiempo transcurrido y la cuenta regresiva de silencio se quedan en el chat. "
+                "Después de la ventana de silencio configurada (3.5 segundos predeterminados de fábrica), corre el reconocimiento y el "
+                "texto se agrega al borrador existente. Config > Micrófono elige el envío automático normal del formulario "
+                "o un borrador editable para Enviar a mano.",
+                "El modo de revisión no inicia ninguna tarea hasta Enviar. Un segundo clic o Escape cancela; un reconocimiento vacío o "
+                "con error no envía nada. Los modos actuales y el comportamiento de permisos siguen vigentes. "
+                "El avatar confirma el envío con la voz del browser y respeta el modo Silencio.",
             ],
             points=[
-                ("Click", "Direct Whisperer start; the host microphone opens only for a recording."),
-                ("Listen", "Live samples drive the in-chat indicator and the configured silence gate."),
-                ("Recognize", "Local faster-whisper or the explicitly configured cloud speech engine."),
-                ("Send or review", "Submit once with current modes, or review the editable draft and press Send yourself."),
+                ("Clic", "Inicio directo de Whisperer; el micrófono del host sólo se abre para una grabación."),
+                ("Escuchar", "Las muestras en vivo mueven el indicador del chat y la compuerta de silencio configurada."),
+                ("Reconocer", "faster-whisper local o el motor de voz en la nube configurado explícitamente."),
+                ("Enviar o revisar", "Envía una vez con los modos actuales, o revisa el borrador editable y presiona Enviar tú."),
             ], deck="cards"),
-        Section("micsettings", "CONFIGURATION", "Config ends with Mic",
-            "Choose automatic Send or an editable draft, using the same dialog style as the rest of Tlamatini.",
+        Section("micsettings", "CONFIGURACIÓN", "Config termina con Micrófono",
+            "Elige Enviar automáticamente o un borrador editable, con el mismo estilo de diálogo que el resto de Tlamatini.",
             body=[
-                "The button label is Mic. Config > Mic follows Voice and controls what happens after recognition. "
-                "Send automatically is the default. Keep in the chat input restores editing without launching "
-                "a task or processing acknowledgment; correct the words, then press Send.",
-                "Preferences are saved in this browser for the next recording. Each recording owns a snapshot. "
-                "Unset fields inherit the current Whisperer template; Reset then Save restores that inheritance. "
-                "Cancel, close and Escape discard unsaved edits; outside clicks leave the dialog open. "
-                "Config > Voice controls avatar playback; Config > Models > Speech selects the recognizer.",
+                "La etiqueta del botón es Micrófono. Config > Micrófono va después de Voz y controla qué pasa después del reconocimiento. "
+                "Enviar automáticamente es lo predeterminado. Dejar en el input del chat restaura la edición sin lanzar "
+                "una tarea ni la confirmación de procesamiento; corrige las palabras y luego presiona Enviar.",
+                "Las preferencias se guardan en este browser para la siguiente grabación. Cada grabación tiene su propio snapshot. "
+                "Los campos sin valor heredan la plantilla actual de Whisperer; Restablecer y luego Guardar restaura esa herencia. "
+                "Cancelar, cerrar y Escape descartan los cambios sin guardar; los clics afuera dejan el diálogo abierto. "
+                "Config > Voz controla la reproducción del avatar; Config > Modelos > Voz elige el reconocedor.",
             ],
             points=[
-                ("Input", "Configured/default/listed host device, refresh and software gain from 0 to 300%."),
-                ("Sound gate", "Silence 0.3-20 seconds, cap 5-600 seconds, adaptive or manual sensitivity."),
-                ("Recognition", "Language, English translation, capture rate/channels, local beam size and VAD."),
-                ("Guardrails", "Validate settings before capture; removed or ambiguous saved devices cannot silently change inputs."),
+                ("Input", "Dispositivo del host configurado/predeterminado/listado, actualizar y ganancia por software de 0 a 300%."),
+                ("Compuerta de sonido", "Silencio de 0.3-20 segundos, tope de 5-600 segundos, sensibilidad adaptativa o manual."),
+                ("Reconocimiento", "Idioma, traducción al inglés, tasa/canales de captura, beam size local y VAD."),
+                ("Barandales", "Valida la configuración antes de capturar; los dispositivos guardados que se quitaron o son ambiguos no pueden cambiar las entradas en silencio."),
             ], deck="cards"),
-        Section("dictationruntime", "INTERNAL SERVICE", "One main console, no extra window",
-            "Developer visibility requirements do not become additional product windows.",
+        Section("dictationruntime", "SERVICIO INTERNO", "Una consola principal, sin ventanas extra",
+            "Los requisitos de visibilidad para desarrolladores no se convierten en ventanas adicionales del producto.",
             body=[
-                "The authenticated same-origin /ws/chat-voice/ connection prepares one resident worker per "
-                "web process. Source/carried Python runs chat_worker.py; the frozen Django process stays "
-                "free of the speech ML stack. A private token-authenticated loopback socket carries control "
-                "and result frames. Preparation does not open the microphone.",
-                "No PowerShell, conhost, focus activation or console-visibility prerequisite is involved. "
-                "The worker's stdout/stderr flows through agent.chat_voice_runtime into the main console/log. "
-                "Failed startup and shutdown reap the child. Config reloads per job; compatible models are "
-                "cached, and late cancelled results cannot submit.",
+                "La conexión autenticada del mismo origen /ws/chat-voice/ prepara un worker residente por "
+                "proceso web. El Python source/incluido corre chat_worker.py; el proceso congelado de Django se queda "
+                "libre del stack de ML de voz. Un socket loopback privado autenticado por token lleva los frames de control "
+                "y de resultado. La preparación no abre el micrófono.",
+                "No intervienen PowerShell, conhost, activación de foco ni requisitos de visibilidad de consola. "
+                "El stdout/stderr del worker fluye por agent.chat_voice_runtime hacia la consola/log principal. "
+                "Un arranque con error y el apagado recogen al hijo. La Config se recarga por trabajo; los modelos compatibles se "
+                "guardan en caché, y los resultados cancelados tardíos no pueden enviarse.",
             ],
             points=[
-                ("UI ownership", "The composer displays recording and transcription; no second console."),
-                ("Configuration", "Model/template inheritance plus validated, per-recording Mic capture overrides."),
-                ("Boundary", "The direct button is input, not a wrapped tool or an Exec Report row."),
-                ("Release", "Ship consumer/runtime/settings modules, carried validator and worker, Mic JS/CSS and template."),
+                ("Dueño de la UI", "El composer muestra la grabación y la transcripción; sin segunda consola."),
+                ("Configuración", "Herencia de modelo/plantilla más overrides de captura de Micrófono validados por grabación."),
+                ("Frontera", "El botón directo es input, no un tool wrapped ni una fila del Exec Report."),
+                ("Release", "Incluye los módulos de consumer/runtime/settings, el validador y el worker incluidos, el JS/CSS de Micrófono y la plantilla."),
             ], deck="cards"),
-        Section("dictationevidence", "VERIFICATION SCOPE", "Measured source behavior",
-            "Dated source checks are evidence, not a claim that an older installer contains the change.",
+        Section("dictationevidence", "ALCANCE DE LA VERIFICACIÓN", "Comportamiento medido del source",
+            "Las revisiones fechadas del source son evidencia, no la afirmación de que un instalador anterior contiene el cambio.",
             body=[
-                "On September 27, 2026, 108 voice regressions and 42 existing dialog-theme tests passed. "
-                "The worker refreshed 16 host inputs and restarted twice without extra windows or focus changes. "
-                "Earlier real host capture yielded samples in 297 ms after direct start; "
-                "cancellation and normal worker exit were observed. Two startup/shutdown cycles created "
-                "no additional visible windows and left foreground focus unchanged.",
-                "The updated headed-browser suite passed 62 controlled-transport checks, including both modes, "
-                "settings persistence, shared control styles and narrow layouts. Earlier cached "
-                "recognition of a 5.768-second synthetic speech file took 0.203 seconds, versus 11.094 "
-                "seconds on first decode. These are separate observations, not end-to-end latency guarantees. "
-                "No new live Ollama task or rebuilt installer was certified by those checks.",
+                "El 27 de septiembre de 2026 pasaron 108 regresiones de voz y 42 pruebas existentes del tema de diálogos. "
+                "El worker actualizó 16 entradas del host y se reinició dos veces sin ventanas extra ni cambios de foco. "
+                "Una captura real anterior en el host dio muestras en 297 ms después del inicio directo; "
+                "se observaron la cancelación y la salida normal del worker. Dos ciclos de arranque/apagado no crearon "
+                "ventanas visibles adicionales y dejaron sin cambio el foco en primer plano.",
+                "La suite actualizada de browser visible pasó 62 revisiones con transporte controlado, incluidos ambos modos, "
+                "la persistencia de la configuración, los estilos de control compartidos y las distribuciones angostas. Antes, el reconocimiento en caché "
+                "de un archivo de voz sintética de 5.768 segundos tardó 0.203 segundos, contra 11.094 "
+                "segundos en la primera decodificación. Son observaciones separadas, no garantías de latencia de punta a punta. "
+                "Esas revisiones no certificaron ninguna tarea nueva en vivo de Ollama ni un instalador recompilado.",
             ],
             points=[
-                ("Current source", "108 voice regressions, 42 theme tests and real worker metadata/lifecycle probes."),
-                ("Browser evidence", "62 headed checks with controlled transport; separate from live ASR."),
-                ("Limits", "Cold model loading, provider latency and hardware vary; no zero-latency promise."),
-                ("Detailed guide", "docs/chat-microphone-design.md records configuration, protocol and evidence."),
+                ("Source actual", "108 regresiones de voz, 42 pruebas de tema y sondeos reales de metadatos/ciclo de vida del worker."),
+                ("Evidencia del browser", "62 revisiones visibles con transporte controlado; aparte del ASR en vivo."),
+                ("Límites", "La carga en frío del modelo, la latencia del proveedor y el hardware varían; no hay promesa de latencia cero."),
+                ("Guía detallada", "docs/chat-microphone-design.md registra la configuración, el protocolo y la evidencia."),
             ], deck="cards"),
-        Section("navbar", "NAVIGATION", "The menu bar in v1.91.0",
-            "Views controls the workspace, Panels opens the flow editors, and Config holds settings.",
-            table={"columns": ["Menu", "What you find there"], "widths": [0.20, 0.80], "rows": [
-                ["Open · Save", "Open a canvas file; menu Save chooses a destination with native Save As."],
-                ["Views", "Show Canvas or Terminals; Reset layout restores the workspace."],
-                ["Context", "Load a directory or file as context, and set file-type omissions."],
-                ["Panels", "Agentic Control Panel, Prompt Flow Panel and, for staff, the Admin Panel. "
-                 "It stays usable while she is busy."],
-                ["ACPX-Skills", "Browse, configure, diagnose and reload the skill catalog."],
-                ["External", "The External MCPs dialog: catalog, activation and runtime readiness."],
-                ["Config", "Configure MCPs, Configure Agents, Models, URLs, Contacts, Access Keys Wizard, "
-                 "Voice, Mic, and Live Editor & Terminater (pacing, narration and interaction preferences)."],
-                ["DB", "WAL-safe database backup and staged replacement."],
-                ["Reconnect · About", "Rebuild the chat connection; version, author credits and Check for "
-                 "updates. Since v1.78.0, About also opens Usage, even while she is busy."],
+        Section("navbar", "NAVEGACIÓN", "La barra de menús en v1.91.1",
+            "Vistas controla el espacio de trabajo, Paneles abre los editores de flows, y Config guarda la configuración.",
+            table={"columns": ["Menú", "Qué encuentras ahí"], "widths": [0.20, 0.80], "rows": [
+                ["Abrir · Guardar", "Abre un archivo en el canvas; Guardar en el menú elige un destino con el Guardar como nativo."],
+                ["Vistas", "Muestra Canvas o Terminals; Restablecer distribución restaura el espacio de trabajo."],
+                ["Contexto", "Carga un directorio o archivo como contexto, y fija las omisiones por tipo de archivo."],
+                ["Paneles", "Agentic Control Panel, Prompt Flow Panel y, para el staff, el Admin Panel. "
+                 "Se puede usar mientras ella está ocupada."],
+                ["ACPX-Skills", "Examina, configura, diagnostica y recarga el catálogo de skills."],
+                ["Externos", "El diálogo de External MCPs: catálogo, activación y disponibilidad de runtimes."],
+                ["Config", "Configurar MCPs, Configurar Agents, Modelos, URLs, Contactos, Access Keys Wizard, "
+                 "Voz, Micrófono y Live Editor & Terminater (ritmo, narración y preferencias de interacción)."],
+                ["DB", "Backup de base de datos seguro con WAL y reemplazo por etapas."],
+                ["Reconectar · Acerca de", "Reconstruye la conexión del chat; versión, créditos de la autora y Buscar "
+                 "actualizaciones. Desde v1.78.0, Acerca de también abre Uso, incluso mientras ella está ocupada."],
             ]}, deck="table"),
-        Section("usage", "ABOUT → USAGE · NEW IN v1.78.0", "Read usage while she works",
-            "ABOUT USAGE follows the shared dialog theme and remains available during a long answer.",
+        Section("usage", "ACERCA DE → USO · NUEVO EN v1.78.0", "Consulta el uso mientras trabaja",
+            "ACERCA DE USO sigue el tema de diálogos compartido y sigue disponible durante una respuesta larga.",
             body=[
-                "Open About → Usage, then choose Cloud credits, Chat activity or Models. The first tab reads "
-                "the configured Ollama account; the other views identify measured main-chat activity for the "
-                "signed-in Tlamatini user. Recording begins with this feature and does not reconstruct earlier "
-                "history or include child agents and other applications.",
-                "The desktop dialog is 80vw by 74dvh, capped at 1440 pixels wide: at most 59.2% of the client "
-                "area. Narrow screens use 94vw by 63dvh. Text follows normal dialog sizing, buttons have clear "
-                "borders and the body scrolls between fixed controls. Fractional displays have at most two "
-                "decimal places. Colored bars offer keyboard-focus and pointer tooltips plus exact tables.",
+                "Abre Acerca de → Uso, y luego elige Créditos en la nube, Actividad del chat o Modelos. La primera pestaña lee "
+                "la cuenta de Ollama configurada; las otras vistas identifican la actividad medida del chat principal del "
+                "usuario de Tlamatini con sesión iniciada. El registro empieza con esta función y no reconstruye el historial "
+                "anterior ni incluye agents hijos ni otras aplicaciones.",
+                "El diálogo de escritorio mide 80vw por 74dvh, con un tope de 1440 píxeles de ancho: a lo más 59.2% del área "
+                "del cliente. Las pantallas angostas usan 94vw por 63dvh. El texto sigue el tamaño normal de los diálogos, los botones tienen bordes "
+                "claros y el cuerpo se desplaza entre controles fijos. Las cifras fraccionarias tienen a lo más dos "
+                "decimales. Las barras de color ofrecen tooltips con el foco del teclado y el puntero, además de tablas exactas.",
             ],
             points=[
-                ("Cloud credits", "Reported balance, monthly usage, allowance and refill weeks/date."),
-                ("Chat activity", "Your measured calls, input/output tokens and daily trends."),
-                ("Models", "Recorded model activity and peak UTC dates; server inventory alongside it."),
-                ("While busy", "Open and refresh without interrupting the model request."),
-                ("Normal size", "Under 60% client area; ordinary typography and clear buttons."),
-                ("Accessible", "Keyboard tabs, chart tooltips, focus trap and normal Escape/Close behavior."),
+                ("Créditos en la nube", "Saldo reportado, uso mensual, asignación y semanas/fecha de recarga."),
+                ("Actividad del chat", "Tus llamadas medidas, tokens de input/output y tendencias diarias."),
+                ("Modelos", "Actividad registrada de modelos y fechas UTC pico; el inventario del servidor a un lado."),
+                ("Mientras está ocupada", "Abre y actualiza sin interrumpir la solicitud al modelo."),
+                ("Tamaño normal", "Menos del 60% del área del cliente; tipografía común y botones claros."),
+                ("Accesible", "Pestañas con teclado, tooltips en las gráficas, trampa de foco y comportamiento normal de Escape/Cerrar."),
             ], deck="cards"),
-        Section("usage_truth", "ACCOUNT DATA", "Different scopes, clearly identified",
-            "Monthly credits, rolling cloud usage and recorded local activity answer different questions.",
+        Section("usage_truth", "DATOS DE LA CUENTA", "Alcances distintos, claramente identificados",
+            "Los créditos mensuales, el uso rodante en la nube y la actividad local registrada responden preguntas distintas.",
             body=[
-                "The authoritative /api/balance response supplies included allowance and remaining balance, "
-                "purchased credits and the UTC refill period. Used credits equal allowance minus included "
-                "balance; total available adds purchased credits only when both values are reported. Plan "
-                "names never supply an assumed allowance. Refill weeks/date come from the returned period, "
-                "not an assumed 30-day cycle.",
-                "Cloud /api/usage supplies rolling 7/30-day history, including today's partial UTC day. "
-                "That spend is not monthly credits used. Cached input is already part of input. The local "
-                "ledger's 7/30 calendar dates include today and have a narrower measurement scope.",
-                "Ollama's documented API does not yet expose the website's full per-model history or individual "
-                "purchased-credit expiries. The dialog links to Ollama Usage for website-only details. Missing "
-                "fields are explained, never replaced with invented values. Balances follow the configured "
-                "server account, which can differ from the user's website login.",
+                "La respuesta autoritativa de /api/balance da la asignación incluida y el saldo restante, "
+                "los créditos comprados y el periodo de recarga UTC. Los créditos usados son la asignación menos el saldo "
+                "incluido; el total disponible suma los créditos comprados sólo cuando se reportan ambos valores. Los nombres de "
+                "plan nunca dan una asignación supuesta. Las semanas/fecha de recarga vienen del periodo devuelto, "
+                "no de un ciclo supuesto de 30 días.",
+                "/api/usage en la nube da un historial rodante de 7/30 días, incluido el día UTC parcial de hoy. "
+                "Ese gasto no son los créditos mensuales usados. El input en caché ya es parte del input. Las fechas "
+                "de calendario 7/30 del registro local incluyen hoy y tienen un alcance de medición más estrecho.",
+                "La API documentada de Ollama todavía no expone el historial completo por modelo del sitio web ni los vencimientos "
+                "individuales de los créditos comprados. El diálogo enlaza a Ollama Usage para los detalles que sólo están en el sitio web. Los campos "
+                "que faltan se explican, nunca se reemplazan con valores inventados. Los saldos siguen la cuenta del servidor "
+                "configurado, que puede ser distinta del inicio de sesión del usuario en el sitio web.",
             ],
             points=[
-                ("Monthly balance", "Actual included and purchased credits from /api/balance."),
-                ("Rolling history", "7/30-day cloud spend and tokens; separate from the billing period."),
-                ("Local model graphs", "Measured Tlamatini main-chat activity, not website-wide history."),
-                ("Refresh", "Healthy data is cached 60 s; a brief outage is retried after 15 s."),
-                ("Missing data", "Explain unavailable or stale values; no guessed balance or token count."),
-                ("References", "docs.ollama.com/api/balance and /api/cloud-usage; docs/usage-dashboard.md."),
+                ("Saldo mensual", "Créditos incluidos y comprados reales de /api/balance."),
+                ("Historial rodante", "Gasto y tokens en la nube de 7/30 días; aparte del periodo de facturación."),
+                ("Gráficas de modelos locales", "Actividad medida del chat principal de Tlamatini, no el historial de todo el sitio web."),
+                ("Actualizar", "Los datos sanos se guardan en caché 60 s; una caída breve se reintenta después de 15 s."),
+                ("Datos faltantes", "Explica los valores no disponibles o viejos; sin saldos ni conteos de tokens adivinados."),
+                ("Referencias", "docs.ollama.com/api/balance y /api/cloud-usage; docs/usage-dashboard.md."),
             ], deck="cards"),
-        Section("usage_plans", "ADAPTIVE LAYOUT", "Report what the account supplies",
-            "The response shape selects the layout; a plan label is not a credit entitlement.",
+        Section("usage_plans", "DISTRIBUCIÓN ADAPTABLE", "Reporta lo que da la cuenta",
+            "La forma de la respuesta elige la distribución; una etiqueta de plan no es un derecho a créditos.",
             body=[
-                "Free, Pro and Max accounts with monthly balance fields use credit cards. Legacy session and "
-                "weekly responses use reported remaining percentages and reset times; unsupported cost and "
-                "token fields are omitted. Purchased-only responses display only the supplied balance. A zero "
-                "monthly allowance does not produce an invented percentage.",
-                "As checked on October 10, 2026, Ollama lists Free, Pro, Max, Team and Enterprise, with no "
-                "cloud plan named Unlimited. Unlimited local execution is a different claim. Team balances "
-                "are shared, while this adapter requests default member usage, not administrator team scope. "
-                "Commercial terms remain at ollama.com/pricing; they are not hardcoded into the dialog.",
+                "Las cuentas Free, Pro y Max con campos de saldo mensual usan tarjetas de créditos. Las respuestas heredadas de sesión y "
+                "semanales usan los porcentajes restantes reportados y las horas de reinicio; los campos de costo y "
+                "de tokens no soportados se omiten. Las respuestas sólo de compras muestran sólo el saldo dado. Una asignación "
+                "mensual de cero no produce un porcentaje inventado.",
+                "Según lo revisado el 10 de octubre de 2026, Ollama lista Free, Pro, Max, Team y Enterprise, sin ningún "
+                "plan en la nube llamado Unlimited. La ejecución local ilimitada es otra afirmación. Los saldos de Team "
+                "se comparten, mientras que este adaptador pide el uso predeterminado del miembro, no el alcance de equipo del administrador. "
+                "Los términos comerciales se quedan en ollama.com/pricing; no están fijos en el código del diálogo.",
             ],
             points=[
-                ("Monthly", "Returned allowance, balance, purchased credits and reset period."),
-                ("Legacy", "Remaining session/weekly percentages; no guessed dollar conversion."),
-                ("Purchased only", "Only the reported purchased balance; no invented included quota."),
-                ("Free or zero", "Report actual data and omit percentages when allowance is zero."),
-                ("Team", "Shared credit balance is distinct from member-scoped usage."),
-                ("Unlimited label", "Never interpreted as unlimited cloud credits."),
+                ("Mensual", "Asignación, saldo, créditos comprados y periodo de reinicio devueltos."),
+                ("Heredado", "Porcentajes restantes de sesión/semanales; sin conversión adivinada a dólares."),
+                ("Sólo compras", "Sólo el saldo comprado reportado; sin cuota incluida inventada."),
+                ("Free o cero", "Reporta los datos reales y omite los porcentajes cuando la asignación es cero."),
+                ("Team", "El saldo de créditos compartido es distinto del uso con alcance de miembro."),
+                ("Etiqueta Unlimited", "Nunca se interpreta como créditos ilimitados en la nube."),
             ], deck="cards"),
-        Section("acp", "AGENTIC CONTROL PANEL", "Design agent workflows visually",
-            f"Drag any of the {agents} agent types onto the canvas, connect output triangles to input "
-            "triangles, configure each node, validate, and press Start.",
+        Section("acp", "AGENTIC CONTROL PANEL", "Diseña workflows de agents de forma visual",
+            f"Arrastra cualquiera de los {agents} tipos de agent al canvas, conecta los triángulos de output con los triángulos "
+            "de input, configura cada nodo, valida y presiona Iniciar.",
             body=[
-                "Agents run as separate, log-emitting processes that talk through their `config.yaml` files, "
-                "with a live LED for each. Flows can be paused, resumed and stopped, and saved or loaded as "
-                "`.flw` files. FlowCreator can design a flow from a sentence, and FlowHypervisor watches a "
-                "running flow and raises an alert when something looks wrong.",
-                "Since v1.70.0 the canvas is a real editor. Duplicate copies agents together with their saved "
-                "settings and the connections between them; Undo also restores an agent's configuration. "
-                "Editing locks while a flow runs, so a flow is never changed underneath its own processes.",
+                "Los Agents corren como procesos separados que emiten logs y se comunican por sus archivos `config.yaml`, "
+                "con un LED en vivo para cada uno. Los flows se pueden pausar, reanudar y detener, y guardar o cargar como "
+                "archivos `.flw`. FlowCreator puede diseñar un flow a partir de una oración, y FlowHypervisor vigila un "
+                "flow en ejecución y levanta una alerta cuando algo se ve mal.",
+                "Desde v1.70.0 el canvas es un editor real. Duplicar copia los agents junto con su configuración "
+                "guardada y las conexiones entre ellos; Deshacer también restaura la configuración de un agent. "
+                "La edición se bloquea mientras un flow corre, así que nunca se cambia un flow debajo de sus propios procesos.",
             ],
             points=[
-                ("Undo and Redo", "Up to 1,024 steps, configuration included."),
-                ("Duplicate", "Copies settings and internal connections."),
-                ("Zoom", "25 to 200 percent, and Fit."),
-                ("Agent search", f"Filters the {agents} agent types by name."),
-                ("Starters", "Locates each Starter on a large canvas."),
-                ("Help", "Explains every gesture; • marks unsaved changes."),
+                ("Deshacer y Rehacer", "Hasta 1,024 pasos, configuración incluida."),
+                ("Duplicar", "Copia la configuración y las conexiones internas."),
+                ("Zoom", "De 25 a 200 por ciento, y Ajustar."),
+                ("Búsqueda de agents", f"Filtra por nombre los {agents} tipos de agent."),
+                ("Starters", "Ubica cada Starter en un canvas grande."),
+                ("Ayuda", "Explica cada gesto; • marca los cambios sin guardar."),
             ], deck="split"),
-        Section("pfp", "PROMPT FLOW PANEL", "Draw a conversation, then press Play",
-            "The Prompt Flow Panel turns a chain of prompts into a diagram of eight executable operations plus static "
-            "review notes, saved as a portable `.fpmt` file and played against your configured models.",
+        Section("pfp", "PROMPT FLOW PANEL", "Dibuja una conversación y luego presiona Ejecutar",
+            "El Prompt Flow Panel convierte una cadena de prompts en un diagrama de ocho operaciones ejecutables más notas "
+            "estáticas de revisión, guardado como un archivo `.fpmt` portátil y ejecutado contra tus modelos configurados.",
             visual="operations",
             visual_data={"ops": [
-                ("prompt", "Prompt", "Sends its text to the model; Multi-Turn and ACPX can be enabled."),
-                ("programmed", "Programmed Prompt", "Waits for a scheduled time or a delay, then sends."),
-                ("decision", "Decision", "Takes Yes or No from the last answer, or asks you."),
-                ("feed", "Feed embeddings", "Adds reference text to this run's retrieval context."),
-                ("flush", "Flush embeddings", "Clears the run's retrieval context."),
-                ("clean", "Clean History", "Clears the run's conversation and last output."),
-                ("input", "User Input", "Stops to ask you something; your reply joins the run."),
-                ("terminal", "Terminater", "Types commands in a real visible terminal and reads their results."),
-                ("commentary", "User Commentary", "A static speech-bubble note for reviewers; it never runs."),
+                ("prompt", "Prompt", "Envía su texto al modelo; admite Multi-Turn y ACPX."),
+                ("programmed", "Prompt programado", "Espera una hora o un retraso, y luego envía."),
+                ("decision", "Decisión", "Toma Sí o No de la última respuesta, o te pregunta."),
+                ("feed", "Agregar embeddings", "Agrega texto de referencia a la recuperación."),
+                ("flush", "Vaciar embeddings", "Limpia el contexto de recuperación."),
+                ("clean", "Limpiar historial", "Limpia la conversación y el último output."),
+                ("input", "Input del usuario", "Te pregunta algo; tu respuesta se une a la ejecución."),
+                ("terminal", "Terminater", "Escribe comandos en una terminal visible y lee el resultado."),
+                ("commentary", "Comentario del usuario", "Nota estática en burbuja para revisar; nunca se ejecuta."),
             ]}, deck="visual"),
-        Section("pfprun", "PROMPT FLOW PANEL", "Playback that stays in its own lane",
-            "Validate checks the diagram, Play runs it, and every run keeps its own conversation, embeddings "
-            "and cancellation identity, so it never disturbs your chat.",
+        Section("pfprun", "PROMPT FLOW PANEL", "Una ejecución que se queda en su propio carril",
+            "Validar revisa el diagrama, Ejecutar lo corre, y cada ejecución conserva su propia conversación, sus embeddings "
+            "y su identidad de cancelación, así que nunca molesta a tu chat.",
             body=[
-                "Write `{{last_output}}` to pass the previous answer forward. Decisions compare strings — "
-                "contains, does not contain, equals, empty, with optional case matching — and never evaluate "
-                "expressions from a file. Cycles are allowed and bounded by a maximum number of executed "
-                "operations, 500 by default and up to 5,000.",
-                "The running figure lights up and traversed connections are highlighted. Pause lets the current "
-                "operation finish and holds the next; Stop drains the running worker before another run may "
-                "start. Opening a file never runs it, and a User Commentary note never runs at all.",
-                "Feed embeddings requires a real vector store. A provider error cannot become success "
-                "through the chat stack's prompt-only fallback, including with tools enabled. The flow "
-                "reports failure before its next operation and keeps any previously accepted context.",
+                "Escribe `{{last_output}}` para pasar la respuesta anterior hacia adelante. Las Decisiones comparan cadenas: "
+                "contiene, no contiene, es igual, vacía, con distinción opcional de mayúsculas; y nunca evalúan "
+                "expresiones de un archivo. Se permiten ciclos, limitados por un número máximo de operaciones "
+                "ejecutadas: 500 de forma predeterminada y hasta 5,000.",
+                "La figura en ejecución se ilumina y las conexiones recorridas se resaltan. Pausar deja que la operación actual "
+                "termine y retiene la siguiente; Detener drena el worker en ejecución antes de que pueda empezar otra "
+                "ejecución. Abrir un archivo nunca lo ejecuta, y una nota de Comentario del usuario nunca se ejecuta.",
+                "Agregar embeddings requiere un vector store real. Un error del proveedor no puede volverse éxito "
+                "por el fallback sólo de prompt del stack del chat, incluso con tools habilitados. El flow "
+                "reporta el error antes de su siguiente operación y conserva cualquier contexto aceptado antes.",
             ],
             points=[
-                ("Format", "JSON `tlamatini-prompting-flow`, version 2; version 1 files migrate."),
-                ("Limits", "5 MiB, 500 assets, 1,000 connections."),
-                ("Isolation", "Empty history and embeddings at every start."),
-                ("Validation", "Checked in the browser and again on the server."),
-                ("Not .pmt", "Plain-text system prompts keep .pmt and are refused."),
-                ("Drafts", "Kept per user in browser storage."),
+                ("Formato", "JSON `tlamatini-prompting-flow`, versión 2; los archivos de la versión 1 se migran."),
+                ("Límites", "5 MiB, 500 elementos, 1,000 conexiones."),
+                ("Aislamiento", "Historial y embeddings vacíos en cada inicio."),
+                ("Validación", "Se revisa en el browser y otra vez en el servidor."),
+                ("No es .pmt", "Los prompts de sistema en texto plano conservan .pmt y se rechazan."),
+                ("Borradores", "Se guardan por usuario en el almacenamiento del browser."),
             ], deck="cards"),
-        Section("pfpnotes", "STATIC REVIEW NOTES", "Writing and formatting a commentary",
-            "User Commentary is a review note on the canvas. User Input is the operation that pauses "
-            "playback for a reply, using the notched figure.",
+        Section("pfpnotes", "NOTAS ESTÁTICAS DE REVISIÓN", "Escribir y dar formato a un comentario",
+            "Comentario del usuario es una nota de revisión en el canvas. Input del usuario es la operación que pausa "
+            "la ejecución para esperar una respuesta, con la figura de muesca.",
             body=[
-                "Double-click a bubble or press Enter to write directly in it. Select words or paragraphs, "
-                "then use the floating mini toolbar for font, size, text color, bold, italic and underline. "
-                "For example, one bubble can have a large Verdana heading, an italic Arial sentence and a "
-                "Georgia paragraph. With only a caret, formatting applies to subsequent typing. Outside "
-                "editing, it applies to the whole selected note. Bubble color and alignment affect the note.",
-                "Drag any of the eight borders or corners to resize, even while writing. The handles also "
-                "accept arrow keys. Fit text removes spare height, and the bubble grows to contain all "
-                "wrapped text. There are no internal scrollbars, numeric size fields or commentary "
-                "configuration dialogs.",
-                "Done or Ctrl+Enter saves the complete edit. Cancel or Escape restores its original text, "
-                "styles, dimensions and position. Ctrl+Z/Y works inside the editor. Completed edits, moves, "
-                "resizes and duplicates participate in the diagram's Undo/Redo. Copying between comment "
-                "editors preserves formatting. External clipboard text stays literal.",
+                "Haz doble clic en una burbuja o presiona Enter para escribir directo en ella. Selecciona palabras o párrafos, "
+                "y luego usa la mini barra de herramientas flotante para fuente, tamaño, color de texto, negritas, cursivas y subrayado. "
+                "Por ejemplo, una burbuja puede tener un encabezado grande en Verdana, una oración en Arial cursiva y un "
+                "párrafo en Georgia. Con sólo un cursor, el formato se aplica a lo que escribas después. Fuera de la "
+                "edición, se aplica a toda la nota seleccionada. El color y la alineación de la burbuja afectan a la nota.",
+                "Arrastra cualquiera de los ocho bordes o esquinas para cambiar el tamaño, incluso mientras escribes. Las manijas también "
+                "aceptan las flechas del teclado. Ajustar al texto quita la altura sobrante, y la burbuja crece para contener todo "
+                "el texto ajustado. No hay barras de desplazamiento internas, campos numéricos de tamaño ni diálogos de "
+                "configuración del comentario.",
+                "Listo o Ctrl+Enter guarda la edición completa. Cancelar o Escape restaura su texto, "
+                "estilos, dimensiones y posición originales. Ctrl+Z/Y funciona dentro del editor. Las ediciones terminadas, los movimientos, "
+                "los cambios de tamaño y los duplicados participan en el Deshacer/Rehacer del diagrama. Copiar entre editores "
+                "de comentarios conserva el formato. El texto del portapapeles externo se queda literal.",
             ], deck="list", deck_points=[
-                ("Write in place", "Double-click or Enter edits the bubble. No configuration dialog or numeric dimensions."),
-                ("Mixed styles", "Floating toolbar: font, size, text color, bold, italic and underline for each passage."),
-                ("Selection or caret", "Format selected text or subsequent typing; outside editing, format the whole note."),
-                ("Direct sizing", "Drag any edge/corner, even while writing. Fit text removes spare height. No internal scrollbars."),
-                ("Finish or restore", "Done/Ctrl+Enter saves; Cancel/Escape restores text, styles and geometry. Editor and flow Undo/Redo."),
+                ("Escribe en su lugar", "Doble clic o Enter edita la burbuja. Sin diálogo de configuración ni dimensiones numéricas."),
+                ("Estilos mezclados", "Barra flotante: fuente, tamaño, color de texto, negritas, cursivas y subrayado para cada pasaje."),
+                ("Selección o cursor", "Da formato al texto seleccionado o a lo que escribas después; fuera de la edición, a toda la nota."),
+                ("Tamaño directo", "Arrastra cualquier borde o esquina, incluso mientras escribes. Ajustar al texto quita la altura sobrante. Sin barras internas."),
+                ("Terminar o restaurar", "Listo/Ctrl+Enter guarda; Cancelar/Escape restaura texto, estilos y geometría. Deshacer/Rehacer del editor y del flow."),
             ]),
-        Section("pfpfiles", "PORTABLE FLOW FILES", "Comments survive save, open and draft recovery",
-            "Version 2 .fpmt files retain independent notes with their full text, formatting and geometry.",
+        Section("pfpfiles", "ARCHIVOS DE FLOW PORTÁTILES", "Los comentarios sobreviven a guardar, abrir y recuperar el borrador",
+            "Los archivos .fpmt de la versión 2 conservan notas independientes con todo su texto, formato y geometría.",
             body=[
-                "Each note stores allowlisted text runs plus matching literal text. Runs carry font, size, "
-                "text color, bold, italic and underline. Older plain version 2 notes normalize to one run. "
-                "Version 1 executable commentary migrates to User Input with its identifiers, connections, "
-                "settings and reply/cancellation behavior intact. Opening a file never starts playback.",
-                "A note has no connection ports or Start state and never enters model context, conversation "
-                "history or playback step counts. Tokens such as {{last_output}} and HTML-like text remain "
-                "literal in a comment. Several independently styled notes can share a diagram.",
-                "The per-user browser draft keeps the existing .draft.v1 key for compatibility. Portable "
-                "files retain the .fpmt extension. The similarly named .pmt files belong to system prompts "
-                "and remain a separate format. Limits are 5 MiB per flow, 500 assets, 1,000 connections, "
-                "100,000 characters and 10,000 formatted runs per note.",
+                "Cada nota guarda fragmentos de texto de una lista permitida más el texto literal correspondiente. Los fragmentos llevan fuente, tamaño, "
+                "color de texto, negritas, cursivas y subrayado. Las notas simples más viejas de la versión 2 se normalizan a un solo fragmento. "
+                "El comentario ejecutable de la versión 1 se migra a Input del usuario con sus identificadores, conexiones, "
+                "configuración y comportamiento de respuesta/cancelación intactos. Abrir un archivo nunca inicia la ejecución.",
+                "Una nota no tiene puertos de conexión ni estado de Start, y nunca entra al contexto del modelo, al historial "
+                "de la conversación ni al conteo de pasos de la ejecución. Los tokens como {{last_output}} y el texto parecido a HTML se quedan "
+                "literales en un comentario. Varias notas con estilos independientes pueden compartir un diagrama.",
+                "El borrador del browser por usuario conserva la llave .draft.v1 existente por compatibilidad. Los archivos "
+                "portátiles conservan la extensión .fpmt. Los archivos .pmt de nombre parecido pertenecen a los prompts de sistema "
+                "y siguen siendo un formato aparte. Los límites son 5 MiB por flow, 500 elementos, 1,000 conexiones, "
+                "100,000 caracteres y 10,000 fragmentos con formato por nota.",
             ], deck="list", deck_points=[
-                ("Version 2", "Literal text and allowlisted runs preserve mixed formatting."),
-                ("Older files", "Plain v2 notes normalize. Version 1 reply steps become User Input with IDs, edges and settings intact."),
-                ("Static isolation", "No ports, Start or execution steps. Text stays literal and never enters context or history."),
-                ("Recovery", "Independent notes retain text, styles and geometry. Opening never plays the flow; draft key stays compatible."),
+                ("Versión 2", "El texto literal y los fragmentos permitidos conservan el formato mezclado."),
+                ("Archivos más viejos", "Las notas v2 simples se normalizan. Los pasos de respuesta de la versión 1 se vuelven Input del usuario con IDs, conexiones y configuración intactos."),
+                ("Aislamiento estático", "Sin puertos, Start ni pasos de ejecución. El texto se queda literal y nunca entra al contexto ni al historial."),
+                ("Recuperación", "Las notas independientes conservan texto, estilos y geometría. Abrir nunca ejecuta el flow; la llave del borrador sigue siendo compatible."),
             ]),
-        Section("flowopen", "OPENING FLOW FILES", "The right editor, from chat or Windows",
-            "The shipped file associations open .flw agent flows and .fpmt prompting flows. Opening never runs them.",
+        Section("flowopen", "ABRIR ARCHIVOS DE FLOW", "El editor correcto, desde el chat o desde Windows",
+            "Las asociaciones de archivo incluidas abren los agent flows .flw y los prompting flows .fpmt. Abrirlos nunca los ejecuta.",
             body=[
-                "The main chat routes both formats into their own editor tabs and keeps its current document. "
-                "An external file launch validates a bounded snapshot and reuses a matching running server "
-                "before any database startup work. A cold launch starts the application on its configured port.",
-                "Login returns to the requested file. Short-lived, single-use opening links carry a random "
-                "token rather than a filesystem path; browser uploads are bound to the signed-in user. "
-                "Invalid formats, unsupported versions and files over 5 MiB are rejected before replacement.",
-                "Unsaved diagrams and recovered drafts require confirmation. Rich commentary runs retain "
-                "their fonts, styles and layout through .fpmt save/open. Agent-flow opening now awaits "
-                "validation and session preparation; failed credential redaction blocks unsafe .flw downloads.",
+                "El chat principal envía ambos formatos a sus propias pestañas de editor y conserva su documento actual. "
+                "Abrir un archivo desde fuera valida un snapshot acotado y reutiliza un servidor en ejecución que coincida "
+                "antes de cualquier trabajo de arranque de la base de datos. Un arranque en frío inicia la aplicación en su puerto configurado.",
+                "El inicio de sesión regresa al archivo pedido. Los links de apertura de corta duración y de un solo uso llevan un token "
+                "aleatorio en vez de un path del sistema de archivos; las cargas del browser quedan ligadas al usuario con sesión iniciada. "
+                "Los formatos inválidos, las versiones no soportadas y los archivos de más de 5 MiB se rechazan antes de reemplazar.",
+                "Los diagramas sin guardar y los borradores recuperados piden confirmación. Los fragmentos de comentario enriquecido conservan "
+                "sus fuentes, estilos y distribución al guardar/abrir el .fpmt. Abrir un agent flow ahora espera "
+                "la validación y la preparación de la sesión; si la redacción de credenciales no funciona, se bloquean las descargas .flw inseguras.",
             ],
             points=[
-                ("From chat", "Open either flow in its editor and keep the chat document."),
-                ("From Windows", "Start once or reuse the running app; return through login."),
-                ("Preserve work", "Validate before replacement; confirm unsaved changes."),
-                ("No automatic run", "Opening prepares the diagram. Play remains a user action."),
+                ("Desde el chat", "Abre cualquiera de los dos flows en su editor y conserva el documento del chat."),
+                ("Desde Windows", "Arranca una vez o reutiliza la app en ejecución; regresa por el inicio de sesión."),
+                ("Conservar el trabajo", "Valida antes de reemplazar; confirma los cambios sin guardar."),
+                ("Sin ejecución automática", "Abrir prepara el diagrama. Ejecutar sigue siendo una acción del usuario."),
             ], deck="cards"),
-        Section("flowwindows", "WINDOWS FILE TYPES", "Register, repair and remove both formats",
-            "Per-user associations, installation ownership and Windows default-app choices.",
+        Section("flowwindows", "TIPOS DE ARCHIVO DE WINDOWS", "Registra, repara y quita ambos formatos",
+            "Asociaciones por usuario, dueño de la instalación y elecciones de apps predeterminadas de Windows.",
             body=[
-                "A shared PowerShell helper registers .flw and .fpmt with separate ProgIDs, friendly names, "
-                "icons, Open With entries and Default Apps capabilities. Status reports the current registration; "
-                "DefaultApps opens Windows Settings so the user can choose a default.",
-                "Installation registers both formats. Update Repair preserves explicit unregistration and never "
-                "takes another installation's owned entry. Removal deletes only this installation's values, "
-                "preserving Windows UserChoice and other applications' Open With entries. Historical .flw "
-                "wrappers cover both formats so existing installer/uninstaller binaries remain compatible.",
-                "The scripts and opening modules are included in frozen and self-modify packaging. Native "
-                "registry checks use an isolated test key, and visible Chrome tests exercise real file opening "
-                "and login. The October 4 release campaign also rebuilt local main and uninstaller executables. "
-                "The work was committed to main that day and is carried by the v1.76.0 tag; compiled acceptance is "
-                "recorded separately from source tests. "
-                "See docs/windows-flow-files.md for commands, contracts and verification.",
+                "Un helper compartido de PowerShell registra .flw y .fpmt con ProgIDs separados, nombres amigables, "
+                "íconos, entradas de Abrir con y capacidades de Apps predeterminadas. Status reporta el registro actual; "
+                "DefaultApps abre la Configuración de Windows para que el usuario elija una app predeterminada.",
+                "La instalación registra ambos formatos. Update Repair respeta la desinscripción explícita y nunca "
+                "toma la entrada propia de otra instalación. La eliminación borra sólo los valores de esta instalación, "
+                "y conserva el UserChoice de Windows y las entradas de Abrir con de otras aplicaciones. Los wrappers históricos de .flw "
+                "cubren ambos formatos, así que los binarios existentes del instalador/desinstalador siguen siendo compatibles.",
+                "Los scripts y los módulos de apertura se incluyen en el empaquetado congelado y en el de self-modify. Las revisiones "
+                "nativas del registro usan una llave de prueba aislada, y las pruebas visibles en Chrome ejercitan la apertura real de archivos "
+                "y el inicio de sesión. La campaña de release del 4 de octubre también recompiló los ejecutables locales principal y desinstalador. "
+                "El trabajo se hizo commit a main ese día y lo lleva el tag v1.76.0; la aceptación compilada se "
+                "registra aparte de las pruebas del source. "
+                "Consulta docs/windows-flow-files.md para los comandos, los contratos y la verificación.",
             ],
             points=[
-                ("Install", "Register both types with names, icons and the correct editor destinations."),
-                ("Administer", "Inspect Status, register or remove one type, or open Default Apps."),
-                ("Update", "Repair owned entries without undoing the user's opt-out."),
-                ("Uninstall", "Remove owned registrations; keep other apps and user documents."),
+                ("Instalar", "Registra ambos tipos con nombres, íconos y los destinos de editor correctos."),
+                ("Administrar", "Revisa Status, registra o quita un tipo, o abre Apps predeterminadas."),
+                ("Actualizar", "Repara las entradas propias sin deshacer la exclusión del usuario."),
+                ("Desinstalar", "Quita los registros propios; conserva otras apps y los documentos del usuario."),
             ], deck="cards"),
-        Section("uninstallworkers", "WINDOWS LIFECYCLE", "Remove the application and its owned workers",
-            "Confirmation, installation ownership, retryable errors and preserved user content.",
+        Section("uninstallworkers", "CICLO DE VIDA EN WINDOWS", "Quita la aplicación y sus workers propios",
+            "Confirmación, dueño de la instalación, errores que se pueden reintentar y contenido del usuario conservado.",
             body=[
-                "The real installer registration failure came from an omitted InstallDir whose parameter "
-                "default evaluated before Windows PowerShell populated PSScriptRoot. The wrappers now "
-                "resolve that default inside the script. Fresh powershell.exe -File tests exercise the "
-                "same entry point from an unrelated working directory.",
-                "The uninstaller first requires the main application to close. After confirmation it stops "
-                "workers belonging to the selected installation and their descendants. Exact path boundaries, "
-                "creation times and inherited TLAMATINI_AGENTS_ROOT identify agent children even after "
-                "reparenting; unrelated processes and Explorer remain running.",
-                "A temporary independent copy allows the installed uninstaller itself to be removed. "
-                "Helpers and the installation marker remain until file and owned-registry removal succeed, "
-                "so a partial failure can be retried. Locked files and denied registry deletion report failure. "
-                "Drive roots, shared folders, source checkouts and redirected targets are rejected.",
-                "Since v1.76.0, when Windows still holds Uninstaller.exe itself, the file is retried, moved aside "
-                "and removed by a hidden cleanup after the uninstaller exits, so the uninstall finishes cleanly.",
-                "Agents and nonempty user-content directories remain under the existing preservation contract. "
-                "A full directory/registry reset is a separate authorized action. Verification distinguishes "
-                "real compiled GUI outcomes from backend tests and records any blocked native launch explicitly.",
+                "El error real de registro del instalador vino de un InstallDir omitido cuyo valor predeterminado de parámetro "
+                "se evaluaba antes de que Windows PowerShell llenara PSScriptRoot. Ahora los wrappers "
+                "resuelven ese valor predeterminado dentro del script. Las pruebas nuevas con powershell.exe -File ejercitan el "
+                "mismo punto de entrada desde un directorio de trabajo no relacionado.",
+                "Primero, el desinstalador exige que la aplicación principal se cierre. Después de la confirmación, detiene "
+                "los workers que pertenecen a la instalación elegida y a sus descendientes. Los límites exactos de path, "
+                "las horas de creación y el TLAMATINI_AGENTS_ROOT heredado identifican a los hijos de los agents incluso después de "
+                "cambiar de padre; los procesos no relacionados y Explorer siguen corriendo.",
+                "Una copia temporal independiente permite quitar el propio desinstalador instalado. "
+                "Los helpers y el marcador de la instalación se quedan hasta que la eliminación de archivos y del registro propio tiene éxito, "
+                "así que una falla parcial se puede reintentar. Los archivos bloqueados y el borrado denegado del registro reportan error. "
+                "Se rechazan las raíces de unidad, las carpetas compartidas, los checkouts del source y los destinos redirigidos.",
+                "Desde v1.76.0, cuando Windows todavía tiene tomado el propio Uninstaller.exe, el archivo se reintenta, se mueve aparte "
+                "y lo quita una limpieza oculta después de que el desinstalador sale, así que la desinstalación termina limpia.",
+                "Los agents y los directorios de contenido del usuario que no están vacíos se quedan bajo el contrato de conservación existente. "
+                "Un reinicio completo de directorio/registro es una acción autorizada aparte. La verificación distingue "
+                "los resultados reales de la GUI compilada de las pruebas del backend y registra explícitamente cualquier arranque nativo bloqueado.",
             ], deck="cards", points=[
-                ("Installer entry points", "Resolve the installation directory inside PowerShell script bodies."),
-                ("Owned workers", "Stop this installation's agents and surviving descendants after confirmation."),
-                ("Honest retry", "Retain removal support until success; report locked files and registry errors."),
-                ("Preserve user work", "Keep agents and nonempty content; notify the shell without restarting Explorer."),
+                ("Puntos de entrada del instalador", "Resuelven el directorio de instalación dentro del cuerpo de los scripts de PowerShell."),
+                ("Workers propios", "Detiene los agents de esta instalación y los descendientes que sobrevivan, después de la confirmación."),
+                ("Reintento honesto", "Conserva el soporte de eliminación hasta tener éxito; reporta archivos bloqueados y errores del registro."),
+                ("Conservar el trabajo del usuario", "Conserva los agents y el contenido no vacío; avisa al shell sin reiniciar Explorer."),
             ]),
-        Section("setupwizard", "SETUP WINDOWS · v1.82.0", "Install and remove with a way back",
-            "The Installer and Uninstaller share one window that prepares a recovery copy before changing anything.",
+        Section("setupwizard", "VENTANAS DE INSTALACIÓN · v1.82.0", "Instala y quita con una forma de regresar",
+            "El Instalador y el Desinstalador comparten una ventana que prepara una copia de recuperación antes de cambiar cualquier cosa.",
             body=[
-                "Both executables use one setup window: Tlamatini's palette, keyboard controls, a destination "
-                "and review page, real progress and result details that stay on screen. The action row is its "
-                "own window row, so buttons are never clipped, and large fonts or long paths scroll the body. "
-                "Errors stay in the window with Retry and Change folder, and every run writes a private log "
-                "under %LOCALAPPDATA%\\Tlamatini\\SetupLogs.",
-                "Before installation or removal changes a file, a recovery copy is prepared and verified; its "
-                "journal lives in the installation's Temp folder, and the next run restores an interrupted "
-                "transaction first. A failed restoration is reported, never presented as a rollback. A locked "
-                "file gets a five-second retry and is then named with the program holding it, which is never "
-                "closed for you. Only Tlamatini's own registry values and Desktop shortcut are snapshotted.",
-                "These are custom EXE recovery mechanics, not MSI transactions. In the visible October 11-12 "
-                "campaign 52 interface checkpoints, 28 recovery checks, 21 lifecycle checks and 61 mechanics "
-                "tests passed; five real installations and four real removals passed their independent audits. "
-                "The fifth removal stopped safely before deleting anything, because a test browser held a file "
-                "in the installation's Temp folder.",
+                "Ambos ejecutables usan una sola ventana de instalación: la paleta de Tlamatini, controles de teclado, una página de destino "
+                "y de revisión, progreso real y detalles del resultado que se quedan en pantalla. La fila de acciones es su "
+                "propia fila de la ventana, así que los botones nunca se recortan, y las fuentes grandes o los paths largos desplazan el cuerpo. "
+                "Los errores se quedan en la ventana con Reintentar y Cambiar carpeta, y cada ejecución escribe un log privado "
+                "en %LOCALAPPDATA%\\Tlamatini\\SetupLogs.",
+                "Antes de que la instalación o la eliminación cambie un archivo, se prepara y verifica una copia de recuperación; su "
+                "journal vive en la carpeta Temp de la instalación, y la siguiente ejecución restaura primero una "
+                "transacción interrumpida. Una restauración con error se reporta, nunca se presenta como rollback. Un archivo "
+                "bloqueado recibe cinco segundos de reintento y luego se nombra junto con el programa que lo tiene, que nunca "
+                "se cierra por ti. Sólo se toma snapshot de los valores de registro propios de Tlamatini y de su acceso directo en el Escritorio.",
+                "Son mecanismos de recuperación propios de un EXE, no transacciones MSI. En la campaña visible del 11-12 de octubre "
+                "pasaron 52 puntos de revisión de la interfaz, 28 revisiones de recuperación, 21 revisiones de ciclo de vida y 61 pruebas "
+                "de mecánica; cinco instalaciones reales y cuatro eliminaciones reales pasaron sus auditorías independientes. "
+                "La quinta eliminación se detuvo de forma segura antes de borrar nada, porque un browser de prueba tenía tomado un archivo "
+                "en la carpeta Temp de la instalación.",
             ], deck="cards", points=[
-                ("One window", "Shared Installer and Uninstaller screens that never clip their buttons."),
-                ("Recovery copy", "Prepared and verified before any file changes; restored after an interruption."),
-                ("Named locks", "A locked file and its holder are named; nothing is force-closed."),
-                ("Own scope", "Only Tlamatini's registry values and shortcut; never UserChoice."),
-                ("Bounded helpers", "PowerShell helpers end within 120 seconds inside a Windows job."),
-                ("Honest tally", "Five installations and four removals passed; one stopped safely."),
+                ("Una ventana", "Pantallas compartidas del Instalador y el Desinstalador que nunca recortan sus botones."),
+                ("Copia de recuperación", "Preparada y verificada antes de cambiar cualquier archivo; restaurada después de una interrupción."),
+                ("Bloqueos con nombre", "Se nombra un archivo bloqueado y a quien lo tiene; nada se cierra a la fuerza."),
+                ("Alcance propio", "Sólo los valores de registro y el acceso directo de Tlamatini; nunca UserChoice."),
+                ("Helpers acotados", "Los helpers de PowerShell terminan en 120 segundos dentro de un job de Windows."),
+                ("Conteo honesto", "Pasaron cinco instalaciones y cuatro eliminaciones; una se detuvo de forma segura."),
             ]),
-        Section("release_repair", "LOCAL RELEASE VALIDATION", "Repair the boundary, then repeat the real operation",
-            "The October 4 repairs, now carried by v1.76.0, have separate source, frozen, package and visual "
-            "evidence.",
+        Section("release_repair", "VALIDACIÓN LOCAL DEL RELEASE", "Repara la frontera y luego repite la operación real",
+            "Las reparaciones del 4 de octubre, que ahora lleva v1.76.0, tienen evidencia aparte del source, del congelado, del paquete y visual"
+            ".",
             body=[
-                "The visible campaign checks the actual installer, Windows associations, authenticated "
-                "file opening, administration, main chat and both flow panels. It also compares several "
-                "rich comments across repeated file writes and reads, executes local agents, and audits "
-                "owned workers after shutdown. A configuration dialog opening is not proof that a "
-                "hardware or external-service agent executed successfully.",
-                "System-Metrics and Files-Search now honor the effective configuration and nondefault "
-                "ports, including UTF-8 BOM files. The path-security and chat-chain readers accept the same "
-                "encoding without weakening directory boundaries. Both auxiliary context chains use the same "
-                "effective paths and endpoints; system sockets close after each request and file RPCs have deadlines. "
-                "Parametrizer restores connections when a saved file "
-                "contains mappings without explicit connection lists. Model-free agents avoid unrelated "
-                "model-setting reads. Numeric messaging identifiers keep the same string/integer "
-                "contract in public and keyed templates.",
-                "A rejected embedding request must fail the flow before its next operation. The campaign's "
-                "provider returned HTTP 401; this is recorded as a blocked capability with a tested failure "
-                "path. The desktop-control tool also blocked the compiled uninstaller launch. Backend "
-                "cleanup tests do not certify its unobserved native confirmation and completion screens.",
-                "Detailed results and retained failed attempts are in "
-                "docs/changes/2026-10-04-release-validation.md. The review profile requested by Angela "
-                "lists each changed file and code segment. The work was committed on October 4 and is carried by "
-                "the v1.76.0 tag.",
+                "La campaña visible revisa el instalador real, las asociaciones de Windows, la apertura autenticada "
+                "de archivos, la administración, el chat principal y ambos paneles de flows. También compara varios "
+                "comentarios enriquecidos a lo largo de escrituras y lecturas repetidas de archivos, ejecuta agents locales y audita "
+                "los workers propios después del apagado. Que se abra un diálogo de configuración no prueba que un "
+                "agent de hardware o de servicio externo se haya ejecutado con éxito.",
+                "System-Metrics y Files-Search ahora respetan la configuración efectiva y los puertos "
+                "no predeterminados, incluidos los archivos UTF-8 con BOM. Los lectores de seguridad de paths y de la cadena del chat aceptan la misma "
+                "codificación sin debilitar los límites de directorio. Las dos cadenas de contexto auxiliares usan los mismos "
+                "paths y endpoints efectivos; los sockets del sistema se cierran después de cada solicitud y los RPC de archivos tienen plazos. "
+                "Parametrizer restaura las conexiones cuando un archivo guardado "
+                "contiene mapeos sin listas explícitas de conexiones. Los agents sin modelo evitan lecturas no relacionadas "
+                "de la configuración de modelos. Los identificadores numéricos de mensajería conservan el mismo contrato "
+                "de cadena/entero en las plantillas públicas y con llaves.",
+                "Una solicitud de embedding rechazada debe hacer que el flow falle antes de su siguiente operación. El proveedor "
+                "de la campaña devolvió HTTP 401; esto se registra como una capacidad bloqueada con un camino de error "
+                "probado. El tool de control del escritorio también bloqueó el arranque del desinstalador compilado. Las pruebas de "
+                "limpieza del backend no certifican sus pantallas nativas de confirmación y de término, que no se observaron.",
+                "Los resultados detallados y los intentos con error que se conservaron están en "
+                "docs/changes/2026-10-04-release-validation.md. El perfil de revisión que pidió Angela "
+                "lista cada archivo cambiado y cada segmento de código. El trabajo se hizo commit el 4 de octubre y lo lleva "
+                "el tag v1.76.0.",
             ], deck="cards", points=[
-                ("Real user paths", "Installer, login, Admin, chat, both panels and Windows file opening."),
-                ("File fidelity", "Mixed styles, geometry and rendered text checked across save/open cycles."),
-                ("Runtime boundaries", "Configured MCP endpoints, agent defaults, mappings and identifier types."),
-                ("Explicit limits", "Provider failure and blocked native launch remain visible in the verdict."),
+                ("Caminos reales del usuario", "Instalador, inicio de sesión, Admin, chat, ambos paneles y apertura de archivos en Windows."),
+                ("Fidelidad de archivos", "Estilos mezclados, geometría y texto renderizado revisados en ciclos de guardar/abrir."),
+                ("Fronteras del runtime", "Endpoints de MCP configurados, valores predeterminados de agents, mapeos y tipos de identificadores."),
+                ("Límites explícitos", "El error del proveedor y el arranque nativo bloqueado se quedan visibles en el veredicto."),
             ]),
-        Section("pfpoutput", "RUN OUTPUT", "More room for the canvas or the log",
-            "Drag the horizontal divider above Run output to give it 5% to 95% of the available pane height.",
+        Section("pfpoutput", "OUTPUT DE LA EJECUCIÓN", "Más espacio para el canvas o para el log",
+            "Arrastra el divisor horizontal sobre Output de la ejecución para darle del 5% al 95% de la altura disponible del panel.",
             body=[
-                "The percentage uses the combined canvas and output height, excluding headers, the status "
-                "strip and the divider. The initial allocation is 20%. The canvas and Run output each keep "
-                "their own scrollbar. Moving the divider preserves canvas zoom, node dimensions and text "
-                "size. The Operations bar keeps its separate horizontal sizing control.",
-                "Tab to the divider and use Up/Down for one percentage point, or Shift+Up/Down for five. "
-                "Home selects 5% and End selects 95%. Escape ends a drag. Click the Run output heading to "
-                "collapse it. Reopening restores the chosen height, and resizing the window retains the ratio.",
-                "The browser remembers the output height per signed-in user. This layout preference does "
-                "not modify a flow file, mark the diagram as edited or add an Undo step. Resizing the panel "
-                "also leaves the run and its output unchanged.",
+                "El porcentaje usa la altura combinada del canvas y del output, sin contar encabezados, la franja "
+                "de status ni el divisor. La asignación inicial es 20%. El canvas y el Output de la ejecución conservan cada uno "
+                "su propia barra de desplazamiento. Mover el divisor conserva el zoom del canvas, las dimensiones de los nodos y el tamaño "
+                "del texto. La Barra de operaciones conserva su control aparte de tamaño horizontal.",
+                "Llega al divisor con Tab y usa Arriba/Abajo para un punto porcentual, o Shift+Arriba/Abajo para cinco. "
+                "Inicio elige 5% y Fin elige 95%. Escape termina un arrastre. Haz clic en el encabezado de Output de la ejecución para "
+                "colapsarlo. Al volver a abrirlo se restaura la altura elegida, y cambiar el tamaño de la ventana conserva la proporción.",
+                "El browser recuerda la altura del output por usuario con sesión iniciada. Esta preferencia de distribución no "
+                "modifica un archivo de flow, no marca el diagrama como editado ni agrega un paso de Deshacer. Cambiar el tamaño del panel "
+                "también deja sin cambio la ejecución y su output.",
             ], deck="list", deck_points=[
-                ("5% to 95%", "Share of canvas/output height, excluding headers, status and divider. Initial share: 20%."),
-                ("Stable content", "Independent scrolling. Canvas zoom and text sizes stay unchanged."),
-                ("Keyboard", "Up/Down: 1 point; Shift: 5. Home: 5%; End: 95%. Escape ends the drag."),
-                ("Remembered layout", "Collapse/reopen and window resizing retain the ratio. Saved per user, outside flow files and Undo/Redo."),
+                ("Del 5% al 95%", "Parte de la altura del canvas/output, sin encabezados, status ni divisor. Parte inicial: 20%."),
+                ("Contenido estable", "Desplazamiento independiente. El zoom del canvas y los tamaños de texto no cambian."),
+                ("Teclado", "Arriba/Abajo: 1 punto; Shift: 5. Inicio: 5%; Fin: 95%. Escape termina el arrastre."),
+                ("Distribución recordada", "Colapsar/reabrir y cambiar el tamaño de la ventana conservan la proporción. Se guarda por usuario, fuera de los archivos de flow y de Deshacer/Rehacer."),
             ]),
-        Section("catalog", "CATALOG OF PROMPTS", "Ready-made prompts, grouped by purpose",
-            f"The Catalog of Prompts opens with {sections_count} sections, each beginning with a guided "
-            f"Step-by-Step wizard and growing from simple to advanced.",
+        Section("catalog", "CATÁLOGO DE PROMPTS", "Prompts listos para usar, agrupados por propósito",
+            f"El Catálogo de prompts se abre con {sections_count} secciones; cada una empieza con un asistente guiado "
+            f"Paso a paso y crece de lo simple a lo avanzado.",
             body=[
-                f"Sections: {catalog_names}. VOICE COMMANDS comes first, because speaking is the shortest way "
-                f"to use her: you talk, Whisperer transcribes, and the transcript becomes the prompt. "
-                "These catalog workflows use the model-mediated wrapped tool and their card-specific modes; "
-                "they are distinct from the direct microphone button beside Send.",
-                "The mode badges on each card are derived from the prompt text itself, and clicking a card sets "
-                "the toolbar switches to exactly those modes. Every prompt uses one grammar, so it is always "
-                "clear whose blank is whose.",
+                f"Secciones: {catalog_names}. VOICE COMMANDS va primero, porque hablar es la forma más corta "
+                f"de usarla: tú hablas, Whisperer transcribe y la transcripción se vuelve el prompt. "
+                "Estos workflows del catálogo usan el tool wrapped mediado por el modelo y los modos propios de cada tarjeta; "
+                "son distintos del botón directo de micrófono junto a Enviar.",
+                "Las insignias de modo de cada tarjeta se derivan del texto mismo del prompt, y hacer clic en una tarjeta pone "
+                "los interruptores de la barra de herramientas exactamente en esos modos. Todos los prompts usan una sola gramática, así que siempre "
+                "queda claro de quién es cada espacio en blanco.",
             ],
-            table={"columns": ["Mark", "Filled by", "Meaning"], "widths": [0.18, 0.22, 0.60], "rows": [
-                ["[[ … ]]", "You", "A value you provide, collected at the top with a safe default."],
-                ["{{ … }}", "Tlamatini", "A value she fills at run time."],
-                ["< … >", "Report slot", "Where an answer is printed; never an input."],
+            table={"columns": ["Marca", "Lo llena", "Significado"], "widths": [0.18, 0.22, 0.60], "rows": [
+                ["[[ … ]]", "Tú", "Un valor que tú das, reunido arriba con un valor predeterminado seguro."],
+                ["{{ … }}", "Tlamatini", "Un valor que ella llena al momento de ejecutar."],
+                ["< … >", "Espacio del reporte", "Donde se imprime una respuesta; nunca es un input."],
             ]}, deck="split",
             deck_points=[
-                ("Sections", f"{sections_count}, beginning with VOICE COMMANDS."),
-                ("Openers", "Every section starts with a guided Step-by-Step wizard."),
-                ("Badges", "Derived from the prompt text; a click sets the modes."),
-                ("Grammar", "[[ you ]], {{ runtime }}, < report slot >."),
+                ("Secciones", f"{sections_count}, empezando con VOICE COMMANDS."),
+                ("Aperturas", "Cada sección empieza con un asistente guiado Paso a paso."),
+                ("Insignias", "Derivadas del texto del prompt; un clic pone los modos."),
+                ("Gramática", "[[ tú ]], {{ runtime }}, < espacio del reporte >."),
             ]),
-        Section("pdfcanvas", "PDF CANVAS", "Read a PDF, then hand her the whole document",
-            "Open a PDF beside the chat in a vendored Mozilla PDF.js viewer, then use it as context.",
+        Section("pdfcanvas", "CANVAS DE PDF", "Lee un PDF y luego dale el documento completo",
+            "Abre un PDF junto al chat en un visor Mozilla PDF.js incluido, y luego úsalo como contexto.",
             body=[
-                "Reading uploads nothing and calls no model: the viewer reads byte ranges straight from your "
-                "disk, so there is no size or page cutoff on Tlamatini's side. Text selection, navigation, zoom, "
-                "fit, rotation and in-viewer passwords behave as you expect; Copy lifts the text of every page "
-                "and Save As returns the original bytes.",
-                "**Use as context** asks one question first: Process images? It starts unticked every time, and "
-                "nothing runs until you press Continue. Unticked, she reads the selectable text only. Ticked, she "
-                "also renders every page and analyzes every embedded image with Image-Interpreter. Progress is "
-                "honest, Cancel really cancels, and partial image failures are reported, not hidden. A PDF "
-                "password is used in memory only: never written to disk, to the context text or to the log.",
-                "A second account signed in from the same browser takes over every open tab, while an open chat "
-                "keeps its first account, so loading is refused. Since v1.76.0 the message names that cause and "
-                "the fix, reloading with F5, the header comes back and the progress dialog marks the failed step.",
+                "Leer no sube nada ni llama a ningún modelo: el visor lee rangos de bytes directo de tu "
+                "disco, así que del lado de Tlamatini no hay límite de tamaño ni de páginas. La selección de texto, la navegación, el zoom, "
+                "el ajuste, la rotación y las contraseñas dentro del visor se comportan como esperas; Copiar toma el texto de todas las páginas "
+                "y Guardar como devuelve los bytes originales.",
+                "**Usar como contexto** hace primero una pregunta: ¿Procesar imágenes? Empieza sin marcar cada vez, y "
+                "nada corre hasta que presionas Continuar. Sin marcar, ella lee sólo el texto seleccionable. Marcada, ella "
+                "también renderiza cada página y analiza cada imagen incrustada con Image-Interpreter. El progreso es "
+                "honesto, Cancelar de verdad cancela, y los errores parciales de imágenes se reportan, no se esconden. Una "
+                "contraseña de PDF se usa sólo en memoria: nunca se escribe a disco, al texto del contexto ni al log.",
+                "Una segunda cuenta que inicia sesión desde el mismo browser toma todas las pestañas abiertas, mientras que un chat abierto "
+                "conserva su primera cuenta, así que la carga se rechaza. Desde v1.76.0 el mensaje nombra esa causa y "
+                "el arreglo, recargar con F5; el encabezado regresa y el diálogo de progreso marca el paso con error.",
             ], deck="list",
             deck_points=[
-                ("Private reading", "Byte ranges from your disk; nothing uploaded, no model called."),
-                ("Viewer", "Mozilla PDF.js 6.3.289, vendored under Apache-2.0; no CDN."),
-                ("Use as context", "Text only by default; images only when you tick the box."),
-                ("Honest progress", "Four progress rows, a real Cancel, failures reported."),
-                ("Passwords", "Used in memory only; never stored or logged."),
+                ("Lectura privada", "Rangos de bytes de tu disco; no se sube nada ni se llama a ningún modelo."),
+                ("Visor", "Mozilla PDF.js 6.3.289, incluido bajo Apache-2.0; sin CDN."),
+                ("Usar como contexto", "Sólo texto de forma predeterminada; imágenes sólo cuando marcas la casilla."),
+                ("Progreso honesto", "Cuatro filas de progreso, un Cancelar real, errores reportados."),
+                ("Contraseñas", "Se usan sólo en memoria; nunca se guardan ni van al log."),
             ]),
-        Section("mdcanvas", "MARKDOWN CANVAS", "Markdown opens as a page, and stays your source",
-            "Open or drop a .md file and the canvas renders it; Source opens the editable document.",
+        Section("mdcanvas", "CANVAS DE MARKDOWN", "El Markdown se abre como página y sigue siendo tu source",
+            "Abre o suelta un archivo .md y el canvas lo renderiza; Source abre el documento editable.",
             body=[
-                "Open, Refresh, a dropped file, a generated-file link and Context ▸ Set file as context all "
-                "recognise .md and .markdown. Preview renders CommonMark and GitHub-flavored Markdown: "
-                "headings, tables, task lists, fenced code through the existing highlighter and safe embedded "
-                "HTML such as expandable details. Source edits the current text with line numbers.",
-                "Rendering is local: Marked 18.1.0 and DOMPurify 3.4.16 are vendored with pinned integrity, "
-                "so nothing is fetched from a CDN. The sanitizer allowlists HTML and attributes, scopes ids and "
-                "restricts resource protocols. Choose folder resolves relative images and links from files you "
-                "select; they stay on your device, and a relative URL never reaches an application endpoint.",
-                "Copy, Use as context and Save always take the Markdown source, never the flattened preview; "
-                "Unedited saves retain original bytes; edits retain encoding/BOM and line endings. Preview shipped in v1.82.0 and was checked "
-                "on October 11 with 30 of 30 visible browser checkpoints.",
+                "Abrir, Actualizar, un archivo soltado, un link a un archivo generado y Contexto ▸ Usar archivo como contexto "
+                "reconocen .md y .markdown. La vista previa renderiza CommonMark y Markdown al estilo GitHub: "
+                "encabezados, tablas, listas de tareas, código cercado con el resaltador existente y HTML incrustado "
+                "seguro, como los detalles desplegables. Source edita el texto actual con números de línea.",
+                "El renderizado es local: Marked 18.1.0 y DOMPurify 3.4.16 van incluidos con integridad fija, "
+                "así que nada se trae de un CDN. El sanitizador usa listas permitidas de HTML y atributos, delimita los ids y "
+                "restringe los protocolos de recursos. Elegir carpeta resuelve las imágenes y los links relativos desde archivos que "
+                "seleccionas; se quedan en tu equipo, y una URL relativa nunca llega a un endpoint de la aplicación.",
+                "Copiar, Usar como contexto y Guardar siempre toman el source en Markdown, nunca la vista previa aplanada; "
+                "guardar sin editar conserva los bytes originales; las ediciones conservan la codificación/BOM y los saltos de línea. La vista previa salió en v1.82.0 y se revisó "
+                "el 11 de octubre con 30 de 30 puntos de revisión visibles en el browser.",
             ], deck="list",
             deck_points=[
-                ("Preview and Source", "Rendered page, or editable source with line numbers."),
-                ("Offline", "Vendored Marked and DOMPurify; no CDN at runtime."),
-                ("Safe HTML", "Allowlisted markup; relative links never reach the app."),
-                ("Your source", "Copy, context and Save use the current source buffer."),
-                ("Evidence", "30 of 30 visible checkpoints on October 11."),
+                ("Vista previa y Source", "Página renderizada, o source editable con números de línea."),
+                ("Sin conexión", "Marked y DOMPurify incluidos; sin CDN al ejecutar."),
+                ("HTML seguro", "Marcado de una lista permitida; los links relativos nunca llegan a la app."),
+                ("Tu source", "Copiar, contexto y Guardar usan el buffer actual del source."),
+                ("Evidencia", "30 de 30 puntos de revisión visibles el 11 de octubre."),
             ]),
-        Section("filedrop", "FILE DROP · v1.83.0", "Drop a file anywhere, and she knows what it is",
-            "One listener on every page reads each dropped file and sends it to the mechanism that fits it.",
+        Section("filedrop", "SOLTAR ARCHIVOS · v1.83.0", "Suelta un archivo en cualquier lugar, y ella sabe qué es",
+            "Un solo listener en cada página lee cada archivo soltado y lo envía al mecanismo que le corresponde.",
             body=[
-                "Drag a file from Windows Explorer onto the chat, the Agentic Control Panel, the Prompt Flow Panel, "
-                "the welcome and login pages, the admin pages or the PDF viewer. A small overlay says what will "
-                "happen on that page. The listener claims only file drags, so text you drag, such as an agent "
-                "name or a palette item, is never touched, and a drop on a file input is left to the browser.",
-                "It decides by the bytes, not the name: the extension, the MIME type, magic numbers, a byte-order-mark "
-                "aware text-or-binary test and a real JSON parse that recognises an MCP configuration in every common "
-                "shape, UTF-16 files from PowerShell included. A bare map of names to servers counts only when every "
-                "value is a server, so ordinary JSON is never hijacked. An MCP import is never silent: a confirmation "
-                "lists the servers and warns that they can start programs on this computer.",
-                "Each page tells the listener what it can do, and the same registration writes the drag overlay. Up to "
-                "25 files at a time; a folder cannot be dropped because browsers do not reveal its path. Shipped in "
-                "v1.83.0 and checked on October 14 with 138 router checks, 22 new tests and 58 visible browser checks.",
+                "Arrastra un archivo desde el Explorador de Windows al chat, al Agentic Control Panel, al Prompt Flow Panel, "
+                "a las páginas de bienvenida y de inicio de sesión, a las páginas de admin o al visor de PDF. Un pequeño overlay dice qué va a "
+                "pasar en esa página. El listener sólo toma arrastres de archivos, así que el texto que arrastras, como el nombre de un "
+                "agent o un elemento de la paleta, nunca se toca, y lo que sueltas sobre un input de archivo se le deja al browser.",
+                "Decide por los bytes, no por el nombre: la extensión, el tipo MIME, los números mágicos, una prueba de texto o binario "
+                "que reconoce la marca de orden de bytes y un parseo real de JSON que reconoce una configuración de MCP en todas las formas "
+                "comunes, incluidos los archivos UTF-16 de PowerShell. Un mapa simple de nombres a servidores cuenta sólo cuando todos "
+                "los valores son servidores, así que el JSON común nunca se secuestra. Una importación de MCP nunca es silenciosa: una confirmación "
+                "lista los servidores y avisa que pueden arrancar programas en esta computadora.",
+                "Cada página le dice al listener qué puede hacer, y el mismo registro escribe el overlay de arrastre. Hasta "
+                "25 archivos a la vez; no se puede soltar una carpeta porque los browsers no revelan su path. Salió en "
+                "v1.83.0 y se revisó el 14 de octubre con 138 revisiones del router, 22 pruebas nuevas y 58 revisiones visibles en el browser.",
             ],
-            table={"columns": ["You drop", "What happens"], "widths": [0.30, 0.70], "rows": [
-                ["An MCP .json", "Confirm, then it joins the External MCP catalog; works on every page."],
-                ["A .flw flow", "Loads on the Agentic Control Panel canvas, or opens that panel in a new tab."],
-                ["A .fpmt flow", "Loads in the Prompt Flow Panel, asking first about unsaved work, or a new tab."],
-                ["An image", "Attached to your message: saved in Temp, its path written into the message."],
-                ["PDF, Markdown, code, plain JSON", "Opens in the chat canvas."],
-                ["A folder, zip or program", "Explained in plain words; nothing opens."],
+            table={"columns": ["Sueltas", "Qué pasa"], "widths": [0.30, 0.70], "rows": [
+                ["Un .json de MCP", "Confirma, y luego se une al catálogo de External MCPs; funciona en todas las páginas."],
+                ["Un flow .flw", "Se carga en el canvas del Agentic Control Panel, o abre ese panel en una pestaña nueva."],
+                ["Un flow .fpmt", "Se carga en el Prompt Flow Panel, preguntando primero por el trabajo sin guardar, o en una pestaña nueva."],
+                ["Una imagen", "Se adjunta a tu mensaje: se guarda en Temp y su path se escribe en el mensaje."],
+                ["PDF, Markdown, código, JSON simple", "Se abre en el canvas del chat."],
+                ["Una carpeta, un zip o un programa", "Se explica con palabras sencillas; no se abre nada."],
             ]}, deck="table"),
-        Section("models", "CONFIG ▸ MODELS", "Every model choice in one place",
-            f"The Models dialog exposes {model_fields} model, engine and voice settings for the core services "
-            f"and {model_agents} model-backed agents, in six searchable categories.",
+        Section("models", "CONFIG ▸ MODELOS", "Todas las elecciones de modelo en un solo lugar",
+            f"El diálogo Modelos expone {model_fields} configuraciones de modelo, motor y voz para los servicios principales "
+            f"y {model_agents} agents con modelo, en seis categorías con búsqueda.",
             body=[
-                f"Categories: {groups_text}. Save submits all values, preserves unrelated configuration and "
-                "downloads nothing. Reconnect the chat to rebuild its clients; agents pick up a choice at their "
-                "next configuration load. The model list comes from the configured Ollama servers, asked by "
-                "the backend with their token, so a remote server's models are offered and accepted. Since v1.76.0 "
-                "Save also opens the Model Brain's Auto-tuning dialog, which tunes each configured model in front "
-                "of you and names the source of every value.",
-                "Agent templates marked `\"@config\"` follow the global choice, while a literal value in a "
-                "workflow remains an explicit override. Wrapped chat launches seed the global choices before "
-                "any explicit tool argument, and the frozen build proves every model loader runs before it "
-                "packages.",
+                f"Categorías: {groups_text}. Guardar envía todos los valores, conserva la configuración no relacionada y "
+                "no descarga nada. Reconecta el chat para reconstruir sus clientes; los agents toman una elección en su "
+                "siguiente carga de configuración. La lista de modelos viene de los servidores de Ollama configurados, consultados por "
+                "el backend con su token, así que se ofrecen y se aceptan los modelos de un servidor remoto. Desde v1.76.0 "
+                "Guardar también abre el diálogo de Autoajuste del Model Brain, que ajusta cada modelo configurado frente "
+                "a ti y nombra la fuente de cada valor.",
+                "Las plantillas de agents marcadas `\"@config\"` siguen la elección global, mientras que un valor literal en un "
+                "workflow sigue siendo un override explícito. Los arranques de chat wrapped siembran las elecciones globales antes de "
+                "cualquier argumento explícito del tool, y el build congelado prueba que cada cargador de modelos corre antes de "
+                "empaquetar.",
             ],
             visual="bars_models", deck="split",
             deck_points=[
-                ("Settings", f"{model_fields} model, engine and voice choices."),
-                ("Agents", f"{model_agents} model-backed agents configured centrally."),
-                ("Inheritance", "\"@config\" follows the global choice; literals override."),
-                ("Save", "Keeps unrelated settings, downloads nothing, then auto-tunes each model."),
-                ("Catalog", "Listed by the configured Ollama servers, asked with their token."),
+                ("Configuraciones", f"{model_fields} elecciones de modelo, motor y voz."),
+                ("Agents", f"{model_agents} agents con modelo, configurados de forma central."),
+                ("Herencia", "\"@config\" sigue la elección global; los literales la reemplazan."),
+                ("Guardar", "Conserva la configuración no relacionada, no descarga nada y luego autoajusta cada modelo."),
+                ("Catálogo", "Lo listan los servidores de Ollama configurados, consultados con su token."),
             ]),
-        Section("onelook", "ONE LOOK · v1.80.0", "Every page shares one theme and one way to resize",
-            "Chat, both panels, login, welcome, Usage, the PDF viewer and the admin pages share one identity.",
+        Section("onelook", "UN SOLO ASPECTO · v1.80.0", "Todas las páginas comparten un tema y una forma de cambiar el tamaño",
+            "El chat, ambos paneles, el inicio de sesión, la bienvenida, Uso, el visor de PDF y las páginas de admin comparten una identidad.",
             body=[
-                "One set of design tokens defines the slate surfaces, teal accent, readable text, borders, "
-                "fonts and scrollbars for every first-party page, including a themed Django admin that keeps "
-                "its light, dark and automatic modes. Dialog colors follow the same tokens, and the dialog "
-                "theme always loads last.",
-                "All five pane dividers share one grip and one gesture model: pointer capture, arrows for one "
-                "percent, Shift for five, Home and End, and clean cancellation on Escape, blur or a lost "
-                "pointer. Resizable dialogs accept all eight edges and corners and the keyboard, and a modal "
-                "can no longer slide under the expanded menu at 400 percent zoom.",
+                "Un solo juego de design tokens define las superficies de pizarra, el acento verde azulado, el texto legible, los bordes, "
+                "las fuentes y las barras de desplazamiento de cada página propia, incluido un admin de Django con tema que conserva "
+                "sus modos claro, oscuro y automático. Los colores de los diálogos siguen los mismos tokens, y el tema de los diálogos "
+                "siempre se carga al final.",
+                "Los cinco divisores de paneles comparten una manija y un modelo de gestos: captura del puntero, flechas para un "
+                "por ciento, Shift para cinco, Inicio y Fin, y una cancelación limpia con Escape, al perder el foco o al perder el "
+                "puntero. Los diálogos que cambian de tamaño aceptan los ocho bordes y esquinas y el teclado, y un modal "
+                "ya no se puede deslizar debajo del menú expandido con zoom de 400 por ciento.",
             ], deck="cards", points=[
-                ("Shared tokens", "One palette, font set and scrollbar style for every page."),
-                ("Five dividers", "One grip, one keyboard model, one clean cancel."),
-                ("Dialogs", "Eight resize directions, keyboard resizing, buttons that match."),
-                ("High zoom", "A modal stays above the menu at 400 percent."),
-                ("Evidence", "175 source tests and visible checks passed on October 11."),
+                ("Tokens compartidos", "Una paleta, un juego de fuentes y un estilo de barra de desplazamiento para todas las páginas."),
+                ("Cinco divisores", "Una manija, un modelo de teclado, una cancelación limpia."),
+                ("Diálogos", "Ocho direcciones de cambio de tamaño, cambio de tamaño con teclado, botones que combinan."),
+                ("Zoom alto", "Un modal se queda arriba del menú al 400 por ciento."),
+                ("Evidencia", "175 pruebas del source y revisiones visibles pasaron el 11 de octubre."),
             ]),
-        Section("dialogs", "OPERATOR DIALOGS", "Everything else, without editing files",
-            "Configuration, credentials, databases and updates are handled from the browser.",
+        Section("dialogs", "DIÁLOGOS DEL OPERADOR", "Todo lo demás, sin editar archivos",
+            "La configuración, las credenciales, las bases de datos y las actualizaciones se manejan desde el browser.",
             points=[
-                ("Access Keys Wizard", "One guided place for provider keys; blank fields keep what is set."),
-                ("Contacts", "Names resolve to addresses, phones and @usernames for messaging agents."),
-                ("DB menu", "WAL-safe backup, and a verified database staged for the next start."),
-                ("External ▸ MCPs", "Search the catalog, activate up to five servers, install runtimes."),
-                ("ACPX-Skills", "Browse, enable, diagnose and reload skills."),
-                ("Check for updates", "Stage the latest published release and swap it in safely."),
+                ("Access Keys Wizard", "Un lugar guiado para las llaves de los proveedores; los campos en blanco conservan lo que ya está."),
+                ("Contactos", "Los nombres se resuelven a direcciones, teléfonos y @usernames para los agents de mensajería."),
+                ("Menú DB", "Backup seguro con WAL, y una base de datos verificada preparada para el siguiente arranque."),
+                ("Externos ▸ MCPs", "Busca en el catálogo, activa hasta cinco servidores, instala runtimes."),
+                ("ACPX-Skills", "Examina, habilita, diagnostica y recarga skills."),
+                ("Buscar actualizaciones", "Prepara el último release publicado y lo cambia de forma segura."),
             ],
-            callout=("One dismissal rule everywhere",
-                     "Escape means exactly what a dialog's ✕ means, and an outside click never dismisses "
-                     "anything. A downloading updater is the single dialog that refuses to close."),
+            callout=("Una sola regla para cerrar en todas partes",
+                     "Escape significa exactamente lo mismo que la ✕ de un diálogo, y un clic afuera nunca cierra "
+                     "nada. Un actualizador que está descargando es el único diálogo que se niega a cerrarse."),
             deck="cards"),
     ])
 
     bestiary_sections = []
     for name, accent, blurb, members in AGENT_FAMILIES:
         bestiary_sections.append(Section(
-            "family_" + name.lower().replace(" ", "_").replace(",", ""), "AGENT FAMILY",
+            "family_" + name.lower().replace(" ", "_").replace(",", ""), "FAMILIA DE AGENTS",
             name, blurb,
             points=[(f["display_names"][key], text) for key, text in members],
             visual_data={"accent": accent, "count": len(members)}, deck="family"))
-    bestiary = Chapter("bestiary", "IV", "The Bestiary",
-        f"{agents} agent types in twelve families. Each is a plain-Python program you can read, audit and change.",
+    bestiary = Chapter("bestiary", "IV", "El Bestiario",
+        f"{agents} tipos de agent en doce familias. Cada uno es un programa en Python simple que puedes leer, auditar y cambiar.",
         accent="magenta", sections=[
-            Section("bestiary_intro", "THE AGENTS", f"{agents} agents, twelve families",
-                "Every agent follows one skeleton: a template directory, a `config.yaml`, a session-scoped "
-                "pool copy, PID and log files, and explicit source and target wiring.",
+            Section("bestiary_intro", "LOS AGENTS", f"{agents} agents, doce familias",
+                "Cada agent sigue un mismo esqueleto: un directorio de plantilla, un `config.yaml`, una copia en el pool "
+                "con alcance de sesión, archivos PID y de log, y conexiones explícitas de origen y de destino.",
                 body=[
-                    f"{wrapped} of them also run from the chat as wrapped `chat_agent_*` tools, each in its own "
-                    "isolated runtime folder. Every wrapped agent appears in the Exec Report automatically, and "
-                    "each ships at least one example prompt in the catalog.",
-                    "Display names keep their exact designed casing — STM32er, PDFer, LaTeXer, ACPXer — while "
-                    "directories, pools and style classes use lowercase forms.",
+                    f"{wrapped} de ellos también corren desde el chat como tools wrapped `chat_agent_*`, cada uno en su propia "
+                    "carpeta de runtime aislada. Cada agent wrapped aparece automáticamente en el Exec Report, y "
+                    "cada uno incluye al menos un prompt de ejemplo en el catálogo.",
+                    "Los nombres para mostrar conservan su uso exacto de mayúsculas tal como se diseñó: STM32er, PDFer, LaTeXer, ACPXer; mientras que "
+                    "los directorios, los pools y las clases de estilo usan formas en minúsculas.",
                 ],
                 visual="family_wheel", deck="visual"),
             *bestiary_sections,
         ])
 
-    capabilities = Chapter("capabilities", "V", "Deep Capabilities",
-        "The subsystems that give her reach: other agents, other servers, documents, boards, engines and senses.",
+    capabilities = Chapter("capabilities", "V", "Capacidades profundas",
+        "Los subsistemas que le dan alcance: otros agents, otros servidores, documentos, tarjetas, motores y sentidos.",
         accent="cyan", sections=[
-        Section("acpx", "ACPX", "Other coding agents as her children",
-            "ACPX spawns external coding-agent CLIs as out-of-process children, talks to them over "
-            "stdin and stdout, keeps an NDJSON transcript of every turn, and brokers it all to the model as "
-            "twelve tools.",
+        Section("acpx", "ACPX", "Otros agents de programación como sus hijos",
+            "ACPX arranca CLIs externos de agents de programación como hijos fuera del proceso, habla con ellos por "
+            "stdin y stdout, guarda una transcripción NDJSON de cada turno, y lo pone todo a disposición del modelo como "
+            "doce tools.",
             body=[
-                f"{len(peers)} peers are registered: {', '.join(peers)}. One-shot peers receive the prompt as a "
-                "command-line argument and are read to completion; the Tlamatini self-host speaks strict JSON; "
-                "interactive peers are drained by a transport-aware idle rule. ACPX is a Python port of "
-                "OpenClaw's ACPX plugin, so its agent identifiers and skill contract are compatible.",
-                "ACPX tells the truth about its peers. A version check is not health and exit code 0 is not "
-                "success: a stdlib-only classifier decides whether a child actually delivered, and a refusal is "
-                "returned as `ok: false` with a named code instead of a green row. `acp_doctor(deep=True)` sends "
-                "a real one-line prompt to each peer and names what is broken.",
-                "Children are never spawned through the shell, because cmd.exe silently cuts a command line at "
-                "its first newline. npm and pnpm shims are rewritten to `node.exe` with the script path.",
+                f"Hay {len(peers)} pares registrados: {', '.join(peers)}. Los pares de una sola ejecución reciben el prompt como "
+                "argumento de la línea de comandos y se leen hasta el final; el self-host de Tlamatini habla JSON estricto; "
+                "los pares interactivos se drenan con una regla de inactividad que conoce el transporte. ACPX es un port en Python del "
+                "plugin ACPX de OpenClaw, así que sus identificadores de agents y su contrato de skills son compatibles.",
+                "ACPX dice la verdad sobre sus pares. Una revisión de versión no es salud, y el código de salida 0 no es "
+                "éxito: un clasificador que sólo usa la stdlib decide si un hijo de verdad entregó, y una negativa se "
+                "devuelve como `ok: false` con un código con nombre en vez de una fila verde. `acp_doctor(deep=True)` envía "
+                "un prompt real de una línea a cada par y nombra lo que está roto.",
+                "Los hijos nunca se arrancan por el shell, porque cmd.exe corta en silencio una línea de comandos en "
+                "su primer salto de línea. Los shims de npm y pnpm se reescriben a `node.exe` con el path del script.",
             ],
-            table={"columns": ["Non-delivery code", "Meaning"], "widths": [0.42, 0.58], "rows": [
-                ["PERMISSION_BLOCKED", "The child stopped at its own permission prompt."],
-                ["AUTH_FAILED · CONFIG_INVALID", "It could not authenticate, or refused its own config."],
-                ["NO_CREDIT · USAGE_LIMIT", "No credit, or a plan or rate limit was reached."],
-                ["UPSTREAM_ERROR", "The model provider returned a server-side error."],
-                ["NO_OUTPUT · CHILD_ERROR", "Nothing legible came back, or it failed without an answer."],
-                ["WORKSPACE_NOT_TRUSTED", "Its working folder is untrusted, so permissions were ignored."],
+            table={"columns": ["Código de no entrega", "Significado"], "widths": [0.42, 0.58], "rows": [
+                ["PERMISSION_BLOCKED", "El hijo se detuvo en su propio aviso de permisos."],
+                ["AUTH_FAILED · CONFIG_INVALID", "No pudo autenticarse, o rechazó su propia configuración."],
+                ["NO_CREDIT · USAGE_LIMIT", "Sin crédito, o se alcanzó un límite del plan o de tasa."],
+                ["UPSTREAM_ERROR", "El proveedor del modelo devolvió un error del lado del servidor."],
+                ["NO_OUTPUT · CHILD_ERROR", "No regresó nada legible, o tuvo un error sin dar respuesta."],
+                ["WORKSPACE_NOT_TRUSTED", "Su carpeta de trabajo no es de confianza, así que se ignoraron los permisos."],
             ]}, deck="split",
             deck_points=[
-                ("Peers", f"{len(peers)} CLIs, including Claude Code, Codex, Gemini, Cursor and Qwen."),
-                ("Twelve tools", "Spawn, send, wait, relay, transcript, status, kill, doctor, skills."),
-                ("Truthful", "A refusal returns ok: false with a named code."),
-                ("No shell", "Shims are rewritten so long prompts are never cut."),
+                ("Pares", f"{len(peers)} CLIs, incluidos Claude Code, Codex, Gemini, Cursor y Qwen."),
+                ("Doce tools", "Arrancar, enviar, esperar, relevar, transcripción, status, matar, doctor, skills."),
+                ("Veraz", "Una negativa devuelve ok: false con un código con nombre."),
+                ("Sin shell", "Los shims se reescriben para que los prompts largos nunca se corten."),
             ]),
-        Section("mcps", "EXTERNAL MCPS", "A universal MCP client",
-            "Connect Tlamatini to any MCP server declared in a JSON catalog and use its tools at once, with "
-            "no code written for the server.",
+        Section("mcps", "EXTERNAL MCPS", "Un cliente MCP universal",
+            "Conecta Tlamatini a cualquier servidor MCP declarado en un catálogo JSON y usa sus tools de inmediato, sin "
+            "escribir código para el servidor.",
             body=[
-                "The catalog uses the standard `mcpServers` shape and lives beside `config.json`, preserved "
-                "across updates. Four transports connect — stdio, streamable HTTP, SSE and WebSocket — lazily "
-                "on a background thread, so a slow server can never delay an answer. Up to five servers are "
-                "active at once, and each remote tool appears as `ext__<server>__<tool>`.",
-                "Most servers start with `npx` or `uvx`, which a fresh machine lacks. A private runtime "
-                "provisioner downloads Node and uv once from their official sources into the user's profile, "
-                "verifies checksums, installs atomically, needs no administrator rights and never changes the "
-                "system PATH.",
-                "Memory and Sequential Thinking ship in every installation, inactive. A default you delete is "
-                "remembered and never resurrected; one you edit is never overwritten.",
+                "El catálogo usa la forma estándar `mcpServers` y vive junto a `config.json`, conservado "
+                "entre actualizaciones. Se conectan cuatro transportes (stdio, HTTP streamable, SSE y WebSocket) de forma diferida "
+                "en un hilo de fondo, así que un servidor lento nunca puede retrasar una respuesta. Hasta cinco servidores están "
+                "activos a la vez, y cada tool remoto aparece como `ext__<server>__<tool>`.",
+                "La mayoría de los servidores arrancan con `npx` o `uvx`, que una máquina recién instalada no tiene. Un aprovisionador privado "
+                "de runtimes descarga Node y uv una sola vez desde sus fuentes oficiales al perfil del usuario, "
+                "verifica checksums, instala de forma atómica, no necesita derechos de administrador y nunca cambia el "
+                "PATH del sistema.",
+                "Memory y Sequential Thinking vienen en cada instalación, inactivos. Un servidor predeterminado que borras se "
+                "recuerda y nunca se revive; uno que editas nunca se sobrescribe.",
             ],
             visual="chain",
-            visual_data={"chain": ["Classify", "Import", "Doctor", "Activate", "Wait", "List", "Call"],
-                         "caption": "The adding-external-mcp skill: one guarded onboarding sequence."},
+            visual_data={"chain": ["Clasificar", "Importar", "Diagnosticar", "Activar", "Esperar", "Listar", "Llamar"],
+                         "caption": "La skill adding-external-mcp: una secuencia de incorporación protegida."},
             deck="split",
             deck_points=[
-                ("Transports", "stdio, streamable HTTP, SSE and WebSocket."),
-                ("Ten supervisors", "Status, reconnect, doctor, runtimes, import, list, call, activate, wait."),
-                ("Private runtimes", "Node and uv provisioned per user, no admin, no PATH change."),
-                ("Defaults", "Memory and Sequential Thinking, inactive until you choose."),
+                ("Transportes", "stdio, HTTP streamable, SSE y WebSocket."),
+                ("Diez supervisores", "Status, reconectar, doctor, runtimes, importar, listar, llamar, activar, esperar."),
+                ("Runtimes privados", "Node y uv aprovisionados por usuario, sin admin, sin cambiar el PATH."),
+                ("Predeterminados", "Memory y Sequential Thinking, inactivos hasta que tú elijas."),
             ]),
-        Section("skills", "SKILLS", "Procedures, handed over complete",
-            f"{skills} `SKILL.md` packages are loaded at start-up and offered to the model through "
-            "`list_skills` and `invoke_skill`.",
+        Section("skills", "SKILLS", "Procedimientos, entregados completos",
+            f"{skills} paquetes `SKILL.md` se cargan al arrancar y se le ofrecen al modelo por medio de "
+            "`list_skills` e `invoke_skill`.",
             body=[
-                "Invoking an in-process skill is a planning handoff, not a hidden execution. It returns the "
-                "complete procedure, the contract of outputs still owed, and an honest statement of what is "
-                "enforced — argument checks, secret redaction and time budgets — and what remains declared "
-                "policy, gated by the normal Configure and Ask Execs surfaces.",
-                "Skills include code review, security audit, the Kali pentest runbook, flow making, skill "
-                "creation, summarization, the adding-external-mcp runbook, Roblox Studio, repository audit and "
-                "refactor helpers, and integration guides for GitHub, Gmail, Slack, Jira, Notion, Todoist, "
-                "Trello and weather. The ACPX-Skills menu enables, diagnoses and reloads them without a restart.",
+                "Invocar una skill en proceso es una entrega de planeación, no una ejecución escondida. Devuelve el "
+                "procedimiento completo, el contrato de outputs que todavía se deben y una declaración honesta de lo que se "
+                "hace cumplir (revisión de argumentos, redacción de secretos y presupuestos de tiempo) y de lo que queda como política "
+                "declarada, protegida por las superficies normales de Configurar y de Ask Execs.",
+                "Las skills incluyen revisión de código, auditoría de seguridad, el runbook de pentest con Kali, creación de flows, creación "
+                "de skills, resumen, el runbook adding-external-mcp, Roblox Studio, auditoría del repositorio y "
+                "helpers de refactorización, y guías de integración para GitHub, Gmail, Slack, Jira, Notion, Todoist, "
+                "Trello y el clima. El menú ACPX-Skills las habilita, las diagnostica y las recarga sin reiniciar.",
             ],
-            callout=("Credentials stay inside",
-                     "An input marked sensitive, or named like a credential, is redacted from every audit "
-                     "event and from the returned result: no prefix, no length, no hash."),
+            callout=("Las credenciales se quedan adentro",
+                     "Un input marcado como sensible, o con nombre de credencial, se redacta de todos los eventos "
+                     "de auditoría y del resultado devuelto: sin prefijo, sin longitud, sin hash."),
             deck="list",
             deck_points=[
-                ("Catalog", f"{skills} packages, validated by one shared routine."),
-                ("Handoff", "invoke_skill returns the full procedure and the outputs still owed."),
-                ("Honest enforcement", "It states what is enforced and what is declared policy."),
-                ("Administered", "Browse, Configure, Diagnostics and Reload from the menu."),
+                ("Catálogo", f"{skills} paquetes, validados por una sola rutina compartida."),
+                ("Entrega", "invoke_skill devuelve el procedimiento completo y los outputs que todavía se deben."),
+                ("Cumplimiento honesto", "Dice qué se hace cumplir y qué es política declarada."),
+                ("Administradas", "Examinar, Configurar, Diagnósticos y Recargar desde el menú."),
             ]),
-        Section("documents", "THE DOCUMENT FAMILY", "Compose, present, typeset",
-            "Three agents produce documents, each with its own craft, and none of them calls a file clean "
-            "just because it was created.",
-            table={"columns": ["Agent", "Craft", "Signature features"], "widths": [0.14, 0.24, 0.62], "rows": [
-                ["PDFer", "Composes PDFs from text, Markdown, HTML and images",
-                 "24 visual styles in five families over 20 content themes; measured tables and covers; a "
-                 "layout audit that reopens the file and checks overlap, off-page text, blank pages and "
-                 "contrast."],
-                ["PPTXer", "Builds editable PowerPoint decks",
-                 "36 named treatments and 17 font pairings; text measured before it is placed, so long "
-                 "content continues onto a new slide; native PowerPoint verification when installed."],
-                ["LaTeXer", "Typesets real LaTeX",
-                 "Eight templates and 30 signature styles; whole-project builds with bibliography and index "
-                 "convergence; readable diagnostics; an eight-rung repair ladder; a mostly-cut build delivered as "
-                 "`<name>.DEGRADED.pdf`; MiKTeX recommended."],
+        Section("documents", "LA FAMILIA DE DOCUMENTOS", "Componer, presentar, tipografiar",
+            "Tres agents producen documentos, cada uno con su propio oficio, y ninguno da por limpio un archivo "
+            "sólo porque se creó.",
+            table={"columns": ["Agent", "Oficio", "Funciones distintivas"], "widths": [0.14, 0.24, 0.62], "rows": [
+                ["PDFer", "Compone PDFs a partir de texto, Markdown, HTML e imágenes",
+                 "24 estilos visuales en cinco familias sobre 20 temas de contenido; tablas y portadas medidas; una "
+                 "auditoría de distribución que vuelve a abrir el archivo y revisa encimados, texto fuera de la página, páginas en blanco y "
+                 "contraste."],
+                ["PPTXer", "Construye presentaciones editables de PowerPoint",
+                 "36 tratamientos con nombre y 17 combinaciones de fuentes; el texto se mide antes de colocarlo, así que el contenido "
+                 "largo continúa en una diapositiva nueva; verificación nativa en PowerPoint cuando está instalado."],
+                ["LaTeXer", "Tipografía LaTeX real",
+                 "Ocho plantillas y 30 estilos distintivos; builds de proyectos completos con convergencia de bibliografía e "
+                 "índice; diagnósticos legibles; una escalera de reparación de ocho peldaños; un build mayormente recortado se entrega como "
+                 "`<name>.DEGRADED.pdf`; se recomienda MiKTeX."],
             ]},
-            callout=("Created is not verified",
-                     "A saved file only proves it exists. Read PDFer's `layout_clean`, PPTXer's "
-                     "`ground_truth`, or LaTeXer's `status` before calling a document clean."),
+            callout=("Creado no es verificado",
+                     "Un archivo guardado sólo prueba que existe. Lee, de PDFer, `layout_clean`; de PPTXer, "
+                     "`ground_truth`; o de LaTeXer, `status`, antes de dar un documento por limpio."),
             deck="table"),
-        Section("ladder", "LATEXER", "A repair ladder that protects your words",
-            "When a build fails, LaTeXer climbs eight rungs in a fixed order, each tried only if the one "
-            "before produced no PDF.",
+        Section("ladder", "LATEXER", "Una escalera de reparación que protege tus palabras",
+            "Cuando un build falla, LaTeXer sube ocho peldaños en un orden fijo; cada uno se intenta sólo si el "
+            "anterior no produjo un PDF.",
             body=[
-                "Every repair is applied to a copy and re-linted; a repair that makes the lint worse is reverted. "
-                "The author's file is never overwritten unless `repair_write_back` is set, every rung is recorded "
-                "in an audit trace, and any block set aside is named with its line number.",
-                "Bisect is strictly last because it is the only rung that removes content, and it is skipped when "
-                "the model rung merely could not be reached. A clean build tells the model plainly that the "
-                "document is finished, so a good PDF is never “improved” into a broken one.",
-                "Since v1.76.0 a PDF is reported only when the delivered file really exists. A build that had to "
-                "cut a quarter or more of its body is delivered as `<name>.DEGRADED.pdf`, never under the name you "
-                "asked for, and in a document over 8,000 characters the model rung first repairs only the lines "
-                "around the compiler's error with a capped request; a reply that never came forbids bisect.",
+                "Cada reparación se aplica a una copia y se vuelve a revisar con lint; una reparación que empeora el lint se revierte. "
+                "El archivo del autor nunca se sobrescribe a menos que se active `repair_write_back`, cada peldaño se registra "
+                "en una traza de auditoría, y cualquier bloque que se aparta se nombra con su número de línea.",
+                "Bisect va estrictamente al final porque es el único peldaño que quita contenido, y se salta cuando "
+                "el peldaño del modelo sólo no se pudo alcanzar. Un build limpio le dice al modelo claramente que el "
+                "documento está terminado, así que un buen PDF nunca se “mejora” hasta romperlo.",
+                "Desde v1.76.0 un PDF se reporta sólo cuando el archivo entregado de verdad existe. Un build que tuvo que "
+                "cortar una cuarta parte o más de su cuerpo se entrega como `<name>.DEGRADED.pdf`, nunca con el nombre que "
+                "pediste, y en un documento de más de 8,000 caracteres el peldaño del modelo primero repara sólo las líneas "
+                "alrededor del error del compilador con una solicitud acotada; una respuesta que nunca llegó prohíbe el bisect.",
             ],
             visual="ladder",
             visual_data={"rungs": [
-                ("1", "lint", "Static structural repair before any compiler runs."),
-                ("2", "preamble", "Infer packages from the commands actually used."),
-                ("3", "rules", "Deterministic rewrites of known-bad constructs."),
-                ("4", "log-directed", "Compile, read the real error, fix that line."),
-                ("5", "acquire", "Install a package that is genuinely missing."),
-                ("6", "engine swap", "Retry with XeLaTeX or LuaLaTeX."),
-                ("7", "model", "Ask a model; its answer re-enters at rung 1."),
-                ("8", "bisect", "Last: set the failing block aside, and say so."),
+                ("1", "lint", "Reparación estructural estática antes de que corra cualquier compilador."),
+                ("2", "preamble", "Deduce los paquetes a partir de los comandos que de verdad se usan."),
+                ("3", "rules", "Reescrituras deterministas de construcciones que se sabe que están mal."),
+                ("4", "log-directed", "Compila, lee el error real y arregla esa línea."),
+                ("5", "acquire", "Instala un paquete que de verdad falta."),
+                ("6", "engine swap", "Reintenta con XeLaTeX o LuaLaTeX."),
+                ("7", "model", "Pregunta a un modelo; su respuesta vuelve a entrar en el peldaño 1."),
+                ("8", "bisect", "Al final: aparta el bloque con error, y lo dice."),
             ]}, deck="visual"),
-        Section("firmware", "FIRMWARE", "Real boards, fail-safe by design",
-            "Four agents take firmware from scaffold to a running board, and each refuses rather than flash "
-            "something that cannot be right.",
-            table={"columns": ["Agent", "Toolchain", "Highlights"], "widths": [0.14, 0.26, 0.60], "rows": [
-                ["STM32er", "PlatformIO ststm32 and the STM32 Template Project MCP",
-                 "Blue Pill through F7, G, L, H7, U5 and WB; zero-config bootstrap; ST-LINK probe checks; "
-                 "newest silicon refused cleanly until its native backend exists."],
-                ["ESP32er", "PlatformIO Core, called directly",
-                 "Copies a blink-and-print template so a new project compiles at once; serial-aware preflight."],
-                ["Arduiner", "arduino-cli, downloaded on demand",
-                 "The board is chosen by its FQBN; the board's core is installed automatically."],
-                ["ESPHomer", "The esphome CLI",
-                 "Smart-home devices from YAML; headless config generator; USB first flash, OTA after."],
+        Section("firmware", "FIRMWARE", "Tarjetas reales, a prueba de errores por diseño",
+            "Cuatro agents llevan el firmware desde el andamiaje hasta una tarjeta funcionando, y cada uno se niega antes que flashear "
+            "algo que no puede estar bien.",
+            table={"columns": ["Agent", "Toolchain", "Lo más destacado"], "widths": [0.14, 0.26, 0.60], "rows": [
+                ["STM32er", "PlatformIO ststm32 y el STM32 Template Project MCP",
+                 "De la Blue Pill a F7, G, L, H7, U5 y WB; bootstrap sin configuración; revisiones de la sonda ST-LINK; "
+                 "el silicio más nuevo se rechaza limpiamente hasta que exista su backend nativo."],
+                ["ESP32er", "PlatformIO Core, llamado directamente",
+                 "Copia una plantilla de parpadeo e impresión para que un proyecto nuevo compile de inmediato; preflight que conoce el puerto serial."],
+                ["Arduiner", "arduino-cli, descargado cuando se necesita",
+                 "La tarjeta se elige por su FQBN; el core de la tarjeta se instala automáticamente."],
+                ["ESPHomer", "El CLI de esphome",
+                 "Dispositivos de casa inteligente a partir de YAML; generador de configuración sin interfaz; primer flasheo por USB, luego OTA."],
             ]},
-            callout=("Authorized hardware only",
-                     "Flash, erase, reset and upload change a real attached device. STM32er drives "
-                     "mission-critical robot firmware, which is why its preflight fails safe."),
+            callout=("Sólo hardware autorizado",
+                     "Flashear, borrar, reiniciar y subir cambian un dispositivo real conectado. STM32er maneja "
+                     "firmware crítico de robots, y por eso su preflight falla de forma segura."),
             deck="table"),
-        Section("engines", "CREATIVE ENGINES", "Unreal Engine and Blender, live",
-            "Two agents drive running editors over their own sockets, from chat or from the canvas.",
+        Section("engines", "MOTORES CREATIVOS", "Unreal Engine y Blender, en vivo",
+            "Dos agents manejan editores en ejecución por sus propios sockets, desde el chat o desde el canvas.",
             points=[
-                ("Unrealer", "Talks to the Unreal MCP plugin over TCP: 53 commands in nine categories "
-                 "— editor, Blueprint, nodes, project, UMG, system, level, asset and material."),
-                ("Tlamatini's Unreal fork", "XaihtUnrealEngineMCP ships the full surface plus a scaffolder for "
-                 "a ready-to-build UE 5.8 C++ project with a Visual Studio 2026 solution."),
-                ("Blenderer", "Speaks the official Blender MCP add-on's code-execution protocol on its local "
-                 "socket, with a rich action catalog so most tasks need no hand-written Python."),
-                ("Chainable", "Both return structured blocks, so Parametrizer can carry a result into the "
-                 "next step and a Forker can branch on it."),
+                ("Unrealer", "Habla con el plugin Unreal MCP por TCP: 53 comandos en nueve categorías "
+                 "(editor, Blueprint, nodos, proyecto, UMG, sistema, nivel, asset y material)."),
+                ("El fork de Unreal de Tlamatini", "XaihtUnrealEngineMCP incluye toda la superficie más un generador de andamiaje para "
+                 "un proyecto C++ de UE 5.8 listo para compilar con una solución de Visual Studio 2026."),
+                ("Blenderer", "Habla el protocolo de ejecución de código del add-on oficial Blender MCP en su socket "
+                 "local, con un catálogo rico de acciones, así que la mayoría de las tareas no necesitan Python escrito a mano."),
+                ("Encadenables", "Ambos devuelven bloques estructurados, así que Parametrizer puede llevar un resultado al "
+                 "siguiente paso y un Forker puede ramificarse según él."),
             ], deck="cards"),
-        Section("security", "SECURITY", "Assessment for authorized targets",
-            "Offensive and defensive tooling is part of the catalog, always limited to systems you own or are "
-            "explicitly authorized to test.",
+        Section("security", "SEGURIDAD", "Evaluación para objetivos autorizados",
+            "Las herramientas ofensivas y defensivas son parte del catálogo, siempre limitadas a sistemas que son tuyos o que tienes "
+            "autorización explícita para probar.",
             points=[
-                ("Kalier", "Kali Linux tools through MCP-Kali-Server: nmap, gobuster, nikto, sqlmap and more."),
-                ("Discoverer", "subfinder, httpx, naabu, katana, nuclei and vulnx on a private Go toolchain."),
-                ("Nmapper", "Uses the nmap you installed; never bundles it; connect scan needs no admin."),
-                ("Analyzer", "bandit, semgrep, ruff, eslint, gitleaks and pip-audit, deterministically."),
-                ("Reviewer", "A senior-engineer review of a diff, with a verdict a flow can branch on."),
-                ("Kyber", "Post-quantum key generation, encryption and decryption."),
+                ("Kalier", "Herramientas de Kali Linux por medio de MCP-Kali-Server: nmap, gobuster, nikto, sqlmap y más."),
+                ("Discoverer", "subfinder, httpx, naabu, katana, nuclei y vulnx sobre un toolchain privado de Go."),
+                ("Nmapper", "Usa el nmap que tú instalaste; nunca lo incluye; el connect scan no necesita admin."),
+                ("Analyzer", "bandit, semgrep, ruff, eslint, gitleaks y pip-audit, de forma determinista."),
+                ("Reviewer", "Una revisión de un diff a nivel senior, con un veredicto según el cual un flow puede ramificarse."),
+                ("Kyber", "Generación de llaves, cifrado y descifrado poscuánticos."),
             ], deck="cards"),
-        Section("bluehat", "BLUE-HAT TOOLKIT", "Windows defence, operated by a human",
-            "The `security/` toolkit is an administrator-run monitoring and response kit, not a chat tool: a "
-            "person launches it, reads its evidence and decides.",
+        Section("bluehat", "KIT BLUE-HAT", "Defensa de Windows, operada por una persona",
+            "El kit `security/` es un conjunto de monitoreo y respuesta que corre un administrador, no un tool del chat: una "
+            "persona lo lanza, lee su evidencia y decide.",
             body=[
-                "Enablement makes persistent changes. Defender and the firewall keep running, but the "
-                "installation is excluded from scans, allowed through Controlled Folder Access, and six attack "
-                "surface reduction rules move to Audit. Those exceptions are real trade-offs, so record a "
-                "baseline before elevation; there is no automatic rollback.",
-                "The monitor watches ten signal families, from Defender health and logons to persistence, "
-                "ransomware indicators and administrator-group changes. Start with a detect-only baseline, "
-                "investigate, and arm only when justified. A non-destructive visible harness validates the "
-                "assets themselves.",
+                "Habilitarlo hace cambios persistentes. Defender y el firewall siguen corriendo, pero la "
+                "instalación se excluye de los escaneos, se permite en Controlled Folder Access, y seis reglas de reducción "
+                "de la superficie de ataque pasan a modo Audit. Esas excepciones son concesiones reales, así que registra una "
+                "línea base antes de elevar privilegios; no hay rollback automático.",
+                "El monitor vigila diez familias de señales, desde la salud de Defender y los inicios de sesión hasta la persistencia, "
+                "los indicadores de ransomware y los cambios en el grupo de administradores. Empieza con una línea base sólo de detección, "
+                "investiga, y ármalo sólo cuando se justifique. Un harness visible no destructivo valida los "
+                "propios activos.",
             ],
-            table={"columns": ["Mode", "Behaviour"], "widths": [0.28, 0.72], "rows": [
-                ["-DetectOnly", "Reports what it would block or stop; the safe first run."],
-                ["default", "One armed sweep; may block an attacking IP and stop known attacker tools."],
-                ["-Watch", "Continuous sweeps until Ctrl+C, every 60 seconds by default."],
-                ["-Aggressive", "Also stops dual-use tools outside Tlamatini's paths; incidents only."],
+            table={"columns": ["Modo", "Comportamiento"], "widths": [0.28, 0.72], "rows": [
+                ["-DetectOnly", "Reporta lo que bloquearía o detendría; la primera ejecución segura."],
+                ["default", "Un barrido armado; puede bloquear una IP atacante y detener tools de atacantes conocidos."],
+                ["-Watch", "Barridos continuos hasta Ctrl+C, cada 60 segundos de forma predeterminada."],
+                ["-Aggressive", "También detiene tools de doble uso fuera de los paths de Tlamatini; sólo en incidentes."],
             ]}, deck="split",
             deck_points=[
-                ("Operator-run", "A human launches it and owns every policy change."),
-                ("Ten families", "Defender, logons, network, processes, persistence, ransomware, accounts."),
-                ("Detect first", "Baseline with -DetectOnly before arming."),
-                ("Trade-offs", "Exclusions and Audit-mode rules are recorded and explained."),
+                ("Operado por una persona", "Una persona lo lanza y es dueña de cada cambio de política."),
+                ("Diez familias", "Defender, inicios de sesión, red, procesos, persistencia, ransomware, cuentas."),
+                ("Detectar primero", "Línea base con -DetectOnly antes de armar."),
+                ("Concesiones", "Las exclusiones y las reglas en modo Audit se registran y se explican."),
             ]),
-        Section("voice", "VOICE", "She listens until you stop, and answers in her voice",
-            "Direct chat dictation, workflow Whisperer, Talker and catalog commands have distinct voice contracts.",
+        Section("voice", "VOZ", "Te escucha hasta que paras, y te contesta con su voz",
+            "El dictado directo en el chat, el Whisperer de workflows, Talker y los comandos del catálogo tienen contratos de voz distintos.",
             body=[
-                "In standalone/workflow Whisperer, no duration means the gate records while you talk and stops "
-                "after 3.5 seconds of silence, with a 300-second ceiling. `record_seconds: 0` is the switch; name "
-                "a duration and it is honoured exactly. The gate starts at a sensitive floor so a speaker who "
-                "begins at once is heard, and if a sound driver refuses the live stream she records a fixed "
-                "length and says so. Direct chat dictation instead requires the gate and refuses that fallback.",
-                "Transcription runs locally with faster-whisper, on a GPU when present and on the CPU otherwise, "
-                "or through a cloud Whisper provider. Talker speaks through an Orpheus-compatible model in a "
-                "female voice — tara, leah, jess, mia or zoe. A male voice is refused by design.",
-                "The catalog's first section, VOICE COMMANDS, makes the microphone the keyboard: she transcribes "
-                "your instruction, reads it back, and only then acts. Anything irreversible still needs your "
-                "written confirmation under those catalog instructions. Config > Mic selects automatic submission "
-                "or an editable draft. Actual dispatch uses browser speech for acknowledgment, respecting Silent mode.",
+                "En el Whisperer independiente o de workflow, si no hay duración la compuerta graba mientras hablas y se detiene "
+                "después de 3.5 segundos de silencio, con un tope de 300 segundos. `record_seconds: 0` es el interruptor; di "
+                "una duración y se respeta exactamente. La compuerta empieza en un nivel sensible para que se oiga a quien "
+                "empieza a hablar de inmediato, y si un driver de sonido rechaza el stream en vivo, ella graba una duración "
+                "fija y lo dice. El dictado directo en el chat, en cambio, exige la compuerta y rechaza ese fallback.",
+                "La transcripción corre localmente con faster-whisper, en una GPU cuando hay y en el CPU si no, "
+                "o por medio de un proveedor de Whisper en la nube. Talker habla con un modelo compatible con Orpheus en una "
+                "voz femenina: tara, leah, jess, mia o zoe. Una voz masculina se rechaza por diseño.",
+                "La primera sección del catálogo, VOICE COMMANDS, convierte el micrófono en el teclado: ella transcribe "
+                "tu instrucción, te la lee de vuelta, y sólo entonces actúa. Cualquier cosa irreversible sigue necesitando tu "
+                "confirmación por escrito según esas instrucciones del catálogo. Config > Micrófono elige el envío automático "
+                "o un borrador editable. El envío real usa la voz del browser para confirmar, y respeta el modo Silencio.",
             ], deck="list",
             deck_points=[
-                ("Sound gate", "Records while you talk; stops after 3.5 s of silence."),
-                ("Workflow duration", "Standalone/workflow recording can use an explicit fixed duration."),
-                ("Local first", "faster-whisper on GPU or CPU, or a cloud provider."),
-                ("Her voice", "Female only: tara, leah, jess, mia or zoe."),
-                ("Direct microphone", "Gate, recognize, then send or keep an editable draft; no extra console."),
-                ("Catalog commands", "Model-mediated cards can request readback before acting."),
+                ("Compuerta de sonido", "Graba mientras hablas; se detiene después de 3.5 s de silencio."),
+                ("Duración en workflows", "La grabación independiente o de workflow puede usar una duración fija explícita."),
+                ("Primero lo local", "faster-whisper en GPU o CPU, o un proveedor en la nube."),
+                ("Su voz", "Sólo femenina: tara, leah, jess, mia o zoe."),
+                ("Micrófono directo", "Compuerta, reconocimiento, y luego enviar o conservar un borrador editable; sin consola extra."),
+                ("Comandos del catálogo", "Las tarjetas mediadas por el modelo pueden pedir que se lea de vuelta antes de actuar."),
             ]),
-        Section("vision", "VISION AND VIDEO", "Eyes that report their limits",
-            "Image and video analysis combine independent observers, so one model's guess is never presented "
-            "as fact.",
+        Section("vision", "VISIÓN Y VIDEO", "Ojos que reportan sus límites",
+            "El análisis de imágenes y de video combina observadores independientes, así que la suposición de un modelo nunca se presenta "
+            "como un hecho.",
             points=[
-                ("Image-Interpreter", "Two vision models read each image in parallel on their own connections; "
-                 "a third merges both. A comma-separated list reads several images."),
-                ("Video-Analyzer · robotics", "A deterministic motion gate plus two vision models; PASS only "
-                 "when both agree."),
-                ("Video-Analyzer · transcription", "Timestamped speech from chosen audio tracks or a web link, locally."),
-                ("Video-Analyzer · summary", "Speech plus sampled visual evidence: scenes, text, facts, "
-                 "decisions and limits; a web link is downloaded first."),
-                ("Capture", "Shoter, Camcorder and Recorder save to your known folders with exact names."),
-                ("Paste to chat", "A screenshot pasted into the chat becomes a path she can analyze."),
+                ("Image-Interpreter", "Dos modelos de visión leen cada imagen en paralelo con sus propias conexiones; "
+                 "un tercero combina ambos. Una lista separada por comas lee varias imágenes."),
+                ("Video-Analyzer · robótica", "Una compuerta de movimiento determinista más dos modelos de visión; PASS sólo "
+                 "cuando ambos coinciden."),
+                ("Video-Analyzer · transcripción", "Voz con marcas de tiempo de las pistas de audio elegidas o de un link web, de forma local."),
+                ("Video-Analyzer · resumen", "Voz más evidencia visual muestreada: escenas, texto, hechos, "
+                 "decisiones y límites; un link web se descarga primero."),
+                ("Captura", "Shoter, Camcorder y Recorder guardan en tus carpetas conocidas con nombres exactos."),
+                ("Pegar en el chat", "Un screenshot pegado en el chat se vuelve un path que ella puede analizar."),
             ], deck="cards"),
-        Section("desktop", "DESKTOP AND BROWSER", "Precise hands on a real desktop",
-            "Desktop agents state their coordinate spaces and their evidence, because a click that lands in "
-            "the wrong place is worse than no click.",
+        Section("desktop", "ESCRITORIO Y BROWSER", "Manos precisas en un escritorio real",
+            "Los agents de escritorio declaran sus espacios de coordenadas y su evidencia, porque un clic que cae en "
+            "el lugar equivocado es peor que no hacer clic.",
             points=[
-                ("Mouser", "Coordinates are declared: physical screen, desktop, normalized, window or "
+                ("Mouser", "Las coordenadas se declaran: pantalla física, escritorio, normalizadas, ventana o "
                  "screenshot."),
-                ("Shoter", "Publishes the exact captured rectangle, image size and monitor geometry."),
-                ("Keyboarder", "Binds each keystroke to a verified window and stops on focus loss."),
-                ("Delivery is not acceptance", "`input_sent` proves delivery only; interrupted input is "
-                 "inspected before any replay."),
-                ("Playwrighter", "A real browser through declared steps, with a hold-open knob to watch."),
-                ("Windower", "Focus, move, resize, tile, pin and close windows by title."),
+                ("Shoter", "Publica el rectángulo exacto capturado, el tamaño de la imagen y la geometría del monitor."),
+                ("Keyboarder", "Liga cada tecla a una ventana verificada y se detiene si se pierde el foco."),
+                ("Entregar no es aceptar", "`input_sent` sólo prueba la entrega; el input interrumpido se "
+                 "inspecciona antes de repetir."),
+                ("Playwrighter", "Un browser real con pasos declarados, con un ajuste para dejarlo abierto y mirarlo."),
+                ("Windower", "Enfoca, mueve, cambia de tamaño, acomoda en mosaico, fija y cierra ventanas por su título."),
             ], deck="cards"),
-        Section("web", "WEB SEARCH", "Three search tiers, one time budget",
-            "The chat search tool and pool agent use the same Googler implementation, with a default "
-            "120-second budget and explicit outcomes.",
+        Section("web", "BÚSQUEDA WEB", "Tres niveles de búsqueda, un solo presupuesto de tiempo",
+            "El tool de búsqueda del chat y el agent del pool usan la misma implementación de Googler, con un presupuesto "
+            "predeterminado de 120 segundos y resultados explícitos.",
             body=[
-                "With no engine pinned, six plain-HTTP routes race for relevant results. If none answers, "
-                "real installed Chrome uses a persistent profile across eight browser routes. Open knowledge "
-                "sources form the final tier: Wikipedia, arXiv, OpenAlex, Hacker News, GitHub, Internet Archive "
-                "and Project Gutenberg. The log names the answering engine and tier.",
-                "A shared health ledger rests refusing engines for 3, 10 or 30 minutes; an off-topic result "
-                "is rejected, and a refusing route is not asked again in the same run. Blocked, timed out, "
-                "unreachable and no matches are separate outcomes. The chat wrapper supports Cancel and "
-                "enforces a process deadline with a cleanup allowance.",
-                "Structured dorks retain presets, grouped filters and links_only URL delivery. An explicit "
-                "engines list skips the HTTP and open-source tiers. Pin Google when Google-only operators "
-                "matter; fallback engines may broaden their meaning. Licensing and authorization remain yours.",
+                "Sin un motor fijo, seis vías de HTTP simple compiten por resultados relevantes. Si ninguna contesta, "
+                "el Chrome real instalado usa un perfil persistente en ocho vías del browser. Las fuentes de conocimiento abierto "
+                "forman el último nivel: Wikipedia, arXiv, OpenAlex, Hacker News, GitHub, Internet Archive "
+                "y Project Gutenberg. El log nombra el motor y el nivel que contestaron.",
+                "Un registro compartido de salud pone en descanso a los motores que se niegan por 3, 10 o 30 minutos; un resultado fuera de tema "
+                "se rechaza, y una vía que se niega no se vuelve a consultar en la misma ejecución. Bloqueado, tiempo agotado, "
+                "inalcanzable y sin coincidencias son resultados distintos. El wrapper del chat soporta Cancelar y "
+                "hace cumplir un límite de tiempo del proceso con un margen para limpiar.",
+                "Los dorks estructurados conservan presets, filtros agrupados y la entrega de URLs con links_only. Una lista explícita "
+                "de engines se salta los niveles de HTTP y de fuentes abiertas. Fija Google cuando importen los operadores "
+                "exclusivos de Google; los motores alternativos pueden ampliar su significado. Las licencias y la autorización siguen siendo tu responsabilidad.",
             ], deck="list",
             deck_points=[
-                ("Tier 0", "Six hedged HTTP routes; relevance checked before acceptance."),
-                ("Tier 1", "Eight browser routes in health-ledger order; persistent Chrome profile."),
-                ("Tier 2", "Clearly attributed open knowledge sources when search routes fail."),
-                ("Bounded work", "120-second default, cancellation and named failure outcomes."),
-                ("Dork contract", "Explicit engines skip fallback tiers; links_only delivers URLs."),
+                ("Nivel 0", "Seis vías HTTP en paralelo; la relevancia se revisa antes de aceptar."),
+                ("Nivel 1", "Ocho vías del browser en el orden del registro de salud; perfil persistente de Chrome."),
+                ("Nivel 2", "Fuentes de conocimiento abierto claramente atribuidas cuando las vías de búsqueda no funcionan."),
+                ("Trabajo acotado", "120 segundos de forma predeterminada, cancelación y resultados de error con nombre."),
+                ("Contrato de dorks", "Los engines explícitos se saltan los niveles alternativos; links_only entrega URLs."),
             ]),
-        Section("crawler_current", "WEB READING", "Read the requested page, report what happened",
-            "Crawler starts with the supplied page, bounds its work and keeps refusal pages away from the model.",
+        Section("crawler_current", "LECTURA WEB", "Lee la página pedida, reporta lo que pasó",
+            "Crawler empieza con la página dada, acota su trabajo y mantiene las páginas de rechazo lejos del modelo.",
             body=[
-                "The default crawl_type is page, with include_seed enabled. A range crawl defaults to "
-                "25 pages and a 900-second whole-run budget. Each download has a 45-second default wall-clock "
-                "limit and an 8,000,000-byte cap. These are configurable defaults; zero disables the page "
-                "count or whole-crawl limit, so unlimited operation must be a deliberate choice.",
-                "Headers are read case-insensitively. Bot walls, CAPTCHA pages and access refusals are "
-                "reported before analysis; timeouts and unreachable pages remain named outcomes. If nothing "
-                "was analyzed, the final report says so. Crawler reads fetched HTML; it does not execute JavaScript.",
-                "Since v1.72.4, both Crawler and Googler use a stack of skipped HTML regions, handle omitted "
-                "head endings and self-closing tags, and compare the extraction with a plain-text fallback. "
-                "When that fallback has at least 200 characters and the parser kept less than 25 percent, "
-                "the fallback takes over. Crawler warns in its log; Googler returns an extraction_note. "
-                "Parser exceptions also use the fallback; healthy extractions stay unchanged.",
+                "El crawl_type predeterminado es page, con include_seed habilitado. Un crawl por rango usa de forma predeterminada "
+                "25 páginas y un presupuesto de 900 segundos para toda la ejecución. Cada descarga tiene un límite predeterminado de 45 segundos de reloj "
+                "y un tope de 8,000,000 de bytes. Son valores predeterminados configurables; cero desactiva el conteo de páginas "
+                "o el límite de todo el crawl, así que la operación ilimitada tiene que ser una elección deliberada.",
+                "Los encabezados se leen sin distinguir mayúsculas. Los muros de bots, las páginas CAPTCHA y los rechazos de acceso se "
+                "reportan antes del análisis; los tiempos agotados y las páginas inalcanzables siguen siendo resultados con nombre. Si no se "
+                "analizó nada, el reporte final lo dice. Crawler lee el HTML descargado; no ejecuta JavaScript.",
+                "Desde v1.72.4, Crawler y Googler usan una pila de regiones HTML saltadas, manejan los finales de head "
+                "omitidos y las etiquetas que se cierran solas, y comparan la extracción con un fallback de texto plano. "
+                "Cuando ese fallback tiene al menos 200 caracteres y el parser conservó menos del 25 por ciento, "
+                "el fallback toma el control. Crawler avisa en su log; Googler devuelve un extraction_note. "
+                "Las excepciones del parser también usan el fallback; las extracciones sanas no cambian.",
             ], deck="cards",
             points=[
-                ("Page first", "Read the seed URL by default; range crawling is explicit."),
-                ("Budgets", "Defaults: 25 pages, 900 seconds overall, 45 seconds per download."),
-                ("Truthful outcome", "Refusals never become source content; no analysis is reported plainly."),
-                ("Text safety net", "Below 25% of a 200+ character fallback: recover and disclose."),
+                ("Primero la página", "Lee la URL semilla de forma predeterminada; el crawl por rango es explícito."),
+                ("Presupuestos", "Valores predeterminados: 25 páginas, 900 segundos en total, 45 segundos por descarga."),
+                ("Resultado veraz", "Los rechazos nunca se vuelven contenido fuente; la falta de análisis se reporta claramente."),
+                ("Red de seguridad de texto", "Debajo del 25% de un fallback de más de 200 caracteres: recupera y avisa."),
             ]),
-        Section("network_measurement", "NETWORK MEASUREMENT", "Speed measured with its error bar",
-            "NetSpeed-Calculator publishes a speed with a confidence interval and measures latency under load.",
+        Section("network_measurement", "MEDICIÓN DE RED", "Velocidad medida con su barra de error",
+            "NetSpeed-Calculator publica una velocidad con un intervalo de confianza y mide la latencia bajo carga.",
             body=[
-                "Several keyless providers run in parallel. The measurement discards the TCP slow-start "
-                "ramp, samples throughput as a derivative, rejects outliers and fuses providers with a "
-                "random-effects meta-analysis. It grades bufferbloat from A+ to F. A full run transfers about "
-                "100 to 200 MB, so it asks before running.",
+                "Varios proveedores sin llave corren en paralelo. La medición descarta la rampa de slow-start "
+                "de TCP, muestrea el throughput como una derivada, rechaza valores atípicos y fusiona los proveedores con un "
+                "metaanálisis de efectos aleatorios. Califica el bufferbloat de A+ a F. Una ejecución completa transfiere unos "
+                "100 a 200 MB, así que pregunta antes de correr.",
             ], deck="list",
             deck_points=[
-                ("Throughput", "Parallel streams, Student-t intervals, random-effects fusion."),
-                ("Bufferbloat", "Latency under load, graded A+ to F."),
-                ("Metered", "About 100 to 200 MB per full run; it asks first."),
+                ("Throughput", "Streams en paralelo, intervalos t de Student, fusión de efectos aleatorios."),
+                ("Bufferbloat", "Latencia bajo carga, calificada de A+ a F."),
+                ("Con medidor", "Unos 100 a 200 MB por ejecución completa; pregunta primero."),
             ]),
-        Section("messaging", "MESSAGING", "Reaching people deliberately",
-            "Messaging agents use official surfaces by default and make every unofficial route an explicit "
-            "choice.",
+        Section("messaging", "MENSAJERÍA", "Llegar a las personas de forma deliberada",
+            "Los agents de mensajería usan superficies oficiales de forma predeterminada y hacen de cada vía no oficial una elección "
+            "explícita.",
             points=[
-                ("Telegrammer", "Sends as the bot or as your own account; “send it as me” picks yours."),
-                ("Whatsapper", "Meta's official Cloud API by default; your own number only when you say so."),
-                ("TeleTlamatini", "The full chat in Telegram, on a dedicated account."),
-                ("Instant Messaging Doctor", "Checks tokens, contacts, templates and policy windows."),
-                ("Contacts", "A contact name resolves to the real address when a message is sent."),
+                ("Telegrammer", "Envía como el bot o como tu propia cuenta; “envíalo como yo” elige la tuya."),
+                ("Whatsapper", "La Cloud API oficial de Meta de forma predeterminada; tu propio número sólo cuando lo dices."),
+                ("TeleTlamatini", "El chat completo en Telegram, en una cuenta dedicada."),
+                ("Instant Messaging Doctor", "Revisa tokens, contactos, plantillas y ventanas de política."),
+                ("Contactos", "El nombre de un contacto se resuelve a la dirección real cuando se envía un mensaje."),
             ], deck="cards"),
     ])
 
-    trust = Chapter("trust", "VI", "Promises She Keeps",
-        "Honesty, consent, safety and control, written into the code rather than into a brochure.",
+    trust = Chapter("trust", "VI", "Las promesas que cumple",
+        "Honestidad, consentimiento, seguridad y control, escritos en el código y no en un folleto.",
         accent="rose", sections=[
-        Section("honesty", "HONESTY", "Truth over comfort",
-            "Where a system can be confidently wrong, Tlamatini is built to say what she knows and what she "
-            "does not.",
+        Section("honesty", "HONESTIDAD", "La verdad antes que la comodidad",
+            "Donde un sistema puede equivocarse con total seguridad, Tlamatini está construida para decir lo que sabe y lo que "
+            "no sabe.",
             points=[
-                ("Self-report first", "An agent's typed result outranks a one-bit exit code."),
-                ("Degraded is red", "A compromised deliverable is never painted green."),
-                ("Silence is named", "Skipped files, dead transfers and refusals carry a reason."),
-                ("Recovery is narrated", "Retries are shown live and summarized in the answer."),
-                ("Created is not clean", "Documents report their audits before being called finished."),
-                ("Delivered is not accepted", "Desktop input evidence is kept distinct from success."),
+                ("Primero el autorreporte", "El resultado tipado de un agent pesa más que un código de salida de un bit."),
+                ("Degradado es rojo", "Un entregable comprometido nunca se pinta de verde."),
+                ("El silencio tiene nombre", "Los archivos saltados, las transferencias muertas y los rechazos llevan una razón."),
+                ("La recuperación se narra", "Los reintentos se muestran en vivo y se resumen en la respuesta."),
+                ("Creado no es limpio", "Los documentos reportan sus auditorías antes de darse por terminados."),
+                ("Entregado no es aceptado", "La evidencia de input del escritorio se mantiene aparte del éxito."),
             ], deck="cards"),
-        Section("failmodes", "FAILURE MODES", "Fail open or fail safe, on purpose",
-            "Every guard chooses its failure direction deliberately, by asking which mistake would hurt you "
-            "more.",
-            table={"columns": ["Mechanism", "Direction", "Why"], "widths": [0.30, 0.16, 0.54], "rows": [
-                ["Binary-content guard", "Open", "Dropping real context is worse than embedding one odd file."],
-                ["Verdict parsing", "Open", "A parse error falls through to the next rule; it never raises."],
-                ["Port and console settings", "Open", "A typo must never stop the server from starting."],
-                ["Runtime provisioner", "Open", "A failed download never blocks start-up."],
-                ["Compact-mode fitter", "Open", "Any doubt sends the complete request, exactly as before."],
-                ["Ask Execs", "Safe", "Any doubt resolves to Deny."],
-                ["Database copies", "Safe", "An unclear or unchecked copy is reported as a failure."],
-                ["LaTeXer bisect guard", "Safe", "When in doubt, protect the author's content."],
-                ["Firmware preflights", "Safe", "Refuse rather than build or flash the wrong target."],
-                ["Deleter", "Safe", "Refuses protected folders, repository roots and drive roots."],
+        Section("failmodes", "MODOS DE FALLA", "Fallar abierto o fallar seguro, a propósito",
+            "Cada protección elige su dirección de falla deliberadamente, preguntándose qué error te dañaría "
+            "más.",
+            table={"columns": ["Mecanismo", "Dirección", "Por qué"], "widths": [0.30, 0.16, 0.54], "rows": [
+                ["Protección de contenido binario", "Abierto", "Tirar contexto real es peor que incrustar un archivo raro."],
+                ["Análisis del veredicto", "Abierto", "Un error de parseo pasa a la siguiente regla; nunca lanza una excepción."],
+                ["Configuración de puerto y consola", "Abierto", "Un error de dedo nunca debe impedir que el servidor arranque."],
+                ["Aprovisionador de runtimes", "Abierto", "Una descarga con error nunca bloquea el arranque."],
+                ["Ajustador de Compact mode", "Abierto", "Ante cualquier duda envía la solicitud completa, exactamente como antes."],
+                ["Ask Execs", "Seguro", "Ante cualquier duda se resuelve como Denegar."],
+                ["Copias de la base de datos", "Seguro", "Una copia dudosa o sin revisar se reporta como error."],
+                ["Protección del bisect de LaTeXer", "Seguro", "En caso de duda, protege el contenido del autor."],
+                ["Preflights de firmware", "Seguro", "Se niegan antes que compilar o flashear el destino equivocado."],
+                ["Deleter", "Seguro", "Rechaza carpetas protegidas, raíces de repositorios y raíces de unidades."],
             ]}, deck="table"),
-        Section("responsibility", "RESPONSIBILITY", "Your agents, your jurisdiction",
-            "Every agent is a plain-Python program so you can read, audit, edit, restrict or disable it. That "
-            "transparency is a means of control, not a warranty of safety.",
+        Section("responsibility", "RESPONSABILIDAD", "Tus agents, tu jurisdicción",
+            "Cada agent es un programa en Python simple, así que puedes leerlo, auditarlo, editarlo, restringirlo o desactivarlo. Esa "
+            "transparencia es un medio de control, no una garantía de seguridad.",
             body=[
-                "Agents have no independent authority. You decide whether, where, how and with which permissions "
-                "they run. When you enable, configure, modify, chain or execute an agent, that execution is under "
-                "your control and your jurisdiction.",
-                "You are responsible for reviewing code and configuration, limiting secrets and permissions, "
-                "authorizing every file, target, browser, shell, API, MCP server, machine and device an agent "
-                "can reach, supervising its output and complying with the law, policies, licenses and "
-                "agreements that apply.",
-                "By running an agent you accept responsibility for its actions and consequences. Tlamatini's "
-                "orchestration, documentation and guardrails do not authorize access to third-party systems and "
-                "cannot replace your own security review, permission controls, monitoring or legal compliance.",
+                "Los agents no tienen autoridad propia. Tú decides si corren, dónde, cómo y con qué permisos "
+                "lo hacen. Cuando habilitas, configuras, modificas, encadenas o ejecutas un agent, esa ejecución está bajo "
+                "tu control y tu jurisdicción.",
+                "Eres responsable de revisar el código y la configuración, limitar los secretos y los permisos, "
+                "autorizar cada archivo, destino, browser, shell, API, servidor MCP, máquina y dispositivo que un agent "
+                "pueda alcanzar, supervisar su output y cumplir con las leyes, políticas, licencias y "
+                "acuerdos que apliquen.",
+                "Al ejecutar un agent aceptas la responsabilidad de sus acciones y sus consecuencias. Lo que Tlamatini ofrece en "
+                "orquestación, documentación y barandales no autoriza el acceso a sistemas de terceros y "
+                "no pueden reemplazar tu propia revisión de seguridad, tus controles de permisos, tu monitoreo ni tu cumplimiento legal.",
             ], deck="list",
             deck_points=[
-                ("Readable", "Every agent is plain Python you can audit and change."),
-                ("Your decision", "You choose whether, where and how an agent runs."),
-                ("Your scope", "You authorize every file, target, machine and device."),
-                ("Your responsibility", "Running an agent accepts its consequences."),
+                ("Legible", "Cada agent es Python simple que puedes auditar y cambiar."),
+                ("Tu decisión", "Tú eliges si un agent corre, dónde y cómo."),
+                ("Tu alcance", "Tú autorizas cada archivo, destino, máquina y dispositivo."),
+                ("Tu responsabilidad", "Ejecutar un agent es aceptar sus consecuencias."),
             ]),
-        Section("datasafety", "DATA SAFETY", "Your data, handled carefully",
-            "Databases, secrets and scratch files each have one well-defined path.",
+        Section("datasafety", "SEGURIDAD DE LOS DATOS", "Tus datos, manejados con cuidado",
+            "Las bases de datos, los secretos y los archivos temporales tienen cada uno un camino bien definido.",
             points=[
-                ("WAL-safe database", "Backups read through the write-ahead log with SQLite's online backup "
-                 "API and are verified with quick_check."),
-                ("Staged replacement", "A new database waits in DB/ToLoad; the old one is archived with its "
-                 "sidecars before Django starts."),
-                ("Secrets", "Known secret fields are redacted from exported .flw files and public builds."),
-                ("Private contacts", "Public builds and source snapshots carry no contact data."),
-                ("Scratch files", "Temporary files stay inside the application's own Temp folder."),
-                ("Passwords", "PDF passwords live in memory only."),
+                ("Base de datos segura con WAL", "Los backups leen a través del write-ahead log con el API de backup en línea de SQLite "
+                 "y se verifican con quick_check."),
+                ("Reemplazo por etapas", "Una base de datos nueva espera en DB/ToLoad; la vieja se archiva con sus "
+                 "archivos acompañantes antes de que arranque Django."),
+                ("Secretos", "Los campos secretos conocidos se redactan de los archivos .flw exportados y de los builds públicos."),
+                ("Contactos privados", "Los builds públicos y los snapshots del source no llevan datos de contactos."),
+                ("Archivos temporales", "Los archivos temporales se quedan dentro de la propia carpeta Temp de la aplicación."),
+                ("Contraseñas", "Las contraseñas de PDF viven sólo en memoria."),
             ], deck="cards"),
-        Section("visible", "TESTED IN THE OPEN", "Nothing runs where nobody can see it",
-            "Tlamatini's development rule is that every test, build and diagnostic runs visibly, on a real "
-            "desktop, where its creator can watch each step.",
+        Section("visible", "PROBADO A LA VISTA", "Nada corre donde nadie lo puede ver",
+            "La regla de desarrollo de Tlamatini es que cada prueba, build y diagnóstico corra de forma visible, en un escritorio "
+            "real, donde su creadora puede ver cada paso.",
             body=[
-                "Browser tests run headed in real Chrome, consoles open in the foreground, and whole-desktop "
-                "photographs are taken by Tlamatini's own Shoter agent — because using the agent is the test "
-                "of the agent. A stale, transient or timed-out answer is never recorded as a pass.",
-                "Source-derived guards stop drift before it ships: the status vocabulary, display names, dialog "
-                "dismissal, catalog ordering, the Ask Execs allowlist, the self-modify gate and the frozen-bundle "
-                "module proof are all checked by tests that read the real source.",
+                "Las pruebas de browser corren con ventana en Chrome real, las consolas se abren en primer plano, y las fotos de todo el "
+                "escritorio las toma el propio agent Shoter de Tlamatini, porque usar el agent es la prueba "
+                "del agent. Una respuesta vieja, transitoria o con tiempo agotado nunca se registra como aprobada.",
+                "Las protecciones derivadas del source detienen la deriva antes de publicarse: el vocabulario de status, los nombres para mostrar, el cierre "
+                "de diálogos, el orden del catálogo, la lista permitida de Ask Execs, la compuerta de self-modify y la prueba de módulos "
+                "del bundle congelado se revisan con pruebas que leen el source real.",
             ], deck="list",
             deck_points=[
-                ("Visible", "Headed browsers and foreground consoles only."),
-                ("Photographed", "Whole-desktop evidence taken by the Shoter agent."),
-                ("Truthful", "Stale or timed-out results are never counted as passes."),
-                ("Drift guards", "Tests read the real source to stop silent drift."),
+                ("Visible", "Sólo browsers con ventana y consolas en primer plano."),
+                ("Fotografiado", "Evidencia de todo el escritorio tomada por el agent Shoter."),
+                ("Veraz", "Los resultados viejos o con tiempo agotado nunca cuentan como aprobados."),
+                ("Protecciones contra la deriva", "Las pruebas leen el source real para detener la deriva silenciosa."),
             ]),
     ])
 
-    running = Chapter("running", "VII", "Install, Configure, Run",
-        "From a fresh Windows machine to a working assistant, and from source to a signed-off release.",
+    running = Chapter("running", "VII", "Instalar, configurar, ejecutar",
+        "De una máquina Windows recién instalada a una asistente funcionando, y del source a un release aprobado.",
         accent="jade", sections=[
-        Section("start", "GET STARTED", "Five steps to a working Tlamatini",
-            "Tlamatini itself is free. The only purchase is an Ollama plan, bought directly from Ollama.",
+        Section("start", "PRIMEROS PASOS", "Cinco pasos para tener Tlamatini funcionando",
+            "Tlamatini en sí es gratis. La única compra es un plan de Ollama, comprado directamente a Ollama.",
             visual="steps",
             visual_data={"steps": [
-                ("Install", "Run the recoverable release installer (Python 3.12.10 bundled), or clone the source."),
-                ("Ollama", "Install Ollama for Windows."),
-                ("Pro plan", "Activate Ollama Pro or higher, then run `ollama signin`."),
-                ("Models", "Pull nomic-embed-text and the cloud models Tlamatini uses."),
-                ("Configure", "Open Config ▸ Models and the Access Keys Wizard, then tick Multi-Turn."),
+                ("Instalar", "Ejecuta el instalador recuperable del release (con Python 3.12.10 incluido), o clona el source."),
+                ("Ollama", "Instala Ollama para Windows."),
+                ("Plan Pro", "Activa Ollama Pro o superior, y luego ejecuta `ollama signin`."),
+                ("Modelos", "Descarga nomic-embed-text y los modelos en la nube que usa Tlamatini."),
+                ("Configurar", "Abre Config ▸ Modelos y el Access Keys Wizard, y luego marca Multi-Turn."),
             ]},
             code=("git clone https://github.com/XAIHT/Tlamatini.git\n"
                   "cd Tlamatini\n"
@@ -1636,963 +1636,963 @@ def build_chapters(f: dict) -> list[Chapter]:
                   "pip install -r requirements.txt\n"
                   "python Tlamatini/manage.py migrate\n"
                   "python Tlamatini/manage.py runserver --noreload\n"
-                  "# open http://127.0.0.1:8000/   (default login: user / changeme)"),
+                  "# abre http://127.0.0.1:8000/   (login predeterminado: user / changeme)"),
             deck="visual"),
-        Section("dependencies", "DEPENDENCY COVERAGE", "Every referenced Python library is accounted for",
-            "The October 18 dependency audit covers all 85 agents, build helpers, optional imports and tests.",
+        Section("dependencies", "COBERTURA DE DEPENDENCIAS", "Cada librería de Python referida está contemplada",
+            "La auditoría de dependencias del 18 de octubre cubre los 85 agents, los helpers de build, los imports opcionales y las pruebas.",
             body=[
-                "The refreshed static guard scanned 855 Python files and 72 directly referenced distributions. The "
-                "complete requirements file pins all 263 distributions, including CPU PyTorch. A clean Python "
-                "installation, dependency consistency check and runtime imports passed.",
-                "ESPHome has a separate requirements-esphome.txt manifest because its py7zr and PlatformIO "
-                "pins conflict with the main environment. Keep it in its private runtime. Blender bpy, "
-                "Unreal unreal, device toolchains, npm packages and model weights follow their own runtime "
-                "contracts; they are not missing pip packages.",
+                "La protección estática actualizada revisó 855 archivos de Python y 72 distribuciones referidas directamente. El "
+                "archivo completo de requirements fija las 263 distribuciones, incluido PyTorch para CPU. Pasaron una instalación "
+                "limpia de Python, una revisión de consistencia de dependencias y los imports en runtime.",
+                "ESPHome tiene un manifiesto aparte, requirements-esphome.txt, porque sus versiones fijas de py7zr y PlatformIO "
+                "chocan con el entorno principal. Mantenlo en su runtime privado. bpy de Blender, "
+                "unreal de Unreal, los toolchains de dispositivos, los paquetes npm y los pesos de los modelos siguen sus propios contratos "
+                "de runtime; no son paquetes pip faltantes.",
             ],
             points=[
-                ("Coverage guard", "scripts/check_requirements_coverage.py checks source and build inventories."),
-                ("Verification", "October 18: no missing declarations, syntax errors or unreviewed dynamic imports."),
-                ("Earlier evidence", "September 27: main/ESPHome dry runs and temporary-environment dependency smoke checks passed."),
-                ("Limits", "A clean Python dependency installation does not certify the compiled installer or every external integration."),
+                ("Protección de cobertura", "scripts/check_requirements_coverage.py revisa los inventarios del source y del build."),
+                ("Verificación", "18 de octubre: sin declaraciones faltantes, errores de sintaxis ni imports dinámicos sin revisar."),
+                ("Evidencia anterior", "27 de septiembre: pasaron las ejecuciones de prueba de main/ESPHome y las revisiones rápidas de dependencias en un entorno temporal."),
+                ("Límites", "Una instalación limpia de las dependencias de Python no certifica el instalador compilado ni cada integración externa."),
             ], deck="cards"),
-        Section("modes", "RUNTIME", "Two modes and their service ports",
-            "Tlamatini runs either from source or as a frozen executable built by PyInstaller. Only path "
-            "resolution differs, and `CONFIG_PATH` overrides the configuration location in both.",
+        Section("modes", "RUNTIME", "Dos modos y sus puertos de servicio",
+            "Tlamatini corre desde el source o como un ejecutable congelado construido con PyInstaller. Sólo cambia la resolución "
+            "de paths, y `CONFIG_PATH` reemplaza la ubicación de la configuración en ambos.",
             body=[
-                "An installed build resolves `config.json` beside `Tlamatini.exe`; a source run uses "
-                "`Tlamatini/agent/config.json`. A second, independent axis is self-modification: a build made "
-                "with `--self-modify` carries her complete, rebuildable source beside the executable, and her "
-                "self-knowledge travels with it. Without the flag, neither ships. A source run is always "
-                "self-able, and a toolbar Self-modify switch decides per request whether her self-knowledge "
-                "is sent; it locks off when the model cannot hold it.",
-                "Direct dictation additionally uses a private ephemeral loopback listener for its worker "
-                "handshake. It closes after authentication; it is not a fourth public service or fixed port.",
-                "Both MCP services honor their configured hosts and ports in source and frozen mode; "
-                "their client URIs must match. Files-Search also honors its worker count and bounds RPC "
-                "waits. UTF-8 BOM configuration files and CONFIG_PATH overrides are supported by both clients.",
+                "Un build instalado resuelve `config.json` junto a `Tlamatini.exe`; una ejecución desde el source usa "
+                "`Tlamatini/agent/config.json`. Un segundo eje independiente es la automodificación: un build hecho "
+                "con `--self-modify` lleva su source completo y recompilable junto al ejecutable, y su "
+                "autoconocimiento viaja con él. Sin la bandera, no se incluye ninguno. Una ejecución desde el source siempre "
+                "puede automodificarse, y un interruptor Self-modify de la barra de herramientas decide por solicitud si se envía "
+                "su autoconocimiento; se bloquea apagado cuando el modelo no puede contenerlo.",
+                "El dictado directo además usa un listener loopback privado y efímero para el saludo "
+                "de su worker. Se cierra después de la autenticación; no es un cuarto servicio público ni un puerto fijo.",
+                "Ambos servicios MCP respetan sus hosts y puertos configurados en modo source y congelado; "
+                "las URIs de sus clientes deben coincidir. Files-Search también respeta su número de workers y acota las esperas "
+                "de RPC. Ambos clientes soportan archivos de configuración UTF-8 con BOM y los overrides de CONFIG_PATH.",
             ],
-            table={"columns": ["Port", "Protocol", "Service"], "widths": [0.20, 0.22, 0.58], "rows": [
-                ["8000 (default)", "HTTP + WebSocket", "Web interface and chat; change it with django_port."],
-                ["8765 (default)", "WebSocket", "System-Metrics MCP; match server port and client URI."],
-                ["50051 (default)", "gRPC", "Files-Search MCP; match server port and client URI."],
+            table={"columns": ["Puerto", "Protocolo", "Servicio"], "widths": [0.20, 0.22, 0.58], "rows": [
+                ["8000 (predeterminado)", "HTTP + WebSocket", "Interfaz web y chat; cámbialo con django_port."],
+                ["8765 (predeterminado)", "WebSocket", "MCP System-Metrics; haz coincidir el puerto del servidor y la URI del cliente."],
+                ["50051 (predeterminado)", "gRPC", "MCP Files-Search; haz coincidir el puerto del servidor y la URI del cliente."],
             ]}, deck="split",
             deck_points=[
-                ("Source", "Run from the repository with manage.py."),
-                ("Frozen", "A PyInstaller executable with its own Python."),
-                ("Self-modify", "Always from source; optional in a build; a switch sends it."),
-                ("Ports", "Defaults: 8000, 8765 and 50051; configure clients and servers together."),
+                ("Source", "Corre desde el repositorio con manage.py."),
+                ("Congelado", "Un ejecutable de PyInstaller con su propio Python."),
+                ("Self-modify", "Siempre desde el source; opcional en un build; un interruptor lo envía."),
+                ("Puertos", "Predeterminados: 8000, 8765 y 50051; configura los clientes y los servidores juntos."),
             ]),
-        Section("settings", "CONFIGURATION", "The settings that matter most",
-            "A handful of `config.json` keys shape her behaviour; everything else has sensible defaults.",
-            table={"columns": ["Key", "Default", "Purpose"], "widths": [0.37, 0.16, 0.47], "rows": [
-                ["django_port", "8000", "Web port for every launch path; fails open to 8000."],
-                ["unified_agent_max_iterations", "4096", "Upper bound on Multi-Turn tool-loop turns."],
-                ["unified_agent_llm_step_timeout_seconds", "900", "Watchdog for one model attempt."],
-                ["llm_client_timeout_seconds", "600", "How long one model call may take."],
-                ["model_brain", "auto", "Tunes each model from formal sources; off restores the legacy sampler."],
-                ["ollama_repeat_penalty", "1.2", "Legacy sampler, sent only when model_brain is off."],
-                ["ollama_num_ctx", "1048576", "Legacy requested window; the brain clamps it to the real one."],
-                ["context_sidecar_llm_timeout_seconds", "60", "Time limit on the context helpers' own model calls."],
-                ["context_compact_mode", "auto", "Compact mode locks on for models that cannot hold everything."],
-                ["binary_context_detection", "true", "Screens files by content before embedding."],
-                ["console_quick_edit", "false", "Keeps a click from pausing a frozen console."],
-                ["console_colors", "true", "Colours console lines by level; the log stays plain text."],
-                ["runtime_autoprovision", "true", "Lets MCP servers provision Node or uv privately."],
+        Section("settings", "CONFIGURACIÓN", "Las configuraciones que más importan",
+            "Unas cuantas llaves de `config.json` dan forma a su comportamiento; todo lo demás tiene valores predeterminados sensatos.",
+            table={"columns": ["Llave", "Predeterminado", "Propósito"], "widths": [0.37, 0.16, 0.47], "rows": [
+                ["django_port", "8000", "Puerto web para todas las formas de arranque; si falla, vuelve a 8000."],
+                ["unified_agent_max_iterations", "4096", "Límite superior de vueltas del ciclo de tools de Multi-Turn."],
+                ["unified_agent_llm_step_timeout_seconds", "900", "Watchdog para un intento del modelo."],
+                ["llm_client_timeout_seconds", "600", "Cuánto puede tardar una llamada al modelo."],
+                ["model_brain", "auto", "Ajusta cada modelo a partir de fuentes formales; off restaura el sampler heredado."],
+                ["ollama_repeat_penalty", "1.2", "Sampler heredado, enviado sólo cuando model_brain está en off."],
+                ["ollama_num_ctx", "1048576", "Ventana pedida heredada; el brain la limita a la real."],
+                ["context_sidecar_llm_timeout_seconds", "60", "Límite de tiempo para las propias llamadas al modelo de los helpers de contexto."],
+                ["context_compact_mode", "auto", "Compact mode se bloquea encendido para los modelos que no pueden contenerlo todo."],
+                ["binary_context_detection", "true", "Revisa los archivos por su contenido antes de hacer embeddings."],
+                ["console_quick_edit", "false", "Evita que un clic pause una consola congelada."],
+                ["console_colors", "true", "Colorea las líneas de la consola por nivel; el log se queda en texto plano."],
+                ["runtime_autoprovision", "true", "Deja que los servidores MCP aprovisionen Node o uv de forma privada."],
             ]},
-            callout=("Measured, not chosen by taste",
-                     "The legacy sampler comes from repeated trials on real workloads, and one fast run never "
-                     "justifies a change. "
-                     "The Model Brain now tunes each model from formal sources."),
+            callout=("Medido, no elegido por gusto",
+                     "El sampler heredado viene de pruebas repetidas con cargas de trabajo reales, y una sola ejecución rápida nunca "
+                     "justifica un cambio. "
+                     "El Model Brain ahora ajusta cada modelo a partir de fuentes formales."),
             deck="table"),
-        Section("pipeline", "BUILD AND RELEASE", "From source tree to installer",
-            "Three build scripts produce a standalone Windows release, and the build proves what it ships "
-            "before it packages anything.",
+        Section("pipeline", "BUILD Y RELEASE", "Del árbol del source al instalador",
+            "Tres scripts de build producen un release independiente para Windows, y el build prueba lo que incluye "
+            "antes de empaquetar cualquier cosa.",
             visual="chain",
-            visual_data={"chain": ["build.py", "Frozen checks", "Uninstaller", "Installer", "pkg.zip",
+            visual_data={"chain": ["build.py", "Revisiones del congelado", "Desinstalador", "Instalador", "pkg.zip",
                                    "Release"],
-                         "caption": "Every stage verifies the one before it."},
+                         "caption": "Cada etapa verifica la anterior."},
             points=[
-                ("PyInstaller bundle", "Collected static files, templates, agents, skills and helpers, with "
-                 "numpy and OpenCV embedded in both shipped Pythons."),
-                ("Carriage proof", "The build opens the archive it produced and aborts if a required "
-                 "fail-open module is missing."),
-                ("Runtime gates", "Every agent runtime and every model loader is executed inside the new "
-                 "frozen executable, and the Prompt Flow Panel check runs there too."),
-                ("Integrity receipt", "A SHA-256 receipt covers every payload file and is checked again when "
-                 "the installer is assembled."),
-                ("Size ceiling", "The final release ZIP stays under 1,990,000,000 bytes; required files are "
-                 "never dropped to fit."),
+                ("Bundle de PyInstaller", "Archivos estáticos recolectados, plantillas, agents, skills y helpers, con "
+                 "numpy y OpenCV incluidos en los dos Pythons que se distribuyen."),
+                ("Prueba de transporte", "El build abre el archivo que produjo y se detiene si falta un módulo "
+                 "requerido de los que fallan abiertos."),
+                ("Compuertas de runtime", "Cada runtime de agent y cada cargador de modelos se ejecuta dentro del nuevo "
+                 "ejecutable congelado, y la revisión del Prompt Flow Panel también corre ahí."),
+                ("Recibo de integridad", "Un recibo SHA-256 cubre cada archivo del payload y se vuelve a revisar cuando "
+                 "se arma el instalador."),
+                ("Tope de tamaño", "El ZIP final del release se queda debajo de 1,990,000,000 bytes; los archivos requeridos "
+                 "nunca se quitan para que quepa."),
             ], deck="split",
             deck_points=[
-                ("Bundle", "Static files, templates, agents, skills and both Pythons."),
-                ("Carriage proof", "Aborts if a required fail-open module is missing."),
-                ("Runtime gates", "Every agent runtime and model loader runs frozen."),
-                ("Receipt", "SHA-256 for every payload file and all required root helpers, checked before use."),
-                ("Ceiling", "Under 1,990,000,000 bytes, nothing dropped to fit."),
+                ("Bundle", "Archivos estáticos, plantillas, agents, skills y ambos Pythons."),
+                ("Prueba de transporte", "Se detiene si falta un módulo requerido de los que fallan abiertos."),
+                ("Compuertas de runtime", "Cada runtime de agent y cada cargador de modelos corre congelado."),
+                ("Recibo", "SHA-256 para cada archivo del payload y todos los helpers raíz requeridos, revisado antes de usarse."),
+                ("Tope", "Debajo de 1,990,000,000 bytes, sin quitar nada para que quepa."),
             ]),
-        Section("root_carriage", "BUILD REPAIR · SEPTEMBER 27", "One inventory ships every required helper",
-            "A September 27 repair, carried since v1.72.1, ships the Whisperer settings helper without weakening package verification.",
+        Section("root_carriage", "REPARACIÓN DEL BUILD · 27 DE SEPTIEMBRE", "Un solo inventario incluye cada helper requerido",
+            "Una reparación del 27 de septiembre, incluida desde v1.72.1, lleva el helper de configuración de Whisperer sin debilitar la verificación del paquete.",
             body=[
-                "A build correctly refused a runtime receipt because chat_voice_settings.py was missing. "
-                "The verifier required the loose helper, but build.py used a separate copy dictionary that "
-                "omitted it. Compiling agent.chat_voice_settings does not satisfy the standalone Whisperer "
-                "worker running under the carried Python.",
-                "build.py now calls copy_root_sources using the verifier's ROOT_SOURCES inventory. All "
-                "inputs are checked before copying. Every mapped destination is mandatory in both ZIP and "
-                "extracted-stage receipts, so removing a required file and its receipt entry still fails. "
-                "The pre-freeze hash baseline continues to reject source changes during a build.",
+                "Un build rechazó correctamente un recibo de runtime porque faltaba chat_voice_settings.py. "
+                "El verificador exigía el helper suelto, pero build.py usaba un diccionario de copia aparte que "
+                "lo omitía. Compilar agent.chat_voice_settings no satisface al worker independiente de Whisperer "
+                "que corre con el Python incluido.",
+                "build.py ahora llama a copy_root_sources con el inventario ROOT_SOURCES del verificador. Todos "
+                "los inputs se revisan antes de copiar. Cada destino mapeado es obligatorio tanto en los recibos del ZIP como "
+                "en los de la etapa extraída, así que quitar un archivo requerido y su entrada en el recibo sigue fallando. "
+                "La línea base de hashes previa al congelado sigue rechazando cambios en el source durante un build.",
             ],
             points=[
-                ("One carrier", "Copy and verification share ROOT_SOURCES; a new required helper needs no second list."),
-                ("Worker import", "Carry chat_voice_settings.py at the installation root as well as compiling the Django module."),
-                ("Integrity", "Reject missing, edited or unmanifested files, including otherwise consistent incomplete receipts."),
-                ("Rebuild inputs", "Mirrored self-update/self-modify sweeps include the shared inventory and report omitted Git checks."),
+                ("Un solo transportador", "La copia y la verificación comparten ROOT_SOURCES; un nuevo helper requerido no necesita una segunda lista."),
+                ("Import del worker", "Lleva chat_voice_settings.py en la raíz de la instalación además de compilar el módulo de Django."),
+                ("Integridad", "Rechaza archivos faltantes, editados o fuera del manifiesto, incluidos los recibos incompletos que por lo demás son consistentes."),
+                ("Inputs de recompilación", "Los barridos espejo de self-update/self-modify incluyen el inventario compartido y reportan las revisiones de Git omitidas."),
             ], deck="cards"),
-        Section("carriage_evidence", "RECORDED VERIFICATION", "Packaging evidence and its limits",
-            "The September 27 file-level checks establish carriage and integrity; a full installer is a separate verification.",
+        Section("carriage_evidence", "VERIFICACIÓN REGISTRADA", "La evidencia del empaquetado y sus límites",
+            "Las revisiones a nivel de archivos del 27 de septiembre establecen el transporte y la integridad; un instalador completo es una verificación aparte.",
             body=[
-                "The recorded focused suite ran 146 tests: 145 passed and one Git-dependent census was skipped. "
-                "It exercised the real carrier with source files, imported the worker from a staged installation, "
-                "and verified ZIP creation, extraction and receipts with synthetic runtime binaries. "
-                "Missing or corrupted helpers and extra files were rejected.",
-                "The recorded self-update sweep with --no-git had no findings. A self-modify snapshot copied "
-                "1,579 files with zero copy errors and accounted for all 778 runtime source inputs. "
-                "These are that audit's dated counts. Neither those checks nor this dossier regeneration ran "
-                "a complete PyInstaller build, installed a release or performed a live update swap.",
+                "La suite enfocada registrada corrió 146 pruebas: 145 pasaron y un censo que depende de Git se saltó. "
+                "Ejercitó el transportador real con archivos del source, importó el worker desde una instalación preparada, "
+                "y verificó la creación del ZIP, la extracción y los recibos con binarios de runtime sintéticos. "
+                "Se rechazaron los helpers faltantes o corruptos y los archivos extra.",
+                "El barrido de self-update registrado con --no-git no tuvo hallazgos. Un snapshot de self-modify copió "
+                "1,579 archivos sin errores de copia y contempló los 778 inputs de source del runtime. "
+                "Son los conteos fechados de esa auditoría. Ni esas revisiones ni esta regeneración del dossier corrieron "
+                "un build completo de PyInstaller, instalaron un release ni hicieron un cambio de actualización en vivo.",
             ],
             points=[
-                ("Focused suite", "146 tests recorded: 145 passed, one skipped; file-only harness exited successfully."),
-                ("Real files", "Every mapped source destination matched; the staged worker resolved its settings helper."),
-                ("Snapshot", "Recorded audit: 1,579 files, 11 redacted, 778 runtime inputs covered, zero copy errors."),
-                ("Evidence", "docs/build-root-assets-verification.md records scope, skipped checks and local transcripts."),
+                ("Suite enfocada", "146 pruebas registradas: 145 pasaron, una se saltó; el harness sólo de archivos salió con éxito."),
+                ("Archivos reales", "Cada destino de source mapeado coincidió; el worker preparado resolvió su helper de configuración."),
+                ("Snapshot", "Auditoría registrada: 1,579 archivos, 11 redactados, 778 inputs de runtime cubiertos, cero errores de copia."),
+                ("Evidencia", "docs/build-root-assets-verification.md registra el alcance, las revisiones saltadas y las transcripciones locales."),
             ], deck="cards"),
-        Section("update", "SELF-UPDATE", "Updating herself without losing you",
-            "About ▸ Check for updates fetches the latest published release, stages it, and hands the "
-            "locked-file swap to an external script.",
+        Section("update", "AUTOACTUALIZACIÓN", "Actualizarse sin perderte",
+            "Acerca de ▸ Buscar actualizaciones trae el último release publicado, lo prepara y le pasa "
+            "el cambio de archivos bloqueados a un script externo.",
             body=[
-                "The swap preserves `config.json`, the database, contacts, the external-MCP catalog, Temp, "
-                "Templates, generated content and the separately built uninstaller. The database is copied "
-                "through SQLite's online backup API before shutdown, then new migrations are applied to it on "
-                "the next launch, so chat history and settings survive while new agents and prompts arrive.",
-                "Downloads and staging receipts are verified before shutdown, and a failed prerequisite stops "
-                "before any file is replaced. While the download runs, the update dialog is sealed and refuses "
-                "to close.",
+                "El cambio conserva `config.json`, la base de datos, los contactos, el catálogo de External MCPs, Temp, "
+                "Templates, el contenido generado y el desinstalador que se construye por separado. La base de datos se copia "
+                "con el API de backup en línea de SQLite antes del apagado, y luego se le aplican las nuevas migraciones en "
+                "el siguiente arranque, así que el historial del chat y la configuración sobreviven mientras llegan agents y prompts nuevos.",
+                "Las descargas y los recibos de la preparación se verifican antes del apagado, y un prerrequisito con error se detiene "
+                "antes de reemplazar cualquier archivo. Mientras corre la descarga, el diálogo de actualización está sellado y se niega "
+                "a cerrarse.",
             ], deck="list",
             deck_points=[
-                ("Published releases", "Only releases published on GitHub are offered."),
-                ("Preserved", "Configuration, database, contacts, catalogs, content."),
-                ("Migrated", "Your database receives new migrations on the next launch."),
-                ("Verified", "Receipts are checked before anything is replaced."),
+                ("Releases publicados", "Sólo se ofrecen los releases publicados en GitHub."),
+                ("Conservado", "Configuración, base de datos, contactos, catálogos, contenido."),
+                ("Migrado", "Tu base de datos recibe las migraciones nuevas en el siguiente arranque."),
+                ("Verificado", "Los recibos se revisan antes de reemplazar cualquier cosa."),
             ]),
-        Section("versioning", "VERSIONING", "One number, from one source",
-            "Tlamatini follows Semantic Versioning, with annotated Git tags as the single source of truth.",
+        Section("versioning", "VERSIONADO", "Un número, de una sola fuente",
+            "Tlamatini sigue el Versionado Semántico, con tags anotados de Git como única fuente de verdad.",
             body=[
-                "The runtime resolver, the About window, the `/agent/version/` endpoint and every build artefact "
-                "report the same base tag. The reported version never carries a development or dirty suffix, "
-                "and `TLAMATINI_VERSION` can document a release before its tag is cut.",
-                f"This dossier reports version {version} and states the exact tag, commit and publication status "
-                f"in its Release chapter.",
+                "El resolvedor del runtime, la ventana Acerca de, el endpoint `/agent/version/` y cada artefacto del build "
+                "reportan el mismo tag base. La versión reportada nunca lleva un sufijo de desarrollo ni de cambios sin commit, "
+                "y `TLAMATINI_VERSION` puede documentar un release antes de que se cree su tag.",
+                f"Este dossier reporta la versión {version} e indica el tag, el commit y el estado de publicación exactos "
+                f"en su capítulo Release.",
             ], deck="list",
             deck_points=[
-                ("SemVer", "MAJOR.MINOR.PATCH from annotated Git tags."),
-                ("One resolver", "version.py, the About window and /agent/version/."),
-                ("Base tag only", "No .devN, +gSHA or .dirty suffix."),
-                ("Override", "TLAMATINI_VERSION documents a release ahead of its tag."),
+                ("SemVer", "MAJOR.MINOR.PATCH a partir de tags anotados de Git."),
+                ("Un solo resolvedor", "version.py, la ventana Acerca de y /agent/version/."),
+                ("Sólo el tag base", "Sin sufijos .devN, +gSHA ni .dirty."),
+                ("Override", "TLAMATINI_VERSION documenta un release antes de su tag."),
             ]),
     ])
 
-    release = Chapter("release", "VIII", "Current Release",
-        f"Source release {f['release_tag']}; package delivery and runtime acceptance need separate evidence.",
+    release = Chapter("release", "VIII", "Release actual",
+        f"Release del source {f['release_tag']}; la entrega del paquete y la aceptación en runtime necesitan evidencia aparte.",
         accent="gold", sections=[
-        Section("release188", "CARRIED FROM v1.88.0", "Terminals you can watch, and a private release that carries your data",
-            "Tlamatini v1.88.0 introduced Terminater; its tag was created on October 20.",
+        Section("release188", "HEREDADO DE v1.88.0", "Terminales a la vista y un release privado con tus datos",
+            "Tlamatini v1.88.0 introdujo Terminater; su tag se creó el 20 de octubre.",
             body=[
-                f"Terminater is workflow agent number {f['agents']}. It raises real CMD and PowerShell terminals in a new "
-                "Terminals area (Views → Terminals, or Ctrl+`) on the chat, Agentic Control Panel and Prompt Flow Panel "
-                "pages. Tlamatini types every key like a person, about 50 words per minute and never pasted, waits for the "
-                "command, reads its whole output and reports the exit code. Esc takes the keyboard; a command can hand it "
-                "to you on purpose with <<USER:hint>>.",
-                f"A command that stops answering is flagged hung and can be aborted without losing the terminal; one that "
-                f"exits with an error is a red Exec Report row even though the terminal worked. One hub in the Django "
-                f"process owns the shells, so closing a page never closes one. It is wrapped chat agent number {f['wrapped']}, "
-                f"the eighth Prompt Flow Panel operation, and has three safe cards in the Catalog of Prompts.",
-                "The build now proves it inside the frozen app: check_terminater drives a real PowerShell, a real cmd.exe, "
-                "the shipped pool agent under the carried Python and a WebSocket round trip, and packaging stops if it "
-                "fails. On October 19, 774 unit tests passed, and 1,668 passed after the documentation pass. The saved "
-                "chat-page and canvas visible suites were not re-run as one clean pass after their last fixes.",
-                "The v1.88.0 tag was created on October 20 and points to the commit before this work; the work landed on "
-                "main in the next commit, so a build of main then reported 1.88.0 and carried all of it.",
-                "The private (keyed) release now carries the data of the machine that builds it: every External MCP server "
-                "of the installed copy and its active choice, merged into a gitignored private catalog, and the whole "
-                "data.keys vault. The public builder refuses both. An in-app update does not keep data.keys.",
+                f"Terminater es el agent de workflow número {f['agents']}. Abre terminales reales de CMD y PowerShell en una nueva "
+                "área Terminals (Vistas → Terminals, o Ctrl+`) en las páginas del chat, del Agentic Control Panel y del Prompt Flow Panel"
+                ". Tlamatini teclea cada tecla como una persona, unas 50 palabras por minuto y nunca pegando, espera el "
+                "comando, lee todo su output y reporta el código de salida. Esc toma el teclado; un comando te lo puede pasar "
+                "a propósito con <<USER:hint>>.",
+                f"Un comando que deja de responder se marca como colgado y se puede detener sin perder la terminal; uno que "
+                f"sale con error es una fila roja del Exec Report aunque la terminal haya funcionado. Un solo hub en el proceso de Django "
+                f"es dueño de los shells, así que cerrar una página nunca cierra uno. Es el agent de chat wrapped número {f['wrapped']}, "
+                f"la octava operación del Prompt Flow Panel, y tiene tres tarjetas seguras en el Catálogo de prompts.",
+                "Ahora el build lo prueba dentro de la app congelada: check_terminater maneja un PowerShell real, un cmd.exe real, "
+                "el agent del pool incluido con el Python incluido y un viaje de ida y vuelta por WebSocket, y el empaquetado se detiene si "
+                "falla. El 19 de octubre pasaron 774 pruebas unitarias, y 1,668 pasaron después de la revisión de la documentación. Las "
+                "suites visibles guardadas de la página del chat y del canvas no se volvieron a correr como una sola pasada limpia después de sus últimos arreglos.",
+                "El tag v1.88.0 se creó el 20 de octubre y apunta al commit anterior a este trabajo; el trabajo llegó a "
+                "main en el siguiente commit, así que un build de main reportaba entonces 1.88.0 y lo llevaba todo.",
+                "El release privado (con llaves) ahora lleva los datos de la máquina que lo construye: cada servidor de External MCP "
+                "de la copia instalada y su elección activa, combinados en un catálogo privado ignorado por git, y toda la "
+                "bóveda data.keys. El builder público rechaza ambos. Una actualización desde la app no conserva data.keys.",
             ],
             points=[
-                ("Terminals", "Real CMD and PowerShell you can watch, typed like a person, with a hand-over."),
-                ("Current counts", f"{f['agents']} agents · {f['wrapped']} wrapped · {f['tools']} tools · {f['migrations']} migrations."),
-                ("Gate", "check_terminater runs inside the frozen app; packaging stops on failure."),
-                ("Private release", "External MCP servers and data.keys travel in the keyed build only."),
+                ("Terminales", "CMD y PowerShell reales que puedes ver, tecleados como una persona, con entrega del teclado."),
+                ("Conteos actuales", f"{f['agents']} agents · {f['wrapped']} wrapped · {f['tools']} tools · {f['migrations']} migraciones."),
+                ("Compuerta", "check_terminater corre dentro de la app congelada; el empaquetado se detiene si falla."),
+                ("Release privado", "Los servidores de External MCP y data.keys viajan sólo en el build con llaves."),
             ], deck="cards"),
-        Section("release187", "CARRIED FROM v1.87.0", "A leaner catalog, a safer removal, a smaller release",
-            "Tagged on October 18: the catalog shrank to 85 agents, and removal became fast and recoverable.",
+        Section("release187", "HEREDADO DE v1.87.0", "Menos agents, eliminación segura, release más chico",
+            "Con tag del 18 de octubre: el catálogo bajó a 85 agents, y la eliminación se volvió rápida y recuperable.",
             body=[
-                "That release held 85 workflow agents: Gatewayer, Gateway-Relayer, Node-Manager and "
-                "Zavuerer were removed. Migration 0214 deletes their rows and catalog prompts without "
-                "renumbering anything that remains.",
-                "The Uninstaller moves the installation aside on the same drive instead of copying it, and "
-                "offers Retry cleanup when a locked file stays behind. The frozen release no longer carries "
-                "the media and browser libraries twice. About → Usage waits for real data, and every tracked "
-                "Python file has a quality gate.",
-                "The v1.87.0 tag was created one minute before the work it names. Both follow-up commits "
-                "landed on main right after it, so a build of main then reported 1.87.0 and carried all of it.",
+                "Ese release tenía 85 agents de workflow: se quitaron Gatewayer, Gateway-Relayer, Node-Manager y "
+                "Zavuerer. La migración 0214 borra sus filas y sus prompts del catálogo sin "
+                "renumerar nada de lo que queda.",
+                "El Desinstalador mueve la instalación aparte en la misma unidad en vez de copiarla, y "
+                "ofrece Reintentar limpieza cuando queda atrás un archivo bloqueado. El release congelado ya no lleva "
+                "las librerías de medios y de browser dos veces. Acerca de → Uso espera datos reales, y cada archivo "
+                "de Python con seguimiento tiene una compuerta de calidad.",
+                "El tag v1.87.0 se creó un minuto antes del trabajo que nombra. Los dos commits siguientes "
+                "llegaron a main justo después, así que un build de main reportaba entonces 1.87.0 y lo llevaba todo.",
             ],
             points=[
-                ("85 agents", "Four retired agents removed in a forward migration."),
-                ("Removal", "Move aside, verify, Retry cleanup for locked leftovers."),
-                ("Release size", "Media and browser libraries ship once, in the carried Python."),
-                ("Quality", "npm run lint:python checks every tracked Python file."),
+                ("85 agents", "Cuatro agents retirados quitados con una migración hacia adelante."),
+                ("Eliminación", "Mover aparte, verificar, Reintentar limpieza para lo bloqueado que queda."),
+                ("Tamaño del release", "Las librerías de medios y de browser se incluyen una sola vez, en el Python incluido."),
+                ("Calidad", "npm run lint:python revisa cada archivo de Python con seguimiento."),
             ], deck="cards"),
-        Section("removal187", "NEW IN v1.87.0", "Uninstalling is fast and recoverable",
-            "The Uninstaller moves entries into a recovery folder instead of copying and hashing them.",
+        Section("removal187", "NUEVO EN v1.87.0", "Desinstalar es rápido y recuperable",
+            "El Desinstalador mueve las entradas a una carpeta de recuperación en vez de copiarlas y sacarles hash.",
             body=[
-                "Each move is recorded in a schema 2 journal before and after it happens. A destination "
-                "collision is refused, and the journal stays until cleanup succeeds. If a reversible step "
-                "fails, the entries and the Windows state are put back.",
-                "If the application is removed but a locked file remains, the window says Application removed; "
-                "cleanup incomplete, lists what remains and offers Retry cleanup. Reopening the Uninstaller can "
-                "finish the job later. agents/ and the six content folders that hold files are kept.",
-                "A filesystem benchmark removed 64,264 package files (3.88 GB) in 22.3 seconds with all 254 "
-                "preserved hashes unchanged. It measures the filesystem phase; a compiled-client run remains "
-                "the acceptance test.",
+                "Cada movimiento se registra en un journal de esquema 2 antes y después de que pase. Una colisión "
+                "en el destino se rechaza, y el journal se queda hasta que la limpieza tiene éxito. Si un paso reversible "
+                "falla, las entradas y el estado de Windows se regresan a su lugar.",
+                "Si se quita la aplicación pero queda un archivo bloqueado, la ventana dice Aplicación quitada; "
+                "limpieza incompleta, lista lo que queda y ofrece Reintentar limpieza. Volver a abrir el Desinstalador puede "
+                "terminar el trabajo después. Se conservan agents/ y las seis carpetas de contenido que tienen archivos.",
+                "Una prueba de rendimiento del sistema de archivos quitó 64,264 archivos del paquete (3.88 GB) en 22.3 segundos con los 254 "
+                "hashes conservados sin cambio. Mide la fase del sistema de archivos; una ejecución con el cliente compilado sigue siendo "
+                "la prueba de aceptación.",
             ], points=[
-                ("Journal", "Every move recorded before and after."),
-                ("Retry", "Locked leftovers can be finished later."),
-                ("Kept", "agents/ and the content folders that hold files."),
-                ("Benchmark", "64,264 files in 22.3 s, October 18."),
+                ("Journal", "Cada movimiento se registra antes y después."),
+                ("Reintentar", "Lo bloqueado que queda se puede terminar después."),
+                ("Se conserva", "agents/ y las carpetas de contenido que tienen archivos."),
+                ("Prueba de rendimiento", "64,264 archivos en 22.3 s, 18 de octubre."),
             ], deck="cards"),
-        Section("payload187", "NEW IN v1.87.0", "One owner for every library",
-            "The frozen web process stops carrying libraries that only the pool agents use.",
+        Section("payload187", "NUEVO EN v1.87.0", "Un dueño para cada librería",
+            "El proceso web congelado deja de llevar librerías que sólo usan los agents del pool.",
             body=[
-                "cv2, ffpyplayer, av, playwright, faster_whisper, ctranslate2 and onnxruntime run under the "
-                "carried Python, so build.py keeps them out of the frozen interpreter. Chromium and FFmpeg "
-                "revisions come from the carried Playwright manifest.",
-                "Only bytecode caches whose source sits beside them are removed, Git's copied uninstaller files "
-                "are dropped and the package is written with DEFLATE level 9. A release-payload test pins who "
-                "owns each library.",
-                "About → Usage shows Checking usage… until real report data arrives, explains a failed connection "
-                "under Connection details and retries by itself. Its account request is a bodyless "
-                "POST /api/me: a {} body made the local server reset the connection.",
+                "cv2, ffpyplayer, av, playwright, faster_whisper, ctranslate2 y onnxruntime corren con el "
+                "Python incluido, así que build.py los deja fuera del intérprete congelado. Las revisiones de Chromium y FFmpeg "
+                "vienen del manifiesto de Playwright incluido.",
+                "Sólo se quitan los cachés de bytecode cuyo source está a su lado, se descartan los archivos copiados por Git "
+                "del desinstalador y el paquete se escribe con DEFLATE nivel 9. Una prueba del payload del release fija quién "
+                "es dueño de cada librería.",
+                "Acerca de → Uso muestra Revisando el uso… hasta que llegan datos reales del reporte, explica una conexión con error "
+                "en Detalles de la conexión y reintenta por sí sola. Su solicitud de la cuenta es un "
+                "POST /api/me sin cuerpo: un cuerpo {} hacía que el servidor local reiniciara la conexión.",
             ], points=[
-                ("Ownership", "Pool-only libraries live in the carried Python."),
-                ("Package", "Bytecode, uninstaller copies and compression tuned."),
-                ("Usage", "Checking usage… until real data arrives."),
-                ("Account", "A bodyless POST /api/me."),
+                ("Propiedad", "Las librerías sólo del pool viven en el Python incluido."),
+                ("Paquete", "Bytecode, copias del desinstalador y compresión ajustados."),
+                ("Uso", "Revisando el uso… hasta que llegan datos reales."),
+                ("Cuenta", "Un POST /api/me sin cuerpo."),
             ], deck="cards"),
-        Section("sweep187", "AFTER THE v1.87.0 TAG", "The consistency sweep",
-            "A source-wide sweep re-derived every count and fixed what it found.",
+        Section("sweep187", "DESPUÉS DEL TAG v1.87.0", "Barrido de consistencia",
+            "Un barrido de todo el source volvió a derivar cada conteo y arregló lo que encontró.",
             body=[
-                "Grepper's glob and Globber's pattern now understand brace sets such as *.{js,py}, lists such "
-                "as *.py,*.js and folder globs such as src/**/*.py. Before, each searched zero files and "
-                "answered no_matches. Globber walks the tree once for several patterns: three minutes became "
-                "ten seconds.",
-                "Six wrapped tools whose label names an action (Send Email, Move File, Summarize Text and the "
-                "three Kyber tools) now obey their agent's Configure Agents checkbox. A loaded flow keeps "
-                "FlowCreator's label, and the Python quality gate runs in Windows Terminal.",
-                "The daily chat test reads this repository again instead of an old copy, and its question "
-                "banks cover all 85 agents and all 66 wrapped tools. Configure Agents and Configure MCPs now open "
-                "with the boxes the server saved, so a quick Continue can no longer switch most agents off.",
+                "El glob de Grepper y el pattern de Globber ahora entienden conjuntos con llaves como *.{js,py}, listas como "
+                "*.py,*.js y globs de carpetas como src/**/*.py. Antes, cada uno buscaba en cero archivos y "
+                "contestaba no_matches. Globber recorre el árbol una sola vez para varios patterns: tres minutos se volvieron "
+                "diez segundos.",
+                "Seis tools wrapped cuya etiqueta nombra una acción (Send Email, Move File, Summarize Text y los "
+                "tres tools de Kyber) ahora obedecen la casilla de su agent en Configurar Agents. Un flow cargado conserva "
+                "la etiqueta de FlowCreator, y la compuerta de calidad de Python corre en Windows Terminal.",
+                "La prueba diaria del chat vuelve a leer este repositorio en vez de una copia vieja, y sus bancos de "
+                "preguntas cubren los 85 agents y los 66 tools wrapped. Configurar Agents y Configurar MCPs ahora se abren "
+                "con las casillas que guardó el servidor, así que un Continuar rápido ya no puede apagar la mayoría de los agents.",
             ], points=[
-                ("Patterns", "Brace sets, lists and folder globs in Grepper and Globber."),
-                ("Gates", "Six wrapped tools follow their agent's checkbox; Configure opens with the saved ticks."),
-                ("Harness", "The daily chat test reads this repository."),
-                ("Quality gate", "Runs in Windows Terminal, the Windows 11 default."),
+                ("Patterns", "Conjuntos con llaves, listas y globs de carpetas en Grepper y Globber."),
+                ("Compuertas", "Seis tools wrapped siguen la casilla de su agent; Configurar se abre con las marcas guardadas."),
+                ("Harness", "La prueba diaria del chat lee este repositorio."),
+                ("Compuerta de calidad", "Corre en Windows Terminal, la predeterminada de Windows 11."),
             ], deck="cards"),
-        Section("release186", "CARRIED FROM v1.86.0", "Mover folders and the Architecture atlas",
-            "Tagged on October 17: a missing destination becomes a folder, and the atlas rebuilds itself.",
+        Section("release186", "HEREDADO DE v1.86.0", "Carpetas de Mover y el atlas",
+            "Con tag del 17 de octubre: un destino faltante se vuelve carpeta, y el atlas se reconstruye solo.",
             body=[
-                "Mover creates a destination that does not exist yet, such as scripts/architecture_atlas, as a "
-                "folder, and the file keeps its own name. A rename still happens when the destination names a "
-                "file: it exists as a file, has an extension, or the source has none either. A trailing slash "
-                "always means a folder.",
-                "python scripts/architecture_atlas/build_architecture_pdf.py regenerates "
-                "Tlamatini-Architecture.pdf with Tlamatini's own LaTeXer and verifies that every tracked file "
-                "appears in it. Exit codes 0, 1, 2 and 3 mean ok, typeset failed, a file left unplaced and a "
-                "file missing.",
+                "Mover crea un destino que todavía no existe, como scripts/architecture_atlas, como una "
+                "carpeta, y el archivo conserva su propio nombre. Un renombre sigue pasando cuando el destino nombra un "
+                "archivo: existe como archivo, tiene extensión, o el origen tampoco tiene. Una diagonal al final "
+                "siempre significa una carpeta.",
+                "python scripts/architecture_atlas/build_architecture_pdf.py regenera "
+                "Tlamatini-Architecture.pdf con el propio LaTeXer de Tlamatini y verifica que cada archivo con seguimiento "
+                "aparezca en él. Los códigos de salida 0, 1, 2 y 3 significan ok, error de tipografía, un archivo sin colocar y un "
+                "archivo faltante.",
             ], points=[
-                ("Mover", "A new destination name becomes a folder."),
-                ("Rename", "Only when the destination names a file."),
-                ("Atlas", "Rebuilt by LaTeXer from the repository."),
-                ("Proof", "Every tracked file appears in the atlas."),
+                ("Mover", "Un nombre de destino nuevo se vuelve una carpeta."),
+                ("Renombre", "Sólo cuando el destino nombra un archivo."),
+                ("Atlas", "Lo reconstruye LaTeXer a partir del repositorio."),
+                ("Prueba", "Cada archivo con seguimiento aparece en el atlas."),
             ], deck="cards"),
-        Section("release185", "CARRIED FROM v1.85.0", "Refresh, Views and a centered avatar",
-            "Tagged and published on October 16, with a more flexible chat workspace.",
+        Section("release185", "HEREDADO DE v1.85.0", "Actualizar, Vistas y un avatar centrado",
+            "Con tag y publicado el 16 de octubre, con un espacio de trabajo del chat más flexible.",
             body=[
-                "Refresh rereads the open document. Views makes room for full-width chat while keeping the "
-                "canvas alive. Reset restores the layout without clearing content. The portrait and its "
-                "frame remain centered over Mic through Send as the message box shrinks.",
-                "The release retains the page-wide file-drop router, setup recovery, Markdown rendering, "
-                "Usage dashboard, Model Brain, Compact mode, voice dictation and both flow editors.",
+                "Actualizar vuelve a leer el documento abierto. Vistas hace espacio para el chat a todo lo ancho sin apagar el "
+                "canvas. Restablecer distribución restaura la distribución sin borrar contenido. El retrato y su "
+                "marco quedan centrados sobre Micrófono hasta Enviar mientras la caja de mensaje se encoge.",
+                "El release conserva el router para soltar archivos en toda la página, la recuperación de la instalación, el renderizado de Markdown, "
+                "el tablero de Uso, el Model Brain, Compact mode, el dictado por voz y los dos editores de flows.",
             ],
             points=[
-                ("Refresh", "The original document, read again without a chooser."),
-                ("Views", "Show or hide the canvas and keep its state."),
-                ("Reset layout", "Restore both panes and dock the avatar."),
-                ("Portrait", "Center the whole frame above the complete action row."),
+                ("Actualizar", "El documento original, leído otra vez sin un selector."),
+                ("Vistas", "Muestra u oculta el canvas y conserva su estado."),
+                ("Restablecer distribución", "Restaura ambos paneles y acopla el avatar."),
+                ("Retrato", "Centra todo el marco sobre la fila de acciones completa."),
             ], deck="cards"),
-        Section("refresh185", "CARRIED FROM v1.85.0", "Refresh the original document",
-            "Open selects a file. Refresh reads that same source again, without writing to it.",
+        Section("refresh185", "HEREDADO DE v1.85.0", "Actualiza el documento original",
+            "Abrir elige un archivo. Actualizar vuelve a leer esa misma fuente, sin escribir en ella.",
             body=[
-                "Native-picker access retains a browser-granted handle. Drops retain their handle or entry "
-                "during the original event, including the PDF-frame relay. A snapshot-only source explains "
-                "why Refresh is unavailable. A generated document rereads its authenticated saved-content endpoint.",
-                "Text and Markdown are compared in full, including empty files. Equal size or timestamp is "
-                "never proof of equal content. An unchanged document stays in place without rebuilding context. "
-                "Changed content replaces the complete document only when preparation succeeds.",
-                "Busy, unchanged, updated, permission and error states have visible feedback. Cancel, Clear, "
-                "opening another document and a new operation invalidate pending reads. Failure preserves the "
-                "previous document and explains the next action.",
+                "El acceso con el selector nativo conserva un handle que concede el browser. Lo que se suelta conserva su handle o su entrada "
+                "durante el evento original, incluido el relevo del frame de PDF. Una fuente que sólo es snapshot explica "
+                "por qué Actualizar no está disponible. Un documento generado vuelve a leer su endpoint autenticado de contenido guardado.",
+                "El texto y el Markdown se comparan completos, incluidos los archivos vacíos. El mismo tamaño o la misma marca de tiempo nunca "
+                "prueban que el contenido sea igual. Un documento sin cambios se queda en su lugar sin reconstruir el contexto. "
+                "El contenido cambiado reemplaza el documento completo sólo cuando la preparación tiene éxito.",
+                "Los estados de ocupado, sin cambios, actualizado, permiso y error tienen respuesta visible. Cancelar, Limpiar, "
+                "abrir otro documento y una operación nueva invalidan las lecturas pendientes. Un error conserva el "
+                "documento anterior y explica la siguiente acción.",
             ], points=[
-                ("Open", "Choose a document and retain read access."),
-                ("Refresh", "Reread the retained source without another picker."),
-                ("Failure", "Keep the previous content and allow retry."),
-                ("Context", "Prepare changed content before replacing active context."),
+                ("Abrir", "Elige un documento y conserva el acceso de lectura."),
+                ("Actualizar", "Vuelve a leer la fuente conservada sin otro selector."),
+                ("Error", "Conserva el contenido anterior y permite reintentar."),
+                ("Contexto", "Prepara el contenido cambiado antes de reemplazar el contexto activo."),
             ], deck="cards"),
-        Section("refreshviews185", "CARRIED FROM v1.85.0", "Keep the reading position",
-            "Refreshing Markdown or PDF preserves the view while the underlying document changes.",
+        Section("refreshviews185", "HEREDADO DE v1.85.0", "Mantén tu lugar de lectura",
+            "Actualizar un Markdown o un PDF conserva la vista mientras cambia el documento de fondo.",
             body=[
-                "Markdown retains Preview or Source, reading position and explicitly selected resources. "
-                "Its source bytes remain the basis for Save. Folder-selected resource files remain snapshots "
-                "and can be selected again when those separate files change.",
-                "PDF Refresh stages a new range-backed PDF.js viewer before retiring the old one. It keeps "
-                "page, zoom, rotation and scroll mode, clamping the page to a shorter document. A corrupt PDF "
-                "or cancelled password entry leaves the prior viewer visible. The staged iframe stays attached "
-                "during the swap so the browser does not reload it.",
-                "PDFs always reload on Refresh. No whole-file hash, eager whole-document read or metadata-only "
-                "equality claim is introduced. Active-context replacement keeps the established text/image options.",
+                "El Markdown conserva Vista previa o Source, la posición de lectura y los recursos elegidos explícitamente. "
+                "Sus bytes de source siguen siendo la base de Guardar. Los archivos de recursos elegidos por carpeta siguen siendo snapshots "
+                "y se pueden elegir otra vez cuando esos archivos aparte cambien.",
+                "Actualizar un PDF prepara un nuevo visor PDF.js respaldado por rangos antes de retirar el viejo. Conserva "
+                "la página, el zoom, la rotación y el modo de desplazamiento, y ajusta la página a un documento más corto. Un PDF corrupto "
+                "o una contraseña cancelada dejan visible el visor anterior. El iframe preparado sigue conectado "
+                "durante el cambio para que el browser no lo recargue.",
+                "Los PDFs siempre se recargan con Actualizar. No se introduce ningún hash de archivo completo, ninguna lectura anticipada del documento completo ni ninguna afirmación "
+                "de igualdad sólo por metadatos. El reemplazo del contexto activo conserva las opciones establecidas de texto/imagen.",
             ], points=[
-                ("Markdown", "Preview/Source, position and selected resources stay."),
-                ("PDF", "Page, zoom, rotation and scroll mode stay."),
-                ("Recovery", "A failed replacement retains the previous viewer."),
-                ("Evidence", "20 visible Chrome checks on October 15."),
+                ("Markdown", "Vista previa/Source, posición y recursos elegidos se quedan."),
+                ("PDF", "Página, zoom, rotación y modo de desplazamiento se quedan."),
+                ("Recuperación", "Un reemplazo con error conserva el visor anterior."),
+                ("Evidencia", "20 revisiones visibles en Chrome el 15 de octubre."),
             ], deck="cards"),
-        Section("views185", "CARRIED FROM v1.85.0", "Choose a full-width chat",
-            "Views → Canvas shows or hides the canvas without unloading it.",
+        Section("views185", "HEREDADO DE v1.85.0", "Chat a todo lo ancho",
+            "Vistas → Canvas muestra u oculta el canvas sin descargarlo.",
             body=[
-                "Hiding the canvas gives the chat the full width. The document, PDF viewer, Markdown mode, "
-                "Refresh source, draft, history and loaded context remain intact. Open, a supported document "
-                "drop and a generated-file link reveal the canvas when their result needs it.",
-                "The choice is stored per account in that browser and synchronized across its tabs. It survives "
-                "reload and browser restart. A different browser profile or origin has separate preferences.",
-                "Changing visibility cancels divider gestures. Focus moves to the Views menu only when its "
-                "current region disappears, and the check mark exposes its state to assistive technology.",
+                "Ocultar el canvas le da al chat todo el ancho. El documento, el visor de PDF, el modo de Markdown, "
+                "la fuente de Actualizar, el borrador, el historial y el contexto cargado se quedan intactos. Abrir, soltar un documento "
+                "soportado y un link a un archivo generado muestran el canvas cuando su resultado lo necesita.",
+                "La elección se guarda por cuenta en ese browser y se sincroniza entre sus pestañas. Sobrevive "
+                "a la recarga y al reinicio del browser. Otro perfil o origen del browser tiene preferencias aparte.",
+                "Cambiar la visibilidad cancela los gestos de los divisores. El foco se mueve al menú Vistas sólo cuando su "
+                "región actual desaparece, y la palomita expone su estado a la tecnología de asistencia.",
             ], points=[
-                ("Full width", "Hide the canvas to give the chat more room."),
-                ("Continuity", "Keep the open document and active context."),
-                ("Preference", "Saved per account and browser origin."),
-                ("Navigation", "Opening a document reveals its canvas."),
+                ("Todo lo ancho", "Oculta el canvas para darle más espacio al chat."),
+                ("Continuidad", "Conserva el documento abierto y el contexto activo."),
+                ("Preferencia", "Se guarda por cuenta y por origen del browser."),
+                ("Navegación", "Abrir un documento muestra su canvas."),
             ], deck="cards"),
-        Section("avatar185", "CARRIED FROM v1.85.0", "A centered portrait at every height",
-            "The portrait and its frame share the center of the entire Mic-to-Send action row.",
+        Section("avatar185", "HEREDADO DE v1.85.0", "Un retrato centrado a cualquier altura",
+            "El retrato y su marco comparten el centro de toda la fila de acciones de Micrófono a Enviar.",
             body=[
-                "Previously, reducing the composer height shrank the portrait but left it anchored to the "
-                "right edge. The layout now measures from Mic's left edge to Send's right edge and centers "
-                "the whole dock above that span. Both dividers, narrow layouts and zoom follow the same measurement.",
-                "The portrait remains square with a 120-pixel minimum. Its floating size remains independent. "
-                "Hiding the canvas docks the portrait and disables floating resize through pointer, keyboard "
-                "and API paths. Showing the canvas enables resizing again and leaves the portrait docked.",
-                "Views → Reset layout shows both panes, restores their initial sizes and docks the avatar. "
-                "It does not clear the document, draft, history or context.",
+                "Antes, reducir la altura del composer encogía el retrato pero lo dejaba anclado a la "
+                "orilla derecha. Ahora la distribución mide desde la orilla izquierda de Micrófono hasta la orilla derecha de Enviar y centra "
+                "todo el dock sobre ese tramo. Los dos divisores, las distribuciones angostas y el zoom siguen la misma medida.",
+                "El retrato sigue siendo cuadrado con un mínimo de 120 píxeles. Su tamaño flotante sigue siendo independiente. "
+                "Ocultar el canvas acopla el retrato y desactiva el cambio de tamaño flotante por puntero, teclado "
+                "y API. Mostrar el canvas vuelve a permitir el cambio de tamaño y deja el retrato acoplado.",
+                "Vistas → Restablecer distribución muestra ambos paneles, restaura sus tamaños iniciales y acopla el avatar. "
+                "No borra el documento, el borrador, el historial ni el contexto.",
             ], points=[
-                ("Alignment", "Mic's left edge through Send's right edge."),
-                ("Sizing", "A square portrait, never below 120 pixels."),
-                ("Reset", "Restore layout while keeping content."),
-                ("Evidence", "19 visible checks; center error below 0.02 CSS px, October 16."),
+                ("Alineación", "De la orilla izquierda de Micrófono a la orilla derecha de Enviar."),
+                ("Tamaño", "Un retrato cuadrado, nunca de menos de 120 píxeles."),
+                ("Restablecer", "Restaura la distribución y conserva el contenido."),
+                ("Evidencia", "19 revisiones visibles; error de centrado menor a 0.02 px de CSS, 16 de octubre."),
             ], deck="cards"),
-        Section("carriage185", "CARRIED FROM v1.85.0", "The complete feature travels together",
-            "Required runtime and self-modify inventories cover the Views template and scripts.",
+        Section("carriage185", "HEREDADO DE v1.85.0", "La función completa viaja junta",
+            "Los inventarios requeridos del runtime y de self-modify cubren la plantilla y los scripts de Vistas.",
             body=[
-                "The runtime receipt requires agent_page.html plus agent_page_layout.js, avatar_size.js, "
-                "agent_page_canvas.js and agent_page_init.js. The snapshot also requires the two visible Views "
-                "harnesses and the identity instructions. Refresh retains the existing PDF and Markdown carriers.",
-                "There is no new migration or Python dependency. Its cache suffix was -avatar-center-1 and the "
-                "Views template suffix is _views1. Visibility is browser-local and does not depend on Self-modify.",
-                "Dated evidence includes 160 packaging/self-update/self-modify tests and 13 visible frozen "
-                "frontend checks on October 16. The latter used an actual executable with byte-verified "
-                "current frontend assets in a disposable fixture. The carriage guide records the exact scope.",
+                "El recibo del runtime exige agent_page.html más agent_page_layout.js, avatar_size.js, "
+                "agent_page_canvas.js y agent_page_init.js. El snapshot también exige los dos harnesses visibles de Vistas "
+                "y las instrucciones de identidad. Actualizar conserva los transportadores existentes de PDF y Markdown.",
+                "No hay migración nueva ni dependencia de Python. Su sufijo de caché era -avatar-center-1 y el "
+                "sufijo de la plantilla de Vistas es _views1. La visibilidad es local del browser y no depende de Self-modify.",
+                "La evidencia fechada incluye 160 pruebas de empaquetado/self-update/self-modify y 13 revisiones visibles del frontend "
+                "congelado el 16 de octubre. Estas últimas usaron un ejecutable real con assets del frontend "
+                "actuales verificados byte por byte en un fixture desechable. La guía de transporte registra el alcance exacto.",
             ], points=[
-                ("Runtime", "Required template and four cooperating scripts."),
-                ("Snapshot", "Sources, identity and both Views harnesses."),
-                ("Database", "v1.85.0 introduced no migration." ),
-                ("Version", "v1.85.0 across the application at the time."),
+                ("Runtime", "La plantilla requerida y cuatro scripts que cooperan."),
+                ("Snapshot", "Sources, identidad y los dos harnesses de Vistas."),
+                ("Base de datos", "v1.85.0 no introdujo ninguna migración." ),
+                ("Versión", "v1.85.0 en toda la aplicación en ese momento."),
             ], deck="cards"),
-        Section("maintenance184", "CARRIED FROM v1.84.0", "Catalog and fixture maintenance",
-            "The October 14 maintenance commit updated catalog/configuration data and scrubbed test fixtures.",
+        Section("maintenance184", "HEREDADO DE v1.84.0", "Mantenimiento de catálogo y fixtures",
+            "El commit de mantenimiento del 14 de octubre actualizó los datos del catálogo y de la configuración y limpió los fixtures de prueba.",
             body=[
-                "Commit 1a8c5093 changed FlowCreator catalog data, the local External MCP catalog and "
-                "test fixtures. It introduced no new product subsystem, agent type, migration or dependency. "
-                "Private catalog values are excluded from this dossier.",
-                "The current audit reads the actual implementation and keeps historical test results dated. "
-                "A fixture value is test data, not a deployed credential or evidence that a provider ran.",
+                "El commit 1a8c5093 cambió los datos del catálogo de FlowCreator, el catálogo local de External MCPs y "
+                "los fixtures de prueba. No introdujo ningún subsistema de producto, tipo de agent, migración ni dependencia nuevos. "
+                "Los valores privados del catálogo se excluyen de este dossier.",
+                "La auditoría actual lee la implementación real y mantiene fechados los resultados de pruebas históricas. "
+                "Un valor de fixture es dato de prueba, no una credencial desplegada ni evidencia de que un proveedor corrió.",
             ], points=[
-                ("Maintenance", "Catalog data and test fixtures changed in commit 1a8c5093."),
-                ("Product surface", "No new subsystem, agent type, migration or dependency."),
-                ("Privacy", "Public documents exclude private catalog values."),
+                ("Mantenimiento", "Los datos del catálogo y los fixtures de prueba cambiaron en el commit 1a8c5093."),
+                ("Superficie del producto", "Ningún subsistema, tipo de agent, migración ni dependencia nuevos."),
+                ("Privacidad", "Los documentos públicos excluyen los valores privados del catálogo."),
             ], deck="list"),
-        Section("working_dropfiles", "CARRIED FROM v1.83.0", "One smart listener for every file you drop",
-            "Tagged and published on October 14: a dropped file never errors, never opens as text by mistake and never navigates away.",
+        Section("working_dropfiles", "HEREDADO DE v1.83.0", "Un listener para cada archivo que sueltas",
+            "Con tag y publicado el 14 de octubre: un archivo soltado nunca da error, nunca se abre como texto por equivocación y nunca hace salir de la página.",
             body=[
-                "Dropping an MCP .json on the chat used to report an error, on the canvas it opened as plain text and "
-                "killed the import, and on every other page the browser left for the file. One listener now sits in "
-                "the head of the chat, both panels, the welcome and login pages, the admin pages and the PDF viewer "
-                "frame, as the File Drop section describes. It claims only file drags.",
-                "It decides by the bytes, not the name, and sends each kind to its own mechanism: an MCP .json to a "
-                "confirmation and the External MCP catalog, a .flw or .fpmt flow to its editor, an image to the "
-                "message, a PDF, Markdown or code file to the chat canvas, and anything else to a plain explanation.",
-                "It replaced four per-page handlers. Checked with 138 router checks against the real script, 22 new "
-                "Django tests and a visible Chrome run of 58 checks with 24 Shoter photographs, all on October 14.",
+                "Soltar un .json de MCP en el chat antes reportaba un error, en el canvas se abría como texto plano y "
+                "mataba la importación, y en cualquier otra página el browser se iba al archivo. Ahora un solo listener está en "
+                "el head del chat, de ambos paneles, de las páginas de bienvenida y de inicio de sesión, de las páginas de admin y del frame "
+                "del visor de PDF, como describe la sección Soltar archivos. Sólo toma arrastres de archivos.",
+                "Decide por los bytes, no por el nombre, y envía cada tipo a su propio mecanismo: un .json de MCP a una "
+                "confirmación y al catálogo de External MCPs, un flow .flw o .fpmt a su editor, una imagen al "
+                "mensaje, un PDF, Markdown o archivo de código al canvas del chat, y cualquier otra cosa a una explicación sencilla.",
+                "Reemplazó cuatro manejadores por página. Revisado con 138 revisiones del router contra el script real, 22 pruebas "
+                "nuevas de Django y una ejecución visible en Chrome de 58 revisiones con 24 fotos de Shoter, todo el 14 de octubre.",
             ],
             points=[
-                ("One listener", "Capture phase, file drags only; text drags are untouched."),
-                ("By the bytes", "Extension, MIME, magic numbers, BOM-aware text test, real JSON parse."),
-                ("MCP import", "Never silent: a confirmation lists the servers first."),
-                ("Everywhere", "Chat, both panels, welcome, login, admin and the PDF frame."),
-                ("Evidence", "138 router checks, 22 tests, 58 visible checks, 24 photographs."),
-                ("Tag", "v1.83.0 at a2914019, pushed and published October 14."),
+                ("Un solo listener", "Fase de captura, sólo arrastres de archivos; los arrastres de texto no se tocan."),
+                ("Por los bytes", "Extensión, MIME, números mágicos, prueba de texto que conoce el BOM, parseo real de JSON."),
+                ("Importación de MCP", "Nunca silenciosa: una confirmación lista primero los servidores."),
+                ("En todas partes", "Chat, ambos paneles, bienvenida, inicio de sesión, admin y el frame de PDF."),
+                ("Evidencia", "138 revisiones del router, 22 pruebas, 58 revisiones visibles, 24 fotos."),
+                ("Tag", "v1.83.0 en a2914019, con push y publicado el 14 de octubre."),
             ], deck="cards"),
-        Section("working_dockedavatar", "CARRIED FROM v1.83.0", "The portrait shrinks with the message box",
-            "Commit 63a62cc1 on October 13, credited to Tlamatini's-AutoBot; shipped in v1.83.0.",
+        Section("working_dockedavatar", "HEREDADO DE v1.83.0", "El retrato se encoge con la caja de mensaje",
+            "Commit 63a62cc1 del 13 de octubre, acreditado a Tlamatini's-AutoBot; incluido en v1.83.0.",
             body=[
-                "The divider above the message box used to reserve the portrait's current width as the box's "
-                "minimum height, so a wide portrait kept the box from shrinking. It now reserves only a 120-pixel "
-                "portrait plus its controls, and the docked portrait follows the divider: its side is the smaller of "
-                "a quarter of the form width and the height above the Send and Mic row, never below 120 pixels.",
-                "At the initial 1440-pixel window the portrait went from 282 to 120 pixels, returning about 162 "
-                "pixels to the chat history. Nineteen docked-avatar checkpoints and all eighteen existing composer "
-                "checkpoints passed in a visible Chrome window.",
+                "El divisor sobre la caja de mensaje antes reservaba el ancho actual del retrato como la altura mínima "
+                "de la caja, así que un retrato ancho no dejaba que la caja se encogiera. Ahora reserva sólo un retrato de 120 píxeles "
+                "más sus controles, y el retrato acoplado sigue al divisor: su lado es el menor entre "
+                "un cuarto del ancho del formulario y la altura sobre la fila de Enviar y Micrófono, nunca de menos de 120 píxeles.",
+                "Con la ventana inicial de 1440 píxeles el retrato pasó de 282 a 120 píxeles, y le regresó unos 162 "
+                "píxeles al historial del chat. Pasaron diecinueve puntos de revisión del avatar acoplado y los dieciocho puntos "
+                "de revisión existentes del composer en una ventana visible de Chrome.",
             ],
             points=[
-                ("Down", "Dragging the divider down shrinks the portrait to a 120-pixel square."),
-                ("Up", "Dragging it up gives the portrait back, up to its original column."),
-                ("Keyboard", "Arrows, Shift+arrows, Home, End, double-click and Escape still work."),
-                ("Evidence", "19 docked-avatar and 18 composer checkpoints passed."),
+                ("Abajo", "Arrastrar el divisor hacia abajo encoge el retrato a un cuadrado de 120 píxeles."),
+                ("Arriba", "Arrastrarlo hacia arriba le regresa espacio al retrato, hasta su columna original."),
+                ("Teclado", "Flechas, Shift+flechas, Inicio, Fin, doble clic y Escape siguen funcionando."),
+                ("Evidencia", "Pasaron 19 puntos de revisión del avatar acoplado y 18 del composer."),
             ], deck="cards"),
-        Section("working_aftertag", "CARRIED FROM v1.83.0", "A wrongly worded request is not fatal",
-            "Commit 91ff8453 on October 12, credited to Tlamatini's-AutoBot; shipped in v1.83.0.",
+        Section("working_aftertag", "HEREDADO DE v1.83.0", "Una solicitud mal redactada no es fatal",
+            "Commit 91ff8453 del 12 de octubre, acreditado a Tlamatini's-AutoBot; incluido en v1.83.0.",
             body=[
-                "When the launcher refuses an Image-Interpreter or Video-Analyzer call before the agent starts, "
-                "because a setting does not exist or a mandatory one is missing, the refusal is marked as a "
-                "request error. It no longer raises the red fatal-analysis dialog and its sound; the model "
-                "simply corrects the call. A real start failure still raises the dialog.",
-                "Video-Analyzer's description now says it has no transcription engine setting, which belongs "
-                "to Whisperer. Five new tests pin the behavior, and it reaches installations with v1.83.0.",
+                "Cuando el lanzador rechaza una llamada a Image-Interpreter o a Video-Analyzer antes de que arranque el agent, "
+                "porque una configuración no existe o falta una obligatoria, el rechazo se marca como un "
+                "error de la solicitud. Ya no levanta el diálogo rojo de análisis fatal ni su sonido; el modelo "
+                "simplemente corrige la llamada. Una falla real de arranque sigue levantando el diálogo.",
+                "La descripción de Video-Analyzer ahora dice que no tiene configuración de motor de transcripción, que le pertenece "
+                "a Whisperer. Cinco pruebas nuevas fijan el comportamiento, y llega a las instalaciones con v1.83.0.",
             ],
             points=[
-                ("Request errors", "Refused before any model ran; the model retries."),
-                ("Real failures", "Still raise the accumulated fatal dialog."),
-                ("No engine setting", "engine= belongs to Whisperer, not Video-Analyzer."),
-                ("Tests", "Five tests in RequestRefusalIsNotFatalTests."),
+                ("Errores de solicitud", "Rechazados antes de que corriera algún modelo; el modelo reintenta."),
+                ("Fallas reales", "Siguen levantando el diálogo fatal acumulado."),
+                ("Sin configuración de motor", "engine= le pertenece a Whisperer, no a Video-Analyzer."),
+                ("Pruebas", "Cinco pruebas en RequestRefusalIsNotFatalTests."),
             ], deck="cards"),
-        Section("working_setup", "CARRIED FROM v1.82.0", "A way back for installing and removing",
-            "Tagged and published on October 12: new setup windows, and Markdown that opens as a page.",
+        Section("working_setup", "HEREDADO DE v1.82.0", "Instalar y quitar con vuelta atrás",
+            "Con tag y publicado el 12 de octubre: ventanas de instalación nuevas, y Markdown que se abre como página.",
             body=[
-                "The Installer and Uninstaller share one window that prepares and verifies a recovery copy "
-                "before changing any file, restores an interrupted run, names a locked file and keeps every "
-                "error on screen with Retry, as the Setup Windows section describes. Markdown files now open "
-                "in the chat canvas as a rendered page with their source kept intact.",
-                "The release was published on GitHub on October 12 and was the latest until v1.83.0 replaced it "
-                "on October 14. Its zip was a self-modify build whose package carried the setup windows, the "
-                "Markdown canvas, the shared theme of v1.80.0 and the web links of v1.79.0. There is no v1.81.0 tag.",
-                "The setup campaign ran visibly on October 11 and 12: 52 interface checkpoints, 28 recovery "
-                "checks, 21 lifecycle checks and 61 mechanics tests passed, with five real installations and "
-                "four real removals passing their independent audits. The Markdown canvas passed 30 of 30 "
-                "visible checkpoints. The campaign did not install the published zip.",
+                "El Instalador y el Desinstalador comparten una ventana que prepara y verifica una copia de recuperación "
+                "antes de cambiar cualquier archivo, restaura una ejecución interrumpida, nombra un archivo bloqueado y deja cada "
+                "error en pantalla con Reintentar, como describe la sección Ventanas de instalación. Los archivos Markdown ahora se abren "
+                "en el canvas del chat como una página renderizada con su source intacto.",
+                "El release se publicó en GitHub el 12 de octubre y fue el más reciente hasta que v1.83.0 lo reemplazó "
+                "el 14 de octubre. Su zip era un build de self-modify cuyo paquete llevaba las ventanas de instalación, el "
+                "canvas de Markdown, el tema compartido de v1.80.0 y los links web de v1.79.0. No hay tag v1.81.0.",
+                "La campaña de instalación corrió de forma visible el 11 y el 12 de octubre: pasaron 52 puntos de revisión de la interfaz, 28 revisiones "
+                "de recuperación, 21 revisiones de ciclo de vida y 61 pruebas de mecánica, con cinco instalaciones reales y "
+                "cuatro eliminaciones reales que pasaron sus auditorías independientes. El canvas de Markdown pasó 30 de 30 "
+                "puntos de revisión visibles. La campaña no instaló el zip publicado.",
             ],
             points=[
-                ("Setup windows", "One recoverable window for installing and removing."),
-                ("Markdown", "Rendered Preview, original Source, offline sanitizer."),
-                ("Published", "October 12; the latest release until v1.83.0."),
-                ("No v1.81.0", "The number was skipped; v1.80.0 and v1.79.0 come before it."),
-                ("Campaign", "Five installations and four removals passed; one removal stopped safely."),
-                ("Followed by", "v1.83.0 on October 14 carries the three later changes."),
+                ("Ventanas de instalación", "Una ventana recuperable para instalar y quitar."),
+                ("Markdown", "Vista previa renderizada, Source original, sanitizador sin conexión."),
+                ("Publicado", "12 de octubre; el release más reciente hasta v1.83.0."),
+                ("Sin v1.81.0", "Ese número se saltó; v1.80.0 y v1.79.0 vienen antes."),
+                ("Campaña", "Pasaron cinco instalaciones y cuatro eliminaciones; una eliminación se detuvo de forma segura."),
+                ("Seguido de", "v1.83.0, del 14 de octubre, lleva los tres cambios posteriores."),
             ], deck="cards"),
-        Section("working_onelook", "CARRIED FROM v1.80.0", "One look, and one way to drag",
-            "Tagged on October 11 without a release of its own; it reaches users through v1.82.0 and v1.83.0.",
+        Section("working_onelook", "HEREDADO DE v1.80.0", "Un aspecto y una forma de arrastrar",
+            "Con tag del 11 de octubre sin release propio; llega a los usuarios por medio de v1.82.0 y v1.83.0.",
             body=[
-                "Every first-party page now draws from one set of design tokens, and the five pane dividers "
-                "share one grip and one gesture model, as the One Look section describes. The side divider was "
-                "first made to match the composer divider, then the whole site followed the same evening.",
-                "The source campaign passed 175 tests with two platform skips, 17 composer checkpoints, 38 "
-                "zoom and responsive checkpoints at 25 to 400 percent, 13 commentary checkpoints and all eight "
-                "dialog resize directions, in a visible Chrome window. It certifies the source pages, not a "
-                "model answer or an installed build.",
+                "Cada página propia ahora toma de un solo juego de design tokens, y los cinco divisores de paneles "
+                "comparten una manija y un modelo de gestos, como describe la sección Un solo aspecto. Primero se hizo que el divisor "
+                "lateral coincidiera con el divisor del composer, y luego todo el sitio lo siguió esa misma noche.",
+                "La campaña del source pasó 175 pruebas con dos saltos por plataforma, 17 puntos de revisión del composer, 38 "
+                "puntos de revisión de zoom y adaptables del 25 al 400 por ciento, 13 puntos de revisión de comentarios y las ocho "
+                "direcciones de cambio de tamaño de diálogos, en una ventana visible de Chrome. Certifica las páginas del source, no una "
+                "respuesta del modelo ni un build instalado.",
             ],
             points=[
-                ("Tag", "v1.80.0 at 82099963, pushed; no published release."),
-                ("Tokens", "Slate surfaces, teal accent, one font set, one scrollbar."),
-                ("Dividers", "Five seams, one grip, arrows and Shift, Home and End."),
-                ("Dialogs", "Eight-direction and keyboard resizing; matching buttons."),
-                ("Evidence", "175 tests and visible zoom, composer and dialog checks."),
-                ("Delivered by", "The published v1.82.0 and v1.83.0 releases."),
+                ("Tag", "v1.80.0 en 82099963, con push; sin release publicado."),
+                ("Tokens", "Superficies de pizarra, acento verde azulado, un juego de fuentes, una barra de desplazamiento."),
+                ("Divisores", "Cinco uniones, una manija, flechas y Shift, Inicio y Fin."),
+                ("Diálogos", "Cambio de tamaño en ocho direcciones y con teclado; botones que combinan."),
+                ("Evidencia", "175 pruebas y revisiones visibles de zoom, composer y diálogos."),
+                ("Entregado por", "Los releases publicados v1.82.0 y v1.83.0."),
             ], deck="cards"),
-        Section("working_links", "CARRIED FROM v1.79.0", "Video-Analyzer takes a web link",
-            "Tagged on October 11 without a release of its own; it reaches users through v1.82.0 and v1.83.0.",
+        Section("working_links", "HEREDADO DE v1.79.0", "Video-Analyzer acepta un link web",
+            "Con tag del 11 de octubre sin release propio; llega a los usuarios por medio de v1.82.0 y v1.83.0.",
             body=[
-                "Given a YouTube or other web link, Video-Analyzer downloads one item itself: only the sound "
-                "for a transcription, the picture for a summary or a robotics check. It keeps a private, "
-                "self-updating downloader, updates it once and retries when a download fails, joins picture "
-                "and sound without ffmpeg, and names every failure instead of returning silence.",
-                "The chat parser no longer mistakes a link's ?v= for a setting, a request written in plain "
-                "words fills in the link and the mode, and the result adds the source address and title. The "
-                "model is told to hand links to Video-Analyzer and never to install a downloader itself. "
-                "141 unit tests and a visible 12-of-12 chat run passed on October 11.",
+                "Con un link de YouTube u otro sitio web, Video-Analyzer descarga un elemento por sí mismo: sólo el sonido "
+                "para una transcripción, la imagen para un resumen o una revisión de robótica. Tiene un descargador privado "
+                "que se actualiza solo, lo actualiza una vez y reintenta cuando falla una descarga, une imagen "
+                "y sonido sin ffmpeg, y nombra cada error en vez de devolver silencio.",
+                "El parser del chat ya no confunde el ?v= de un link con una configuración, una solicitud escrita en palabras "
+                "sencillas llena el link y el modo, y el resultado agrega la dirección y el título de la fuente. Al "
+                "modelo se le dice que pase los links a Video-Analyzer y que nunca instale un descargador por sí mismo. "
+                "Pasaron 141 pruebas unitarias y una ejecución visible del chat de 12 de 12 el 11 de octubre.",
             ],
             points=[
-                ("One item", "Sound for transcription, picture for summary or robotics."),
-                ("Self-updating", "A private downloader, refreshed once on failure."),
-                ("Named failures", "Unavailable, login required, network, timeout and more."),
-                ("Prose works", "Plain-language requests fill in the link and the mode."),
-                ("Evidence", "141 unit tests and a visible 12-of-12 chat run."),
-                ("Delivered by", "The published v1.82.0 and v1.83.0 releases."),
+                ("Un elemento", "Sonido para la transcripción, imagen para el resumen o la robótica."),
+                ("Se actualiza solo", "Un descargador privado, renovado una vez cuando falla."),
+                ("Errores con nombre", "No disponible, requiere inicio de sesión, red, tiempo agotado y más."),
+                ("Funciona con prosa", "Las solicitudes en lenguaje sencillo llenan el link y el modo."),
+                ("Evidencia", "141 pruebas unitarias y una ejecución visible del chat de 12 de 12."),
+                ("Entregado por", "Los releases publicados v1.82.0 y v1.83.0."),
             ], deck="cards"),
-        Section("working_usage", "CARRIED FROM v1.78.0", "Usage: credits and activity, while she works",
-            "Tagged on October 10; the Usage commit lands one commit after the tag. The published v1.78.0 zip carries it.",
+        Section("working_usage", "HEREDADO DE v1.78.0", "Uso: créditos y actividad, mientras trabaja",
+            "Con tag del 10 de octubre; el commit de Uso llega un commit después del tag. El zip publicado de v1.78.0 lo lleva.",
             body=[
-                "The first October 10 campaign passed 18 Usage tests, 202 existing regressions and 24 visible "
-                "browser checks, plus source/collected-static byte parity. The live Pro account was compared "
-                "with Ollama Settings before and after a real model request, and Usage opened and refreshed while "
-                "that request ran. Other-plan, failure and account-switch cases used explicitly synthetic "
-                "fixtures, not live Free, Max or Unlimited subscriptions.",
-                "A follow-up the same day made Usage recover when Ollama starts late. Temporary connection, "
-                "timeout and invalid-response failures now retry after 15 seconds instead of a full minute, an "
-                "upstream Retry-After is respected even when Refresh is clicked repeatedly, and a refused "
-                "connection is checked again at once on Refresh or reopen. It passed 27 Usage tests and 12 "
-                "visible browser checks: Refresh recovered in 0.47 seconds, reopening in 0.52 seconds and the "
-                "automatic retry in 15.02 seconds.",
-                "UsageDaily, migration 0213, records counters by user/model/UTC day through a bounded worker "
-                "queue; it is best-effort telemetry, not a billing ledger. Both inclusion sweeps passed. Those "
-                "campaigns ran from source. This refresh checked that the published zip matches the local build "
-                "byte for byte (SHA-256); it did not install the release or rerun the browser tests.",
+                "La primera campaña del 10 de octubre pasó 18 pruebas de Uso, 202 regresiones existentes y 24 revisiones visibles "
+                "en el browser, además de la paridad byte por byte entre el source y los estáticos recolectados. La cuenta Pro en vivo se comparó "
+                "con la Configuración de Ollama antes y después de una solicitud real al modelo, y Uso se abrió y se actualizó mientras "
+                "esa solicitud corría. Los casos de otros planes, de errores y de cambio de cuenta usaron fixtures explícitamente sintéticos, "
+                "no suscripciones en vivo de Free, Max o Unlimited.",
+                "Una continuación ese mismo día hizo que Uso se recupere cuando Ollama arranca tarde. Los errores temporales de conexión, "
+                "de tiempo agotado y de respuesta inválida ahora reintentan después de 15 segundos en vez de un minuto completo, un "
+                "Retry-After del servidor se respeta incluso cuando se hace clic varias veces en Actualizar, y una conexión rechazada "
+                "se vuelve a revisar de inmediato al Actualizar o al reabrir. Pasó 27 pruebas de Uso y 12 "
+                "revisiones visibles en el browser: Actualizar se recuperó en 0.47 segundos, reabrir en 0.52 segundos y el "
+                "reintento automático en 15.02 segundos.",
+                "UsageDaily, la migración 0213, registra contadores por usuario/modelo/día UTC con una cola de worker "
+                "acotada; es telemetría de mejor esfuerzo, no un libro de facturación. Pasaron los dos barridos de inclusión. Esas "
+                "campañas corrieron desde el source. Esta actualización revisó que el zip publicado coincide con el build local "
+                "byte por byte (SHA-256); no instaló el release ni volvió a correr las pruebas del browser.",
             ],
             points=[
-                ("220 tests", "18 Usage plus 202 existing regressions passed on October 10."),
-                ("24 browser checks", "Visible live Pro comparisons plus clearly synthetic edge cases."),
-                ("Recovery", "27 Usage tests and 12 visible checks; outages retried after 15 s."),
-                ("During a request", "Usage opened/refreshed while a real model answer completed."),
-                ("In the release", "The published zip's files match the latest October 10 commit."),
-                ("Privacy", "Account observations and authenticated screenshots stay out of this dossier."),
+                ("220 pruebas", "Pasaron 18 de Uso más 202 regresiones existentes el 10 de octubre."),
+                ("24 revisiones en el browser", "Comparaciones visibles en vivo con Pro más casos límite claramente sintéticos."),
+                ("Recuperación", "27 pruebas de Uso y 12 revisiones visibles; las caídas se reintentan después de 15 s."),
+                ("Durante una solicitud", "Uso se abrió/actualizó mientras se completaba una respuesta real del modelo."),
+                ("En el release", "Los archivos del zip publicado coinciden con el último commit del 10 de octubre."),
+                ("Privacidad", "Las observaciones de la cuenta y los screenshots autenticados se quedan fuera de este dossier."),
             ], deck="cards"),
-        Section("working_composer", "CARRIED FROM v1.78.0", "Undock her, and the message box shrinks to fit",
-            "Two commits after the v1.78.0 tag, and carried by the published zip: the input area resizes once she floats.",
+        Section("working_composer", "HEREDADO DE v1.78.0", "Desacóplala y la caja de mensaje se encoge",
+            "Dos commits después del tag v1.78.0, y llevado por el zip publicado: el área de input cambia de tamaño cuando ella flota.",
             body=[
-                "With the avatar undocked, the input form can now be dragged down to its own action buttons plus "
-                "a six-pixel guard; the old 30% floor is gone. The toolbar, context gauge, attachment and dictation "
-                "rows count with their measured heights. Docking her again restores room for the portrait. The "
-                "divider answers the pointer, the arrow keys, Shift+arrows, Home, End and double-click, and "
-                "reports its height to screen readers.",
-                "Short windows scroll the composer inside itself and keep the chat history. The page occupies the "
-                "real viewport: collapsed navigation opens over the workspace instead of pushing it down, and a "
-                "640-pixel minimum workspace keeps both panes on narrow screens. jQuery UI dialogs stay inside the "
-                "window after opening, dragging or resizing, short native dialogs scroll as complete cards, and the "
-                "avatar never covers a modal dialog.",
-                "In a verified foreground Chrome window, 18 composer checks and 38 viewport checks passed at 100%, "
-                "native 400% and 25% zoom and in a phone-sized window, with eight dialogs at each size. That is a "
-                "desktop browser at phone-sized dimensions, not a physical phone; 20% zoom was unavailable and is "
-                "not claimed. These layout checks do not certify model inference or audio capture.",
+                "Con el avatar desacoplado, el formulario de input ahora se puede arrastrar hacia abajo hasta sus propios botones de acción más "
+                "un margen de seis píxeles; el viejo piso del 30% desapareció. La barra de herramientas, el medidor de contexto y las filas de adjuntos y de dictado "
+                "cuentan con sus alturas medidas. Volver a acoplarla restaura el espacio para el retrato. El "
+                "divisor responde al puntero, a las flechas, a Shift+flechas, a Inicio, a Fin y al doble clic, y "
+                "le reporta su altura a los lectores de pantalla.",
+                "Las ventanas bajas desplazan el composer dentro de sí mismo y conservan el historial del chat. La página ocupa el "
+                "viewport real: la navegación colapsada se abre sobre el espacio de trabajo en vez de empujarlo hacia abajo, y un "
+                "espacio de trabajo mínimo de 640 píxeles conserva ambos paneles en pantallas angostas. Los diálogos de jQuery UI se quedan dentro de la "
+                "ventana después de abrirse, arrastrarse o cambiar de tamaño, los diálogos nativos bajos se desplazan como tarjetas completas, y el "
+                "avatar nunca tapa un diálogo modal.",
+                "En una ventana verificada de Chrome en primer plano pasaron 18 revisiones del composer y 38 revisiones del viewport al 100%, "
+                "con zoom nativo de 400% y de 25% y en una ventana del tamaño de un teléfono, con ocho diálogos en cada tamaño. Es un "
+                "browser de escritorio con dimensiones de teléfono, no un teléfono físico; el zoom de 20% no estaba disponible y no "
+                "se afirma. Estas revisiones de distribución no certifican la inferencia del modelo ni la captura de audio.",
             ],
             points=[
-                ("Shrinks to fit", "Undocked, the input area can shrink to its buttons; no 30% floor."),
-                ("Dock again", "Docking restores room for her portrait above the buttons."),
-                ("Keyboard", "Arrows, Shift+arrows, Home, End and double-click on the divider."),
-                ("Short windows", "The composer scrolls inside itself; chat history stays visible."),
-                ("Narrow screens", "A 640-pixel workspace pans; the page and dialogs stay anchored."),
-                ("Evidence", "18 composer and 38 viewport checks passed, visibly, on October 10."),
+                ("Se encoge para caber", "Desacoplado, el área de input se puede encoger hasta sus botones; sin piso del 30%."),
+                ("Acoplar de nuevo", "Acoplarla restaura el espacio para su retrato sobre los botones."),
+                ("Teclado", "Flechas, Shift+flechas, Inicio, Fin y doble clic en el divisor."),
+                ("Ventanas bajas", "El composer se desplaza dentro de sí mismo; el historial del chat sigue visible."),
+                ("Pantallas angostas", "Un espacio de trabajo de 640 píxeles se desplaza; la página y los diálogos se quedan anclados."),
+                ("Evidencia", "Pasaron 18 revisiones del composer y 38 del viewport, de forma visible, el 10 de octubre."),
             ], deck="cards"),
-        Section("working_selfrepair", "CARRIED FROM v1.78.0", "She repaired one of her own agents",
-            "Image-Interpreter now reads a comma-separated list of images, a change credited to Tlamatini herself.",
+        Section("working_selfrepair", "HEREDADO DE v1.78.0", "Reparó uno de sus propios agents",
+            "Image-Interpreter ahora lee una lista de imágenes separada por comas, un cambio acreditado a la propia Tlamatini.",
             body=[
-                "Commit 0e6fc72d is titled \u201cTlamatini's self-repair Image-Interpreter, by Tlamatini's-AutoBot\u201d "
-                "and is the commit the v1.78.0 tag points to. When the images field holds several paths "
-                "separated by commas, each entry is resolved on its own, the results are merged, and repeated "
-                "paths are removed while the original order is kept.",
-                "The list is split only when the whole value is not itself an existing file, so a single image "
-                "whose name contains a comma still resolves. An entry that matches nothing is logged as a warning "
-                "and the other images are still analyzed. The 22-line change arrived without a new automated "
-                "test; it ships in the published v1.78.0 release.",
+                "El commit 0e6fc72d se titula \u201cTlamatini's self-repair Image-Interpreter, by Tlamatini's-AutoBot\u201d "
+                "y es el commit al que apunta el tag v1.78.0. Cuando el campo de imágenes tiene varios paths "
+                "separados por comas, cada entrada se resuelve por su cuenta, los resultados se combinan, y los paths "
+                "repetidos se quitan conservando el orden original.",
+                "La lista se divide sólo cuando el valor completo no es en sí un archivo existente, así que una sola imagen "
+                "cuyo nombre contiene una coma sigue resolviéndose. Una entrada que no coincide con nada se registra como advertencia "
+                "y las demás imágenes se siguen analizando. El cambio de 22 líneas llegó sin una nueva prueba "
+                "automatizada; se incluye en el release publicado v1.78.0.",
             ],
             points=[
-                ("Several images", "Comma-separated paths are resolved one by one and merged."),
-                ("No duplicates", "Repeated paths are removed; the original order is kept."),
-                ("Commas in names", "A single existing file is never split at its comma."),
-                ("Honest warning", "An entry that resolves to nothing is logged, not hidden."),
-                ("Self-repair", "The commit credits Tlamatini's-AutoBot, her own self-modify work."),
-                ("In v1.78.0", "The tag points to this commit; no dedicated test yet."),
+                ("Varias imágenes", "Los paths separados por comas se resuelven uno por uno y se combinan."),
+                ("Sin duplicados", "Los paths repetidos se quitan; se conserva el orden original."),
+                ("Comas en los nombres", "Un solo archivo existente nunca se divide en su coma."),
+                ("Advertencia honesta", "Una entrada que no se resuelve a nada se registra, no se esconde."),
+                ("Autorreparación", "El commit acredita a Tlamatini's-AutoBot, su propio trabajo de self-modify."),
+                ("En v1.78.0", "El tag apunta a este commit; todavía sin prueba dedicada."),
             ], deck="cards"),
-        Section("working_firstperson", "CARRIED FROM v1.77.0", "She speaks to you, by name",
-            "Tagged and published on October 9; v1.78.0 replaced it as the Latest release on October 10.",
+        Section("working_firstperson", "HEREDADO DE v1.77.0", "Te habla a ti, por tu nombre",
+            "Con tag y publicado el 9 de octubre; v1.78.0 lo reemplazó como el release Latest el 10 de octubre.",
             body=[
-                "Every fixed line Tlamatini sends to the chat, and that her avatar reads aloud, is now written in the "
-                "first person and addressed to the user by name: “I'm ready, Angela! You can start chatting with me "
-                "now.” replaces “Your agent is ready.” The lines live in one place, `agent/constants.py`; a helper "
-                "fills in the first name, or the user name when there is no first name, and leaves the name out "
-                "cleanly when there is neither.",
-                "Some of these lines are recognised by their words: the chat page uses them to know it is busy or "
-                "ready, the avatar to decide what to say, and the Telegram bridge to filter its replies. Every one "
-                "of those matchers changed in the same commit and still accepts the old wording, so a saved chat "
-                "history and an older server still read correctly.",
-                "The uninstaller no longer erases the user's own work. Uninstalling an installation had deleted the "
-                "projects kept in `Templates/`, where STM32er, ESP32er, Arduiner, ESPHomer, Unrealer and LaTeXer "
-                "create their projects by default. It now keeps `application`, `applications`, `content_generated`, "
-                "`context_files`, `doc_generated` and `Templates` whenever they hold a file, always erases `Temp/`, "
-                "and still keeps `agents/`. Only a rebuilt Uninstaller.exe carries this: a fresh install or a "
-                "reinstall copies it, while an in-app update keeps the old one.",
-                "Both changes are covered by unit tests (the message tests in `test_compact_mode_switch.py` and "
-                "`test_uninstaller_mechanics.py`), recorded as passing in the October 9 documentation refresh.",
+                "Cada línea fija que Tlamatini envía al chat, y que su avatar lee en voz alta, ahora está escrita en "
+                "primera persona y dirigida al usuario por su nombre: “¡Estoy lista, Angela! Ya puedes empezar a platicar "
+                "conmigo.” reemplaza a “Tu agent está listo.” Las líneas viven en un solo lugar, `agent/constants.py`; un helper "
+                "llena el primer nombre, o el nombre de usuario cuando no hay primer nombre, y quita el nombre "
+                "limpiamente cuando no hay ninguno.",
+                "Algunas de estas líneas se reconocen por sus palabras: la página del chat las usa para saber si está ocupada o "
+                "lista, el avatar para decidir qué decir, y el puente de Telegram para filtrar sus respuestas. Cada uno "
+                "de esos reconocedores cambió en el mismo commit y sigue aceptando la redacción vieja, así que un historial "
+                "de chat guardado y un servidor más viejo se siguen leyendo correctamente.",
+                "El desinstalador ya no borra el trabajo propio del usuario. Desinstalar una instalación había borrado los "
+                "proyectos guardados en `Templates/`, donde STM32er, ESP32er, Arduiner, ESPHomer, Unrealer y LaTeXer "
+                "crean sus proyectos de forma predeterminada. Ahora conserva `application`, `applications`, `content_generated`, "
+                "`context_files`, `doc_generated` y `Templates` siempre que tengan un archivo, siempre borra `Temp/`, "
+                "y sigue conservando `agents/`. Sólo un Uninstaller.exe recompilado lleva esto: una instalación nueva o una "
+                "reinstalación lo copia, mientras que una actualización desde la app conserva el viejo.",
+                "Ambos cambios están cubiertos por pruebas unitarias (las pruebas de mensajes en `test_compact_mode_switch.py` y "
+                "`test_uninstaller_mechanics.py`), registradas como aprobadas en la actualización de la documentación del 9 de octubre.",
             ],
             points=[
-                ("First person", "Fixed chat lines say “I” and use your name."),
-                ("One source", "Every fixed line lives in agent/constants.py."),
-                ("Old wording kept", "Matchers accept both, so old histories still read."),
-                ("Templates kept", "Uninstalling keeps the projects in Templates/."),
-                ("Temp erased", "Scratch goes; folders holding your files stay."),
-                ("Rebuilt uninstaller", "A reinstall carries the fix; an in-app update does not."),
+                ("Primera persona", "Las líneas fijas del chat dicen “yo” y usan tu nombre."),
+                ("Una sola fuente", "Cada línea fija vive en agent/constants.py."),
+                ("Redacción vieja conservada", "Los reconocedores aceptan ambas, así que los historiales viejos se siguen leyendo."),
+                ("Templates conservado", "Desinstalar conserva los proyectos en Templates/."),
+                ("Temp borrado", "Lo temporal se va; las carpetas con tus archivos se quedan."),
+                ("Desinstalador recompilado", "Una reinstalación lleva el arreglo; una actualización desde la app no."),
             ], deck="cards"),
-        Section("working_brain", "CARRIED FROM v1.76.0", "The Model Brain tunes every model",
-            "Tagged on October 8; the Model Brain commit lands on main one commit after the tag. The published "
-            "v1.76.0 release was built from main and carries it.",
+        Section("working_brain", "HEREDADO DE v1.76.0", "El Model Brain ajusta cada modelo",
+            "Con tag del 8 de octubre; el commit del Model Brain llega a main un commit después del tag. El release "
+            "publicado v1.76.0 se construyó desde main y lo lleva.",
             body=[
-                "Every model Tlamatini calls now receives its own sampling, thinking level and context size from "
-                "formal sources, as the How She Works chapter describes. Config ▸ Models ▸ Save opens an "
-                "Auto-tuning dialog that tunes each configured model in front of you, thinking models keep their "
-                "own reasoning between tool calls inside one answer, and the stall clocks that threw finished work "
-                "away are gone.",
-                "The console window paints each line by level: errors red, fatal errors white on red, warnings "
-                "yellow, debug grey and successes green, while `tlamatini.log` stays plain text. At startup she "
-                "logs which program draws the window, the classic console or Windows Terminal, the default on "
-                "Windows 11. `console_colors` and the standard `NO_COLOR` variable turn the colours off.",
-                "Two smaller repairs ship beside it. A PDF refused because a second account signed in from the "
-                "same browser now names that cause and the fix, reloading with F5, and the progress dialog marks "
-                "the failed step. Two chat pages on two different models no longer make each other measure again "
-                "forever: a model's verdict updates the boxes and stops. On two idle test pages the re-sends fell "
-                "from 1,081 in one minute to none.",
-                "On October 8 the visible Model Brain test passed 25 of 25 checks in a source run and the visible "
-                "PDF-account test passed 20 of 20. These are dated results, not a claim that this documentation "
-                "refresh reran them. Publication status is stated in the Release Identity section.",
+                "Cada modelo que Tlamatini llama ahora recibe su propio muestreo, nivel de razonamiento y tamaño de contexto a partir de "
+                "fuentes formales, como describe el capítulo Cómo funciona. Config ▸ Modelos ▸ Guardar abre un "
+                "diálogo de Autoajuste que ajusta cada modelo configurado frente a ti, los modelos que razonan conservan su "
+                "propio razonamiento entre llamadas a tools dentro de una respuesta, y los relojes de bloqueo que tiraban trabajo terminado "
+                "desaparecieron.",
+                "La ventana de la consola pinta cada línea según su nivel: errores en rojo, errores fatales en blanco sobre rojo, advertencias "
+                "en amarillo, debug en gris y éxitos en verde, mientras que `tlamatini.log` se queda en texto plano. Al arrancar ella "
+                "registra qué programa dibuja la ventana, la consola clásica o Windows Terminal, la predeterminada en "
+                "Windows 11. `console_colors` y la variable estándar `NO_COLOR` apagan los colores.",
+                "Dos reparaciones más pequeñas vienen junto. Un PDF rechazado porque una segunda cuenta inició sesión desde el "
+                "mismo browser ahora nombra esa causa y el arreglo, recargar con F5, y el diálogo de progreso marca "
+                "el paso con error. Dos páginas de chat con dos modelos distintos ya no se hacen volver a medir una a la otra "
+                "para siempre: el veredicto de un modelo actualiza las casillas y se detiene. En dos páginas de prueba inactivas los reenvíos bajaron "
+                "de 1,081 en un minuto a ninguno.",
+                "El 8 de octubre la prueba visible del Model Brain pasó 25 de 25 revisiones en una ejecución desde el source y la prueba visible "
+                "de la cuenta del PDF pasó 20 de 20. Son resultados fechados, no una afirmación de que esta actualización "
+                "de la documentación los volvió a correr. El estado de publicación se indica en la sección Identidad del release.",
             ],
             points=[
-                ("Model Brain", "Per-model settings from cited sources; Auto-tuning shows each one."),
-                ("Reasoning kept", "Thinking models keep their train of thought between tool calls."),
-                ("Coloured console", "Lines coloured by level; the log file stays plain text."),
-                ("Truthful refusal", "A PDF refused for a second account says why and how to fix it."),
-                ("Quiet tabs", "Two pages on two models no longer re-measure each other."),
-                ("Evidence", "25 of 25 and 20 of 20 visible checks on October 8."),
+                ("Model Brain", "Configuración por modelo a partir de fuentes citadas; Autoajuste muestra cada una."),
+                ("Razonamiento conservado", "Los modelos que piensan conservan su hilo de pensamiento entre llamadas a tools."),
+                ("Consola a colores", "Líneas coloreadas por nivel; el archivo de log se queda en texto plano."),
+                ("Rechazo veraz", "Un PDF rechazado por una segunda cuenta dice por qué y cómo arreglarlo."),
+                ("Pestañas tranquilas", "Dos páginas con dos modelos ya no se vuelven a medir una a la otra."),
+                ("Evidencia", "25 de 25 y 20 de 20 revisiones visibles el 8 de octubre."),
             ], deck="cards"),
-        Section("working_truth", "CARRIED FROM v1.76.0", "Documents and files that tell the truth",
-            "October 7 and 8: LaTeXer, Mover and the document agents report what really happened.",
+        Section("working_truth", "HEREDADO DE v1.76.0", "Documentos y archivos que dicen la verdad",
+            "7 y 8 de octubre: LaTeXer, Mover y los agents de documentos reportan lo que de verdad pasó.",
             body=[
-                "LaTeXer reports a PDF only when the delivered file really exists and is not empty, and a PDF whose "
-                "text sticks out more than five points past the margin is reported as created with findings, not "
-                "as clean. When it had to cut a quarter or more of a broken document's body to produce any PDF at "
-                "all, it saves the result as `<name>.DEGRADED.pdf` and leaves the requested name untouched. In a "
-                "document longer than 8,000 characters the model rung first repairs only the lines around the "
-                "compiler's error with a capped request; an unusable reply falls back to the whole-document "
-                "request, and a reply that never came forbids the bisect rung.",
-                "Mover no longer erases a destination folder to copy into it: folders are merged, each file is "
-                "staged and published whole, a move removes its source only afterwards, and a failure ends with a "
-                "failure receipt and a non-zero exit instead of a success. Document and capture agents keep a "
-                "finished file when Windows Controlled Folder Access blocks the folder, and the security whitelist "
-                "script now finds every Tlamatini installation and lets its Python save files.",
-                "The October 8 LaTeXer change added 37 tests, and all 549 LaTeXer tests passed with it. The October "
-                "7 Mover and LaTeXer delivery work passed 126 focused tests.",
+                "LaTeXer reporta un PDF sólo cuando el archivo entregado de verdad existe y no está vacío, y un PDF cuyo "
+                "texto sobresale más de cinco puntos del margen se reporta como creado con hallazgos, no "
+                "como limpio. Cuando tuvo que cortar una cuarta parte o más del cuerpo de un documento roto para producir algún PDF, "
+                "guarda el resultado como `<name>.DEGRADED.pdf` y deja intacto el nombre pedido. En un "
+                "documento de más de 8,000 caracteres el peldaño del modelo primero repara sólo las líneas alrededor del "
+                "error del compilador con una solicitud acotada; una respuesta inútil vuelve a la solicitud del documento "
+                "completo, y una respuesta que nunca llegó prohíbe el peldaño bisect.",
+                "Mover ya no borra una carpeta de destino para copiar en ella: las carpetas se combinan, cada archivo se "
+                "prepara y se publica completo, un movimiento quita su origen sólo después, y un error termina con un "
+                "recibo de error y una salida distinta de cero en vez de un éxito. Los agents de documentos y de captura conservan un "
+                "archivo terminado cuando el Controlled Folder Access de Windows bloquea la carpeta, y el script de lista blanca "
+                "de seguridad ahora encuentra cada instalación de Tlamatini y deja que su Python guarde archivos.",
+                "El cambio de LaTeXer del 8 de octubre agregó 37 pruebas, y las 549 pruebas de LaTeXer pasaron con él. El trabajo de entrega "
+                "de Mover y LaTeXer del 7 de octubre pasó 126 pruebas enfocadas.",
             ],
             points=[
-                ("Real PDFs", "Success only when the delivered file exists and is not empty."),
-                ("Layout findings", "Text past the margin is reported, never called clean."),
-                ("DEGRADED name", "A mostly-cut build never wears the name you asked for."),
-                ("Region repair", "Large documents: the lines around the error are repaired first."),
-                ("Mover", "Destinations are merged, never erased; failures are reported."),
-                ("Protected folders", "Finished files survive Controlled Folder Access."),
+                ("PDFs reales", "Éxito sólo cuando el archivo entregado existe y no está vacío."),
+                ("Hallazgos de distribución", "El texto que pasa el margen se reporta, nunca se llama limpio."),
+                ("Nombre DEGRADED", "Un build mayormente recortado nunca lleva el nombre que pediste."),
+                ("Reparación por región", "Documentos grandes: primero se reparan las líneas alrededor del error."),
+                ("Mover", "Los destinos se combinan, nunca se borran; los errores se reportan."),
+                ("Carpetas protegidas", "Los archivos terminados sobreviven a Controlled Folder Access."),
             ], deck="cards"),
-        Section("working_fixes", "IN v1.76.0 · OCTOBER 5 AND 8", "Smaller fixes that keep the chat moving",
-            "Committed after the v1.75.0 tag and carried by the v1.76.0 tag.",
+        Section("working_fixes", "EN v1.76.0 · 5 Y 8 DE OCTUBRE", "Arreglos que mantienen el chat en marcha",
+            "Hechos commit después del tag v1.75.0 y llevados por el tag v1.76.0.",
             body=[
-                "The Files-Search and System-Metrics helpers ask Ollama their own questions before the main answer. "
-                "Those calls now have a time limit, `context_sidecar_llm_timeout_seconds`, 60 seconds by default; "
-                "at the limit, or when you press Cancel, a helper skips its context and the answer goes ahead, so a "
-                "slow reply can no longer freeze the chat.",
-                "When Windows still holds `Uninstaller.exe` while the uninstaller finishes, the file is retried, "
-                "moved aside and deleted by a hidden cleanup after exit, so the uninstall completes. File-Creator "
-                "gained `append`: true adds the content to the end of a file, byte for byte, instead of "
-                "overwriting it.",
+                "Los helpers Files-Search y System-Metrics le hacen a Ollama sus propias preguntas antes de la respuesta principal. "
+                "Esas llamadas ahora tienen un límite de tiempo, `context_sidecar_llm_timeout_seconds`, 60 segundos de forma predeterminada; "
+                "al llegar al límite, o cuando presionas Cancelar, un helper se salta su contexto y la respuesta sigue adelante, así que una "
+                "respuesta lenta ya no puede congelar el chat.",
+                "Cuando Windows todavía tiene tomado `Uninstaller.exe` mientras el desinstalador termina, el archivo se reintenta, "
+                "se mueve aparte y lo borra una limpieza oculta después de salir, así que la desinstalación se completa. File-Creator "
+                "ganó `append`: true agrega el contenido al final de un archivo, byte por byte, en vez de "
+                "sobrescribirlo.",
             ],
             points=[
-                ("Context helpers", "Their own model calls stop at a time limit or on Cancel."),
-                ("Uninstaller", "A held Uninstaller.exe is moved aside and removed after exit."),
-                ("File-Creator", "`append: true` adds to a file instead of overwriting it."),
+                ("Helpers de contexto", "Sus propias llamadas al modelo se detienen en un límite de tiempo o con Cancelar."),
+                ("Desinstalador", "Un Uninstaller.exe tomado se mueve aparte y se quita después de salir."),
+                ("File-Creator", "`append: true` agrega a un archivo en vez de sobrescribirlo."),
             ], deck="cards"),
-        Section("working_canvas", "IN v1.76.0 · OCTOBER 4", "Graphical notes and resizable Run output",
-            "Committed to main on October 4 and carried by the v1.76.0 tag; local executables were rebuilt to validate them.",
+        Section("working_canvas", "EN v1.76.0 · 4 DE OCTUBRE", "Notas gráficas y Output ajustable",
+            "Hecho commit a main el 4 de octubre y llevado por el tag v1.76.0; los ejecutables locales se recompilaron para validarlos.",
             body=[
-                "User Commentary is edited entirely on the canvas. Double-click or press Enter to write, "
-                "then format selected words with the floating mini toolbar. A single note can combine "
-                "different fonts, sizes, text colors, bold, italic and underline. A caret styles the next "
-                "text you type. Bubble color and alignment apply to the whole note.",
-                "Drag any border or corner, including while writing. Fit text removes spare height. "
-                "Every wrapped line stays inside the bubble without an internal scrollbar. Done or "
-                "Ctrl+Enter saves the edit. Cancel or Escape restores its text, styles, size and position.",
-                "The divider above Run output allocates 5% to 95% of the usable canvas/output height. "
-                "Only the two viewports change. Canvas zoom, figure dimensions and text sizes stay fixed, "
-                "and each pane scrolls independently. The browser remembers the ratio per signed-in user.",
-                "The October 4 commentary verification passed 29 diagram/runner tests, 3 carriage tests "
-                "and 23 visible Chrome checkpoints, including three mixed-style comments through three "
-                "file save/open cycles with identical data and rendered line boxes. The output-divider "
-                "verification separately passed 14 visible Chrome checkpoints and 3 carriage tests. "
-                "These are dated results, not a claim that this documentation refresh reran them.",
+                "Comentario del usuario se edita por completo en el canvas. Haz doble clic o presiona Enter para escribir, "
+                "y luego da formato a las palabras seleccionadas con la mini barra de herramientas flotante. Una sola nota puede combinar "
+                "distintas fuentes, tamaños, colores de texto, negritas, cursivas y subrayado. Un cursor da estilo al siguiente "
+                "texto que escribes. El color y la alineación de la burbuja se aplican a toda la nota.",
+                "Arrastra cualquier borde o esquina, incluso mientras escribes. Ajustar al texto quita la altura sobrante. "
+                "Cada línea ajustada se queda dentro de la burbuja sin una barra de desplazamiento interna. Listo o "
+                "Ctrl+Enter guarda la edición. Cancelar o Escape restaura su texto, estilos, tamaño y posición.",
+                "El divisor sobre Output de la ejecución asigna del 5% al 95% de la altura útil del canvas/output. "
+                "Sólo cambian las dos áreas visibles. El zoom del canvas, las dimensiones de las figuras y los tamaños de texto se quedan fijos, "
+                "y cada panel se desplaza de forma independiente. El browser recuerda la proporción por usuario con sesión iniciada.",
+                "La verificación de comentarios del 4 de octubre pasó 29 pruebas de diagrama/ejecutor, 3 pruebas de transporte "
+                "y 23 puntos de revisión visibles en Chrome, incluidos tres comentarios con estilos mezclados a lo largo de tres "
+                "ciclos de guardar/abrir el archivo con datos idénticos y cajas de líneas renderizadas idénticas. La verificación del divisor "
+                "del output pasó por separado 14 puntos de revisión visibles en Chrome y 3 pruebas de transporte. "
+                "Son resultados fechados, no una afirmación de que esta actualización de la documentación los volvió a correr.",
             ], deck="list", deck_points=[
-                ("Rich notes", "Selected text keeps its own fonts, sizes, colors and emphasis."),
-                ("Direct editing", "Floating tools and all-border resizing. No commentary dialog."),
-                ("Run output", "5% to 95% height. Independent scrolling with content sizes preserved."),
-                ("File fidelity", "Three mixed-style notes rendered identically across three save/open cycles."),
-                ("Delivery", "Committed October 4 and carried by v1.76.0; builds were validated separately."),
+                ("Notas enriquecidas", "El texto seleccionado conserva sus propias fuentes, tamaños, colores y énfasis."),
+                ("Edición directa", "Herramientas flotantes y cambio de tamaño por todos los bordes. Sin diálogo de comentarios."),
+                ("Output de la ejecución", "Del 5% al 95% de la altura. Desplazamiento independiente con los tamaños del contenido conservados."),
+                ("Fidelidad de archivos", "Tres notas con estilos mezclados se renderizaron igual en tres ciclos de guardar/abrir."),
+                ("Entrega", "Hecho commit el 4 de octubre y llevado por v1.76.0; los builds se validaron por separado."),
             ]),
-        Section("working_main", "IN v1.76.0 · OCTOBER 3", "Four stop sequences and a clearer Prompt Flow Panel",
-            "Committed on main after the v1.75.0 tag and carried by the v1.76.0 tag.",
+        Section("working_main", "EN v1.76.0 · 3 DE OCTUBRE", "Cuatro paradas y un Prompt Flow Panel más claro",
+            "Hecho commit en main después del tag v1.75.0 y llevado por el tag v1.76.0.",
             body=[
-                "Ollama's cloud models refuse a request that carries more than four stop sequences, and the chat "
-                "model used to send nine, so the chat-history summary, the first call once a conversation grows "
-                "long, failed the whole request. Every stop list now passes through one fitter that keeps at "
-                "most four, most important first, and a failed summary no longer fails the answer: the request "
-                "continues without it, while Cancel still stops it.",
-                "The Prompt Flow Panel separates two things that shared one name. User Input is the operation "
-                "that stops to ask you something; it keeps exactly its old behaviour under a new notched figure. "
-                "User Commentary is now a static speech-bubble note for reviewers: written in place, coloured "
-                "and styled freely, growing to hold its whole text without a scrollbar, and never run. New "
-                "files are saved as version 2; version 1 files open with their old commentary steps turned into "
-                "User Input, identifiers and connections kept.",
-                "The October 3 refresh reran 430 targeted unit tests, the offline Prompt Flow check, ESLint with zero "
-                "errors, the skills inventory and both inclusion sweeps; all passed, and ruff now reports a "
-                "clean tree. In a visible Chrome on the real desktop, the commentary test passed all nine "
-                "checkpoints: long notes without scrollbars, fonts and colours, resize with Undo and Redo, "
-                "save and reopen, a real User Input run, Escape stopping it, and a version 1 file migrating.",
+                "Los modelos en la nube de Ollama rechazan una solicitud que lleva más de cuatro secuencias de parada, y el modelo "
+                "del chat antes enviaba nueve, así que el resumen del historial del chat, la primera llamada cuando una conversación se vuelve "
+                "larga, hacía fallar toda la solicitud. Ahora cada lista de paradas pasa por un solo ajustador que conserva "
+                "cuando mucho cuatro, las más importantes primero, y un resumen con error ya no hace fallar la respuesta: la solicitud "
+                "sigue sin él, mientras que Cancelar todavía la detiene.",
+                "El Prompt Flow Panel separa dos cosas que compartían un nombre. Input del usuario es la operación "
+                "que se detiene a preguntarte algo; conserva exactamente su comportamiento anterior con una nueva figura de muesca. "
+                "Comentario del usuario ahora es una nota estática en burbuja de diálogo para quien revisa: escrita en su lugar, con color "
+                "y estilo libres, crece para contener todo su texto sin barra de desplazamiento, y nunca se ejecuta. Los archivos "
+                "nuevos se guardan como versión 2; los archivos de la versión 1 se abren con sus viejos pasos de comentario convertidos en "
+                "Input del usuario, conservando identificadores y conexiones.",
+                "La actualización del 3 de octubre volvió a correr 430 pruebas unitarias enfocadas, la revisión sin conexión del Prompt Flow, ESLint con cero "
+                "errores, el inventario de skills y los dos barridos de inclusión; todo pasó, y ruff ahora reporta un "
+                "árbol limpio. En un Chrome visible en el escritorio real, la prueba de comentarios pasó los nueve "
+                "puntos de revisión: notas largas sin barras de desplazamiento, fuentes y colores, cambio de tamaño con Deshacer y Rehacer, "
+                "guardar y reabrir, una ejecución real de Input del usuario, Escape deteniéndola y un archivo de versión 1 migrando.",
             ],
             points=[
-                ("Four stop sequences", "Every Ollama request; a failed summary never fails the answer."),
-                ("User Input", "The step that asks you: same mechanism, new figure."),
-                ("User Commentary", "A static review note; it never runs and never reaches the model."),
-                ("Version 2 files", "Version 1 flows migrate on open; identifiers and links are kept."),
-                ("October 3 evidence", "430 unit tests; 9 of 9 visible Chrome checkpoints."),
+                ("Cuatro secuencias de parada", "Cada solicitud a Ollama; un resumen con error nunca hace fallar la respuesta."),
+                ("Input del usuario", "El paso que te pregunta: mismo mecanismo, nueva figura."),
+                ("Comentario del usuario", "Una nota estática de revisión; nunca se ejecuta y nunca llega al modelo."),
+                ("Archivos versión 2", "Los flows de la versión 1 se migran al abrirse; se conservan los identificadores y los enlaces."),
+                ("Evidencia del 3 de octubre", "430 pruebas unitarias; 9 de 9 puntos de revisión visibles en Chrome."),
             ], deck="cards"),
-        Section("working_switches", "CARRIED FROM v1.75.0", "Compact mode and Self-modify become switches",
-            "Tagged on October 3: Compact mode is a toolbar switch; the Self-modify switch followed and ships in v1.76.0.",
+        Section("working_switches", "HEREDADO DE v1.75.0", "Compact mode y Self-modify, ahora interruptores",
+            "Con tag del 3 de octubre: Compact mode es un interruptor de la barra de herramientas; el interruptor Self-modify vino después y se incluye en v1.76.0.",
             body=[
-                "Compact mode as tagged in v1.74.0 was a verdict made behind the user's back. In v1.75.0 it is "
-                "a toolbar box. Ticking it unticks every row in Configure MCPs, Configure Agents and "
-                "ACPX-Skills except System-Metrics, Files-Search and Current-Time, and pauses the External "
-                "MCPs; unticking it ticks every row again. Each row shows the tokens it adds, a model that "
-                "cannot hold everything turns the box on and locks it, and an answer built from a cut request "
-                "carries a CONTEXT-WINDOW warning.",
-                "Right after the tag, commit 70aeeb87 added the Self-modify box, which ships in v1.76.0. A source "
-                "run always shows it; "
-                "a frozen build shows it only when built with --self-modify. On, it sends her self-knowledge, "
-                "about 28,900 tokens per request; off, one line tells her not to change her own code. A model "
-                "that cannot hold it shows the box locked off.",
-                "The visible Compact-switch run passed 57 of 57 checks on a local qwen2.5 and a free cloud "
-                "model. The visible Self-modify run passed 28 of 28: with the same 119 tools, the request with "
-                "the self-knowledge was 117,517 bytes larger than without it. 473 unit tests passed, including "
-                "a render of the page as a frozen build.",
+                "Compact mode, tal como quedó en el tag v1.74.0, era un veredicto tomado a espaldas del usuario. En v1.75.0 es "
+                "una casilla de la barra de herramientas. Marcarla desmarca todas las filas en Configurar MCPs, Configurar Agents y "
+                "ACPX-Skills excepto System-Metrics, Files-Search y Current-Time, y pausa los External "
+                "MCPs; desmarcarla vuelve a marcar todas las filas. Cada fila muestra los tokens que agrega, un modelo que "
+                "no puede contenerlo todo enciende la casilla y la bloquea, y una respuesta construida a partir de una solicitud recortada "
+                "lleva una advertencia CONTEXT-WINDOW.",
+                "Justo después del tag, el commit 70aeeb87 agregó la casilla Self-modify, que se incluye en v1.76.0. Una ejecución "
+                "desde el source siempre la muestra; "
+                "un build congelado la muestra sólo cuando se construyó con --self-modify. Encendida, envía su autoconocimiento, "
+                "unos 28,900 tokens por solicitud; apagada, una línea le dice que no cambie su propio código. Un modelo "
+                "que no puede contenerlo muestra la casilla bloqueada en apagado.",
+                "La ejecución visible del interruptor Compact pasó 57 de 57 revisiones con un qwen2.5 local y un modelo gratuito en la nube. "
+                "La ejecución visible de Self-modify pasó 28 de 28: con los mismos 119 tools, la solicitud con "
+                "el autoconocimiento fue 117,517 bytes más grande que sin él. Pasaron 473 pruebas unitarias, incluido "
+                "un renderizado de la página como build congelado.",
             ],
             points=[
-                ("Compact switch", "Only the rows you tick; locked on when the model cannot hold everything."),
-                ("Prices", "Every Configure row shows the tokens it adds to each request."),
-                ("Self-modify", "Her self-knowledge on or off; locked off when it does not fit."),
-                ("Proof", "57/57 and 28/28 visible checks; 473 unit tests."),
+                ("Interruptor Compact", "Sólo las filas que marcas; bloqueado en encendido cuando el modelo no puede contenerlo todo."),
+                ("Precios", "Cada fila de Configurar muestra los tokens que agrega a cada solicitud."),
+                ("Self-modify", "Su autoconocimiento encendido o apagado; bloqueado en apagado cuando no cabe."),
+                ("Prueba", "57/57 y 28/28 revisiones visibles; 473 pruebas unitarias."),
             ], deck="cards"),
-        Section("working_compact", "CARRIED FROM v1.74.0", "Compact mode and readable tables",
-            "Tagged on October 1: every request is fitted to the model it is sent to.",
+        Section("working_compact", "HEREDADO DE v1.74.0", "Compact mode y tablas legibles",
+            "Con tag del 1 de octubre: cada solicitud se ajusta al modelo al que se envía.",
             body=[
-                "A model that can hold Tlamatini's complete request still receives it byte for byte. A model "
-                "whose real window is smaller receives Compact mode, described in the How She Works chapter, "
-                "with a once-per-model dialog, a Compact badge and a locked ACPX box, replaced in v1.75.0 by a switch.",
-                "The visible run on a local qwen2.5 exposed three more problems, fixed in the same release. In "
-                "Compact mode the one-shot file guard now states the real reason a file cannot be opened, and a "
-                "table the user asked to see is shown as a table instead of fenced code. For every model, an "
-                "answer-table cell whose text would be unreadable is recoloured.",
-                "On October 1 the visible Compact run on the installed qwen2.5:latest passed 37 of 37 checks at "
-                "about 8,100 tokens per request, with no cuts. On nemotron-3-ultra:cloud every request stayed "
-                "complete, with Ollama reading 102,539 to 104,259 tokens. A small model can still sometimes "
-                "re-answer an earlier question before the new one. The v1.74.0 dossier refresh reran the 43 "
-                "Compact-mode regression tests; all passed.",
+                "Un modelo que puede contener la solicitud completa de Tlamatini sigue recibiéndola byte por byte. Un modelo "
+                "cuya ventana real es más pequeña recibe Compact mode, que describe el capítulo Cómo funciona, "
+                "con un diálogo una vez por modelo, una insignia Compact y una casilla ACPX bloqueada, reemplazados en v1.75.0 por un interruptor.",
+                "La ejecución visible con un qwen2.5 local expuso tres problemas más, arreglados en el mismo release. En "
+                "Compact mode la protección de archivos de una sola ejecución ahora dice la razón real por la que no se puede abrir un archivo, y una "
+                "tabla que el usuario pidió ver se muestra como tabla en vez de como código cercado. Para cada modelo, una "
+                "celda de tabla de respuesta cuyo texto sería ilegible se vuelve a colorear.",
+                "El 1 de octubre la ejecución visible de Compact con el qwen2.5:latest instalado pasó 37 de 37 revisiones con "
+                "unos 8,100 tokens por solicitud, sin recortes. Con nemotron-3-ultra:cloud cada solicitud se mantuvo "
+                "completa, con Ollama leyendo de 102,539 a 104,259 tokens. Un modelo pequeño todavía puede a veces "
+                "volver a contestar una pregunta anterior antes de la nueva. La actualización del dossier de v1.74.0 volvió a correr las 43 "
+                "pruebas de regresión de Compact mode; todas pasaron.",
             ],
             points=[
-                ("Fitted", "Full when the model can hold the request; Compact when it cannot."),
-                ("Compact proof", "37/37 visible checks on a local qwen2.5, about 8.1K tokens, no cuts."),
-                ("Full proof", "A large cloud model read every request complete: about 103K tokens."),
-                ("Readable tables", "Cells below 3:1 contrast are recoloured, for every model."),
+                ("Ajustado", "Completo cuando el modelo puede contener la solicitud; Compact cuando no puede."),
+                ("Prueba de Compact", "37/37 revisiones visibles con un qwen2.5 local, unos 8.1K tokens, sin recortes."),
+                ("Prueba completa", "Un modelo grande en la nube leyó completa cada solicitud: unos 103K tokens."),
+                ("Tablas legibles", "Las celdas con contraste menor a 3:1 se vuelven a colorear, para cada modelo."),
             ], deck="cards"),
-        Section("working_catalog", "CARRIED FROM v1.73.1", "Model lists from the server you configured",
-            "Tagged on October 1: Config ▸ Models asks the configured Ollama servers, with their token.",
+        Section("working_catalog", "HEREDADO DE v1.73.1", "Modelos del servidor que configuraste",
+            "Con tag del 1 de octubre: Config ▸ Modelos consulta a los servidores de Ollama configurados, con su token.",
             body=[
-                "Config ▸ Models used to ask the browser's own Ollama for the model list, at an address fixed "
-                "when the page loaded. After Config ▸ URLs pointed Tlamatini at a remote server, a model "
-                "installed only there was marked red and could not be saved.",
-                "A login-protected endpoint now reads config.json on every call, asks each distinct configured "
-                "Ollama address in parallel with the same bearer token the chat sends, and merges their model "
-                "names. Each server reports its own status, and the dialog names the server and the reason "
-                "when one cannot answer, such as an HTTP 401 that points to the token.",
-                "The same release made the start-up GPU step send the token too, so a token-protected remote "
-                "server no longer answers 401 at every start. A visible run against a simulated "
-                "token-protected server passed 16 of 16 checks, with every request carrying the token. The "
-                "v1.74.0 dossier refresh reran the 18 model-catalog regression tests; all passed.",
+                "Config ▸ Modelos antes le pedía la lista de modelos al propio Ollama del browser, en una dirección fijada "
+                "cuando cargaba la página. Después de que Config ▸ URLs apuntaba Tlamatini a un servidor remoto, un modelo "
+                "instalado sólo ahí se marcaba en rojo y no se podía guardar.",
+                "Un endpoint protegido por inicio de sesión ahora lee config.json en cada llamada, consulta en paralelo cada dirección distinta de "
+                "Ollama configurada con el mismo bearer token que envía el chat, y combina los nombres de sus modelos. "
+                "Cada servidor reporta su propio status, y el diálogo nombra el servidor y la razón "
+                "cuando uno no puede contestar, como un HTTP 401 que apunta al token.",
+                "El mismo release hizo que el paso de GPU al arrancar también envíe el token, así que un servidor remoto protegido por token "
+                "ya no contesta 401 en cada arranque. Una ejecución visible contra un servidor simulado "
+                "protegido por token pasó 16 de 16 revisiones, con cada solicitud llevando el token. La "
+                "actualización del dossier de v1.74.0 volvió a correr las 18 pruebas de regresión del catálogo de modelos; todas pasaron.",
             ],
             points=[
-                ("Fresh address", "Read from config.json on every call, never fixed at page load."),
-                ("Token", "Every configured server is asked with the chat's own bearer token."),
-                ("Clear errors", "Each server reports its status; a 401 points at the token."),
-                ("Start-up", "The GPU warm-up sends the token too: no 401 at every start."),
+                ("Dirección actual", "Se lee de config.json en cada llamada, nunca se fija al cargar la página."),
+                ("Token", "Cada servidor configurado se consulta con el propio bearer token del chat."),
+                ("Errores claros", "Cada servidor reporta su status; un 401 apunta al token."),
+                ("Arranque", "El calentamiento de la GPU también envía el token: sin 401 en cada arranque."),
             ], deck="cards"),
-        Section("working_drop", "CARRIED FROM v1.73.0", "One card removed from future context",
-            "Tagged and published on September 30: Drop throughout chat, with confirmation and history updates.",
+        Section("working_drop", "HEREDADO DE v1.73.0", "Una tarjeta quitada del contexto futuro",
+            "Con tag y publicado el 30 de septiembre: Descartar en todo el chat, con confirmación y actualización del historial.",
             body=[
-                "Saved greetings, user prompts and answers carry their AgentMessage id from the first page "
-                "render and subsequent WebSocket frames. The drop-message request validates that id against "
-                "the signed-in conversation owner before deleting rows. A busy guard checks this connection's "
-                "active run; it is not a global lock across all of the user's tabs.",
-                "Successful deletion broadcasts message-dropped with all deleted ids to the user's tabs, "
-                "then schedules a context-gauge refresh. Dropping a user prompt also removes up to twenty "
-                "directly following Referenced Rephrase rows, stopping at the first other row. An answer "
-                "or another user's message is never included in that cleanup.",
-                "All 23 focused Drop regression tests passed on September 30, covering ownership, both message roles, neighboring rows, "
-                "the history window, busy refusal, rephrases and browser/server protocol contracts. The "
-                "September 30 maintainer record reports 42/42 checks in the extended visible browser harness, "
-                "including a new real context count after every drop that ends lower than before; "
-                "this dossier refresh reruns the focused suite without writing to the real memory graph.",
+                "Los saludos guardados, los prompts del usuario y las respuestas llevan su id de AgentMessage desde el primer renderizado "
+                "de la página y en los frames de WebSocket que siguen. La solicitud drop-message valida ese id contra "
+                "el dueño de la conversación con sesión iniciada antes de borrar filas. Una protección de ocupado revisa la ejecución "
+                "activa de esta conexión; no es un bloqueo global entre todas las pestañas del usuario.",
+                "Un borrado exitoso transmite message-dropped con todos los ids borrados a las pestañas del usuario, "
+                "y luego programa una actualización del medidor de contexto. Descartar un prompt del usuario también quita hasta veinte "
+                "filas de Referenced Rephrase que lo siguen directamente, y se detiene en la primera fila distinta. Una respuesta "
+                "o el mensaje de otro usuario nunca se incluyen en esa limpieza.",
+                "Las 23 pruebas de regresión enfocadas de Descartar pasaron el 30 de septiembre, cubriendo la propiedad, ambos roles de mensaje, las filas vecinas, "
+                "la ventana del historial, el rechazo cuando está ocupada, los rephrases y los contratos del protocolo browser/servidor. El "
+                "registro de mantenimiento del 30 de septiembre reporta 42/42 revisiones en el harness extendido visible del browser, "
+                "incluido un nuevo conteo real de contexto después de cada descarte que termina más bajo que antes; "
+                "esta actualización del dossier vuelve a correr la suite enfocada sin escribir en el grafo de memoria real.",
             ],
             points=[
-                ("Owned rows", "Server deletion is scoped to the signed-in user's conversation."),
-                ("Tabs and gauge", "Confirmed ids remove saved cards across tabs and refresh the context estimate."),
-                ("Rephrases", "Prompt cleanup removes following rephrase copies and keeps the answer."),
-                ("Run guard", "An active answer blocks Drop on that connection. Other tabs have separate runs."),
+                ("Filas propias", "El borrado en el servidor se limita a la conversación del usuario con sesión iniciada."),
+                ("Pestañas y medidor", "Los ids confirmados quitan las tarjetas guardadas en todas las pestañas y actualizan la estimación de contexto."),
+                ("Copias de rephrase", "La limpieza del prompt quita las copias de rephrase que siguen y conserva la respuesta."),
+                ("Protección de ejecución", "Una respuesta activa bloquea Descartar en esa conexión. Otras pestañas tienen ejecuciones aparte."),
             ], deck="cards"),
-        Section("working_web", "CARRIED FROM v1.72.4", "Web pages that cannot vanish in silence",
-            "Tagged and published on September 29: no web page loses its text without saying so.",
+        Section("working_web", "HEREDADO DE v1.72.4", "Páginas web que no desaparecen en silencio",
+            "Con tag y publicado el 29 de septiembre: ninguna página web pierde su texto sin decirlo.",
             body=[
-                "Crawler and Googler strip a page to its words by skipping scripts, styles and similar "
-                "blocks. A block that never closed, such as an omitted closing head tag or a cut-off "
-                "download, used to swallow the rest of the page. Both now track open blocks with a stack, "
-                "and a plain-text safety net replaces any result that kept too little, logging a warning "
-                "when it does.",
-                "Two tags travel with it. v1.72.2 added deadline-bound defaults to both agents, and a "
-                "CAPTCHA or bot wall is reported as blocked, never read as content. "
-                "v1.72.3 made the chat avatar's lips move clearly while she speaks, never wider than her "
-                "own portrait.",
+                "Crawler y Googler reducen una página a sus palabras saltándose scripts, estilos y bloques "
+                "parecidos. Un bloque que nunca se cerraba, como una etiqueta de cierre de head omitida o una "
+                "descarga cortada, antes se tragaba el resto de la página. Ahora ambos siguen los bloques abiertos con una pila, "
+                "y una red de seguridad de texto plano reemplaza cualquier resultado que conservó muy poco, registrando una advertencia "
+                "cuando lo hace.",
+                "Dos tags viajan con él. v1.72.2 agregó valores predeterminados con plazos a ambos agents, y un "
+                "CAPTCHA o un muro de bots se reporta como bloqueado, nunca se lee como contenido. "
+                "v1.72.3 hizo que los labios del avatar del chat se movieran claramente mientras habla, nunca más abiertos que su "
+                "propio retrato.",
             ],
             points=[
-                ("No silent loss", "A stack of open tags replaces a counter in both agents."),
-                ("Safety net", "A plain reading takes over when a parse keeps too little."),
-                ("Bounded defaults", "v1.72.2: search and crawl budgets, cancellation and explicit outcomes."),
-                ("Refusals named", "A CAPTCHA or bot wall comes back as blocked, never as content."),
-                ("Visible lips", "v1.72.3: her lips open and close clearly, without gaping."),
+                ("Sin pérdida silenciosa", "Una pila de etiquetas abiertas reemplaza a un contador en ambos agents."),
+                ("Red de seguridad", "Una lectura simple toma el control cuando un parseo conserva muy poco."),
+                ("Valores acotados", "v1.72.2: presupuestos de búsqueda y de crawl, cancelación y resultados explícitos."),
+                ("Rechazos con nombre", "Un CAPTCHA o un muro de bots regresa como bloqueado, nunca como contenido."),
+                ("Labios visibles", "v1.72.3: sus labios se abren y se cierran claramente, sin quedarse muy abiertos."),
             ], deck="cards"),
-        Section("working_gauge", "CARRIED FROM v1.72.1", "A context gauge that tells the truth",
-            "Tagged and published on September 28: the ring beside the message box shows Ollama's own count.",
+        Section("working_gauge", "HEREDADO DE v1.72.1", "Un medidor de contexto veraz",
+            "Con tag y publicado el 28 de septiembre: el anillo junto a la caja de mensaje muestra el propio conteo de Ollama.",
             body=[
-                "The ring now reports the exact request Tlamatini's main chain sends. Bytes are measured; "
-                "the token figure is Ollama's own prompt_eval_count for that request, and the ceiling is the "
-                "context length Ollama reports. An estimate is shown only until Ollama answers, and says so.",
-                "Between questions the ring shows what the next request will cost, recalculated whenever the "
-                "state changes: page open, Clear history, Drop, Clear context, a context loaded, an answer finished "
-                "or a mode toggled. It is exact in one-shot and Multi-Turn alike, per connected user, and "
-                "one-shot questions no longer carry an empty System-Metrics line.",
+                "El anillo ahora reporta la solicitud exacta que envía la cadena principal de Tlamatini. Los bytes se miden; "
+                "la cifra de tokens es el propio prompt_eval_count de Ollama para esa solicitud, y el tope es la "
+                "longitud de contexto que reporta Ollama. Una estimación se muestra sólo hasta que Ollama contesta, y lo dice.",
+                "Entre preguntas el anillo muestra lo que va a costar la siguiente solicitud, recalculado cada vez que cambia el "
+                "estado: al abrir la página, al Limpiar historial, al Descartar, al Limpiar contexto, al cargar un contexto, al terminar una respuesta "
+                "o al cambiar un modo. Es exacto tanto en una sola ejecución como en Multi-Turn, por usuario conectado, y "
+                "las preguntas de una sola ejecución ya no llevan una línea vacía de System-Metrics.",
             ],
             points=[
-                ("Real tokens", "Ollama's prompt_eval_count, paired to its own request."),
-                ("Exact in both modes", "Live = at-rest prediction + the question + the Multi-Turn plan."),
-                ("Main chain only", "Out-of-band calls never reach the ring; each user sees their own."),
-                ("Less waste", "The question is sent once; the one-shot placeholder line is gone."),
-                ("Proof", "A visible lab passed 60 of 60 checks against tlamatini.log."),
+                ("Tokens reales", "El prompt_eval_count de Ollama, emparejado con su propia solicitud."),
+                ("Exacto en ambos modos", "En vivo = predicción en reposo + la pregunta + el plan de Multi-Turn."),
+                ("Sólo la cadena principal", "Las llamadas fuera de banda nunca llegan al anillo; cada usuario ve las suyas."),
+                ("Menos desperdicio", "La pregunta se envía una vez; la línea de relleno de una sola ejecución desapareció."),
+                ("Prueba", "Un laboratorio visible pasó 60 de 60 revisiones contra tlamatini.log."),
             ], deck="cards"),
-        Section("working_voice", "CARRIED FROM v1.72.0", "Direct dictation and dependency coverage",
-            "These September 27 changes were tagged v1.72.0 and published on September 28.",
+        Section("working_voice", "HEREDADO DE v1.72.0", "Dictado directo y dependencias",
+            "Estos cambios del 27 de septiembre llevaron el tag v1.72.0 y se publicaron el 28 de septiembre.",
             body=[
-                "The chat microphone starts Whisperer directly, stops on the configured silence gate, "
-                "recognizes speech and sends or leaves an editable draft as selected in Config > Mic. "
-                "The dialog also saves browser-local input, gain, gate and recognition preferences. The worker uses the main "
-                "application logger and creates no second console. Developer tests remain visibly executed.",
-                "The root dependency manifest and separate ESPHome manifest now account for referenced "
-                "libraries across agents and source. The static guard and detailed dependency audit record "
-                "coverage and runtime boundaries. They shipped in the published v1.72.0 release; the "
-                "shared root-asset carrier repair that followed is committed and carried by v1.72.1.",
+                "El micrófono del chat arranca Whisperer directamente, se detiene en la compuerta de silencio configurada, "
+                "reconoce la voz y envía o deja un borrador editable según lo elegido en Config > Micrófono. "
+                "El diálogo también guarda preferencias locales del browser de entrada, ganancia, compuerta y reconocimiento. El worker usa el logger "
+                "principal de la aplicación y no crea una segunda consola. Las pruebas de desarrollo siguen corriendo de forma visible.",
+                "El manifiesto raíz de dependencias y el manifiesto aparte de ESPHome ahora contemplan las librerías referidas "
+                "en los agents y en el source. La protección estática y la auditoría detallada de dependencias registran "
+                "la cobertura y las fronteras del runtime. Se incluyeron en el release publicado v1.72.0; la "
+                "reparación del transportador compartido de assets raíz que siguió está hecha commit y la lleva v1.72.1.",
             ],
             points=[
-                ("User guide", "README.md and BookOfTlamatini.md explain Mic settings, recording, cancellation and both modes."),
-                ("Runtime contract", "docs/chat-microphone-design.md records ownership, protocol, configuration and limits."),
-                ("Dependencies", "docs/dependency-coverage-audit.md records declarations, isolation and verification."),
-                ("Delivery", "Published as v1.72.0 and carried by v1.72.1, with the root-asset carrier repair."),
+                ("Guía del usuario", "README.md y BookOfTlamatini.md explican la configuración de Micrófono, la grabación, la cancelación y ambos modos."),
+                ("Contrato del runtime", "docs/chat-microphone-design.md registra la propiedad, el protocolo, la configuración y los límites."),
+                ("Dependencias", "docs/dependency-coverage-audit.md registra las declaraciones, el aislamiento y la verificación."),
+                ("Entrega", "Publicado como v1.72.0 y llevado por v1.72.1, con la reparación del transportador de assets raíz."),
             ], deck="cards"),
-        Section("whatsnew", "CARRIED RELEASE", "v1.70.0: the Prompt Flow Panel",
-            "Version 1.70.0 is about designing conversations and editing flows with the same ease.",
+        Section("whatsnew", "RELEASE HEREDADO", "v1.70.0: el Prompt Flow Panel",
+            "La versión 1.70.0 trata de diseñar conversaciones y editar flows con la misma facilidad.",
             points=[
-                ("Prompt Flow Panel", "Seven operations, `.fpmt` files, validated playback, isolated runs."),
-                ("Panels and Config", "The canvases live under Panels; every Configure dialog under Config."),
-                ("A real editor", "Undo and Redo, Duplicate with settings, zoom, Fit, agent search, Help."),
-                ("Shared mechanics", "Both canvases connect, drag, select and zoom the same way."),
-                ("Busy-safe menus", "Panels stays usable while she answers; one path re-arms the menus."),
-                ("Context line carried", "The context meter, Context Governor and context gauge of v1.65."),
+                ("Prompt Flow Panel", "Siete operaciones, archivos `.fpmt`, ejecución validada, ejecuciones aisladas."),
+                ("Paneles y Config", "Los canvases viven en Paneles; cada diálogo Configurar, en Config."),
+                ("Un editor de verdad", "Deshacer y Rehacer, Duplicar con configuración, zoom, Ajustar, búsqueda de agents, Ayuda."),
+                ("Mecánica compartida", "Ambos canvases conectan, arrastran, seleccionan y hacen zoom de la misma forma."),
+                ("Menús a prueba de ocupación", "Paneles sigue disponible mientras ella contesta; un solo camino reactiva los menús."),
+                ("Línea de contexto heredada", "El medidor de contexto, el Context Governor y el indicador de contexto de v1.65."),
             ], deck="cards"),
-        Section("lineage", "LINEAGE", "How the line arrived here",
-            "Recent tags, oldest first, read from Git.",
+        Section("lineage", "LINAJE", "Cómo llegó la línea aquí",
+            "Tags recientes, del más viejo al más nuevo, leídos de Git.",
             visual="timeline", deck="visual"),
-        Section("identity_release", "RELEASE IDENTITY", f"One released version: v{version}",
-            "The application, user guides, PDF and PowerPoint all identify the same current release. "
-            "The repository metadata records the implementation inspected for this dossier.",
+        Section("identity_release", "IDENTIDAD DEL RELEASE", f"Una versión publicada: v{version}",
+            "La aplicación, las guías del usuario, el PDF y el PowerPoint identifican el mismo release actual. "
+            "Los metadatos del repositorio registran la implementación inspeccionada para este dossier.",
             body=f["release_statements"],
-            table={"columns": ["Fact", "Value"], "widths": [0.40, 0.60], "rows": f["release_rows"]},
+            table={"columns": ["Dato", "Valor"], "widths": [0.40, 0.60], "rows": f["release_rows"]},
             deck="split", deck_points=f["release_points"]),
     ])
 
-    facts = Chapter("facts", "IX", "Repository Facts",
-        "The source tree measured: files, languages, effective lines, the largest files and recent history.",
+    facts = Chapter("facts", "IX", "Datos del repositorio",
+        "El árbol del source medido: archivos, lenguajes, líneas efectivas, los archivos más grandes y la historia reciente.",
         accent="copper", sections=[
-        Section("facts_table", "INVENTORY", "The repository in numbers",
-            "Counts come from Git and from the source files at the moment of generation.",
-            table={"columns": ["Measure", "Value"], "widths": [0.46, 0.54], "rows": f["fact_rows"]},
+        Section("facts_table", "INVENTARIO", "El repositorio en números",
+            "Los conteos vienen de Git y de los archivos del source al momento de generarse.",
+            table={"columns": ["Medida", "Valor"], "widths": [0.46, 0.54], "rows": f["fact_rows"]},
             deck="table"),
-        Section("languages", "LINE INVENTORY", "Effective lines by language",
-            f"{f['total_effective']:,} effective lines across {f['text_files']:,} text files; "
-            f"{f['total_physical']:,} physical lines.",
+        Section("languages", "INVENTARIO DE LÍNEAS", "Líneas efectivas por lenguaje",
+            f"{f['total_effective']:,} líneas efectivas en {f['text_files']:,} archivos de texto; "
+            f"{f['total_physical']:,} líneas físicas.",
             visual="language_bars", deck="visual"),
-        Section("language_table", "LINE INVENTORY", "Every language, counted",
-            "Effective lines exclude blank lines, comment-only lines and Python docstrings.",
-            table={"columns": ["Language", "Files", "Physical", "Effective", "Share"],
+        Section("language_table", "INVENTARIO DE LÍNEAS", "Cada lenguaje, contado",
+            "Las líneas efectivas excluyen las líneas en blanco, las líneas que sólo tienen comentarios y los docstrings de Python.",
+            table={"columns": ["Lenguaje", "Archivos", "Físicas", "Efectivas", "Proporción"],
                    "widths": [0.34, 0.12, 0.18, 0.18, 0.18], "rows": f["language_rows"],
                    "align": ["LEFT", "RIGHT", "RIGHT", "RIGHT", "RIGHT"]},
             deck="table"),
-        Section("authored", "PROVENANCE", "Authored and vendored",
-            "Third-party frontend libraries are vendored so the application needs no CDN at runtime; their "
-            "lines are counted separately here so they are never mistaken for Tlamatini's own logic.",
-            table={"columns": ["Portion", "Files", "Effective lines"], "widths": [0.50, 0.20, 0.30],
+        Section("authored", "PROCEDENCIA", "Escrito y de terceros",
+            "Las librerías de frontend de terceros van incluidas para que la aplicación no necesite un CDN al ejecutarse; sus "
+            "líneas se cuentan aparte aquí para que nunca se confundan con la lógica propia de Tlamatini.",
+            table={"columns": ["Porción", "Archivos", "Líneas efectivas"], "widths": [0.50, 0.20, 0.30],
                    "rows": f["provenance_rows"], "align": ["LEFT", "RIGHT", "RIGHT"]},
             deck="table"),
-        Section("largest", "LARGEST FILES", "The largest source files",
-            "Ranked by effective lines.",
-            table={"columns": ["File", "Language", "Effective"], "widths": [0.64, 0.18, 0.18],
+        Section("largest", "ARCHIVOS MÁS GRANDES", "Los archivos de source más grandes",
+            "Ordenados por líneas efectivas.",
+            table={"columns": ["Archivo", "Lenguaje", "Efectivas"], "widths": [0.64, 0.18, 0.18],
                    "rows": f["largest_rows"], "align": ["LEFT", "LEFT", "RIGHT"]},
             deck="table"),
-        Section("commits", "HISTORY", "Recent commits",
-            "The most recent commits on the inspected branch, newest first.",
-            table={"columns": ["Commit", "Date", "Subject"], "widths": [0.12, 0.14, 0.74],
+        Section("commits", "HISTORIA", "Commits recientes",
+            "Los commits más recientes en la branch inspeccionada, del más nuevo al más viejo.",
+            table={"columns": ["Commit", "Fecha", "Asunto"], "widths": [0.12, 0.14, 0.74],
                    "rows": f["commit_rows"]},
             deck="table"),
-        Section("method", "METHOD", "How these numbers were produced",
-            "The inventory is reproducible: run the generator again and the same tree yields the same counts.",
+        Section("method", "MÉTODO", "Cómo se produjeron estos números",
+            "El inventario es reproducible: vuelve a correr el generador y el mismo árbol da los mismos conteos.",
             points=[
-                ("Scope", "Every Git-tracked file plus unignored working-tree additions; ignored build "
-                 "output, caches and runtime state are excluded."),
-                ("Text only", "Binary assets such as images, fonts and archives are counted as files, never "
-                 "as lines."),
-                ("Python", "Tokenized: comments, blank lines and module, class and function docstrings are "
-                 "excluded."),
-                ("Other languages", "Block and line comments are stripped, then non-blank lines are counted."),
-                ("No private values", "Configuration values, credentials and addresses are never reproduced."),
-                ("Regenerate", "`python Tlamatini\\agent\\doc_generation\\refresh_project_docs.py`"),
+                ("Alcance", "Cada archivo con seguimiento en Git más las adiciones no ignoradas del árbol de trabajo; se excluyen el output "
+                 "ignorado del build, los cachés y el estado del runtime."),
+                ("Sólo texto", "Los assets binarios como imágenes, fuentes y archivos comprimidos se cuentan como archivos, nunca "
+                 "como líneas."),
+                ("Python", "Tokenizado: se excluyen los comentarios, las líneas en blanco y los docstrings de módulos, clases y funciones"
+                 "."),
+                ("Otros lenguajes", "Se quitan los comentarios de bloque y de línea, y luego se cuentan las líneas que no están en blanco."),
+                ("Sin valores privados", "Los valores de configuración, las credenciales y las direcciones nunca se reproducen."),
+                ("Regenerar", "`python Tlamatini\\agent\\doc_generation\\refresh_project_docs.py`"),
             ], deck="cards"),
     ])
 

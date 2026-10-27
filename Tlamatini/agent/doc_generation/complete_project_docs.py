@@ -65,20 +65,20 @@ LANGUAGE_BY_EXTENSION = {
     ".js": "JavaScript",
     ".json": "JSON",
     ".md": "Markdown",
-    ".mjs": "JavaScript module",
-    ".pmt": "Prompt template",
+    ".mjs": "Módulo JavaScript",
+    ".pmt": "Plantilla de prompt",
     ".proto": "Protocol Buffers",
     ".ps1": "PowerShell",
     ".py": "Python",
     ".svg": "SVG",
-    ".txt": "Text",
+    ".txt": "Texto",
     ".yaml": "YAML",
     ".yml": "YAML",
 }
 
 DOCUMENT_TIMEZONE = ZoneInfo("America/Mexico_City")
-MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
-          "October", "November", "December"]
+MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre",
+          "octubre", "noviembre", "diciembre"]
 
 
 @dataclass
@@ -116,7 +116,7 @@ def document_datetime(iso_value: str) -> datetime:
 
 def long_date(iso_value: str) -> str:
     moment = document_datetime(iso_value)
-    return f"{MONTHS[moment.month - 1]} {moment.day}, {moment.year}"
+    return f"{moment.day} de {MONTHS[moment.month - 1]} de {moment.year}"
 
 
 def short_date(iso_value: str) -> str:
@@ -314,7 +314,7 @@ def line_inventory(paths: list[str]) -> tuple[list[LineStats], list[FileStats], 
             binary += 1
             continue
         suffix = absolute.suffix.lower()
-        language = LANGUAGE_BY_EXTENSION.get(suffix, "Other text")
+        language = LANGUAGE_BY_EXTENSION.get(suffix, "Otro texto")
         total = len(text.splitlines())
         effective = count_python_effective(text) if suffix == ".py" else count_generic_effective(text, suffix)
         stats = by_language.setdefault(language, LineStats(language))
@@ -459,22 +459,22 @@ def release_facts(published: dict, head_short: str) -> dict:
 
 def release_statements(rel: dict, version: str) -> tuple[list[str], list[list[str]], list[tuple[str, str]]]:
     statements = [
-        f"**{rel['latest_published']} is the current tagged source version.** The application, user guides "
-        f"and both dossiers use the same version, **{version}**.",
-        f"This audit inspected commit `{rel['head_short']}`. The existing annotated tag `{rel['tag']}` "
-        f"was created on {rel['tag_date']} and resolves to `{rel['tag_commit']}`. Git history is preserved.",
-        "A source tag identifies the implementation. GitHub publication and installed-package acceptance "
-        "require separate evidence; documentation generation does not build or install an executable.",
+        f"**{rel['latest_published']} es la versión actual del source con tag.** La aplicación, las guías del usuario "
+        f"y ambos dossiers usan la misma versión, **{version}**.",
+        f"Esta auditoría inspeccionó el commit `{rel['head_short']}`. El tag anotado existente `{rel['tag']}` "
+        f"se creó el {rel['tag_date']} y apunta a `{rel['tag_commit']}`. La historia de Git se conserva.",
+        "Un tag del source identifica la implementación. La publicación en GitHub y la aceptación del paquete instalado "
+        "necesitan evidencia aparte; la generación de la documentación no construye ni instala un ejecutable.",
     ]
-    points = [("Current release", rel['latest_published']),
-              ("Audit commit", rel['head_short']),
-              ("Runtime version", version)]
+    points = [("Release actual", rel['latest_published']),
+              ("Commit de la auditoría", rel['head_short']),
+              ("Versión del runtime", version)]
     rows = [
-        ["Current release", rel['latest_published']],
-        ["Runtime version", version],
-        ["Existing annotated tag", f"{rel['tag']} → {rel['tag_commit']} ({rel['tag_date']})"],
-        ["Inspected commit", rel['head_short']],
-        ["Tag on remote", "Yes" if rel["on_origin"] else "No"],
+        ["Release actual", rel['latest_published']],
+        ["Versión del runtime", version],
+        ["Tag anotado existente", f"{rel['tag']} → {rel['tag_commit']} ({rel['tag_date']})"],
+        ["Commit inspeccionado", rel['head_short']],
+        ["Tag en el remoto", "Sí" if rel["on_origin"] else "No"],
     ]
     return statements, rows, points
 
@@ -524,9 +524,9 @@ def collect_facts() -> dict:
         commits.append([sha, short_date(when), subject])
 
     facts = {
-        "generated_at": f"{MONTHS[now.month - 1]} {now.day}, {now.year} at {now.strftime('%H:%M')} "
+        "generated_at": f"{now.day} de {MONTHS[now.month - 1]} de {now.year} a las {now.strftime('%H:%M')} "
                         f"(UTC{now.strftime('%z')[:3]}:{now.strftime('%z')[3:]})",
-        "generated_date": f"{MONTHS[now.month - 1]} {now.day}, {now.year}",
+        "generated_date": f"{now.day} de {MONTHS[now.month - 1]} de {now.year}",
         "head_short": head_short,
         "head_full": git("rev-parse", "HEAD"),
         "head_subject": git("show", "-s", "--format=%s", "HEAD"),
@@ -583,26 +583,26 @@ def collect_facts() -> dict:
         "vendored_effective": vendored_effective,
     }
     facts["fact_rows"] = [
-        ["Inspected commit", f"{head_short} · {facts['head_date']} · branch {facts['branch']}"],
-        ["Version", facts['version']],
-        ["Tracked files", f"{len(tracked):,}"],
-        ["Unignored working-tree additions", f"{len(untracked):,}"],
-        ["Text files counted", f"{len(files):,}"],
-        ["Binary assets (counted, not measured)", f"{binary:,}"],
-        ["Physical text lines", f"{total_physical:,}"],
-        ["Effective lines", f"{total_effective:,}"],
-        ["Workflow agent types", f"{len(agents)}"],
-        ["Wrapped chat-agent tools", f"{len(wrapped)}"],
-        ["Built-in Multi-Turn tools", f"{tools} = {len(core)} core + {len(wrapped)} wrapped + "
-                                      f"{len(acpx_tools)} ACPX/Skill + {len(supervisors)} supervisors"],
+        ["Commit inspeccionado", f"{head_short} · {facts['head_date']} · branch {facts['branch']}"],
+        ["Versión", facts['version']],
+        ["Archivos con seguimiento", f"{len(tracked):,}"],
+        ["Adiciones no ignoradas del árbol de trabajo", f"{len(untracked):,}"],
+        ["Archivos de texto contados", f"{len(files):,}"],
+        ["Assets binarios (contados, no medidos)", f"{binary:,}"],
+        ["Líneas físicas de texto", f"{total_physical:,}"],
+        ["Líneas efectivas", f"{total_effective:,}"],
+        ["Tipos de agents de workflow", f"{len(agents)}"],
+        ["Tools wrapped de agents de chat", f"{len(wrapped)}"],
+        ["Tools integrados de Multi-Turn", f"{tools} = {len(core)} núcleo + {len(wrapped)} wrapped + "
+                                      f"{len(acpx_tools)} ACPX/Skill + {len(supervisors)} supervisores"],
         ["Skills", f"{len(skill_list)}"],
-        ["ACPX peers", f"{len(facts['acpx_peers'])}"],
-        ["Database migrations", f"{facts['migrations']}"],
-        ["JavaScript modules · stylesheets · templates",
+        ["Pares de ACPX", f"{len(facts['acpx_peers'])}"],
+        ["Migraciones de la base de datos", f"{facts['migrations']}"],
+        ["Módulos JavaScript · hojas de estilo · plantillas",
          f"{facts['js']} · {facts['css']} · {facts['templates']}"],
-        ["Pinned Python requirements", f"{facts['requirements']}"],
-        ["Catalog sections", f"{len(facts['catalog_sections'])}"],
-        ["Central model settings", f"{fields} for {model_agents} model-backed agents"],
+        ["Requirements de Python fijados", f"{facts['requirements']}"],
+        ["Secciones del catálogo", f"{len(facts['catalog_sections'])}"],
+        ["Configuraciones centrales de modelos", f"{fields} para {model_agents} agents con modelo"],
     ]
     facts["language_rows"] = [
         [row.language, f"{row.files:,}", f"{row.total_lines:,}", f"{row.effective_lines:,}",
@@ -611,11 +611,11 @@ def collect_facts() -> dict:
     ] + [["Total", f"{len(files):,}", f"{total_physical:,}", f"{total_effective:,}", "100.0%"]]
     authored_files = len(files) - len(vendored)
     facts["provenance_rows"] = [
-        ["Tlamatini-authored text (application, agents, docs, tests)", f"{authored_files:,}",
+        ["Texto escrito por Tlamatini (aplicación, agents, docs, pruebas)", f"{authored_files:,}",
          f"{total_effective - vendored_effective:,}"],
-        ["Vendored frontend libraries (PDF.js, Bootstrap, jQuery …)", f"{len(vendored):,}",
+        ["Librerías de frontend de terceros (PDF.js, Bootstrap, jQuery …)", f"{len(vendored):,}",
          f"{vendored_effective:,}"],
-        ["All text files", f"{len(files):,}", f"{total_effective:,}"],
+        ["Todos los archivos de texto", f"{len(files):,}", f"{total_effective:,}"],
     ]
     facts["largest_rows"] = [[row.path, row.language, f"{row.effective_lines:,}"]
                              for row in [r for r in files if not r.path.startswith(VENDOR_PREFIX)][:18]]

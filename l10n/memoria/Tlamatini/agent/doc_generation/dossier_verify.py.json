@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/doc_generation/dossier_verify.py",
+ "segmentos": [
+  {
+   "en": "\"Appendix A: the application file tree\"",
+   "es": "\"Apéndice A: el árbol de archivos de la aplicación\"",
+   "maquina": true,
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -483,14 +483,14 @@ def table_rows_fit(columns, rows, ratios, w, h, size) -> int:
 
 # ── Visuals ─────────────────────────────────────────────────────────
 def visual_planes(sc, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTOM - CONTENT_TOP):
-    spec = [("jade", "Local control plane", "YOUR MACHINE",
-             ["Django, Channels and Daphne", "Chat, canvases and dialogs", "SQLite database and settings",
-              "Agent programs and permissions"]),
-            ("gold", "Local retrieval", "YOUR MACHINE",
-             ["nomic-embed-text embeddings", "FAISS vectors and BM25", "Context budgeting",
-              "Binary-content guard"]),
-            ("copper", "Cloud reasoning", "OLLAMA CLOUD",
-             ["Chat and tool calling", "Long context", "Vision observers and mergers", "Multi-Turn planning"])]
+    spec = [("jade", "Plano de control local", "TU MÁQUINA",
+             ["Django, Channels y Daphne", "Chat, canvases y diálogos", "Base de datos SQLite y configuración",
+              "Programas de agents y permisos"]),
+            ("gold", "Recuperación local", "TU MÁQUINA",
+             ["embeddings de nomic-embed-text", "Vectores FAISS y BM25", "Presupuesto de contexto",
+              "Protección de contenido binario"]),
+            ("copper", "Razonamiento en la nube", "OLLAMA EN LA NUBE",
+             ["Chat y llamadas a tools", "Contexto largo", "Observadores de visión y combinadores", "Planeación de Multi-Turn"])]
     gap = 0.55
     cw = (w - 2 * gap) / 3
     for index, (tone, title, place, items) in enumerate(spec):
@@ -517,7 +517,7 @@ def visual_layers(sc, layers, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTOM
     row_h = (inner_h - gap * (len(layers) - 1)) / len(layers)
     shape_box(sc, x, y, w, band, fill="stone", radius=0.08, label="browser band")
     text(sc, x + 0.2, y, w - 0.4, band, [Para([Run("BROWSER   ", "sans-semibold", 11, "gold", 1.6),
-                                             Run("Chat page  ·  Agentic Control Panel  ·  Prompt Flow Panel"
+                                             Run("Página del chat  ·  Agentic Control Panel  ·  Prompt Flow Panel"
                                                  "  ·  WebSockets", "sans", 13, "light")])],
          anchor="middle", label="browser")
     ry = y + band + gap
@@ -534,8 +534,8 @@ def visual_layers(sc, layers, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTOM
              label="layer text", parent=parent)
         ry += row_h + gap
     shape_box(sc, x, ry, w, band, fill="stone", radius=0.08, label="models band")
-    text(sc, x + 0.2, ry, w - 0.4, band, [Para([Run("MODELS   ", "sans-semibold", 11, "gold", 1.6),
-                                              Run("Ollama (local and cloud)  ·  Anthropic Claude  ·  Qwen "
+    text(sc, x + 0.2, ry, w - 0.4, band, [Para([Run("MODELOS   ", "sans-semibold", 11, "gold", 1.6),
+                                              Run("Ollama (local y en la nube)  ·  Anthropic Claude  ·  visión de Qwen "
                                                   "vision", "sans", 13, "light")])], anchor="middle", label="models")
 
 
@@ -592,7 +592,7 @@ def visual_cascade(sc, stages, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTO
     for index, (name, note) in enumerate(stages):
         r, col = divmod(index, per_row)
         bx, by = x + col * (bw + gap), y + 0.2 + r * (bh + 0.55)
-        tone = "jade" if name in ("BOM", "Empty") else ("copper" if index in (0, 4, 5, 6, 7) else "gold")
+        tone = "jade" if name in ("BOM", "Vacío") else ("copper" if index in (0, 4, 5, 6, 7) else "gold")
         parent = shape_box(sc, bx, by, bw, bh, fill="panel", line=tone, radius=0.12, line_w=1.4, label="stage")
         text(sc, bx + 0.18, by + 0.14, bw - 0.36, 0.5, [Para([Run(f"{index + 1}   ", "serif-bold", 16, tone),
                                                              Run(name, "sans-semibold", 16, "ivory")])],
@@ -602,8 +602,8 @@ def visual_cascade(sc, stages, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTO
         if col < per_row - 1:
             line(sc, bx + bw + 0.04, by + bh / 2, bx + bw + gap - 0.04, by + bh / 2, "copper", 1.4, True)
     text(sc, x, y + h - 0.55, w, 0.5, [Para(marked(
-        "Copper stages can drop a binary file; jade stages can only keep a file as text. Any doubt keeps the "
-        "file, and every omission is logged under `--- [BINARY-GUARD]`.", "sans-italic", 13, "light_muted",
+        "Las etapas cobrizas pueden quitar un archivo binario; las etapas de jade sólo pueden conservarlo como texto. Ante cualquier duda, el "
+        "archivo se conserva, y cada omisión se registra con `--- [BINARY-GUARD]`.", "sans-italic", 13, "light_muted",
         code_color="gold"))], label="cascade note")
 
 
@@ -666,8 +666,8 @@ def visual_operations(sc, ops, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTO
                            label="format card")
         text(sc, cx + 0.25, cy + 0.2, w - col * (cw + gap) - 0.5, ch - 0.4, [
             Para([Run(".fpmt", "mono-bold", 22, "gold")]),
-            Para(marked("A portable JSON diagram: `tlamatini-prompting-flow`, version 2. Opening a file never "
-                        "runs it; Validate, then Play.", "sans", 13, "light", code_color="gold"), space_before=8)],
+            Para(marked("Un diagrama JSON portátil: `tlamatini-prompting-flow`, versión 2. Abrir un archivo nunca "
+                        "lo ejecuta; Validar, y luego Ejecutar.", "sans", 13, "light", code_color="gold"), space_before=8)],
              label="format text", parent=parent)
 
 
@@ -754,7 +754,7 @@ def visual_timeline(sc, rows, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTOM
 def visual_bars(sc, rows, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTOM - CONTENT_TOP, title=""):
     data = CategoryChartData()
     data.categories = [name for name, _ in rows][::-1]
-    data.add_series(title or "Value", [value for _, value in rows][::-1])
+    data.add_series(title or "Valor", [value for _, value in rows][::-1])
     frame = sc.slide.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(x), Inches(y), Inches(w), Inches(h), data)
     sc.track(x, y, w, h, "chart", "chart")
     chart = frame.chart
@@ -793,22 +793,22 @@ def visual_bars(sc, rows, x=MX, y=CONTENT_TOP, w=CONTENT_W, h=CONTENT_BOTTOM - C
 # ── Slide builders ──────────────────────────────────────────────────
 def cover_slide(deck: Deck):
     f = deck.facts
-    sc = deck.new("cover", notes="Tlamatini: the complete project dossier. Created by Angela López Mendoza.")
+    sc = deck.new("cover", notes="Tlamatini: el dossier completo del proyecto. Creada por Angela López Mendoza.")
     portrait = circular_portrait()
     d = 4.25
     picture(sc, portrait, SW * 0.30 - d / 2, SH * 0.52 - d / 2, d, d, label="portrait")
     x = 7.05
-    text(sc, x, 0.98, 5.8, 0.36, one("THE COMPLETE PROJECT DOSSIER", "sans-semibold", 12, "copper", spacing=3.4),
+    text(sc, x, 0.98, 5.8, 0.36, one("EL DOSSIER COMPLETO DEL PROYECTO", "sans-semibold", 12, "copper", spacing=3.4),
          label="cover kicker")
     text(sc, x - 0.06, 1.38, 5.9, 1.33, one("Tlamatini", "serif", 76, "ivory"), label="cover title")
-    text(sc, x, 2.74, 5.8, 0.55, one("the one who knows", "serif-italic", 26, "jade"), label="cover tagline")
+    text(sc, x, 2.74, 5.8, 0.55, one("la que sabe", "serif-italic", 26, "jade"), label="cover tagline")
     text(sc, x, 3.42, 5.7, 1.1, [Para(marked(
-        "A self-hosted AI developer assistant with a visual agent-workflow designer, a universal MCP client, "
-        "and the reach to drive real boards, engines and networks.", "sans-light", 16.5, "light"))],
+        "Una asistente de desarrollo con IA alojada por ti, con un diseñador visual de workflows de agents, un cliente MCP universal "
+        "y el alcance para manejar tarjetas, motores y redes reales.", "sans-light", 16.5, "light"))],
          label="cover subtitle")
-    metrics = [(str(f["agents"]), "agent types"), (str(f["tools"]), "Multi-Turn tools"),
+    metrics = [(str(f["agents"]), "tipos de agent"), (str(f["tools"]), "tools de Multi-Turn"),
                (str(f["skills"]), "skills"), (f"v{f['version']}",
-                "current release" if f"v{f['version']}" == (f.get("release") or {}).get("latest_published")
+                "release actual" if f"v{f['version']}" == (f.get("release") or {}).get("latest_published")
                 else "version")]
     mw = 5.8 / 4
     for index, (value, label) in enumerate(metrics):
@@ -818,18 +818,18 @@ def cover_slide(deck: Deck):
              label="cover metric label")
         if index:
             line(sc, mx - 0.1, 4.86, mx - 0.1, 5.6, "edge", 0.9)
-    text(sc, x, 6.12, 5.8, 0.34, one("Created by Angela López Mendoza  ·  @angelahack1", "sans-semibold",
+    text(sc, x, 6.12, 5.8, 0.34, one("Creada por Angela López Mendoza  ·  @angelahack1", "sans-semibold",
                                      13, "ivory"), label="cover credit")
     text(sc, x, 6.46, 5.8, 0.3, one(f"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini  ·  MIT",
                                     "sans", 10.5, "light_muted"), label="cover date")
 
 
 def agenda_slide(deck: Deck, chapters):
-    sc = deck.new("content", notes="What this dossier covers, chapter by chapter.")
-    deck.header(sc, "CONTENTS", "What this dossier covers",
-                "Nine chapters from identity to inventory, and the application file tree at the end.")
+    sc = deck.new("content", notes="Lo que cubre este dossier, capítulo por capítulo.")
+    deck.header(sc, "CONTENTS", "Lo que cubre este dossier",
+                "Nueve capítulos de la identidad al inventario, y el árbol de archivos de la aplicación al final.")
     items = [(ch.numeral, ch.title, ch.tagline, ch.accent) for ch in chapters]
-    items.append(("A", "The application file tree", "Application files; database history is summarized.", "gold"))
+    items.append(("A", "El árbol de archivos de la aplicación", "Archivos de la aplicación; la historia de la base de datos se resume.", "gold"))
     cols = 2
     per_col = math.ceil(len(items) / cols)
     gap = 0.4
@@ -844,11 +844,11 @@ def agenda_slide(deck: Deck, chapters):
              min_scale=0.7)
         text(sc, cx + 0.9, cy + 0.42, cw - 0.95, rh - 0.46, one(tagline, "sans", 12, "light_muted"),
              label="agenda tagline", min_scale=0.62)
-    deck.chrome(sc, "Contents")
+    deck.chrome(sc, "Contenido")
 
 
 def divider_slide(deck: Deck, chapter, label_override: str | None = None):
-    sc = deck.new("divider", notes=f"Chapter {chapter.numeral}: {chapter.title}. {chapter.tagline}")
+    sc = deck.new("divider", notes=f"Capítulo {chapter.numeral}: {chapter.title}. {chapter.tagline}")
     text(sc, 0.9, 0.95, 5.0, 0.4, one("CHAPTER" if chapter.numeral[0] in "IVX" else "APPENDIX", "sans-semibold",
                                       13, chapter.accent, spacing=3.4), label="div kicker")
     text(sc, 0.82, 1.38, 5.5, 1.85, one(chapter.numeral, "serif", 120, "copper"), label="div numeral", min_scale=0.5)
@@ -888,7 +888,7 @@ def section_slides(deck: Deck, chapter, section):
         sc = deck.new("content", notes=notes)
         portrait = circular_portrait()
         picture(sc, portrait, 0.7, 1.05, 4.2, 4.2, label="identity portrait")
-        text(sc, 0.7, 5.35, 4.2, 0.5, one("“one who knows”", "serif-italic", 20, "jade", "center"),
+        text(sc, 0.7, 5.35, 4.2, 0.5, one("“la que sabe”", "serif-italic", 20, "jade", "center"),
              label="identity quote")
         text(sc, 0.7, 5.88, 4.2, 0.36, one("NAHUATL", "sans-semibold", 11, "copper", "center", 3.0),
              label="identity lang")
@@ -920,7 +920,7 @@ def section_slides(deck: Deck, chapter, section):
         chunks = [members] if len(members) <= 12 else [members[:7], members[7:]]
         for part, chunk in enumerate(chunks):
             suffix = f"  ({part + 1}/{len(chunks)})" if len(chunks) > 1 else ""
-            sc = start(f"AGENT FAMILY  ·  {len(members)} AGENTS", section.title + suffix, section.lede)
+            sc = start(f"FAMILIA DE AGENTS  ·  {len(members)} AGENTS", section.title + suffix, section.lede)
             sizes = (21, 16.5) if len(chunk) <= 6 else ((19, 15) if len(chunk) <= 8 else (17.5, 14))
             family_grid(sc, chunk, tone, *sizes)
             deck.chrome(sc, label)
@@ -967,7 +967,7 @@ def section_slides(deck: Deck, chapter, section):
         elif kind == "language_bars":
             from dossier_pdf import language_series
 
-            visual_bars(sc, language_series(f, 14), title="Effective lines")
+            visual_bars(sc, language_series(f, 14), title="Líneas efectivas")
         elif kind == "family_wheel":
             visual_family_tiles(sc)
         deck.chrome(sc, label)
@@ -1022,7 +1022,7 @@ def right_panel(sc, section, x, y, w, h):
         table_block(sc, t["columns"], t["rows"], t["widths"], x=x, y=y, w=w, h=h, size=12, align=t.get("align"))
     elif section.visual == "bars_models":
         visual_bars(sc, [(name, count) for name, count in sc_facts["model_groups"]], x=x, y=y, w=w, h=h,
-                    title="Settings")
+                    title="Configuración")
     elif section.visual == "chain":
         data = section.visual_data
         visual_chain_vertical(sc, data["chain"], data.get("caption", ""), x, y, w, h)
@@ -1065,7 +1065,7 @@ def callout_slide(deck, chapter, section, notes, label):
     text(sc, MX + 0.6, CONTENT_TOP - 0.05, CONTENT_W - 1.2, 3.1,
          [Para(marked(body, "sans-light", 26, "ivory", bold_font="sans-semibold", code_color="gold"))],
          anchor="middle", label="callout text", parent=parent, min_scale=0.55)
-    text(sc, MX, 5.72, CONTENT_W, 0.5, one(f"From “{plain(section.title)}”", "sans-italic", 13,
+    text(sc, MX, 5.72, CONTENT_W, 0.5, one(f"De “{plain(section.title)}”", "sans-italic", 13,
                                           "light_muted"), label="callout source")
     deck.chrome(sc, label)
 
@@ -1103,11 +1103,11 @@ def tree_slides(deck: Deck, tree_text: str):
     total = math.ceil(len(lines) / per_slide)
     for page in range(total):
         chunk = lines[page * per_slide:(page + 1) * per_slide]
-        sc = deck.new("appendix", notes="Appendix A: the application file tree, continued.")
-        text(sc, MX, 0.42, 9.5, 0.36, one(f"APPENDIX A  ·  APPLICATION FILE TREE  ·  {page + 1} / {total}",
+        sc = deck.new("appendix", notes="Apéndice A: el árbol de archivos de la aplicación, continúa.")
+        text(sc, MX, 0.42, 9.5, 0.36, one(f"APÉNDICE A  ·  ÁRBOL DE ARCHIVOS DE LA APLICACIÓN  ·  {page + 1} / {total}",
                                           "sans-semibold", 11, "copper", spacing=2.0), label="tree kicker")
-        text(sc, MX, 0.80, CONTENT_W, 0.42, one(f"{deck.facts['tree_count']:,} listed files at commit "
-                                                f"{deck.facts['head_short']}; {deck.facts['tree_history_count']} database-history files summarized.",
+        text(sc, MX, 0.80, CONTENT_W, 0.42, one(f"{deck.facts['tree_count']:,} archivos listados en el commit "
+                                                f"{deck.facts['head_short']}; {deck.facts['tree_history_count']} archivos de la historia de la base de datos resumidos.",
                                                 "sans", 13, "light_muted"), label="tree lede")
         for col in range(TREE_COLS):
             part = chunk[col * per_col:(col + 1) * per_col]
@@ -1116,21 +1116,21 @@ def tree_slides(deck: Deck, tree_text: str):
             x = MX + col * (col_w + col_gap)
             paras = [Para([Run(item, "mono", TREE_PT, "jade" if item.endswith("/") else "light")]) for item in part]
             text(sc, x, top, col_w, bottom - top, paras, label="tree column", wrap=False, min_scale=1.0)
-        deck.chrome(sc, "Appendix A · File tree")
+        deck.chrome(sc, "Apéndice A · Árbol de archivos")
 
 
 def closing_slide(deck: Deck):
     f = deck.facts
-    sc = deck.new("divider", notes="Tlamatini — one who knows. Created by Angela López Mendoza.")
+    sc = deck.new("divider", notes="Tlamatini, la que sabe. Creada por Angela López Mendoza.")
     portrait = circular_portrait(ring="copper")
     picture(sc, portrait, 1.1, 1.35, 4.5, 4.5, label="closing portrait")
     text(sc, 6.3, 1.7, 6.3, 1.2, one("Tlamatini", "serif", 64, "ivory"), label="closing title")
-    text(sc, 6.33, 2.95, 6.2, 0.55, one("one who knows", "serif-italic", 24, "jade"), label="closing tagline")
+    text(sc, 6.33, 2.95, 6.2, 0.55, one("la que sabe", "serif-italic", 24, "jade"), label="closing tagline")
     text(sc, 6.33, 3.62, 6.3, 1.6, [Para(marked(
-        "Conceived, designed and built by **Angela López Mendoza**. Every number in this deck was counted "
-        "from the source tree when it was generated.", "sans-light", 17, "light", bold_font="sans-semibold",
+        "Concebida, diseñada y construida por **Angela López Mendoza**. Cada número de esta presentación se contó "
+        "a partir del árbol del source cuando se generó.", "sans-light", 17, "light", bold_font="sans-semibold",
         bold_color="ivory"))], label="closing text")
-    text(sc, 6.33, 5.35, 6.0, 0.4, one("Regenerate with  refresh_project_docs.py", "mono", 13, "gold"),
+    text(sc, 6.33, 5.35, 6.0, 0.4, one("Regenérala con  refresh_project_docs.py", "mono", 13, "gold"),
          label="closing code")
     text(sc, 6.33, 5.8, 6.0, 0.36, one(f"{f['generated_date']}  ·  commit {f['head_short']}  ·  "
                                        "github.com/XAIHT/Tlamatini", "sans", 11, "light_muted"), label="closing meta")
@@ -1177,17 +1177,17 @@ def build_pptx(facts: dict, chapters, output) -> int:
     agenda_slide(deck, chapters)
     for chapter in chapters:
         sc = divider_slide(deck, chapter)
-        deck.chrome(sc, f"Chapter {chapter.numeral}")
+        deck.chrome(sc, f"Capítulo {chapter.numeral}")
         for section in chapter.sections:
             if section.deck != "none":
                 section_slides(deck, chapter, section)
     from dossier_content import Chapter
 
-    appendix = Chapter("tree", "A", "The application file tree",
-                       f"{facts['tree_count']:,} application files, with {facts['tree_history_count']} database-history files summarized.", [],
+    appendix = Chapter("tree", "A", "El árbol de archivos de la aplicación",
+                       f"{facts['tree_count']:,} archivos de la aplicación, con {facts['tree_history_count']} archivos de la historia de la base de datos resumidos.", [],
                        accent="gold")
     sc = divider_slide(deck, appendix)
-    deck.chrome(sc, "Appendix A")
+    deck.chrome(sc, "Apéndice A")
     tree_slides(deck, facts["tree_text"])
     closing_slide(deck)
     problems = audit(deck.canvases)
@@ -1196,10 +1196,10 @@ def build_pptx(facts: dict, chapters, output) -> int:
     LEDGER.assert_clean("PPTX")
     core = deck.prs.core_properties
     core.author = "Angela López Mendoza"
-    core.title = "Tlamatini — Complete Project Dossier"
+    core.title = "Tlamatini — Dossier completo del proyecto"
     core.subject = f"Tlamatini {facts['version']}"
-    core.keywords = "Tlamatini; agents; Multi-Turn; ACPX; MCP; workflow designer"
-    core.comments = "Generated by refresh_project_docs.py from the source tree."
+    core.keywords = "Tlamatini; agents; Multi-Turn; ACPX; MCP; diseñador de workflows"
+    core.comments = "Generado por refresh_project_docs.py a partir del árbol del source."
     deck.prs.save(str(output))
     return len(deck.canvases)
 
