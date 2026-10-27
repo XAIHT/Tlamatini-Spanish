@@ -637,21 +637,6 @@
    "n": 1
   },
   {
-   "en": "> Current release: **[v1.91.0](docs/changes/2026-10-23-v1.91.0.md)**. Dated records below retain their original evidence dates.",
-   "es": "> Release actual: **[v1.91.0](docs/changes/2026-10-23-v1.91.0.md)**. Los registros fechados de abajo conservan sus fechas de evidencia originales.",
-   "n": 1
-  },
-  {
-   "en": "## v1.91.0 — Live Editor and Terminater configuration",
-   "es": "## v1.91.0 — Configuración de Editor en vivo y Terminater",
-   "n": 1
-  },
-  {
-   "en": "**v1.91.0** is the current source version (2026-10-23). Its existing annotated tag\nresolves to `a771d27c` and is present on origin. The catalog remains **86 workflow\nagents, 67 wrapped chat agents and 110 built-in tools** (21 + 67 + 12 + 10), with\n**29 skills and 220 migrations**. The frontend has **64 JS modules and 29 CSS\nfiles** in the counted `static/agent/js` and `static/agent/css` directories.",
-   "es": "**v1.91.0** es la versión actual del código fuente (2026-10-23). Su tag anotado existente\nresuelve a `a771d27c` y está en origin. El catálogo sigue siendo **86 workflow\nagents, 67 wrapped chat agents y 110 tools integrados** (21 + 67 + 12 + 10), con\n**29 skills y 220 migraciones**. El frontend tiene **64 módulos JS y 29 archivos\nCSS** en los directorios contados `static/agent/js` y `static/agent/css`.",
-   "n": 1
-  },
-  {
    "en": "**Config → Live Editor & Terminater** opens one dialog with Live Editor,\nTerminater and Voice tabs, also available from the canvas and terminal Settings\nbuttons on the chat and control-panel surfaces. Saved account preferences control\nreal action pacing, teaching suggestions, shell defaults, manual Enter, waits and\nnarration; editor/terminal appearance stays local to the account and browser.\nPresets and previews are drafts until Save; Stop, mute and tab access are immediate.",
    "es": "**Config → Editor en vivo y Terminater** abre un diálogo con las pestañas de Editor en vivo,\nTerminater y Voz, disponible también desde los botones de Settings del canvas y de la terminal\nen las superficies del chat y de los paneles de control. Las preferencias guardadas de la cuenta controlan\nel ritmo real de las acciones, las sugerencias de enseñanza, los valores predeterminados del shell, el Enter manual, las esperas y\nla narración; la apariencia del editor/terminal se queda local a la cuenta y al browser.\nLos presets y las vistas previas son borradores hasta que Guardas; Stop, silenciar y el acceso a las pestañas son inmediatos.",
    "n": 1
@@ -662,11 +647,6 @@
    "n": 1
   },
   {
-   "en": "Source evidence on October 23: **17/17 visible browser checks passed; 929 of 931\nregression tests passed**, with two existing README documentation assertions failing\nbefore this documentation sweep. These are dated source results, not a new installed\npackage acceptance. No GitHub release for v1.91.0 was found during this sweep.\nSee the [release record](docs/changes/2026-10-23-v1.91.0.md) and\n[settings guide](docs/interaction-settings.md).",
-   "es": "Evidencia de código fuente del 23 de octubre: **17/17 revisiones visibles en el browser pasaron; 929 de 931\npruebas de regresión pasaron**, con dos aserciones de documentación del README existentes fallando\nantes de este barrido de documentación. Estos son resultados fechados de código fuente, no la aceptación de un\npaquete instalado nuevo. No se encontró ningún release de GitHub para v1.91.0 durante este barrido.\nVe el [registro del release](docs/changes/2026-10-23-v1.91.0.md) y la\n[guía de configuración](docs/interaction-settings.md).",
-   "n": 1
-  },
-  {
    "en": "## Carried from v1.90.0 — editable canvas and Interactor",
    "es": "## Heredado de v1.90.0 — canvas editable e Interactor",
    "n": 1
@@ -674,6 +654,71 @@
   {
    "en": "The v1.90.0 source line had **86 workflow agents, 67 wrapped chat agents, 110 built-in tools (21 direct/module + 67 wrapped + 12 ACPX/Skills + 10 supervisors), and 219 migrations** after migration 0219. Interactor added a module/tool, not an Agent. The annotated tag resolves to `ebc5c3b4` and its GitHub release was published on 2026-10-22. Later commits in that line carried the account wizard’s local Notifier checkpoints. This section preserves v1.90.0 history; current configuration and counts are described above. Dated source and frozen runs remain separate.",
    "es": "La línea de código fuente v1.90.0 tenía **86 workflow agents, 67 wrapped chat agents, 110 tools integrados (21 directos/de módulo + 67 envueltos + 12 ACPX/Skills + 10 supervisores), y 219 migraciones** después de la migración 0219. Interactor agregó un módulo/tool, no un Agent. El tag anotado resuelve a `ebc5c3b4` y su release de GitHub se publicó el 2026-10-22. Los commits posteriores en esa línea llevaron los checkpoints locales de Notifier del account wizard. Esta sección conserva la historia de v1.90.0; la configuración y los conteos actuales se describen arriba. El código fuente fechado y las ejecuciones congeladas siguen siendo cosas distintas.",
+   "n": 1
+  },
+  {
+   "en": "> Current release: **[v1.91.1](docs/changes/2026-10-27-v1.91.1.md)**. Dated records below retain their original evidence dates.",
+   "es": "> Release actual: **[v1.91.1](docs/changes/2026-10-27-v1.91.1.md)**. Los registros fechados de abajo conservan sus fechas de evidencia originales.",
+   "n": 1
+  },
+  {
+   "en": "## v1.91.1 — Prompt Flow fixes and short tool names",
+   "es": "## v1.91.1 — Correcciones de Prompt Flow y nombres cortos de tools",
+   "n": 1
+  },
+  {
+   "en": "**v1.91.1** is the current version (2026-10-27). Its annotated tag resolves to\n`9915938a` and is present on origin; it is published on GitHub as the Latest\nrelease, replacing v1.91.0 (published 2026-10-23). It is a patch release: no agent,\ntool, skill or migration was added, so the catalog stays **86 workflow agents, 67\nwrapped chat agents, 110 built-in tools, 29 skills and 220 migrations**.",
+   "es": "**v1.91.1** es la versión actual (2026-10-27). Su tag anotado resuelve a\n`9915938a` y está en origin; está publicado en GitHub como el Latest\nrelease, reemplazando a v1.91.0 (publicado 2026-10-23). Es un patch release: no se agregó ningún agent,\ntool, skill ni migración, así que el catálogo sigue siendo **86 workflow agents, 67\nwrapped chat agents, 110 tools integrados, 29 skills y 220 migraciones**.",
+   "n": 1
+  },
+  {
+   "en": "- **Prompt Flow history:** every chain loads the history of the request's own\n  `conversation_user_id`; a Prompt Flow run uses only its own in-memory history.",
+   "es": "- **Historial de Prompt Flow:** cada chain carga el historial del `conversation_user_id` propio\n  de la solicitud; una ejecución de Prompt Flow usa sólo su propio historial en memoria.",
+   "n": 1
+  },
+  {
+   "en": "- **YES/NO Decisions:** an `equals` Decision accepts an answer that opens with the\n  value (`## YES - ...` equals `YES`; `Yesterday` does not), and the Prompt before it\n  asks for that short answer alone on the first line.",
+   "es": "- **Decisiones YES/NO:** una Decisión `equals` acepta una respuesta que empieza con el\n  valor (`## YES - ...` es igual a `YES`; `Yesterday` no), y el Prompt anterior\n  pide esa respuesta corta sola en la primera línea.",
+   "n": 1
+  },
+  {
+   "en": "- **Usage:** a Prompt Flow run is recorded for the account that owns it.",
+   "es": "- **Uso:** una ejecución de Prompt Flow se registra para la cuenta que la posee.",
+   "n": 1
+  },
+  {
+   "en": "- **Telegrammer:** \"using the bot ...\" anywhere in the request (outside quoted values)\n  sends as the bot; an explicit `provider` still wins.",
+   "es": "- **Telegrammer:** \"using the bot ...\" en cualquier parte de la solicitud (fuera de los valores entre comillas)\n  envía como el bot; un `provider` explícito sigue ganando.",
+   "n": 1
+  },
+  {
+   "en": "- **Short tool names:** a wrapped agent called by its short name (`terminater`) is\n  resolved to `chat_agent_terminater` and logged as `[TOOL-ALIAS]`.",
+   "es": "- **Nombres cortos de tools:** un wrapped agent llamado por su nombre corto (`terminater`) se\n  resuelve a `chat_agent_terminater` y se registra como `[TOOL-ALIAS]`.",
+   "n": 1
+  },
+  {
+   "en": "- **Prompt Flow tab title:** an Untitled flow shows the name of its file.",
+   "es": "- **Título de pestaña de Prompt Flow:** un flow Untitled muestra el nombre de su archivo.",
+   "n": 1
+  },
+  {
+   "en": "See the [v1.91.1 release record](docs/changes/2026-10-27-v1.91.1.md).",
+   "es": "Ve el [registro del release v1.91.1](docs/changes/2026-10-27-v1.91.1.md).",
+   "n": 1
+  },
+  {
+   "en": "## Carried from v1.91.0 — Live Editor and Terminater configuration",
+   "es": "## Heredado de v1.91.0 — Configuración de Editor en vivo y Terminater",
+   "n": 1
+  },
+  {
+   "en": "**v1.91.0** was the source version of 2026-10-23. Its existing annotated tag\nresolves to `a771d27c` and is present on origin. The catalog remains **86 workflow\nagents, 67 wrapped chat agents and 110 built-in tools** (21 + 67 + 12 + 10), with\n**29 skills and 220 migrations**. The frontend has **64 JS modules and 29 CSS\nfiles** in the counted `static/agent/js` and `static/agent/css` directories.",
+   "es": "**v1.91.0** fue la versión del código fuente del 2026-10-23. Su tag anotado existente\nresuelve a `a771d27c` y está en origin. El catálogo sigue siendo **86 workflow\nagents, 67 wrapped chat agents y 110 tools integrados** (21 + 67 + 12 + 10), con\n**29 skills y 220 migraciones**. El frontend tiene **64 módulos JS y 29 archivos\nCSS** en los directorios contados `static/agent/js` y `static/agent/css`.",
+   "n": 1
+  },
+  {
+   "en": "Source evidence on October 23: **17/17 visible browser checks passed; 929 of 931\nregression tests passed**, with two existing README documentation assertions failing\nbefore this documentation sweep. These are dated source results, not a new installed\npackage acceptance. v1.91.0 was published on GitHub on 2026-10-23.\nSee the [release record](docs/changes/2026-10-23-v1.91.0.md) and\n[settings guide](docs/interaction-settings.md).",
+   "es": "Evidencia de código fuente del 23 de octubre: **17/17 revisiones visibles en el browser pasaron; 929 de 931\npruebas de regresión pasaron**, con dos aserciones de documentación del README existentes fallando\nantes de este barrido de documentación. Estos son resultados fechados de código fuente, no la aceptación de un\npaquete instalado nuevo. v1.91.0 se publicó en GitHub el 2026-10-23.\nVe el [registro del release](docs/changes/2026-10-23-v1.91.0.md) y la\n[guía de configuración](docs/interaction-settings.md).",
    "n": 1
   }
  ],

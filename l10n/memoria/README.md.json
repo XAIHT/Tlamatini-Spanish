@@ -660,16 +660,6 @@
    "n": 1
   },
   {
-   "en": "<p align=\"center\">\n  <a href=\"https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s\"><b>▶ Watch the teaser</b></a> ·\n  <a href=\"https://xaiht.org\">Website</a> ·\n  <a href=\"BookOfTlamatini.md\">Full guide</a> ·\n  <a href=\"Tlamatini-Architecture.pdf\">Architecture atlas</a> ·\n  <a href=\"docs/changes/2026-10-23-v1.91.0.md\">What's new</a>\n</p>",
-   "es": "<p align=\"center\">\n  <a href=\"https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s\"><b>▶ Mira el teaser</b></a> ·\n  <a href=\"https://xaiht.org\">Sitio web</a> ·\n  <a href=\"BookOfTlamatini.md\">Guía completa</a> ·\n  <a href=\"Tlamatini-Architecture.pdf\">Atlas de arquitectura</a> ·\n  <a href=\"docs/changes/2026-10-23-v1.91.0.md\">Novedades</a>\n</p>",
-   "n": 1
-  },
-  {
-   "en": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents callable from chat</b> &nbsp;·&nbsp; <b>110 built-in tools</b><br />\n  <sub>Current v1.91.0 source inventory. The 67 chat wrappers are included in the 110 tools; enabled external MCP servers add their own tools.</sub>\n</p>",
-   "es": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />\n  <sub>Inventario del código fuente v1.91.0 actual. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores MCP externos activos agregan sus propios tools.</sub>\n</p>",
-   "n": 1
-  },
-  {
    "en": "### Choose how she types, teaches and speaks",
    "es": "### Elige cómo escribe, enseña y habla",
    "n": 1
@@ -677,11 +667,6 @@
   {
    "en": "Open **Config → Live Editor & Terminater** to set the pace of a lesson or command.\nChoose typing speed, pauses, suggestions and appearance; select a default shell\nand whether **you always press Enter**. Turn on narration for every command or\nteaching segment, choose what she says and when, and let speech finish before\ntyping. **Standard** and **Guided learning** presets give you a starting point;\nPreview lets you try the draft before saving. [Explore the settings →](docs/interaction-settings.md)",
    "es": "Abre **Config → Editor en vivo y Terminater** para fijar el ritmo de una lección o un comando.\nElige la velocidad de tecleo, las pausas, las sugerencias y la apariencia; selecciona un shell predeterminado\ny si **siempre presionas Enter**. Activa la narración para cada comando o\nsegmento de enseñanza, elige qué dice y cuándo, y deja que la voz termine antes de\nteclear. Los presets **Estándar** y **Aprendizaje guiado** te dan un punto de partida;\nla Vista previa te deja probar el borrador antes de guardar. [Explora la configuración →](docs/interaction-settings.md)",
-   "n": 1
-  },
-  {
-   "en": "**New in [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** the shared configuration\ndialog controls the real editor and terminal behavior across chat and both control\npanels. This source tag is available; the Downloads link refers to published packages.",
-   "es": "**Nuevo en [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración\ncompartido controla el comportamiento real del editor y de la terminal en el chat y en ambos paneles\nde control. Este tag de código fuente está disponible; el vínculo de Downloads se refiere a los paquetes publicados.",
    "n": 1
   },
   {
@@ -702,6 +687,31 @@
   {
    "en": "Use the [Blue-hat toolkit guide](security/README.md) to configure optional Windows\ndefense and report-only observation. During an in-app update, security code is\nreplaced while existing local evidence is carried through `_security_logs_carryover`\nand restored into the new installation. Evidence preservation does not certify the\nsecurity state of a machine; the guide explains the scripts and their scope.",
    "es": "Usa la [guía del toolkit Blue-hat](security/README.md) para configurar la defensa opcional de\nWindows y la observación en modo sólo reporte. Durante una actualización dentro de la app, el código\nde seguridad se reemplaza mientras la evidencia local existente se conserva mediante `_security_logs_carryover`\ny se restaura en la nueva instalación. Conservar la evidencia no certifica el estado de\nseguridad de una máquina; la guía explica los scripts y su alcance.",
+   "n": 1
+  },
+  {
+   "en": "<p align=\"center\">\n  <a href=\"https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s\"><b>▶ Watch the teaser</b></a> ·\n  <a href=\"https://xaiht.org\">Website</a> ·\n  <a href=\"BookOfTlamatini.md\">Full guide</a> ·\n  <a href=\"Tlamatini-Architecture.pdf\">Architecture atlas</a> ·\n  <a href=\"docs/changes/2026-10-27-v1.91.1.md\">What's new</a>\n</p>",
+   "es": "<p align=\"center\">\n  <a href=\"https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s\"><b>▶ Mira el teaser</b></a> ·\n  <a href=\"https://xaiht.org\">Sitio web</a> ·\n  <a href=\"BookOfTlamatini.md\">Guía completa</a> ·\n  <a href=\"Tlamatini-Architecture.pdf\">Atlas de arquitectura</a> ·\n  <a href=\"docs/changes/2026-10-27-v1.91.1.md\">Novedades</a>\n</p>",
+   "n": 1
+  },
+  {
+   "en": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents callable from chat</b> &nbsp;·&nbsp; <b>110 built-in tools</b><br />\n  <sub>Current v1.91.1 source inventory. The 67 chat wrappers are included in the 110 tools; enabled external MCP servers add their own tools.</sub>\n</p>",
+   "es": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />\n  <sub>Inventario del código fuente v1.91.1 actual. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores MCP externos activos agregan sus propios tools.</sub>\n</p>",
+   "n": 1
+  },
+  {
+   "en": "**New in [v1.91.1](docs/changes/2026-10-27-v1.91.1.md):** Prompt Flow runs keep their own\nhistory, YES/NO Decisions accept an answer that opens with the verdict, and an agent\ncalled by its short name still runs. v1.91.1 is the Latest published release.",
+   "es": "**Nuevo en [v1.91.1](docs/changes/2026-10-27-v1.91.1.md):** las ejecuciones de Prompt Flow conservan su propio\nhistorial, las Decisiones YES/NO aceptan una respuesta que empieza con el verdicto, y un agent\nllamado por su nombre corto sigue corriendo. v1.91.1 es el Latest release publicado.",
+   "n": 1
+  },
+  {
+   "en": "**Since [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** the shared configuration\ndialog controls the real editor and terminal behavior across chat and both control\npanels. This source tag is available; the Downloads link refers to published packages.",
+   "es": "**Desde [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración\ncompartido controla el comportamiento real del editor y de la terminal en el chat y en ambos\npaneles de control. Este tag de código fuente está disponible; el vínculo de Downloads se refiere a los paquetes publicados.",
+   "n": 1
+  },
+  {
+   "en": "| [v1.91.1 release record](docs/changes/2026-10-27-v1.91.1.md) | The current patch release: what it fixes and where. |",
+   "es": "| [Registro del release v1.91.1](docs/changes/2026-10-27-v1.91.1.md) | El patch release actual: qué corrige y dónde. |",
    "n": 1
   }
  ],

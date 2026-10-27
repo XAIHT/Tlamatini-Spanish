@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/XAIHT/Tlamatini/tree/v1.91.0"><img src="https://img.shields.io/badge/SOURCE-v1.91.0-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini source v1.91.0" /></a>
+  <a href="https://github.com/XAIHT/Tlamatini/tree/v1.91.1"><img src="https://img.shields.io/badge/SOURCE-v1.91.1-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini source v1.91.1" /></a>
   <a href="#installation"><img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-14B8A6?style=for-the-badge&labelColor=101827" alt="Windows 10 and 11" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/OPEN%20SOURCE-MIT-E9C46A?style=for-the-badge&labelColor=101827" alt="MIT open source" /></a>
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-818CF8?style=for-the-badge&labelColor=101827&logo=discord&logoColor=white" alt="Join the community on Discord" /></a>
@@ -31,7 +31,7 @@
   <a href="https://xaiht.org">Sitio web</a> ·
   <a href="BookOfTlamatini.md">Guía completa</a> ·
   <a href="Tlamatini-Architecture.pdf">Atlas de arquitectura</a> ·
-  <a href="docs/changes/2026-10-23-v1.91.0.md">Novedades</a>
+  <a href="docs/changes/2026-10-27-v1.91.1.md">Novedades</a>
 </p>
 
 > > [!IMPORTANT]
@@ -39,7 +39,7 @@
 
 <p align="center">
   <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />
-  <sub>Inventario del código fuente v1.91.0 actual. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores MCP externos activos agregan sus propios tools.</sub>
+  <sub>Inventario del código fuente v1.91.1 actual. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores MCP externos activos agregan sus propios tools.</sub>
 </p>
 
 <p align="center">
@@ -106,9 +106,13 @@ segmento de enseñanza, elige qué dice y cuándo, y deja que la voz termine ant
 teclear. Los presets **Estándar** y **Aprendizaje guiado** te dan un punto de partida;
 la Vista previa te deja probar el borrador antes de guardar. [Explora la configuración →](docs/interaction-settings.md)
 
-**Nuevo en [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración
-compartido controla el comportamiento real del editor y de la terminal en el chat y en ambos paneles
-de control. Este tag de código fuente está disponible; el vínculo de Downloads se refiere a los paquetes publicados.
+**Nuevo en [v1.91.1](docs/changes/2026-10-27-v1.91.1.md):** las ejecuciones de Prompt Flow conservan su propio
+historial, las Decisiones YES/NO aceptan una respuesta que empieza con el verdicto, y un agent
+llamado por su nombre corto sigue corriendo. v1.91.1 es el Latest release publicado.
+
+**Desde [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración
+compartido controla el comportamiento real del editor y de la terminal en el chat y en ambos
+paneles de control. Este tag de código fuente está disponible; el vínculo de Downloads se refiere a los paquetes publicados.
 
 **Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El registro de releases distingue el código fuente etiquetado, los cambios posteriores en `main` y la evidencia fechada del build instalado.
 
@@ -285,6 +289,7 @@ Elige una puerta de entrada y profundiza tanto como lo necesite tu proyecto.
 | :--- | :--- |
 | [Book of Tlamatini](BookOfTlamatini.md) | La guía completa, la arquitectura, los workflows y la historia del desarrollo. |
 | [Todos los agents](agents_descriptions.md) | El catálogo de especialistas y el rol de cada agent. |
+| [Registro del release v1.91.1](docs/changes/2026-10-27-v1.91.1.md) | El patch release actual: qué corrige y dónde. |
 | [Registro del release v1.91.0](docs/changes/2026-10-23-v1.91.0.md) | Desarrollos recientes, inventario del código fuente y evidencia de verificación fechada. |
 | [Edición en el canvas](docs/canvas-editing.md) · [Interactor](docs/interactor.md) · [Terminater](docs/terminater.md) | Edita, aprende y ejecuta con control directo. |
 | [Configuración de Editor en vivo y Terminater](docs/interaction-settings.md) | Tecleo, enseñanza, narración, comportamiento de la terminal, presets y apariencia. |

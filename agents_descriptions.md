@@ -8,11 +8,33 @@
 -->
 # Tlamatini — Descripciones de agents
 
-> Release actual: **[v1.91.0](docs/changes/2026-10-23-v1.91.0.md)**. Los registros fechados de abajo conservan sus fechas de evidencia originales.
+> Release actual: **[v1.91.1](docs/changes/2026-10-27-v1.91.1.md)**. Los registros fechados de abajo conservan sus fechas de evidencia originales.
 
-## v1.91.0 — Configuración de Editor en vivo y Terminater
+## v1.91.1 — Correcciones de Prompt Flow y nombres cortos de tools
 
-**v1.91.0** es la versión actual del código fuente (2026-10-23). Su tag anotado existente
+**v1.91.1** es la versión actual (2026-10-27). Su tag anotado resuelve a
+`9915938a` y está en origin; está publicado en GitHub como el Latest
+release, reemplazando a v1.91.0 (publicado 2026-10-23). Es un patch release: no se agregó ningún agent,
+tool, skill ni migración, así que el catálogo sigue siendo **86 workflow agents, 67
+wrapped chat agents, 110 tools integrados, 29 skills y 220 migraciones**.
+
+- **Historial de Prompt Flow:** cada chain carga el historial del `conversation_user_id` propio
+  de la solicitud; una ejecución de Prompt Flow usa sólo su propio historial en memoria.
+- **Decisiones YES/NO:** una Decisión `equals` acepta una respuesta que empieza con el
+  valor (`## YES - ...` es igual a `YES`; `Yesterday` no), y el Prompt anterior
+  pide esa respuesta corta sola en la primera línea.
+- **Uso:** una ejecución de Prompt Flow se registra para la cuenta que la posee.
+- **Telegrammer:** "using the bot ..." en cualquier parte de la solicitud (fuera de los valores entre comillas)
+  envía como el bot; un `provider` explícito sigue ganando.
+- **Nombres cortos de tools:** un wrapped agent llamado por su nombre corto (`terminater`) se
+  resuelve a `chat_agent_terminater` y se registra como `[TOOL-ALIAS]`.
+- **Título de pestaña de Prompt Flow:** un flow Untitled muestra el nombre de su archivo.
+
+Ve el [registro del release v1.91.1](docs/changes/2026-10-27-v1.91.1.md).
+
+## Heredado de v1.91.0 — Configuración de Editor en vivo y Terminater
+
+**v1.91.0** fue la versión del código fuente del 2026-10-23. Su tag anotado existente
 resuelve a `a771d27c` y está en origin. El catálogo sigue siendo **86 workflow
 agents, 67 wrapped chat agents y 110 tools integrados** (21 + 67 + 12 + 10), con
 **29 skills y 220 migraciones**. El frontend tiene **64 módulos JS y 29 archivos
@@ -35,7 +57,7 @@ módulos de UI y de backend.
 Evidencia de código fuente del 23 de octubre: **17/17 revisiones visibles en el browser pasaron; 929 de 931
 pruebas de regresión pasaron**, con dos aserciones de documentación del README existentes fallando
 antes de este barrido de documentación. Estos son resultados fechados de código fuente, no la aceptación de un
-paquete instalado nuevo. No se encontró ningún release de GitHub para v1.91.0 durante este barrido.
+paquete instalado nuevo. v1.91.0 se publicó en GitHub el 2026-10-23.
 Ve el [registro del release](docs/changes/2026-10-23-v1.91.0.md) y la
 [guía de configuración](docs/interaction-settings.md).
 

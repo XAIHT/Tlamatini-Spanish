@@ -1,9 +1,9 @@
 {
  "ingles": "C:/Development/XAIHT/Tlamatini",
- "commit": "9915938aca55060980f1b0245f02cae67fbffdd0",
- "fecha_commit": "2026-10-27T07:46:21-06:00",
- "titulo_commit": "Fix on prompting flow correction with conversation_user_id, and answering handling, ans some additional GUI fixes, by Tñamaitni's-AutoBot.",
- "copiado": "2026-10-27T07:56:32",
+ "commit": "1d13922ded76a1a9526e8a3edd2684f4a0785f02",
+ "fecha_commit": "2026-10-27T09:24:42-06:00",
+ "titulo_commit": "Documentation sweep for v1.91.1 (release record, docs, skills, memory, dossiers), with keys regenerated as push-able, by Tlamatini's-AutoBot.",
+ "copiado": "2026-10-27T09:26:00",
  "archivos": [
   ".claude/hooks/announce_skills.py",
   ".claude/hooks/test_announce_skills.py",
@@ -1664,6 +1664,7 @@
   "docs/changes/2026-10-22-release-version-pinning.md",
   "docs/changes/2026-10-22-v1.90.0.md",
   "docs/changes/2026-10-23-v1.91.0.md",
+  "docs/changes/2026-10-27-v1.91.1.md",
   "docs/chat-microphone-design.md",
   "docs/claude/INDEX.md",
   "docs/claude/acpx.md",
