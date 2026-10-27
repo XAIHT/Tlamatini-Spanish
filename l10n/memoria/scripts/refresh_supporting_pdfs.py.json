@@ -1,0 +1,21 @@
+{
+ "archivo": "scripts/refresh_supporting_pdfs.py",
+ "segmentos": [
+  {
+   "en": "\"Lifecycle, ownership and current implementation limits\"",
+   "es": "\"Ciclo de vida, propiedad y límites actuales de implementación\"",
+   "n": 1
+  },
+  {
+   "en": "\"Tlamatini v1.91.0 | Angela López Mendoza | source review 2026-10-23\"",
+   "es": "\"Tlamatini v1.91.0 | Angela López Mendoza | revisión de fuente 2026-10-23\"",
+   "n": 1
+  },
+  {
+   "en": "\"OOB and NAMU - v1.91.0\"",
+   "es": "\"OOB y NAMU - v1.91.0\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

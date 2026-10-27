@@ -21,13 +21,13 @@ def footer(canvas, doc):
     canvas.line(42, 46, A4[0]-42, 46)
     canvas.setFont("Doc", 8)
     canvas.setFillColor(colors.HexColor("#53657b"))
-    canvas.drawString(42, 31, "Tlamatini v1.91.0 | Angela López Mendoza | source review 2026-10-23")
+    canvas.drawString(42, 31, "Tlamatini v1.91.0 | Angela López Mendoza | revisión de fuente 2026-10-23")
     canvas.drawRightString(A4[0]-42, 31, str(doc.page))
 def main():
     text = (ROOT/"docs/oob-namu-lifecycle.md").read_text(encoding="utf-8")
     parts = text.split("\n## ")
     story = [Paragraph(escape(parts[0].splitlines()[0].removeprefix("# ")), TITLE),
-             Paragraph("Lifecycle, ownership and current implementation limits", BODY), Spacer(1, 8)]
+             Paragraph("Ciclo de vida, propiedad y límites actuales de implementación", BODY), Spacer(1, 8)]
     for index, part in enumerate(parts[1:]):
         if index:
             story.append(PageBreak())
@@ -37,7 +37,7 @@ def main():
             story.append(Paragraph(escape(" ".join(para.splitlines())), BODY))
     path = ROOT/"OOB_shift_reaper-and-NAMU-Design.pdf"
     SimpleDocTemplate(str(path), pagesize=A4, leftMargin=42, rightMargin=42,
-                      topMargin=42, bottomMargin=64, title="OOB and NAMU - v1.91.0",
+                      topMargin=42, bottomMargin=64, title="OOB y NAMU - v1.91.0",
                       author="Angela López Mendoza").build(story, onFirstPage=footer, onLaterPages=footer)
     print(f"Regenerated {path}", flush=True)
     # Keep this file a small renderer fixture, not another product guide.

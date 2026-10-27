@@ -1,83 +1,38 @@
-# OOB_shift_reaper and NAMU - v1.91.0 source review
+# OOB_shift_reaper y NAMU - revisión de fuente v1.91.0
 
-Created by Angela López Mendoza · @angelahack1.
-Reviewed against source a771d27c, 2026-10-23; tag v1.91.0 resolves to the same commit.
+Creado por Angela López Mendoza · @angelahack1.
+Revisado contra la fuente a771d27c, 2026-10-23; el tag v1.91.0 resuelve al mismo commit.
 
-## 1. Two lifecycle boundaries
+## 1. Dos fronteras de ciclo de vida
 
-OOB_shift_reaper governs long-running reconnaissance during an ordinary application run.
-NAMU is the priority reconnaissance cleanup in AgentConfig.ready()'s shutdown path.
-These are different boundaries: a grace window during a run does not grant permission
-to outlive the owning application.
+OOB_shift_reaper rige el reconocimiento de larga duración durante una ejecución común de la aplicación. NAMU es la limpieza prioritaria del reconocimiento en el path de apagado deAgentConfig.ready(). Son fronteras distintas: una ventana de gracia durante una ejecución no da permiso de sobrevivir a la aplicación que lo posee.
 
-Nmapper and Discoverer stream subprocess output. Their runner treats a live process
-as possibly hung after startup grace and hang_detect_idle_seconds without output.
-Before the free-run threshold it logs a warning and continues. After that threshold,
-a still-hung process is tree-killed and partial output is retained. A process that has
-already exited is drained and reported as finished. A process producing output is
-not killed merely because this particular OOB threshold has elapsed.
+Nmapper y Discoverer transmiten la salida del subproceso. Su runner considera que un proceso vivo podría estar colgado después de la gracia de arranque y de hang_detect_idle_seconds sin salida. Antes del umbral de ejecución libre registra una advertencia y continúa. Después de ese umbral, un proceso que sigue colgado se mata por árbol y se conserva la salida parcial. Un proceso que ya salió se drena y se reporta como terminado. Un proceso que está produciendo salida no se mata sólo porque este umbral de OOB en particular se haya cumplido.
 
-The condition is elapsed > OOB_shift_reaper, evaluated by the polling loop.
-“Exactly second 3601” is an illustration, not a scheduling guarantee.
-Other explicit user cancellation, operating-system failures or application shutdown
-remain independent causes of termination.
+La condición es elapsed > OOB_shift_reaper, evaluada por el loop de sondeo. “Exactamente el segundo 3601” es una ilustración, no una garantía de agendado. La cancelación explícita del usuario, las fallas del sistema operativo o el apagado de la aplicación siguen siendo causas independientes de terminación.
 
-## 2. Agent-specific behavior and settings
+## 2. Comportamiento y configuración específicos por agent
 
-Nmapper and Discoverer use _run_cmd_oob in their own agent modules. The default
-OOB_shift_reaper is 3600 seconds and the default hang_detect_idle_seconds is 120.
-A no-output interval is an operational heuristic, not proof that a scan is deadlocked.
-Startup grace and logging cadence belong to the runner. Setup/bootstrap/meta commands
-can retain their own shorter timeouts. User-specified scanner limits remain relevant.
+Nmapper y Discoverer usan _run_cmd_oob en sus propios módulos de agent. El OOB_shift_reaper predeterminado es de 3600 segundos y el hang_detect_idle_seconds predeterminado es 120. Un intervalo sin salida es una heurística operativa, no una prueba de que un escaneo esté en deadlock. La gracia de arranque y la cadencia de logging le pertenecen al runner. Los comandos de setup/bootstrap/meta pueden conservar sus propios timeouts más cortos. Los límites de escáner que especifica el usuario siguen siendo relevantes.
 
-Kalier is different: its request waits over HTTP for a remote Kali service. It cannot
-stream that remote scan through these local runners. The source uses OOB_shift_reaper
-as the HTTP wait budget, with 3600 as its default. Remote service timeouts and remote
-process lifetime are controlled by the Kali host. Raising the local wait does not
-raise a remote server cap, and closing a local HTTP client does not prove remote
-execution stopped.
+Kalier es diferente: su solicitud espera por HTTP a un servicio remoto de Kali. No puede transmitir ese escaneo remoto a través de estos runners locales. La fuente usa OOB_shift_reaper como el presupuesto de espera de HTTP, con 3600 como predeterminado. Los timeouts del servicio remoto y el tiempo de vida del proceso remoto los controla el host de Kali. Subir la espera local no sube un límite del servidor remoto, y cerrar un cliente HTTP local no prueba que la ejecución remota se haya detenido.
 
-Primary source locations: agents/nmapper/nmapper.py::_run_cmd_oob;
-agents/discoverer/discoverer.py::_run_cmd_oob; agents/kalier/kalier.py.
-Use function names instead of historical line numbers, which change between releases.
+Ubicaciones principales en la fuente: agents/nmapper/nmapper.py::_run_cmd_oob; agents/discoverer/discoverer.py::_run_cmd_oob; agents/kalier/kalier.py. Usa nombres de función en vez de números de línea históricos, que cambian entre releases.
 
-## 3. Shutdown cleanup: scope and limits
+## 3. Limpieza de apagado: alcance y límites
 
-apps.py::namu_kill_recon_gods runs first in cleanup_pool_on_shutdown. It chooses
-the pool root according to source versus frozen mode, enumerates local processes,
-matches pool paths and the nmapper/discoverer/kalier names, and invokes recursive_kill.
-It attempts descendants and then parents, tolerating disappeared processes and access
-denials. The broader cleanup also handles other tracked processes.
+apps.py::namu_kill_recon_gods corre primero en cleanup_pool_on_shutdown. Elige la raíz del pool según el modo source o frozen, enumera los procesos locales, coincide los paths del pool y los nombres de nmapper/discoverer/kalier, e invoca recursive_kill. Intenta primero los descendientes y luego los padres, tolerando procesos que desaparecieron y accesos denegados. La limpieza más amplia también maneja otros procesos rastreados.
 
-The priority is unconditional with respect to the OOB elapsed-time window. It is
-not an absolute guarantee of instantaneous cleanup: process enumeration, permissions,
-races and forced termination of the application can prevent normal cleanup code
-from completing. In particular, the local cleanup cannot certify that a remote Kali
-service killed its scan. The previous design's universal “every child instantly”
-wording described intent more strongly than the implementation can prove.
+La prioridad es incondicional respecto a la ventana de tiempo transcurrido del OOB. No es una garantía absoluta de limpieza inmediata: la enumeración de procesos, los permisos, las condiciones de carrera y la terminación forzada de la aplicación pueden impedir que el código normal de limpieza termine. En particular, la limpieza local no puede certificar que un servicio remoto de Kali haya matado su escaneo. La redacción universal “cada hijo al instante” del diseño anterior describía la intención con más fuerza de la que la implementación puede probar.
 
-This document reviews source behavior. It does not claim a new shutdown stress test,
-remote cancellation test or frozen-package acceptance.
+Este documento revisa el comportamiento de la fuente. No afirma una nueva prueba de estrés de apagado, una prueba de cancelación remota ni una aceptación de paquete frozen.
 
-## 4. Relationship to Terminater and Interactor
+## 4. Relación con Terminater e Interactor
 
-Terminater owns real terminal sessions through TerminalHub. Reapers consult
-terminal_hub.live_pids(); closing a browser page does not itself kill the shells.
-Config → Live Editor & Terminater supplies account pacing, manual Enter and bounded narration.
-A command wait timeout does not kill the process. Terminal lifetime and its own
-hung-command/user-takeover controls are separate from
-the reconnaissance OOB grace window.
+Terminater es dueño de sesiones de terminal reales a través de TerminalHub. Los reapers consultan terminal_hub.live_pids(); cerrar una página del browser no mata por sí mismo las shells. Config → Live Editor & Terminater da el ritmo por cuenta, el Enter manual y la narración acotada. Un timeout de espera de comando no mata el proceso. El tiempo de vida de la terminal y sus propios controles de comando-colgado/toma-de-control-del-usuario están separados de la ventana de gracia de OOB del reconocimiento.
 
-Interactor is a module, not an agent process or terminal. It operates the live editor
-through an authenticated browser bridge. It reads unsaved text, types short teaching
-segments and hands fields to the user. User input, Stop and disconnect interrupt
-typing while preserving the prefix; hidden tabs pause with a bounded recovery period.
-It does not run the edited code, and editing does not implicitly save a file.
+Interactor es un módulo, no un proceso de agent ni una terminal. Opera el editor en vivo a través de un puente de browser autenticado. Lee el texto sin guardar, escribe segmentos cortos de enseñanza y le entrega los campos al usuario. El input del usuario, Detener y la desconexión interrumpen la escritura conservando el prefijo; las pestañas ocultas se pausan con un periodo de recuperación acotado. No ejecuta el código editado, y editar no guarda un archivo de manera implícita.
 
-Native canvas Save As writes to a user-selected local destination outside Downloads,
-using revision checks and account/session-bound capabilities. These editor mechanisms
-do not change NAMU or database backup/restore.
+El Guardar como nativo del canvas escribe a un destino local que elige el usuario, fuera de Downloads, usando verificaciones de revisión y capacidades ligadas a la cuenta/sesión. Estos mecanismos del editor no cambian NAMU ni el backup/restauración de la base de datos.
 
-Related contracts: docs/terminater.md, docs/interactor.md, docs/canvas-editing.md and
-docs/changes/2026-10-23-v1.91.0.md. The complete architecture and summary dossiers
-describe the broader application and distinguish source evidence from installed tests.
+Contratos relacionados: docs/terminater.md, docs/interactor.md, docs/canvas-editing.md y docs/changes/2026-10-23-v1.91.0.md. Los dossiers completos de arquitectura y de resumen describen la aplicación más amplia y distinguen la evidencia de la fuente de las pruebas instaladas.
