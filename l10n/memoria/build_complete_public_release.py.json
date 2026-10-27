@@ -6,6 +6,12 @@
    "es": "\"Tlamatini-Spanish_Release_v*\"",
    "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
    "n": 1
+  },
+  {
+   "en": "SCRUB_SKIP_FILES = {\"data.keys\", \".private_targets.json\", \"private_targets.json\",\n                    \"contacts.private.json\"}",
+   "es": "SCRUB_SKIP_FILES = {\"data.keys\", \".private_targets.json\", \"private_targets.json\",\n                    \"contacts.private.json\",\n                    \"flow_catalog.json\", \"test_canvas_file_views.py\",\n                    \"test_terminater_agent.py\", \"test_terminater_hub_api.py\"}",
+   "codigo": "Estos 4 archivos no tienen datos privados: el regex de campos-secreto solo toco nombres de tipo (str/bool) en flow_catalog.json y valores de prueba (yes/y/not-issued) en los 3 tests. Saltarlos evita que el scrub les cambie los finales de linea y deje basura o deriva l10n en el arbol espanol. Verificado 2026-10-27: 0 coincidencias de PII en los 4.",
+   "n": 1
   }
  ],
  "conservar": []
