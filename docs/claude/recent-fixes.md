@@ -21,6 +21,16 @@
 
 ---
 
+## 2026-10-28 — Spanish names across avatar, Orpheus and Piper (Spanish source)
+
+`spanish_pronunciation.py` is the shared name catalog; account names are separate
+from login identifiers. Do not reintroduce unaccented greetings or remove the
+Piper child's explicit UTF-8 environment: Windows redirected stdin can otherwise
+corrupt the accents before phonemization. The Mexican model uses `es-419`; real
+Piper output for Angela/Angéla/Ángela is `ˈaŋxela`. All five female Orpheus voices
+receive the same corrected spelling, but the English model is not certified as
+native Spanish. See [implementation and evidence](../spanish-name-pronunciation.md).
+
 ## 2026-10-22 — User-creation wizard diverted by two intent guards (DEV)
 
 The installed `C:\Tlamatini\tlamatini.log` showed the catalog's first setup

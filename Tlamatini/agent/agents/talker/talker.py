@@ -39,6 +39,7 @@ import wave
 import yaml
 import logging
 import subprocess
+import importlib.util
 
 # -- conhost.exe orphan guard ------------------------------------------
 # When Tlamatini's runtime launches us with DETACHED_PROCESS we have no
@@ -66,6 +67,12 @@ if os.name == 'nt' and not getattr(subprocess, '_conhost_guard_applied', False):
 import urllib.request
 import urllib.error
 from typing import Dict, List, Tuple
+
+# Load the flat sibling by path: pool copies run without Django on sys.path.
+_pronunciation_spec = importlib.util.spec_from_file_location(
+    'talker_spanish_pronunciation', os.path.join(os.path.dirname(__file__), 'spanish_pronunciation.py'))
+_pronunciation = importlib.util.module_from_spec(_pronunciation_spec)
+_pronunciation_spec.loader.exec_module(_pronunciation)
 
 # Set working directory to script location
 try:
@@ -753,26 +760,30 @@ def apply_emotion(text: str, config: Dict) -> str:
     return f"{text} {tag}".strip()
 
 
-def build_orpheus_prompt(config: Dict, text: str) -> str:
+def build_orpheus_prompt(config: Dict, text: str, *, names_prepared: bool = False) -> str:
     """
     Build the prompt for the Orpheus TTS model: ``<voice>: <text>``.
 
     - The voice is resolved from `voice` (+ optional `gender`).
-    - ``text`` is the exact words to speak (already chunked + emotion-tagged by
-      the caller — see ``synthesize``).
+    - Spanish names receive their spoken accents without changing input_text.
     - When ``include_language_in_prompt`` is true AND ``language`` is a
       non-English, non-empty, non-"auto" value, the language tag is woven in
-      (``<voice> <es>: <text>``) so a multilingual model can act on it; a model
-      that does not understand the tag simply ignores it.
+      (``<voice> <es>: <text>``) for a configured custom model. The official
+      English Orpheus uses its documented ``voice: text`` format; adding a
+      language tag cannot turn its English weights into a Spanish model.
     """
     voice = resolve_voice(config)
     language = str(config.get('language') or '').strip()
     include_lang = _coerce_bool(config.get('include_language_in_prompt', True), True)
 
     speaker = voice
-    if include_lang and language and language.lower() not in ('en', 'eng', 'english', 'auto', ''):
+    model = str(config.get('model') or '').lower().split(':')[0]
+    english_orpheus = model in ('legraphista/orpheus', 'orpheus-3b-ft', 'canopylabs/orpheus-3b-0.1-ft')
+    if include_lang and not english_orpheus and language and language.lower() not in ('en', 'eng', 'english', 'auto', ''):
         speaker = f"{voice} <{language}>"
-    return f"{speaker}: {str(text).strip()}"
+    prepared = text if names_prepared else _pronunciation.speech_text(
+        text, config.get('name_pronunciations'), language or 'es-MX')
+    return f"{speaker}: {prepared.strip()}"
 
 
 # Sentence-boundary splitter (keeps the terminating . ! ? attached) used to chunk
@@ -1254,9 +1265,15 @@ def synthesize_piper(config: Dict, text: str, voice: str, gender: str) -> Dict:
     cmd = str(config.get('piper_executable') or '').strip()
     argv = ([cmd] if cmd else [sys.executable, '-m', 'piper']) + ['-m', onnx, '-f', wav_path]
     logging.info(f"🗣️ Synthesising {len(text)} chars with Piper voice '{voice}' @ {native_sr} Hz -> {wav_path}")
+    # Redirected Python stdin on Windows may use the ANSI code page. Our bytes
+    # are UTF-8: force the child to decode them as such, including explicit
+    # Python-based Piper launchers. Never mutate the parent environment.
+    piper_env = os.environ.copy()
+    piper_env.update(PYTHONIOENCODING='utf-8', PYTHONUTF8='1')
     try:
         proc = subprocess.run(argv, input=text.encode('utf-8'),
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              timeout=timeout, env=piper_env)
     except Exception as exc:
         result["_message"] = f"Piper synthesis failed to run: {exc}"
         return result
@@ -1321,6 +1338,9 @@ def synthesize(config: Dict) -> Dict:
     if not text:
         raise RuntimeError("No input_text configured — set input_text to the words to speak.")
 
+    text = _pronunciation.speech_text(
+        text, config.get('name_pronunciations'), config.get('language') or 'es-MX')
+
     # Engine dispatch. The Spanish edition uses the LOCAL Piper backend for a
     # genuine Mexican-Spanish female voice; English keeps the Ollama/Orpheus path.
     # resolve_voice() above has ALREADY enforced the female-only guard; the Piper
@@ -1331,6 +1351,12 @@ def synthesize(config: Dict) -> Dict:
 
     model = str(config.get('model') or 'Orpheus-3b-FT').strip()
     language = str(config.get('language') or 'en').strip()
+    if language.lower().startswith('es') and str(model).lower().split(':')[0] in (
+            'legraphista/orpheus', 'orpheus-3b-ft', 'canopylabs/orpheus-3b-0.1-ft'):
+        logging.warning(
+            'Orpheus seleccionado es un modelo inglés: envío los nombres con sus tildes, '
+            'pero no garantiza fonética mexicana. Para español nativo está disponible '
+            'tts_engine=piper con voice=es_MX-claude-high.')
     emotion = str(config.get('emotion') or '').strip().lower().strip('<>')
     base = str(config.get('ollama_url') or 'http://localhost:11434').rstrip('/')
 
@@ -1388,7 +1414,7 @@ def synthesize(config: Dict) -> Dict:
         # Emotion tags are inline events (a laugh, a sigh) — weave the configured
         # one into the LAST chunk only, never after every sentence.
         prompt_text = apply_emotion(chunk_text, config) if (is_last and emotion) else chunk_text
-        prompt = build_orpheus_prompt(config, prompt_text)
+        prompt = build_orpheus_prompt(config, prompt_text, names_prepared=True)
         raw_text, _status = query_ollama_tts(config, prompt)
         codes = parse_audio_codes(raw_text)
         logging.info(

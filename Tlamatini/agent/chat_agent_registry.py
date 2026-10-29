@@ -654,7 +654,12 @@ WRAPPED_CHAT_AGENT_SPECS: tuple[ChatWrappedAgentSpec, ...] = (
             "(output_dir) and play_audio=false saves without playing. The wrapped result includes "
             "a top-level 'output_path'. NOTE: hearing the audio needs 'snac' + 'torch' (a neural "
             "vocoder) installed; without them the agent still fetches + saves the audio tokens and "
-            "reports status 'tokens_only'."
+            "reports status 'tokens_only'. In Tlamatini-Spanish, known personal names regain "
+            "their spoken accents (angela -> Ángela) without modifying login identifiers. "
+            "name_pronunciations is an optional mapping of exact aliases to spoken names. "
+            "legraphista/Orpheus is English-only: accents improve its input but cannot guarantee "
+            "Mexican phonetics. For native Mexican Spanish use tts_engine='piper', "
+            "voice='es_MX-claude-high', language='es'."
         ),
         example_request=(
             "Speak 'Hello, welcome to Tlamatini' out loud, OR speak with "

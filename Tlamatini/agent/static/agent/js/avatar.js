@@ -12,8 +12,8 @@
     const submit=document.getElementById('chat-message-submit');
     const input=document.getElementById('chat-message-input');
     const chatLog=document.getElementById('chat-log');
-    let uname='there';
-    try{ const el=document.getElementById('user_username'); if(el){const raw=JSON.parse(el.textContent||'""'); if(raw){uname=String(raw).charAt(0).toUpperCase()+String(raw).slice(1);}} }catch(e){ /* Keep the generic greeting when account data cannot be parsed. */ }
+    let uname=window.TLM_VOICE.accountName || '';
+    if(!uname)try{ const el=document.getElementById('user_username'); if(el){const raw=JSON.parse(el.textContent||'""'); if(raw){uname=window.TLM_VOICE.prepareSpeech(String(raw).charAt(0).toUpperCase()+String(raw).slice(1));}} }catch(e){ /* Keep the generic greeting when account data cannot be parsed. */ }
 
     function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
     function idlePhrase(){ return pick([
@@ -393,12 +393,14 @@
     const overlay=document.getElementById('tlm-voice-overlay');
     function fillVoices(){
       const sel=document.getElementById('tlm-voice-select'); if(!sel)return;
-      const fem=femaleVoices(); sel.innerHTML='';
+      let fem=femaleVoices(); sel.innerHTML='';
       // Show the preferred-language (e.g. es-MX) voices first.
       const want=(document.documentElement.lang||navigator.language||'').toLowerCase().split('-')[0];
+      if(want==='es')fem=fem.filter(v=>(v.lang||'').toLowerCase().startsWith('es'));
       if(want)fem.sort(function(a,b){return ((a.lang||'').toLowerCase().startsWith(want)?0:1)-((b.lang||'').toLowerCase().startsWith(want)?0:1);});
       fem.forEach(function(v){const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o);});
-      const s=loadSettings(); if(s.voiceURI)sel.value=s.voiceURI; else { const pv=pickVoice(); if(pv)sel.value=pv.voiceURI; }
+      const pv=pickVoice(); if(pv)sel.value=pv.voiceURI;
+      if(!fem.length){const o=document.createElement('option');o.value='';o.textContent='No hay una voz femenina en español disponible';sel.appendChild(o);}
     }
     function syncDialog(){
       const s=loadSettings();

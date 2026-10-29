@@ -244,6 +244,11 @@ KEEP_PATH_GLOBS = (
 # one raises rather than producing a quietly-incomplete self-modify tree.
 # Add the canonical file of any new always-present capability here.
 REQUIRED_SNAPSHOT_FILES = (
+    "Tlamatini/agent/agents/talker/spanish_pronunciation.py",
+    "Tlamatini/agent/test_spanish_pronunciation.py",
+    "docs/spanish-name-pronunciation.md",
+    "scripts/spanish_names_visible.py",
+    "scripts/spanish_names_synthesis_visible.py",
     "Tlamatini/agent/canvas_file_views.py",
     "Tlamatini/agent/native_dialogs.py",
     "Tlamatini/agent/test_canvas_file_views.py",

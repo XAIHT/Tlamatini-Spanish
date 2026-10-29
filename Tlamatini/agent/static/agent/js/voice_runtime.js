@@ -8,6 +8,36 @@
     const defaults = { mode: 'notify', voiceURI: '', volume: 100, rate: 1, pitch: 1.05, lang: '' };
     let memory = { ...defaults }, active = null, listening = false;
     const queue = [];
+    let pronunciation = {};
+    try { pronunciation = JSON.parse(document.getElementById('tlm-speech-pronunciation')?.textContent || '{}'); }
+    catch { /* A missing optional payload must not break text chat. */ }
+    const foldName = value => value.toLowerCase().normalize('NFD').replace(/\u0301/g, '').normalize('NFC');
+    const names = pronunciation.names || {};
+    const ambiguous = new Set(pronunciation.ambiguous || []);
+    const aliases = new Map(Object.entries(pronunciation.aliases || {}).map(([key, value]) => [key.normalize('NFC').toLowerCase(), value]));
+    // Python and JS have different definitions of \w. Use Unicode properties
+    // in the browser so a name never matches inside another script's identifier.
+    const tokenPattern = pronunciation.token_pattern?.replaceAll('[^\\W\\d_]+', '[\\p{L}\\p{M}]+')
+        .replaceAll('[\\w', '[\\p{L}\\p{M}\\p{N}_')
+        .replaceAll('\\w', '[\\p{L}\\p{M}\\p{N}_]');
+    const nameTokens = tokenPattern ? new RegExp(tokenPattern, 'gu') : null;
+    function prepareSpeech(text, settings = loadSettings()) {
+        text = String(text || '').normalize('NFC');
+        if (langBase(preferredLang(settings)) !== 'es' || !nameTokens) return text;
+        return text.replace(nameTokens, token => {
+            const alias = aliases.get(token.toLowerCase());
+            if (alias && !/[@/\\<>`]/.test(token)) return alias;
+            if (!/^[\p{L}\p{M}]+$/u.test(token)) return token;
+            const key = foldName(token);
+            if (token === token.toLowerCase() && ambiguous.has(key)) return token;
+            if (key !== 'angela' && /[áéíóú]/i.test(token)) return token;
+            const replacement = names[key];
+            if (!replacement) return token;
+            if (token === token.toUpperCase()) return replacement.toUpperCase();
+            if (token === token.toLowerCase()) return replacement.toLowerCase();
+            return replacement;
+        });
+    }
     function loadSettings() {
         try { memory = { ...defaults, ...JSON.parse(localStorage.getItem('tlm_voice_settings') || '{}') }; }
         catch { /* Keep the usable in-memory settings. */ }
@@ -34,16 +64,18 @@
         // STRICTLY female: a voice is offered ONLY when its name is a verified-female
         // name (FEMALE above — which includes the Latin-American es voices Sabina/Dalia
         // and Google's Spanish voices) AND not a male name. Tlamatini must NEVER speak
-        // with a male voice — better an English female voice, or silence, than risk male.
+        // with a male voice. Spanish pages remain silent if no Spanish female
+        // voice is available; they never fall back to an English pronunciation.
         // A gender-neutral/unknown voice is deliberately NOT accepted.
         return (window.speechSynthesis?.getVoices() || []).filter(voice => FEMALE.test(voice.name) && !MALE.test(voice.name));
     }
     function pickVoice(settings = loadSettings()) {
         const voices = femaleVoices();
         if (!voices.length) return null;
-        const saved = voices.find(voice => voice.voiceURI === settings.voiceURI);
-        if (saved) return saved;
         const want = preferredLang(settings), base = langBase(want);
+        const saved = voices.find(voice => voice.voiceURI === settings.voiceURI);
+        // A saved English default from another edition must not anglicize names.
+        if (saved && (base !== 'es' || langBase(saved.lang) === 'es')) return saved;
         if (base) {
             const exact = voices.find(voice => voiceLang(voice) === want);   // es-MX beats es-US/es-ES
             if (exact) return exact;
@@ -56,6 +88,7 @@
                 return sameBase[0];
             }
         }
+        if (base === 'es') return null;
         return voices.find(voice => /zira|jenny|aria|samantha|google us english|hazel/i.test(voice.name)) || voices[0] || null;
     }
     function finish(item, status) {
@@ -84,7 +117,7 @@
         const voice = pickVoice(settings);
         if (!voice || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return finish(item, 'unavailable');
         // Queue a chunk only after the previous chunk ends. Cancel never leaves stale chunks.
-        const pieces = item.text.match(/[\s\S]{1,170}(?:\s|$)|[\s\S]{1,170}/g) || [];
+        const pieces = prepareSpeech(item.text, settings).match(/[\s\S]{1,170}(?:\s|$)|[\s\S]{1,170}/g) || [];
         let index = 0;
         item.timer = setTimeout(() => { stop('unavailable'); }, 100000);
         function next() {
@@ -124,6 +157,7 @@
     // Speech begins only from a user-enabled feature. A click can resume a paused browser engine.
     function prime() { try { window.speechSynthesis?.resume(); } catch { /* Optional browser capability. */ } }
     window.TLM_VOICE = { speak, stop, prime, loadSettings, saveSettings, femaleVoices, pickVoice, setSilent,
+        prepareSpeech, accountName: pronunciation.display_name || '',
         notify: () => speak('Ya terminé tu solicitud.'),
         setListening: on => { listening = !!on; if (on) stop('muted'); },
         get listening() { return listening; } };

@@ -3052,6 +3052,23 @@ def _launch_wrapped_chat_agent(spec, request, *, auto_diagnose=True, config_over
     # BEFORE applying the LLM's assignments, so an explicit per-call value wins.
     runtime_config = _seed_global_agent_defaults(spec.template_dir, runtime_config)
 
+    if spec.template_dir == "talker":
+        # Resolve only this request's account; never the globally last login.
+        # Explicit per-call name_pronunciations below can override the defaults.
+        from .context_governor import current_user
+        from .agents.talker.spanish_pronunciation import browser_payload
+        from django.contrib.auth import get_user_model
+        speech_owner = current_user()
+        if speech_owner is not None:
+            try:
+                speech_user = get_user_model().objects.only('username', 'first_name').get(pk=speech_owner)
+                runtime_config['name_pronunciations'] = {
+                    **browser_payload(speech_user)['aliases'],
+                    **(runtime_config.get('name_pronunciations') or {}),
+                }
+            except Exception:
+                logger.warning('[TALKER-NAMES] Account name unavailable; using the Spanish name catalog.', exc_info=True)
+
     if config_overrides is not None:
         runtime_config, assignment_error, assignment_notes = _apply_typed_overrides_to_config(
             runtime_config,

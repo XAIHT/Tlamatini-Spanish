@@ -30,15 +30,18 @@
 # chat history or an older server still reads correctly.
 
 
+from .agents.talker.spanish_pronunciation import accent_name
+
+
 def display_name(user):
     """The name Tlamatini calls the user by: the first word of the first
     name, else the username with a capital letter, else ''. Never raises."""
     try:
         first = str(getattr(user, 'first_name', '') or '').strip()
         if first:
-            return first.split()[0]
+            return accent_name(first.split()[0])
         raw = str(getattr(user, 'username', '') or '').strip()
-        return raw[:1].upper() + raw[1:]
+        return accent_name(raw[:1].upper() + raw[1:])
     except Exception:  # noqa: BLE001 - a greeting must never break a send
         return ''
 

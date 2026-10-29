@@ -810,6 +810,7 @@
   <script src="{% static 'agent/js/agent_page_markdown.js' %}?v={{ STATIC_VERSION }}"></script>
   <script src="{% static 'agent/js/agent_page_canvas.js' %}?v={{ STATIC_VERSION }}_views1"></script>
   {% include 'agent/interaction_settings.html' %}
+  {{ speech_pronunciation|json_script:"tlm-speech-pronunciation" }}
   <script src="{% static 'agent/js/voice_runtime.js' %}?v={{ STATIC_VERSION }}"></script>
   <script src="{% static 'agent/js/interaction_speech.js' %}?v={{ STATIC_VERSION }}"></script>
   <script src="{% static 'agent/js/interaction_settings.js' %}?v={{ STATIC_VERSION }}"></script>

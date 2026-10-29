@@ -29,3 +29,9 @@ def app_version(_request):
         return {"version": "0.0.0+unknown"}
 
 
+def speech_pronunciation(request):
+    """Share the Spanish speech lexicon and this account's preferred name."""
+    from agent.agents.talker.spanish_pronunciation import browser_payload
+    return {"speech_pronunciation": browser_payload(getattr(request, 'user', None))}
+
+

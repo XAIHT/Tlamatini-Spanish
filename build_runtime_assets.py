@@ -96,6 +96,8 @@ ROOT_SOURCES = {
         "_internal/agent/templates/agent/usage_dialog.html",
     "Tlamatini/agent/chat_voice_settings.py": "chat_voice_settings.py",
     "Tlamatini/agent/agents/whisperer/chat_worker.py": "agents/whisperer/chat_worker.py",
+    "Tlamatini/agent/agents/talker/spanish_pronunciation.py": "agents/talker/spanish_pronunciation.py",
+    "docs/spanish-name-pronunciation.md": "docs/spanish-name-pronunciation.md",
     "Tlamatini/agent/templates/agent/prompt_flow_panel.html":
         "_internal/agent/templates/agent/prompt_flow_panel.html",
     "docs/windows-flow-files.md": "docs/windows-flow-files.md",
