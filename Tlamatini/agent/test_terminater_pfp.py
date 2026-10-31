@@ -91,7 +91,7 @@ class ValidatorTests(SimpleTestCase):
                 self.assertEqual(cfg(result)["action"], action)
 
     def test_an_unknown_action_is_rejected(self):
-        with self.assertRaisesRegex(fm.FlowError, "Unknown Terminater action"):
+        with self.assertRaisesRegex(fm.FlowError, "Acción de Terminater desconocida"):
             fm.validate_flow(diagram([node(action="selfdestruct")]))
 
     def test_every_kind_is_accepted(self):
@@ -105,14 +105,14 @@ class ValidatorTests(SimpleTestCase):
 
     def test_run_needs_a_command_when_playing(self):
         for action in fm.TERMINATER_TEXT_ACTIONS:
-            with self.subTest(action=action), self.assertRaisesRegex(fm.FlowError, "needs a command"):
+            with self.subTest(action=action), self.assertRaisesRegex(fm.FlowError, "necesita un comando"):
                 fm.validate_flow(diagram([node(action=action, text="   ")]), playable=True)
 
     def test_a_draft_may_be_saved_without_a_command(self):
         fm.validate_flow(diagram([node(text="")]), playable=False)
 
     def test_send_key_needs_keys_when_playing(self):
-        with self.assertRaisesRegex(fm.FlowError, "needs the keys"):
+        with self.assertRaisesRegex(fm.FlowError, "necesita las teclas"):
             fm.validate_flow(diagram([node(action="send_key", text="", keys="  ")]), playable=True)
         fm.validate_flow(diagram([node(action="send_key", text="", keys="ctrl+c")]), playable=True)
 
@@ -134,7 +134,7 @@ class ValidatorTests(SimpleTestCase):
 
     def test_number_bounds(self):
         cases = {
-            "typing_wpm": (20, 160, 19, 161),
+            "typing_wpm": (20, 250, 19, 251),
             "wait_seconds": (1, 3600, 0.5, 3601),
             "hang_seconds": (3, 3600, 2.9, 3601),
             "user_wait_seconds": (5, 3600, 4, 3601),
@@ -246,7 +246,7 @@ class ValidatorTests(SimpleTestCase):
         fm.validate_flow(diagram([node("t"), decision("d")], [("t", "d", "next"), ("d", "t", "no")]))
 
     def test_an_unreachable_terminater_is_rejected_when_playing(self):
-        with self.assertRaisesRegex(fm.FlowError, "unreachable"):
+        with self.assertRaisesRegex(fm.FlowError, "No se puede llegar"):
             fm.validate_flow(diagram([prompt("p"), node("t")]), playable=True)
 
     def test_many_terminaters_fit(self):
@@ -284,8 +284,8 @@ class ValidatorTests(SimpleTestCase):
                 self.assertEqual(data[key], value, f"{key}: PFP default differs from agents/terminater/config.yaml")
 
     def test_number_ranges_agree_with_the_engine_clamps(self):
-        self.assertEqual(fm.TERMINATER_NUMBERS["typing_wpm"][:2], (20, 160))
-        self.assertEqual((kit.tx().MIN_WPM, kit.tx().MAX_WPM), (20, 160)) if hasattr(kit.tx(), "MIN_WPM") else None
+        self.assertEqual(fm.TERMINATER_NUMBERS["typing_wpm"][:2], (20, 250))
+        self.assertEqual((kit.tx().MIN_WPM, kit.tx().MAX_WPM), (20, 250)) if hasattr(kit.tx(), "MIN_WPM") else None
 
     def test_format_and_version_are_unchanged(self):
         self.assertEqual(fm.FORMAT, "tlamatini-prompting-flow")
@@ -329,7 +329,7 @@ def _parity_cases():
     for key in ("submit", "secret", "wait", "close_after", "load_profile", "advisor"):
         for value in (True, False, "yes", 1, None):
             add(f"bool {key}={value!r}", [node(**{key: value})])
-    numbers = {"typing_wpm": (19, 20, 50, 50.5, 160, 161, "50", True),
+    numbers = {"typing_wpm": (19, 20, 50, 50.5, 160, 161, 250, 251, "50", True),
                "wait_seconds": (0.5, 1, 120, 3600, 3601),
                "hang_seconds": (2.9, 3, 45, 3600, 3601),
                "user_wait_seconds": (4, 5, 300, 3601),
@@ -553,7 +553,7 @@ class RunnerTests(unittest.IsolatedAsyncioTestCase):
     async def test_a_loop_is_bounded_by_the_step_limit(self):
         flow = fm.validate_flow(diagram([node("t")], [("t", "t", "next")], max_steps=5), playable=True)
         runner = fm.FlowRunner(flow, FakeRuntime(), self.emit)
-        with self.assertRaisesRegex(fm.FlowError, "Step limit"):
+        with self.assertRaisesRegex(fm.FlowError, "Se alcanzó el límite de pasos"):
             await runner.run()
 
     async def test_stop_cancels_the_runtime(self):

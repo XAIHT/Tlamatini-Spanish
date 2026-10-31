@@ -848,7 +848,7 @@
                 field('secret', 'Texto secreto (nunca se guarda en el log ni se devuelve)', 'checkbox', config.secret);
                 field('wait', 'Esperar a que termine el comando', 'checkbox', config.wait);
                 field('close_after', 'Cerrar la terminal cuando termine', 'checkbox', config.close_after);
-                for (const [name, label, min, max] of [['typing_wpm', 'Velocidad de escritura (palabras por minuto, 20-160)', 20, 160], ['wait_seconds', 'Dejar de esperar después de (segundos)', 1, 3600], ['hang_seconds', 'Sin output durante este tiempo = colgado (segundos)', 3, 3600], ['user_wait_seconds', "Esperar la parte del usuario (segundos)", 5, 3600]]) {
+                for (const [name, label, min, max] of [['typing_wpm', 'Velocidad de escritura (palabras por minuto, 20-250)', 20, 250], ['wait_seconds', 'Dejar de esperar después de (segundos)', 1, 3600], ['hang_seconds', 'Sin output durante este tiempo = colgado (segundos)', 3, 3600], ['user_wait_seconds', "Esperar la parte del usuario (segundos)", 5, 3600]]) {
                     const input = field(name, label, 'number', config[name]); input.min = min; input.max = max; input.step = 'any';
                     inheritedFields.push(input);
                 }

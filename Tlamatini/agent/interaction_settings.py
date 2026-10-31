@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 
 # The API supplies this same schema to the dialog. No parallel browser defaults.
 FIELDS = {
-    "editor_wpm": dict(tab="editor", label="Velocidad de escritura (WPM)", default=100, min=40, max=160, step=1),
+    "editor_wpm": dict(tab="editor", label="Velocidad de escritura (WPM)", default=100, min=40, max=250, step=1),
     "link_speeds": dict(tab="editor", label="Usar la misma velocidad de escritura para ambos", default=False),
     "segment_pause": dict(tab="editor", label="Pausa después de cada segmento (segundos)", default=0, min=0, max=3, step=.1),
     "teaching_detail": dict(tab="editor", label="Nivel de detalle de la enseñanza", default="balanced", options={"brief": "Breve", "balanced": "Equilibrado", "detailed": "Detallado"}),
@@ -22,7 +22,7 @@ FIELDS = {
     "editor_font": dict(tab="editor", label="Tamaño de letra del Editor (px)", default=13, min=12, max=24, step=1, local=True),
     "line_numbers": dict(tab="editor", label="Mostrar números de línea", default=True, local=True),
     "wrap": dict(tab="editor", label="Ajustar las líneas largas", default=False, local=True),
-    "terminal_wpm": dict(tab="terminal", label="Velocidad de escritura (WPM)", default=50, min=20, max=160, step=1),
+    "terminal_wpm": dict(tab="terminal", label="Velocidad de escritura (WPM)", default=50, min=20, max=250, step=1),
     "shell": dict(tab="terminal", label="Shell predeterminado", default="powershell", options={"powershell": "PowerShell", "cmd": "CMD", "pwsh": "PowerShell 7"}),
     "execution": dict(tab="terminal", label="Ejecución del comando", default="task", options={"task": "Seguir las instrucciones de la tarea", "manual": "Yo siempre presiono Enter"}),
     "advisor": dict(tab="terminal", label="Activar el asesor en las nuevas terminales", default=True),
