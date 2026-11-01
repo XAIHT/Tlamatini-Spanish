@@ -252,6 +252,7 @@
   "Tests/test_release_version_pinning.py",
   "Tests/test_requirements_coverage.py",
   "Tests/test_setup_release_paths.py",
+  "Tests/test_update_client_carriage.py",
   "TestsVisiblesAndVisibleExecutionFromClaude2Codex.md",
   "Tlamatini-Architecture.pdf",
   "Tlamatini-Kali-Setup.md",
@@ -1592,6 +1593,10 @@
   "Tlamatini/agent/torrenter_bridge.py",
   "Tlamatini/agent/torrenter_tool.py",
   "Tlamatini/agent/torrenter_views.py",
+  "Tlamatini/agent/torrenter_workspace/layout.js",
+  "Tlamatini/agent/torrenter_workspace/workspace.css",
+  "Tlamatini/agent/torrenter_workspace/workspace.html",
+  "Tlamatini/agent/torrenter_workspace/workspace.js",
   "Tlamatini/agent/urls.py",
   "Tlamatini/agent/usage_provider.py",
   "Tlamatini/agent/usage_tracking.py",
@@ -1858,5 +1863,5 @@
   "Tlamatini/agent/static/agent/vendor/frontend/xterm-addon-web-links/lib/addon-web-links.js",
   "Tlamatini/agent/static/agent/vendor/frontend/xterm/lib/xterm.js"
  ],
- "parche": "2512d8fb9fd98e37afeea294783abd3a9a5fbbffd8db51c8271ca4e63b434421"
+ "parche": "27157c2c8be06e8dd10c483571c886a85464237cedd46b81138d1fdf39edd9e8"
 }

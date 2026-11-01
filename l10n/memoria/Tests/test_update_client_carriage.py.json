@@ -1,0 +1,12 @@
+{
+ "archivo": "Tests/test_update_client_carriage.py",
+ "segmentos": [
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "n": 1,
+   "codigo": "Identidad del ejecutable de la edición española"
+  }
+ ],
+ "conservar": []
+}

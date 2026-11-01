@@ -6,6 +6,11 @@
    "es": "Tlamatini-Spanish.exe",
    "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
    "n": 1
+  },
+  {
+   "en": "uninstaller differs",
+   "es": "desinstalador del paquete no coincide",
+   "n": 1
   }
  ],
  "conservar": []

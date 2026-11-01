@@ -281,7 +281,22 @@
    "en": "Tlamatini.exe",
    "es": "Tlamatini-Spanish.exe",
    "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
-   "n": 8
+   "n": 9
+  },
+  {
+   "en": "The application PID was reused. Update stopped before terminating any process.",
+   "es": "Se reutilizo el PID de la aplicacion. Se detuvo la actualizacion antes de terminar procesos.",
+   "n": 1
+  },
+  {
+   "en": "The supplied PID does not belong to this installation. Nothing was replaced.",
+   "es": "El PID indicado no pertenece a esta instalacion. No se reemplazo ningun archivo.",
+   "n": 1
+  },
+  {
+   "en": "Could not clear a legacy browser cache. Update stopped.",
+   "es": "No se pudo eliminar una cache antigua del navegador. Se detuvo la actualizacion.",
+   "n": 1
   }
  ],
  "conservar": [

@@ -2,6 +2,12 @@
 
 Torrenter es un agent de flow de Tlamatini y se puede invocar desde el chat con `chat_agent_torrenter`. Controla las descargas del servicio de Windows Tlachihuani Jobs, que se instala por separado y expone su API en `http://127.0.0.1:12064/api/v1`. Jobs administra la transferencia, sus archivos y el registro de operaciones. Puedes cerrar el chat, Agentic Control Panel o el browser y volver al mismo job.
 
+The signed-in page is carried with Tlamatini in `agent/torrenter_workspace/`.
+Self-update replaces its HTML, JavaScript and CSS together with the controller.
+A self-modification snapshot includes the same files for rebuilding. Jobs and XT
+remain separately installed. Changes to their API must remain compatible with the
+workspace protocol or provide a coordinated service update.
+
 ## Vincular una cuenta
 
 1. Selecciona **Start Services** en el menú de XT e inicia sesión en Tlamatini.

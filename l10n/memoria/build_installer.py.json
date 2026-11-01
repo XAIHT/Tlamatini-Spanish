@@ -12,6 +12,16 @@
    "es": "f\"Tlamatini-Spanish_Release_v{safe_version}\"",
    "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
    "n": 1
+  },
+  {
+   "en": "Rebuild pkg.zip with the current build.py to include the versioned uninstaller.",
+   "es": "Vuelve a generar pkg.zip con el build.py actual para incluir el desinstalador de esta versión.",
+   "n": 1
+  },
+  {
+   "en": "The release folder contains pkg.zip and its matching Uninstaller.exe.",
+   "es": "La carpeta de distribución contiene pkg.zip y su Uninstaller.exe correspondiente.",
+   "n": 1
   }
  ],
  "conservar": []

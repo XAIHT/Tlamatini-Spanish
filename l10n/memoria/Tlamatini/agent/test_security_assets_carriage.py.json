@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/test_security_assets_carriage.py",
+ "segmentos": [
+  {
+   "en": "self.assertIn(\"Enable Tlamatini as a Blue-hat agent\", _read(f))",
+   "es": "self.assertIn(\"Activa Tlamatini como agent Blue-hat\" if f.name == \"README.md\"\n                          else \"Enable Tlamatini as a Blue-hat agent\", _read(f))",
+   "codigo": "El README de esta edición tiene el encabezado traducido y el libro conserva el encabezado inglés.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

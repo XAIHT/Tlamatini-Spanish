@@ -1,0 +1,12 @@
+{
+ "archivo": "requirements.txt",
+ "segmentos": [
+  {
+   "en": "snac==1.2.1",
+   "es": "snac==1.2.1\n# Motor de voz local de la edición española.\npiper-tts==1.8.0\npathvalidate==3.3.1",
+   "codigo": "Dependencia del motor Piper propio de esta edición",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -24,6 +24,18 @@
    "es": "    \"agent.chat_voice_settings\",\n    \"agent.agents.talker.spanish_pronunciation\",  # same names in browser and pool speech\n",
    "n": 1,
    "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+  },
+  {
+   "en": "_AGENT_RUNTIME_IMPORTS = (",
+   "es": "_AGENT_RUNTIME_IMPORTS = (\n    \"piper\",  # Motor de voz local de la edición española.",
+   "n": 1,
+   "codigo": "Verifica Piper en el intérprete transportado de la edición española"
+  },
+  {
+   "en": "_FROZEN_POOL_ONLY_MODULES = (",
+   "es": "_FROZEN_POOL_ONLY_MODULES = (\n    \"piper\",  # Motor local ejecutado por el Python transportado.",
+   "codigo": "El motor de voz local pertenece al proceso Talker de la edición española.",
+   "n": 1
   }
  ],
  "conservar": []

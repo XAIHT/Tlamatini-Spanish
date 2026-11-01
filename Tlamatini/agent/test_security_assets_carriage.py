@@ -127,7 +127,8 @@ class DocumentationTests(unittest.TestCase):
 
     def test_blue_hat_section_exists(self):
         for f in (REPO_ROOT / "README.md", REPO_ROOT / "BookOfTlamatini.md"):
-            self.assertIn("Enable Tlamatini as a Blue-hat agent", _read(f))
+            self.assertIn("Activa Tlamatini como agent Blue-hat" if f.name == "README.md"
+                          else "Enable Tlamatini as a Blue-hat agent", _read(f))
 
     def test_docs_describe_the_evidence_carryover(self):
         # After G1+G4 the docs describe evidence PRESERVATION, not "logs not shipped".

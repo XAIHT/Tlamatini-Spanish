@@ -7,11 +7,6 @@
    "n": 1
   },
   {
-   "en": "Install or update the Tlachihuani Jobs workspace.",
-   "es": "Instala o actualiza el espacio de descargas de Tlachihuani Jobs.",
-   "n": 1
-  },
-  {
    "en": "Choose a .torrent file or enter one magnet link.",
    "es": "Elige un archivo .torrent o ingresa un vínculo magnet.",
    "n": 1
@@ -54,6 +49,11 @@
   {
    "en": "Query too long.",
    "es": "La consulta es demasiado larga.",
+   "n": 1
+  },
+  {
+   "en": "The Torrenter workspace files are missing from this Tlamatini installation.",
+   "es": "Faltan los archivos de la página de Torrenter en esta instalación de Tlamatini.",
    "n": 1
   }
  ],

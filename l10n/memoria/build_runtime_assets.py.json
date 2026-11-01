@@ -18,6 +18,11 @@
    "es": "    \"Tlamatini/agent/agents/whisperer/chat_worker.py\": \"agents/whisperer/chat_worker.py\",\n    \"Tlamatini/agent/agents/talker/spanish_pronunciation.py\": \"agents/talker/spanish_pronunciation.py\",\n    \"docs/spanish-name-pronunciation.md\": \"docs/spanish-name-pronunciation.md\",\n",
    "n": 1,
    "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+  },
+  {
+   "en": "Packaged uninstaller differs from its runtime receipt",
+   "es": "El desinstalador del paquete no coincide con su registro de integridad",
+   "n": 1
   }
  ],
  "conservar": []

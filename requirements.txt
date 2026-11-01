@@ -99,6 +99,9 @@ openai-whisper==20250625
 faster-whisper==1.1.1
 ctranslate2==4.8.0
 snac==1.2.1
+# Motor de voz local de la edición española.
+piper-tts==1.8.0
+pathvalidate==3.3.1
 torch==2.13.0+cpu
 yt-dlp==2026.8.19
 playwright==1.52.0

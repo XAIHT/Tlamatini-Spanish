@@ -251,6 +251,17 @@
    "es": "Tlamatini-Spanish.lnk",
    "codigo": "Identidad de Tlamatini-Spanish: su acceso directo propio (Tlamatini-Spanish.lnk)",
    "n": 1
+  },
+  {
+   "en": "Invalid browser-cache update boundary",
+   "es": "El límite de actualización de la caché del navegador no es válido",
+   "n": 1
+  },
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "n": 1,
+   "codigo": "Identidad del ejecutable de la edición española"
   }
  ],
  "conservar": [
