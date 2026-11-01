@@ -1,5 +1,11 @@
 {
  "archivo": "Tlamatini/agent/torrenter_workspace/workspace.html",
- "segmentos": [],
+ "segmentos": [
+  {
+   "en": "Details pane height",
+   "es": "Altura del panel de detalles",
+   "n": 1
+  }
+ ],
  "conservar": []
 }

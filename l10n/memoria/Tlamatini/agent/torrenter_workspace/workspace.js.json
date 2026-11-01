@@ -1,5 +1,79 @@
 {
  "archivo": "Tlamatini/agent/torrenter_workspace/workspace.js",
- "segmentos": [],
+ "segmentos": [
+  {
+   "en": "Download verified. Saving to Windows Downloads…",
+   "es": "Descarga verificada. Guardando en Descargas…",
+   "n": 1
+  },
+  {
+   "en": "Download verified · saving failed",
+   "es": "Descarga verificada · no se pudo guardar",
+   "n": 1
+  },
+  {
+   "en": "Saving to Downloads…",
+   "es": "Guardando en Descargas…",
+   "n": 1
+  },
+  {
+   "en": "Windows Downloads · ",
+   "es": "Descargas de Windows · ",
+   "n": 1
+  },
+  {
+   "en": "'Delivery error':",
+   "es": "'Error al guardar':",
+   "n": 1,
+   "maquina": "Etiquetas de presentación locales en general(); no son campos del protocolo REST."
+  },
+  {
+   "en": "'Saved to':",
+   "es": "'Guardado en':",
+   "n": 1,
+   "maquina": "Etiquetas de presentación locales en general(); no son campos del protocolo REST."
+  },
+  {
+   "en": "'Delivery':",
+   "es": "'Entrega':",
+   "n": 1,
+   "maquina": "Etiquetas de presentación locales en general(); no son campos del protocolo REST."
+  },
+  {
+   "en": "Saved to: ",
+   "es": "Guardado en: ",
+   "n": 1
+  },
+  {
+   "en": "Update Tlachihuani Jobs to save verified files in Windows Downloads.",
+   "es": "Actualiza Tlachihuani Jobs para guardar los archivos verificados en Descargas de Windows.",
+   "n": 1
+  },
+  {
+   "en": "Service update required",
+   "es": "Se requiere actualizar el servicio",
+   "n": 1
+  },
+  {
+   "en": "Saved in content_generated because Windows Downloads was unavailable: ",
+   "es": "Guardado en content_generated porque Descargas de Windows no estaba disponible: ",
+   "n": 1
+  },
+  {
+   "en": "Magnet queued. Waiting for a metadata slot…",
+   "es": "Magnet en cola. Esperando un turno para consultar sus metadatos…",
+   "n": 1
+  },
+  {
+   "en": " magnet inspection(s) awaiting a file list.",
+   "es": " consulta(s) de magnets pendientes de la lista de archivos.",
+   "n": 1
+  },
+  {
+   "en": "Waiting for magnet metadata…",
+   "es": "Esperando los metadatos del magnet…",
+   "n": 1
+  }
+ ],
  "conservar": []
 }

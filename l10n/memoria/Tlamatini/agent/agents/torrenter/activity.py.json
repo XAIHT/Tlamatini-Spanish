@@ -175,6 +175,31 @@
    "en": "\"FILES\"",
    "es": "\"ARCHIVOS\"",
    "n": 1
+  },
+  {
+   "en": "Windows Downloads destination: ",
+   "es": "Destino en Descargas de Windows: ",
+   "n": 1
+  },
+  {
+   "en": "Waiting for verified delivery.",
+   "es": "Esperando la entrega verificada.",
+   "n": 1
+  },
+  {
+   "en": "OUTPUT NOT YET SAVED",
+   "es": "SALIDA AÚN NO GUARDADA",
+   "n": 1
+  },
+  {
+   "en": "Delivery error: ",
+   "es": "Error al guardar: ",
+   "n": 1
+  },
+  {
+   "en": "Delivery: ",
+   "es": "Entrega: ",
+   "n": 1
   }
  ]
 }

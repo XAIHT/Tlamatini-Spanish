@@ -171,6 +171,26 @@
    "en": "## Actions",
    "es": "## Acciones",
    "n": 1
+  },
+  {
+   "en": "Service update required",
+   "es": "Se requiere actualizar el servicio",
+   "n": 1
+  },
+  {
+   "en": "Details pane height",
+   "es": "Altura del panel de detalles",
+   "n": 1
+  },
+  {
+   "en": "If Windows refuses Downloads, Jobs tries this edition’s\n`content_generated/Torrenter/<account>/<job>/`. The workspace and agent log show\nthe actual destination. If both locations fail, the completion wait reports the\nerror and the private verified original remains available. A changed or missing user",
+   "es": "Si Windows rechaza Descargas, Jobs intenta guardar en\n`content_generated/Torrenter/<account>/<job>/` de esta edición. El panel y el registro\nmuestran el destino efectivo. Si ambos destinos fallan, la espera informa del error\ny el original verificado sigue disponible. Una copia de usuario modificada o ausente",
+   "n": 1
+  },
+  {
+   "en": "Source references and activity logs belong in the edition’s private\n`TorrenterData` directory. Jobs stages incomplete downloads in its own state\ndirectory. Do not use Windows user profiles or `%TEMP%` as scratch space.\nThe final destination may contain a short-lived sibling file for an atomic write.",
+   "es": "Las referencias de origen y los registros se guardan en la carpeta privada\n`TorrenterData` de la edición. Jobs mantiene las descargas incompletas en su\ncarpeta de estado. No se usan perfiles de Windows ni `%TEMP%` para trabajo temporal.\nAl publicar, el destino final puede contener un archivo provisional hasta el cambio de nombre.",
+   "n": 1
   }
  ],
  "conservar": []

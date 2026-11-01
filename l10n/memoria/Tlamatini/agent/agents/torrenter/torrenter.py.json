@@ -45,6 +45,16 @@
    "en": " Operation key: ",
    "es": " Clave de operación: ",
    "n": 1
+  },
+  {
+   "en": "The download is verified, but saving to Windows Downloads failed: ",
+   "es": "La descarga está verificada, pero no se pudo guardar en Descargas de Windows: ",
+   "n": 1
+  },
+  {
+   "en": "Unknown delivery error.",
+   "es": "Error desconocido al guardar.",
+   "n": 1
   }
  ],
  "conservar": []

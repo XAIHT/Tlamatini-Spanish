@@ -1469,6 +1469,7 @@
   "Tlamatini/agent/test_esphomer_agent.py",
   "Tlamatini/agent/test_exec_report_verdict.py",
   "Tlamatini/agent/test_execute_command_bounded.py",
+  "Tlamatini/agent/test_executer_shell_request.py",
   "Tlamatini/agent/test_executer_window_report.py",
   "Tlamatini/agent/test_external_mcp_add_flow.py",
   "Tlamatini/agent/test_external_mcp_e2e.py",
@@ -1568,6 +1569,7 @@
   "Tlamatini/agent/test_terminater_text.py",
   "Tlamatini/agent/test_tool_failure_recovery.py",
   "Tlamatini/agent/test_torrenter.py",
+  "Tlamatini/agent/test_torrenter_delivery.py",
   "Tlamatini/agent/test_uninstall_processes.py",
   "Tlamatini/agent/test_uninstaller_lifecycle.py",
   "Tlamatini/agent/test_uninstaller_mechanics.py",
@@ -1625,6 +1627,7 @@
   "Tlamatini/tests_e2e/test_self_healing_visual.py",
   "Tlamatini/tests_e2e/test_voice_visual.py",
   "Tlamatini/tests_e2e/torrenter_books.py",
+  "Tlamatini/tests_e2e/torrenter_console_windows.py",
   "Tlamatini/tests_e2e/torrenter_live.py",
   "Tlamatini/tests_e2e/torrenter_panel.py",
   "Tlamatini/tlamatini/__init__.py",
@@ -1864,5 +1867,5 @@
   "Tlamatini/agent/static/agent/vendor/frontend/xterm-addon-web-links/lib/addon-web-links.js",
   "Tlamatini/agent/static/agent/vendor/frontend/xterm/lib/xterm.js"
  ],
- "parche": "5214eb2fa47b69397a9cbcaceffd477b8a2b2ab4e11cac4333a7edaa5ec8ae1d"
+ "parche": "c137100a9c7d5ea022a7fcd533e2e9ac2706806a7ce2e41096462e9a368ff5b0"
 }

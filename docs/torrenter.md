@@ -16,6 +16,40 @@ workspace protocol or provide a coordinated service update.
 
 El servidor asigna a cada cuenta de Django un perfil estable de Jobs. El canal de control autenticado de Windows emite una credencial limitada a esa cuenta. El navegador usa su sesión de Django y su token CSRF. Cada edición tiene su propia cookie de sesión.
 
+## Files in Windows Downloads
+
+The updated Jobs service publishes a hash-verified copy to the Windows operator's
+actual Downloads folder under `Torrenter/<account UUID>/<job ID>/`. The account
+heading identifies the signed-in Tlamatini user; the location above the queue and
+**Verified output** show the destination. Windows folder redirection is respected.
+The private service copy remains available for resume and recheck.
+
+The ordinary local controller prepares only that account's output directory and
+grants the Jobs service write access there. Neither edition needs administrator
+rights for routine delivery. The private journal remains protected. An existing
+completed job is copied on reconnect after the service update, without downloading
+it again. Copies survive service shutdown, browser closure and record removal.
+Explicit **Erase files** approval lists both the private and delivered copies.
+
+`verified=true` in a delivered manifest means the copy was checked and published.
+Si Windows rechaza Descargas, Jobs intenta guardar en
+`content_generated/Torrenter/<account>/<job>/` de esta edición. El panel y el registro
+muestran el destino efectivo. Si ambos destinos fallan, la espera informa del error
+y el original verificado sigue disponible. Una copia de usuario modificada o ausente
+copy is reported rather than silently overwritten or recreated. An older Jobs
+version produces **Se requiere actualizar el servicio**, not a claim that a private service
+file was saved to Downloads.
+
+The workspace fills the browser viewport and keeps its footer at the bottom. The
+queue receives the unused height; selecting a transfer opens the details pane.
+**Preferences → Altura del panel de detalles** adjusts that pane. Scrolling is retained
+where the content actually exceeds the available pane or viewport.
+
+Native credential calls are internal IPC and do not allocate console windows.
+Development verification still runs in a visible foreground console and headed
+Chrome. Full Tlamatini executables must be rebuilt to deliver frozen Python
+changes; updating Jobs alone does not replace either Tlamatini executable.
+
 ## Iniciar una transferencia
 
 Abre **Paneles → Fuentes de Torrenter**. Elige un archivo `.torrent` o pega un vínculo magnet y selecciona **Revisar metadatos**. Copia el ID de inspección en el chat. También puedes pegar un magnet en un mensaje: Tlamatini lo sustituye por una referencia cifrada de corta duración antes de guardar el historial o enviar la solicitud al modelo.
@@ -61,10 +95,16 @@ A search result passes its complete magnet, including trackers, as a private sou
 
 ## Repetir las pruebas de desarrollo
 
+Las referencias de origen y los registros se guardan en la carpeta privada
+`TorrenterData` de la edición. Jobs mantiene las descargas incompletas en su
+carpeta de estado. No se usan perfiles de Windows ni `%TEMP%` para trabajo temporal.
+Al publicar, el destino final puede contener un archivo provisional hasta el cambio de nombre.
+
 From a verified visible foreground PowerShell console, keep the server running in its own visible window. The live check opens headed Chrome, asks for the signed-in development account’s password, uploads a generated torrent, submits it through the real wrapped tool, replays its receipt and independently checks the SHA-256 of the published 13,936-byte fixture. It prints the completed job ID for inspection.
 
 ```powershell
 Set-Location -LiteralPath 'C:\Development\XAIHT\Tlamatini-Spanish\Tlamatini'
 python manage.py test agent.test_torrenter agent.test_ask_execs_allowlist agent.test_agent_display_names agent.tests.ExecReportCaptureTests
+python tests_e2e/torrenter_console_windows.py
 python tests_e2e/torrenter_live.py --username YOUR_USERNAME --port 18084
 ```

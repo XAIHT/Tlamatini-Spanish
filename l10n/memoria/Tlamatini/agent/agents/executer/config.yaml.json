@@ -1,0 +1,11 @@
+{
+ "archivo": "Tlamatini/agent/agents/executer/config.yaml",
+ "segmentos": [
+  {
+   "en": "Blocking deadline in seconds. Leave unset to use TLAMATINI_COMMAND_TIMEOUT.",
+   "es": "Tiempo máximo de espera en segundos. Dejar vacío para usar TLAMATINI_COMMAND_TIMEOUT.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

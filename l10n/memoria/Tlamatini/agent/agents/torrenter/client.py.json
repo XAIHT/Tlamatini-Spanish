@@ -72,11 +72,6 @@
    "n": 1
   },
   {
-   "en": "Jobs refused gateway enrollment.",
-   "es": "Jobs rechazó el registro del gateway.",
-   "n": 1
-  },
-  {
    "en": "Unexpected Jobs response.",
    "es": "Jobs devolvió una respuesta inesperada.",
    "n": 1
@@ -89,6 +84,21 @@
   {
    "en": "Request refused.",
    "es": "Solicitud rechazada.",
+   "n": 1
+  },
+  {
+   "en": "Update Tlachihuani Jobs to save verified files in Windows Downloads.",
+   "es": "Actualiza Tlachihuani Jobs para guardar los archivos verificados en Descargas de Windows.",
+   "n": 1
+  },
+  {
+   "en": "Reopen Torrenter from this edition to renew its activation.",
+   "es": "Vuelve a abrir Torrenter desde esta edición para renovar su activación.",
+   "n": 1
+  },
+  {
+   "en": "Cannot access this edition’s TorrenterData directory: ",
+   "es": "No se puede acceder a la carpeta TorrenterData de esta edición: ",
    "n": 1
   }
  ],

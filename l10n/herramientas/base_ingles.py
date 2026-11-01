@@ -7,6 +7,7 @@
 #   Tlamatini Author Banner — no se quita (el nombre de Angela va en cada build)
 """Lectura rápida de los originales ingleses del commit base (git cat-file --batch)."""
 import hashlib
+import os
 import subprocess
 import tempfile
 from functools import lru_cache
@@ -24,10 +25,17 @@ def originales_del_parche(ingles, commit, huella):
     datos = parche.read_bytes()
     if hashlib.sha256(datos).hexdigest() != huella:
         raise ValueError("El parche inglés no corresponde a la huella registrada")
-    with tempfile.TemporaryDirectory(prefix="tlamatini-origen-") as tmp:
+    scratch = Path(__file__).resolve().parents[2] / "Temp" / "l10n"
+    scratch.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=scratch, prefix="origen-") as tmp:
+        # El directorio de trabajo vive dentro del proyecto. Sin este límite,
+        # git apply interpreta las rutas desde el repositorio padre y omite el parche.
+        entorno = {**os.environ, "GIT_CEILING_DIRECTORIES": str(scratch)}
         orden = ["git", "apply", "--no-index", "-p2", "--whitespace=nowarn"]
-        lista = subprocess.check_output([*orden, "--numstat", "-z", str(parche)], cwd=tmp)
+        lista = subprocess.check_output([*orden, "--numstat", "-z", str(parche)], cwd=tmp, env=entorno)
         rutas = [fila.split(b"\t", 2)[2].decode("utf-8") for fila in lista.split(b"\0") if fila]
+        if datos.strip() and not rutas:
+            raise ValueError("Git no reconstruyó ninguna ruta del parche inglés")
         with OriginalesIngles(ingles, commit) as origen:
             for ruta in rutas:
                 destino = (Path(tmp) / ruta).resolve()
@@ -37,7 +45,7 @@ def originales_del_parche(ingles, commit, huella):
                 if anterior is not None:
                     destino.parent.mkdir(parents=True, exist_ok=True)
                     destino.write_bytes(anterior)
-        subprocess.run([*orden, str(parche)], cwd=tmp, check=True)
+        subprocess.run([*orden, str(parche)], cwd=tmp, env=entorno, check=True)
         return {ruta: (Path(tmp) / ruta).read_bytes() for ruta in rutas}
 
 
