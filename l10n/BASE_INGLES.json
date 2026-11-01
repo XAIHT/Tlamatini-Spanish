@@ -245,6 +245,7 @@
   "Tests/test_avatar_collectstatic.py",
   "Tests/test_avatar_presence_visible.py",
   "Tests/test_avatar_visible.cjs",
+  "Tests/test_build_env_concurrency.py",
   "Tests/test_pdf_canvas_assets.py",
   "Tests/test_pdf_canvas_browser.py",
   "Tests/test_perf_3x_visual.py",
@@ -1863,5 +1864,5 @@
   "Tlamatini/agent/static/agent/vendor/frontend/xterm-addon-web-links/lib/addon-web-links.js",
   "Tlamatini/agent/static/agent/vendor/frontend/xterm/lib/xterm.js"
  ],
- "parche": "27157c2c8be06e8dd10c483571c886a85464237cedd46b81138d1fdf39edd9e8"
+ "parche": "5214eb2fa47b69397a9cbcaceffd477b8a2b2ab4e11cac4333a7edaa5ec8ae1d"
 }

@@ -1,0 +1,26 @@
+{
+ "archivo": "build_env.py",
+ "segmentos": [
+  {
+   "en": "Cannot repair build Python while files remain locked: {env_dir}",
+   "es": "No se puede reparar el Python de compilación mientras haya archivos bloqueados: {env_dir}",
+   "n": 1
+  },
+  {
+   "en": "Build Python became unavailable before launch: {python}",
+   "es": "El Python de compilación dejó de estar disponible antes del inicio: {python}",
+   "n": 1
+  },
+  {
+   "en": "waiting for another build using {env_dir}",
+   "es": "esperando a otra compilación que usa {env_dir}",
+   "n": 1
+  },
+  {
+   "en": "Build Python is still in use: {env_dir}",
+   "es": "El Python de compilación sigue en uso: {env_dir}",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}
