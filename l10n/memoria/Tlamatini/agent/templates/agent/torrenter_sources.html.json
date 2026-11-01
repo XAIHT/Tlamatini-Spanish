@@ -1,0 +1,121 @@
+{
+ "archivo": "Tlamatini/agent/templates/agent/torrenter_sources.html",
+ "segmentos": [
+  {
+   "en": "Inspect a magnet or a torrent file under your signed-in account. Give the inspection ID to Torrenter in chat or use it in a flow.",
+   "es": "Revisa un vínculo magnet o un archivo torrent con la cuenta que usaste para iniciar sesión. Copia el ID de inspección en el chat de Torrenter o úsalo en un flow.",
+   "n": 1
+  },
+  {
+   "en": "Ask Torrenter to review this inspection and download the file IDs you choose. Inspections expire after 15 minutes.",
+   "es": "Pide a Torrenter que revise esta inspección y descargue los archivos que elijas por ID. La inspección vence en 15 minutos.",
+   "n": 1
+  },
+  {
+   "en": "One endpoint per line. An empty list clears existing sources.",
+   "es": "Escribe un endpoint por línea. Una lista vacía borra las fuentes actuales.",
+   "n": 1
+  },
+  {
+   "en": " on a stopped job with its revision and source reference ",
+   "es": " en un job detenido, con su revisión y esta referencia de fuentes ",
+   "n": 1
+  },
+  {
+   "en": "Your signed-in Tlamatini account opens the same queue.",
+   "es": "Tu sesión de Tlamatini abre la misma cola.",
+   "n": 1
+  },
+  {
+   "en": "Prepare a private tracker or web-seed update",
+   "es": "Preparar una actualización privada de trackers o web seeds",
+   "n": 1
+  },
+  {
+   "en": ". This reference expires in 15 minutes.",
+   "es": ". La referencia vence en 15 minutos.",
+   "n": 1
+  },
+  {
+   "en": "Torrent metadata file (up to 1 MiB)",
+   "es": "Archivo de metadatos torrent (hasta 1 MiB)",
+   "n": 1
+  },
+  {
+   "en": "Open the XT download workspace",
+   "es": "Abrir el panel de descargas de XT",
+   "n": 1
+  },
+  {
+   "en": "Inspection ready for review",
+   "es": "Inspección lista para revisar",
+   "n": 1
+  },
+  {
+   "en": "Prepare source reference",
+   "es": "Crear referencia de fuentes",
+   "n": 1
+  },
+  {
+   "en": "aria-label=\"Inspection\"",
+   "es": "aria-label=\"Inspección\"",
+   "n": 1
+  },
+  {
+   "en": "Or paste a magnet link",
+   "es": "O pega un vínculo magnet",
+   "n": 1
+  },
+  {
+   "en": "TLAMATINI / DOWNLOADS",
+   "es": "TLAMATINI / DESCARGAS",
+   "n": 1
+  },
+  {
+   "en": "role=\"status\">Use ",
+   "es": "role=\"status\">Usa ",
+   "n": 1
+  },
+  {
+   "en": "Torrenter Sources",
+   "es": "Fuentes de Torrenter",
+   "n": 2
+  },
+  {
+   "en": "Metadata revision",
+   "es": "Revisión de los metadatos",
+   "n": 1
+  },
+  {
+   "en": "Inspect metadata",
+   "es": "Revisar metadatos",
+   "n": 1
+  },
+  {
+   "en": "Inspection ID ",
+   "es": "ID de inspección ",
+   "n": 1
+  },
+  {
+   "en": "<th>File</th>",
+   "es": "<th>Archivo</th>",
+   "n": 1
+  },
+  {
+   "en": "Source list",
+   "es": "Lista de fuentes",
+   "n": 1
+  },
+  {
+   "en": "lang=\"en\"",
+   "es": "lang=\"es-MX\"",
+   "n": 1
+  },
+  {
+   "en": "<p>Phase ",
+   "es": "<p>Fase ",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -17,11 +17,6 @@
    "n": 1
   },
   {
-   "en": ">\r\n            Open in...\r\n            <",
-   "es": ">\r\n            Abrir en...\r\n            <",
-   "n": 1
-  },
-  {
    "en": ">Open<",
    "es": ">Abrir<",
    "n": 1
@@ -72,11 +67,6 @@
    "n": 1
   },
   {
-   "en": ">View context directory in\r\n                  canvas<",
-   "es": ">Ver el directorio de contexto en el canvas<",
-   "n": 1
-  },
-  {
    "en": ">Clear context<",
    "es": ">Limpiar el contexto<",
    "n": 1
@@ -114,16 +104,6 @@
   {
    "en": ">External<",
    "es": ">Externos<",
-   "n": 1
-  },
-  {
-   "en": ">\r\n                  Configure MCPs<",
-   "es": ">\r\n                  Configurar MCPs<",
-   "n": 1
-  },
-  {
-   "en": ">\r\n                  Configure Agents<",
-   "es": ">\r\n                  Configurar Agents<",
    "n": 1
   },
   {
@@ -494,11 +474,6 @@
   {
    "en": "title=\"Execution permission required\"",
    "es": "title=\"Se requiere permiso de ejecución\"",
-   "n": 1
-  },
-  {
-   "en": ">Tlamatini wants to run the following before continuing the Multi-Turn chain.\r\n      Review what is about to execute and choose <",
-   "es": ">Tlamatini quiere ejecutar lo siguiente antes de continuar el chain de Multi-Turn.\n      Revisa lo que está por ejecutarse y elige <",
    "n": 1
   },
   {
@@ -1180,6 +1155,22 @@
    "en": "href=\"https://github.com/XAIHT/Tlamatini/releases\"",
    "es": "href=\"https://github.com/XAIHT/Tlamatini-Spanish/releases\"",
    "codigo": "Identidad de Tlamatini-Spanish: se actualiza desde XAIHT/Tlamatini-Spanish y su release se llama Tlamatini-Spanish_Release_v*",
+   "n": 1
+  },
+  {
+   "en": "  {% include 'agent/interaction_settings.html' %}\n",
+   "es": "  {% include 'agent/interaction_settings.html' %}\n  {{ speech_pronunciation|json_script:\"tlm-speech-pronunciation\" }}\n",
+   "n": 1,
+   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+  },
+  {
+   "en": ">Torrenter Sources</a>",
+   "es": ">Fuentes de Torrenter</a>",
+   "n": 1
+  },
+  {
+   "en": "Torrenter Workspace",
+   "es": "Descargas de Torrenter",
    "n": 1
   }
  ],

@@ -1,0 +1,11 @@
+{
+ "archivo": "Tlamatini/agent/torrenter_tool.py",
+ "segmentos": [
+  {
+   "en": "Use a documented action and a named arguments object.",
+   "es": "Usa una acción documentada y un objeto arguments con campos identificados por nombre.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

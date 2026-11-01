@@ -1,0 +1,61 @@
+{
+ "archivo": "Tlamatini/agent/test_uninstaller_mechanics.py",
+ "segmentos": [
+  {
+   "en": "\"⟳  Retry\"",
+   "es": "\"⟳  Reintentar\"",
+   "n": 1
+  },
+  {
+   "en": "'\"Exit\"'",
+   "es": "'\"Salir\"'",
+   "n": 1
+  },
+  {
+   "en": "Always kept: agents/",
+   "es": "Siempre se conserva: agents/",
+   "n": 1
+  },
+  {
+   "en": "Everything else, including Temp/, is removed.",
+   "es": "Todo lo demás, incluida Temp/, se elimina.",
+   "n": 1
+  },
+  {
+   "en": "\"the directory below\"",
+   "es": "\"el directorio de abajo\"",
+   "n": 1
+  },
+  {
+   "en": "\"the directories below\"",
+   "es": "\"los directorios de abajo\"",
+   "n": 1
+  },
+  {
+   "en": "\"left untouched\"",
+   "es": "\"sin tocar\"",
+   "n": 1
+  },
+  {
+   "en": "\"installation directory\"",
+   "es": "\"directorio de instalación\"",
+   "n": 1
+  },
+  {
+   "en": "\"All other application files will be removed\"",
+   "es": "\"Se eliminarán todos los demás archivos de la aplicación\"",
+   "n": 1
+  },
+  {
+   "en": "\"continue anyway\", \"Continue Anyway\", \"Ignore\",",
+   "es": "\"continuar de todos modos\", \"Continuar de todos modos\", \"Ignorar\",",
+   "n": 1
+  },
+  {
+   "en": "\"Skip\", \"Force\"",
+   "es": "\"Omitir\", \"Forzar\"",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -64,14 +65,14 @@ class EmptyPackageDirectoryRecoveryTests(unittest.TestCase):
         collision = self.target / 'agents'
         collision.write_bytes(b'keep the existing file')
         recovery = Recovery(self.target)
-        with self.assertRaisesRegex(RuntimeError, 'occupied by a file'):
+        with self.assertRaisesRegex(RuntimeError, 'ocupado por un archivo'):
             recovery.prepare([], windows=False, created_directories=['agents'])
         self.assertFalse(recovery.folder.exists())
         self.assertEqual(collision.read_bytes(), b'keep the existing file')
 
     def test_unsafe_directory_is_refused_before_mutation(self):
         recovery = Recovery(self.target)
-        with self.assertRaisesRegex(ValueError, 'Unsafe recovery path'):
+        with self.assertRaisesRegex(ValueError, 'Path de recuperación no seguro'):
             recovery.prepare([], windows=False, created_directories=['../outside'])
         self.assertFalse(self.target.exists())
 
@@ -98,7 +99,7 @@ class ReinstallPreservedCatalogTests(unittest.TestCase):
         self.user_file.write_bytes(b'user agent retained byte for byte')
         self.package = Path(self.temp.name) / 'pkg.zip'
         self.payload = {'agents/_tlamatini_agents_manifest.json': b'{"agents_root_kind":"installed"}\n',
-                        'Tlamatini.exe': b'isolated filesystem fixture'}
+                        'Tlamatini-Spanish.exe': b'isolated filesystem fixture'}
         with zipfile.ZipFile(self.package, 'w') as archive:
             for name, content in self.payload.items():
                 archive.writestr(name, content)
@@ -142,7 +143,7 @@ class ReinstallPreservedCatalogTests(unittest.TestCase):
         self.assertEqual(self.marker.read_bytes(), self.original_marker)
         self.assertEqual(self.manifest.read_bytes(), self.original_manifest)
         self.assertEqual(self.user_file.read_bytes(), b'user agent retained byte for byte')
-        self.assertFalse((self.target / 'Tlamatini.exe').exists())
+        self.assertFalse((self.target / 'Tlamatini-Spanish.exe').exists())
         self.assertFalse((self.target / 'Temp/.setup-recovery').exists())
 
     def test_install_without_prior_marker_succeeds(self):
@@ -177,7 +178,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         self.target = Path(self.temp.name) / 'Tlamatini'
         self.target.mkdir()
         self.payload = self.file('python/Lib/package/data.bin', b'application payload' * 500)
-        self.executable = self.file('Tlamatini.exe', b'application image')
+        self.executable = self.file('Tlamatini-Spanish.exe', b'application image')
         self.kept = ['agents', *PRESERVED_WHEN_NOT_EMPTY]
         self.content = {}
         for name in self.kept:
@@ -226,6 +227,37 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         self.assertFalse(self.executable.exists())
         self.assert_content_unchanged()
         self.assertTrue((self.target / 'Temp/UpdateMedia/cache.bin').is_file())
+
+    @unittest.skipUnless(os.name == 'nt', 'literal NTFS directory names')
+    def test_browser_caches_remain_distinct_across_interruption_and_cleanup(self):
+        root = Path('\\\\?\\' + str(self.target))
+        # Ordinary Win32 path access can silently select the other sibling.
+        names = ('ms-playwright', 'ms-playwright ', 'ms-playwright.')
+        self.addCleanup(remove_tree, root)
+        identities = {}
+        for name in names:
+            cache = root / name
+            cache.mkdir()
+            (cache / 'revision').write_bytes(name.encode())
+            nested = cache / ('x' * 120) / ('y' * 120)
+            nested.mkdir(parents=True)
+            (nested / 'readonly. ').write_bytes(b'cache')
+            (nested / 'readonly. ').chmod(stat.S_IREAD)
+            identities[name] = cache.stat().st_ino
+        self.assertEqual(len(set(identities.values())), 3)
+        recovery = self.prepare()
+        for name in names:
+            recovery.stage_removal(name)
+        Recovery(self.target).recover_previous()
+        for name in names:
+            self.assertEqual((root / name).stat().st_ino, identities[name])
+            self.assertEqual((root / name / 'revision').read_bytes(), name.encode())
+        recovery = self.prepare()
+        self.stage_all(recovery)
+        self.assertEqual(recovery.commit(), '')
+        for name in names:
+            self.assertFalse((root / name).exists())
+        self.assert_content_unchanged()
 
     @unittest.skipUnless(os.name == 'nt', 'Windows file sharing semantics')
     def test_transient_journal_lock_retries_atomic_replacement(self):
@@ -291,12 +323,12 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
 
     def test_recovery_never_overwrites_new_content_at_original_path(self):
         recovery = self.prepare()
-        recovery.stage_removal('Tlamatini.exe')
+        recovery.stage_removal('Tlamatini-Spanish.exe')
         self.executable.write_bytes(b'new content from another actor')
-        with self.assertRaisesRegex(RuntimeError, 'occupied'):
+        with self.assertRaisesRegex(RuntimeError, 'El destino de restauración está ocupado'):
             Recovery(self.target).recover_previous()
         self.assertEqual(self.executable.read_bytes(), b'new content from another actor')
-        self.assertEqual((recovery.folder / 'quarantine/Tlamatini.exe').read_bytes(), b'application image')
+        self.assertEqual((recovery.folder / 'quarantine/Tlamatini-Spanish.exe').read_bytes(), b'application image')
         self.executable.unlink()
         Recovery(self.target).recover_previous()
         self.assertEqual(self.executable.read_bytes(), b'application image')
@@ -309,7 +341,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         started = time.monotonic()
         try:
             with self.assertRaises(PermissionError):
-                recovery.stage_removal('Tlamatini.exe')
+                recovery.stage_removal('Tlamatini-Spanish.exe')
         finally:
             release()
         recovery.rollback()
@@ -325,7 +357,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         held = recovery.folder / 'quarantine/python/Lib/package/data.bin'
         release = self.lock(held)
         try:
-            self.assertIn('recovery copy could not be cleared', recovery.commit())
+            self.assertIn('No se pudo borrar la copia temporal de recuperación', recovery.commit())
             self.assertEqual(json.loads(recovery.journal.read_text())['state'], 'committed')
             self.assertFalse(self.payload.exists())
         finally:
@@ -339,7 +371,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         recovery = self.prepare()
         recovery.stage_removal('python')
         recovery.cleanup_deadline = time.monotonic() - 1
-        self.assertIn('could not be cleared', recovery.commit())
+        self.assertIn('No se pudo borrar la copia temporal de recuperación', recovery.commit())
         self.assertEqual(json.loads(recovery.journal.read_text())['state'], 'committed')
         Recovery(self.target).recover_previous()
         self.assertFalse(self.payload.exists())
@@ -385,7 +417,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
                 app._run_cleanup_retry(str(self.target))
         finally:
             release()
-        self.assertIn('Temporary cleanup could not finish', app.setup_notice)
+        self.assertIn('No se pudo terminar la limpieza temporal', app.setup_notice)
         self.assertTrue(folder.is_dir())
         self.assert_content_unchanged()
 
@@ -397,7 +429,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         recovery.rollback()
         self.assertEqual(marker.read_bytes(), b'original marker')
         legacy = Recovery(self.target)
-        legacy.prepare(['Tlamatini.exe'], windows=False)
+        legacy.prepare(['Tlamatini-Spanish.exe'], windows=False)
         self.executable.write_bytes(b'partial legacy modification')
         Recovery(self.target).recover_previous()
         self.assertEqual(self.executable.read_bytes(), b'application image')
@@ -405,7 +437,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
     def test_recovery_progress_advances_even_when_files_already_match(self):
         progress = []
         recovery = Recovery(self.target, rollback_progress=progress.append)
-        recovery.prepare(['Tlamatini.exe'], windows=False)
+        recovery.prepare(['Tlamatini-Spanish.exe'], windows=False)
         recovery.rollback()
         self.assertEqual(progress, sorted(progress))
         self.assertEqual(progress[-1], 1)
@@ -456,7 +488,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         original_id = self.payload.stat().st_ino
         self.run_pipeline(app)
         app._show_success.assert_not_called()
-        self.assertIn('were restored', app._show_error.call_args.args[0])
+        self.assertIn('Se restauraron los archivos de instalación', app._show_error.call_args.args[0])
         self.assertEqual(self.payload.stat().st_ino, original_id)
         self.assertEqual(app.deferred_in_place, [])
         self.assertEqual(app.removal_target, '')
@@ -486,7 +518,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         app = self.cleanup_app(recovery)
         with patch('uninstall.setup_lock', side_effect=nullcontext):
             app._run_cleanup_retry(str(self.target))
-        self.assertIn('protect the new installation', app.setup_notice)
+        self.assertIn('proteger la instalación nueva', app.setup_notice)
         self.assertEqual(self.executable.read_bytes(), b'new installation image')
         self.assertTrue(recovery.journal.exists())
         self.assert_content_unchanged()
@@ -502,7 +534,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
         with patch('uninstall.setup_lock', side_effect=nullcontext):
             for _ in range(2):
                 app._run_cleanup_retry(str(self.target))
-                self.assertIn('changed since this removal', app.setup_notice)
+                self.assertIn('cambiaron desde esta eliminación', app.setup_notice)
                 self.assertTrue(recovery.journal.exists())
                 self.assertTrue((recovery.folder / 'quarantine/python').exists())
         self.assert_content_unchanged()
@@ -547,7 +579,7 @@ class RemovalRenameRecoveryTests(unittest.TestCase):
             self.run_pipeline(app)
         finally:
             release()
-        self.assertIn('Temporary cleanup', app.setup_notice)
+        self.assertIn('la limpieza temporal', app.setup_notice)
         self.assertFalse(recovery.journal.exists())
         self.assertTrue((self.target / CLEANUP_RECEIPT).is_file())
         self.assertTrue(removal_cleanup_pending(self.target))

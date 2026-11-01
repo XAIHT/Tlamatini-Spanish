@@ -1,0 +1,61 @@
+{
+ "archivo": "Tlamatini/agent/torrenter_views.py",
+ "segmentos": [
+  {
+   "en": "Enter a valid magnet link of up to 8192 characters.",
+   "es": "Ingresa un vínculo magnet válido de hasta 8192 caracteres.",
+   "n": 1
+  },
+  {
+   "en": "Install or update the Tlachihuani Jobs workspace.",
+   "es": "Instala o actualiza el espacio de descargas de Tlachihuani Jobs.",
+   "n": 1
+  },
+  {
+   "en": "Choose a .torrent file or enter one magnet link.",
+   "es": "Elige un archivo .torrent o ingresa un vínculo magnet.",
+   "n": 1
+  },
+  {
+   "en": "The torrent metadata must be 1 byte to 1 MiB.",
+   "es": "El archivo de metadatos debe tener entre 1 byte y 1 MiB.",
+   "n": 1
+  },
+  {
+   "en": "Account changed. Reload the workspace.",
+   "es": "Cambió la cuenta. Recarga el espacio de descargas.",
+   "n": 1
+  },
+  {
+   "en": "Unsupported content type.",
+   "es": "El tipo de contenido no es compatible.",
+   "n": 1
+  },
+  {
+   "en": "Expected a JSON object.",
+   "es": "Se esperaba un objeto JSON.",
+   "n": 1
+  },
+  {
+   "en": "Sign in to Tlamatini.",
+   "es": "Inicia sesión en Tlamatini.",
+   "n": 2
+  },
+  {
+   "en": "Invalid torrent file.",
+   "es": "El archivo torrent no es válido.",
+   "n": 1
+  },
+  {
+   "en": "Invalid revision.",
+   "es": "La revisión no es válida.",
+   "n": 1
+  },
+  {
+   "en": "Query too long.",
+   "es": "La consulta es demasiado larga.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

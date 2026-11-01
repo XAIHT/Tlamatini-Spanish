@@ -1,0 +1,12 @@
+{
+ "archivo": "copy_source_assets.py",
+ "segmentos": [
+  {
+   "en": "REQUIRED_SNAPSHOT_FILES = (\n",
+   "es": "REQUIRED_SNAPSHOT_FILES = (\n    \"Tlamatini/agent/agents/talker/spanish_pronunciation.py\",\n    \"Tlamatini/agent/test_spanish_pronunciation.py\",\n    \"docs/spanish-name-pronunciation.md\",\n    \"scripts/spanish_names_visible.py\",\n    \"scripts/spanish_names_synthesis_visible.py\",\n",
+   "n": 1,
+   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+  }
+ ],
+ "conservar": []
+}

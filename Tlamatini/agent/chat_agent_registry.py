@@ -2231,6 +2231,19 @@ WRAPPED_CHAT_AGENT_SPECS: tuple[ChatWrappedAgentSpec, ...] = (
         poll_window_seconds=120,
     ),
     ChatWrappedAgentSpec(
+        key="torrenter", template_dir="torrenter", tool_name="chat_agent_torrenter",
+        tool_description="Chat-Agent-Torrenter", display_name="Torrenter",
+        purpose="Controla las descargas persistentes de Jobs de la cuenta activa. Después de buscar, llama a get_torrent "
+                "para el resultado elegido y pasa el source_ref a inspect para conservar los trackers. Inspecciona un info hash público "
+                "or a staged magnet source_ref, or use an inspection ID from Paneles > Fuentes de Torrenter. Review metadata and select explicit file "
+                "IDs before download. A 202 is acceptance. Reattach using job_id for status, lifecycle and the "
+                "verified manifest, or operation_id for the receipt. Stop retains bytes. Removing a record retains "
+                "files. Content deletion requires an exact preview approved in XT. Never substitute a chat run ID.",
+        example_request="Lista mis descargas de torrents y muestra los archivos verificados de un job completado.",
+        aliases=("torrenter", "torrent", "torrent downloads", "magnet", "descargas de torrents", "vínculo magnet"),
+        security_hints=("torrent", "magnet", "download job"),
+    ),
+    ChatWrappedAgentSpec(
         key="terminater",
         template_dir="terminater",
         tool_name="chat_agent_terminater",

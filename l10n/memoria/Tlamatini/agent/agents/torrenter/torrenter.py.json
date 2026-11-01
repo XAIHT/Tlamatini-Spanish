@@ -1,0 +1,51 @@
+{
+ "archivo": "Tlamatini/agent/agents/torrenter/torrenter.py",
+ "segmentos": [
+  {
+   "en": "The interrupted activation changed. Review and start a new action.",
+   "es": "La acción interrumpida cambió. Revísala e inicia una acción nueva.",
+   "n": 1
+  },
+  {
+   "en": "\"The running Jobs version did not supply the full source magnet.\"",
+   "es": "\"La versión activa de Jobs no proporcionó el enlace magnet original completo.\"",
+   "n": 1
+  },
+  {
+   "en": "Invalid configuration or unavailable Windows integration.",
+   "es": "La configuración no es válida o la integración con Windows no está disponible.",
+   "n": 1
+  },
+  {
+   "en": "\"Download ended before verified publication. \"",
+   "es": "\"La descarga terminó antes de verificar los archivos. \"",
+   "n": 1
+  },
+  {
+   "en": "The saved operation receipt is invalid.",
+   "es": "El comprobante guardado de la operación no es válido.",
+   "n": 1
+  },
+  {
+   "en": "Downstream agent is unavailable.",
+   "es": "El siguiente agent no está disponible.",
+   "n": 1
+  },
+  {
+   "en": "Invalid downstream agent name.",
+   "es": "El nombre del siguiente agent no es válido.",
+   "n": 1
+  },
+  {
+   "en": "\"Waiting for verified output\"",
+   "es": "\"Esperando los archivos verificados\"",
+   "n": 1
+  },
+  {
+   "en": " Operation key: ",
+   "es": " Clave de operación: ",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

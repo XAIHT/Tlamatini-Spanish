@@ -1,0 +1,180 @@
+{
+ "archivo": "Tlamatini/agent/agents/torrenter/activity.py",
+ "segmentos": [
+  {
+   "en": "\"selected\" if item[\"selected\"] else \"excluded\"",
+   "es": "\"seleccionado\" if item[\"selected\"] else \"excluido\"",
+   "n": 1
+  },
+  {
+   "en": "\"Magnet generated from the uploaded .torrent\"",
+   "es": "\"Magnet generado a partir del .torrent cargado\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Files in metadata: {len(files)}\"",
+   "es": "f\"Archivos en los metadatos: {len(files)}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Wait for complete download: \"",
+   "es": "\"Esperar a que termine la descarga: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Leechers reported by swarm: \"",
+   "es": "\"Pares incompletos reportados: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Connected peers (up to 100)\"",
+   "es": "\"Pares conectados (hasta 100)\"",
+   "n": 1
+  },
+  {
+   "en": "\"Seeds reported by swarm: \"",
+   "es": "\"Semillas reportadas por el enjambre: \"",
+   "n": 1
+  },
+  {
+   "en": "\"available for selection\"",
+   "es": "\"disponible para seleccionar\"",
+   "n": 1
+  },
+  {
+   "en": "\"Yes\" if wait else \"No\"",
+   "es": "\"Sí\" if wait else \"No\"",
+   "n": 1
+  },
+  {
+   "en": "\"Waiting for metadata\"",
+   "es": "\"En espera de los metadatos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Original magnet link\"",
+   "es": "\"Enlace magnet original\"",
+   "n": 1
+  },
+  {
+   "en": "f\"Action: {action}\"",
+   "es": "f\"Acción: {action}\"",
+   "n": 1
+  },
+  {
+   "en": "\"Seeds connected: \"",
+   "es": "\"Semillas conectadas: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Peers connected: \"",
+   "es": "\"Pares conectados: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Completed (UTC): \"",
+   "es": "\"Completado (UTC): \"",
+   "n": 1
+  },
+  {
+   "en": "\"    Saved file: \"",
+   "es": "\"    Archivo guardado: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Finished (UTC): \"",
+   "es": "\"Fin (UTC): \"",
+   "n": 1
+  },
+  {
+   "en": "\"Observed (UTC): \"",
+   "es": "\"Observación (UTC): \"",
+   "n": 1
+  },
+  {
+   "en": "\"TRANSFER / SWARM\"",
+   "es": "\"TRANSFERENCIA Y ENJAMBRE\"",
+   "n": 1
+  },
+  {
+   "en": "\"VERIFIED OUTPUT\"",
+   "es": "\"ARCHIVOS VERIFICADOS\"",
+   "n": 1
+  },
+  {
+   "en": "\"Started (UTC): \"",
+   "es": "\"Inicio (UTC): \"",
+   "n": 1
+  },
+  {
+   "en": "\"Download rate: \"",
+   "es": "\"Velocidad de descarga: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Availability: \"",
+   "es": "\"Disponibilidad: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Share ratio: \"",
+   "es": "\"Proporción compartida: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Upload rate: \"",
+   "es": "\"Velocidad de subida: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Destination: \"",
+   "es": "\"Destino: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Total size: \"",
+   "es": "\"Tamaño total: \"",
+   "n": 1
+  },
+  {
+   "en": "\"not reported\"",
+   "es": "\"sin datos\"",
+   "n": 1
+  },
+  {
+   "en": "\"Selected: \"",
+   "es": "\"Seleccionados: \"",
+   "n": 1
+  },
+  {
+   "en": "\"Verified: \"",
+   "es": "\"Verificados: \"",
+   "n": 1
+  },
+  {
+   "en": "\"HTTP seeds\"",
+   "es": "\"Semillas HTTP\"",
+   "n": 1
+  },
+  {
+   "en": "\"Status: \"",
+   "es": "\"Estado: \"",
+   "n": 1
+  },
+  {
+   "en": "\"TORRENT\"",
+   "es": "\"TORRENT\"",
+   "n": 1
+  },
+  {
+   "en": "\"RESULT\"",
+   "es": "\"RESULTADO\"",
+   "n": 1
+  },
+  {
+   "en": "\"FILES\"",
+   "es": "\"ARCHIVOS\"",
+   "n": 1
+  }
+ ]
+}

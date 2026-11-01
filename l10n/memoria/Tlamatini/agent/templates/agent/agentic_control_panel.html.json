@@ -325,6 +325,22 @@
    "en": ">From agents_descriptions.md<",
    "es": ">De agents_descriptions.md<",
    "n": 1
+  },
+  {
+   "en": "    {% include 'agent/interaction_settings.html' %}\n",
+   "es": "    {% include 'agent/interaction_settings.html' %}\n    {{ speech_pronunciation|json_script:\"tlm-speech-pronunciation\" }}\n",
+   "n": 1,
+   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+  },
+  {
+   "en": ">Torrenter Sources</a>",
+   "es": ">Fuentes de Torrenter</a>",
+   "n": 1
+  },
+  {
+   "en": "Torrenter Workspace",
+   "es": "Descargas de Torrenter",
+   "n": 1
   }
  ],
  "conservar": [

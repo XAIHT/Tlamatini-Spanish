@@ -12,6 +12,12 @@
    "es": "Tlamatini-Spanish.exe",
    "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
    "n": 2
+  },
+  {
+   "en": "    \"Tlamatini/agent/agents/whisperer/chat_worker.py\": \"agents/whisperer/chat_worker.py\",\n",
+   "es": "    \"Tlamatini/agent/agents/whisperer/chat_worker.py\": \"agents/whisperer/chat_worker.py\",\n    \"Tlamatini/agent/agents/talker/spanish_pronunciation.py\": \"agents/talker/spanish_pronunciation.py\",\n    \"docs/spanish-name-pronunciation.md\": \"docs/spanish-name-pronunciation.md\",\n",
+   "n": 1,
+   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
   }
  ],
  "conservar": []

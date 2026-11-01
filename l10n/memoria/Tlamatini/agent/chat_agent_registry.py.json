@@ -1,0 +1,38 @@
+{
+ "archivo": "Tlamatini/agent/chat_agent_registry.py",
+ "segmentos": [
+  {
+   "en": "            \"vocoder) installed; without them the agent still fetches + saves the audio tokens and \"\n            \"reports status 'tokens_only'.\"\n",
+   "es": "            \"vocoder) installed; without them the agent still fetches + saves the audio tokens and \"\n            \"reports status 'tokens_only'. In Tlamatini-Spanish, known personal names regain \"\n            \"their spoken accents (angela -> Ángela) without modifying login identifiers. \"\n            \"name_pronunciations is an optional mapping of exact aliases to spoken names. \"\n            \"legraphista/Orpheus is English-only: accents improve its input but cannot guarantee \"\n            \"Mexican phonetics. For native Mexican Spanish use tts_engine='piper', \"\n            \"voice='es_MX-claude-high', language='es'.\"\n",
+   "n": 1,
+   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+  },
+  {
+   "en": "\"on the chosen result and pass the returned source_ref to inspect, preserving trackers. Inspect a public info hash \"",
+   "es": "\"para el resultado elegido y pasa el source_ref a inspect para conservar los trackers. Inspecciona un info hash público \"",
+   "n": 1
+  },
+  {
+   "en": "\"Control the signed-in user's persistent Tlachihuani Jobs downloads. After torrent-search, call its get_torrent \"",
+   "es": "\"Controla las descargas persistentes de Jobs de la cuenta activa. Después de buscar, llama a get_torrent \"",
+   "n": 1
+  },
+  {
+   "en": "List my torrent downloads and show verified files for a completed job.",
+   "es": "Lista mis descargas de torrents y muestra los archivos verificados de un job completado.",
+   "n": 1
+  },
+  {
+   "en": "aliases=(\"torrenter\", \"torrent\", \"torrent downloads\", \"magnet\"),",
+   "es": "aliases=(\"torrenter\", \"torrent\", \"torrent downloads\", \"magnet\", \"descargas de torrents\", \"vínculo magnet\"),",
+   "n": 1,
+   "codigo": "Reconocer también las menciones del agent en español."
+  },
+  {
+   "en": "Panels > Torrenter Sources",
+   "es": "Paneles > Fuentes de Torrenter",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

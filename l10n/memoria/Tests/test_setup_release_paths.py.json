@@ -1,0 +1,62 @@
+{
+ "archivo": "Tests/test_setup_release_paths.py",
+ "segmentos": [
+  {
+   "en": "Tlamatini.exe",
+   "es": "Tlamatini-Spanish.exe",
+   "n": 8,
+   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición"
+  },
+  {
+   "en": "'occupied by a file'",
+   "es": "'ocupado por un archivo'",
+   "n": 1
+  },
+  {
+   "en": "'Unsafe recovery path'",
+   "es": "'Path de recuperación no seguro'",
+   "n": 1
+  },
+  {
+   "en": "'could not be cleared'",
+   "es": "'No se pudo borrar la copia temporal de recuperación'",
+   "n": 1
+  },
+  {
+   "en": "'protect the new installation'",
+   "es": "'proteger la instalación nueva'",
+   "n": 1
+  },
+  {
+   "en": "'changed since this removal'",
+   "es": "'cambiaron desde esta eliminación'",
+   "n": 1
+  },
+  {
+   "en": "'recovery copy could not be cleared'",
+   "es": "'No se pudo borrar la copia temporal de recuperación'",
+   "n": 1
+  },
+  {
+   "en": "'were restored'",
+   "es": "'Se restauraron los archivos de instalación'",
+   "n": 1
+  },
+  {
+   "en": "'Temporary cleanup could not finish'",
+   "es": "'No se pudo terminar la limpieza temporal'",
+   "n": 1
+  },
+  {
+   "en": "'Temporary cleanup'",
+   "es": "'la limpieza temporal'",
+   "n": 1
+  },
+  {
+   "en": "'Restoration destination is occupied'",
+   "es": "'El destino de restauración está ocupado'",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

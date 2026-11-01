@@ -6,6 +6,16 @@
    "es": "Tlamatini-Spanish.exe",
    "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
    "n": 4
+  },
+  {
+   "en": "'Installed-apps entry'",
+   "es": "'entrada de las aplicaciones instaladas'",
+   "n": 1
+  },
+  {
+   "en": "\"could not be removed\"",
+   "es": "\"No se pudieron eliminar\"",
+   "n": 1
   }
  ],
  "conservar": []

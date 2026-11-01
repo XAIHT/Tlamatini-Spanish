@@ -276,5 +276,10 @@
   "Tlamatini/agent/doc_generation/dossier_editor_content.py::I always press Enter": "contenido del dossier de documentacion generada; se queda en ingles (no es interfaz de la app)",
   "Tlamatini/agent/chat_agent_registry.py::action='scaffold_build_flash": "chat_agent_registry.py es texto para el LLM; sus acoplamientos son literales de codigo (snippets ESP32er/STM32er) que se quedan en ingles",
   "Tlamatini/agent/chat_agent_registry.py::rel_path='src/main.cpp' and content=": "chat_agent_registry.py es texto para el LLM; sus acoplamientos son literales de codigo (snippets ESP32er/STM32er) que se quedan en ingles"
+ },
+ "llaves_traducibles_por_archivo": {
+  "Tlamatini/agent/agents/flowcreator/flow_catalog.json": [
+   "purpose"
+  ]
  }
 }

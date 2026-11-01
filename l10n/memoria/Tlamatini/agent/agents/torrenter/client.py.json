@@ -1,0 +1,96 @@
+{
+ "archivo": "Tlamatini/agent/agents/torrenter/client.py",
+ "segmentos": [
+  {
+   "en": "Cannot read the Jobs API. Check Services in XT. Reuse the same operation key after an uncertain write.",
+   "es": "No se pudo consultar la API de Jobs. Revisa Services en XT. Si no sabes si se guardó el cambio, reintenta con la misma clave de operación.",
+   "n": 1
+  },
+  {
+   "en": "This activation needs a signed-in Tlamatini account. Start it from chat or the Agentic Control Panel.",
+   "es": "Esta activación necesita una sesión de Tlamatini. Iníciala desde el chat o Agentic Control Panel.",
+   "n": 1
+  },
+  {
+   "en": "Cannot reach the installed Jobs control pipe. Check Services in XT and the Windows operator.",
+   "es": "No se pudo acceder al pipe de control de Jobs. Revisa Services en XT y la cuenta del operador de Windows.",
+   "n": 1
+  },
+  {
+   "en": "If it expired, inspect the original full magnet as source_ref to retain its trackers. ",
+   "es": "Si caducó, inspecciona el magnet original completo como source_ref para conservar los trackers. ",
+   "n": 1
+  },
+  {
+   "en": "Jobs HTTP 409. No download was submitted. Check list for an existing job first. ",
+   "es": "Jobs HTTP 409. No se envió ninguna descarga. Primero consulta list para ver si el job ya existe. ",
+   "n": 1
+  },
+  {
+   "en": "Poll inspection with the same inspection_id until it is ready and lists files. ",
+   "es": "Consulta inspection con el mismo inspection_id hasta que esté listo y muestre los archivos. ",
+   "n": 1
+  },
+  {
+   "en": "Do not guess file IDs or retry download while metadata is unresolved.",
+   "es": "No inventes ID ni repitas download mientras se resuelven los metadatos.",
+   "n": 1
+  },
+  {
+   "en": "Install Tlachihuani Jobs and start its Torrenter provider in XT.",
+   "es": "Instala Tlachihuani Jobs e inicia su proveedor Torrenter desde XT.",
+   "n": 1
+  },
+  {
+   "en": "The Jobs response exceeds the limit. Request a smaller page.",
+   "es": "La respuesta de Jobs supera el límite. Solicita una página más pequeña.",
+   "n": 1
+  },
+  {
+   "en": "Open the workspace from your signed-in Tlamatini account.",
+   "es": "Abre el espacio de descargas desde tu sesión de Tlamatini.",
+   "n": 1
+  },
+  {
+   "en": "Check access scopes or the exact-file approval in XT.",
+   "es": "Revisa los permisos de acceso o la aprobación de los archivos específicos en XT.",
+   "n": 1
+  },
+  {
+   "en": "Read the current job or operation before retrying.",
+   "es": "Consulta el job o la operación actual antes de reintentar.",
+   "n": 1
+  },
+  {
+   "en": "Read the latest revision before changing this job.",
+   "es": "Consulta la revisión más reciente antes de modificar el job.",
+   "n": 1
+  },
+  {
+   "en": "Start Jobs and the Torrenter provider in XT.",
+   "es": "Inicia Jobs y el proveedor Torrenter desde XT.",
+   "n": 1
+  },
+  {
+   "en": "Jobs refused gateway enrollment.",
+   "es": "Jobs rechazó el registro del gateway.",
+   "n": 1
+  },
+  {
+   "en": "Unexpected Jobs response.",
+   "es": "Jobs devolvió una respuesta inesperada.",
+   "n": 1
+  },
+  {
+   "en": "Check the owned ID.",
+   "es": "Comprueba que el ID pertenezca a tu cuenta.",
+   "n": 1
+  },
+  {
+   "en": "Request refused.",
+   "es": "Solicitud rechazada.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

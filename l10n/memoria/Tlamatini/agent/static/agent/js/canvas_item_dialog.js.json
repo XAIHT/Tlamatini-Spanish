@@ -226,6 +226,16 @@
    "en": "\" (comma-separated): \"",
    "es": "\" (separados por comas): \"",
    "n": 1
+  },
+  {
+   "en": "'Wait for complete download: Yes'",
+   "es": "'Esperar a que termine la descarga: Sí'",
+   "n": 1
+  },
+  {
+   "en": "'Wait for complete download: No'",
+   "es": "'Esperar a que termine la descarga: No'",
+   "n": 1
   }
  ],
  "conservar": [

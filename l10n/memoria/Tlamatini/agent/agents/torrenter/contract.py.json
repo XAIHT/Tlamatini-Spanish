@@ -1,0 +1,116 @@
+{
+ "archivo": "Tlamatini/agent/agents/torrenter/contract.py",
+ "segmentos": [
+  {
+   "en": "Choose a documented Torrenter action.",
+   "es": "Elige una acción documentada de Torrenter.",
+   "n": 1
+  },
+  {
+   "en": "Arguments must be a JSON object.",
+   "es": "Los argumentos deben ser un objeto JSON.",
+   "n": 1
+  },
+  {
+   "en": "Fields for ",
+   "es": "Campos para ",
+   "n": 1
+  },
+  {
+   "en": ": required [",
+   "es": ": obligatorios [",
+   "n": 1
+  },
+  {
+   "en": "], optional [",
+   "es": "], opcionales [",
+   "n": 1
+  },
+  {
+   "en": " must be 32 lowercase hex digits.",
+   "es": " debe tener 32 dígitos hexadecimales en minúsculas.",
+   "n": 1
+  },
+  {
+   "en": "Use a v1 info hash or stage the magnet in Torrenter Sources.",
+   "es": "Usa un info hash v1 o prepara el vínculo magnet en Fuentes de Torrenter.",
+   "n": 1
+  },
+  {
+   "en": " must be true or false.",
+   "es": " debe ser true o false.",
+   "n": 1
+  },
+  {
+   "en": "Select unique reviewed file IDs.",
+   "es": "Selecciona IDs de archivos que hayas revisado, sin repetirlos.",
+   "n": 1
+  },
+  {
+   "en": "Select file IDs before assigning priorities.",
+   "es": "Selecciona los IDs de los archivos antes de asignar prioridades.",
+   "n": 1
+  },
+  {
+   "en": "Priorities must be 1–7 for selected files.",
+   "es": "Las prioridades de los archivos seleccionados deben estar entre 1 y 7.",
+   "n": 1
+  },
+  {
+   "en": "Select 1–100 jobs.",
+   "es": "Selecciona entre 1 y 100 jobs.",
+   "n": 1
+  },
+  {
+   "en": "Batch items require a job_id and revision.",
+   "es": "Cada elemento del lote requiere job_id y revision.",
+   "n": 1
+  },
+  {
+   "en": "Use each job ID once per batch.",
+   "es": "Usa cada ID de job una sola vez por lote.",
+   "n": 1
+  },
+  {
+   "en": "Invalid tags.",
+   "es": "Los tags no son válidos.",
+   "n": 1
+  },
+  {
+   "en": "\"Invalid \"",
+   "es": "\"Campo no válido: \"",
+   "n": 2
+  },
+  {
+   "en": "\"Unsupported \"",
+   "es": "\"Campo no admitido: \"",
+   "n": 1
+  },
+  {
+   "en": "Use an opaque source reference for network addresses.",
+   "es": "Para las direcciones de red, usa una referencia de fuentes.",
+   "n": 1
+  },
+  {
+   "en": "Choose either info_hash or a staged source_ref.",
+   "es": "Elige info_hash o una source_ref que ya hayas preparado.",
+   "n": 1
+  },
+  {
+   "en": "Only a rename requires new_name.",
+   "es": "new_name se requiere únicamente al cambiar un nombre.",
+   "n": 1
+  },
+  {
+   "en": "Choose at least one setting to update.",
+   "es": "Elige al menos un ajuste que quieras actualizar.",
+   "n": 1
+  },
+  {
+   "en": "Unknown action.",
+   "es": "Acción desconocida.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

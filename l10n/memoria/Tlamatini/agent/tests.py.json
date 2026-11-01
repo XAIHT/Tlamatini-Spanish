@@ -1,0 +1,36 @@
+{
+ "archivo": "Tlamatini/agent/tests.py",
+ "segmentos": [
+  {
+   "en": "'List of ACPx Operations'",
+   "es": "'Lista de operaciones de ACPx'",
+   "n": 1,
+   "maquina": true
+  },
+  {
+   "en": "'List of Skill Operations'",
+   "es": "'Lista de operaciones de Skill'",
+   "n": 1,
+   "maquina": true
+  },
+  {
+   "en": "'List of SSHer Operations'",
+   "es": "'Lista de operaciones de SSHer'",
+   "n": 1,
+   "maquina": true
+  },
+  {
+   "en": "'List of Executer Operations'",
+   "es": "'Lista de operaciones de Executer'",
+   "n": 4,
+   "maquina": true
+  },
+  {
+   "en": "'List of Dockerer Operations'",
+   "es": "'Lista de operaciones de Dockerer'",
+   "n": 2,
+   "maquina": true
+  }
+ ],
+ "conservar": []
+}

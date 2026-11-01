@@ -1,0 +1,18 @@
+{
+ "archivo": "Tlamatini/tests_e2e/torrenter_live.py",
+ "segmentos": [
+  {
+   "en": "name=\"Login\"",
+   "es": "name=\"Iniciar sesión\"",
+   "n": 1,
+   "maquina": true
+  },
+  {
+   "en": "name=\"Inspect metadata\"",
+   "es": "name=\"Revisar metadatos\"",
+   "n": 1,
+   "maquina": true
+  }
+ ],
+ "conservar": []
+}

@@ -1,0 +1,21 @@
+{
+ "archivo": "Tlamatini/agent/management/commands/enroll_torrenter.py",
+ "segmentos": [
+  {
+   "en": "Check whether a local Tlamatini user can reach the installed Jobs service.",
+   "es": "Comprueba si una cuenta local de Tlamatini puede acceder al servicio Jobs instalado.",
+   "n": 1
+  },
+  {
+   "en": "Jobs is ready. Open Torrenter workspace from the signed-in account.",
+   "es": "Jobs está listo. Abre las descargas de Torrenter desde la cuenta que inició sesión.",
+   "n": 1
+  },
+  {
+   "en": "Choose an existing active Tlamatini user.",
+   "es": "Elige un usuario activo que ya exista en Tlamatini.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

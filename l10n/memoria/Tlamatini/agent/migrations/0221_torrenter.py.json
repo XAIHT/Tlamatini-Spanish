@@ -1,0 +1,21 @@
+{
+ "archivo": "Tlamatini/agent/migrations/0221_torrenter.py",
+ "segmentos": [
+  {
+   "en": "Use Torrenter to list my downloads. Report their desired state, observed phase and verified bytes. ",
+   "es": "Usa Torrenter para listar mis descargas. Indica el estado solicitado, la fase observada y los bytes verificados. ",
+   "n": 1
+  },
+  {
+   "en": "If I supply an inspection ID, review its files and ask which ones I want before submitting. ",
+   "es": "Si te doy un ID de inspección, revisa los archivos y pregúntame cuáles quiero antes de iniciar la descarga. ",
+   "n": 1
+  },
+  {
+   "en": "Report the durable job ID and check the verified manifest before naming any completed file.",
+   "es": "Dame el ID persistente del job y consulta el manifiesto verificado antes de indicar que un archivo está completo.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

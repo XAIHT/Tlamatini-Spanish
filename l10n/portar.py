@@ -33,6 +33,7 @@ HERRAMIENTAS = L10N / "herramientas"
 sys.path.insert(0, str(HERRAMIENTAS))
 
 from memoria import aplicar_segmentos, cargar_memoria  # noqa: E402
+from base_ingles import originales_del_parche  # noqa: E402
 
 BASE = L10N / "BASE_INGLES.json"
 MEMORIA = L10N / "memoria"
@@ -50,6 +51,9 @@ def leer_base() -> dict:
 
 
 def original_ingles(base: dict, ruta: str) -> bytes:
+    parche = originales_del_parche(base["ingles"], base["commit"], base.get("parche"))
+    if ruta in parche:
+        return parche[ruta]
     return _git(Path(base["ingles"]), "show", f"{base['commit']}:{ruta}", binario=True)
 
 
@@ -141,7 +145,10 @@ def memorias():
 def cmd_aplicar(args):
     base = leer_base()
     total_ok, total_mal, archivos = 0, 0, 0
-    for ruta_json, mem in memorias():
+    por_ruta = {mem["archivo"]: mem for _, mem in memorias()}
+    for ruta in originales_del_parche(base["ingles"], base["commit"], base.get("parche")):
+        por_ruta.setdefault(ruta, {"archivo": ruta, "segmentos": []})
+    for mem in por_ruta.values():
         ruta = mem["archivo"]
         if args.rutas and not any(ruta.startswith(r.replace("\\", "/")) for r in args.rutas):
             continue

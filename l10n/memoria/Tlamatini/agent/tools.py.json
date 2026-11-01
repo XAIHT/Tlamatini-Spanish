@@ -6,6 +6,27 @@
    "es": "    r'(and|with|y|con)\\s+[A-Za-z_][A-Za-z0-9_.\\-]*\\s*=',",
    "codigo": "Requests en español: los parámetros de un chat_agent también se separan con \"y\" / \"con\" (como \"and\" / \"with\")",
    "n": 1
+  },
+  {
+   "en": "    if spec.template_dir == \"torrenter\":\n        from .agents.torrenter.contract import validated",
+   "es": "    if spec.template_dir == \"talker\":\n        # Resolve only this request's account; never the globally last login.\n        # Explicit per-call name_pronunciations below can override the defaults.\n        from .context_governor import current_user\n        from .agents.talker.spanish_pronunciation import browser_payload\n        from django.contrib.auth import get_user_model\n        speech_owner = current_user()\n        if speech_owner is not None:\n            try:\n                speech_user = get_user_model().objects.only('username', 'first_name').get(pk=speech_owner)\n                runtime_config['name_pronunciations'] = {\n                    **browser_payload(speech_user)['aliases'],\n                    **(runtime_config.get('name_pronunciations') or {}),\n                }\n            except Exception:\n                logger.warning('[TALKER-NAMES] Account name unavailable; using the Spanish name catalog.', exc_info=True)\n\n    if spec.template_dir == \"torrenter\":\n        from .agents.torrenter.contract import validated",
+   "n": 1,
+   "codigo": "Conservar el contexto de pronunciación de Talker antes de preparar Torrenter."
+  },
+  {
+   "en": "Use the typed Torrenter tool.",
+   "es": "Usa el tool de Torrenter con los campos indicados.",
+   "n": 1
+  },
+  {
+   "en": "Jobs accepted the operation. Read its receipt and job state.",
+   "es": "Jobs aceptó la operación. Consulta el comprobante y el estado del job.",
+   "n": 1
+  },
+  {
+   "en": "Torrenter returned the observed Jobs result.",
+   "es": "Torrenter devolvió el resultado observado en Jobs.",
+   "n": 1
   }
  ],
  "conservar": []

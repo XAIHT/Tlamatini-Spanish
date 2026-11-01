@@ -1,0 +1,51 @@
+{
+ "archivo": "Tlamatini/agent/torrenter_bridge.py",
+ "segmentos": [
+  {
+   "en": "Call chat_agent_torrenter with torrenter_request. Poll inspection until ready, ",
+   "es": "Llama a chat_agent_torrenter con torrenter_request. Consulta la inspección hasta que esté lista, ",
+   "n": 1
+  },
+  {
+   "en": "Torrenter accepts action, arguments and canvas connections only.",
+   "es": "Torrenter solo acepta action, arguments y conexiones del canvas.",
+   "n": 1
+  },
+  {
+   "en": "then submit only file IDs from its reviewed file list.",
+   "es": "y envía únicamente los ID de archivos de la lista revisada.",
+   "n": 1
+  },
+  {
+   "en": "This flow belongs to another Tlamatini account.",
+   "es": "Este flow pertenece a otra cuenta de Tlamatini.",
+   "n": 1
+  },
+  {
+   "en": "\"Wait for complete download must be Yes or No.\"",
+   "es": "\"Esperar a que termine la descarga debe ser Sí o No.\"",
+   "n": 1
+  },
+  {
+   "en": "Torrent search did not return a usable source.",
+   "es": "La búsqueda no devolvió una fuente utilizable.",
+   "n": 2
+  },
+  {
+   "en": "Use up to eight magnets in one message.",
+   "es": "Incluye hasta ocho vínculos magnet por mensaje.",
+   "n": 1
+  },
+  {
+   "en": "Sign in to Tlamatini to use Torrenter.",
+   "es": "Inicia sesión en Tlamatini para usar Torrenter.",
+   "n": 1
+  },
+  {
+   "en": "Sign in to use Torrenter.",
+   "es": "Inicia sesión para usar Torrenter.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

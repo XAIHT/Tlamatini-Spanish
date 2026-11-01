@@ -107,7 +107,7 @@ def _literales_de(ruta: str, datos: bytes, acorn: str) -> str:
 
 def _corpus_literales(base: dict, acorn: str, leer) -> dict:
     """{ruta: cadenas en minúsculas} de todo el árbol inglés, con caché por commit."""
-    cache = Path(tempfile.gettempdir()) / f"l10n_literales_v4_{base['commit'][:12]}.json"
+    cache = Path(tempfile.gettempdir()) / f"l10n_literales_v4_{base['commit'][:12]}{base.get('parche', '')[:12]}.json"
     if cache.exists():
         with open(cache, "r", encoding="utf-8") as fh:
             return json.load(fh)
@@ -136,7 +136,7 @@ def recoger_acoplamientos(base, raiz: Path, memoria_dir: Path, productores: set)
         m = cargar_memoria(rj)
         memorias[m["archivo"]] = m
     claves = set()
-    with OriginalesIngles(base["ingles"], base["commit"]) as orig:
+    with OriginalesIngles(base["ingles"], base["commit"], base.get("parche")) as orig:
         corpus_en = _corpus_literales(base, acorn, orig.leer)
         cache_es = {}
         for ruta_mem, mem in memorias.items():
@@ -188,7 +188,7 @@ def verificar_todo(base, raiz: Path, memoria_dir: Path, rutas, _original, es_pro
             avisos += 1
             print(f"· {ruta}: {msg}")
 
-    with OriginalesIngles(base["ingles"], base["commit"]) as orig:
+    with OriginalesIngles(base["ingles"], base["commit"], base.get("parche")) as orig:
         originales = {}
         for ruta in archivos:
             if es_propio(ruta):
@@ -233,7 +233,8 @@ def verificar_todo(base, raiz: Path, memoria_dir: Path, rutas, _original, es_pro
                     if r.returncode != 0:
                         linea = next((x for x in r.stderr.splitlines() if "Error" in x), r.stderr.strip()[:200])
                         reportar(ruta, "error", f"JS inválido con la adaptación de código: {linea}")
-            for p in verificar_estructura(ruta, en, comparable, acorn, tmp, traducibles, permitidos):
+            llaves = traducibles.union(config.get("llaves_traducibles_por_archivo", {}).get(ruta, ()))
+            for p in verificar_estructura(ruta, en, comparable, acorn, tmp, llaves, permitidos):
                 reportar(ruta, "error", p)
             for seg in mem["segmentos"]:
                 if seg.get("codigo"):

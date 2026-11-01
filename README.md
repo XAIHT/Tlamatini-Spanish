@@ -38,8 +38,8 @@
 > **EL PODER COMPLETO EMPIEZA CON OLLAMA PRO.** Una **suscripción Ollama Pro o superior** activa es un prerrequisito para la experiencia completa que Tlamatini busca ofrecer. Tlamatini en sí es **gratis y de código abierto**; la suscripción de Ollama es una compra aparte que se hace directamente con [Ollama](https://ollama.com/pricing). Las ejecuciones largas de agents, los contextos grandes de proyecto, las llamadas repetidas a tools y el trabajo de visión en paralelo necesitan una capacidad de nube considerable. Pro es el nivel mínimo previsto; las cargas de trabajo más pesadas pueden necesitar más capacidad. [Entiende los requisitos →](#requirements)
 
 <p align="center">
-  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />
-  <sub>Inventario del código fuente v1.91.1 actual. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores MCP externos activos agregan sus propios tools.</sub>
+  <b>87 workflow agents</b> &nbsp;·&nbsp; <b>68 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>111 tools integrados</b><br />
+  <sub>Inventario de desarrollo con Torrenter. Los 111 tools incluyen los 68 wrappers de chat. Los servidores MCP externos activos agregan sus propios tools.</sub>
 </p>
 
 <p align="center">
@@ -134,12 +134,16 @@ El dictado directo usa el micrófono de la **computadora donde corre Tlamatini**
 
 | Agentic Control Panel · `.flw` | Prompt Flow Panel · `.fpmt` |
 | :--- | :--- |
-| Acomoda **86 tipos de agent**, configura su trabajo y conéctalos en flows ejecutables. | Compón prompts, decisiones, embeddings, preguntas al usuario y operaciones ejecutables. |
+| Acomoda **87 tipos de agent**, configura su trabajo y conéctalos en flows ejecutables. | Compón prompts, decisiones, embeddings, preguntas al usuario y operaciones ejecutables. |
 | Usa **Parametrizer** para pasar el output de un agent a la configuración del siguiente. | **User Input** se detiene a esperar una respuesta real; **User Commentary** agrega notas con formato para explicar el diseño. |
 | Pídele a **FlowCreator** que convierta un objetivo en un flow que se pueda cargar en el canvas, y luego inspecciónalo y refínalo. | Guarda secuencias de prompts reutilizables, sigue su output de ejecución y cambia el tamaño de los paneles de canvas y de output por separado. |
 | Busca agents, duplica nodos ya configurados, deshaz, rehaz, haz zoom y ajusta. | Mantén notas explicativas en el canvas mientras el flow ejecutable hace el trabajo. |
 
 Ambos formatos se abren en sus propios editores. Suelta un archivo `.flw` o `.fpmt` sobre una página compatible, o usa la asociación de archivos registrada en Windows. [Guía del Prompt Flow →](docs/prompting-flow-designer.md) · [Archivos de flow en Windows →](docs/windows-flow-files.md)
+
+**Torrenter** conecta el chat y Agentic Control Panel con las descargas persistentes de Tlachihuani Jobs.
+Abre **Paneles → Fuentes de Torrenter** para revisar un archivo torrent o un vínculo magnet. Desde la misma cuenta registrada
+puedes elegir archivos, controlar jobs y consultar los resultados verificados. [Configuración y acciones de Torrenter](docs/torrenter.md).
 
 ## One workspace, many ways to build
 

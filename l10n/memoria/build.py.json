@@ -18,6 +18,12 @@
    "es": "else \"Tlamatini-Spanish\")",
    "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
    "n": 1
+  },
+  {
+   "en": "    \"agent.chat_voice_settings\",\n",
+   "es": "    \"agent.chat_voice_settings\",\n    \"agent.agents.talker.spanish_pronunciation\",  # same names in browser and pool speech\n",
+   "n": 1,
+   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
   }
  ],
  "conservar": []

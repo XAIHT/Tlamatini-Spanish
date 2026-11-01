@@ -92,8 +92,8 @@
                 d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
               <path
                 d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
-            </svg>
-            Abrir en...
+            </svg>
+            Open in...
             <svg class="open-in-caret" viewBox="0 0 16 16" fill="currentColor" width="10" height="10">
               <path d="M3.204 5h9.592L8 10.481 3.204 5z" />
             </svg>
@@ -129,7 +129,8 @@
             <ul class="dropdown-menu dropdown-entry" aria-labelledby="context-menu-button">
               <li><a class="dropdown-item menu-entry" href="#" id="set-dir-context">Usar un directorio como contexto</a></li>
               <li><a class="dropdown-item menu-entry" href="#" id="set-file-context">Usar un archivo como contexto</a></li>
-              <li><a class="dropdown-item menu-entry" href="#" id="view-context-dir-in-canvas">Ver el directorio de contexto en el canvas</a></li>
+              <li><a class="dropdown-item menu-entry" href="#" id="view-context-dir-in-canvas">View context directory in
+                  canvas</a></li>
               <li><a class="dropdown-item menu-entry" href="#" id="clear-context">Limpiar el contexto</a></li>
               <li><a class="dropdown-item menu-entry" href="#" id="set-omissions"
                   onclick="OpenOmissionsDialog(event);">Definir los tipos de archivo omitidos</a></li>
@@ -143,6 +144,8 @@
                   id="agentic-control-panel" target="_blank" rel="noopener">Agentic Control Panel</a></li>
               <li><a class="dropdown-item menu-entry" href="{% url 'prompt_flow_panel' %}"
                   id="prompt-flow-panel" target="_blank" rel="noopener">Prompt Flow Panel</a></li>
+              <li><a class="dropdown-item menu-entry" href="{% url 'torrenter_sources' %}" target="_blank" rel="noopener">Fuentes de Torrenter</a></li>
+              <li><a class="dropdown-item menu-entry" href="{% url 'torrenter_workspace' %}" target="_blank" rel="noopener">Descargas de Torrenter</a></li>
               {% if request.user.is_staff %}
               <li><a class="dropdown-item menu-entry" href="{% url 'admin:index' %}" id="open-admin" target="_blank"
                   rel="noopener">Admin Panel</a></li>
@@ -176,10 +179,10 @@
             <a class="nav-link dropdown-toggle" href="#" id="config-menu-button" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">Config</a>
             <ul class="dropdown-menu dropdown-entry" aria-labelledby="config-menu-button">
-              <li><a class="dropdown-item menu-entry" href="#" id="enable-mcps" onclick="OpenMcpsDialog(event);">
-                  Configurar MCPs</a></li>
-              <li><a class="dropdown-item menu-entry" href="#" id="enable-agents" onclick="OpenAgentsDialog(event);">
-                  Configurar Agents</a></li>
+              <li><a class="dropdown-item menu-entry" href="#" id="enable-mcps" onclick="OpenMcpsDialog(event);">
+                  Configure MCPs</a></li>
+              <li><a class="dropdown-item menu-entry" href="#" id="enable-agents" onclick="OpenAgentsDialog(event);">
+                  Configure Agents</a></li>
               <li><a class="dropdown-item menu-entry" href="#" id="config-models"
                   onclick="OpenConfigModelsDialog(event);">Modelos</a></li>
               <li><a class="dropdown-item menu-entry" href="#" id="config-urls"
@@ -403,8 +406,8 @@
     <p id="confirmation-secondary-dialog-legend"></p>
   </div>
   <div id="exec-permission-dialog-message" title="Se requiere permiso de ejecución" style="display: none;">
-    <p id="exec-perm-intro">Tlamatini quiere ejecutar lo siguiente antes de continuar el chain de Multi-Turn.
-      Revisa lo que está por ejecutarse y elige <strong>Permitir</strong> o <strong>Denegar</strong>.</p>
+    <p id="exec-perm-intro">Tlamatini wants to run the following before continuing the Multi-Turn chain.
+      Review what is about to execute and choose <strong>Permitir</strong> o <strong>Denegar</strong>.</p>
     <div class="exec-perm-row">
       <span class="exec-perm-label">Tool / MCP / Agent de Tlamatini</span>
       <div id="exec-perm-agent" class="exec-perm-value"></div>

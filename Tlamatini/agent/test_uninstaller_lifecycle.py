@@ -39,7 +39,7 @@ class UninstallerLifecycleTests(unittest.TestCase):
         handle = kernel.CreateFileW(str(file), 0x80000000, 0, None, 3, 0, None)
         self.assertNotEqual(handle, ctypes.c_void_p(-1).value)
         try:
-            with self.assertRaisesRegex(RuntimeError, "could not be removed"):
+            with self.assertRaisesRegex(RuntimeError, "No se pudieron eliminar"):
                 self.app()._remove_files(str(self.temp), 0, 1)
             self.assertTrue(file.exists())
         finally:
@@ -253,7 +253,7 @@ class UninstallerLifecycleTests(unittest.TestCase):
         with patch.object(winreg, 'OpenKey'), \
              patch.object(winreg, 'QueryValueEx', return_value=(str(self.temp), winreg.REG_SZ)), \
              patch.object(winreg, 'DeleteKey', side_effect=PermissionError('denied')):
-            with self.assertRaisesRegex(RuntimeError, 'Installed-apps entry'):
+            with self.assertRaisesRegex(RuntimeError, 'entrada de las aplicaciones instaladas'):
                 uninstall.FancyUninstaller._unregister_programs_entry(str(self.temp))
 
     def test_frozen_worker_uses_independent_bootloader_and_original_target(self):

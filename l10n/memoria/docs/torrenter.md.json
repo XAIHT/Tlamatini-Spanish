@@ -1,0 +1,177 @@
+{
+ "archivo": "docs/torrenter.md",
+ "segmentos": [
+  {
+   "en": "A resolving magnet may need peers before any files are available. Inspect again using the same inspection ID. A published manifest with `verified=true` identifies completed output. A shared piece can be larger than the selected file. If the service reports excess piece bytes, Torrenter preserves that count in `engine_verified_bytes` and reports selected verified bytes only after publication. A zero rate, an accepted operation and a finished chat agent each describe different events.",
+   "es": "Es posible que un magnet necesite peers antes de mostrar los archivos. Vuelve a consultar la inspección con el mismo ID. Un manifiesto publicado con `verified=true` identifica el archivo terminado. Si una pieza compartida contiene bytes de archivos que no elegiste, Torrenter conserva el conteo del motor en `engine_verified_bytes` y reporta los bytes verificados de tu selección después de publicar el archivo. Que la tasa sea cero, que Jobs acepte la operación o que el agent termine su turno no prueba que la descarga haya terminado.",
+   "n": 1
+  },
+  {
+   "en": "On the Agentic Control Panel, **Wait for complete download** defaults to **No**. The node returns its receipt and starts its connected agents as soon as Jobs accepts the transfer. Choose **Yes** to keep it running until Jobs publishes a verified manifest for the selected files. Pausing preserves the wait. A stopped, cancelled or failed transfer ends the wait with an error. The YAML setting is `wait_for_completion: true` or `false`.",
+   "es": "En Agentic Control Panel, **Esperar a que termine la descarga** tiene el valor inicial **No**. El nodo devuelve su recibo y activa los agents conectados cuando Jobs admite la transferencia. Elige **Sí** para esperar hasta que Jobs publique el manifiesto verificado de los archivos seleccionados. Pausar conserva la espera. Detener, cancelar o fallar la descarga termina la espera con un error. En YAML usa `wait_for_completion: true` o `false`.",
+   "n": 1
+  },
+  {
+   "en": "Drop **Torrenter** on the Agentic Control Panel, open Configure and choose its action. For example, set **action** to `list` and **arguments** to `{\"limit\":10}`. Connect its output to a Parametrizer or Forker. Each activation writes one `INI_SECTION_TORRENTER` record with the action outcome and JSON response body. Fresh activations use fresh operation keys. Reanimation of an interrupted write reuses the saved key.",
+   "es": "Arrastra **Torrenter** a Agentic Control Panel, abre la configuración y elige una acción. Por ejemplo, selecciona `list` en **action** e introduce `{\"limit\":10}` en **arguments**. Conecta el output a Parametrizer o Forker. Cada activación genera un registro `INI_SECTION_TORRENTER` con el resultado y el cuerpo JSON de la respuesta. Cada escritura nueva usa su propia clave. Si se reanima una escritura interrumpida, utiliza la clave guardada.",
+   "n": 1
+  },
+  {
+   "en": "Durable writes accept an `operation_key` of 32 lowercase hex digits. Keep the key and arguments on an uncertain retry. Reusing them returns the original admission receipt. A changed request needs a fresh key and a stale revision needs a fresh read. The local chat `run_id` controls the short-lived client process. It is separate from the Jobs `job_id`, `inspection_id` and `operation_id`.",
+   "es": "Las escrituras persistentes aceptan una `operation_key` de 32 dígitos hexadecimales en minúsculas. Si no sabes si se aplicó el cambio, reintenta con la misma clave y los mismos argumentos para recuperar el comprobante original. Una solicitud distinta necesita otra clave. Si la revisión está desactualizada, vuelve a consultarla. El `run_id` del chat identifica el proceso cliente; Jobs usa `job_id`, `inspection_id` y `operation_id` para identificar sus propios recursos.",
+   "n": 1
+  },
+  {
+   "en": "Torrenter is a Tlamatini workflow agent and the wrapped chat tool `chat_agent_torrenter`. It controls downloads in the separately installed Tlachihuani Jobs Windows service at `http://127.0.0.1:12064/api/v1`. Jobs owns the transfer, files and journal. You can close chat, the ACP or the browser and reconnect to the same job.",
+   "es": "Torrenter es un agent de flow de Tlamatini y se puede invocar desde el chat con `chat_agent_torrenter`. Controla las descargas del servicio de Windows Tlachihuani Jobs, que se instala por separado y expone su API en `http://127.0.0.1:12064/api/v1`. Jobs administra la transferencia, sus archivos y el registro de operaciones. Puedes cerrar el chat, Agentic Control Panel o el browser y volver al mismo job.",
+   "n": 1
+  },
+  {
+   "en": "Open **Panels → Torrenter Sources**. Choose a `.torrent` file or paste a magnet and click **Inspect metadata**. Copy the inspection ID to chat. You can also paste a magnet into a regular chat request. Tlamatini replaces it with a short-lived encrypted source reference before writing chat history or sending it to the model.",
+   "es": "Abre **Paneles → Fuentes de Torrenter**. Elige un archivo `.torrent` o pega un vínculo magnet y selecciona **Revisar metadatos**. Copia el ID de inspección en el chat. También puedes pegar un magnet en un mensaje: Tlamatini lo sustituye por una referencia cifrada de corta duración antes de guardar el historial o enviar la solicitud al modelo.",
+   "n": 1
+  },
+  {
+   "en": "Right-click the Torrenter node and open its log to see all available filenames, the selected files, sizes, full source magnet and the verified saved paths and hashes. Uploaded metadata has a generated magnet. The detailed activity file belongs to the account's flow. Chat results carry a separate machine-readable receipt.",
+   "es": "Haz clic derecho en el nodo Torrenter y abre su log para ver los nombres, archivos seleccionados, tamaños, magnet completo, rutas verificadas y hashes. Los metadatos cargados tienen un magnet generado. El archivo de actividad pertenece al flow de esa cuenta. El chat recibe un comprobante por separado.",
+   "n": 1
+  },
+  {
+   "en": "| Control | `pause`, `resume`, `stop`, `start`, `cancel`, `recheck`, `reseed`, `move` | Supply `job_id` and the latest `revision`. Pause pairs with resume. Stop retains partial data for start. Cancel ends an incomplete transfer permanently. Stop before moving to a different approved root. |",
+   "es": "| Controlar | `pause`, `resume`, `stop`, `start`, `cancel`, `recheck`, `reseed`, `move` | Indica `job_id` y la última `revision`. Puedes pausar y reanudar. Detener conserva los datos parciales para continuar después. Cancelar termina la transferencia incompleta. Detén el job antes de moverlo a otra carpeta autorizada. |",
+   "n": 1
+  },
+  {
+   "en": "Pass an `action` and an `arguments` object to the chat tool. On a canvas node put the same JSON object in the **arguments** field. Each invocation makes one logical Jobs request. A bounded wait polls the current job for up to 30 seconds. Continue observing with its job ID.",
+   "es": "Envía al tool del chat una `action` y un objeto `arguments`. En un nodo del canvas, escribe el mismo objeto JSON en el campo **arguments**. Cada invocación hace una solicitud lógica a Jobs. La espera consulta el job por un máximo de 30 segundos. Usa su ID para seguir consultándolo.",
+   "n": 1
+  },
+  {
+   "en": "| Erase owned files | `delete_preview`, `delete_content` | Review exact files for a stopped or finished job, approve the matching preview in XT, then pass `preview_id` and the original revision. Poll the operation. A chat confirmation alone cannot authorize erasure. |",
+   "es": "| Borrar archivos propios | `delete_preview`, `delete_content` | Revisa los archivos exactos de un job detenido o terminado y aprueba esa vista en XT. Envía `preview_id` y la revisión original y consulta la operación. Solo XT puede aprobar el borrado. |",
+   "n": 1
+  },
+  {
+   "en": "| Edit | `select`, `update`, `set_trackers`, `set_web_seeds` | Change selected IDs/priorities on a stopped job. Update labels, queue position, rates or policies. Prepare private source lists in Torrenter Sources and pass the opaque reference to the stopped job. |",
+   "es": "| Editar | `select`, `update`, `set_trackers`, `set_web_seeds` | Con el job detenido puedes cambiar los archivos seleccionados y sus prioridades. Actualiza etiquetas, posición en cola, velocidades o políticas. Prepara las fuentes privadas en Fuentes de Torrenter y envía la referencia al job detenido. |",
+   "n": 1
+  },
+  {
+   "en": "The server maps each Django account to a stable Jobs profile. The authenticated Windows control pipe issues the server an account-scoped credential. The browser uses its existing Django session and CSRF token. Each edition has its own session cookie.",
+   "es": "El servidor asigna a cada cuenta de Django un perfil estable de Jobs. El canal de control autenticado de Windows emite una credencial limitada a esa cuenta. El navegador usa su sesión de Django y su token CSRF. Cada edición tiene su propia cookie de sesión.",
+   "n": 1
+  },
+  {
+   "en": "| Admit a download | `download` | Supply `inspection_id`, `metadata_revision`, explicit `selected_file_ids` and `destination_root_id` (`downloads` or `archive`). Optional priorities, resume and seed policies retain explicit false and zero values. |",
+   "es": "| Iniciar una descarga | `download` | Indica `inspection_id`, `metadata_revision`, los IDs explícitos en `selected_file_ids` y una `destination_root_id` (`downloads` o `archive`). Las prioridades y políticas opcionales respetan los valores false y cero. |",
+   "n": 1
+  },
+  {
+   "en": "2. Open **Panels → Torrenter workspace** to see the same downloads as chat. The XT panel opens this workspace too. If both editions are running, choose one. Refresh keeps your signed-in account. Signing out ends browser access to its queue.",
+   "es": "2. Abre **Paneles → Descargas de Torrenter** para ver las mismas descargas que en el chat. También puedes entrar desde XT. Si ambas ediciones están abiertas, elige una. Recargar conserva tu sesión. Al cerrarla termina el acceso a su cola desde el navegador.",
+   "n": 1
+  },
+  {
+   "en": "| Discover and inspect | `capabilities`, `list`, `inspect`, `inspection` | List supports filters, `limit` and `cursor`. Inspect accepts a public v1 `info_hash` or private `source_ref`. Inspection reads an `inspection_id`. |",
+   "es": "| Descubrir e inspeccionar | `capabilities`, `list`, `inspect`, `inspection` | La lista acepta filtros, `limit` y `cursor`. Para inspeccionar, usa un `info_hash` público v1 o una `source_ref` privada. Consulta la inspección con `inspection_id`. |",
+   "n": 1
+  },
+  {
+   "en": "| Account configuration | `categories`, `tags`, `label`, `settings`, `update_settings`, `totals` | Create, rename or remove a label by collection. Update defaults using their revision. Totals summarize this account. |",
+   "es": "| Configurar la cuenta | `categories`, `tags`, `label`, `settings`, `update_settings`, `totals` | Crea, renombra o elimina etiquetas por colección. Usa la revisión actual al cambiar los ajustes predeterminados. Los totales corresponden a tu cuenta. |",
+   "n": 1
+  },
+  {
+   "en": "| Reconnect | `status`, `wait`, `operation`, `events` | Use a job ID for status or wait, an operation ID for the durable receipt, and an event cursor for events. Re-read the list on an expired cursor. |",
+   "es": "| Volver a consultar | `status`, `wait`, `operation`, `events` | Usa el ID del job para consultar o esperar, el ID de operación para recuperar el comprobante y el cursor para leer eventos. Si el cursor vence, vuelve a consultar la lista. |",
+   "n": 1
+  },
+  {
+   "en": "3. Enable **Torrenter** in Configure Agents and **Chat-Agent-Torrenter** in Configure MCPs/Tools. Select them in Compact mode if enabled. Chat supports Multi-Turn, Ask Execs and Exec Report.",
+   "es": "3. Activa **Torrenter** en Configurar Agents y **Chat-Agent-Torrenter** en Configurar MCPs/Tools. Si usas Compact mode, selecciona ambos. El chat admite Multi-Turn, Ask Execs y Exec Report.",
+   "n": 1
+  },
+  {
+   "en": "| Inspect a job | `files`, `peers`, `trackers`, `web_seeds`, `statistics`, `manifest` | Supply its job ID. Jobs returns only published verified paths in a ready manifest. |",
+   "es": "| Inspeccionar un job | `files`, `peers`, `trackers`, `web_seeds`, `statistics`, `manifest` | Indica el ID del job. El manifiesto devuelve paths verificados una vez que Jobs ha publicado los archivos. |",
+   "n": 1
+  },
+  {
+   "en": "| Multiple jobs | `batch` | Pass `transition` (pause, resume, stop or start) and `jobs`, an array of job IDs with individual revisions. Inspect each outcome. |",
+   "es": "| Varios jobs | `batch` | Indica la `transition` (pause, resume, stop o start) y `jobs`, una lista de IDs con la revisión de cada job. Revisa el resultado de cada elemento. |",
+   "n": 1
+  },
+  {
+   "en": "| Remove a record | `remove_job` | Supply the ID and revision of a stopped, cancelled or completed job. Its files stay on disk. |",
+   "es": "| Eliminar un registro | `remove_job` | Indica el ID y la revisión de un job detenido, cancelado o terminado. Los archivos permanecen en el disco. |",
+   "n": 1
+  },
+  {
+   "en": "3. “Check job `<job_id>`. Show the desired state, observed phase, selected bytes and verified bytes.”",
+   "es": "3. «Consulta el job `<job_id>`. Indica el estado solicitado, la fase observada y los bytes seleccionados y verificados».",
+   "n": 1
+  },
+  {
+   "en": "4. “Show the verified manifest for that job, including the output location and SHA-256.”",
+   "es": "4. «Muéstrame el manifiesto verificado del job con la ubicación del archivo y su SHA-256».",
+   "n": 1
+  },
+  {
+   "en": "1. “Use Torrenter to review inspection `<inspection_id>`. Show the file IDs and sizes.”",
+   "es": "1. «Usa Torrenter para revisar la inspección `<inspection_id>`. Muéstrame los IDs y tamaños de sus archivos».",
+   "n": 1
+  },
+  {
+   "en": "2. “Download file 0 from that inspection into downloads. Keep seeding off.”",
+   "es": "2. «Descarga el archivo 0 de esa inspección en downloads. Deja desactivado el seeding».",
+   "n": 1
+  },
+  {
+   "en": "1. Choose **Start Services** in the XT tray menu and sign in to Tlamatini.",
+   "es": "1. Selecciona **Start Services** en el menú de XT e inicia sesión en Tlamatini.",
+   "n": 1
+  },
+  {
+   "en": "| Intent | Actions | Fields or behavior |",
+   "es": "| Objetivo | Acciones | Campos y comportamiento |",
+   "n": 1
+  },
+  {
+   "en": "C:\\Development\\XAIHT\\Tlamatini\\Tlamatini",
+   "es": "C:\\Development\\XAIHT\\Tlamatini-Spanish\\Tlamatini",
+   "n": 1,
+   "codigo": "Ruta de desarrollo propia de la edición española en los ejemplos de PowerShell."
+  },
+  {
+   "en": "Example chat requests, in order:",
+   "es": "Ejemplo de conversación, en orden:",
+   "n": 1
+  },
+  {
+   "en": "## Repeat the development checks",
+   "es": "## Repetir las pruebas de desarrollo",
+   "n": 1
+  },
+  {
+   "en": "## Flows and diagnostics",
+   "es": "## Flows y diagnóstico",
+   "n": 1
+  },
+  {
+   "en": "## Connect an account",
+   "es": "## Vincular una cuenta",
+   "n": 1
+  },
+  {
+   "en": "## Start a transfer",
+   "es": "## Iniciar una transferencia",
+   "n": 1
+  },
+  {
+   "en": "## Actions",
+   "es": "## Acciones",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

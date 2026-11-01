@@ -1,0 +1,36 @@
+{
+ "archivo": "Tlamatini/agent/agents/torrenter/sources.py",
+ "segmentos": [
+  {
+   "en": "Enter a magnet link of up to 8192 characters.",
+   "es": "Ingresa un vínculo magnet de hasta 8192 caracteres.",
+   "n": 1
+  },
+  {
+   "en": "Choose up to 32 endpoints.",
+   "es": "Elige hasta 32 endpoints.",
+   "n": 1
+  },
+  {
+   "en": "One of the endpoints is invalid.",
+   "es": "Uno de los endpoints no es válido.",
+   "n": 1
+  },
+  {
+   "en": "Source limit reached. Unused references expire in 15 minutes.",
+   "es": "Se alcanzó el límite de fuentes. Las referencias sin usar vencen en 15 minutos.",
+   "n": 1
+  },
+  {
+   "en": "Invalid source reference.",
+   "es": "La referencia de fuentes no es válida.",
+   "n": 1
+  },
+  {
+   "en": "This source reference is unavailable, expired or belongs to a different account.",
+   "es": "Esta referencia de fuentes no está disponible, ya venció o pertenece a otra cuenta.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

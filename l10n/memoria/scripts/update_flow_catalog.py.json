@@ -1,0 +1,26 @@
+{
+ "archivo": "scripts/update_flow_catalog.py",
+ "segmentos": [
+  {
+   "en": "The catalog contains **{len(agents)} installed agent types**. Every row has a current configuration schema, ",
+   "es": "El catálogo contiene **{len(agents)} tipos de agent instalados**. Cada fila tiene un esquema de configuración, ",
+   "n": 1
+  },
+  {
+   "en": "canonical name, aliases, connection slots, lifecycle flags, and declared structured output fields. ",
+   "es": "un nombre canónico, alias, conexiones, opciones de ciclo de vida y campos de output estructurados. ",
+   "n": 1
+  },
+  {
+   "en": "Field types are inferred from templates; they are not a complete semantic validator. ",
+   "es": "Los tipos de campo se infieren de las plantillas. ",
+   "n": 1
+  },
+  {
+   "en": "No template values or credentials are exported. GUI-Manager remains a design and is excluded.",
+   "es": "El catálogo no expone valores de configuración ni credenciales. GUI-Manager sigue en fase de diseño y no se incluye.",
+   "n": 1
+  }
+ ],
+ "conservar": []
+}

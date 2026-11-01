@@ -1137,8 +1137,8 @@ class ExecReportCaptureTests(TestCase):
 
         # Exactly one ACPx caption and one Skill caption — spawn/send/kill
         # were merged into a single table.
-        self.assertEqual(html.count('List of ACPx Operations'), 1)
-        self.assertEqual(html.count('List of Skill Operations'), 1)
+        self.assertEqual(html.count('Lista de operaciones de ACPx'), 1)
+        self.assertEqual(html.count('Lista de operaciones de Skill'), 1)
         # All three ACPx commands appear in their merged table, in order.
         spawn_idx = html.index('[cursor] refactor')
         send_idx = html.index('[sess-1] follow up')
@@ -1189,9 +1189,9 @@ class ExecReportCaptureTests(TestCase):
         html = _render_exec_report_html(entries)
 
         # SSHer appears first (its first fire was index 0) then Executer then Dockerer.
-        ssher_idx = html.index('List of SSHer Operations')
-        executer_idx = html.index('List of Executer Operations')
-        dockerer_idx = html.index('List of Dockerer Operations')
+        ssher_idx = html.index('Lista de operaciones de SSHer')
+        executer_idx = html.index('Lista de operaciones de Executer')
+        dockerer_idx = html.index('Lista de operaciones de Dockerer')
         self.assertLess(ssher_idx, executer_idx)
         self.assertLess(executer_idx, dockerer_idx)
 
@@ -1405,8 +1405,8 @@ class ExecReportPersistenceTests(TestCase):
         # — including the Exec report HTML — so reload parity is guaranteed.
         self.assertEqual(row.message, final)
         self.assertIn('exec-report-block', row.message)
-        self.assertIn('List of Executer Operations', row.message)
-        self.assertIn('List of Dockerer Operations', row.message)
+        self.assertIn('Lista de operaciones de Executer', row.message)
+        self.assertIn('Lista de operaciones de Dockerer', row.message)
         self.assertIn('>SUCCESS<', row.message)
         self.assertIn('>FAILURE<', row.message)
 
@@ -1423,7 +1423,7 @@ class ExecReportPersistenceTests(TestCase):
         self.assertIsNotNone(row)
         self.assertEqual(row.message, final)
         self.assertIn('exec-report-block', row.message)
-        self.assertIn('List of Executer Operations', row.message)
+        self.assertIn('Lista de operaciones de Executer', row.message)
 
     def test_persisted_message_has_no_tables_when_exec_report_disabled(self):
         self._run_processor(
@@ -1433,7 +1433,7 @@ class ExecReportPersistenceTests(TestCase):
         row = self._latest_bot_message()
         self.assertIsNotNone(row)
         self.assertNotIn('exec-report-block', row.message)
-        self.assertNotIn('List of Executer Operations', row.message)
+        self.assertNotIn('Lista de operaciones de Executer', row.message)
 
     def test_persisted_message_has_no_tables_when_no_entries_captured(self):
         # Flag on, but no state-changing tool fired. Row must stay clean and

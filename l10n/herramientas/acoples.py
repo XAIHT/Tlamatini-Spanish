@@ -79,7 +79,7 @@ def _py_ocurrencias(datos: bytes) -> list[tuple]:
 
 def indice(base: dict, acorn: str, leer) -> dict:
     """{valor_normalizado: [(archivo, crudo, línea), ...]} de todo el árbol inglés (con caché)."""
-    cache = Path(tempfile.gettempdir()) / f"l10n_acoples_v2_{base['commit'][:12]}.json"
+    cache = Path(tempfile.gettempdir()) / f"l10n_acoples_v2_{base['commit'][:12]}{base.get('parche', '')[:12]}.json"
     if cache.exists():
         with open(cache, "r", encoding="utf-8") as fh:
             return json.load(fh)

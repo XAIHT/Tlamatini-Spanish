@@ -1779,6 +1779,11 @@ function _mapToolArgsToAgentConfig(canonicalName, rawArgs, _toolName) {
                 if (!Number.isNaN(n)) config[k] = n;
             }
         });
+    } else if (lower === 'torrenter') {
+        set('action', pairs.action);
+        const args = pairs.arguments;
+        if (args && typeof args === 'object') config.arguments = JSON.stringify(args);
+        else if (typeof args === 'string') config.arguments = args;
     } else if (lower === 'terminater') {
         // The chat tool takes TYPED arguments (one per setting), so every key arrives as its own
         // direct arg. A terminal ID ("t2") belongs to ONE live session: in a saved flow it would
@@ -2367,6 +2372,7 @@ function _agentPurpose(canonicalName) {
         'SQLer': 'Queries de SQL',
         'Mongoxer': 'Operaciones de MongoDB',
         'LaTeXer': 'Composición con LaTeX: archivos fuente .tex compilados a PDF',
+        'Torrenter': 'Administra descargas persistentes con el perfil de Tlachihuani Jobs de la cuenta activa',
         'Terminater': 'Terminales visibles de CMD/PowerShell, escritas como lo haría una persona, con traspaso al usuario',
         'Prompter': 'Ejecución de prompts en el LLM',
         'Summarizer': 'Resumen de textos con LLM',

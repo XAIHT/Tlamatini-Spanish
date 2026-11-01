@@ -720,6 +720,11 @@
    "en": "Source evidence on October 23: **17/17 visible browser checks passed; 929 of 931\nregression tests passed**, with two existing README documentation assertions failing\nbefore this documentation sweep. These are dated source results, not a new installed\npackage acceptance. v1.91.0 was published on GitHub on 2026-10-23.\nSee the [release record](docs/changes/2026-10-23-v1.91.0.md) and\n[settings guide](docs/interaction-settings.md).",
    "es": "Evidencia de código fuente del 23 de octubre: **17/17 revisiones visibles en el browser pasaron; 929 de 931\npruebas de regresión pasaron**, con dos aserciones de documentación del README existentes fallando\nantes de este barrido de documentación. Estos son resultados fechados de código fuente, no la aceptación de un\npaquete instalado nuevo. v1.91.0 se publicó en GitHub el 2026-10-23.\nVe el [registro del release](docs/changes/2026-10-23-v1.91.0.md) y la\n[guía de configuración](docs/interaction-settings.md).",
    "n": 1
+  },
+  {
+   "en": "Controls persistent Tlachihuani Jobs downloads for the signed-in account. Review torrent metadata, select files, submit, pause, stop, resume, remove records and read verified manifests. File erasure requires approval in XT.",
+   "es": "Administra las descargas persistentes de la cuenta activa en Tlachihuani Jobs. Revisa metadatos, elige archivos, inicia, pausa, detén o reanuda jobs, elimina registros y consulta manifiestos verificados. Borrar archivos requiere aprobación en XT.",
+   "n": 1
   }
  ],
  "conservar": [

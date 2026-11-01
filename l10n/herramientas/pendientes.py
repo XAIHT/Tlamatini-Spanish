@@ -60,7 +60,7 @@ def listar_pendientes(base: dict, raiz: Path, memoria_dir: Path, rutas: list[str
         archivos = [a for a in archivos if not EXCLUIR.search(a)]
     total = 0
     resultado = {}
-    with OriginalesIngles(base["ingles"], base["commit"]) as orig:
+    with OriginalesIngles(base["ingles"], base["commit"], base.get("parche")) as orig:
         for ruta in archivos:
             datos = orig.leer(ruta)
             if datos is None:

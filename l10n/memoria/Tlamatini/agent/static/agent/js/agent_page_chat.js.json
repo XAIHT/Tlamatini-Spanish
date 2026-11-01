@@ -513,6 +513,11 @@
    "es": "/^(?:and|with|y|con)\\s+/i",
    "codigo": "Create Flow en español: los parámetros de un request también se separan con \"y\" / \"con\" (como \"and\" / \"with\")",
    "n": 2
+  },
+  {
+   "en": "Manage persistent downloads through the signed-in Tlachihuani Jobs profile",
+   "es": "Administra descargas persistentes con el perfil de Tlachihuani Jobs de la cuenta activa",
+   "n": 1
   }
  ],
  "conservar": [

@@ -335,12 +335,12 @@ class PreservedContentLegendTests(SimpleTestCase):
     def test_one_directory_reads_as_one(self):
         note = self._note(["Templates"])
         self.assertIn("Templates", note)
-        self.assertIn("the directory below", note)
-        self.assertIn("left untouched", note)
+        self.assertIn("el directorio de abajo", note)
+        self.assertIn("sin tocar", note)
 
     def test_several_directories_are_all_named(self):
         note = self._note(["application", "content_generated", "Templates"])
-        self.assertIn("the directories below", note)
+        self.assertIn("los directorios de abajo", note)
         for name in ("application", "content_generated", "Templates"):
             self.assertIn(name, note)
 
@@ -411,7 +411,7 @@ class RunningProcessDetectionTests(SimpleTestCase):
             mine = [rec for rec in found if rec["pid"] == proc.pid]
             self.assertEqual(len(mine), 1, f"child {proc.pid} not in {found}")
             self.assertEqual(mine[0]["name"].lower(), "tlamatini.exe")
-            self.assertIn("installation directory", mine[0]["evidence"])
+            self.assertIn("directorio de instalación", mine[0]["evidence"])
         finally:
             proc.kill()
             proc.wait(timeout=10)
@@ -521,10 +521,10 @@ class GateWiringContractTests(SimpleTestCase):
 
     def test_the_gate_offers_exactly_retry_and_exit(self):
         source = _code_only("_show_running_gate")
-        self.assertIn('"⟳  Retry"', source)
-        self.assertIn('"Exit"', source)
-        for forbidden in ("continue anyway", "Continue Anyway", "Ignore",
-                          "Skip", "Force"):
+        self.assertIn('"⟳  Reintentar"', source)
+        self.assertIn('"Salir"', source)
+        for forbidden in ("continuar de todos modos", "Continuar de todos modos", "Ignorar",
+                          "Omitir", "Forzar"):
             self.assertNotIn(forbidden, source,
                              "a bypass would walk the user into the broken "
                              "half-deleted installation this gate prevents")
@@ -563,15 +563,15 @@ class GateWiringContractTests(SimpleTestCase):
 
     def test_the_warning_on_screen_matches_what_the_code_does(self):
         """The card must not still promise that everything else is removed."""
-        self.assertNotIn("All other application files will be removed",
+        self.assertNotIn("Se eliminarán todos los demás archivos de la aplicación",
                          UNINSTALL_SOURCE)
         build = _function_source("_build_ui")
         self.assertIn("preserved=PRESERVED_WHEN_NOT_EMPTY", build)
         from setup_wizard import WizardView
         import inspect
         source = inspect.getsource(WizardView)
-        self.assertIn('Always kept: agents/', source)
-        self.assertIn('Everything else, including Temp/, is removed.', source)
+        self.assertIn('Siempre se conserva: agents/', source)
+        self.assertIn('Todo lo demás, incluida Temp/, se elimina.', source)
 
     def test_the_confirmation_names_every_kept_directory(self):
         """The 'are you sure?' box is the last thing read before deletion."""

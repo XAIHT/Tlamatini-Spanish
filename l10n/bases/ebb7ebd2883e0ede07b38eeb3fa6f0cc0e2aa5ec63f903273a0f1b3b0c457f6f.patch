@@ -1,0 +1,2827 @@
+diff --git a/antes/README.md b/despues/README.md
+index 8f3440d..b1b0d9c 100644
+--- a/antes/README.md
++++ b/despues/README.md
+@@ -38,8 +38,8 @@
+ > **FULL POWER STARTS WITH OLLAMA PRO.** An active **Ollama Pro subscription or higher** is a prerequisite for Tlamatini's complete intended experience. Tlamatini itself is **free and open source**; the Ollama subscription is a separate purchase made directly from [Ollama](https://ollama.com/pricing). Long agent runs, large project contexts, repeated tool calls and parallel vision work need meaningful cloud capacity. Pro is the minimum intended tier; heavier workloads may need more capacity. [Understand the requirements →](#requirements)
+ 
+ <p align="center">
+-  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents callable from chat</b> &nbsp;·&nbsp; <b>110 built-in tools</b><br />
+-  <sub>Current v1.91.1 source inventory. The 67 chat wrappers are included in the 110 tools; enabled external MCP servers add their own tools.</sub>
++  <b>87 workflow agents</b> &nbsp;·&nbsp; <b>68 agents callable from chat</b> &nbsp;·&nbsp; <b>111 built-in tools</b><br />
++  <sub>Development inventory including Torrenter. The 111 tools include the 68 chat wrappers. Enabled external MCP servers add their own tools.</sub>
+ </p>
+ 
+ <p align="center">
+@@ -134,13 +134,17 @@ Direct dictation uses the microphone on the **computer running Tlamatini**. It k
+ 
+ | Agentic Control Panel · `.flw` | Prompt Flow Panel · `.fpmt` |
+ | :--- | :--- |
+-| Arrange **86 agent types**, configure their work and connect them into runnable flows. | Compose prompts, decisions, embeddings, user questions and executable operations. |
++| Arrange **87 agent types**, configure their work and connect them into runnable flows. | Compose prompts, decisions, embeddings, user questions and executable operations. |
+ | Use **Parametrizer** to pass one agent's output into the next agent's configuration. | **User Input** pauses for a real reply; **User Commentary** adds rich-text notes to explain the design. |
+ | Ask **FlowCreator** to turn an objective into a canvas-loadable flow, then inspect and refine it. | Save reusable prompt sequences, follow their run output and resize the canvas/output panes independently. |
+ | Search agents, duplicate configured nodes, undo, redo, zoom and fit. | Keep explanatory notes on the canvas while the executable flow does the work. |
+ 
+ Both formats open in their own editors. Drop a `.flw` or `.fpmt` file onto a supported page, or use the registered Windows file association. [Prompt Flow guide →](docs/prompting-flow-designer.md) · [Windows flow files →](docs/windows-flow-files.md)
+ 
++**Torrenter** connects chat and the Agentic Control Panel to persistent downloads in Tlachihuani Jobs.
++Open **Panels → Torrenter Sources** to review a torrent file or magnet. Use the same enrolled account
++to select files, control jobs and inspect verified output. [Torrenter setup and actions](docs/torrenter.md).
++
+ ## One workspace, many ways to build
+ 
+ | Your next task | The tools behind it |
+diff --git a/antes/Tlamatini/agent/agents/flowcreator/agentic_skill.md b/despues/Tlamatini/agent/agents/flowcreator/agentic_skill.md
+index 28ec5dd..a7754ee 100644
+--- a/antes/Tlamatini/agent/agents/flowcreator/agentic_skill.md
++++ b/despues/Tlamatini/agent/agents/flowcreator/agentic_skill.md
+@@ -2111,6 +2111,16 @@ system_prompt: |
+   - `target_agents`: [] (downstream agents to start after the terminal action ends)
+ - **Notes**: Needs Windows 10 1809+ (ConPTY). It is on the Ask Execs allowlist (a visible command can still delete). A quiet stretch while a person types, or a hand-over waits for a human, is normal for up to `wait_seconds` + `user_wait_seconds`. Full contract: `docs/terminater.md`.
+ 
++### 87. Torrenter
++
++Use the active `torrenter_<n>` node for one authenticated Jobs action. Configure `action` and
++`arguments` (a JSON object encoded as text). Use `list` with `{}` to discover owned jobs.
++Stage metadata in Torrenter Sources, then use `inspection` and `download` with explicit file IDs.
++Reattach with the job ID. Poll `operation` for an admission receipt or `manifest` for verified output.
++Route the `INI_SECTION_TORRENTER` fields `status`, `success`, `phase`, `job_id`, `operation_id`,
++`verified_bytes` and `response_body` to the next node. Stop preserves files. Content erasure requires XT approval.
++Use an enrolled account and keep credentials and private source links outside exported flows.
++
+ ---
+ 
+ ## Output Format
+diff --git a/antes/Tlamatini/agent/agents/flowcreator/flow_catalog.json b/despues/Tlamatini/agent/agents/flowcreator/flow_catalog.json
+index 5fccff2..237491c 100644
+--- a/antes/Tlamatini/agent/agents/flowcreator/flow_catalog.json
++++ b/despues/Tlamatini/agent/agents/flowcreator/flow_catalog.json
+@@ -4455,6 +4455,61 @@
+       "never_starts_targets": false,
+       "special": ""
+     },
++    "torrenter": {
++      "display_name": "Torrenter",
++      "aliases": [
++        "torrenter"
++      ],
++      "purpose": "Controls persistent Tlachihuani Jobs downloads for the signed-in account. Review torrent metadata, select files, submit, pause, stop, resume, remove records and read verified manifests. File erasure requires approval in XT.",
++      "config_schema": {
++        "action": "str",
++        "arguments": "str",
++        "source_agents": "list",
++        "target_agents": "list"
++      },
++      "output_fields": [
++        "action",
++        "status",
++        "success",
++        "job_id",
++        "operation_id",
++        "operation_key",
++        "inspection_id",
++        "preview_id",
++        "phase",
++        "revision",
++        "verified_bytes",
++        "selected_bytes",
++        "verified",
++        "message",
++        "response_body"
++      ],
++      "output_slots": {
++        "0": "target_agents"
++      },
++      "input_slots": {
++        "0": "source_agents"
++      },
++      "connection_fields": [
++        "source_agents",
++        "target_agents",
++        "output_agents",
++        "source_agent",
++        "target_agent",
++        "source_agent_1",
++        "source_agent_2",
++        "target_agents_a",
++        "target_agents_b",
++        "target_agents_l",
++        "target_agents_g"
++      ],
++      "no_input": false,
++      "no_output": false,
++      "singleton": false,
++      "long_running": false,
++      "never_starts_targets": false,
++      "special": ""
++    },
+     "unrealer": {
+       "display_name": "Unrealer",
+       "aliases": [
+diff --git a/antes/Tlamatini/agent/agents/flowhypervisor/monitoring-prompt.pmt b/despues/Tlamatini/agent/agents/flowhypervisor/monitoring-prompt.pmt
+index c09662b..dc02365 100644
+--- a/antes/Tlamatini/agent/agents/flowhypervisor/monitoring-prompt.pmt
++++ b/despues/Tlamatini/agent/agents/flowhypervisor/monitoring-prompt.pmt
+@@ -382,6 +382,12 @@ PDFER SPECIAL NOTES:
+     time; use progress and actual stage failures, not an assumption of a seconds-long
+     whole run or a global command_timeout deadline that the renderer does not enforce.
+ 
++TORRENTER SPECIAL NOTES:
++  - One activation makes one Jobs request or a bounded wait, then emits INI_SECTION_TORRENTER.
++    An accepted operation is durable. A completed wrapper process can leave a transfer running.
++    Observe its job ID and verified manifest. Never synthesize a fresh submit to recover a lost receipt.
++    Missing enrollment and stale revisions require operator action or a fresh read.
++
+ TERMINATER SPECIAL NOTES:
+   - Terminater runs ONE action in a real ConPTY terminal (CMD or PowerShell) that the user can see in
+     the Terminals area. It types like a person (never pastes), so slow typing is NORMAL, not a hang.
+diff --git a/despues/Tlamatini/agent/agents/torrenter/client.py b/despues/Tlamatini/agent/agents/torrenter/client.py
+new file mode 100644
+index 0000000..a75bb58
+--- /dev/null
++++ b/despues/Tlamatini/agent/agents/torrenter/client.py
+@@ -0,0 +1,217 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""Transport for the installed Windows Jobs service. Never follows redirects or proxies."""
++
++import base64
++import hashlib
++import hmac
++import http.client
++import json
++import os
++import subprocess
++import time
++import uuid
++from pathlib import Path
++
++if __package__:
++    from .contract import TorrentError
++else:
++    from contract import TorrentError
++
++
++def compact(value):
++    return json.dumps(value, separators=(",", ":"), ensure_ascii=True)
++
++
++def known_folder(folder_id):
++    from win32com.shell import shell
++
++    return Path(shell.SHGetFolderPath(0, folder_id, 0, 0))
++
++
++def installation():
++    try:
++        ident = json.loads(
++            (known_folder(35) / "XAIHT/Tlachihuani.Jobs/installation.json").read_text(
++                encoding="utf-8-sig"
++            )
++        )
++        return str(uuid.UUID(ident["installation_id"]))
++    except (OSError, ValueError, KeyError) as exc:
++        raise TorrentError(
++            "Install Tlachihuani Jobs and start its Torrenter provider in XT."
++        ) from exc
++
++
++def native(request):
++    binary = known_folder(38) / "XAIHT/Tlachihuani/Jobs/Tlachihuani.Jobs.exe"
++    try:
++        result = subprocess.run(
++            [str(binary), "--control"],
++            input=compact(request),
++            text=True,
++            capture_output=True,
++            timeout=12,
++            check=True,
++        )
++        return json.loads(result.stdout)
++    except (ValueError, OSError, subprocess.SubprocessError) as exc:
++        raise TorrentError(
++            "Cannot reach the installed Jobs control pipe. Check Services in XT and the Windows operator."
++        ) from exc
++
++
++def credential_name(profile):
++    return "XAIHT/Tlamatini/Torrenter/" + installation() + "/" + str(uuid.UUID(profile))
++
++
++def enroll(profile):
++    import win32cred
++
++    target = credential_name(profile)
++    account = "tlm-" + profile
++    data = native(
++        {
++            "op": "issue",
++            "gateway": True,
++            "profile": account,
++            "scope": "read submit control remove erase",
++        }
++    ).get("body", {})
++    if (
++        data.get("account") != account
++        or not data.get("signing_key")
++        or not data.get("gateway_id")
++    ):
++        raise TorrentError("Jobs refused gateway enrollment.")
++    win32cred.CredWrite(
++        {
++            "Type": win32cred.CRED_TYPE_GENERIC,
++            "TargetName": target,
++            "UserName": account,
++            "CredentialBlob": compact(data),
++            "Persist": win32cred.CRED_PERSIST_LOCAL_MACHINE,
++        },
++        0,
++    )
++    return account
++
++
++def scope_grant(profile, directory):
++    import win32crypt
++
++    claim = [
++        profile,
++        installation(),
++        str(Path(directory).resolve()),
++        int(time.time()) + 8 * 3600,
++    ]
++    raw = win32crypt.CryptProtectData(
++        compact(claim).encode(), "Torrenter activation", None, None, None, 1
++    )
++    return base64.urlsafe_b64encode(raw).decode("ascii")
++
++
++def read_grant(directory):
++    import win32crypt
++
++    try:
++        envelope = base64.urlsafe_b64decode(os.environ["TLAMATINI_TORRENTER_GRANT"])
++        _, data = win32crypt.CryptUnprotectData(envelope, None, None, None, 1)
++        profile, host, bound, expires = json.loads(data)
++        pool = Path(directory).resolve()
++        if (
++            host == installation()
++            and expires >= time.time()
++            and (
++                Path(bound) == pool
++                or (Path(bound) == pool.parent and pool.name.startswith("torrenter_"))
++            )
++        ):
++            return str(uuid.UUID(profile))
++    except Exception:
++        pass
++    raise TorrentError(
++        "This activation needs an enrolled, signed-in Tlamatini account. Start it from chat or the Agentic Control Panel."
++    )
++
++
++def request(method, path, body=None, *, bearer=None, key=None, revision=None):
++    headers = {"Accept": "application/json", "Content-Type": "application/json"}
++    if bearer:
++        headers["Authorization"] = "Bearer " + bearer
++    if key:
++        headers["Idempotency-Key"] = key
++    if revision is not None:
++        headers["If-Match"] = '"' + str(revision) + '"'
++    conn = http.client.HTTPConnection("127.0.0.1", 12064, timeout=10)
++    try:
++        conn.request(
++            method,
++            "/api/v1/" + path,
++            compact(body).encode() if body is not None else None,
++            headers,
++        )
++        res = conn.getresponse()
++        raw = res.read(4 * 1024 * 1024 + 1)
++        if len(raw) > 4 * 1024 * 1024:
++            raise TorrentError(
++                "The Jobs response exceeds the limit. Request a smaller page."
++            )
++        data = json.loads(raw)
++        if not isinstance(data, dict):
++            raise TorrentError("Unexpected Jobs response.")
++        if not 200 <= res.status < 300:
++            advice = {
++                401: "Enroll this account again.",
++                403: "Check access scopes or the exact-file approval in XT.",
++                404: "Check the owned ID.",
++                409: "Read the current job or operation before retrying.",
++                412: "Read the latest revision before changing this job.",
++            }
++            raise TorrentError(
++                f"Jobs HTTP {res.status}. {str(data.get('error', 'Request refused.'))[:250]} {advice.get(res.status, '')}".strip()
++            )
++        return res.status, data
++    except (OSError, http.client.HTTPException, json.JSONDecodeError) as exc:
++        raise TorrentError(
++            "Cannot read the Jobs API. Check Services in XT. Reuse the same operation key after an uncertain write."
++        ) from exc
++    finally:
++        conn.close()
++
++
++def session(profile):
++    import win32cred
++
++    state = native({"op": "status"})
++    if not (state.get("port") == 12064 and state.get("web") and state.get("engine")):
++        raise TorrentError("Start Jobs and the Torrenter provider in XT.")
++    try:
++        record = win32cred.CredRead(
++            credential_name(profile), win32cred.CRED_TYPE_GENERIC
++        )
++        cred = json.loads(record["CredentialBlob"])
++    except Exception as exc:
++        raise TorrentError(
++            "This Windows operator must enroll the Tlamatini account using manage.py enroll_torrenter."
++        ) from exc
++    gateway, account = cred["gateway_id"], "tlm-" + profile
++    if cred["account"] != account:
++        raise TorrentError("Enrollment does not match this account.")
++    nonce, expires = uuid.uuid4().hex, int(time.time()) + 60
++    assertion = compact(
++        [gateway, account, "Tlachihuani.Torrenter", nonce, expires]
++    ).encode()
++    sig = hmac.new(cred["signing_key"].encode(), assertion, hashlib.sha256).hexdigest()
++    _, data = request(
++        "POST",
++        "sessions/delegated",
++        {
++            "gateway_id": gateway,
++            "account": account,
++            "nonce": nonce,
++            "expires": expires,
++            "signature": sig,
++        },
++    )
++    return data["access_token"]
+diff --git a/despues/Tlamatini/agent/agents/torrenter/config.yaml b/despues/Tlamatini/agent/agents/torrenter/config.yaml
+new file mode 100644
+index 0000000..6f66ca3
+--- /dev/null
++++ b/despues/Tlamatini/agent/agents/torrenter/config.yaml
+@@ -0,0 +1,7 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++# One REST action per activation. Use Torrenter Sources to inspect a magnet or .torrent.
++action: list
++# JSON object of named action fields. The generic canvas editor treats this as editable text.
++arguments: "{}"
++source_agents: []
++target_agents: []
+diff --git a/despues/Tlamatini/agent/agents/torrenter/contract.py b/despues/Tlamatini/agent/agents/torrenter/contract.py
+new file mode 100644
+index 0000000..47c5a5f
+--- /dev/null
++++ b/despues/Tlamatini/agent/agents/torrenter/contract.py
+@@ -0,0 +1,280 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""Closed action vocabulary shared by the typed tool, flow nodes and Jobs adapter."""
++
++import re
++from urllib.parse import urlencode
++
++
++class TorrentError(ValueError):
++    pass
++
++
++TRANSITIONS = "pause resume stop start cancel recheck reseed move".split()
++DETAILS = "files peers trackers web_seeds statistics manifest".split()
++OPTIONS = "category tags download_limit upload_limit queue_position resume_on_boot seed_after_completion".split()
++READ = {
++    "capabilities": "capabilities",
++    "list": "torrents",
++    "settings": "settings",
++    "categories": "categories",
++    "tags": "tags",
++    "events": "events",
++    "totals": "statistics",
++}
++# Required and optional action arguments. No transport, account, path or approval override.
++FIELDS = {name: ("", "") for name in READ}
++FIELDS.update(
++    {
++        "list": (
++            "",
++            "limit cursor phase desired search category tag tracker sort direction",
++        ),
++        "events": ("", "after"),
++        "inspect": ("", "info_hash source_ref"),
++        "inspection": ("inspection_id", ""),
++        "download": (
++            "inspection_id metadata_revision selected_file_ids destination_root_id",
++            "priorities resume_on_boot seed_after_completion",
++        ),
++        "status": ("job_id", ""),
++        "wait": ("job_id", "wait_seconds"),
++        "operation": ("operation_id", ""),
++        "remove_job": ("job_id revision", ""),
++        "delete_preview": ("job_id revision", ""),
++        "delete_content": ("preview_id revision", ""),
++        "set_trackers": ("job_id revision source_ref", ""),
++        "set_web_seeds": ("job_id revision source_ref", ""),
++        "select": ("job_id revision selected_file_ids", "priorities"),
++        "update": ("job_id revision", " ".join(OPTIONS)),
++        "update_settings": (
++            "revision",
++            "download_limit upload_limit resume_on_boot seed_after_completion",
++        ),
++        "batch": ("transition jobs", ""),
++        "label": ("collection change name", "new_name"),
++    }
++)
++FIELDS.update({name: ("job_id revision", "") for name in TRANSITIONS})
++FIELDS["move"] = ("job_id revision destination_root_id", "")
++FIELDS.update({name: ("job_id", "") for name in DETAILS})
++DURABLE = set(TRANSITIONS) | {
++    "download",
++    "select",
++    "update",
++    "update_settings",
++    "label",
++    "batch",
++    "remove_job",
++    "delete_content",
++    "set_trackers",
++    "set_web_seeds",
++}
++ID = re.compile(r"[0-9a-f]{32}")
++
++
++def check(ok, message):
++    if not ok:
++        raise TorrentError(message)
++
++
++def validated(action, arguments):
++    check(
++        isinstance(action, str) and action in FIELDS,
++        "Choose a documented Torrenter action.",
++    )
++    check(isinstance(arguments, dict), "Arguments must be a JSON object.")
++    req, opt = (set(v.split()) for v in FIELDS[action])
++    allowed = req | opt | ({"operation_key"} if action in DURABLE else set())
++    check(
++        set(arguments) <= allowed and req <= set(arguments),
++        "Fields for "
++        + action
++        + ": required ["
++        + ", ".join(sorted(req))
++        + "], optional ["
++        + ", ".join(sorted(allowed - req))
++        + "].",
++    )
++    a = dict(arguments)
++    for k, v in a.items():
++        if k in (
++            "job_id",
++            "inspection_id",
++            "operation_id",
++            "preview_id",
++            "operation_key",
++            "source_ref",
++        ):
++            check(
++                isinstance(v, str) and ID.fullmatch(v),
++                k + " must be 32 lowercase hex digits.",
++            )
++        elif k == "info_hash":
++            check(
++                isinstance(v, str) and re.fullmatch(r"[a-fA-F0-9]{40}", v),
++                "Use a v1 info hash or stage the magnet in Torrenter Sources.",
++            )
++        elif k in ("resume_on_boot", "seed_after_completion"):
++            check(type(v) is bool, k + " must be true or false.")
++        elif k == "selected_file_ids":
++            check(
++                isinstance(v, list)
++                and 0 < len(v) <= 4096
++                and all(type(i) is int and 0 <= i < 4096 for i in v)
++                and len(v) == len(set(v)),
++                "Select unique reviewed file IDs.",
++            )
++        elif k == "priorities":
++            selection = a.get("selected_file_ids")
++            check(
++                isinstance(selection, list),
++                "Select file IDs before assigning priorities.",
++            )
++            selected_keys = {str(n) for n in selection}
++            check(
++                isinstance(v, dict)
++                and all(
++                    str(i) in selected_keys and type(p) is int and 1 <= p <= 7
++                    for i, p in v.items()
++                ),
++                "Priorities must be 1–7 for selected files.",
++            )
++        elif k == "jobs":
++            check(isinstance(v, list) and 0 < len(v) <= 100, "Select 1–100 jobs.")
++            for entry in v:
++                check(
++                    isinstance(entry, dict) and set(entry) == {"job_id", "revision"},
++                    "Batch items require a job_id and revision.",
++                )
++                validated("stop", entry)
++            check(
++                len({item["job_id"] for item in v}) == len(v),
++                "Use each job ID once per batch.",
++            )
++        elif k == "tags":
++            check(
++                isinstance(v, list)
++                and len(v) <= 16
++                and all(isinstance(t, str) and len(t) <= 80 for t in v),
++                "Invalid tags.",
++            )
++        elif k in (
++            "limit",
++            "cursor",
++            "after",
++            "wait_seconds",
++            "revision",
++            "metadata_revision",
++            "queue_position",
++            "download_limit",
++            "upload_limit",
++        ):
++            lower = 1 if k in ("limit", "revision", "metadata_revision") else 0
++            upper = {
++                "limit": 250,
++                "wait_seconds": 30,
++                "queue_position": 9999,
++                "download_limit": 2**30,
++                "upload_limit": 2**30,
++            }.get(k, 2**53 - 1)
++            check(type(v) is int and lower <= v <= upper, "Invalid " + k + ".")
++        else:
++            check(
++                isinstance(v, str)
++                and len(v) <= (80 if k in ("category", "name", "new_name") else 160)
++                and (len(v) > 0 or k == "category")
++                and all(ord(c) >= 32 for c in v),
++                "Invalid " + k + ".",
++            )
++    if any(
++        isinstance(v, str) and ("magnet:?" in v.lower() or "://" in v)
++        for v in a.values()
++    ):
++        raise TorrentError("Use an opaque source reference for network addresses.")
++    choices = {
++        "destination_root_id": ("downloads", "archive"),
++        "direction": ("asc", "desc"),
++        "sort": (
++            "name",
++            "phase",
++            "selected_bytes",
++            "verified_bytes",
++            "download_rate_bps",
++            "upload_rate_bps",
++            "queue_position",
++        ),
++        "collection": ("categories", "tags"),
++        "change": ("create", "rename", "remove"),
++        "transition": ("pause", "resume", "start", "stop"),
++    }
++    for k, values in choices.items():
++        check(k not in a or a[k] in values, "Unsupported " + k + ".")
++    if action == "inspect":
++        check(
++            ("info_hash" in a) != ("source_ref" in a),
++            "Choose either info_hash or a staged source_ref.",
++        )
++    if action == "label":
++        check(
++            ("new_name" in a) == (a["change"] == "rename"),
++            "Only a rename requires new_name.",
++        )
++    if action in ("update", "update_settings"):
++        check(bool(opt & set(a)), "Choose at least one setting to update.")
++    return a
++
++
++def route(action, a):
++    body = {
++        k: v for k, v in a.items() if k not in ("operation_key", "revision", "job_id")
++    }
++    job = "torrents/" + a.get("job_id", "")
++    if action in READ:
++        return "GET", READ[action] + ("?" + urlencode(body) if body else ""), None
++    if action == "inspect":
++        return (
++            "POST",
++            "inspections",
++            {"magnet": "magnet:?xt=urn:btih:" + a["info_hash"]}
++            if "info_hash" in a
++            else {},
++        )
++    if action in ("operation", "inspection"):
++        return "GET", action + "s/" + a[action + "_id"], None
++    if action == "download":
++        return "POST", "torrents", body
++    if action in ("status", "wait"):
++        return "GET", job, None
++    if action in DETAILS:
++        return "GET", job + "/" + action.replace("_", "-"), None
++    if action in TRANSITIONS:
++        return "POST", job + "/actions", dict(body, action=action)
++    if action in ("select", "update", "update_settings"):
++        return (
++            "PATCH",
++            {"select": job + "/files", "update": job, "update_settings": "settings"}[
++                action
++            ],
++            body,
++        )
++    if action in ("set_trackers", "set_web_seeds"):
++        return "PATCH", job + "/" + action[4:].replace("_", "-"), body
++    if action == "remove_job":
++        return "DELETE", job, None
++    if action == "delete_preview":
++        return "POST", "content-deletion-previews", {"job_id": a["job_id"]}
++    if action == "delete_content":
++        return "POST", "content-deletions", body
++    if action == "batch":
++        return (
++            "POST",
++            "batch-operations",
++            {"action": a["transition"], "jobs": a["jobs"]},
++        )
++    if action == "label":
++        return (
++            {"create": "POST", "rename": "PATCH", "remove": "DELETE"}[a["change"]],
++            a["collection"],
++            {k: a[k] for k in ("name", "new_name") if k in a},
++        )
++    raise TorrentError("Unknown action.")
+diff --git a/despues/Tlamatini/agent/agents/torrenter/sources.py b/despues/Tlamatini/agent/agents/torrenter/sources.py
+new file mode 100644
+index 0000000..3e78ac3
+--- /dev/null
++++ b/despues/Tlamatini/agent/agents/torrenter/sources.py
+@@ -0,0 +1,90 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""Ephemeral encrypted tracker/web-seed lists. Only an opaque ID enters a flow."""
++
++import json
++import time
++import uuid
++from urllib.parse import urlsplit
++
++if __package__:
++    from .client import installation, known_folder
++    from .contract import ID, TorrentError
++else:
++    from client import installation, known_folder
++    from contract import ID, TorrentError
++
++
++def directory(profile):
++    return (
++        known_folder(28)
++        / "XAIHT/Tlamatini/Torrenter"
++        / installation()
++        / str(uuid.UUID(profile))
++    )
++
++
++def stage(profile, kind, text):
++    if kind == "magnet":
++        if not text.startswith("magnet:?") or len(text) > 8192:
++            raise TorrentError("Enter a magnet link of up to 8192 characters.")
++        return save(profile, kind, text)
++    links = [line.strip() for line in text.splitlines() if line.strip()]
++    allowed = ("http", "https", "udp") if kind == "trackers" else ("http", "https")
++    if kind not in ("trackers", "web_seeds") or len(links) > 32:
++        raise TorrentError("Choose up to 32 endpoints.")
++    for link in links:
++        try:
++            parsed = urlsplit(link)
++            valid = parsed.scheme in allowed and parsed.hostname and len(link) <= 2048
++        except ValueError:
++            valid = False
++        if not valid:
++            raise TorrentError("One of the endpoints is invalid.")
++    return save(profile, kind, links)
++
++
++def save(profile, kind, payload):
++    import win32crypt
++
++    folder = directory(profile)
++    folder.mkdir(parents=True, exist_ok=True)
++    now = time.time()
++    for item in folder.glob("*.source"):
++        if item.stat().st_mtime < now - 900:
++            item.unlink(missing_ok=True)
++    if sum(1 for _ in folder.glob("*.source")) >= 32:
++        raise TorrentError(
++            "Source limit reached. Unused references expire in 15 minutes."
++        )
++    key = uuid.uuid4().hex
++    payload = json.dumps([kind, payload, now + 900]).encode()
++    data = win32crypt.CryptProtectData(
++        payload, "Torrenter source", str(folder).encode(), None, None, 1
++    )
++    with (folder / (key + ".source")).open("xb") as stream:
++        stream.write(data)
++    return key
++
++
++def resolve(profile, kind, key):
++    import win32crypt
++
++    if not ID.fullmatch(key):
++        raise TorrentError("Invalid source reference.")
++    folder = directory(profile)
++    try:
++        _, plain = win32crypt.CryptUnprotectData(
++            (folder / (key + ".source")).read_bytes(),
++            str(folder).encode(),
++            None,
++            None,
++            1,
++        )
++        expected, links, expires = json.loads(plain)
++        if expected == kind and expires >= time.time():
++            return links
++    except Exception:
++        pass
++    raise TorrentError(
++        "This source reference is unavailable, expired or belongs to a different account."
++    )
+diff --git a/despues/Tlamatini/agent/agents/torrenter/torrenter.py b/despues/Tlamatini/agent/agents/torrenter/torrenter.py
+new file mode 100644
+index 0000000..9d98344
+--- /dev/null
++++ b/despues/Tlamatini/agent/agents/torrenter/torrenter.py
+@@ -0,0 +1,237 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""One isolated activation. The service owns all peer connections and durable files."""
++
++import hashlib
++import json
++import logging
++import os
++import re
++import subprocess
++import sys
++import time
++import uuid
++from pathlib import Path
++
++import yaml
++
++# Carried Python can have an isolated ._pth file.
++HERE = Path(__file__).resolve().parent
++if __package__:
++    from .client import compact, installation, read_grant, request, session
++    from .contract import DURABLE, ID, TorrentError, route, validated
++    from .sources import resolve
++else:
++    sys.path.insert(0, str(HERE))
++    from client import compact, installation, read_grant, request, session
++    from contract import DURABLE, ID, TorrentError, route, validated
++    from sources import resolve
++
++
++def safe(value):
++    return compact(value).replace("<", "\\u003c").replace(">", "\\u003e")
++
++
++def emit(result):
++    fields = {k: v for k, v in result.items() if k != "response_body"}
++    body = safe(result.get("response_body", {}))
++    lines = [
++        k + ": " + (str(v) if isinstance(v, (int, bool)) else safe(str(v))[1:-1])
++        for k, v in fields.items()
++    ]
++    logging.info(
++        "INI_SECTION_TORRENTER<<<\n%s\n\n%s\n>>>END_SECTION_TORRENTER",
++        "\n".join(lines),
++        body,
++    )
++    # The chat result reader consumes the atomic result even if a log excerpt was truncated.
++    tmp = HERE / ("result." + uuid.uuid4().hex + ".tmp")
++    tmp.write_text(safe(result), encoding="utf-8")
++    tmp.replace(HERE / "torrenter-result.json")
++
++
++def report_selected_bytes(snapshot):
++    """A boundary piece can contain bytes belonging to unselected neighbouring files."""
++    piece_bytes = snapshot.get("verified_bytes")
++    selected = snapshot.get("selected_bytes")
++    if (
++        isinstance(piece_bytes, int)
++        and isinstance(selected, int)
++        and piece_bytes > selected
++    ):
++        snapshot["engine_verified_bytes"] = piece_bytes
++        snapshot["verified_bytes"] = selected if snapshot.get("completed_at") else None
++
++
++def save_receipt(path, record):
++    tmp = path.with_suffix("." + uuid.uuid4().hex)
++    tmp.write_text(compact(record), encoding="utf-8")
++    tmp.replace(path)
++
++
++def execute(action, params, profile):
++    p = validated(action, params)
++    key = p.get("operation_key")
++    admitted = None
++    if action in DURABLE:
++        receipt = HERE / ".torrenter-receipt"
++        fingerprint = hashlib.sha256(
++            json.dumps(
++                [installation(), profile, action, p],
++                sort_keys=True,
++                separators=(",", ":"),
++            ).encode()
++        ).hexdigest()
++        if os.environ.get("AGENT_REANIMATED") == "1" and receipt.exists():
++            previous = json.loads(receipt.read_text(encoding="utf-8"))
++            if previous["fingerprint"] != fingerprint:
++                raise TorrentError(
++                    "The interrupted activation changed. Review and start a new action."
++                )
++            key = previous["key"]
++            admitted = previous.get("operation_id")
++        else:
++            key = key or uuid.uuid4().hex
++            save_receipt(receipt, {"fingerprint": fingerprint, "key": key})
++    token = session(profile)
++    method, path, body = route(action, p)
++    if admitted:
++        if not isinstance(admitted, str) or not ID.fullmatch(admitted):
++            raise TorrentError("The saved operation receipt is invalid.")
++        method, path, body = "GET", "operations/" + admitted, None
++    elif action == "inspect" and "source_ref" in p:
++        body = {"magnet": resolve(profile, "magnet", p["source_ref"])}
++    elif action in ("set_trackers", "set_web_seeds"):
++        body = {"urls": resolve(profile, action[4:], p["source_ref"])}
++    deadline = time.monotonic() + p.get("wait_seconds", 10)
++    try:
++        while True:
++            code, data = request(
++                method, path, body, bearer=token, key=key, revision=p.get("revision")
++            )
++            if (
++                action != "wait"
++                or data.get("phase")
++                in (
++                    "completed",
++                    "seeding",
++                    "cancelled",
++                    "failed",
++                    "error",
++                    "stopped",
++                    "paused",
++                )
++                or time.monotonic() >= deadline
++            ):
++                break
++            time.sleep(1)
++    except TorrentError as exc:
++        if key:
++            raise TorrentError(str(exc) + " Operation key: " + key) from exc
++        raise
++    if key and code == 202:
++        save_receipt(
++            receipt,
++            {
++                "fingerprint": fingerprint,
++                "key": key,
++                "operation_id": data["operation_id"],
++            },
++        )
++    if action in ("status", "wait", "statistics"):
++        report_selected_bytes(data)
++    elif action == "list":
++        for snapshot in data.get("items", []):
++            report_selected_bytes(snapshot)
++    observed = "accepted" if code == 202 else "observed"
++    result = {
++        "action": action,
++        "status": observed,
++        "success": True,
++        "response_body": data,
++    }
++    for name in (
++        "job_id",
++        "inspection_id",
++        "operation_id",
++        "preview_id",
++        "revision",
++        "phase",
++        "verified",
++        "selected_bytes",
++        "verified_bytes",
++    ):
++        if name in data or name in p:
++            result[name] = data.get(name, p.get(name))
++    if key:
++        result["operation_key"] = key
++    return result
++
++
++def trigger_targets(names):
++    import psutil
++
++    for name in dict.fromkeys(names):
++        if not isinstance(name, str) or not re.fullmatch(
++            r"[a-z][a-z0-9_]*_[0-9]+", name
++        ):
++            raise TorrentError("Invalid downstream agent name.")
++        directory = (HERE.parent / name).resolve()
++        script = directory / (name.rsplit("_", 1)[0] + ".py")
++        if directory.parent != HERE.parent or not script.is_file():
++            raise TorrentError("Downstream agent is unavailable.")
++        pid = directory / "agent.pid"
++        while pid.exists():
++            try:
++                proc = psutil.Process(int(pid.read_text().strip()))
++                if Path(proc.cwd()).resolve() != directory:
++                    break
++            except (ValueError, OSError, psutil.Error):
++                break
++            time.sleep(0.5)
++        subprocess.Popen([sys.executable, str(script)], cwd=directory)
++
++
++def main():
++    logging.basicConfig(
++        filename=HERE / (HERE.name + ".log"),
++        level=logging.INFO,
++        encoding="utf-8",
++        format="%(asctime)s %(levelname)s %(message)s",
++        filemode="a" if os.environ.get("AGENT_REANIMATED") == "1" else "w",
++    )
++    pid = HERE / "agent.pid"
++    pid.write_text(str(os.getpid()))
++    action, targets = "", []
++    try:
++        config = yaml.safe_load((HERE / "config.yaml").read_text(encoding="utf-8-sig"))
++        targets = config.get("target_agents") or []
++        action = config["action"]
++        params = config.get("arguments", {})
++        if isinstance(params, str):
++            params = json.loads(params)
++        result = execute(action, params, read_grant(HERE))
++    except Exception as exc:
++        message = (
++            str(exc)
++            if isinstance(exc, TorrentError)
++            else "Invalid configuration or unavailable Windows integration."
++        )
++        result = {
++            "action": action
++            if isinstance(action, str) and action.isidentifier()
++            else "",
++            "status": "failed",
++            "success": False,
++            "message": message,
++        }
++    try:
++        emit(result)
++        trigger_targets(targets)
++        return 0 if result["success"] else 1
++    finally:
++        if pid.exists() and pid.read_text() == str(os.getpid()):
++            pid.unlink()
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/antes/Tlamatini/agent/chat_agent_registry.py b/despues/Tlamatini/agent/chat_agent_registry.py
+index 4f2bec1..178ce77 100644
+--- a/antes/Tlamatini/agent/chat_agent_registry.py
++++ b/despues/Tlamatini/agent/chat_agent_registry.py
+@@ -2225,6 +2225,18 @@ WRAPPED_CHAT_AGENT_SPECS: tuple[ChatWrappedAgentSpec, ...] = (
+         ),
+         poll_window_seconds=120,
+     ),
++    ChatWrappedAgentSpec(
++        key="torrenter", template_dir="torrenter", tool_name="chat_agent_torrenter",
++        tool_description="Chat-Agent-Torrenter", display_name="Torrenter",
++        purpose="Control the signed-in user's persistent Tlachihuani Jobs downloads. Inspect a public info hash "
++                "or a staged magnet source_ref, or use an inspection ID from Panels > Torrenter Sources. Review metadata and select explicit file "
++                "IDs before download. A 202 is acceptance. Reattach using job_id for status, lifecycle and the "
++                "verified manifest, or operation_id for the receipt. Stop retains bytes. Removing a record retains "
++                "files. Content deletion requires an exact preview approved in XT. Never substitute a chat run ID.",
++        example_request="List my torrent downloads and show verified files for a completed job.",
++        aliases=("torrenter", "torrent", "torrent downloads", "magnet"),
++        security_hints=("torrent", "magnet", "download job"),
++    ),
+     ChatWrappedAgentSpec(
+         key="terminater",
+         template_dir="terminater",
+diff --git a/antes/Tlamatini/agent/chat_agent_runtime.py b/despues/Tlamatini/agent/chat_agent_runtime.py
+index 9514869..7a34a58 100644
+--- a/antes/Tlamatini/agent/chat_agent_runtime.py
++++ b/despues/Tlamatini/agent/chat_agent_runtime.py
+@@ -7,6 +7,7 @@
+ #   Every line of this file was written by Angela López Mendoza.
+ # ═══════════════════════════════════════════════════════════════════
+ #   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
++import json
+ import itertools
+ import logging
+ import os
+@@ -352,7 +353,9 @@ def register_chat_agent_run(
+     logger.info("[ChatRuntime.register_chat_agent_run]   log_path          = %s", log_path)
+     logger.info("[ChatRuntime.register_chat_agent_run]   runtime_dir exists? %s", os.path.isdir(runtime_dir))
+     logger.info("[ChatRuntime.register_chat_agent_run]   request_text      = %.200s", request_text)
++    from .context_governor import current_user
+     return ChatAgentRun.objects.create(
++        owner_id=current_user() if template_dir == "torrenter" else None,
+         runId=run_id,
+         toolDescription=tool_description,
+         templateAgentDir=template_dir,
+@@ -373,6 +376,10 @@ def start_chat_agent_subprocess(run: ChatAgentRun, script_path: str):
+     logger.info("[ChatRuntime.start_chat_agent_subprocess] cwd exists? %s", os.path.isdir(run.runtimeDir))
+ 
+     child_env = _build_child_env()
++    if run.templateAgentDir == "torrenter":
++        from .agents.torrenter.client import scope_grant
++        from .torrenter_bridge import profile_for
++        child_env["TLAMATINI_TORRENTER_GRANT"] = scope_grant(profile_for(run.owner_id), run.runtimeDir)
+     kwargs = {
+         "cwd": run.runtimeDir,
+         "env": child_env,
+@@ -468,6 +475,15 @@ def wait_briefly_for_initial_state(run: ChatAgentRun, *, seconds: int) -> ChatAg
+     return reconcile_chat_agent_run(run)
+ 
+ 
++def _visible_runs():
++    from django.db.models import Q
++    from .context_governor import current_user
++    visible = ~Q(templateAgentDir="torrenter")
++    if current_user():
++        visible |= Q(owner_id=current_user())
++    return ChatAgentRun.objects.filter(visible)
++
++
+ def get_chat_agent_run(run_id: str) -> ChatAgentRun | None:
+     """Look up a chat-agent run by exact or prefix match on *runId*.
+ 
+@@ -480,17 +496,18 @@ def get_chat_agent_run(run_id: str) -> ChatAgentRun | None:
+         return None
+     # 1) Exact match (fast path)
+     try:
+-        return ChatAgentRun.objects.get(runId=run_id)
++        return _visible_runs().get(runId=run_id)
+     except ChatAgentRun.DoesNotExist:
+         pass
+     # 2) Prefix match — only if the caller passed a plausible short ID
+     run_id_stripped = run_id.strip()
+     if len(run_id_stripped) >= 6:
+-        candidates = ChatAgentRun.objects.filter(
++        candidates = _visible_runs().filter(
+             runId__startswith=run_id_stripped,
+         ).order_by("-startedAt")
+-        if candidates.exists():
+-            return candidates.first()
++        if candidates.filter(templateAgentDir="torrenter").exists() and candidates.count() > 1:
++            return None
++        return candidates.first()
+     return None
+ 
+ 
+@@ -510,7 +527,7 @@ def list_chat_agent_runs(*, limit: int | None = None) -> list[ChatAgentRun]:
+             effective_limit = max(int(limit), 1)
+         except (TypeError, ValueError):
+             effective_limit = get_chat_agent_limit_runs()
+-    runs = list(ChatAgentRun.objects.order_by("-startedAt")[:effective_limit])
++    runs = list(_visible_runs().order_by("-startedAt")[:effective_limit])
+     return [reconcile_chat_agent_run(run) for run in runs]
+ 
+ 
+@@ -591,6 +608,15 @@ def serialize_chat_agent_run(run: ChatAgentRun, *, include_log_excerpt: bool = F
+         "started_at": run.startedAt.isoformat() if run.startedAt else None,
+         "finished_at": run.finishedAt.isoformat() if run.finishedAt else None,
+     }
++    if run.templateAgentDir == "torrenter" and run.status in FINAL_STATUSES:
++        try:
++            with open(os.path.join(run.runtimeDir, "torrenter-result.json"), encoding="utf-8") as result_file:
++                result = json.load(result_file)
++            payload["action_status"] = result.pop("status")
++            payload.update(result)
++        except (OSError, ValueError, KeyError):
++            payload["success"] = False
++            payload["action_status"] = "unavailable"
+     if include_log_excerpt:
+         payload["log_excerpt"] = tail_runtime_log(run.logPath)
+     return payload
+diff --git a/antes/Tlamatini/agent/consumers.py b/despues/Tlamatini/agent/consumers.py
+index 94bf401..c24f089 100644
+--- a/antes/Tlamatini/agent/consumers.py
++++ b/despues/Tlamatini/agent/consumers.py
+@@ -1400,7 +1400,7 @@ class AgentConsumer(AsyncWebsocketConsumer):
+ 
+     async def receive(self, text_data):   # type: ignore
+         if _WS_TRACE:
+-            print(f">>> [RECEIVE] Got message: {text_data[:100]}...", flush=True)
++            print(f">>> [RECEIVE] Got frame ({len(text_data)} characters)", flush=True)
+             sys.stdout.flush()
+         try:
+             text_data_json = json.loads(text_data)
+@@ -1424,6 +1424,14 @@ class AgentConsumer(AsyncWebsocketConsumer):
+             else:
+                 type = None
+             user = self.scope['user']
++            if type is None and isinstance(message, str) and "magnet:?" in message.lower():
++                from .torrenter_bridge import stage_chat_magnets
++                from .agents.torrenter.contract import TorrentError
++                try:
++                    message = await database_sync_to_async(stage_chat_magnets)(user.pk, message)
++                except TorrentError as exc:
++                    await self.agent_message({"username":"Tlamatini", "message":str(exc)})
++                    return
+ 
+             # Per-line log attribution (Angela, 2026-08-13). An UNTYPED frame is
+             # a real prompt, so it OPENS a new turn -- that turn number is what
+diff --git a/despues/Tlamatini/agent/management/commands/enroll_torrenter.py b/despues/Tlamatini/agent/management/commands/enroll_torrenter.py
+new file mode 100644
+index 0000000..4f1b6f3
+--- /dev/null
++++ b/despues/Tlamatini/agent/management/commands/enroll_torrenter.py
+@@ -0,0 +1,32 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++from django.contrib.auth import get_user_model
++from django.core.management.base import BaseCommand, CommandError
++
++from agent.agents.torrenter.client import enroll
++from agent.agents.torrenter.contract import TorrentError
++from agent.models import TorrenterProfile
++
++
++class Command(BaseCommand):
++    help = "Enroll a local Tlamatini user with the installed XT Jobs service using the current Windows operator."
++
++    def add_arguments(self, parser):
++        parser.add_argument("--username", required=True)
++
++    def handle(self, *args, **options):
++        user = (
++            get_user_model()
++            .objects.filter(username=options["username"], is_active=True)
++            .first()
++        )
++        if not user:
++            raise CommandError("Choose an existing active Tlamatini user.")
++        profile, _ = TorrenterProfile.objects.get_or_create(user=user)
++        try:
++            account = enroll(str(profile.account))
++        except TorrentError as exc:
++            raise CommandError(str(exc)) from exc
++        self.stdout.write(
++            "Enrolled. To view these jobs in the XT workspace, pair using Account "
++            + account
++        )
+diff --git a/antes/Tlamatini/agent/mcp_agent.py b/despues/Tlamatini/agent/mcp_agent.py
+index d86fbb3..e162f97 100644
+--- a/antes/Tlamatini/agent/mcp_agent.py
++++ b/despues/Tlamatini/agent/mcp_agent.py
+@@ -367,6 +367,7 @@ _EXEC_REPORT_TOOLS: Dict[str, Tuple[str, str]] = {
+     # Terminater types real commands into VISIBLE terminals the user supervises. The
+     # generic wrapped-agent fallback already captures it; this entry only gives the
+     # table its native "Phosphor Console" caption gradient defined in agent_page.css.
++    "chat_agent_torrenter":      ("torrenter",      "Torrenter"),
+     "chat_agent_terminater":     ("terminater",     "Terminater"),
+     # STM32er is state-changing: it drives the STM32 Template Project MCP server
+     # to scaffold / write / build / flash / erase / reset firmware and to
+@@ -512,6 +513,7 @@ _ASK_EXECS_REQUIRED_TOOLS: frozenset = frozenset({
+     # cmd.exe / PowerShell. That it is VISIBLE does not make a command harmless (a visible
+     # `Remove-Item -Recurse` still deletes), so it sits with Executer/Pythonxer/SSHer here
+     # rather than in the desktop-UI tier C. Only users who ticked Ask Execs see the prompt.
++    "chat_agent_torrenter",     # Submits and changes durable downloads
+     "chat_agent_terminater",    # Terminater    (types commands into a visible shell)
+     # ----- Tier B: MESSAGING — DELIBERATELY *NOT* GATED (Angela, 2026-07-26) --
+     # Emailer / Whatsapper / Telegrammer used to be gated here on the
+@@ -593,6 +595,8 @@ def _infer_execution_shell(tool_name: str, tool_input: Any) -> str:
+     if name == "chat_agent_ssher":
+         host = tool_input.get("host") if isinstance(tool_input, dict) else None
+         return f"Remote SSH shell{(' @ ' + str(host)) if host else ''}"
++    if name == "chat_agent_torrenter":
++        return "Tlachihuani Jobs authenticated local REST API"
+     if name == "chat_agent_terminater":
+         try:
+             from .terminater_tool import shell_kind
+@@ -1043,6 +1047,15 @@ class MultiTurnToolAgentExecutor:
+         shows an empty cell. ``tool_name`` is optional only for backward
+         compatibility with older callers; new code should always pass it.
+         """
++        if tool_name == "chat_agent_torrenter":
++            from .agents.torrenter.contract import FIELDS, ID
++            action = tool_input.get("action") if isinstance(tool_input, dict) else None
++            args = tool_input.get("arguments", {}) if isinstance(tool_input, dict) else {}
++            if not isinstance(action, str) or action not in FIELDS or not isinstance(args, dict):
++                return "Torrenter (invalid arguments)"
++            targets = [k+"="+v for k,v in args.items() if k in ("job_id","operation_id","inspection_id","preview_id")
++                       and isinstance(v,str) and ID.fullmatch(v)]
++            return " ".join(["Torrenter", action, *targets])
+         if tool_input is None:
+             return ""
+         if isinstance(tool_input, str):
+@@ -2443,6 +2456,24 @@ class MultiTurnToolAgentExecutor:
+                 if self._run_cancelled():
+                     return self._cancelled_result(messages)
+                 tool_name = tool_call.get("name", "")
++                if tool_name.strip().lower() in {"torrenter", "chat_agent_torrenter"} and "chat_agent_torrenter" in self.tool_map:
++                    if tool_name != "chat_agent_torrenter":
++                        logger.info("--- [TOOL-ALIAS] %s resolved to chat_agent_torrenter", tool_name)
++                    tool_name = "chat_agent_torrenter"
++                    tool_call = dict(tool_call, name=tool_name)
++                    from .agents.torrenter.contract import TorrentError, validated
++                    args = tool_call.get("args")
++                    try:
++                        if not isinstance(args, dict) or set(args) - {"action", "arguments"}:
++                            raise TorrentError("Use the typed Torrenter action and arguments.")
++                        validated(args.get("action"), args.get("arguments", {}))
++                    except TorrentError as exc:
++                        # Never echo unvalidated input into permission prompts, reports or .flw exports.
++                        refusal = str(exc)
++                        self._record_refused_call(dict(tool_call, args={}), refusal)
++                        messages.append(ToolMessage(tool_call_id=tool_call.get("id", ""), name=tool_name,
++                                                    content=json.dumps({"status":"refused", "success":False, "message":refusal})))
++                        continue
+                 # Mark that the model has attempted the requested completion
+                 # notification so the notification-debt guard above stays quiet.
+                 if tool_name in _NOTIFICATION_TOOLS:
+diff --git a/despues/Tlamatini/agent/migrations/0221_torrenter.py b/despues/Tlamatini/agent/migrations/0221_torrenter.py
+new file mode 100644
+index 0000000..ec314b1
+--- /dev/null
++++ b/despues/Tlamatini/agent/migrations/0221_torrenter.py
+@@ -0,0 +1,98 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++import uuid
++from django.conf import settings
++from django.db import migrations, models
++import django.db.models.deletion
++
++PROMPT = (
++    "Use Torrenter to list my downloads. Report their desired state, observed phase and verified bytes. "
++    "If I supply an inspection ID, review its files and ask which ones I want before submitting. "
++    "Report the durable job ID and check the verified manifest before naming any completed file."
++)
++
++
++def seed(apps, schema_editor):
++    compact = (
++        apps.get_model("agent", "CompactState")
++        .objects.filter(pk=1, active=True)
++        .exists()
++    )
++    for model, label in (("Agent", "Torrenter"), ("Tool", "Chat-Agent-Torrenter")):
++        table = apps.get_model("agent", model)
++        prefix = model.lower()
++        pk = "id" + model
++        if not table.objects.filter(**{prefix + "Description": label}).exists():
++            n = (
++                table.objects.order_by("-" + pk).values_list(pk, flat=True).first() or 0
++            ) + 1
++            table.objects.create(
++                **{
++                    pk: n,
++                    prefix + "Name": f"{prefix}-{n}",
++                    prefix + "Description": label,
++                    prefix + "Content": "false" if compact else "true",
++                }
++            )
++    table = apps.get_model("agent", "Prompt")
++    if not table.objects.filter(promptContent=PROMPT).exists():
++        n = (
++            table.objects.order_by("-idPrompt")
++            .values_list("idPrompt", flat=True)
++            .first()
++            or 0
++        ) + 1
++        table.objects.create(
++            idPrompt=n,
++            promptName=f"prompt-{n}",
++            promptContent=PROMPT,
++            category="run_execute",
++            sort_rank=68,
++        )
++
++
++def unseed(apps, schema_editor):
++    apps.get_model("agent", "Agent").objects.filter(
++        agentDescription="Torrenter"
++    ).delete()
++    apps.get_model("agent", "Tool").objects.filter(
++        toolDescription="Chat-Agent-Torrenter"
++    ).delete()
++    apps.get_model("agent", "Prompt").objects.filter(promptContent=PROMPT).delete()
++
++
++class Migration(migrations.Migration):
++    dependencies = [
++        ("agent", "0220_interaction_settings"),
++        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
++    ]
++    operations = [
++        migrations.CreateModel(
++            name="TorrenterProfile",
++            fields=[
++                (
++                    "user",
++                    models.OneToOneField(
++                        on_delete=django.db.models.deletion.CASCADE,
++                        primary_key=True,
++                        serialize=False,
++                        to=settings.AUTH_USER_MODEL,
++                    ),
++                ),
++                (
++                    "account",
++                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
++                ),
++            ],
++        ),
++        migrations.AddField(
++            model_name="chatagentrun",
++            name="owner",
++            field=models.ForeignKey(
++                null=True,
++                blank=True,
++                on_delete=django.db.models.deletion.CASCADE,
++                to=settings.AUTH_USER_MODEL,
++            ),
++        ),
++        migrations.RunPython(seed, unseed),
++    ]
+diff --git a/antes/Tlamatini/agent/models.py b/despues/Tlamatini/agent/models.py
+index 55a2ece..77e6dc7 100644
+--- a/antes/Tlamatini/agent/models.py
++++ b/despues/Tlamatini/agent/models.py
+@@ -7,6 +7,7 @@
+ #   Every line of this file was written by Angela López Mendoza.
+ # ═══════════════════════════════════════════════════════════════════
+ #   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
++import uuid
+ from django.db import models
+ from django.contrib.auth.models import User
+ 
+@@ -114,7 +115,13 @@ class AgentProcess(models.Model):
+         return f'{self.agentProcessDescription} {self.agentProcessPid}'
+ 
+ 
++class TorrenterProfile(models.Model):
++    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
++    account = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
++
++
+ class ChatAgentRun(models.Model):
++    owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+     runId = models.CharField(primary_key=True, max_length=64)
+     toolDescription = models.CharField(max_length=200)
+     templateAgentDir = models.CharField(max_length=200)
+diff --git a/antes/Tlamatini/agent/services/agent_contracts.py b/despues/Tlamatini/agent/services/agent_contracts.py
+index b5265d6..e54a516 100644
+--- a/antes/Tlamatini/agent/services/agent_contracts.py
++++ b/despues/Tlamatini/agent/services/agent_contracts.py
+@@ -186,6 +186,7 @@ _PARAMETRIZER_OUTPUT_FIELDS: dict[str, tuple[str, ...]] = {
+     # stopped answering is `hung`); `user_part` / `user_line` carry what the USER typed
+     # in a hand-over, and `typed` is exactly what Tlamatini typed.  Keep this tuple in
+     # step with terminater.py::SECTION_FIELDS.
++    "torrenter": ("action", "status", "success", "job_id", "operation_id", "operation_key", "inspection_id", "preview_id", "phase", "revision", "verified_bytes", "selected_bytes", "verified", "message", "response_body"),
+     "terminater": ("action", "status", "success", "terminal_id", "kind", "title", "terminal_state", "command", "exit_code", "duration_seconds", "output_chars", "truncated", "hung", "aborted_by", "typed", "user_part", "user_line", "user_keys", "cursor", "watch_reason", "wait_reason", "layout", "area", "terminals", "hub", "message", "verified", "screen_line", "enter_pressed", "notes", "response_body"),
+ }
+ 
+diff --git a/antes/Tlamatini/agent/services/agent_paths.py b/despues/Tlamatini/agent/services/agent_paths.py
+index 3c3d85b..f623c1b 100644
+--- a/antes/Tlamatini/agent/services/agent_paths.py
++++ b/despues/Tlamatini/agent/services/agent_paths.py
+@@ -142,6 +142,7 @@ def display_name_from_agent_type(agent_type: str) -> str:
+         # Pinned explicitly (str.title() would give the same word today, but the name is a
+         # product identity: "Terminater" = Terminal + Tlamatini's "-er" agent suffix, never
+         # "TerminaTer" / "TERMINATER" / "Terminator").
++        "torrenter": "Torrenter",
+         "terminater": "Terminater",
+         # --- case-only fixes: .title() lower-cases the second capital ---
+         "audioplayer": "AudioPlayer",
+diff --git a/antes/Tlamatini/agent/static/agent/css/agentic_control_panel.css b/despues/Tlamatini/agent/static/agent/css/agentic_control_panel.css
+index 205ba0c..94b7ed1 100644
+--- a/antes/Tlamatini/agent/static/agent/css/agentic_control_panel.css
++++ b/despues/Tlamatini/agent/static/agent/css/agentic_control_panel.css
+@@ -2395,6 +2395,7 @@ body.resizing {
+    next to the red/bronze document agents. Unique in this file - no other agent uses
+    #07130E / #0B7A4B / #3DFF8F / #D9FFEA. The sidebar icon inherits this automatically
+    through applyAgentToolIconStyle(); never re-type the gradient in JS. */
++.canvas-item.torrenter-agent,
+ .canvas-item.terminater-agent {
+     background-color: #07130E;
+     background: linear-gradient(135deg, #07130E 0%, #0B7A4B 33%, #3DFF8F 66%, #D9FFEA 100%);
+@@ -2402,6 +2403,7 @@ body.resizing {
+     font-size: smaller;
+ }
+ 
++.canvas-item.torrenter-agent:hover,
+ .canvas-item.terminater-agent:hover {
+     background: linear-gradient(135deg, #0F2A1E 0%, #12A064 33%, #7CFFB5 66%, #F0FFF7 100%);
+     box-shadow: 0 6px 15px rgba(61, 255, 143, 0.45);
+diff --git a/antes/Tlamatini/agent/static/agent/js/acp-agent-connectors.js b/despues/Tlamatini/agent/static/agent/js/acp-agent-connectors.js
+index 522feb1..315af90 100644
+--- a/antes/Tlamatini/agent/static/agent/js/acp-agent-connectors.js
++++ b/despues/Tlamatini/agent/static/agent/js/acp-agent-connectors.js
+@@ -10,7 +10,7 @@
+  *   Tlamatini Author Banner — do not remove (releases scrub the name automatically)
+  */
+ // Shared classic-script bindings, consumed by sibling page scripts.
+-/* exported findDownstreamEnders, updateRaiserConnection, updateEmailerConnection, updateMonitorLogConnection, updateStarterConnection, updateEnderConnection, updateCleanerConnection, updateOrAgentConnection, updateAndAgentConnection, updateCronerConnection, updateMoverConnection, updateSleeperConnection, updateShoterConnection, updateEditorConnection, updateGrepperConnection, updateGlobberConnection, updateCamcorderConnection, updateRecorderConnection, updateWhispererConnection, updateAudioPlayerConnection, updateTalkerConnection, updateVideoPlayerConnection, updateDeleterConnection, updateExecuterConnection, updateScperConnection, updateSsherConnection, updateNotifierConnection, updateStopperConnection, updateWhatsapperConnection, updatePythonxerConnection, updateAskerConnection, updateForkerConnection, updateCounterConnection, updateTeletlamatiniConnection, updateAcpxerConnection, updateTelegrammerConnection, updateRecmailerConnection, updateSqlerConnection, updatePrompterConnection, updateGitterConnection, updateKuberneterConnection, updateApirerConnection, updateUnrealerConnection, updateBlendererConnection, updatePlaywrighterConnection, updateReviewerConnection, updateAnalyzerConnection, updateJenkinserConnection, updateCrawlerConnection, updateSummarizerConnection, updateMouserConnection, updateWindowerConnection, updateDiscovererConnection, updateNmapperConnection, updatePptxerConnection, updatePdferConnection, updateTerminaterConnection, updateLatexerConnection, updateKalierConnection, updateStm32erConnection, updateEsp32erConnection, updateEsphomerConnection, updateArduinerConnection, updateFileInterpreterConnection, updateKeyboarderConnection, updateGooglerConnection */
++/* exported findDownstreamEnders, updateRaiserConnection, updateEmailerConnection, updateMonitorLogConnection, updateStarterConnection, updateEnderConnection, updateCleanerConnection, updateOrAgentConnection, updateAndAgentConnection, updateCronerConnection, updateMoverConnection, updateSleeperConnection, updateShoterConnection, updateEditorConnection, updateGrepperConnection, updateGlobberConnection, updateCamcorderConnection, updateRecorderConnection, updateWhispererConnection, updateAudioPlayerConnection, updateTalkerConnection, updateVideoPlayerConnection, updateDeleterConnection, updateExecuterConnection, updateScperConnection, updateSsherConnection, updateNotifierConnection, updateStopperConnection, updateWhatsapperConnection, updatePythonxerConnection, updateAskerConnection, updateForkerConnection, updateCounterConnection, updateTeletlamatiniConnection, updateAcpxerConnection, updateTelegrammerConnection, updateRecmailerConnection, updateSqlerConnection, updatePrompterConnection, updateGitterConnection, updateKuberneterConnection, updateApirerConnection, updateUnrealerConnection, updateBlendererConnection, updatePlaywrighterConnection, updateReviewerConnection, updateAnalyzerConnection, updateJenkinserConnection, updateCrawlerConnection, updateSummarizerConnection, updateMouserConnection, updateWindowerConnection, updateDiscovererConnection, updateNmapperConnection, updatePptxerConnection, updatePdferConnection, updateTorrenterConnection, updateTerminaterConnection, updateLatexerConnection, updateKalierConnection, updateStm32erConnection, updateEsp32erConnection, updateEsphomerConnection, updateArduinerConnection, updateFileInterpreterConnection, updateKeyboarderConnection, updateGooglerConnection */
+ 
+ 
+ // Agentic Control Panel - Agent Connection Updaters
+@@ -1283,9 +1283,17 @@ async function updatePdferConnection(agentId, targetAgentId, action) {
+ }
+ 
+ // Terminater — an active agent: a wire FROM it records the downstream agent in target_agents.
+-async function updateTerminaterConnection(agentId, targetAgentId, action) {
++function updateTorrenterConnection(agentId, targetAgentId, action) {
++    return updateActiveTransferConnection("torrenter", agentId, targetAgentId, action);
++}
++
++function updateTerminaterConnection(agentId, targetAgentId, action) {
++    return updateActiveTransferConnection("terminater", agentId, targetAgentId, action);
++}
++
++async function updateActiveTransferConnection(kind, agentId, targetAgentId, action) {
+     try {
+-        const response = await fetch(`/agent/update_terminater_connection/${agentId}/`, {
++        const response = await fetch(`/agent/update_${kind}_connection/${agentId}/`, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json', ...getHeaders() },
+             credentials: 'same-origin',
+@@ -1293,12 +1301,12 @@ async function updateTerminaterConnection(agentId, targetAgentId, action) {
+         });
+         if (response.ok) {
+             const result = await response.json();
+-            console.log(`--- Terminater ${agentId} config updated:`, result.message);
++            console.log(`--- ${kind} ${agentId} config updated:`, result.message);
+         } else {
+-            console.error(`--- Failed to update Terminater ${agentId}:`, response.statusText);
++            console.error(`--- Failed to update ${kind} ${agentId}:`, response.statusText);
+         }
+     } catch (error) {
+-        console.error(`--- Error updating Terminater ${agentId}:`, error);
++        console.error(`--- Error updating ${kind} ${agentId}:`, error);
+     }
+ }
+ 
+diff --git a/antes/Tlamatini/agent/static/agent/js/acp-canvas-core.js b/despues/Tlamatini/agent/static/agent/js/acp-canvas-core.js
+index 98bf589..edea495 100644
+--- a/antes/Tlamatini/agent/static/agent/js/acp-canvas-core.js
++++ b/despues/Tlamatini/agent/static/agent/js/acp-canvas-core.js
+@@ -241,6 +241,7 @@ const AGENT_TYPE_CLASS_MAP = {
+     'pptxer': 'pptxer-agent',
+     'pdfer': 'pdfer-agent',
+     'terminater': 'terminater-agent',
++    'torrenter': 'torrenter-agent',
+     'latexer': 'latexer-agent',
+     'dockerer': 'dockerer-agent',
+     'mcp-doctor': 'mcpdoctor-agent',
+@@ -946,6 +947,7 @@ function removeConnection(conn) {
+         if (sourceAgentName.toLowerCase() === 'pptxer') updatePptxerConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'pdfer') updatePdferConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'terminater') updateTerminaterConnection(sourceId, targetId, 'remove');
++        if (sourceAgentName.toLowerCase() === 'torrenter') updateTorrenterConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'latexer') updateLatexerConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'kalier') updateKalierConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'stm32er') updateStm32erConnection(sourceId, targetId, 'remove');
+@@ -1089,6 +1091,7 @@ function removeConnectionsFor(node, deletingNodes = null) { // eslint-disable-li
+         if (sourceAgentName.toLowerCase() === 'pptxer' && !sourceBeingDeleted) updatePptxerConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'pdfer' && !sourceBeingDeleted) updatePdferConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'terminater' && !sourceBeingDeleted) updateTerminaterConnection(sourceId, targetId, 'remove');
++        if (sourceAgentName.toLowerCase() === 'torrenter' && !sourceBeingDeleted) updateTorrenterConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'latexer' && !sourceBeingDeleted) updateLatexerConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'kalier' && !sourceBeingDeleted) updateKalierConnection(sourceId, targetId, 'remove');
+         if (sourceAgentName.toLowerCase() === 'stm32er' && !sourceBeingDeleted) updateStm32erConnection(sourceId, targetId, 'remove');
+@@ -1653,6 +1656,7 @@ function initCanvasEvents() {
+                     if (sourceAgentName.toLowerCase() === 'pptxer') updatePptxerConnection(sourceId, targetId, 'add');
+                     if (sourceAgentName.toLowerCase() === 'pdfer') updatePdferConnection(sourceId, targetId, 'add');
+                     if (sourceAgentName.toLowerCase() === 'terminater') updateTerminaterConnection(sourceId, targetId, 'add');
++                    if (sourceAgentName.toLowerCase() === 'torrenter') updateTorrenterConnection(sourceId, targetId, 'add');
+                     if (sourceAgentName.toLowerCase() === 'latexer') updateLatexerConnection(sourceId, targetId, 'add');
+                     if (sourceAgentName.toLowerCase() === 'kalier') updateKalierConnection(sourceId, targetId, 'add');
+                     if (sourceAgentName.toLowerCase() === 'stm32er') updateStm32erConnection(sourceId, targetId, 'add');
+diff --git a/antes/Tlamatini/agent/static/agent/js/acp-canvas-undo.js b/despues/Tlamatini/agent/static/agent/js/acp-canvas-undo.js
+index a2c5b15..610ed74 100644
+--- a/antes/Tlamatini/agent/static/agent/js/acp-canvas-undo.js
++++ b/despues/Tlamatini/agent/static/agent/js/acp-canvas-undo.js
+@@ -430,6 +430,9 @@ async function removeConnectionWithoutUndo(sourceId, targetId) {
+             if (sourceAgentName.toLowerCase() === 'terminater') {
+                 await updateTerminaterConnection(sourceId, targetId, 'remove');
+             }
++            if (sourceAgentName.toLowerCase() === 'torrenter') {
++                await updateTorrenterConnection(sourceId, targetId, 'remove');
++            }
+             if (sourceAgentName.toLowerCase() === 'latexer') {
+                 await updateLatexerConnection(sourceId, targetId, 'remove');
+             }
+@@ -840,6 +843,9 @@ async function recreateConnection(state) {
+     if (sourceAgentName === 'terminater') {
+         await updateTerminaterConnection(sourceId, targetId, 'add');
+     }
++    if (sourceAgentName === 'torrenter') {
++        await updateTorrenterConnection(sourceId, targetId, 'add');
++    }
+     if (sourceAgentName === 'latexer') {
+         await updateLatexerConnection(sourceId, targetId, 'add');
+     }
+diff --git a/antes/Tlamatini/agent/static/agent/js/acp-file-io.js b/despues/Tlamatini/agent/static/agent/js/acp-file-io.js
+index 4331268..e9a6d1d 100644
+--- a/antes/Tlamatini/agent/static/agent/js/acp-file-io.js
++++ b/despues/Tlamatini/agent/static/agent/js/acp-file-io.js
+@@ -590,6 +590,7 @@ async function restoreAgentConnection(sourceNode, targetNode, connData) {
+                 case 'pptxer': await updatePptxerConnection(sourceId, targetId, 'add'); break;
+                 case 'pdfer': await updatePdferConnection(sourceId, targetId, 'add'); break;
+                 case 'terminater': await updateTerminaterConnection(sourceId, targetId, 'add'); break;
++                case 'torrenter': await updateTorrenterConnection(sourceId, targetId, 'add'); break;
+                 case 'latexer': await updateLatexerConnection(sourceId, targetId, 'add'); break;
+                 case 'kalier': await updateKalierConnection(sourceId, targetId, 'add'); break;
+                 case 'stm32er': await updateStm32erConnection(sourceId, targetId, 'add'); break;
+diff --git a/antes/Tlamatini/agent/static/agent/js/agent_page_chat.js b/despues/Tlamatini/agent/static/agent/js/agent_page_chat.js
+index 5e8b7eb..665fdb6 100644
+--- a/antes/Tlamatini/agent/static/agent/js/agent_page_chat.js
++++ b/despues/Tlamatini/agent/static/agent/js/agent_page_chat.js
+@@ -1779,6 +1779,11 @@ function _mapToolArgsToAgentConfig(canonicalName, rawArgs, _toolName) {
+                 if (!Number.isNaN(n)) config[k] = n;
+             }
+         });
++    } else if (lower === 'torrenter') {
++        set('action', pairs.action);
++        const args = pairs.arguments;
++        if (args && typeof args === 'object') config.arguments = JSON.stringify(args);
++        else if (typeof args === 'string') config.arguments = args;
+     } else if (lower === 'terminater') {
+         // The chat tool takes TYPED arguments (one per setting), so every key arrives as its own
+         // direct arg. A terminal ID ("t2") belongs to ONE live session: in a saved flow it would
+@@ -2367,6 +2372,7 @@ function _agentPurpose(canonicalName) {
+         'SQLer': 'SQL queries',
+         'Mongoxer': 'MongoDB operations',
+         'LaTeXer': 'LaTeX typesetting: .tex sources compiled to PDF',
++        'Torrenter': 'Manage persistent downloads through the signed-in Tlachihuani Jobs profile',
+         'Terminater': 'Visible CMD/PowerShell terminals typed like a person, with hand-over to the user',
+         'Prompter': 'LLM prompt execution',
+         'Summarizer': 'LLM text summarization',
+diff --git a/antes/Tlamatini/agent/templates/agent/agent_page.html b/despues/Tlamatini/agent/templates/agent/agent_page.html
+index 283f75c..9298e9b 100644
+--- a/antes/Tlamatini/agent/templates/agent/agent_page.html
++++ b/despues/Tlamatini/agent/templates/agent/agent_page.html
+@@ -144,6 +144,7 @@
+                   id="agentic-control-panel" target="_blank" rel="noopener">Agentic Control Panel</a></li>
+               <li><a class="dropdown-item menu-entry" href="{% url 'prompt_flow_panel' %}"
+                   id="prompt-flow-panel" target="_blank" rel="noopener">Prompt Flow Panel</a></li>
++              <li><a class="dropdown-item menu-entry" href="{% url 'torrenter_sources' %}" target="_blank" rel="noopener">Torrenter Sources</a></li>
+               {% if request.user.is_staff %}
+               <li><a class="dropdown-item menu-entry" href="{% url 'admin:index' %}" id="open-admin" target="_blank"
+                   rel="noopener">Admin Panel</a></li>
+diff --git a/antes/Tlamatini/agent/templates/agent/agentic_control_panel.html b/despues/Tlamatini/agent/templates/agent/agentic_control_panel.html
+index 5fe58df..5f3ee87 100644
+--- a/antes/Tlamatini/agent/templates/agent/agentic_control_panel.html
++++ b/despues/Tlamatini/agent/templates/agent/agentic_control_panel.html
+@@ -49,6 +49,7 @@
+                             <li><a class="dropdown-item" href="#" id="file-open-button">Open</a></li>
+                             <li><a class="dropdown-item" href="#" id="save-as-button">Save as</a></li>
+                             <li><a class="dropdown-item" href="{% url 'prompt_flow_panel' %}" target="_blank" rel="noopener">Prompt Flow Panel</a></li>
++              <li><a class="dropdown-item menu-entry" href="{% url 'torrenter_sources' %}" target="_blank" rel="noopener">Torrenter Sources</a></li>
+                             <li>
+                                 <hr class="dropdown-divider">
+                             </li>
+diff --git a/despues/Tlamatini/agent/templates/agent/torrenter_sources.html b/despues/Tlamatini/agent/templates/agent/torrenter_sources.html
+new file mode 100644
+index 0000000..870e328
+--- /dev/null
++++ b/despues/Tlamatini/agent/templates/agent/torrenter_sources.html
+@@ -0,0 +1,25 @@
++{% load static %}<!doctype html>
++<!-- Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 -->
++<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
++<title>Torrenter Sources · Tlamatini</title><style>
++:root{color-scheme:dark;font:16px/1.5 system-ui;background:#101522;color:#ecf2ff}body{max-width:48rem;margin:5vh auto;padding:0 1rem}header small{color:#78e1c7;letter-spacing:.12em}h1{font-size:clamp(2rem,6vw,3rem);margin:.35em 0}
++section,form{background:#192236;border:1px solid #354663;border-radius:1rem;padding:1.25rem;margin:1.2rem 0}label{display:block;font-weight:600;margin:.75rem 0}input,textarea,button{box-sizing:border-box;font:inherit}textarea,input{display:block;width:100%;padding:.6rem;background:#0f1728;color:#fff;border:1px solid #657998;border-radius:.4rem}button{padding:.65rem 1.2rem;border:0;border-radius:.5rem;background:#89efd3;color:#0d2923;font-weight:bold;margin-top:1rem}a{color:#98ccff}code{overflow-wrap:anywhere}.error{color:#ffbcaf}th,td{text-align:left;padding:.25em .5em;overflow-wrap:anywhere}table{width:100%}
++</style></head><body><header><small>TLAMATINI / DOWNLOADS</small><h1>Torrenter Sources</h1>
++<p>Inspect a magnet or a torrent file under your signed-in account. Give the inspection ID to Torrenter in chat or use it in a flow.</p></header>
++{% if error %}<section role="alert" class="error">{{ error }}</section>{% endif %}
++{% if inspection %}<section aria-label="Inspection"><h2>Inspection ready for review</h2><p>Inspection ID <code id="inspection-id">{{ inspection.inspection_id }}</code></p>
++<p>Phase <strong>{{ inspection.phase }}</strong> · Metadata revision {{ inspection.metadata_revision }}</p>
++{% if inspection.files %}<h3>{{ inspection.name }}</h3><table><thead><tr><th>ID</th><th>File</th><th>Bytes</th></tr></thead><tbody>{% for f in inspection.files %}<tr><td>{{ f.id }}</td><td>{{ f.path }}</td><td>{{ f.size }}</td></tr>{% endfor %}</tbody></table>{% endif %}
++<p>Ask Torrenter to review this inspection and download the file IDs you choose. Inspections expire after 15 minutes.</p></section>{% endif %}
++<form method="post" enctype="multipart/form-data">{% csrf_token %}
++<label for="torrent">Torrent metadata file (up to 1 MiB)</label><input type="file" id="torrent" name="torrent" accept=".torrent">
++<label for="magnet">Or paste a magnet link</label><textarea id="magnet" name="magnet" rows="3" maxlength="8192" autocomplete="off" spellcheck="false"></textarea>
++<button type="submit">Inspect metadata</button></form>
++<details><summary>Prepare a private tracker or web-seed update</summary>
++<form method="post">{% csrf_token %}<label for="source_kind">Source list</label>
++<select name="source_kind" id="source_kind"><option value="trackers">Trackers</option><option value="web_seeds">Web seeds</option></select>
++<label for="endpoints">One endpoint per line. An empty list clears existing sources.</label>
++<textarea rows="3" id="endpoints" name="endpoints" maxlength="65568" autocomplete="off"></textarea>
++<button type="submit">Prepare source reference</button></form></details>
++{% if source_ref %}<section role="status">Use <code>{{ source_action }}</code> on a stopped job with its revision and source reference <code>{{ source_ref }}</code>. This reference expires in 15 minutes.</section>{% endif %}
++<p><a href="http://127.0.0.1:12064/" target="_blank" rel="noopener noreferrer">Open the XT download workspace</a> · Pair it to the profile supplied during enrollment to see the same queue.</p></body></html>
+diff --git a/antes/Tlamatini/agent/test_ask_execs_allowlist.py b/despues/Tlamatini/agent/test_ask_execs_allowlist.py
+index 11587d7..fca691a 100644
+--- a/antes/Tlamatini/agent/test_ask_execs_allowlist.py
++++ b/despues/Tlamatini/agent/test_ask_execs_allowlist.py
+@@ -95,6 +95,7 @@ MESSAGING_UNGATED = [
+ 
+ # ── Tier D — remote systems / the network ───────────────────────────────────
+ TIER_D = [
++    "chat_agent_torrenter",
+     "chat_agent_scper",
+     "chat_agent_apirer",
+     "chat_agent_nmapper",
+diff --git a/antes/Tlamatini/agent/test_prompt_flow_panel_carriage.py b/despues/Tlamatini/agent/test_prompt_flow_panel_carriage.py
+index 576cd43..4673b3d 100644
+--- a/antes/Tlamatini/agent/test_prompt_flow_panel_carriage.py
++++ b/despues/Tlamatini/agent/test_prompt_flow_panel_carriage.py
+@@ -35,7 +35,9 @@ class PromptFlowPanelCarriageTests(unittest.TestCase):
+         ):
+             with self.subTest(module=module):
+                 self.assertIn(module, complete)
+-                with patch.object(build, "_read_pyz_module_names", return_value=complete - {module}):
++                # Isolate the missing PYZ entry from checks for loose Windows extensions.
++                with (patch.object(build, "_FROZEN_PYWIN32_EXTENSIONS", ()),
++                      patch.object(build, "_read_pyz_module_names", return_value=complete - {module})):
+                     with self.assertRaises(SystemExit) as failure:
+                         build.verify_frozen_agent_modules(ROOT / "Temp")
+                     self.assertEqual(failure.exception.code, 1)
+diff --git a/antes/Tlamatini/agent/test_release_payload_ownership.py b/despues/Tlamatini/agent/test_release_payload_ownership.py
+index 7b020b7..2b2665a 100644
+--- a/antes/Tlamatini/agent/test_release_payload_ownership.py
++++ b/despues/Tlamatini/agent/test_release_payload_ownership.py
+@@ -23,6 +23,34 @@ finally:
+ 
+ 
+ class PayloadOwnershipTests(unittest.TestCase):
++    @unittest.skipUnless(os.name == "nt", "Windows frozen pywin32 layout")
++    def test_pywin32_extensions_must_ship_in_the_frozen_runtime(self):
++        modules = ("win32cred", "win32crypt")
++        pyz = set(build._FROZEN_REQUIRED_AGENT_MODULES)
++        self.assertTrue(pyz.isdisjoint(modules))
++        with tempfile.TemporaryDirectory() as temporary:
++            root = Path(temporary)
++            frozen = root / "_internal/win32"
++            carried = root / "python/Lib/site-packages/win32"
++            frozen.mkdir(parents=True)
++            carried.mkdir(parents=True)
++            for module in modules:
++                (frozen / f"{module}.pyd").touch()
++            with patch.object(build, "_read_pyz_module_names", return_value=pyz):
++                self.assertTrue(build.verify_frozen_agent_modules(root))
++            for module in modules:
++                with self.subTest(module=module):
++                    filename = f"{module}.pyd"
++                    (frozen / filename).rename(carried / filename)
++                    with patch.object(build, "_read_pyz_module_names", return_value=pyz | {module}):
++                        with self.assertRaises(SystemExit) as missing:
++                            build.verify_frozen_agent_modules(root)
++                        self.assertEqual(missing.exception.code, 1)
++                    (carried / filename).rename(frozen / filename)
++            with patch.object(build, "_read_pyz_module_names", return_value=None):
++                with self.assertRaisesRegex(RuntimeError, "Cannot inspect the frozen PYZ"):
++                    build.verify_frozen_agent_modules(root)
++
+     def test_caches_are_removed_only_when_source_is_present(self):
+         with tempfile.TemporaryDirectory() as temporary:
+             root = Path(temporary)
+diff --git a/despues/Tlamatini/agent/test_torrenter.py b/despues/Tlamatini/agent/test_torrenter.py
+new file mode 100644
+index 0000000..c027735
+--- /dev/null
++++ b/despues/Tlamatini/agent/test_torrenter.py
+@@ -0,0 +1,244 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++import json
++import tempfile
++from types import SimpleNamespace
++from unittest.mock import patch
++
++from django.contrib.auth import get_user_model
++from django.core.exceptions import PermissionDenied
++from django.test import SimpleTestCase, TestCase
++from django.urls import reverse
++
++from .agents.torrenter.contract import FIELDS, TorrentError, route, validated
++from .chat_agent_registry import WRAPPED_CHAT_AGENT_SPECS
++from .chat_agent_runtime import get_chat_agent_run, list_chat_agent_runs
++from .context_governor import bind_user, unbind_user
++from .models import ChatAgentRun, TorrenterProfile
++from .torrenter_bridge import canvas_config, protect_pool, stage_chat_magnets
++from .torrenter_tool import build_tool
++
++SPEC = next(s for s in WRAPPED_CHAT_AGENT_SPECS if s.key == "torrenter")
++ID = "a" * 32
++
++
++class ActionContractTests(SimpleTestCase):
++    def test_closed_schema_and_service_authority(self):
++        for action, args in [
++            ("undelete", {}),
++            ("stop", {"job_id": ID}),
++            ("stop", {"job_id": "../x", "revision": 1}),
++            ("delete_content", {"preview_id": ID, "revision": 1, "confirmed": True}),
++            ("list", {"owner": "another"}),
++            ("status", {"job_id": ID, "url": "https://example.org"}),
++            ("inspect", {}),
++            ("inspect", {"source_ref": ID, "info_hash": "a" * 40}),
++            ("select", {"job_id": ID, "revision": True, "selected_file_ids": [0]}),
++            ("list", {"search": "magnet:?private"}),
++            ("set_web_seeds", {"job_id": ID, "revision": 1, "urls": []}),
++        ]:
++            with (
++                self.subTest(action=action, args=args),
++                self.assertRaises(TorrentError),
++            ):
++                validated(action, args)
++
++    def test_explicit_selection_and_false_and_zero(self):
++        args = dict(
++            inspection_id=ID,
++            metadata_revision=1,
++            selected_file_ids=[0],
++            priorities={"0": 4},
++            destination_root_id="downloads",
++            resume_on_boot=False,
++            operation_key=ID,
++        )
++        parsed = validated("download", args)
++        method, path, body = route("download", parsed)
++        self.assertEqual((method, path), ("POST", "torrents"))
++        self.assertNotIn("operation_key", body)
++        self.assertIs(body["resume_on_boot"], False)
++        self.assertEqual(body["selected_file_ids"], [0])
++        cfg = canvas_config(
++            {
++                "action": "download",
++                "arguments": json.dumps(args),
++                "target_agents": ["ender_1"],
++            }
++        )
++        self.assertEqual(json.loads(cfg["arguments"]), args)
++        self.assertEqual(cfg["target_agents"], ["ender_1"])
++
++    def test_writes_use_distinct_routes(self):
++        for action, expected in (
++            ("stop", ("POST", "torrents/" + ID + "/actions")),
++            ("remove_job", ("DELETE", "torrents/" + ID)),
++            ("delete_preview", ("POST", "content-deletion-previews")),
++            ("delete_content", ("POST", "content-deletions")),
++        ):
++            args = {
++                "preview_id" if action == "delete_content" else "job_id": ID,
++                "revision": 2,
++            }
++            method, path, body = route(action, validated(action, args))
++            self.assertEqual((method, path), expected)
++            self.assertNotIn("revision", body or {})
++
++    def test_typed_tool_refuses_unknown_input_before_launch(self):
++        def unexpected(*a, **kw):
++            self.fail("Refused input reached the launcher")
++
++        wrapper = build_tool(SPEC, unexpected, json.dumps)
++        for raw in (
++            {"request": "stop everything"},
++            {"action": "list", "permission": True},
++            {"action": "list", "arguments": {"password": "secret"}},
++        ):
++            answer = json.loads(wrapper.invoke(raw))
++            self.assertEqual(answer["status"], "refused")
++            self.assertNotIn("secret", str(answer))
++
++    def test_pool_binding_rejects_a_second_account(self):
++        def account(pk):
++            return SimpleNamespace(user=SimpleNamespace(pk=pk, is_authenticated=True))
++
++        with tempfile.TemporaryDirectory() as d:
++            protect_pool(account(5), d, claim=True)
++            protect_pool(account(5), d)
++            with self.assertRaises(PermissionDenied):
++                protect_pool(account(6), d, claim=True)
++            with self.assertRaises(PermissionDenied):
++                protect_pool(account(6), d)
++
++    def test_model_schema_lists_all_actions(self):
++        from .torrenter_tool import TorrenterInput
++
++        actions = TorrenterInput.model_json_schema()["properties"]["action"]["enum"]
++        self.assertEqual(set(actions), set(FIELDS))
++
++    def test_exec_report_and_gate(self):
++        from .mcp_agent import _ASK_EXECS_REQUIRED_TOOLS, _resolve_exec_report_spec
++        from .tools import tool_gate_table
++
++        self.assertIn(SPEC.tool_name, _ASK_EXECS_REQUIRED_TOOLS)
++        self.assertEqual(
++            _resolve_exec_report_spec(SPEC.tool_name), ("torrenter", "Torrenter")
++        )
++        self.assertIn(
++            ("chat-agent-torrenter", "Torrenter"),
++            [(t, a) for t, a, _ in tool_gate_table()],
++        )
++
++
++class AccountTests(TestCase):
++    @classmethod
++    def setUpTestData(cls):
++        cls.alice = get_user_model().objects.create_user("torrenter-a")
++        cls.bob = get_user_model().objects.create_user("torrenter-b")
++        cls.profile = TorrenterProfile.objects.create(user=cls.alice)
++        ChatAgentRun.objects.create(
++            runId=ID,
++            owner=cls.alice,
++            templateAgentDir="torrenter",
++            toolDescription=SPEC.tool_description,
++            status="completed",
++        )
++
++    def test_cross_account_run_id_prefix_list_and_absent_identity(self):
++        for identity in (self.bob.pk, None, self.alice.pk):
++            token = bind_user(identity)
++            try:
++                visible = identity == self.alice.pk
++                self.assertEqual(bool(get_chat_agent_run(ID)), visible)
++                self.assertEqual(bool(get_chat_agent_run(ID[:8])), visible)
++                self.assertEqual(
++                    any(r.pk == ID for r in list_chat_agent_runs()), visible
++                )
++            finally:
++                unbind_user(token)
++
++    def test_unenrolled_user_and_anonymous_source(self):
++        url = reverse("torrenter_sources")
++        self.assertEqual(self.client.get(url).status_code, 302)
++        self.client.force_login(self.bob)
++        with patch("agent.torrenter_views.client.session", side_effect=AssertionError):
++            res = self.client.post(url, {"magnet": "magnet:?xt=urn:btih:" + "a" * 40})
++        self.assertContains(res, "enroll_torrenter", status_code=400)
++
++    def test_chat_replaces_private_magnet_before_history(self):
++        magnet = "magnet:?xt=urn:btih:" + "a" * 40 + "&tr=private_token"
++        with patch("agent.agents.torrenter.sources.stage", return_value=ID) as store:
++            msg = stage_chat_magnets(self.alice.pk, "Inspect " + magnet)
++        store.assert_called_once_with(str(self.profile.account), "magnet", magnet)
++        self.assertIn(ID, msg)
++        self.assertNotIn("private_token", msg)
++
++    def test_source_forms_escape_names_and_keep_input_out_of_response(self):
++        self.client.force_login(self.alice)
++        with (
++            patch("agent.torrenter_views.client.session", return_value="local-token"),
++            patch(
++                "agent.torrenter_views.client.request",
++                return_value=(
++                    201,
++                    dict(
++                        inspection_id=ID,
++                        phase="ready",
++                        metadata_revision=1,
++                        name="<script>unsafe</script>",
++                        files=[{"id": 0, "path": "example", "size": 8}],
++                    ),
++                ),
++            ) as api,
++        ):
++            res = self.client.post(
++                reverse("torrenter_sources"), {"magnet": "magnet:?private"}
++            )
++        api.assert_called_once()
++        self.assertContains(res, ID)
++        self.assertContains(res, "&lt;script&gt;")
++        self.assertNotContains(res, "magnet:?private")
++        self.assertNotContains(res, "local-token")
++
++
++class RecoveryTests(SimpleTestCase):
++    def test_boundary_piece_bytes_only_become_selected_bytes_after_publication(self):
++        from .agents.torrenter.torrenter import report_selected_bytes
++
++        for completed, expected in ((None, None), ("2026-10-31T00:00:00Z", 1514)):
++            row = {
++                "selected_bytes": 1514,
++                "verified_bytes": 131072,
++                "completed_at": completed,
++            }
++            report_selected_bytes(row)
++            self.assertEqual(row["verified_bytes"], expected)
++            self.assertEqual(row["engine_verified_bytes"], 131072)
++
++    def test_reanimation_reattaches_instead_of_repeating_an_accepted_mutation(self):
++        import os
++        from pathlib import Path
++        from .agents.torrenter import torrenter as worker
++
++        fields = {"job_id": ID, "revision": 1}
++        response = {"operation_id": "b" * 32, "job_id": ID, "phase": "accepted"}
++        with (
++            tempfile.TemporaryDirectory() as d,
++            patch.object(worker, "HERE", Path(d)),
++            patch.object(worker, "installation", return_value="test-installation"),
++            patch.object(worker, "session", return_value="test-session"),
++            patch.object(worker, "request") as api,
++        ):
++            api.return_value = (202, response)
++            first = worker.execute("stop", fields, "test-profile")
++            api.return_value = (200, dict(response, phase="succeeded"))
++            with patch.dict(os.environ, {"AGENT_REANIMATED": "1"}):
++                later = worker.execute("stop", fields, "test-profile")
++                with self.assertRaises(TorrentError):
++                    worker.execute("pause", fields, "test-profile")
++            self.assertEqual(api.call_count, 2)
++            self.assertEqual(
++                api.call_args.args[:2],
++                ("GET", "operations/" + response["operation_id"]),
++            )
++            self.assertEqual(later["operation_key"], first["operation_key"])
++            self.assertEqual(later["phase"], "succeeded")
+diff --git a/antes/Tlamatini/agent/tools.py b/despues/Tlamatini/agent/tools.py
+index e8829de..6d08ad8 100644
+--- a/antes/Tlamatini/agent/tools.py
++++ b/despues/Tlamatini/agent/tools.py
+@@ -2524,6 +2524,8 @@ _PRE_LAUNCH_PREVIEW_SECRET_LEAF_PATTERNS = (
+ )
+ 
+ _PRE_LAUNCH_PREVIEW_BY_TEMPLATE = {
++    'torrenter': {'title': 'TORRENTER JOBS ACTION', 'body': ('action', 'action'),
++                  'params': ()},
+     # --- document / presentation authoring ------------------------------
+     # PPTXer gets a preview because a run has a real COST worth showing first:
+     # it writes a .pptx plus a folder of rendered PNGs to a free-form path, and
+@@ -3052,7 +3054,20 @@ def _launch_wrapped_chat_agent(spec, request, *, auto_diagnose=True, config_over
+     # BEFORE applying the LLM's assignments, so an explicit per-call value wins.
+     runtime_config = _seed_global_agent_defaults(spec.template_dir, runtime_config)
+ 
+-    if config_overrides is not None:
++    if spec.template_dir == "torrenter":
++        from .agents.torrenter.contract import validated
++        from .context_governor import current_user
++        from .torrenter_bridge import profile_for
++        try:
++            profile_for(current_user())
++            if not isinstance(config_overrides, dict) or set(config_overrides) != {"action", "arguments"}:
++                raise ValueError("Use the typed Torrenter tool.")
++            fields = validated(config_overrides["action"], config_overrides["arguments"])
++        except ValueError as exc:
++            return _tool_output({"status":"refused", "error_kind":"request", "message":str(exc)})
++        runtime_config.update(action=config_overrides["action"], arguments=fields, source_agents=[], target_agents=[])
++        assignment_error, assignment_notes = None, []
++    elif config_overrides is not None:
+         runtime_config, assignment_error, assignment_notes = _apply_typed_overrides_to_config(
+             runtime_config,
+             config_overrides,
+@@ -3355,7 +3370,11 @@ def _launch_wrapped_chat_agent(spec, request, *, auto_diagnose=True, config_over
+         except Exception:
+             pass
+ 
+-    if run.status == "running":
++    if spec.template_dir == "torrenter" and run.status in {"completed", "failed"}:
++        payload.setdefault("message", "Jobs accepted the operation. Read its receipt and job state."
++                           if payload.get("action_status") == "accepted" else "Torrenter returned the observed Jobs result.")
++        payload["retryable"] = False
++    elif run.status == "running":
+         payload["message"] = (
+             f"{spec.display_name} started in an isolated runtime copy and is still running. "
+             "Use chat_agent_run_status, chat_agent_run_log, and chat_agent_run_stop with this run_id."
+@@ -3424,6 +3443,12 @@ def _build_wrapped_chat_agent_tool(spec):
+     if cached is not None:
+         return cached
+ 
++    if spec.template_dir == "torrenter":
++        from .torrenter_tool import build_tool
++        typed = build_tool(spec, _launch_wrapped_chat_agent, _tool_output)
++        _WRAPPED_CHAT_AGENT_TOOLS[spec.tool_name] = typed
++        return typed
++
+     if spec.template_dir == "terminater":
+         # Terminater takes one typed argument per setting, never a sentence torn apart by a
+         # regex (terminater_tool.py).  If the typed tool cannot be built the sentence tool below
+diff --git a/despues/Tlamatini/agent/torrenter_bridge.py b/despues/Tlamatini/agent/torrenter_bridge.py
+new file mode 100644
+index 0000000..70a91d3
+--- /dev/null
++++ b/despues/Tlamatini/agent/torrenter_bridge.py
+@@ -0,0 +1,101 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""Only authenticated server launch sites can bind a Jobs profile to a pool."""
++
++import re
++from django.core.exceptions import PermissionDenied
++import json
++from pathlib import Path
++
++from .agents.torrenter.client import scope_grant
++from .agents.torrenter.contract import TorrentError
++from .models import TorrenterProfile
++
++
++def profile_for(user_id):
++    if not user_id:
++        raise TorrentError("Sign in to Tlamatini to use Torrenter.")
++    profile = (
++        TorrenterProfile.objects.filter(user_id=user_id)
++        .values_list("account", flat=True)
++        .first()
++    )
++    if profile is None:
++        raise TorrentError(
++            "Ask the Windows operator to run manage.py enroll_torrenter for this account."
++        )
++    return str(profile)
++
++
++def canvas_config(config):
++    from .agents.torrenter.contract import validated
++
++    if set(config) - {"action", "arguments", "source_agents", "target_agents"}:
++        raise TorrentError(
++            "Torrenter accepts action, arguments and canvas connections only."
++        )
++    raw = config.get("arguments", {})
++    args = json.loads(raw) if isinstance(raw, str) else raw
++    config["arguments"] = json.dumps(
++        validated(config["action"], args), separators=(",", ":")
++    )
++    return config
++
++
++_MAGNET = re.compile(r"""magnet:\?[^\s<>"'\x60]+""", re.IGNORECASE)
++
++
++def stage_chat_magnets(user_id, message):
++    from .agents.torrenter.sources import stage
++
++    profile = profile_for(user_id)
++    matches = list(_MAGNET.finditer(message))
++    if len(matches) > 8:
++        raise TorrentError("Use up to eight magnets in one message.")
++
++    def replace(match):
++        ref = stage(profile, "magnet", match.group())
++        return "[Torrenter source_ref=" + ref + " for action inspect]"
++
++    return _MAGNET.sub(replace, message)
++
++
++def protect_pool(request, pool, *, claim=False):
++    """Bind a canvas containing Torrenter to its authenticated creator until the pool is cleared."""
++    path = Path(pool)
++    marker = path / ".torrenter-owner"
++    user_id = (
++        str(request.user.pk)
++        if getattr(getattr(request, "user", None), "is_authenticated", False)
++        else ""
++    )
++    if claim:
++        if not user_id:
++            raise PermissionDenied("Sign in to use Torrenter.")
++        path.mkdir(parents=True, exist_ok=True)
++        try:
++            with marker.open("x", encoding="ascii") as out:
++                out.write(user_id)
++        except FileExistsError:
++            pass
++    try:
++        owner = marker.read_text(encoding="ascii")
++    except FileNotFoundError:
++        return
++    if not user_id or owner != user_id:
++        raise PermissionDenied("This flow belongs to another Tlamatini account.")
++
++
++def flow_env(request, pool, env):
++    env.pop("TLAMATINI_TORRENTER_GRANT", None)
++    if request.user.is_authenticated and any(
++        Path(pool).glob("torrenter_*/torrenter.py")
++    ):
++        protect_pool(request, pool, claim=True)
++        profile = (
++            TorrenterProfile.objects.filter(user_id=request.user.pk)
++            .values_list("account", flat=True)
++            .first()
++        )
++        if profile:
++            env["TLAMATINI_TORRENTER_GRANT"] = scope_grant(str(profile), pool)
++    return env
+diff --git a/despues/Tlamatini/agent/torrenter_tool.py b/despues/Tlamatini/agent/torrenter_tool.py
+new file mode 100644
+index 0000000..849a7e7
+--- /dev/null
++++ b/despues/Tlamatini/agent/torrenter_tool.py
+@@ -0,0 +1,64 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""The model gets actions and explicit arguments. HTTP destinations and credentials are private."""
++
++import uuid
++from typing import Literal
++
++from langchain_core.tools import StructuredTool
++from pydantic import BaseModel, ConfigDict, Field
++
++from .agents.torrenter.contract import DURABLE, FIELDS, TorrentError, validated
++from .context_governor import current_user
++from .torrenter_bridge import profile_for
++
++
++class TorrenterInput(BaseModel):
++    model_config = ConfigDict(extra="forbid", strict=True)
++    action: Literal[tuple(FIELDS)]
++    arguments: dict = Field(
++        default_factory=dict,
++        description=(
++            "Named JSON fields for the chosen action. IDs are the Jobs IDs, revision is the last observed integer. "
++            + " | ".join(
++                k + "(" + r + (" [" + o + "]" if o else "") + ")"
++                for k, (r, o) in FIELDS.items()
++            )
++            + ". A durable write may take operation_key (32 lowercase hex), reused only for an identical retry."
++        ),
++    )
++
++
++def build_tool(spec, launch, output):
++    def refuse(message):
++        return output(
++            {
++                "status": "refused",
++                "success": False,
++                "error_kind": "request",
++                "message": message,
++            }
++        )
++
++    def run(action, arguments=None):
++        try:
++            fields = validated(action, arguments or {})
++            profile_for(current_user())
++        except TorrentError as exc:
++            return refuse(str(exc))
++        if action in DURABLE:
++            fields.setdefault("operation_key", uuid.uuid4().hex)
++        return launch(
++            spec,
++            "Torrenter " + action,
++            config_overrides={"action": action, "arguments": fields},
++        )
++
++    return StructuredTool.from_function(
++        func=run,
++        name=spec.tool_name,
++        description=spec.purpose,
++        args_schema=TorrenterInput,
++        handle_validation_error=lambda _: refuse(
++            "Use a documented action and a named arguments object."
++        ),
++    )
+diff --git a/despues/Tlamatini/agent/torrenter_views.py b/despues/Tlamatini/agent/torrenter_views.py
+new file mode 100644
+index 0000000..24bb574
+--- /dev/null
++++ b/despues/Tlamatini/agent/torrenter_views.py
+@@ -0,0 +1,57 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""Stage private torrent metadata directly from the authenticated browser to Jobs."""
++
++import base64
++
++from django.contrib.auth.decorators import login_required
++from django.shortcuts import render
++from django.views.decorators.cache import never_cache
++from django.views.decorators.csrf import csrf_protect
++from django.views.decorators.debug import sensitive_post_parameters
++from django.views.decorators.http import require_http_methods
++
++from .agents.torrenter import client
++from .agents.torrenter.sources import stage
++from .agents.torrenter.contract import TorrentError
++from .torrenter_bridge import profile_for
++
++
++@login_required
++@never_cache
++@csrf_protect
++@sensitive_post_parameters("magnet", "endpoints")
++@require_http_methods(["GET", "POST"])
++def sources(request):
++    context = {}
++    status = 200
++    if request.method == "POST":
++        try:
++            profile = profile_for(request.user.pk)
++            if request.POST.get("source_kind") in ("trackers", "web_seeds"):
++                kind = request.POST["source_kind"]
++                context["source_ref"] = stage(
++                    profile, kind, request.POST.get("endpoints", "")
++                )
++                context["source_action"] = "set_" + kind
++                return render(request, "agent/torrenter_sources.html", context)
++            upload = request.FILES.get("torrent")
++            magnet = request.POST.get("magnet", "").strip()
++            if bool(upload) == bool(magnet):
++                raise TorrentError("Choose a .torrent file or enter one magnet link.")
++            if upload:
++                if not 0 < upload.size <= 1024 * 1024:
++                    raise TorrentError("The torrent metadata must be 1 byte to 1 MiB.")
++                body = {"metainfo": base64.b64encode(upload.read()).decode("ascii")}
++            else:
++                if len(magnet) > 8192 or not magnet.lower().startswith("magnet:?"):
++                    raise TorrentError(
++                        "Enter a valid magnet link of up to 8192 characters."
++                    )
++                body = {"magnet": magnet}
++            _, context["inspection"] = client.request(
++                "POST", "inspections", body, bearer=client.session(profile)
++            )
++        except TorrentError as exc:
++            context["error"] = str(exc)
++            status = 400
++    return render(request, "agent/torrenter_sources.html", context, status=status)
+diff --git a/antes/Tlamatini/agent/urls.py b/despues/Tlamatini/agent/urls.py
+index dddee91..676aa84 100644
+--- a/antes/Tlamatini/agent/urls.py
++++ b/despues/Tlamatini/agent/urls.py
+@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect
+ from django.views.decorators.http import require_POST
+ 
+ from . import views, flow_file_views, model_brain_views, usage_views, terminal_views
+-from . import canvas_file_views, interaction_settings
++from . import canvas_file_views, interaction_settings, torrenter_views
+ from .pdf_context_views import prepare_pdf_context_view, pdf_context_status_view, cancel_pdf_context_view
+ 
+ 
+@@ -29,6 +29,7 @@ def secure_post(view_func):
+ 
+ 
+ urlpatterns = [
++    path("torrenter/sources/", torrenter_views.sources, name="torrenter_sources"),
+     path('interaction-settings/', secure_get(csrf_protect(interaction_settings.settings_view)), name='interaction_settings'),
+     path('canvas/save/', secure_post(canvas_file_views.save), name='canvas_save'),
+     path('canvas/read/', secure_post(canvas_file_views.read), name='canvas_read'),
+@@ -173,6 +174,7 @@ urlpatterns = [
+     path('update_pdfer_connection/<str:agent_name>/', secure_post(views.update_pdfer_connection_view), name='update_pdfer_connection'),
+     path('update_latexer_connection/<str:agent_name>/', secure_post(views.update_latexer_connection_view), name='update_latexer_connection'),
+     path('update_pptxer_connection/<str:agent_name>/', secure_post(views.update_pptxer_connection_view), name='update_pptxer_connection'),
++    path('update_torrenter_connection/<str:agent_name>/', secure_post(views.update_terminater_connection_view), name='update_torrenter_connection'),
+     path('update_terminater_connection/<str:agent_name>/', secure_post(views.update_terminater_connection_view), name='update_terminater_connection'),
+     # Terminater: the loopback API is token-authenticated (no session, no CSRF cookie) and
+     # deliberately NOT wrapped in secure_post; the state view is a normal login-protected GET.
+diff --git a/antes/Tlamatini/agent/views.py b/despues/Tlamatini/agent/views.py
+index f4b4b91..0a31efa 100644
+--- a/antes/Tlamatini/agent/views.py
++++ b/despues/Tlamatini/agent/views.py
+@@ -594,6 +594,9 @@ def _find_path(folder_name) -> Optional[str]:
+     agent_dir_path = os.path.join(module_dir, 'agents', folder_name)
+     return agent_dir_path
+ 
++from .torrenter_bridge import flow_env as torrenter_flow_env, protect_pool
++
++
+ def get_pool_path(request):
+     """
+     Get the path to the agent pool for the current session.
+@@ -607,11 +610,18 @@ def get_pool_path(request):
+     
+     if session_id:
+         # Sanitize session_id to prevent path traversal
+-        session_id = os.path.basename(session_id)
+-        return os.path.join(pools_base, session_id)
++        if (session_id != os.path.basename(session_id) or ":" in session_id
++                or session_id.endswith((".", " ")) or session_id.lower() == "_chat_runs_"):
++            from django.core.exceptions import PermissionDenied
++            raise PermissionDenied("Invalid canvas session.")
++        pool = os.path.join(pools_base, session_id)
++        protect_pool(request, pool)
++        return pool
+     else:
+         # Fallback for requests without session ID (e.g. legacy or direct browser access without JS)
+-        return os.path.join(pools_base, 'default')
++        pool = os.path.join(pools_base, 'default')
++        protect_pool(request, pool)
++        return pool
+ 
+ 
+ def _parse_canvas_agent_name(agent_name: str) -> tuple[str, str]:
+@@ -980,6 +990,8 @@ def deploy_agent_template_view(request, agent_name):
+         
+         # Construct pool destination path
+         pool_base_path = get_pool_path(request)
++        if base_folder_name == "torrenter":
++            protect_pool(request, pool_base_path, claim=True)
+         pool_dir = os.path.join(pool_base_path, pool_folder_name)
+         
+         print(f"[DEPLOY] pool_dir: {pool_dir}")
+@@ -1200,6 +1212,8 @@ def save_agent_config_view(request, agent_name):
+         
+         # Construct pool destination path
+         pool_base_path = get_pool_path(request)
++        if base_folder_name == "torrenter":
++            protect_pool(request, pool_base_path, claim=True)
+         pool_dir = os.path.join(pool_base_path, pool_folder_name)
+         
+         config_path = os.path.join(pool_dir, 'config.yaml')
+@@ -1238,6 +1252,12 @@ def save_agent_config_view(request, agent_name):
+         
+         # Merge: existing config is base, user updates override
+         merged_config = deep_merge(existing_config, config_data)
++        if base_folder_name == "torrenter":
++            from .torrenter_bridge import canvas_config
++            try:
++                merged_config = canvas_config(merged_config)
++            except ValueError as exc:
++                return HttpResponse(json.dumps({"success":False,"message":str(exc)}), status=400, content_type="application/json")
+ 
+         # Sanitize Ender config: remove any unknown keys (e.g., corrupted "utput_agents")
+         if base_folder_name == 'ender':
+@@ -2628,7 +2648,7 @@ def execute_starter_agent_view(request, agent_name):
+         
+         # Execute the starter agent
+         python_cmd = get_python_command()
+-        agent_env = get_agent_env()
++        agent_env = torrenter_flow_env(request, pool_base_path, get_agent_env())
+         
+         if sys.platform.startswith('win'):
+             # Windows: detached, no console — without CREATE_NO_WINDOW the
+@@ -3293,7 +3313,10 @@ def check_chat_runtimes_status_view(request):
+                 "runtimes": {}
+             }), content_type='application/json')
+ 
++        # Torrenter has no Asker/Notifier popup. Its owned runs go through the scoped run tools.
+         for entry_name in os.listdir(runtime_root):
++            if entry_name.startswith("torrenter_"):
++                continue
+             entry_path = os.path.join(runtime_root, entry_name)
+             if not os.path.isdir(entry_path):
+                 continue
+@@ -3662,7 +3685,7 @@ def restart_agent_view(request, agent_name):
+             process = subprocess.Popen(
+                 python_cmd + [script_path],
+                 cwd=agent_dir,
+-                env=get_agent_env(),
++                env=torrenter_flow_env(request, pool_base_path, get_agent_env()),
+                 creationflags=(
+                     subprocess.CREATE_NEW_PROCESS_GROUP
+                     | subprocess.CREATE_NO_WINDOW
+@@ -3677,7 +3700,7 @@ def restart_agent_view(request, agent_name):
+             process = subprocess.Popen(
+                 python_cmd + [script_path],
+                 cwd=agent_dir,
+-                env=get_agent_env(),
++                env=torrenter_flow_env(request, pool_base_path, get_agent_env()),
+                 start_new_session=True
+             )
+         
+@@ -4023,6 +4046,7 @@ def restart_agents_view(request):
+                     process = subprocess.Popen(
+                         cmd,
+                         cwd=agent_dir,
++                        env=torrenter_flow_env(request, pool_base_path, get_agent_env()),
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL,
+                         stdin=subprocess.DEVNULL,
+@@ -4032,6 +4056,7 @@ def restart_agents_view(request):
+                     process = subprocess.Popen(
+                         cmd,
+                         cwd=agent_dir,
++                        env=torrenter_flow_env(request, pool_base_path, get_agent_env()),
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL,
+                         stdin=subprocess.DEVNULL,
+@@ -4127,7 +4152,7 @@ def reanimate_agents_view(request):
+                 print(f"[REANIMATE] Starting: {' '.join(cmd)}")
+ 
+                 # Build env with AGENT_REANIMATED=1 so agent preserves logs & state
+-                agent_env = os.environ.copy()
++                agent_env = torrenter_flow_env(request, pool_base_path, get_agent_env())
+                 agent_env['AGENT_REANIMATED'] = '1'
+ 
+                 if sys.platform.startswith('win'):
+@@ -9079,7 +9104,7 @@ def update_terminater_connection_view(request, agent_name):
+         if not os.path.exists(config_path):
+             return HttpResponse(json.dumps({
+                 "success": False,
+-                "message": f"Terminater config not found: {config_path}"
++                "message": f"Agent config not found: {config_path}"
+             }), content_type='application/json', status=404)
+ 
+         with open(config_path, 'r', encoding='utf-8') as f:
+diff --git a/despues/Tlamatini/tests_e2e/torrenter_live.py b/despues/Tlamatini/tests_e2e/torrenter_live.py
+new file mode 100644
+index 0000000..d38c6a9
+--- /dev/null
++++ b/despues/Tlamatini/tests_e2e/torrenter_live.py
+@@ -0,0 +1,158 @@
++# Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1
++"""Visible development acceptance for the installed Jobs service and an enrolled test account."""
++
++import argparse
++import getpass
++import hashlib
++import json
++import os
++import sys
++import time
++import urllib.request
++import uuid
++from pathlib import Path
++
++from playwright.sync_api import sync_playwright
++import win32console
++import win32gui
++
++
++def metainfo():
++    url = "https://raw.githubusercontent.com/python/cpython/v3.12.10/LICENSE"
++    with urllib.request.urlopen(url, timeout=15) as response:
++        payload = response.read(16385)
++    expected = "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf"
++    assert len(payload) == 13936 and hashlib.sha256(payload).hexdigest() == expected
++
++    def string(data):
++        return str(len(data)).encode() + b":" + data
++
++    # Single-piece v1 metainfo; salt identifies this test's own disposable transfer.
++    info = (
++        b"d6:lengthi13936e4:name7:LICENSE12:piece lengthi16384e6:pieces20:"
++        + hashlib.sha1(payload).digest()
++        + b"6:source32:"
++        + uuid.uuid4().hex.encode()
++        + b"e"
++    )
++    return b"d4:info" + info + b"8:url-listl" + string(url.encode()) + b"ee", expected
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--username", required=True)
++    parser.add_argument("--port", type=int, default=18084)
++    args = parser.parse_args()
++    console = win32console.GetConsoleWindow()
++    if (
++        not console
++        or not win32gui.IsWindowVisible(console)
++        or win32gui.IsIconic(console)
++        or console != win32gui.GetForegroundWindow()
++    ):
++        parser.error(
++            "Run from a visible, foreground development console on the interactive desktop."
++        )
++    password = os.environ.pop(
++        "TLAMATINI_TORRENTER_TEST_PASSWORD", None
++    ) or getpass.getpass("Development account password: ")
++    torrent, expected = metainfo()
++    base = f"http://127.0.0.1:{args.port}"
++    with sync_playwright() as pw:
++        browser = pw.chromium.launch(
++            channel="chrome", headless=False, args=["--start-maximized"]
++        )
++        page = browser.new_page(no_viewport=True)
++        page.bring_to_front()
++        for _ in range(80):
++            hwnd = win32gui.GetForegroundWindow()
++            if (
++                win32gui.IsWindowVisible(hwnd)
++                and not win32gui.IsIconic(hwnd)
++                and win32gui.GetClassName(hwnd).startswith("Chrome_WidgetWin")
++                and "Chrome" in win32gui.GetWindowText(hwnd)
++            ):
++                break
++            time.sleep(0.1)
++        else:
++            raise RuntimeError("Cannot verify foreground Chrome.")
++        page.goto(base + "/?next=/agent/torrenter/sources/")
++        page.locator("#id_username").fill(args.username)
++        page.locator("#id_password").fill(password)
++        page.get_by_role("button", name="Login").click()
++        page.locator("#torrent").set_input_files(
++            {
++                "name": "acceptance.torrent",
++                "mimeType": "application/x-bittorrent",
++                "buffer": torrent,
++            }
++        )
++        page.get_by_role("button", name="Inspect metadata").click()
++        inspection = page.locator("#inspection-id").inner_text(timeout=18000)
++        page.get_by_text("LICENSE", exact=True).first.wait_for()
++        page.wait_for_timeout(2500)
++        browser.close()
++    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tlamatini.settings")
++    import django
++
++    django.setup()
++    from django.contrib.auth import authenticate
++    from agent.chat_agent_registry import WRAPPED_CHAT_AGENT_SPECS
++    from agent.context_governor import bind_user, unbind_user
++    from agent.tools import _build_wrapped_chat_agent_tool
++
++    account = authenticate(username=args.username, password=password)
++    if account is None:
++        parser.error("Sign in with an existing enrolled development account.")
++    spec = next(s for s in WRAPPED_CHAT_AGENT_SPECS if s.key == "torrenter")
++    wrapper = _build_wrapped_chat_agent_tool(spec)
++
++    def call(action, **fields):
++        result = json.loads(wrapper.invoke({"action": action, "arguments": fields}))
++        if not result.get("success"):
++            raise RuntimeError(result.get("message", "Torrenter action failed"))
++        return result["response_body"]
++
++    binding = bind_user(account.pk)
++    try:
++        meta = call("inspection", inspection_id=inspection)
++        assert meta["phase"] == "ready" and [item["id"] for item in meta["files"]] == [
++            0
++        ]
++        fields = dict(
++            inspection_id=inspection,
++            metadata_revision=meta["metadata_revision"],
++            selected_file_ids=[0],
++            destination_root_id="downloads",
++            operation_key=uuid.uuid4().hex,
++        )
++        receipt = call("download", **fields)
++        job = receipt["job_id"]
++        print(
++            "Admitted test job", job, "operation", receipt["operation_id"], flush=True
++        )
++        assert call("download", **fields)["operation_id"] == receipt["operation_id"]
++        for _ in range(12):
++            state = call("wait", job_id=job, wait_seconds=5)
++            manifest = call("manifest", job_id=job)
++            print(state["phase"], state["verified_bytes"], "verified bytes", flush=True)
++            if manifest["verified"]:
++                break
++        assert manifest["verified"] and len(manifest["files"]) == 1
++        assert (
++            manifest["files"][0]["sha256"] == expected
++            and manifest["files"][0]["size"] == 13936
++        )
++        print("PASS independently matched SHA-256", expected, flush=True)
++        print(
++            "Completed test job retained for inspection in XT or Tlamatini:",
++            job,
++            flush=True,
++        )
++    finally:
++        unbind_user(binding)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/antes/Tlamatini/tlamatini/settings.py b/despues/Tlamatini/tlamatini/settings.py
+index 0a0e386..b028bfc 100644
+--- a/antes/Tlamatini/tlamatini/settings.py
++++ b/despues/Tlamatini/tlamatini/settings.py
+@@ -248,7 +248,7 @@ if getattr(sys, 'frozen', False):
+ 
+ # Version stamp for cache-busting of static assets in templates
+ # Override via env var STATIC_VERSION when deploying
+-STATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1'
++STATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1-typing-250-1-torrenter-1'
+ 
+ # WhiteNoise configuration: dev vs release.
+ # NOTE (speed batch, 2026-07-02): the old per-branch STATICFILES_STORAGE lines
+diff --git a/antes/agents_descriptions.md b/despues/agents_descriptions.md
+index 548ec70..5d72e38 100644
+--- a/antes/agents_descriptions.md
++++ b/despues/agents_descriptions.md
+@@ -190,6 +190,7 @@ These are the agents that *do real work* — running commands, hitting APIs, pro
+ | **VideoPlayer** | PLAYS a video file (WITH audio) on a chosen DISPLAY (screen) — the on-screen sibling of AudioPlayer (speakers). Decodes any ffmpeg container (.mp4/.mov/.mkv/.avi/.webm) via `ffpyplayer` (whose pip wheel bundles ffmpeg+SDL — no external ffmpeg, no runtime download) and draws the window with the already-bundled OpenCV; if ffpyplayer is unavailable it falls back to SILENT OpenCV-only video (volume becomes a no-op, logged). Set `video_file` to the path of the file to play; the full absolute path of the played file is logged and emitted. `display_index` picks the monitor (-1 = primary, the default; the agent logs the numbered display list at startup). `volume_percent` is the audio volume (100 = full default, 50 = half, 0 = muted; over 100 capped at 100). `time_played` sets how many SECONDS to play: 0 (default) plays the WHOLE video once; a positive value plays EXACTLY that long — a longer video is TRUNCATED, a shorter one is LOOPED (repeated to fill the time with a final partial segment). `window_width`/`window_height` set the window size in pixels (0 = the video's native size); `fullscreen: true` fills the chosen display (ignoring the window size); `keep_aspect: true` (default) letterboxes instead of stretching. **Additional-params analysis**: it OMITS playback-speed/fps (native timing is used), decode-resolution/codec (intrinsic to the file; the window size controls only display scaling), and audio-track/subtitle selection (advanced) — all rarely needed. Emits an `INI_SECTION_VIDEOPLAYER` block (`input_path`, `input_dir`, `filename`, `display_index`, `display_geometry`, `video_width`, `video_height`, `window_width`, `window_height`, `fullscreen`, `volume_percent`, `backend`, `has_audio`, `file_duration_seconds`, `time_played_requested`, `played_seconds`, `play_mode`, `loops`, `partial_segment`, `format`, `status`) so a downstream Parametrizer/Forker can read the exact path, the time played, and branch on `{status}`; always triggers `target_agents` (success or failure). Observational/output (mutates no persistent state) like Shoter/AudioPlayer, but it STILL appears in the Exec Report (2026-06-07: EVERY Multi-Turn agent does). The visual-canvas counterpart of the `chat_agent_videoplayer` Multi-Turn tool. |
+ | **Talker** | TEXT-TO-SPEECH (TTS): SPEAKS text aloud through a system audio OUTPUT device (speakers) by driving an OLLAMA connection that runs a neural TTS model (default `Orpheus-3b-FT`) — the voice-synthesis sibling of the media family (AudioPlayer plays an existing FILE; Talker GENERATES speech from text). Set `input_text` to the words to pronounce. **FEMALE VOICE ONLY (Tlamatini is female): a male voice is FORBIDDEN BY DESIGN, with no override.** `voice` picks one of the permitted FEMALE Orpheus voices: tara [default], leah, jess, mia, zoe (`gender` accepts only `female`, used when `voice` is empty). Requesting a male voice (leo/dan/zac) or `gender: male` makes Talker close its execution entirely and report "male voice is forbidden by design — NOW CLOSING.. BYE" — it never substitutes and never sounds male. `emotion` weaves a paralinguistic tag into the speech (laugh/chuckle/sigh/cough/sniffle/groan/yawn/gasp) — or inline `<laugh>` etc. directly in `input_text`. `language` passes a hint to the model (the base model is English-only; a multilingual fine-tune speaks others). `model`/`ollama_url`/`ollama_token` configure the Ollama connection; generation knobs are `temperature`, `top_p`, `top_k`, `min_p`, `repetition_penalty` (keep ≥ 1.1), `max_tokens`, `seed`. The model streams audio TOKENS that are decoded to a 24 kHz waveform by the SNAC neural codec; the WAV is saved to `output_dir` (default the user's Music folder under `TlamatiniTalker`) and played on the speakers (`device_index`/`device_name`/`volume_percent`/`sample_rate`; `play_audio: false` saves without playing). Emits an `INI_SECTION_TALKER` block (`output_path`, `output_dir`, `filename`, `model`, `language`, `voice`, `gender`, `emotion`, `sample_rate`, `audio_seconds`, `char_count`, `played`, `status`) so a downstream Parametrizer/Forker can read the spoken-WAV path and branch on `{status}`; always triggers `target_agents` (success or failure). Observational/output (mutates no persistent state), but it STILL appears in the Exec Report (2026-06-07: EVERY Multi-Turn agent does). **NOTE**: fetching the tokens needs only the stdlib, but rendering audible audio needs `snac` + `torch` (a neural vocoder) installed (`pip install snac torch`); without them Talker saves the audio tokens and reports `status: tokens_only`. The visual-canvas counterpart of the `chat_agent_talker` Multi-Turn tool. |
+ | **Mouser** | Mouse movement, clicks, drags, scrolling, window anchors, and reference-image matching. Explicit `coordinate_space` supports physical screen pixels, desktop offsets, window/client positions, normalized positions, and screenshot-to-screen mapping. Handles negative monitor origins, rejects monitor gaps, checks window focus/point ownership for targeted actions, and refuses ambiguous window/image matches. `movement_type: inspect` returns cursor and monitor geometry without input. Reports `action_status` and observed coordinates; input delivery is not application-outcome verification. Reserved for requested desktop UI work; use File-Creator, Executer, and Pythonxer for file/code tasks. |
++| **Torrenter** | Controls persistent Tlachihuani Jobs downloads for the signed-in account. Review torrent metadata, select files, submit, pause, stop, resume, remove records and read verified manifests. File erasure requires approval in XT. |
+ | **Terminater** | Raises REAL `cmd.exe` / PowerShell terminals — visible terminals inside Tlamatini's Terminals area (Views ▸ Terminals, or Ctrl+`) — where the USER watches the work, can interrupt it, answer a question the command asks, or finish a line Tlamatini only started. The visible sibling of Executer: Executer runs a command and returns text; Terminater TYPES every key like a person (default 50 words per minute, never pasted, never instant) and then reads the output back in full. Config → Live Editor & Terminater controls saved pace, shell, manual Enter, waits, narration and appearance; new flows can use account defaults while older explicit flows remain compatible. Runs ONE `action` per run (`run` is the default: open-or-reuse a terminal, type, wait, read) — `open`, `type`, `send_key`, `wait`, `read`, `commands`, `abort` (Ctrl+C, then the command's processes), `kill`, `force_kill`, `kill_all`, `list`, `focus`, `rename`, `layout` (`tabs`, `tile`, `tile-h`, `tile-v`, `grid`), `watch_user`, `warn_user` and `handover` — and terminals persist between runs, so a flow can open one in one step and close it in another. `<<USER:hint>>` inside the text hands the keyboard to the user at that point (`ping <<USER:host>> -n 2`). A command that hangs (no output for `hang_seconds`) is detected and can be aborted; a deterministic advisor warns about dangerous or mistyped commands. Emits an `INI_SECTION_TERMINATER` block (`status`, `exit_code`, `typed`, `user_part`, `terminal_id`, …) and ALWAYS starts its `target_agents`, so a downstream Forker can branch on `{status}` (`completed`, `command_failed`, `hung`, `operator_required`, `aborted`). Windows 10 1809+ (ConPTY). |
+ | **Windower** | The window manager of the desktop-UI trio (Windower = the window itself, Mouser = clicks inside it, Keyboarder = typing into it). Locates an application window by title and runs ONE lifecycle operation on it — `focus`/raise, `minimize`, `maximize`, `restore`, `move`, `resize`, `move_resize`, `close`, `topmost`/`untopmost`, or `arrange` (snap/tile to a screen region) — or `list`s every open window with its position, size and state. Matching is by `substring` (default), `exact`, or `regex`, with `match_index` to pick among same-titled windows. Implemented self-contained with the Win32 API (pywin32), including the reliable cross-process focus-transfer (AttachThreadInput) ported from Microsoft's Windows-MCP. Emits an `INI_SECTION_WINDOWER` block (`action`, `window_title`, `matched`, `match_count`, `state`, `left`, `top`, `width`, `height`) so a downstream Forker can branch on `{matched}`/`{state}` and Parametrizer can pipe geometry onward; always triggers `target_agents`. **Use Windower — not Mouser — whenever the goal is the window as a whole (bring to front, tile, resize, close by title); Mouser only clicks controls inside a window.** The visual-canvas counterpart of the `chat_agent_windower` Multi-Turn tool. |
+ | **Keyboarder** | Checked Windows keyboard input, bound to one HWND/PID and stopped on foreground focus loss. Supports literal Unicode text (`input_mode: text`) including accents and emoji, plus the existing quoted-text/key/chord sequence syntax. Uses SendInput, checks inserted-event counts, releases owned modifiers on failure, and keeps the corner emergency stop enabled. Reports `action_status`, input counters, and target identity. Input delivery does not verify the focused field or its resulting content. Reserved for requested desktop UI work; use file/execution agents for authoring or running code. |
+diff --git a/antes/build.py b/despues/build.py
+index 1f54ffb..00fcd8a 100644
+--- a/antes/build.py
++++ b/despues/build.py
+@@ -503,6 +503,14 @@ _FROZEN_TERMINATER_MODULES = (
+     "agent.management.commands.check_terminater",
+ )
+ 
++_FROZEN_TORRENTER_MODULES = (
++    "agent.management.commands.enroll_torrenter", "agent.torrenter_tool", "agent.torrenter_views",
++    "agent.torrenter_bridge", "agent.agents.torrenter.client", "agent.agents.torrenter.contract", "agent.agents.torrenter.sources",
++)
++
++# PyInstaller ships these Windows extensions as loose .pyd files outside the PYZ.
++_FROZEN_PYWIN32_EXTENSIONS = ("win32cred", "win32crypt") if os.name == "nt" else ()
++
+ _FROZEN_REQUIRED_AGENT_MODULES = (
+     "agent.interactor", "agent.interactor.context", "agent.interactor.protocol",
+     "agent.interaction_settings", "agent.interaction_narration",
+@@ -536,6 +544,7 @@ _FROZEN_REQUIRED_AGENT_MODULES = (
+     *_FROZEN_PDF_MODULES,          # PDF extraction + optional Image-Interpreter
+     *_FROZEN_PROMPT_FLOW_PANEL_MODULES,
+     *_FROZEN_TERMINATER_MODULES,
++    *_FROZEN_TORRENTER_MODULES,
+ )
+ 
+ 
+@@ -595,7 +604,7 @@ def _read_pyz_module_names(dist_root):
+ 
+ 
+ def verify_frozen_agent_modules(dist_root):
+-    """Assert every module in _FROZEN_REQUIRED_AGENT_MODULES is IN the bundle.
++    """Verify Python modules in the PYZ and pywin32 extensions in the frozen runtime.
+ 
+     Aborts for both absent modules and an unreadable archive. Update the reader
+     for incompatible PyInstaller versions instead of publishing unproven output.
+@@ -605,6 +614,11 @@ def verify_frozen_agent_modules(dist_root):
+     if names is None:
+         raise RuntimeError("Cannot inspect the frozen PYZ archive; runtime carriage is not proven")
+     missing = [m for m in _FROZEN_REQUIRED_AGENT_MODULES if m not in names]
++    internal = Path(dist_root) / "_internal"
++    for module in _FROZEN_PYWIN32_EXTENSIONS:
++        filename = f"{module}.pyd"
++        if not any((path / filename).is_file() for path in (internal / "win32", internal)):
++            missing.append(filename)
+     if missing:
+         print("ERROR: the frozen bundle is MISSING required runtime modules: "
+               + ", ".join(missing))
+@@ -614,6 +628,8 @@ def verify_frozen_agent_modules(dist_root):
+         sys.exit(1)
+     print(f"  OK - all {len(_FROZEN_REQUIRED_AGENT_MODULES)} required runtime "
+           f"module(s) present in the PYZ ({len(names)} modules total).")
++    if _FROZEN_PYWIN32_EXTENSIONS:
++        print(f"  OK - frozen native extensions present: {', '.join(_FROZEN_PYWIN32_EXTENSIONS)}.")
+     return True
+ 
+ 
+@@ -1521,6 +1537,8 @@ def main():
+         *(f'--hidden-import={module}' for module in _FROZEN_PDF_MODULES),
+         *(f'--hidden-import={module}' for module in _FROZEN_PROMPT_FLOW_PANEL_MODULES),
+         *(f'--hidden-import={module}' for module in _FROZEN_TERMINATER_MODULES),
++        *(f'--hidden-import={module}' for module in _FROZEN_TORRENTER_MODULES),
++        *(f'--hidden-import={module}' for module in _FROZEN_PYWIN32_EXTENSIONS),
+         # ── The agent.* modules NOTHING ELSE NAMES (Angela review, 2026-08-16) ──
+         # Every one of these is reached only through a FAIL-OPEN import:
+         #   external_mcp_manager.py  `try: from . import runtime_provisioner
+@@ -2130,6 +2148,13 @@ def main():
+                 print(f"-> Running: {manage_exe.name} {cmd_display}")
+                 return subprocess.run([str(manage_exe), *args], **kwargs)
+ 
++            if _FROZEN_PYWIN32_EXTENSIONS:
++                # Load both extensions in the shipped interpreter to catch missing DLL dependencies.
++                res = run_cmd(["shell", "-c", "from win32cred import CredRead, CredWrite; "
++                               "from win32crypt import CryptProtectData, CryptUnprotectData"], timeout=60)
++                if res.returncode != 0:
++                    raise RuntimeError("Frozen Torrenter credential imports failed; check the bundled pywin32 DLLs")
++
+             # 8a) migrate
+             res = run_cmd(["migrate"])
+             if res.returncode != 0:
+diff --git a/antes/build_runtime_assets.py b/despues/build_runtime_assets.py
+index c3e131f..a6c2aa7 100644
+--- a/antes/build_runtime_assets.py
++++ b/despues/build_runtime_assets.py
+@@ -103,6 +103,8 @@ ROOT_SOURCES = {
+     "docs/prompting-flow-designer.md": "docs/prompting-flow-designer.md",
+     # Terminater: the shipped self-knowledge and FlowCreator reference point at this contract.
+     "docs/terminater.md": "docs/terminater.md",
++    "docs/torrenter.md": "docs/torrenter.md",
++    "Tlamatini/agent/templates/agent/torrenter_sources.html": "_internal/agent/templates/agent/torrenter_sources.html",
+     "docs/examples/prompting-kickoff.fpmt": "docs/examples/prompting-kickoff.fpmt",
+     "Tlamatini/agent/agents/model_settings.py": "agents/model_settings.py",
+     "Tlamatini/agent/agents/visual_errors.py": "agents/visual_errors.py",
+diff --git a/antes/copy_source_assets.py b/despues/copy_source_assets.py
+index 76d365f..33e486d 100644
+--- a/antes/copy_source_assets.py
++++ b/despues/copy_source_assets.py
+@@ -333,6 +333,19 @@ REQUIRED_SNAPSHOT_FILES = (
+     "scripts/run_menu_state_checks.py",
+     "Tlamatini/agent/management/commands/check_prompt_flow_panel.py",
+     "Tlamatini/agent/management/commands/check_terminater.py",
++    "docs/torrenter.md",
++    "Tlamatini/agent/management/commands/enroll_torrenter.py",
++    "Tlamatini/agent/migrations/0221_torrenter.py",
++    "Tlamatini/agent/torrenter_tool.py",
++    "Tlamatini/agent/torrenter_bridge.py",
++    "Tlamatini/agent/torrenter_views.py",
++    "Tlamatini/agent/templates/agent/torrenter_sources.html",
++    "Tlamatini/agent/agents/torrenter/config.yaml",
++    "Tlamatini/agent/agents/torrenter/torrenter.py",
++    "Tlamatini/agent/agents/torrenter/client.py",
++    "Tlamatini/agent/agents/torrenter/contract.py",
++    "Tlamatini/agent/agents/torrenter/sources.py",
++    "Tlamatini/agent/test_torrenter.py",
+     # Terminater: visible terminals (hub, WebSocket, loopback API, pool agent, dock UI, vendored xterm).
+     "Tlamatini/agent/terminal_hub.py",
+     "Tlamatini/agent/terminal_consumer.py",
+diff --git a/antes/docs/agent-coverage.md b/despues/docs/agent-coverage.md
+index ff1e303..ea605d5 100644
+--- a/antes/docs/agent-coverage.md
++++ b/despues/docs/agent-coverage.md
+@@ -2,7 +2,7 @@
+ 
+ Generated by `python scripts/update_flow_catalog.py`; verify with `--check`.
+ 
+-The catalog contains **86 installed agent types**. Every row has a current configuration schema, canonical name, aliases, connection slots, lifecycle flags, and declared structured output fields. Field types are inferred from templates; they are not a complete semantic validator. No template values or credentials are exported. GUI-Manager remains a design and is excluded.
++The catalog contains **87 installed agent types**. Every row has a current configuration schema, canonical name, aliases, connection slots, lifecycle flags, and declared structured output fields. Field types are inferred from templates; they are not a complete semantic validator. No template values or credentials are exported. GUI-Manager remains a design and is excluded.
+ 
+ Telegram API IDs and WhatsApp phone-number IDs have a stable `str|int` contract in public and keyed templates. String placeholders or numeric identifiers do not change the catalog; booleans, fractional values and containers are rejected.
+ 
+@@ -96,6 +96,7 @@ Config → Live Editor & Terminater (v1.91.0) adds account interaction preferenc
+ | Telegrammer (`telegrammer`) | 11 | 6 | 0: `target_agents` | ordinary |
+ | TeleTlamatini (`teletlamatini`) | 6 | 0 | 0: `target_agents` | long_running |
+ | Terminater (`terminater`) | 42 | 31 | 0: `target_agents` | ordinary |
++| Torrenter (`torrenter`) | 4 | 15 | 0: `target_agents` | ordinary |
+ | Unrealer (`unrealer`) | 8 | 6 | 0: `target_agents` | ordinary |
+ | Video-Analyzer (`video_analyzer`) | 27 | 30 | 0: `target_agents` | ordinary |
+ | VideoPlayer (`videoplayer`) | 10 | 22 | 0: `target_agents` | ordinary |
+diff --git a/despues/docs/torrenter.md b/despues/docs/torrenter.md
+new file mode 100644
+index 0000000..268513c
+--- /dev/null
++++ b/despues/docs/torrenter.md
+@@ -0,0 +1,68 @@
++# Torrenter
++
++Torrenter is a Tlamatini workflow agent and the wrapped chat tool `chat_agent_torrenter`. It controls downloads in the separately installed Tlachihuani Jobs Windows service at `http://127.0.0.1:12064/api/v1`. Jobs owns the transfer, files and journal. You can close chat, the ACP or the browser and reconnect to the same job.
++
++## Connect an account
++
++1. Open **XT → Show panel → Services** and check that Jobs, Torrenter and its web endpoint are ready.
++2. In a visible foreground PowerShell console, open the Tlamatini development checkout and run the following as the Windows operator who runs Tlamatini. Substitute the existing Django username.
++
++   ```powershell
++   Set-Location -LiteralPath 'C:\Development\XAIHT\Tlamatini\Tlamatini'
++   python manage.py migrate
++   python manage.py enroll_torrenter --username YOUR_USERNAME
++   ```
++
++3. The command prints an account beginning with `tlm-`. To see this account’s jobs in the XT web workspace, request a pairing code there, then enter that code and the printed account in **XT → Services → Approve code**.
++4. In Tlamatini enable **Torrenter** in Configure Agents and **Chat-Agent-Torrenter** in Configure MCPs/Tools. In Compact mode, select the agent/tool there too. In chat, turn on **Multi-Turn**. **Ask Execs** provides a per-call preview. **Exec Report** records Torrenter operations.
++
++The native pipe validates the installed service identity. Enrollment saves the gateway signing key in Windows Credential Manager, scoped to this Jobs installation, Windows operator and stable Django account. Each activation exchanges a short-lived signed assertion for an account-scoped Jobs session. After revocation or a Jobs reinstall, enroll the account again.
++
++## Start a transfer
++
++Open **Panels → Torrenter Sources**. Choose a `.torrent` file or paste a magnet and click **Inspect metadata**. Copy the inspection ID to chat. You can also paste a magnet into a regular chat request. Tlamatini replaces it with a short-lived encrypted source reference before writing chat history or sending it to the model.
++
++Example chat requests, in order:
++
++1. “Use Torrenter to review inspection `<inspection_id>`. Show the file IDs and sizes.”
++2. “Download file 0 from that inspection into downloads. Keep seeding off.”
++3. “Check job `<job_id>`. Show the desired state, observed phase, selected bytes and verified bytes.”
++4. “Show the verified manifest for that job, including the output location and SHA-256.”
++
++A resolving magnet may need peers before any files are available. Inspect again using the same inspection ID. A published manifest with `verified=true` identifies completed output. A shared piece can be larger than the selected file. If the service reports excess piece bytes, Torrenter preserves that count in `engine_verified_bytes` and reports selected verified bytes only after publication. A zero rate, an accepted operation and a finished chat agent each describe different events.
++
++## Actions
++
++Pass an `action` and an `arguments` object to the chat tool. On a canvas node put the same JSON object in the **arguments** field. Each invocation makes one logical Jobs request. A bounded wait polls the current job for up to 30 seconds. Continue observing with its job ID.
++
++| Intent | Actions | Fields or behavior |
++|---|---|---|
++| Discover and inspect | `capabilities`, `list`, `inspect`, `inspection` | List supports filters, `limit` and `cursor`. Inspect accepts a public v1 `info_hash` or private `source_ref`. Inspection reads an `inspection_id`. |
++| Admit a download | `download` | Supply `inspection_id`, `metadata_revision`, explicit `selected_file_ids` and `destination_root_id` (`downloads` or `archive`). Optional priorities, resume and seed policies retain explicit false and zero values. |
++| Reconnect | `status`, `wait`, `operation`, `events` | Use a job ID for status or wait, an operation ID for the durable receipt, and an event cursor for events. Re-read the list on an expired cursor. |
++| Inspect a job | `files`, `peers`, `trackers`, `web_seeds`, `statistics`, `manifest` | Supply its job ID. Jobs returns only published verified paths in a ready manifest. |
++| Control | `pause`, `resume`, `stop`, `start`, `cancel`, `recheck`, `reseed`, `move` | Supply `job_id` and the latest `revision`. Pause pairs with resume. Stop retains partial data for start. Cancel ends an incomplete transfer permanently. Stop before moving to a different approved root. |
++| Edit | `select`, `update`, `set_trackers`, `set_web_seeds` | Change selected IDs/priorities on a stopped job. Update labels, queue position, rates or policies. Prepare private source lists in Torrenter Sources and pass the opaque reference to the stopped job. |
++| Account configuration | `categories`, `tags`, `label`, `settings`, `update_settings`, `totals` | Create, rename or remove a label by collection. Update defaults using their revision. Totals summarize this account. |
++| Multiple jobs | `batch` | Pass `transition` (pause, resume, stop or start) and `jobs`, an array of job IDs with individual revisions. Inspect each outcome. |
++| Remove a record | `remove_job` | Supply the ID and revision of a stopped, cancelled or completed job. Its files stay on disk. |
++| Erase owned files | `delete_preview`, `delete_content` | Review exact files for a stopped or finished job, approve the matching preview in XT, then pass `preview_id` and the original revision. Poll the operation. A chat confirmation alone cannot authorize erasure. |
++
++Durable writes accept an `operation_key` of 32 lowercase hex digits. Keep the key and arguments on an uncertain retry. Reusing them returns the original admission receipt. A changed request needs a fresh key and a stale revision needs a fresh read. The local chat `run_id` controls the short-lived client process. It is separate from the Jobs `job_id`, `inspection_id` and `operation_id`.
++
++## Flows and diagnostics
++
++Drop **Torrenter** on the Agentic Control Panel, open Configure and choose its action. For example, set **action** to `list` and **arguments** to `{"limit":10}`. Connect its output to a Parametrizer or Forker. Each activation writes one `INI_SECTION_TORRENTER` record with the action outcome and JSON response body. Fresh activations use fresh operation keys. Reanimation of an interrupted write reuses the saved key.
++
++Missing enrollment is reported before a wrapped call launches. For HTTP 401 re-enroll the correct account. For 403 check scopes or XT approval, for 404 check the owned ID, and for 412 re-read the revision. When Jobs is unavailable, check the XT Services panel. A transfer waiting for a peer remains a live service job.
++
++
++## Repeat the development checks
++
++From a verified visible foreground PowerShell console, keep the server running in its own visible window. The live check opens headed Chrome, asks for the enrolled development account’s password, uploads a generated torrent, submits it through the real wrapped tool, replays its receipt and independently checks the SHA-256 of the published 13,936-byte fixture. It prints the completed job ID for inspection.
++
++```powershell
++Set-Location -LiteralPath 'C:\Development\XAIHT\Tlamatini\Tlamatini'
++python manage.py test agent.test_torrenter agent.test_ask_execs_allowlist agent.test_agent_display_names agent.tests.ExecReportCaptureTests
++python tests_e2e/torrenter_live.py --username YOUR_USERNAME --port 18084
++```
+diff --git a/antes/eslint.config.mjs b/despues/eslint.config.mjs
+index af5c358..c8b0e40 100644
+--- a/antes/eslint.config.mjs
++++ b/despues/eslint.config.mjs
+@@ -456,6 +456,7 @@ export default [
+                 updateNmapperConnection: "readonly",
+                 updatePptxerConnection: "readonly",
+         updatePdferConnection: "readonly",
++        updateTorrenterConnection: "readonly",
+         updateTerminaterConnection: "readonly",
+                 updateLatexerConnection: "readonly",
+ 

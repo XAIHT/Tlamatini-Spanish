@@ -240,6 +240,16 @@
    "en": "\"I am telling you now rather than reporting work I cannot do.\"",
    "es": "\"Te lo digo ahora en lugar de reportarte un trabajo que no puedo hacer.\"",
    "n": 1
+  },
+  {
+   "en": "Use the typed Torrenter action and arguments.",
+   "es": "Usa los campos action y arguments del tool Torrenter.",
+   "n": 1
+  },
+  {
+   "en": "Torrenter (invalid arguments)",
+   "es": "Torrenter (argumentos no válidos)",
+   "n": 1
   }
  ],
  "conservar": [

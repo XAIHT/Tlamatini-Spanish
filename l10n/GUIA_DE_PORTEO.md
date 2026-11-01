@@ -384,6 +384,21 @@ la interfaz, y las fotos de pantalla completa las toma el agent **Shoter**.
 
 ## 7. Cómo sincronizar con una versión nueva del inglés
 
+### Torrenter en revisión
+
+La implementación inglesa de Torrenter todavía no tiene commit. Para esta revisión,
+`BASE_INGLES.json` conserva el commit de origen y fija por SHA-256 un parche en
+`l10n/bases/`. El lector reconstruye únicamente los archivos incluidos en un directorio
+temporal. Tanto `aplicar` como `pendientes` y `verificar` leen esos mismos originales.
+Las preferencias locales, las cuentas y las credenciales de la máquina quedan fuera del
+parche. Las adaptaciones existentes de voz y pronunciación de esta edición se conservan
+como segmentos de código declarados en la memoria.
+
+Para regenerar Torrenter o revisar sus textos mientras siga en desarrollo, usa
+`aplicar` y `verificar` con las rutas correspondientes. Cuando un commit inglés ya
+contenga la implementación, el siguiente `copiar` con ese commit sustituirá la base
+temporal; después vuelve a aplicar y verificar la memoria.
+
 ```
 python l10n/portar.py copiar --ingles C:/Development/XAIHT/Tlamatini
 python l10n/portar.py aplicar          # avisa qué pares ya no coinciden

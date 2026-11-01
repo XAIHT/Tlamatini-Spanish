@@ -201,8 +201,8 @@
    "es": "| Agentic Control Panel · `.flw` | Prompt Flow Panel · `.fpmt` |"
   },
   {
-   "en": "| Arrange **86 agent types**, configure their work and connect them into runnable flows. | Compose prompts, decisions, embeddings, user questions and executable operations. |",
-   "es": "| Acomoda **86 tipos de agent**, configura su trabajo y conéctalos en flows ejecutables. | Compón prompts, decisiones, embeddings, preguntas al usuario y operaciones ejecutables. |",
+   "en": "| Arrange **87 agent types**, configure their work and connect them into runnable flows. | Compose prompts, decisions, embeddings, user questions and executable operations. |",
+   "es": "| Acomoda **87 tipos de agent**, configura su trabajo y conéctalos en flows ejecutables. | Compón prompts, decisiones, embeddings, preguntas al usuario y operaciones ejecutables. |",
    "n": 1
   },
   {
@@ -695,8 +695,8 @@
    "n": 1
   },
   {
-   "en": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents callable from chat</b> &nbsp;·&nbsp; <b>110 built-in tools</b><br />\n  <sub>Current v1.91.1 source inventory. The 67 chat wrappers are included in the 110 tools; enabled external MCP servers add their own tools.</sub>\n</p>",
-   "es": "<p align=\"center\">\n  <b>86 workflow agents</b> &nbsp;·&nbsp; <b>67 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>110 tools integrados</b><br />\n  <sub>Inventario del código fuente v1.91.1 actual. Los 67 wrappers de chat están incluidos en los 110 tools; los servidores MCP externos activos agregan sus propios tools.</sub>\n</p>",
+   "en": "<p align=\"center\">\n  <b>87 workflow agents</b> &nbsp;·&nbsp; <b>68 agents callable from chat</b> &nbsp;·&nbsp; <b>111 built-in tools</b><br />\n  <sub>Development inventory including Torrenter. The 111 tools include the 68 chat wrappers. Enabled external MCP servers add their own tools.</sub>\n</p>",
+   "es": "<p align=\"center\">\n  <b>87 workflow agents</b> &nbsp;·&nbsp; <b>68 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>111 tools integrados</b><br />\n  <sub>Inventario de desarrollo con Torrenter. Los 111 tools incluyen los 68 wrappers de chat. Los servidores MCP externos activos agregan sus propios tools.</sub>\n</p>",
    "n": 1
   },
   {
@@ -712,6 +712,11 @@
   {
    "en": "| [v1.91.1 release record](docs/changes/2026-10-27-v1.91.1.md) | The current patch release: what it fixes and where. |",
    "es": "| [Registro del release v1.91.1](docs/changes/2026-10-27-v1.91.1.md) | El patch release actual: qué corrige y dónde. |",
+   "n": 1
+  },
+  {
+   "en": "**Torrenter** connects chat and the Agentic Control Panel to persistent downloads in Tlachihuani Jobs.\nOpen **Panels → Torrenter Sources** to review a torrent file or magnet. Use the same enrolled account\nto select files, control jobs and inspect verified output. [Torrenter setup and actions](docs/torrenter.md).",
+   "es": "**Torrenter** conecta el chat y Agentic Control Panel con las descargas persistentes de Tlachihuani Jobs.\nAbre **Paneles → Fuentes de Torrenter** para revisar un archivo torrent o un vínculo magnet. Desde la misma cuenta registrada\npuedes elegir archivos, controlar jobs y consultar los resultados verificados. [Configuración y acciones de Torrenter](docs/torrenter.md).",
    "n": 1
   }
  ],

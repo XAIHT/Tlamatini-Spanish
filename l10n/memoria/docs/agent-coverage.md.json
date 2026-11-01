@@ -1,0 +1,17 @@
+{
+ "archivo": "docs/agent-coverage.md",
+ "segmentos": [
+  {
+   "en": "The catalog contains **87 installed agent types**. Every row has a current configuration schema, canonical name, aliases, connection slots, lifecycle flags, and declared structured output fields. Field types are inferred from templates; they are not a complete semantic validator. No template values or credentials are exported. GUI-Manager remains a design and is excluded.",
+   "es": "El catálogo contiene **87 tipos de agent instalados**. Cada fila tiene un esquema de configuración, un nombre canónico, alias, conexiones, opciones de ciclo de vida y campos de output estructurados. Los tipos de campo se infieren de las plantillas. El catálogo no expone valores de configuración ni credenciales. GUI-Manager sigue en fase de diseño y no se incluye.",
+   "n": 1
+  },
+  {
+   "en": "| Talker (`talker`) | 29 | 14 | 0: `target_agents` | ordinary |",
+   "es": "| Talker (`talker`) | 35 | 14 | 0: `target_agents` | ordinary |",
+   "n": 1,
+   "codigo": "El inventario refleja los parámetros de Piper y pronunciación del agent Talker en español."
+  }
+ ],
+ "conservar": []
+}

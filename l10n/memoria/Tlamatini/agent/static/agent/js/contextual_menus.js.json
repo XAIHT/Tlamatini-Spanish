@@ -55,6 +55,16 @@
    "en": "'Error loading log: '",
    "es": "'Error al cargar el log: '",
    "n": 1
+  },
+  {
+   "en": "'Complete activity log · '",
+   "es": "'Registro completo de actividad · '",
+   "n": 1
+  },
+  {
+   "en": "'Last 100 lines'",
+   "es": "'Últimas 100 líneas'",
+   "n": 1
   }
  ],
  "conservar": []
