@@ -311,7 +311,7 @@ class DossierDoc(BaseDocTemplate):
         draw_text(canv, W / 2, 27.4, str(doc.page), "sans-semibold", 7.6, "copper_deep", anchor="center")
         draw_text(canv, ML, 27.4, f"Versión {self.facts['version']}  ·  {self.facts['generated_date']}",
                   "sans", 7.0, "muted")
-        draw_text(canv, W - MR, 27.4, "github.com/XAIHT/Tlamatini", "sans", 7.0, "muted", anchor="right")
+        draw_text(canv, W - MR, 27.4, "github.com/XAIHT/Tlamatini-Spanish", "sans", 7.0, "muted", anchor="right")
 
     def afterFlowable(self, flowable):
         toc = getattr(flowable, "_toc", None)
@@ -1098,7 +1098,7 @@ class CoverPage(FullPage):
         stepfret(canv, 60, 70, W - 120, 2.4, "copper", 0.6, 0.55)
         draw_text(canv, cx, 50, "Creada por Angela López Mendoza  ·  @angelahack1", "sans-semibold", 9.4,
                   "ivory", anchor="center")
-        draw_text(canv, cx, 35, f"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini  ·  licencia MIT",
+        draw_text(canv, cx, 35, f"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini-Spanish  ·  licencia MIT",
                   "sans", 7.6, "light_muted", anchor="center", space=0.4)
 
 
@@ -1133,6 +1133,8 @@ class ChapterOpener(FullPage):
         gp.drawOn(canv, 64, y - 16 - gh)
         y = y - 16 - gh - 40
         titles = [s.title for s in ch.sections]
+        if ch.key == "release":
+            titles = [s.title for s in ch.sections if s.key in {"release1923", "release1911", "release191", "release190", "lineage", "identity_release"}]
         if titles:
             draw_text(canv, 64, y, "EN ESTE CAPÍTULO", "sans-semibold", 7.4, "gold", space=2.2)
             y -= 12
@@ -1199,7 +1201,7 @@ class ClosingPage(FullPage):
         p.drawOn(canv, cx - 190, H * 0.62 - 246 - ph)
         colophon = style("colo", "sans", 7.6, 11.2, "light_muted", alignment=TA_CENTER)
         q = para(f"Compuesto en Palatino Linotype, Segoe UI y Consolas. Generado el {self.facts['generated_at']} a partir del "
-                 f"commit {self.facts['head_short']}. Licencia MIT · github.com/XAIHT/Tlamatini", colophon,
+                 f"commit {self.facts['head_short']}. Licencia MIT · github.com/XAIHT/Tlamatini-Spanish", colophon,
                  "sans")
         qw, qh = q.wrap(400, 100)
         q.drawOn(canv, cx - 200, 70)

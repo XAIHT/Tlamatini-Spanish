@@ -2,11 +2,7 @@
 
 Torrenter es un agent de flow de Tlamatini y se puede invocar desde el chat con `chat_agent_torrenter`. Controla las descargas del servicio de Windows Tlachihuani Jobs, que se instala por separado y expone su API en `http://127.0.0.1:12064/api/v1`. Jobs administra la transferencia, sus archivos y el registro de operaciones. Puedes cerrar el chat, Agentic Control Panel o el browser y volver al mismo job.
 
-The signed-in page is carried with Tlamatini in `agent/torrenter_workspace/`.
-Self-update replaces its HTML, JavaScript and CSS together with the controller.
-A self-modification snapshot includes the same files for rebuilding. Jobs and XT
-remain separately installed. Changes to their API must remain compatible with the
-workspace protocol or provide a coordinated service update.
+La página de descargas está en `agent/torrenter_workspace/`. El actualizador sustituye su HTML, JavaScript y CSS junto con el controlador. La copia para automodificación incluye los mismos archivos. Jobs y XT se instalan por separado y deben comprender la versión del protocolo que usa el panel.
 
 ## Vincular una cuenta
 
@@ -16,39 +12,15 @@ workspace protocol or provide a coordinated service update.
 
 El servidor asigna a cada cuenta de Django un perfil estable de Jobs. El canal de control autenticado de Windows emite una credencial limitada a esa cuenta. El navegador usa su sesión de Django y su token CSRF. Cada edición tiene su propia cookie de sesión.
 
-## Files in Windows Downloads
+## Archivos en Descargas de Windows
 
-The updated Jobs service publishes a hash-verified copy to the Windows operator's
-actual Downloads folder under `Torrenter/<account UUID>/<job ID>/`. The account
-heading identifies the signed-in Tlamatini user; the location above the queue and
-**Verified output** show the destination. Windows folder redirection is respected.
-The private service copy remains available for resume and recheck.
+Jobs comprueba el hash y publica la copia en la carpeta Descargas real del usuario de Windows, incluso si está redirigida. Cada entrega queda en `Torrenter/<UUID de cuenta>/<ID de trabajo>/`. La cabecera identifica la cuenta y el panel indica el destino efectivo. El servicio conserva su copia privada para reanudar o volver a verificar la transferencia.
 
-The ordinary local controller prepares only that account's output directory and
-grants the Jobs service write access there. Neither edition needs administrator
-rights for routine delivery. The private journal remains protected. An existing
-completed job is copied on reconnect after the service update, without downloading
-it again. Copies survive service shutdown, browser closure and record removal.
-Explicit **Erase files** approval lists both the private and delivered copies.
+El controlador prepara únicamente la carpeta de salida de esa cuenta y concede acceso al servicio. La entrega ordinaria no requiere privilegios de administrador. Al reconectar, Jobs puede publicar un trabajo ya terminado sin descargarlo otra vez. Cerrar el navegador, detener el servicio o quitar el registro conserva las copias. La vista previa de borrado enumera tanto la copia privada como la entregada.
 
-`verified=true` in a delivered manifest means the copy was checked and published.
-Si Windows rechaza Descargas, Jobs intenta guardar en
-`content_generated/Torrenter/<account>/<job>/` de esta edición. El panel y el registro
-muestran el destino efectivo. Si ambos destinos fallan, la espera informa del error
-y el original verificado sigue disponible. Una copia de usuario modificada o ausente
-copy is reported rather than silently overwritten or recreated. An older Jobs
-version produces **Se requiere actualizar el servicio**, not a claim that a private service
-file was saved to Downloads.
+Un manifiesto con `verified=true` acredita la copia publicada. Si Windows rechaza Descargas, Jobs intenta usar `content_generated/Torrenter/<cuenta>/<trabajo>/` de esta edición. Si ambos destinos fallan, el panel muestra el error y se conserva el original privado. El servicio señala las copias modificadas o ausentes. Si la versión instalada solo conoce su almacén privado, el panel pide actualizar Jobs.
 
-The workspace fills the browser viewport and keeps its footer at the bottom. The
-queue receives the unused height; selecting a transfer opens the details pane.
-**Preferences → Altura del panel de detalles** adjusts that pane. Scrolling is retained
-where the content actually exceeds the available pane or viewport.
-
-Native credential calls are internal IPC and do not allocate console windows.
-Development verification still runs in a visible foreground console and headed
-Chrome. Full Tlamatini executables must be rebuilt to deliver frozen Python
-changes; updating Jobs alone does not replace either Tlamatini executable.
+Al seleccionar una transferencia se abre su panel de detalles. Puedes ajustar su altura en Preferencias. La cola aprovecha el espacio disponible de la ventana. Las solicitudes de credenciales usan comunicación interna de Windows sin abrir consolas. Los cambios en el controlador Python se distribuyen con el ejecutable de Tlamatini.
 
 ## Iniciar una transferencia
 
@@ -62,6 +34,8 @@ Ejemplo de conversación, en orden:
 4. «Muéstrame el manifiesto verificado del job con la ubicación del archivo y su SHA-256».
 
 Es posible que un magnet necesite peers antes de mostrar los archivos. Vuelve a consultar la inspección con el mismo ID. Un manifiesto publicado con `verified=true` identifica el archivo terminado. Si una pieza compartida contiene bytes de archivos que no elegiste, Torrenter conserva el conteo del motor en `engine_verified_bytes` y reporta los bytes verificados de tu selección después de publicar el archivo. Que la tasa sea cero, que Jobs acepte la operación o que el agent termine su turno no prueba que la descarga haya terminado.
+
+Si los cuatro espacios de consulta de metadatos están ocupados, Jobs puede responder con `lookup_state: queued`. Consulta el mismo ID de inspección. Cuando se resuelvan los metadatos podrás elegir los archivos. La cola de inspección es independiente de la entrega verificada.
 
 ## Acciones
 
@@ -90,7 +64,7 @@ Las escrituras persistentes aceptan una `operation_key` de 32 dígitos hexadecim
 
 Arrastra **Torrenter** a Agentic Control Panel, abre la configuración y elige una acción. Por ejemplo, selecciona `list` en **action** e introduce `{"limit":10}` en **arguments**. Conecta el output a Parametrizer o Forker. Cada activación genera un registro `INI_SECTION_TORRENTER` con el resultado y el cuerpo JSON de la respuesta. Cada escritura nueva usa su propia clave. Si se reanima una escritura interrumpida, utiliza la clave guardada.
 
-A search result passes its complete magnet, including trackers, as a private source reference. Poll the inspection until its file list is ready before submitting. For HTTP 401, check the signed-in account. For 403 check scopes or XT approval, for 404 check the owned ID, and for 412 re-read the revision. When Jobs is unavailable, check the XT Services panel. A transfer waiting for a peer remains a live service job.
+El resultado de búsqueda conserva el magnet completo y sus trackers en una referencia privada. Consulta la misma inspección hasta que estén disponibles los archivos. Ante un 401, comprueba la sesión. Un 403 requiere revisar los permisos o la aprobación en XT. Un 404 exige comprobar el ID de la cuenta y un 412, volver a leer la revisión. Si Jobs no responde, consulta Servicios en XT. Un trabajo a la espera de pares sigue activo.
 
 
 ## Repetir las pruebas de desarrollo
@@ -100,7 +74,7 @@ Las referencias de origen y los registros se guardan en la carpeta privada
 carpeta de estado. No se usan perfiles de Windows ni `%TEMP%` para trabajo temporal.
 Al publicar, el destino final puede contener un archivo provisional hasta el cambio de nombre.
 
-From a verified visible foreground PowerShell console, keep the server running in its own visible window. The live check opens headed Chrome, asks for the signed-in development account’s password, uploads a generated torrent, submits it through the real wrapped tool, replays its receipt and independently checks the SHA-256 of the published 13,936-byte fixture. It prints the completed job ID for inspection.
+Usa una consola PowerShell visible y verificada. Mantén el servidor en otra ventana visible. La prueba abre Chrome, solicita la contraseña de la cuenta de desarrollo, carga un torrent de prueba y lo envía mediante la herramienta real del chat. Recupera el recibo y comprueba por separado el SHA-256 del archivo publicado de 13 936 bytes. Al finalizar muestra el ID del trabajo.
 
 ```powershell
 Set-Location -LiteralPath 'C:\Development\XAIHT\Tlamatini-Spanish\Tlamatini'

@@ -820,7 +820,7 @@ def cover_slide(deck: Deck):
             line(sc, mx - 0.1, 4.86, mx - 0.1, 5.6, "edge", 0.9)
     text(sc, x, 6.12, 5.8, 0.34, one("Creada por Angela López Mendoza  ·  @angelahack1", "sans-semibold",
                                      13, "ivory"), label="cover credit")
-    text(sc, x, 6.46, 5.8, 0.3, one(f"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini  ·  MIT",
+    text(sc, x, 6.46, 5.8, 0.3, one(f"{f['generated_date']}  ·  github.com/XAIHT/Tlamatini-Spanish  ·  MIT",
                                     "sans", 10.5, "light_muted"), label="cover date")
 
 
@@ -1133,7 +1133,7 @@ def closing_slide(deck: Deck):
     text(sc, 6.33, 5.35, 6.0, 0.4, one("Regenérala con  refresh_project_docs.py", "mono", 13, "gold"),
          label="closing code")
     text(sc, 6.33, 5.8, 6.0, 0.36, one(f"{f['generated_date']}  ·  commit {f['head_short']}  ·  "
-                                       "github.com/XAIHT/Tlamatini", "sans", 11, "light_muted"), label="closing meta")
+                                       "github.com/XAIHT/Tlamatini-Spanish", "sans", 11, "light_muted"), label="closing meta")
 
 
 # ── Audit ───────────────────────────────────────────────────────────

@@ -266,7 +266,7 @@ def _forma_md(texto: str) -> dict:
         "cercas": CERCA.findall(texto) and [m.group(0) for m in CERCA.finditer(texto)],
         "comentarios": COMENTARIO_HTML.findall(texto),
         "titulos": [len(m.group(1)) for m in re.finditer(r"^(#{1,6}) ", sin_cercas, re.M)],
-        "tablas": [l.count("|") for l in lineas if l.lstrip().startswith("|")],
+        "tablas": [linea.count("|") for linea in lineas if linea.lstrip().startswith("|")],
         "destinos": DESTINO.findall(sin_cercas),
         "codigo": sorted(CODIGO_EN_LINEA.findall(sin_cercas)),
     }

@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Installation and removal windows
 
-> Current release: **[v1.91.1](changes/2026-10-27-v1.91.1.md)**. Dated records below retain their original evidence dates.
+> Versión actual: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
 
 
 **Status: shipped in the published `v1.82.0` release (tag at `880a335e`, 2026-10-12).**
@@ -251,3 +251,7 @@ uses foreground attachment without that keystroke, verifies the resulting state,
 and accepts only windows owned by the compiled setup process, excluding previews.
 Uninstaller observation is strictly passive on this machine: no launch, input,
 activation or repositioning is used to bypass the desktop service's app block.
+
+## Actualizar una instalación 1.92
+
+El instalador y el actualizador conservan la bóveda `data.keys` existente. El registro del paquete identifica la copia de `Uninstaller.exe`. El actualizador puede instalarla incluso cuando un cliente anterior solo preparó el ZIP interior. La copia de automodificación incluye los archivos de compilación y el espacio de descargas de Torrenter. Las compilaciones con dependencias distintas pueden coexistir. Un bloqueo protege cada entorno compartido durante la preparación y toda la compilación.

@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/XAIHT/Tlamatini/tree/v1.91.1"><img src="https://img.shields.io/badge/SOURCE-v1.91.1-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini source v1.91.1" /></a>
+  <a href="https://github.com/XAIHT/Tlamatini-Spanish/tree/v1.92.3"><img src="https://img.shields.io/badge/SOURCE-v1.92.3-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini source v1.92.3" /></a>
   <a href="#installation"><img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-14B8A6?style=for-the-badge&labelColor=101827" alt="Windows 10 and 11" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/OPEN%20SOURCE-MIT-E9C46A?style=for-the-badge&labelColor=101827" alt="MIT open source" /></a>
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-818CF8?style=for-the-badge&labelColor=101827&logo=discord&logoColor=white" alt="Join the community on Discord" /></a>
@@ -31,7 +31,7 @@
   <a href="https://xaiht.org">Sitio web</a> ·
   <a href="BookOfTlamatini.md">Guía completa</a> ·
   <a href="Tlamatini-Architecture.pdf">Atlas de arquitectura</a> ·
-  <a href="docs/changes/2026-10-27-v1.91.1.md">Novedades</a>
+  <a href="docs/changes/2026-11-01-v1.92.3.md">Novedades</a>
 </p>
 
 > > [!IMPORTANT]
@@ -106,9 +106,7 @@ segmento de enseñanza, elige qué dice y cuándo, y deja que la voz termine ant
 teclear. Los presets **Estándar** y **Aprendizaje guiado** te dan un punto de partida;
 la Vista previa te deja probar el borrador antes de guardar. [Explora la configuración →](docs/interaction-settings.md)
 
-**Nuevo en [v1.91.1](docs/changes/2026-10-27-v1.91.1.md):** las ejecuciones de Prompt Flow conservan su propio
-historial, las Decisiones YES/NO aceptan una respuesta que empieza con el verdicto, y un agent
-llamado por su nombre corto sigue corriendo. v1.91.1 es el Latest release publicado.
+**Novedades de la [serie 1.92](docs/changes/2026-11-01-v1.92.3.md).** Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.
 
 **Desde [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración
 compartido controla el comportamiento real del editor y de la terminal en el chat y en ambos
@@ -142,7 +140,7 @@ El dictado directo usa el micrófono de la **computadora donde corre Tlamatini**
 Ambos formatos se abren en sus propios editores. Suelta un archivo `.flw` o `.fpmt` sobre una página compatible, o usa la asociación de archivos registrada en Windows. [Guía del Prompt Flow →](docs/prompting-flow-designer.md) · [Archivos de flow en Windows →](docs/windows-flow-files.md)
 
 **Torrenter** conecta el chat y Agentic Control Panel con las descargas persistentes de Tlachihuani Jobs.
-Abre **Paneles → Fuentes de Torrenter** para revisar un archivo torrent o un vínculo magnet. Desde la misma cuenta registrada
+Abre **Paneles → Fuentes de Torrenter** para revisar un archivo torrent o un vínculo magnet. Desde la misma cuenta con la que iniciaste sesión
 puedes elegir archivos, controlar jobs y consultar los resultados verificados. [Configuración y acciones de Torrenter](docs/torrenter.md).
 
 ## One workspace, many ways to build
@@ -199,7 +197,7 @@ Tú eliges los proyectos, los tools y los servicios involucrados. «Local-first�
 
 ### 1 · Instala Tlamatini
 
-Descarga el paquete de Windows desde **[el release más reciente](https://github.com/XAIHT/Tlamatini/releases/latest)**. Si viene como un archivo comprimido, extráelo primero y mantén el instalador junto con el payload que lo acompaña. Ejecuta **Installer.exe**, sigue la ventana de instalación y luego abre Tlamatini desde su acceso directo. El release incluye su runtime de Python; no hace falta una instalación de Python aparte.
+Descarga el paquete de Windows desde **[el release más reciente](https://github.com/XAIHT/Tlamatini-Spanish/releases/latest)**. Si viene como un archivo comprimido, extráelo primero y mantén el instalador junto con el payload que lo acompaña. Ejecuta **Installer.exe**, sigue la ventana de instalación y luego abre Tlamatini desde su acceso directo. El release incluye su runtime de Python; no hace falta una instalación de Python aparte.
 
 Abre **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)** si tu browser no se abre automáticamente. El login predeterminado documentado del instalador es **`user` / `changeme`**; cambia la contraseña predeterminada antes de usar la cuenta para tu propio trabajo. [Guía de instalación y recuperación →](docs/setup-wizards.md)
 
@@ -209,7 +207,7 @@ Abre **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)** si tu browser no se ab
 Instala Python **3.12.10** y Git. Ejecuta estos comandos desde una **ventana de PowerShell visible en primer plano**, y mantenla abierta para leer el output:
 
 ```powershell
-git clone https://github.com/XAIHT/Tlamatini.git
+git clone https://github.com/XAIHT/Tlamatini-Spanish.git
 cd Tlamatini
 python -m venv venv
 .\venv\Scripts\python.exe -m pip install -r requirements.txt
@@ -279,7 +277,7 @@ Usa **Paso a paso** cuando quieras un ritmo guiado. Abre **Acerca de ▸ Uso** p
 <summary><b>Conflictos de puerto, actualizaciones y manejo diario de archivos</b></summary>
 
 - **¿El puerto 8000 no está disponible?** Define `django_port` con un puerto disponible en `config.json`, luego reinicia. El archivo está junto a `Tlamatini.exe` en una instalación, o en `Tlamatini/agent/config.json` en un checkout del código fuente. Un puerto en la línea de comandos del código fuente tiene prioridad sobre el ajuste.
-- **¿Vas a actualizar?** Usa **Acerca de ▸ Buscar actualizaciones**. Consulta la [guía de carriage](docs/self-management-carriage.md) para ver el estado conservado y el comportamiento de los releases. El **vault aparte `data.keys` por ahora no lo conserva la actualización dentro de la app**; guarda un backup seguro si lo usas.
+- **¿Vas a actualizar?** Usa **Acerca de ▸ Buscar actualizaciones**. Consulta la [guía de carriage](docs/self-management-carriage.md) para ver el estado conservado y el comportamiento de los releases. La actualización conserva la bóveda `data.keys` existente.
 - **¿Vas a soltar archivos?** El texto, el código, el Markdown y los PDF se abren en el canvas del chat; las imágenes se adjuntan al chat; los `.flw` y `.fpmt` se abren en sus diseñadores. Una configuración JSON de MCP pide confirmación antes de importarla.
 - **¿Necesitas más espacio?** Usa **Views**, arrastra los divisores o restablece la distribución. Actualizar vuelve a leer un código fuente accesible y pregunta antes de descartar cambios sin guardar; no fusiona ediciones.
 
@@ -293,7 +291,7 @@ Elige una puerta de entrada y profundiza tanto como lo necesite tu proyecto.
 | :--- | :--- |
 | [Book of Tlamatini](BookOfTlamatini.md) | La guía completa, la arquitectura, los workflows y la historia del desarrollo. |
 | [Todos los agents](agents_descriptions.md) | El catálogo de especialistas y el rol de cada agent. |
-| [Registro del release v1.91.1](docs/changes/2026-10-27-v1.91.1.md) | El patch release actual: qué corrige y dónde. |
+| [Registro de la versión v1.92.3](docs/changes/2026-11-01-v1.92.3.md) | El patch release actual: qué corrige y dónde. |
 | [Registro del release v1.91.0](docs/changes/2026-10-23-v1.91.0.md) | Desarrollos recientes, inventario del código fuente y evidencia de verificación fechada. |
 | [Edición en el canvas](docs/canvas-editing.md) · [Interactor](docs/interactor.md) · [Terminater](docs/terminater.md) | Edita, aprende y ejecuta con control directo. |
 | [Configuración de Editor en vivo y Terminater](docs/interaction-settings.md) | Tecleo, enseñanza, narración, comportamiento de la terminal, presets y apariencia. |
@@ -342,7 +340,7 @@ seguridad de una máquina; la guía explica los scripts y su alcance.
 
 ¿Construiste algo con Tlamatini? **[Ven a mostrarlo en Discord.](https://discord.gg/WFQsrskgc)** Trae tu board, tu escena, tu workflow, tu pregunta o tu idea ambiciosa. Los proyectos reales y el feedback útil ayudan a dar forma a lo que viene.
 
-¿Encontraste un problema? **[Abre un issue](https://github.com/XAIHT/Tlamatini/issues)** con la versión, los pasos para reproducirlo y el output relevante ya redactado. Las contribuciones son bienvenidas; empieza con [las instrucciones del repositorio](AGENTS.md) y conserva el workflow de verificación visible.
+¿Encontraste un problema? **[Abre un issue](https://github.com/XAIHT/Tlamatini-Spanish/issues)** con la versión, los pasos para reproducirlo y el output relevante ya redactado. Las contribuciones son bienvenidas; empieza con [las instrucciones del repositorio](AGENTS.md) y conserva el workflow de verificación visible.
 
 ---
 
@@ -350,5 +348,5 @@ seguridad de una máquina; la guía explica los scripts y su alcance.
   <img src="Tlamatini.jpg" alt="emblema de XAIHT" width="72" height="72" /><br />
   <b>Tlamatini — “la que sabe.”</b><br />
   Creada por <b>Angela López Mendoza · @angelahack1</b><br />
-  <a href="https://xaiht.org">XAIHT</a> · <a href="LICENSE">Licencia MIT</a> · <a href="https://github.com/XAIHT/Tlamatini/releases/latest">Empieza a crear</a>
+  <a href="https://xaiht.org">XAIHT</a> · <a href="LICENSE">Licencia MIT</a> · <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/latest">Empieza a crear</a>
 </p>

@@ -20,7 +20,6 @@ import re
 import subprocess
 import sys
 import tempfile
-import tokenize
 from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
@@ -232,7 +231,7 @@ def md_items(datos: bytes):
     def cerrar_bloque():
         nonlocal bloque
         if bloque:
-            crudo = "\n".join(l.rstrip("\r") for l in bloque)
+            crudo = "\n".join(linea.rstrip("\r") for linea in bloque)
             if _tiene_texto(crudo):
                 items.append({"l": inicio + 1, "c": "md", "en": crudo})
         bloque = []

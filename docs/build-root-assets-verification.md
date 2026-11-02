@@ -1,12 +1,16 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Required runtime files: packaging repair and verification
 
-> Current release: **[v1.91.1](changes/2026-10-27-v1.91.1.md)**. Dated records below retain their original evidence dates.
+> Versión actual: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+
+## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
+
+Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](changes/2026-11-01-v1.92.3.md).
 
 ## v1.91.1 — Prompt Flow fixes and short tool names
 
-**v1.91.1** is the current version (2026-10-27). Its annotated tag resolves to
-`9915938a` and is present on origin; it is published on GitHub as the Latest
+**v1.91.1** was the English release of that date (2026-10-27). Its annotated tag resolves to
+`9915938a` and was present on origin; it was published on GitHub as the then-Latest
 release, replacing v1.91.0 (published 2026-10-23). It is a patch release: no agent,
 tool, skill or migration was added, so the catalog stays **86 workflow agents, 67
 wrapped chat agents, 110 built-in tools, 29 skills and 220 migrations**.

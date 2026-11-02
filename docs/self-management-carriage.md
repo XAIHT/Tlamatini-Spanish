@@ -1,11 +1,15 @@
 # Self-modify and self-update carriage review
 
-> Current release: **[v1.91.1](changes/2026-10-27-v1.91.1.md)**. Dated records below retain their original evidence dates.
+> Versión actual: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+
+## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
+
+Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](changes/2026-11-01-v1.92.3.md).
 
 ## v1.91.1 — Prompt Flow fixes and short tool names
 
-**v1.91.1** is the current version (2026-10-27). Its annotated tag resolves to
-`9915938a` and is present on origin; it is published on GitHub as the Latest
+**v1.91.1** was the English release of that date (2026-10-27). Its annotated tag resolves to
+`9915938a` and was present on origin; it was published on GitHub as the then-Latest
 release, replacing v1.91.0 (published 2026-10-23). It is a patch release: no agent,
 tool, skill or migration was added, so the catalog stays **86 workflow agents, 67
 wrapped chat agents, 110 built-in tools, 29 skills and 220 migrations**.
@@ -553,3 +557,7 @@ all load the shared resources. Frozen imports and runtime/source inventories mus
 retain these modules; partial copying can leave an apparently saved setting inert.
 The static cache suffix includes `-interaction-settings-1`. No new workflow agent
 or tool is registered. These carriage changes do not modify DB backup/restore.
+
+## Actualizar una instalación 1.92
+
+El instalador y el actualizador conservan la bóveda `data.keys` existente. El registro del paquete identifica la copia de `Uninstaller.exe`. El actualizador puede instalarla incluso cuando un cliente anterior solo preparó el ZIP interior. La copia de automodificación incluye los archivos de compilación y el espacio de descargas de Torrenter. Las compilaciones con dependencias distintas pueden coexistir. Un bloqueo protege cada entorno compartido durante la preparación y toda la compilación.

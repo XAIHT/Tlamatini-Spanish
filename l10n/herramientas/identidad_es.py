@@ -38,7 +38,6 @@ La persona del chat sigue llamándose Tlamatini: sólo cambia lo que ve el siste
 operativo (y las ventanas del instalador/desinstalador que lo muestran).
 """
 import base64
-import json
 import re
 import sys
 from pathlib import Path

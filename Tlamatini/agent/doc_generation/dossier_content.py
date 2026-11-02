@@ -94,6 +94,7 @@ AGENT_FAMILIES: list[tuple[str, str, str, list[tuple[str, str]]]] = [
         ("file_extractor", "Extrae texto crudo de PDF, DOCX y documentos similares."),
         ("de_compresser", "Comprime o descomprime archivos .zip, .7z, .gz y tar."),
         ("j_decompiler", "Descompila archivos JAR y WAR con el jd-cli incluido."),
+        ("torrenter", "Gestiona las transferencias de cada cuenta en Tlachihuani Jobs y muestra las rutas verificadas."),
         ("gitter", "Ejecuta operaciones de git y comandos git personalizados."),
     ]),
     ("Documentos", "magenta", "Componen, tipografían y presentan.", [
@@ -207,7 +208,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 "quien le dio el nombre. Su cumpleaños es el 29 de octubre de 2025. Es femenina por diseño, incluida "
                 "su voz hablada, que siempre es una voz femenina, y se refiere a sí misma como _ella_.",
                 f"Es software libre y de código abierto bajo la licencia MIT, publicada en "
-                f"`github.com/XAIHT/Tlamatini`. El repositorio lleva la aplicación y cada uno de sus "
+                f"`github.com/XAIHT/Tlamatini-Spanish`. El repositorio lleva la aplicación y cada uno de sus "
                 f"{agents} programas de workflow-agent como Python simple y legible.",
             ],
             points=[
@@ -723,7 +724,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ("Límites", "La carga en frío del modelo, la latencia del proveedor y el hardware varían; no hay promesa de latencia cero."),
                 ("Guía detallada", "docs/chat-microphone-design.md registra la configuración, el protocolo y la evidencia."),
             ], deck="cards"),
-        Section("navbar", "NAVEGACIÓN", "La barra de menús en v1.91.1",
+        Section("navbar", "NAVEGACIÓN", "La barra de menús en v1.92.3",
             "Vistas controla el espacio de trabajo, Paneles abre los editores de flows, y Config guarda la configuración.",
             table={"columns": ["Menú", "Qué encuentras ahí"], "widths": [0.20, 0.80], "rows": [
                 ["Abrir · Guardar", "Abre un archivo en el canvas; Guardar en el menú elige un destino con el Guardar como nativo."],
@@ -1630,8 +1631,8 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ("Modelos", "Descarga nomic-embed-text y los modelos en la nube que usa Tlamatini."),
                 ("Configurar", "Abre Config ▸ Modelos y el Access Keys Wizard, y luego marca Multi-Turn."),
             ]},
-            code=("git clone https://github.com/XAIHT/Tlamatini.git\n"
-                  "cd Tlamatini\n"
+            code=("git clone https://github.com/XAIHT/Tlamatini-Spanish.git\n"
+                  "cd Tlamatini-Spanish\n"
                   "python -m venv venv && venv\\Scripts\\activate\n"
                   "pip install -r requirements.txt\n"
                   "python Tlamatini/manage.py migrate\n"
@@ -1824,7 +1825,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 "main en el siguiente commit, así que un build de main reportaba entonces 1.88.0 y lo llevaba todo.",
                 "El release privado (con llaves) ahora lleva los datos de la máquina que lo construye: cada servidor de External MCP "
                 "de la copia instalada y su elección activa, combinados en un catálogo privado ignorado por git, y toda la "
-                "bóveda data.keys. El builder público rechaza ambos. Una actualización desde la app no conserva data.keys.",
+                "bóveda data.keys. El builder público rechaza ambos. Desde la v1.92.2 se conserva la bóveda existente al actualizar.",
             ],
             points=[
                 ("Terminales", "CMD y PowerShell reales que puedes ver, tecleados como una persona, con entrega del teclado."),

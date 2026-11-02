@@ -1,42 +1,20 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
-# Live Editor and Terminater settings
+# Configuración del Editor en vivo y Terminater
 
-Source update (2026-10-30): both typing-speed limits are now 250 WPM; v1.91.1
-shipped with a 160 WPM limit. Defaults and minimum speeds are unchanged.
+Desde la v1.92.0, ambos controles admiten hasta 250 WPM. El Editor en vivo usa 100 WPM de forma predeterminada y Terminater usa 50.
 
-Open **Config → Live Editor & Terminater**, the canvas Settings button, or the
-terminal Settings button. Live Editor, Terminater and Voice share one dialog.
-Save applies behavior to the next action; Cancel and Escape discard the draft.
-Opening settings stops an active editor teaching action. Live editor access is
-an explicitly immediate tab permission, matching the canvas checkbox.
+Abre **Config → Editor en vivo y Terminater** o pulsa Configuración en el editor o la terminal. El diálogo contiene las pestañas Editor en vivo, Terminater y Voz. Guardar aplica los cambios a la siguiente acción. Cancelar o Escape descartan el borrador. Abrir la configuración interrumpe la lección activa. El permiso de acceso al editor se aplica de inmediato en esa pestaña.
 
-Standard and Guided learning presets fill the draft. Reset restores the current
-tab's defaults. Preview types a harmless sample in the dialog and can speak it;
-it never runs a command, edits a file, or saves settings.
+Los preajustes Estándar y Aprendizaje guiado rellenan el borrador. Restablecer recupera los valores iniciales de la pestaña. Vista previa reproduce una muestra en el diálogo sin guardar cambios en la cuenta.
 
-## Settings and ownership
+## Ajustes de la cuenta y del navegador
 
-Account preferences use `InteractionSettings` (migration 0220), strict validation
-and optimistic revisions at authenticated, CSRF-protected
-`/agent/interaction-settings/`. Concurrent saves require reloading the dialog.
+- **Editor en vivo:** 40–250 WPM, 100 de forma predeterminada. Puedes elegir una pausa de 0–3 segundos tras cada segmento, el detalle de las explicaciones, las sugerencias de campo y el seguimiento del cursor. Desplazar el documento a mano suspende el seguimiento durante ese segmento.
+- **Terminater:** 20–250 WPM, 50 de forma predeterminada. Elige el intérprete, quién presiona Enter, el asesor y los tiempos de espera. Si vinculas las velocidades, ambas usan 40–250 WPM. El modo de Enter manual bloquea también los envíos automáticos mediante alias o comandos codificados. Cada tecla conserva una pausa.
+- **Voz:** elige si se lee la explicación, el texto literal o ambos, y si la lectura ocurre antes, durante o después de escribir. Puedes hacer que la escritura espere el final de la narración. Silenciar y la escucha del micrófono tienen prioridad.
+- **Apariencia:** la fuente, los números de línea, el ajuste de líneas, el cursor y la distribución de terminales se conservan por cuenta y navegador.
 
-* Editor: 40–250 WPM, pause 0–3 seconds after a segment, teaching detail, initial
-  field suggestions, ghost text versus choices, and following the typed cursor.
-  Scrolling manually suspends following for that segment. Saved speed overrides
-  the model's suggested speed. Teaching detail is included in the tool's read
-  response as an instruction; the language model determines the final wording.
-* Terminal: 20–250 WPM, default available shell, task-controlled or user-only
-  Enter, advisor for new terminals, command wait, no-output threshold and user
-  handoff wait. There is no paste or instant mode. Linked speeds use 40–250 WPM.
-  User-only Enter rejects line breaks/control characters and automated Enter,
-  including base64 commands and action aliases. It does not restrict user input.
-* Voice: editor and terminal narration, explanation/literal/both, before/during/
-  after, optional completion before typing, and command-action result notices.
-  Uses the existing browser voice choice, rate, volume and pitch. Global mute
-  and microphone listening take precedence. Escape stops speech.
-* Browser/account appearance: editor font, line numbers and wrapping; terminal
-  font, cursor shape/blink and preferred layout. Stored separately from account
-  behavior and flow files, with live changes to existing views.
+La migración 0220 guarda las preferencias de comportamiento por cuenta. `/agent/interaction-settings/` comprueba la sesión, CSRF, los límites y la revisión. Si dos pestañas intentan guardar revisiones distintas, vuelve a cargar el diálogo.
 
 ## Runtime contracts
 
@@ -105,7 +83,7 @@ release builder solely to test this feature.
 
 | Parameter | Default | Allowed values | Stored for |
 |---|---|---|---|
-| Typing speed (WPM) (`editor_wpm`) | 100 | 40–250 | Account |
+| Velocidad de escritura (WPM) (`editor_wpm`) | 100 | 40–250 | Account |
 | Use the same typing speed for both (`link_speeds`) | Off | On / Off | Account |
 | Pause after each segment (seconds) (`segment_pause`) | 0 | 0–3 | Account |
 | Teaching detail (`teaching_detail`) | Balanced | Brief, Balanced, Detailed | Account |
@@ -120,7 +98,7 @@ release builder solely to test this feature.
 
 | Parameter | Default | Allowed values | Stored for |
 |---|---|---|---|
-| Typing speed (WPM) (`terminal_wpm`) | 50 | 20–250 | Account |
+| Velocidad de escritura (WPM) (`terminal_wpm`) | 50 | 20–250 | Account |
 | Default shell (`shell`) | PowerShell | PowerShell, CMD, PowerShell 7 | Account |
 | Command execution (`execution`) | Follow the task’s instructions | Follow the task’s instructions, I always press Enter | Account |
 | Enable advisor in new terminals (`advisor`) | On | On / Off | Account |

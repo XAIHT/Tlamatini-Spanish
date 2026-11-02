@@ -16,7 +16,6 @@ Cada `en` debe existir tal cual en el original inglés. El conteo `n` de cada
 segmento se calcula aplicando la memoria completa en el mismo orden que usa
 `aplicar` (el más largo primero), así que ambos siempre coinciden.
 """
-import json
 import sys
 from pathlib import Path
 

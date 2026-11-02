@@ -8,7 +8,7 @@ with a description extracted from the file itself. Overview sheets draw the
 runtime topology, the request lifecycle, the intelligence core, the agent
 ecosystem, the integration surfaces, the frontend module map (parsed from the
 templates), the data model (parsed from models.py), the build/release pipeline,
-verification & knowledge, and a Python module dependency matrix (parsed imports).
+verification & knowledge, and a Matriz de dependencias de Python (parsed imports).
 
 Output: <repo>/Temp/architecture/Tlamatini-Architecture.tex (+ generator_report.txt)
 
@@ -835,8 +835,8 @@ MIGRATIONS = [FileInfo(p) for p in ALL_FILES
 LAYERS = collections.OrderedDict([
     ("presentation", ("Presentation (browser)", "0E9F8E")),
     ("transport", ("Process & transport", "1F6FB2")),
-    ("intelligence", ("Intelligence core", "6B3FA0")),
-    ("integration", ("Integration surfaces", "D9731A")),
+    ("intelligence", ("Núcleo de inteligencia", "6B3FA0")),
+    ("integration", ("Interfaces de integración", "D9731A")),
     ("agents", ("Agent pool", "2E8B3A")),
     ("persistence", ("Persistence & state", "8B5A2B")),
     ("platform", ("Platform & safety", "3F5468")),
@@ -893,6 +893,10 @@ def assign(p):
         return "proc"
     if p.startswith("Tlamatini/tlamatini/"):
         return "django"
+    if p.startswith(A + "torrenter_workspace/"):
+        return "torrent_ui"
+    if p.startswith("l10n/"):
+        return "edition_l10n"
     if p.startswith(A + "templates/"):
         return "templates"
     if p.startswith(A + "management/"):
@@ -989,7 +993,7 @@ def assign(p):
 CHAPTERS = collections.OrderedDict([
     ("core", ("Atlas I \u2014 Server core: process, web tier and intelligence",
               "Django/Channels process, HTTP and WebSocket entry points, the RAG chains, the Multi-Turn executor and its services.", 4)),
-    ("integ", ("Atlas II \u2014 Integration surfaces, platform and state",
+    ("integ", ("Atlas II \u2014 Interfaces de integración, platform and state",
                "Built-in MCP servers, the universal external-MCP client, ACPX, the skill harness, platform guards and persistence core.", 4)),
     ("migr", ("Atlas III \u2014 Persistence history: every Django migration",
               "Tiles are tinted by what each migration seeds or changes (classified from its file name).", 5)),
@@ -1008,6 +1012,8 @@ CHAPTERS = collections.OrderedDict([
 ])
 
 META = {
+    "torrent_ui": ("front", "Torrenter workspace", "Cola de la cuenta, inspección y archivos verificados", "presentation"),
+    "edition_l10n": ("know", "Localización de la edición en español", "Herramientas, glosario, bases y memoria de traducción.", "knowledge"),
     "vendor_canvas-editor": ("vendor", "vendor/canvas-editor - offline CodeMirror", "editable text and tutoring extension; manifest and licenses carried locally", "vendor"),
     "interactor": ("core", "agent/interactor/ - live editor module", "authenticated tab bridge, fresh buffer reads, typed teaching segments and learner handoffs", "intelligence"),
     "interactor_front": ("front", "static/agent/interactor/ - tutor controls", "browser bridge, local field completion and learner-first interruption", "presentation"),
@@ -1030,7 +1036,7 @@ META = {
     "skills": ("integ", "agent/skills/ \u00b7 skill harness", "SKILL.md frontmatter, registry, planning-handoff harness, I/O contract, redaction, validator", "integration"),
     "skillspkg": ("integ", "agent/skills_pkg/ \u00b7 SKILL.md packages", "%d packages loaded by boot_skills() and invoked through list_skills / invoke_skill" % len(SKILL_PKGS), "integration"),
     "platform": ("integ", "agent/ \u00b7 platform, safety and lifecycle", "Temp/Templates policy, orphan reaper, watchdog, log tags, self-update, companion discovery", "platform"),
-    "persist": ("integ", "persistence core", "Django models, WAL-safe SQLite copy (online backup API), DB staging for self-update", "persistence"),
+    "persist": ("integ", "persistence core", "modelos Django, WAL-safe SQLite copy (online backup API), DB staging for self-update", "persistence"),
     "jdcli": ("integ", "Tlamatini/jd-cli/ \u00b7 bundled Java decompiler", "", "integration"),
     "images": ("integ", "agent/images/ \u00b7 documentation media", "", "knowledge"),
     "selfsrc": ("integ", "agent/TlamatiniSourceCode/ \u00b7 self-modify snapshot slot", "filled by copy_source_assets.py in --self-modify builds", "platform"),
@@ -1122,10 +1128,10 @@ for _k, _c in CLUSTERS.items():
 ORDER = {
     "core": ["proc", "django", "transport", "templates", "mgmt", "intel", "interactor", "rag", "chains", "services", "imaging", "opus", "monitors", "docgen", "agent_other"],
     "integ": ["integ", "acpx", "skills", "skillspkg", "platform", "persist", "jdcli", "images", "selfsrc", "fixtures"],
-    "front": ["interactor_front", "js_chat", "js_acp", "js_pfp", "js_shared", "js_other", "css_chat", "css_acp", "css_pfp", "css_shared", "css_other", "static_media"],
+    "front": ["torrent_ui", "interactor_front", "js_chat", "js_acp", "js_pfp", "js_shared", "js_other", "css_chat", "css_acp", "css_pfp", "css_shared", "css_other", "static_media"],
     "verify": ["unit", "tests_root", "auxtests", "e2e", "roottests", "scripts", "harness_claude", "harness_gemini"],
     "build": ["build", "install", "mcpserver", "security", "ci", "demo", "rootmedia"],
-    "know": ["rootdocs", "docs", "docs_claude", "docs_changes", "guides", "atlas", "claude_cfg", "memory", "gemini_skills", "codex_skills"],
+    "know": ["edition_l10n", "rootdocs", "docs", "docs_claude", "docs_changes", "guides", "atlas", "claude_cfg", "memory", "gemini_skills", "codex_skills"],
 }
 CH_CLUSTERS = collections.OrderedDict((ch, []) for ch in CHAPTERS)
 for ch in CHAPTERS:
@@ -1424,12 +1430,12 @@ def text_node(out, x, y, txt, size=6.0, anchor="north west", width=None, color="
 
 
 # ----------------------------------------------------------------------------- sheet 1: cover (filled at the end)
-COVER = new_sheet("Tlamatini \u2014 Complete Architecture Atlas", "", "presentation", bm="Cover, figures and sheet index")
+COVER = new_sheet("Tlamatini \u2014 Atlas de arquitectura", "", "presentation", bm="Portada, cifras e índice de láminas")
 
 
 # ----------------------------------------------------------------------------- sheet 2: runtime topology
 def sheet_topology():
-    sh = new_sheet("Runtime topology \u2014 processes, ports and stores",
+    sh = new_sheet("Topología de ejecución \u2014 procesos, puertos y almacenamiento",
                    "One Python process serves the browser pages over HTTP and %d WebSocket routes, starts two built-in MCP servers, and drives pool agents, ACPX children and external MCP servers." % len(WS_ROUTES),
                    "transport")
     o = sh.body
@@ -1548,7 +1554,7 @@ def sheet_topology():
 
 # ----------------------------------------------------------------------------- sheet 3: request lifecycle
 def sheet_lifecycle():
-    sh = new_sheet("Request lifecycle \u2014 from the composer to the rendered answer",
+    sh = new_sheet("Ciclo de una solicitud \u2014 del mensaje a la respuesta",
                    "Twelve steps of one chat message in Multi-Turn mode, by the layer that performs them. Every application file named is clickable.", "intelligence")
     o = sh.body
     lanes = [("Browser", "Lpresentation"), ("Channels consumer", "Ltransport"), ("RAG interface and chains", "Lintelligence"),
@@ -1599,7 +1605,7 @@ def sheet_lifecycle():
 
 # ----------------------------------------------------------------------------- sheet 4: intelligence core
 def sheet_intelligence():
-    sh = new_sheet("Intelligence core \u2014 five layers, the Multi-Turn executor and the Model Brain",
+    sh = new_sheet("Núcleo de inteligencia \u2014 cinco capas, ejecución Multi-Turn y Model Brain",
                    "How context reaches the model, how each request is fitted to the model's real window, and how every model step is protected.", "intelligence")
     o = sh.body
     layers = [
@@ -1675,7 +1681,7 @@ def sheet_intelligence():
 
 # ----------------------------------------------------------------------------- sheet 5: agent ecosystem
 def sheet_agents():
-    sh = new_sheet("Agent ecosystem \u2014 %d workflow agent types and the flow pipeline" % len(AGENT_DIRS),
+    sh = new_sheet("Ecosistema de agentes \u2014 %d tipos de agentes de flujo y ejecución de flujos" % len(AGENT_DIRS),
                    "From a drawing on the canvas (or a chat answer) to running processes; every chip opens that agent's files in the atlas.", "agents")
     o = sh.body
     pipe = [
@@ -1739,7 +1745,7 @@ def sheet_agents():
     anat = ["Each template: `<type>.py` + `config.yaml`; flat helper siblings travel with pool copies (PDFer, PPTXer, LaTeXer, Googler, Video-Analyzer\u2026)",
             "Lifecycle: PID file while running; `AGENT_REANIMATED=1` resumes after pause with `reanim*` state; Ender clears it",
             "Connections: `source_agents` (watch), `target_agents` (start), special slots for OR/AND, Forker/Asker, Counter, Ender",
-            "Pool agents import nothing from `agent.*`: %d of %d pool Python files do (checked)" % (POOL_AGENT_IMPORTS, len(POOL_PY))]
+            "Pool agents import nothing from `agent.*`: %d of %d pool archivos Python do (checked)" % (POOL_AGENT_IMPORTS, len(POOL_PY))]
     col = max(range(ncol), key=lambda i: heights[i])
     box(o, 10 + col * (cw + gap), heights[col], cw, "Lagents", "Anatomy of a pool agent", anat, size=5.6)
     return sh
@@ -1747,7 +1753,7 @@ def sheet_agents():
 
 # ----------------------------------------------------------------------------- sheet 6: integration surfaces
 def sheet_integration():
-    sh = new_sheet("Integration surfaces \u2014 ACPX, skills, external MCPs and bridges",
+    sh = new_sheet("Interfaces de integración \u2014 ACPX, habilidades, MCP externos y puentes",
                    "Four ways Tlamatini reaches beyond its own process: coding-agent CLIs, procedural skills, any MCP server, and the outside world.", "integration")
     o = sh.body
     q = {
@@ -1806,7 +1812,7 @@ def sheet_integration():
 
 # ----------------------------------------------------------------------------- sheet 7: frontend module map
 def sheet_frontend():
-    sh = new_sheet("Frontend module map \u2014 what each page loads, in order",
+    sh = new_sheet("Mapa de módulos de la interfaz \u2014 carga de módulos por página",
                    "Parsed from the templates' {% static %} tags. Numbers give the load order; a star marks a module loaded by more than one page.", "presentation")
     o = sh.body
     pages = [("chat", "Chat page \u00b7 agent_page.html", 150.0), ("acp", "Agentic Control Panel", 82.0),
@@ -1881,7 +1887,7 @@ def short_loc(fi):
 
 # ----------------------------------------------------------------------------- sheet 8: data model
 def sheet_data():
-    sh = new_sheet("Data model and state \u2014 %d Django models, %d migrations, WAL-safe copies" % (len(MODELS), len(MIGRATIONS)),
+    sh = new_sheet("Modelo de datos y estado \u2014 %d modelos Django, %d migraciones, copias compatibles con WAL" % (len(MODELS), len(MIGRATIONS)),
                    "Fields parsed from agent/models.py. FK arrows are written as \u2192 Target. The history chart classifies each migration by its file name.", "persistence")
     o = sh.body
     mfi = FI[A + "models.py"]
@@ -1955,8 +1961,8 @@ def sheet_data():
 
 # ----------------------------------------------------------------------------- sheet 9: build / release / install / update
 def sheet_build():
-    sh = new_sheet("Build, release, install and self-update pipeline",
-                   "From the repository to Installer.exe, then in-app updates that keep user state; plus the guards that keep secrets out of git.", "build")
+    sh = new_sheet("Compilación, distribución, instalación y actualización",
+                   "Del repositorio al instalador y al actualizador: conservación de datos del usuario y exclusión de secretos.", "build")
     o = sh.body
     rows = [
         ("Build", "Lbuild", [
@@ -1983,7 +1989,7 @@ def sheet_build():
             ("h4", "Secrets", ["[[regen_secrets.py]] toggles placeholders and keys from the gitignored `data.keys`; [[uncommit-keys.bat]]; [[private_targets.example.json]]"])]),
         ("What ships and what survives", "Lpersistence", [
             ("w1", "Install layout", ["`Tlamatini.exe` + `_internal/` (frozen Django app and collected statics), carried `python/`, `jre/` and `git/`, the `agents/` templates, `DB/`, `Temp/`, `Templates/`"]),
-            ("w2", "Kept by self-update", ["`config.json`, `DB`, `Temp`, `Templates`, `application(s)`, the `*_generated` and `context_files` folders and `Uninstaller.exe`; uninstall keeps what [[preserved_user_state.json]] lists"]),
+            ("w2", "Kept by self-update", ["`config.json`, `DB`, `Temp`, `Templates`, `application(s)`, the `*_generated` and `context_files` folders and `data.keys`; the package delivers its verified uninstaller"]),
             ("w3", "Self-modify snapshot", ["`TlamatiniSourceCode/` with a manifest and rebuild instructions; secrets redacted and heavy media omitted by [[copy_source_assets.py]]"]),
             ("w4", "Inclusion sweeps", ["[[.claude/skills/tlamatini-self-update-inclusion/scripts/sweep_self_update.py|sweep_self_update.py]] and [[.claude/skills/tlamatini-self-modify-inclusion/scripts/sweep_self_modify.py|sweep_self_modify.py]] prove both pipelines carry every new asset"])], False),
     ]
@@ -2017,7 +2023,7 @@ def sheet_build():
 
 # ----------------------------------------------------------------------------- sheet 10: verification and knowledge
 def sheet_quality():
-    sh = new_sheet("Verification and knowledge \u2014 how Tlamatini is tested and documented",
+    sh = new_sheet("Verificación y documentación \u2014 pruebas y fuentes de conocimiento",
                    "%d test modules hold %d test functions; every automated run is visible. The documentation graph is what every assistant reads first." % (len(TEST_FILES), TEST_FUNCS), "quality")
     o = sh.body
     left = [
@@ -2071,7 +2077,7 @@ def sheet_quality():
 
 # ----------------------------------------------------------------------------- sheet 11: dependency matrix
 def sheet_dsm():
-    sh = new_sheet("Python module dependency matrix (DSM)",
+    sh = new_sheet("Matriz de dependencias de Python (DSM)",
                    "Row imports column (module-level and lazy in-function imports). %d backend modules, %d dependencies, parsed with ast." % (len(DSM_ORDER), len(EDGES)), "intelligence")
     o = sh.body
     n = len(DSM_ORDER)
@@ -2135,8 +2141,8 @@ def sheet_dsm():
 
 
 def sheet_live_editor():
-    sh = new_sheet("Live canvas editor and Interactor - v1.91.1",
-                   "Editable source, native persistence and tutoring share one document authority. Interactor is a module/tool, not a workflow agent.",
+    sh = new_sheet("Editor en vivo e Interactor",
+                   "El editor, el guardado nativo y la tutoría operan sobre el mismo documento. Interactor es una herramienta de módulo.",
                    "presentation")
     o = sh.body
     left = [
@@ -2170,16 +2176,46 @@ def sheet_live_editor():
             "Migration 0218 registers the Tool and catalog example, not an Agent. tool_gate_table drives binding, Compact and costs.",
             "Ask Execs gates new/save. New unnamed-path work uses a unique Temp/interactor directory; manual files need user-granted write access.",
             "Password input is not command ownership; an email field or DONE reply does not authorize outbound notification.",
-            "Current tag and source 9915938a (v1.91.1). Source checks do not certify a newly built installed package."]),
+            "El Editor en vivo admite 40-250 WPM y Terminater 20-250 WPM. Al vincularlos se usa 40-250."]),
     ]
     stack(o, 12, TOP, 193, left, size=12.0)
     stack(o, 215, TOP, 193, right, size=12.0)
     return sh
 
 
+def sheet_torrenter():
+    sh = new_sheet('Torrenter y entrega de la versión',
+                   'v1.92.3 y la actualización posterior de la cola', "integration")
+    box(sh.body, 12, TOP, 193, "Ltransport", "1. Inicia sesión y elige la cuenta", [
+        "El chat, el panel agéntico y XT abren la cola de la misma cuenta. La migración 0221 registra Torrenter.",
+        "Django autentica el navegador. El controlador obtiene una credencial de alcance limitado de Tlachihuani Jobs.",
+    ], h=72, size=15, tsize=14)
+    box(sh.body, 215, TOP, 193, "Lintegration", "2. Inspecciona la fuente y elige archivos", [
+        "Inspecciona el magnet o torrent. Conserva el ID de inspección hasta que estén listos los metadatos y los IDs de archivos.",
+        "Después de la etiqueta, un quinto magnet puede esperar si hay cuatro consultas de metadatos activas. Consulta el mismo ID.",
+    ], h=72, size=15, tsize=14)
+    box(sh.body, 12, TOP - 82, 193, "Lintelligence", "3. Envía la solicitud y sigue el trabajo", [
+        "Envía los IDs seleccionados y la revisión de metadatos. Reutiliza la clave de operación si no se confirmó el envío.",
+        "Un nodo del panel puede continuar al admitirse la operación o esperar la entrega verificada. Una pausa conserva la espera.",
+    ], h=72, size=15, tsize=14)
+    box(sh.body, 215, TOP - 82, 193, "Lpersistence", "4. Comprueba la copia entregada", [
+        "Lee la ruta y el SHA-256 del manifiesto publicado. El destino es Descargas de Windows o la carpeta content_generated de la edición.",
+        "Las referencias privadas y los registros van en TorrenterData. Para borrar archivos hay que aprobar la vista previa correspondiente en XT.",
+    ], h=72, size=15, tsize=14)
+    box(sh.body, 12, TOP - 164, 193, "Lbuild", "Distribuir una actualización", [
+        "El registro del paquete identifica Uninstaller.exe. El actualizador instala la copia verificada y conserva la bóveda data.keys existente.",
+        "Distribuye el HTML, JavaScript y CSS del panel junto con el controlador. Inclúyelos en la copia para automodificación.",
+    ], h=72, size=15, tsize=14)
+    box(sh.body, 215, TOP - 164, 193, "Lplatform", "Compilar y ejecutar en Windows", [
+        "La versión 1.92.3 separa los entornos por la huella de dependencias. El bloqueo del sistema cubre la preparación y el uso.",
+        "Después de la etiqueta, Executer conserva asignaciones como PLAYWRIGHT_BROWSERS_PATH y aplica el tiempo de espera configurado.",
+    ], h=72, size=15, tsize=14)
+    return sh
+
+
 def sheet_interaction_settings():
-    sh = new_sheet("Live Editor and Terminater configuration - v1.91.1",
-                   "One account schema controls real actions; local appearance and a shared speech queue complete the user experience.",
+    sh = new_sheet("Configuración del Editor en vivo y Terminater",
+                   "Un esquema de cuenta regula las acciones. La apariencia es local y la narración usa una cola de voz compartida.",
                    "presentation")
     o = sh.body
     left = [
@@ -2323,7 +2359,7 @@ def flow_chapter(ch, balance=True):
     def new_page():
         state["page"] += 1
         t = title + ("" if state["page"] == 1 else "  (continued %d)" % state["page"])
-        state["sh"] = new_sheet(t, sub, CH_LAYER[ch], legend="migr" if ch == "migr" else "types", bm=title + (" - part %d" % state["page"] if state["page"] > 1 else ""))
+        state["sh"] = new_sheet(t, sub, CH_LAYER[ch], legend="migr" if ch == "migr" else "types", bm=title + (" - parte %d" % state["page"] if state["page"] > 1 else ""))
         state["col"], state["y"] = 0, TOP
 
     def advance():
@@ -2405,6 +2441,7 @@ autofit(sheet_topology, BOTTOM + 1.5)
 sheet_lifecycle()
 sheet_live_editor()
 sheet_interaction_settings()
+sheet_torrenter()
 autofit(sheet_intelligence, BOTTOM + 1.5)
 sheet_agents()
 autofit(sheet_integration, BOTTOM + 4.5)
@@ -2433,23 +2470,23 @@ if notplaced:
 def fill_cover():
     o = COVER.body
     text_node(o, 14, 262, r"\bfseries TLAMATINI", size=58, color="Lpresentation!70!black")
-    text_node(o, 14, 238, r"Complete Architecture Atlas", size=26, color="black!80")
+    text_node(o, 14, 238, r"Atlas de arquitectura", size=26, color="black!80")
     text_node(o, 14, 226.5, r"\itshape eXtended Artificial Intelligence, Humanly Tempered \textperiodcentered{} ``one who knows''", size=12, color="black!65")
-    text_node(o, 14, 218, r"Created by \textbf{Angela L\'opez Mendoza} \textperiodcentered{} XAIHT", size=11.5, color="black!75")
+    text_node(o, 14, 218, r"Creado por \textbf{Angela L\'opez Mendoza} \textperiodcentered{} XAIHT", size=11.5, color="black!75")
     text_node(o, 14, 211, esc("Release %s \u00b7 commit %s (%s) \u00b7 atlas generated %s from application files tracked in git; database history is summarized" % (TAG, HEAD, COMMIT_DATE, TODAY)), size=8, color="black!60")
     kpis = [
-        ("{:,}".format(len(FILES)), "listed application files"),
-        ("{:,}".format(TOTAL_LOC), "lines of text"),
-        (str(sum(1 for f in FI.values() if f.ext == ".py")), "Python files"),
-        (str(len(AGENT_DIRS)), "workflow agent types"),
+        ("{:,}".format(len(FILES)), "archivos de aplicación"),
+        ("{:,}".format(TOTAL_LOC), "líneas de texto"),
+        (str(sum(1 for f in FI.values() if f.ext == ".py")), "archivos Python"),
+        (str(len(AGENT_DIRS)), "tipos de agentes de flujo"),
         (str(len(WRAPPED)), "Multi-Turn chat-agent tools"),
-        ("%d + %d" % (URL_COUNT, len(WS_ROUTES)), "HTTP routes + WebSocket routes"),
-        (str(len(MODELS)), "Django models"),
+        ("%d + %d" % (URL_COUNT, len(WS_ROUTES)), "rutas HTTP y WebSocket"),
+        (str(len(MODELS)), "modelos Django"),
         (str(len(MIGRATIONS)), "migrations"),
-        ("%d / %d" % (len(CH_CLUSTERS and [c for c in CLUSTERS if c.startswith("js_")]) and sum(len(CLUSTERS[c].files) for c in CLUSTERS if c.startswith("js_")), sum(len(CLUSTERS[c].files) for c in CLUSTERS if c.startswith("css_"))), "first-party JS / CSS files"),
+        ("%d / %d" % (len(CH_CLUSTERS and [c for c in CLUSTERS if c.startswith("js_")]) and sum(len(CLUSTERS[c].files) for c in CLUSTERS if c.startswith("js_")), sum(len(CLUSTERS[c].files) for c in CLUSTERS if c.startswith("css_"))), "archivos JS / CSS propios"),
         (str(len(SKILL_PKGS)), "SKILL.md packages"),
         ("{:,}".format(TEST_FUNCS), "test functions in %d files" % len(TEST_FILES)),
-        (str(sum(1 for f in FI.values() if f.ext == ".md")), "Markdown documents"),
+        (str(sum(1 for f in FI.values() if f.ext == ".md")), "documentos Markdown"),
     ]
     cw, chh = 58.0, 18.0
     for i, (v, lab) in enumerate(kpis):
@@ -2468,7 +2505,7 @@ def fill_cover():
         by_layer[c.layer] += sum(f.loc for f in c.files)
         files_layer[c.layer] += len(c.files)
     y = 132
-    text_node(o, 14, y + 6, r"\bfseries Lines of text by architectural layer", size=8, color="black!75")
+    text_node(o, 14, y + 6, r"\bfseries Líneas de texto por capa arquitectónica", size=8, color="black!75")
     total = sum(by_layer.values())
     xx = 14.0
     W = 241.0
@@ -2485,7 +2522,7 @@ def fill_cover():
         o.append(T(r"\fill[L<k>] (<x>,<y1>) rectangle ++(3,3);", k=k, x=n2(x), y1=n2(yy - 3.2)))
         text_node(o, x + 4.2, yy - 0.2, esc("%s \u2014 %d files, %s lines" % (LAYERS[k][0], files_layer.get(k, 0), "{:,}".format(by_layer.get(k, 0)))), size=6.4)
     y = 92
-    text_node(o, 14, y, r"\bfseries File-type markers on every tile", size=8, color="black!75")
+    text_node(o, 14, y, r"\bfseries Tipos de archivos en las fichas", size=8, color="black!75")
     for i, (k, lab, col) in enumerate(TYPES):
         r, c = i // 6, i % 6
         x, yy = 14 + c * 40, y - 6 - r * 5
@@ -2497,10 +2534,10 @@ def fill_cover():
         "**Part C** is the file index: every file with its ID, path, size and a description extracted from the file itself (docstring, header comment, heading or parsed structure).",
         "Click a tile to open its index entry; click an ID in the index to jump back to the tile. PDF bookmarks list every sheet and cluster.",
     ]
-    box(o, 14, 72, 241, "Lpresentation", "How to read this atlas", howto, size=6.6, bullet=True, tint=5)
+    box(o, 14, 72, 241, "Lpresentation", "Cómo leer este atlas", howto, size=6.6, bullet=True, tint=5)
     # sheet index
     x0 = 268.0
-    text_node(o, x0, 271, r"\bfseries SHEET INDEX", size=9, color="Lpresentation!75!black")
+    text_node(o, x0, 271, r"\bfseries ÍNDICE DE LÁMINAS", size=9, color="Lpresentation!75!black")
     y = 264
     groups = [("Part A \u2014 architecture overview", SHEETS[1:OVERVIEW_COUNT]), ("Part B \u2014 file atlas", SHEETS[OVERVIEW_COUNT:])]
     for gt, ss in groups:
@@ -2549,7 +2586,7 @@ def frame(sh):
             o.append(T(r"\node[anchor=west, inner sep=0pt, text=black!65] at (<x>,<y>) {\fontsize{5.4}{6}\selectfont\sffamily <t>};", x=n2(x + 4.2), y=n2(y), t=esc(lab)))
     # title block
     o.append(r"\draw[black!35, line width=0.4pt] (5.5,13.6) -- (414.5,13.6);")
-    cells = [(5.5, 128, "TLAMATINI \u00b7 COMPLETE ARCHITECTURE ATLAS", "XAIHT \u00b7 github.com/XAIHT/Tlamatini \u00b7 MIT"),
+    cells = [(5.5, 128, "TLAMATINI \u00b7 ATLAS DE ARQUITECTURA", "XAIHT \u00b7 github.com/XAIHT/Tlamatini-Spanish \u00b7 MIT"),
              (128, 262, "DRAWING", sh.title),
              (262, 312, "RELEASE", "%s \u00b7 commit %s" % (TAG, HEAD)),
              (312, 360, "AUTHOR", "Angela L\u00f3pez Mendoza"),
@@ -2577,7 +2614,7 @@ PREAMBLE = r"""\documentclass{article}
 \usepackage{multicol}
 \usepackage{fancyhdr}
 \usepackage[hidelinks,bookmarksnumbered,bookmarksopen,bookmarksopenlevel=0]{hyperref}
-\hypersetup{pdftitle={Tlamatini - Complete Architecture Atlas},pdfauthor={Angela L\'opez Mendoza},pdfsubject={Architecture diagrams of every listed application file of Tlamatini},pdfkeywords={Tlamatini, architecture, Django, Channels, agents, MCP, ACPX, RAG}}
+\hypersetup{pdftitle={Tlamatini - Atlas de arquitectura},pdfauthor={Angela L\'opez Mendoza},pdfsubject={Architecture diagrams of every listed application file of Tlamatini},pdfkeywords={Tlamatini, architecture, Django, Channels, agents, MCP, ACPX, RAG}}
 \setlength{\parindent}{0pt}
 \setlength{\topskip}{0pt}
 \setlength{\parskip}{0pt}
@@ -2620,7 +2657,7 @@ def render_index():
     out = []
     out.append(r"\newgeometry{left=9mm,right=9mm,top=15mm,bottom=12mm,headheight=6mm,headsep=3mm,footskip=6mm}")
     out.append(r"\pagestyle{fancy}\fancyhf{}")
-    out.append(r"\fancyhead[L]{\sffamily\fontsize{7}{8}\selectfont\bfseries TLAMATINI \textperiodcentered{} COMPLETE ARCHITECTURE ATLAS \textemdash{} Part C: file index}")
+    out.append(r"\fancyhead[L]{\sffamily\fontsize{7}{8}\selectfont\bfseries TLAMATINI \textperiodcentered{} ATLAS DE ARQUITECTURA \textemdash{} Part C: file index}")
     out.append(r"\fancyhead[R]{\sffamily\fontsize{7}{8}\selectfont %s \textperiodcentered{} commit %s \textperiodcentered{} Angela L\'opez Mendoza}" % (esc(TAG), HEAD))
     out.append(r"\fancyfoot[C]{\sffamily\fontsize{7}{8}\selectfont page \thepage}")
     out.append(r"\renewcommand{\headrulewidth}{0.3pt}")

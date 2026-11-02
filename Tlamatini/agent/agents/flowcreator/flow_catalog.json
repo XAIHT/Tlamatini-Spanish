@@ -1424,7 +1424,7 @@
       "aliases": [
         "flowcreator"
       ],
-      "purpose": "Diseña un workflow a partir de tu objetivo. Primero selecciona de entre los 86 tipos de agent instalados, luego usa sus instrucciones detalladas y los contratos actuales de configuración/conexión para producir un archivo .flw. Revisa las referencias, las ramas, los campos y los mapeos de Parametrizer antes de publicar, con reparación acotada para planes inválidos. El flow generado sigue siendo revisable antes de que lo corras; la cobertura del catálogo no garantiza que cada aplicación o servicio externo esté listo.",
+      "purpose": "Diseña un workflow a partir de tu objetivo. Primero selecciona de entre los 87 tipos de agent instalados, luego usa sus instrucciones detalladas y los contratos actuales de configuración/conexión para producir un archivo .flw. Revisa las referencias, las ramas, los campos y los mapeos de Parametrizer antes de publicar, con reparación acotada para planes inválidos. El flow generado sigue siendo revisable antes de que lo corras; la cobertura del catálogo no garantiza que cada aplicación o servicio externo esté listo.",
       "config_schema": {
         "flow_filename": "str",
         "prompt": "str",

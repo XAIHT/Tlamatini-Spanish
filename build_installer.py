@@ -439,7 +439,7 @@ def main():
             cleanup_file.unlink()
             print(f"Removed: {cleanup_file}")
 
-    # ── 7) Rename dist/Installer → dist/Tlamatini_Release_v<version> ──
+    # ── 7) Rename dist/Installer → dist/Tlamatini-Spanish_Release_v<version> ──
     # Instead of copying the entire --onedir output into a second folder,
     # we simply rename it.  This avoids duplicating ~all build artifacts.
     # The release folder name carries the version so the user knows at a

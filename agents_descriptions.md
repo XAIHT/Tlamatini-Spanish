@@ -8,29 +8,11 @@
 -->
 # Tlamatini — Descripciones de agents
 
-> Release actual: **[v1.91.1](docs/changes/2026-10-27-v1.91.1.md)**. Los registros fechados de abajo conservan sus fechas de evidencia originales.
+> Versión actual: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
 
-## v1.91.1 — Correcciones de Prompt Flow y nombres cortos de tools
+## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
-**v1.91.1** es la versión actual (2026-10-27). Su tag anotado resuelve a
-`9915938a` y está en origin; está publicado en GitHub como el Latest
-release, reemplazando a v1.91.0 (publicado 2026-10-23). Es un patch release: no se agregó ningún agent,
-tool, skill ni migración, así que el catálogo sigue siendo **86 workflow agents, 67
-wrapped chat agents, 110 tools integrados, 29 skills y 220 migraciones**.
-
-- **Historial de Prompt Flow:** cada chain carga el historial del `conversation_user_id` propio
-  de la solicitud; una ejecución de Prompt Flow usa sólo su propio historial en memoria.
-- **Decisiones YES/NO:** una Decisión `equals` acepta una respuesta que empieza con el
-  valor (`## YES - ...` es igual a `YES`; `Yesterday` no), y el Prompt anterior
-  pide esa respuesta corta sola en la primera línea.
-- **Uso:** una ejecución de Prompt Flow se registra para la cuenta que la posee.
-- **Telegrammer:** "using the bot ..." en cualquier parte de la solicitud (fuera de los valores entre comillas)
-  envía como el bot; un `provider` explícito sigue ganando.
-- **Nombres cortos de tools:** un wrapped agent llamado por su nombre corto (`terminater`) se
-  resuelve a `chat_agent_terminater` y se registra como `[TOOL-ALIAS]`.
-- **Título de pestaña de Prompt Flow:** un flow Untitled muestra el nombre de su archivo.
-
-Ve el [registro del release v1.91.1](docs/changes/2026-10-27-v1.91.1.md).
+Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](docs/changes/2026-11-01-v1.92.3.md).
 
 ## Heredado de v1.91.0 — Configuración de Editor en vivo y Terminater
 
@@ -94,7 +76,7 @@ Las descripciones están escritas para **lectores no expertos** — ante la duda
 
 > > **Nota — el lector de PDF del canvas no es un agent.** Abrir un PDF en el canvas del *chat* y convertirlo en contexto (2026-09-16) es una función de la página, no un workflow agent, así que no tiene fila en este archivo: ve [docs/pdf-canvas.md](docs/pdf-canvas.md). Sí reutiliza el agent **Image-Interpreter** de abajo para su análisis de imágenes opcional, y es distinto de **File-Extractor** (que extrae el texto crudo de un PDF que tú nombras) y de **PDFer** (que *crea* PDFs).
 
-El diseñador visual de workflows trae **86 tipos de agent**, agrupados abajo según su rol en un flow. Arrastra cualquiera al canvas, conéctalos entre sí y presiona *Iniciar* — los agents corren como procesos separados que emiten logs y se comunican entre ellos a través de sus archivos `config.yaml`.
+El diseñador visual de workflows trae **87 tipos de agent**, agrupados abajo según su rol en un flow. Arrastra cualquiera al canvas, conéctalos entre sí y presiona *Iniciar* — los agents corren como procesos separados que emiten logs y se comunican entre ellos a través de sus archivos `config.yaml`.
 
 ### Agents de control
 
@@ -218,7 +200,7 @@ Agents de pegamento e infraestructura — no producen output directamente pero h
 |-------|-------------|
 | **Parametrizer** | Lleva resultados estructurados de un agent a la configuración de otro agent, un segmento a la vez. Su registro de parsers sigue a todos los productores de output declarados (50 por ahora, incluido Keyboarder). Conserva los campos vacíos, revisa las conversiones numéricas y booleanas, y exige que cada mapeo configurado tenga éxito antes de escribir o iniciar el objetivo. Respalda y restaura la config del objetivo y bloquea la reproducción automática de input de mouse/teclado interrumpido hasta que se revise el estado de la aplicación. |
 | **FlowBacker** | Una utilidad de backup pasiva. Al dispararse (normalmente por Ender), copia todo el directorio del pool de la sesión desplegada a un `target_directory` configurado, sobrescribiendo cualquier backup anterior de la misma sesión, luego lanza sus `target_agents` (Cleaners). El paso de "guarda antes de borrar" en cualquier flow que termina con limpieza. |
-| **FlowCreator** | Diseña un workflow a partir de tu objetivo. Primero selecciona de entre los 86 tipos de agent instalados, luego usa sus instrucciones detalladas y los contratos actuales de configuración/conexión para producir un archivo .flw. Revisa las referencias, las ramas, los campos y los mapeos de Parametrizer antes de publicar, con reparación acotada para planes inválidos. El flow generado sigue siendo revisable antes de que lo corras; la cobertura del catálogo no garantiza que cada aplicación o servicio externo esté listo. |
+| **FlowCreator** | Diseña un workflow a partir de tu objetivo. Primero selecciona de entre los 87 tipos de agent instalados, luego usa sus instrucciones detalladas y los contratos actuales de configuración/conexión para producir un archivo .flw. Revisa las referencias, las ramas, los campos y los mapeos de Parametrizer antes de publicar, con reparación acotada para planes inválidos. El flow generado sigue siendo revisable antes de que lo corras; la cobertura del catálogo no garantiza que cada aplicación o servicio externo esté listo. |
 
 ### Agents de criptografía
 

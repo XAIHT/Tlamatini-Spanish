@@ -8,7 +8,10 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> Current release: **[v1.91.1](../changes/2026-10-27-v1.91.1.md)**. Dated records below retain their original evidence dates.
+> Versión actual: **[v1.92.3](../changes/2026-11-01-v1.92.3.md)**.
+
+[Versión 1.92.3 y correcciones posteriores](../changes/2026-11-01-v1.92.3.md) · 30 de octubre–2 de noviembre. Velocidad de hasta 250 WPM, admisión y entrega verificada en Torrenter, distribución del desinstalador, aislamiento de compilaciones, cola de metadatos y lectura de comandos de Executer.
+
 
 > **Carried from v1.88.0 (tagged 2026-10-20):** [Terminater](../terminater.md) (workflow agent #86 and the Terminals area) and a private release that carries the builder's own data. Counts: 86 workflow agents, 67 wrapped chat agents, 109 built-in tools, 217 migrations. See the [v1.88.0 release record](../changes/2026-10-20-v1.88.0.md) and the change records [Terminater](../changes/2026-10-19-terminater.md) and [private-release data](../changes/2026-10-19-private-release-data.md).
 

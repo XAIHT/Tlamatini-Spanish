@@ -18,7 +18,6 @@ traduzcan a la vez (o que el acoplamiento quede revisado).
 import ast
 import json
 import re
-import subprocess
 import tempfile
 from pathlib import Path
 
