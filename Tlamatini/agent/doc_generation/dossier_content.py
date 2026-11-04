@@ -1786,24 +1786,24 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ("Verificado", "Los recibos se revisan antes de reemplazar cualquier cosa."),
             ]),
         Section("versioning", "VERSIONADO", "Un número, de una sola fuente",
-            "Tlamatini sigue el Versionado Semántico, con tags anotados de Git como única fuente de verdad.",
+            "Tlamatini utiliza un solo número de versionado semántico para la última versión publicada.",
             body=[
                 "El resolvedor del runtime, la ventana Acerca de, el endpoint `/agent/version/` y cada artefacto del build "
                 "reportan el mismo tag base. La versión reportada nunca lleva un sufijo de desarrollo ni de cambios sin commit, "
-                "y `TLAMATINI_VERSION` puede documentar un release antes de que se cree su tag.",
-                f"Este dossier reporta la versión {version} e indica el tag, el commit y el estado de publicación exactos "
-                f"en su capítulo Release.",
+                "y `TLAMATINI_VERSION` selecciona el número de lanzamiento.",
+                f"Este dossier presenta {version} como la última versión publicada en todas sus páginas, "
+                f"incluidas las portadas, funciones e inventario.",
             ], deck="list",
             deck_points=[
                 ("SemVer", "MAJOR.MINOR.PATCH a partir de tags anotados de Git."),
                 ("Un solo resolvedor", "version.py, la ventana Acerca de y /agent/version/."),
                 ("Sólo el tag base", "Sin sufijos .devN, +gSHA ni .dirty."),
-                ("Override", "TLAMATINI_VERSION documenta un release antes de su tag."),
+                ("Override", "TLAMATINI_VERSION selecciona la última versión publicada."),
             ]),
     ])
 
     release = Chapter("release", "VIII", "Release actual",
-        f"Release del source {f['release_tag']}; la entrega del paquete y la aceptación en runtime necesitan evidencia aparte.",
+        f"Última versión publicada: {f['version']} — descargas, edición, actualizaciones y ejecución en Windows.",
         accent="gold", sections=[
         Section("release188", "HEREDADO DE v1.88.0", "Terminales a la vista y un release privado con tus datos",
             "Tlamatini v1.88.0 introdujo Terminater; su tag se creó el 20 de octubre.",
@@ -2276,7 +2276,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 "de 1,081 en un minuto a ninguno.",
                 "El 8 de octubre la prueba visible del Model Brain pasó 25 de 25 revisiones en una ejecución desde el source y la prueba visible "
                 "de la cuenta del PDF pasó 20 de 20. Son resultados fechados, no una afirmación de que esta actualización "
-                "de la documentación los volvió a correr. El estado de publicación se indica en la sección Identidad del release.",
+                "de la documentación los volvió a correr. La identidad del lanzamiento usa la misma versión que todo el dossier.",
             ],
             points=[
                 ("Model Brain", "Configuración por modelo a partir de fuentes citadas; Autoajuste muestra cada una."),

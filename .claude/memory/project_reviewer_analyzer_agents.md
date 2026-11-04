@@ -15,7 +15,7 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Versión actual: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
 
 
 2026-05-19: Added "powerful skills" the user requested, scoped to **Code Review + Security Audit** on **both surfaces** (their explicit choices via AskUserQuestion). Split into the roadmap's Reviewer (LLM review) + Analyzer (static/security scan).

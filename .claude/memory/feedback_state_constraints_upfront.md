@@ -15,7 +15,7 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Versión actual: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
 
 
 When a request hits a **hard platform or architectural constraint** (something that makes the obvious approach structurally impossible, not just hard), STATE the constraint and the real options up front as a decision for the user — do NOT chase it through trial-and-error patches.

@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza -->
 # Refresh the open canvas file
 
-> Versión actual: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
 
 
 ## Canvas, Views and avatar in v1.85.0

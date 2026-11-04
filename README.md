@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/XAIHT/Tlamatini-Spanish/tree/v1.92.3"><img src="https://img.shields.io/badge/SOURCE-v1.92.3-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini source v1.92.3" /></a>
+  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.92.3"><img src="https://img.shields.io/badge/RELEASE-v1.92.3-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini versión de lanzamiento v1.92.3" /></a>
   <a href="#installation"><img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-14B8A6?style=for-the-badge&labelColor=101827" alt="Windows 10 and 11" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/OPEN%20SOURCE-MIT-E9C46A?style=for-the-badge&labelColor=101827" alt="MIT open source" /></a>
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-818CF8?style=for-the-badge&labelColor=101827&logo=discord&logoColor=white" alt="Join the community on Discord" /></a>
@@ -106,13 +106,13 @@ segmento de enseñanza, elige qué dice y cuándo, y deja que la voz termine ant
 teclear. Los presets **Estándar** y **Aprendizaje guiado** te dan un punto de partida;
 la Vista previa te deja probar el borrador antes de guardar. [Explora la configuración →](docs/interaction-settings.md)
 
-**Novedades de la [serie 1.92](docs/changes/2026-11-01-v1.92.3.md).** Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.
+**Versión de lanzamiento [1.92.3](docs/changes/2026-11-01-v1.92.3.md).** Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.
 
 **Desde [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración
 compartido controla el comportamiento real del editor y de la terminal en el chat y en ambos
-paneles de control. Este tag de código fuente está disponible; el vínculo de Downloads se refiere a los paquetes publicados.
+paneles de control. Esta configuración está incluida en la versión de lanzamiento **1.92.3**.
 
-**Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El registro de releases distingue el código fuente etiquetado, los cambios posteriores en `main` y la evidencia fechada del build instalado.
+**Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El [registro de 1.92.3](docs/changes/2026-11-01-v1.92.3.md) describe la versión de lanzamiento completa.
 
 ## Habla y escucha
 

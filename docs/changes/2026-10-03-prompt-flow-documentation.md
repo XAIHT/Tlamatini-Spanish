@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # 2026-10-03 — Prompt Flow documentation and process cleanup
 
-> Versión actual: **[v1.92.3](2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](2026-11-01-v1.92.3.md)**.
 
 
 ## Request, verbatim

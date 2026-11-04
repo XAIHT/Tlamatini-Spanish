@@ -68,10 +68,15 @@ ALL_FILES = sorted([f for f in git("ls-files", "-z").split("\0") if f], key=lamb
 FILES = [f for f in ALL_FILES if not f.startswith(A + "migrations/")]
 PATHSET = set(FILES)
 HEAD = git("rev-parse", "--short", "HEAD").strip()
-try:
-    TAG = git("describe", "--tags", "--abbrev=0").strip()
-except subprocess.CalledProcessError:
-    TAG = "untagged"
+# Angela's requested release is authoritative, even before packaging/tagging.
+with open(os.path.join(ROOT, "package.json"), encoding="utf-8-sig") as release_manifest:
+    _manifest_version = str(json.load(release_manifest)["version"]).strip()
+_release_version = (os.environ.get("TLAMATINI_RELEASE_TAG", "").strip()
+                    or os.environ.get("TLAMATINI_VERSION", "").strip()
+                    or _manifest_version).removeprefix("v")
+if not re.fullmatch(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?", _release_version):
+    raise ValueError(f"Invalid release version: {_release_version}")
+TAG = f"v{_release_version}"
 COMMIT_DATE = git("log", "-1", "--format=%cs").strip()
 TODAY = datetime.date.today().isoformat()
 
@@ -2185,14 +2190,14 @@ def sheet_live_editor():
 
 def sheet_torrenter():
     sh = new_sheet('Torrenter y entrega de la versión',
-                   'v1.92.3 y la actualización posterior de la cola', "integration")
+                   'Última versión publicada: 1.92.3', "integration")
     box(sh.body, 12, TOP, 193, "Ltransport", "1. Inicia sesión y elige la cuenta", [
         "El chat, el panel agéntico y XT abren la cola de la misma cuenta. La migración 0221 registra Torrenter.",
         "Django autentica el navegador. El controlador obtiene una credencial de alcance limitado de Tlachihuani Jobs.",
     ], h=72, size=15, tsize=14)
     box(sh.body, 215, TOP, 193, "Lintegration", "2. Inspecciona la fuente y elige archivos", [
         "Inspecciona el magnet o torrent. Conserva el ID de inspección hasta que estén listos los metadatos y los IDs de archivos.",
-        "Después de la etiqueta, un quinto magnet puede esperar si hay cuatro consultas de metadatos activas. Consulta el mismo ID.",
+        "Un quinto magnet puede esperar si hay cuatro consultas de metadatos activas. Consulta el mismo ID.",
     ], h=72, size=15, tsize=14)
     box(sh.body, 12, TOP - 82, 193, "Lintelligence", "3. Envía la solicitud y sigue el trabajo", [
         "Envía los IDs seleccionados y la revisión de metadatos. Reutiliza la clave de operación si no se confirmó el envío.",
@@ -2208,7 +2213,7 @@ def sheet_torrenter():
     ], h=72, size=15, tsize=14)
     box(sh.body, 215, TOP - 164, 193, "Lplatform", "Compilar y ejecutar en Windows", [
         "La versión 1.92.3 separa los entornos por la huella de dependencias. El bloqueo del sistema cubre la preparación y el uso.",
-        "Después de la etiqueta, Executer conserva asignaciones como PLAYWRIGHT_BROWSERS_PATH y aplica el tiempo de espera configurado.",
+        "Executer conserva asignaciones como PLAYWRIGHT_BROWSERS_PATH y aplica el tiempo de espera configurado.",
     ], h=72, size=15, tsize=14)
     return sh
 

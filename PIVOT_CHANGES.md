@@ -8,7 +8,7 @@
 -->
 # Tlamatini — Change Pivot / Rollback Log
 
-> Versión actual: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
 
 [Versión 1.92.3 y correcciones posteriores](docs/changes/2026-11-01-v1.92.3.md) · 30 de octubre–2 de noviembre. Velocidad de hasta 250 WPM, admisión y entrega verificada en Torrenter, distribución del desinstalador, aislamiento de compilaciones, cola de metadatos y lectura de comandos de Executer.
 
@@ -549,3 +549,17 @@ links, `package.json`, the `/agent/version/` sample, the self-knowledge version
 marker, the manual, the dossier/atlas source text and every Markdown release banner,
 and added the [v1.91.1 release record](docs/changes/2026-10-27-v1.91.1.md). The
 existing tag `v1.91.1` at `9915938a` is preserved; no code behavior changed. Regenerated the PDF dossier (157 pages), editable PPTX (192 slides) and architecture atlas (31 pages); their verifications passed with 1608/1608 files.
+
+## 2026-11-04 — Una sola última versión publicada: 1.92.3
+
+Solicitud: "NOW GET BACK TO UPDATE EVERYTHING TO SAY SO IN TLAMATINI".
+
+Se actualizaron los encabezados actuales de Markdown, enlaces e insignia de
+README, Tlamatini.md, notas de lanzamiento, instrucciones y memoria para usar
+**1.92.3 como última versión publicada**. Los generadores de PDF/PPTX y del atlas
+ya no separan la versión del código fuente de la publicación. La versión
+explícita tiene prioridad sobre el manifiesto sin exigir etiqueta ni consulta
+de publicación. Se conservan el historial, las pruebas fechadas y los datos privados.
+
+El parche de antes/después y los hashes se guardan en
+`C:/Development/XAIHT/Tlamatini/Temp/release-docs-20261104/`.

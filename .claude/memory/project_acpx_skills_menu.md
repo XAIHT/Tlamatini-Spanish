@@ -15,7 +15,7 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Versión actual: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
 
 
 Shipped v1 of the ACPX-Skills admin UI on 2026-05-17. The chat navbar now has a fourth dropdown between **Agents** and **Config** with four entries:

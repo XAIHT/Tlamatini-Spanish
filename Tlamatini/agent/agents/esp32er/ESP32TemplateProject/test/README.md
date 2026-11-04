@@ -1,6 +1,6 @@
 # `test/` — unit tests
 
-> Versión actual: **[v1.92.3](../../../../../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../../../../../../docs/changes/2026-11-01-v1.92.3.md)**.
 
 
 PlatformIO's test runner (Unity) picks up tests from this directory. Run them with:

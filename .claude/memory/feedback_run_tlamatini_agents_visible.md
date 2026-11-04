@@ -16,7 +16,7 @@ metadata:
 -->
 
 
-> Versión actual: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
 
 
 ## Mandatory rule reaffirmed by Angela, 2026-09-23

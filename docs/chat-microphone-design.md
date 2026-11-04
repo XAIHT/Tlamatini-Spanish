@@ -3,7 +3,7 @@ Tlamatini Author Banner — do not remove -->
 
 # Direct voice prompts
 
-> Versión actual: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
 
 
 ## Use the microphone button

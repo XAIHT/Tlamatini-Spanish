@@ -1,6 +1,6 @@
 # Tlamatini Windows access and Blue-hat toolkit
 
-> Versión actual: **[v1.92.3](../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../docs/changes/2026-11-01-v1.92.3.md)**.
 
 
 Created by **Angela López Mendoza** (`@angelahack1`). Tlamatini — the one who knows.

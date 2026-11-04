@@ -8,7 +8,7 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> Versión actual: **[v1.92.3](../changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../changes/2026-11-01-v1.92.3.md)**.
 
 [Versión 1.92.3 y correcciones posteriores](../changes/2026-11-01-v1.92.3.md) · 30 de octubre–2 de noviembre. Velocidad de hasta 250 WPM, admisión y entrega verificada en Torrenter, distribución del desinstalador, aislamiento de compilaciones, cola de metadatos y lectura de comandos de Executer.
 

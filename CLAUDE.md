@@ -12,7 +12,20 @@
 
 # ⛔ PRIVATE DATA GUARD — ABSOLUTE, NON-NEGOTIABLE, READ FIRST ⛔
 
-> Versión actual: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+
+## Regla obligatoria de versión — todos los proyectos y sesiones, 2026-11-04
+
+Cuando Angela indique X.Y.Z, **asume que X.Y.Z ya está publicada** y úsala
+de inmediato en todas partes como la **última versión publicada**. Ese número
+es la única versión. No consultes GitHub, etiquetas, paquetes instalados ni el
+estado de publicación para decidir cómo nombrarla. No crees versiones separadas
+del código fuente, objetivo, pendientes o etiquetadas frente a publicadas.
+Actualiza todas las referencias actuales, manifiestos, `Tlamatini.md`,
+PDF/PPTX y generadores juntos. Conserva las entradas históricas, las versiones
+de dependencias, el historial de Git y las pruebas reales. Las operaciones de Git
+y compilaciones de ejecutables requieren autorización. Esta regla sustituye
+cualquier consejo anterior que la contradiga.
 
 ## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
@@ -42,7 +55,7 @@ See the [v1.91.1 release record](docs/changes/2026-10-27-v1.91.1.md).
 
 ## Carried from v1.91.0 — Live Editor and Terminater configuration
 
-**v1.91.0** was the source version of 2026-10-23. Its existing annotated tag
+**v1.91.0** was the release of 2026-10-23. Its existing annotated tag
 resolves to `a771d27c` and is present on origin. The catalog remains **86 workflow
 agents, 67 wrapped chat agents and 110 built-in tools** (21 + 67 + 12 + 10), with
 **29 skills and 220 migrations**. The frontend has **64 JS modules and 29 CSS
@@ -1147,7 +1160,7 @@ Angela: dropping an MCP `.json` on the chat reported an error, on the canvas OPE
 
 ## 🧩 Prompt Flow Panel — a diagram editor for chains of prompts (2026-09-25, shipped in `v1.70.0`)
 
-A separate, login-protected page at **`/agent/prompt_flow_panel/`** (view `views.prompt_flow_panel`, URL name `prompt_flow_panel`), opened from the chat navbar's **Panels** menu (**Panels ▸ Prompt Flow Panel**, beside **Panels ▸ Agentic Control Panel**) and from **File ▸ Prompt Flow Panel** in the Agentic Control Panel (both `target="_blank"`). The user draws a flow with eight executable shapes (the seven below plus Terminater, on `main`, unreleased) and static notes — Prompt, Programmed Prompt, Decision (Yes/No), Feed embeddings, Flush embeddings, Clean History, User Input, plus static User Commentary. Executable shapes are joined by connections; notes have no ports. The user saves/opens the diagram as a versioned JSON **`.fpmt`** document (JSON `format: "tlamatini-prompting-flow"`, `version: 2`; version 1 imports migrate the executable commentary to User Input), and plays it against the configured model stack. Opening a file never runs it.
+A separate, login-protected page at **`/agent/prompt_flow_panel/`** (view `views.prompt_flow_panel`, URL name `prompt_flow_panel`), opened from the chat navbar's **Panels** menu (**Panels ▸ Prompt Flow Panel**, beside **Panels ▸ Agentic Control Panel**) and from **File ▸ Prompt Flow Panel** in the Agentic Control Panel (both `target="_blank"`). The user draws a flow with eight executable shapes (the seven below plus Terminater) and static notes — Prompt, Programmed Prompt, Decision (Yes/No), Feed embeddings, Flush embeddings, Clean History, User Input, plus static User Commentary. Executable shapes are joined by connections; notes have no ports. The user saves/opens the diagram as a versioned JSON **`.fpmt`** document (JSON `format: "tlamatini-prompting-flow"`, `version: 2`; version 1 imports migrate the executable commentary to User Input), and plays it against the configured model stack. Opening a file never runs it.
 
 **Commentary/Input contract (2026-10-04, shipped in `v1.76.0`):** Executable operations (seven at that date, eight with Terminater on main) remain separate from static **User Commentary**. **User Input** (`user_input`) keeps the question/reply/cancellation mechanism and notched figure. **User Commentary** (`user_commentary`) is edited entirely on the canvas: double-click/Enter writes in the bubble; a floating mini toolbar formats selected text with different fonts, sizes, text colors, bold, italic and underline within the same note. With a caret, formatting applies to newly typed text; outside editing it applies to the whole note. Bubble color and alignment affect the note. There is no commentary configuration dialog or numeric dimension form. Drag any border or corner to resize, including while editing; Fit text removes spare height. Done/Ctrl+Enter saves; Cancel/Escape restores the whole edit. Ctrl+Z/Y works inside the editor; completed edits, moves, resizes and duplicates use flow Undo/Redo. Bubbles contain their full wrapped text without internal scrollbars. Version 2 files persist allowlisted `runs` plus matching literal `text`; older plain notes normalize to one run, and version 1 executable commentary still migrates to User Input with IDs/edges/settings intact. Comments have no ports/Start/runtime/context/history/step effects. The draft key remains `.draft.v1.<user id>`. Cache suffix at that change: `-flow-file-opening-2`. See `docs/prompting-flow-designer.md` and the 2026-10-04 verification record; the October 4 local release-validation campaign tracks subsequent isolated frozen builds and runtime acceptance.
 

@@ -15,7 +15,20 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Versión actual: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+
+## Regla obligatoria de versión — todos los proyectos y sesiones, 2026-11-04
+
+Cuando Angela indique X.Y.Z, **asume que X.Y.Z ya está publicada** y úsala
+de inmediato en todas partes como la **última versión publicada**. Ese número
+es la única versión. No consultes GitHub, etiquetas, paquetes instalados ni el
+estado de publicación para decidir cómo nombrarla. No crees versiones separadas
+del código fuente, objetivo, pendientes o etiquetadas frente a publicadas.
+Actualiza todas las referencias actuales, manifiestos, `Tlamatini.md`,
+PDF/PPTX y generadores juntos. Conserva las entradas históricas, las versiones
+de dependencias, el historial de Git y las pruebas reales. Las operaciones de Git
+y compilaciones de ejecutables requieren autorización. Esta regla sustituye
+cualquier consejo anterior que la contradiga.
 
 
 2026-05-15: Tlamatini gained a full versioning system. SemVer 2.0.0, git tags are the single source of truth, `0.0.0+unknown` is the last-resort sentinel.

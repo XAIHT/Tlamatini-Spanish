@@ -12,7 +12,20 @@
 
 # ⛔ PRIVATE DATA GUARD — ABSOLUTE, NON-NEGOTIABLE, READ FIRST ⛔
 
-> Versión actual: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+
+## Regla obligatoria de versión — todos los proyectos y sesiones, 2026-11-04
+
+Cuando Angela indique X.Y.Z, **asume que X.Y.Z ya está publicada** y úsala
+de inmediato en todas partes como la **última versión publicada**. Ese número
+es la única versión. No consultes GitHub, etiquetas, paquetes instalados ni el
+estado de publicación para decidir cómo nombrarla. No crees versiones separadas
+del código fuente, objetivo, pendientes o etiquetadas frente a publicadas.
+Actualiza todas las referencias actuales, manifiestos, `Tlamatini.md`,
+PDF/PPTX y generadores juntos. Conserva las entradas históricas, las versiones
+de dependencias, el historial de Git y las pruebas reales. Las operaciones de Git
+y compilaciones de ejecutables requieren autorización. Esta regla sustituye
+cualquier consejo anterior que la contradiga.
 
 ## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
@@ -42,7 +55,7 @@ See the [v1.91.1 release record](docs/changes/2026-10-27-v1.91.1.md).
 
 ## Carried from v1.91.0 — Live Editor and Terminater configuration
 
-**v1.91.0** was the source version of 2026-10-23. Its existing annotated tag
+**v1.91.0** was the release of 2026-10-23. Its existing annotated tag
 resolves to `a771d27c` and is present on origin. The catalog remains **86 workflow
 agents, 67 wrapped chat agents and 110 built-in tools** (21 + 67 + 12 + 10), with
 **29 skills and 220 migrations**. The frontend has **64 JS modules and 29 CSS

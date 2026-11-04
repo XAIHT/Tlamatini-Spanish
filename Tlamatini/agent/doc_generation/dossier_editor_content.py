@@ -7,7 +7,7 @@ def editor_sections(section):
         section("torrent_workspace", "TORRENTER", "Del magnet a los archivos verificados",
                 "El chat, el panel agéntico y XT comparten la cola de Jobs de cada cuenta.",
                 body=["Inspecciona los metadatos y selecciona los archivos por ID. El recibo permite volver al trabajo. En un flujo, activa la espera de descarga si los nodos siguientes necesitan los archivos.",
-                      "Después de la etiqueta (dfbc68a), un quinto magnet puede esperar un espacio de metadatos. Conserva el ID de inspección. El manifiesto verificado identifica la copia en Descargas o en la carpeta alternativa de la edición."], deck_points=[
+                      "Un quinto magnet puede esperar un espacio de metadatos. Conserva el ID de inspección. El manifiesto verificado identifica la copia en Descargas o en la carpeta alternativa de la edición."], deck_points=[
                     ('Inspeccionar', 'Conserva el ID de inspección mientras espera.'),
                     ('Elegir', 'Selecciona los archivos por sus IDs.'),
                     ('Consultar', 'Reconecta con el ID del trabajo de Jobs.'),
@@ -182,10 +182,10 @@ def wizard_section(section):
 
 def release_sections(section, facts):
     return [
-        section("release1923", "VERSIÓN ACTUAL · v1.92.3", "Novedades de la serie 1.92",
-                "Etiqueta 689cb28 · 1 de noviembre de 2026",
+        section("release1923", "PUBLICADA · v1.92.3", "Qué incluye la versión 1.92.3",
+                "Descargas, tecleo, actualizaciones y ejecución en Windows",
                 body=["Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.",
-                      "Las compilaciones con dependencias distintas pueden coexistir. Un bloqueo del sistema operativo protege la preparación y toda la compilación. El paquete 1.92.2 entrega el desinstalador verificado y conserva la bóveda data.keys existente."], deck_points=[
+                      "Las compilaciones con dependencias distintas pueden coexistir. Un bloqueo del sistema operativo protege la preparación y toda la compilación. El paquete 1.92.3 entrega el desinstalador verificado y conserva la bóveda data.keys existente."], deck_points=[
                     ('Tecleo', 'Editor en vivo: 40–250 WPM. Terminater: 20–250 WPM.'),
                     ('Descargas', 'El chat, ACP y XT comparten la cola de Jobs de la cuenta.'),
                     ('Actualización', 'Distribuye el desinstalador verificado y conserva la bóveda.'),

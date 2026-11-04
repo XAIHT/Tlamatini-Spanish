@@ -8,7 +8,7 @@
 -->
 # External MCPs — the bulletproof architecture
 
-> Versión actual: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
 
 
 The design contract for Tlamatini's **universal MCP _client_**: the layer that lets her

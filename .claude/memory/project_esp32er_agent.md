@@ -15,7 +15,7 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Versión actual: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
 
 
 2026-05-31: Added **ESP32er** (#69) — ESP32/Espressif firmware agent on BOTH canvas + Multi-Turn (`chat_agent_esp32er`), modeled on [[project_stm32er_agent]].

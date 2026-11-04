@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 -->
 # About Usage
 
-> Versión actual: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
 
 
 **Status: shipped in the published `v1.78.0` release (2026-10-10).** That release was
