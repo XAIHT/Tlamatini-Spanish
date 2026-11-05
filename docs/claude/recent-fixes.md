@@ -10,6 +10,35 @@
 
 > Última versión publicada: **[v1.92.3](../changes/2026-11-01-v1.92.3.md)**.
 
+## 2026-11-05 — Admisión del catálogo de prompts en español
+
+`agent/rag/interface.py` reconoce las mismas intenciones en español que en inglés:
+contexto proporcionado, ubicaciones permitidas, métricas/hora, generación de código,
+comandos, imágenes y operaciones de agents. También acepta «Tlamatini, por favor»
+antes de una instrucción. No se añadió una excepción por número de prompt ni se
+eliminó la validación de rutas; una ruta explícita fuera del alcance permitido y
+las referencias locales ambiguas siguen rechazándose.
+
+La migración **0222** corrige sólo los valores predeterminados que coinciden
+exactamente con los originales: el nombre estable `prompt-130` de Interactor,
+Multi-Turn/Exec report para Torrenter y cuatro llamadas de escritorio al tool
+real `window_present(title=...)`. Conserva los IDs, el orden, la visibilidad y
+las personalizaciones; `window_title` sigue siendo el argumento de Windower/Mouser.
+
+La prueba `agent.test_spanish_catalog_admission` recorre el catálogo completo
+creado por las migraciones, ejecuta el clasificador y los cambios de casillas del
+JavaScript real, y pasa cada muestra por `ask_rag` con una cadena de registro.
+Comprueba además la carga individual por número, los nombres reales de tools y
+la aplicación idempotente de las correcciones. La línea base reprodujo **22
+rechazos falsos**; tras el arreglo, **127/127 muestras alcanzaron la cadena**.
+Las suites de catálogo, voz, forma del prompt, rutas y Multi-Turn terminaron con
+**60 pruebas aprobadas y 4 omitidas** (las pruebas antiguas de rutas externas se
+omiten cuando el directorio temporal ya está permitido). Las pruebas nuevas
+comprueban el rechazo de rutas externas sin depender de la configuración local.
+Ruff pasó en los archivos Python modificados. Son comprobaciones del código fuente
+y de admisión; no certifican que se hayan ejecutado las instalaciones, envíos,
+servicios externos o acciones de hardware descritas por las muestras.
+
 [Versión 1.92.3 y correcciones posteriores](../changes/2026-11-01-v1.92.3.md) · 30 de octubre–2 de noviembre. Velocidad de hasta 250 WPM, admisión y entrega verificada en Torrenter, distribución del desinstalador, aislamiento de compilaciones, cola de metadatos y lectura de comandos de Executer.
 
 

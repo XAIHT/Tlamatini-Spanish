@@ -96,6 +96,12 @@ def is_valid_prompt(text: str) -> bool:
 
     normalized_text = text.lower().strip()
 
+    # Catalog cards and ordinary Spanish requests often address Tlamatini or
+    # open with "por favor". Neither is the request's operative first word.
+    normalized_text = re.sub(r'^[¿¡]\s*', '', normalized_text)
+    normalized_text = re.sub(r'^tlamatini(?:-spanish)?\s*[,!:—-]\s*', '', normalized_text)
+    normalized_text = re.sub(r'^por\s+favor\b[\s,:;]*', '', normalized_text)
+
     if normalized_text.endswith('?'):
         return True
 
@@ -217,30 +223,40 @@ _RELATIVE_PATH_PATTERN = re.compile(
 _ALLOWED_SYNONYMS = re.compile(
     r'\b(?:allowed|permitted|configured|authorized|approved|valid|designated)\b'
     r'[\s\-]*'
-    r'\b(?:path|paths|location|locations|directory|directories|folder|folders|route|routes|area|areas)\b',
+    r'\b(?:path|paths|location|locations|directory|directories|folder|folders|route|routes|area|areas)\b'
+    r'|\b(?:paths?|rutas?|ubicaciones?|directorios?|carpetas?|[áa]reas?)\s+'
+    r'(?:permitid[oa]s?|configurad[oa]s?|autorizad[oa]s?|aprobad[oa]s?|v[áa]lid[oa]s?)\b',
     re.IGNORECASE
 )
 
 _CONTEXT_REFS = re.compile(
     r'\b(?:provided|loaded|given|attached|uploaded|current|present|above|this)\b'
     r'[\s\-]*'
-    r'\b(?:context|document|documents|content|code|source\s*code|codebase|project|files|data|information|text)\b',
+    r'\b(?:context|document|documents|content|code|source\s*code|codebase|project|files|data|information|text)\b'
+    r'|\b(?:contexto|documentos?|contenido|c[óo]digo(?:\s+fuente)?|proyecto|archivos?|datos|texto)\s+'
+    r'(?:(?:ya\s+)?(?:cargad[oa]s?|proporcionad[oa]s?|adjunt[oa]s?)'
+    r'|que\s+(?:te\s+)?(?:di|dimos|he\s+dado|proporcion[ée]|cargu[ée]|adjunt[ée]))\b'
+    r'|\b(?:este|el\s+presente)\s+contexto\b',
     re.IGNORECASE
 )
 
 _SYSTEM_QUERY = re.compile(
     r'\b(?:cpu\s*usage|memory\s*usage|disk\s*(?:space|usage)'
-    r'|current\s*time|time\s*now)\b',
+    r'|current\s*time|time\s*now'
+    r'|uso\s+(?:actual\s+)?(?:de(?:l|\s+la)?\s+)?(?:cpu|memoria|disco)'
+    r'|espacio\s+(?:libre\s+)?en\s+disco|hora\s+actual|qu[ée]\s+hora\s+es)\b',
     re.IGNORECASE
 )
 
 _RUN_COMMAND = re.compile(
-    r'\b(?:run|execute)\s+(?:command|cmd)\b',
+    r'\b(?:run|execute)\s+(?:command|cmd)\b'
+    r'|\b(?:ejecuta|corre)\s+(?:el\s+|un\s+)?(?:comando|cmd)\b',
     re.IGNORECASE
 )
 
 _IMAGE_DESCRIBE = re.compile(
-    r'\b(?:describe|analyze|analyse)\s+with\s+(?:qwen|opus)\b',
+    r'\b(?:describe|analyze|analyse)\s+with\s+(?:qwen|opus)\b'
+    r'|\b(?:describe|analiza)\s+con\s+(?:qwen|opus)\b',
     re.IGNORECASE
 )
 
@@ -249,28 +265,37 @@ _CODE_GEN = re.compile(
     r'(?:a\s+|an\s+|the\s+|a\s+new\s+)?'
     r'(?:implementation|web\s*page|version|program|code|script'
     r'|command|query|snippet|function|method'
-    r'|application|app|document|documentation)\b',
+    r'|application|app|document|documentation)\b'
+    r'|\b(?:crea|genera|escribe|construye|implementa)\s+'
+    r'(?:(?:un|una|el|la)\s+)?(?:nuev[oa]\s+)?'
+    r'(?:implementaci[óo]n|p[áa]gina\s+web|versi[óo]n|programa|c[óo]digo|script'
+    r'|comando|consulta|fragmento|funci[óo]n|m[ée]todo|aplicaci[óo]n|app|documento|documentaci[óo]n)\b',
     re.IGNORECASE
 )
 
 _LIST_DIRS = re.compile(
     r'\blist\s+(?:available|configured|allowed)\s+'
-    r'(?:director(?:y|ies)|folder|folders)\b',
+    r'(?:director(?:y|ies)|folder|folders)\b'
+    r'|\b(?:lista|muestra|enumera)\s+(?:(?:los|las)\s+)?'
+    r'(?:directorios|carpetas|rutas|ubicaciones)\s+(?:disponibles|configurad[oa]s|permitid[oa]s)\b',
     re.IGNORECASE
 )
 
 _DECOMPILE = re.compile(
-    r'\b(?:decompile|disassemble)\s+(?:file|class|jar|binary)\b',
+    r'\b(?:decompile|disassemble)\s+(?:file|class|jar|binary)\b'
+    r'|\b(?:decompila|descompila|desensambla)\s+(?:(?:el|la|un|una)\s+)?'
+    r'(?:archivo|clase|jar|binario)\b',
     re.IGNORECASE
 )
 
 _EXEC_SCRIPT = re.compile(
-    r'\b(?:execute|run)\s+[\w\-]+\.(?:py|sh|bat|ps1|js|rb|pl)\b',
+    r'\b(?:execute|run|ejecuta|corre)\s+[\w\-]+\.(?:py|sh|bat|ps1|js|rb|pl)\b',
     re.IGNORECASE
 )
 
 _VIEW_IMAGE = re.compile(
-    r'\b(?:view|show|display|open)\s+image\b',
+    r'\b(?:view|show|display|open)\s+image\b'
+    r'|\b(?:muestra|abre|visualiza)\s+(?:la\s+|una\s+)?imagen\b',
     re.IGNORECASE
 )
 
@@ -280,12 +305,14 @@ _URL_OR_DOWNLOAD = re.compile(
     r'|\b(?:curl|wget|fetch|download\s+from)\b'  # download commands/intent
     r'|\bdownload\b.*\b(?:url|link|site|endpoint|server|web|internet|api)\b'
     r'|\b(?:url|link|site|endpoint|server|web|internet|api)\b.*\bdownload\b'
+    r'|\bdescarga\b.*\b(?:url|enlace|sitio|web|internet|api)\b'
     r')',
     re.IGNORECASE
 )
 
 _CONCEPTUAL_PROMPT_START = re.compile(
-    r'^\s*(?:what|why|how|explain|describe|summarize|analyse|analyze|review|discuss|compare)\b',
+    r'^\s*[¿¡]?(?:what|why|how|explain|describe|summarize|analyse|analyze|review|discuss|compare'
+    r'|qu[ée]|por\s+qu[ée]|c[óo]mo|explica|describe|resume|analiza|revisa|compara)\b',
     re.IGNORECASE
 )
 
@@ -296,6 +323,9 @@ _AGENT_OPERATION = re.compile(
     r'|(?:start|stop|terminate|kill|raise|shut\s*down)\s+(?:the\s+)?agent\b'
     r'|(?:get|check|show|what\s+is)\s+the\s+(?:status|state)\s+of\s+(?:the\s+)?agent\b'
     r'|is\s+the\s+agent\b.*\brunning\b'
+    r'|parametriza\s+(?:(?:el|la)\s+)?(?:agent(?:e)?\s+)?plantilla\b'
+    r'|(?:inicia|arranca|ejecuta|det[ée]n|termina|cierra)\s+(?:el\s+)?agent(?:e)?\b'
+    r'|(?:muestra|consulta|verifica)\s+(?:el\s+)?(?:status|estado)\s+del?\s+agent(?:e)?\b'
     r')',
     re.IGNORECASE
 )
@@ -310,11 +340,14 @@ _WRAPPED_CHAT_AGENT_OPERATION = re.compile(
 ) if _WRAPPED_CHAT_AGENT_HINTS else re.compile(r'^\b$')
 
 _DIRECT_FILESYSTEM_ACTION = re.compile(
-    r'^\s*(?:please\s+)?'
-    r'(?:(?:can|could|would)\s+you\s+|help\s+me(?:\s+to)?\s+)?'
+    r'^\s*(?:tlamatini(?:-spanish)?\s*[,!:—-]\s*)?'
+    r'(?:(?:please|por\s+favor)\b[\s,]*)?'
+    r'(?:(?:can|could|would)\s+you\s+|help\s+me(?:\s+to)?\s+|(?:puedes|podr[íi]as)\s+)?'
     r'(?:open|show|read|view|display|execute|run|list|search|find|locate'
     r'|delete|remove|move|copy|decompile|disassemble|unzip|extract|load'
-    r'|save|edit|modify)\b',
+    r'|save|edit|modify|abre|abrir|muestra|mostrar|lee|leer|ejecuta|ejecutar|lista|listar'
+    r'|busca|buscar|encuentra|borra|borrar|elimina|mueve|copia|descompila|decompila'
+    r'|descomprime|extrae|carga|guarda|edita|modifica)\b',
     re.IGNORECASE
 )
 
@@ -576,9 +609,11 @@ def _is_literal_reply_request(question: str) -> bool:
     if not isinstance(question, str):
         return False
     return bool(re.fullmatch(
-        r"\s*(?:please\s+)?(?:reply|respond|answer)\s+with\s+(?:exactly\s+|only\s+)?"
+        r"\s*(?:(?:please|por\s+favor)\b[\s,]*)?"
+        r"(?:(?:reply|respond|answer)\s+with\s+(?:exactly\s+|only\s+)?"
+        r"|(?:responde|contesta)\s+(?:con\s+)?(?:(?:exactamente|s[oó]lo|solamente)\s+)?)"
         r"""(['"]?)[A-Za-z0-9][A-Za-z0-9_-]{0,79}\1"""
-        r"(?:\s+and\s+(?:no\s+other\s+text|nothing\s+else))?[.!]?\s*",
+        r"(?:\s+(?:and\s+(?:no\s+other\s+text|nothing\s+else)|y\s+(?:nada\s+m[áa]s|ning[úu]n\s+otro\s+texto)))?[.!]?\s*",
         question, re.IGNORECASE,
     ))
 

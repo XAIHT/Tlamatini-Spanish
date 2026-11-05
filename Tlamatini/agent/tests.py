@@ -598,7 +598,7 @@ class PromptValidationDecisionTests(TestCase):
         with patch('agent.rag.interface._indirect_file_access_prompt', side_effect=AssertionError('Deterministic relative-path rejection should happen before LLM fallback.')):
             result = _validate_accesses_in_prompt('Open ..\\secret.txt, please.')
 
-        self.assertIn('not relative routes/paths are allowed', result)
+        self.assertIn('no se permiten paths relativos', result)
 
     def test_informational_prompt_with_outside_path_can_use_llm_fallback(self):
         outside_dir = tempfile.mkdtemp()
@@ -2220,8 +2220,8 @@ class AskRagMultiTurnTests(TestCase):
 
         self.assertEqual(
             result,
-            'Please rephrase your input as a clear question or command. '
-            'Examples: "How do I...?", "What is...?", "Show me...", "Create a...", or "Explain..."',
+            'Reformula tu input como una pregunta o una instrucción clara. '
+            'Ejemplos: "¿Cómo...?", "¿Qué es...?", "Muéstrame...", "Crea un..." o "Explica..."',
         )
 
 

@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=4MyRXBahHuU&t=41s"><b>▶ Mira el teaser</b></a> ·
+  <a href="https://youtu.be/RLNHQi8KBNo"><b>▶ Mira el teaser</b></a> ·
   <a href="https://xaiht.org">Sitio web</a> ·
   <a href="BookOfTlamatini.md">Guía completa</a> ·
   <a href="Tlamatini-Architecture.pdf">Atlas de arquitectura</a> ·
