@@ -123,7 +123,7 @@ def _gather_search_dirs():
     dirs.append(Path(sys.executable).parent / "DLLs")
 
     # ── 3) Windows 10/11 SDK UCRT Redistributables ─────────────────────
-    # This prevents PyInstaller from crashing on fresh Windows endpoints 
+    # This prevents PyInstaller from crashing on fresh Windows endpoints
     # without requiring contributors to have a specific hardcoded SDK path.
     sdk_base = Path("C:/Program Files (x86)/Windows Kits/10/Redist")
     if sdk_base.is_dir():
@@ -519,6 +519,9 @@ _FROZEN_PYWIN32_EXTENSIONS = ("win32cred", "win32crypt") if os.name == "nt" else
 _FROZEN_REQUIRED_AGENT_MODULES = (
     "agent.migrations.0222_repair_prompt_catalog",
     "agent.migrations.0223_spanish_catalog_instance_contracts",
+        "agent.migrations.0224_restore_catalog_execution_parity",
+        "agent.migrations.0225_align_catalog_execution_modes", "agent.migrations.0226_replace_mistral_large3",
+        "agent.rag.directory_listing",
     "agent.interactor", "agent.interactor.context", "agent.interactor.protocol",
     "agent.interaction_settings", "agent.interaction_narration",
     "agent.interactor.hub", "agent.interactor.consumer", "agent.interactor.files", "agent.interactor.tool",

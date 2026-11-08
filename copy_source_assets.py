@@ -247,6 +247,12 @@ KEEP_PATH_GLOBS = (
 REQUIRED_SNAPSHOT_FILES = (
     "Tlamatini/agent/migrations/0222_repair_prompt_catalog.py",
     "Tlamatini/agent/migrations/0223_spanish_catalog_instance_contracts.py",
+    "Tlamatini/agent/migrations/0224_restore_catalog_execution_parity.py",
+    "Tlamatini/agent/migrations/0225_align_catalog_execution_modes.py",
+    "Tlamatini/agent/migrations/0226_replace_mistral_large3.py",
+    "Tlamatini/agent/rag/directory_listing.py",
+    "Tlamatini/agent/test_available_directories.py",
+    "Tlamatini/agent/test_catalog_execution_parity.py",
     "Tlamatini/agent/test_spanish_catalog_admission.py",
     "Tlamatini/agent/test_spanish_instance_contracts.py",
     "Tlamatini/agent/agents/talker/spanish_pronunciation.py",
@@ -408,6 +414,7 @@ REQUIRED_SNAPSHOT_FILES = (
     "Tlamatini/agent/chat_agent_runtime.py",
     "Tlamatini/agent/management/commands/check_agent_runtimes.py",
     "Tlamatini/agent/test_model_settings.py",
+    "Tlamatini/agent/test_model_tag_upgrade.py",
     "docs/model_configuration.md",
     # Fatal visual diagnostics must survive both portable copies and self-rebuilds.
     "Tlamatini/agent/agents/visual_errors.py",

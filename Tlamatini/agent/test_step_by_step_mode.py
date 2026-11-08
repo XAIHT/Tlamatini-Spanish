@@ -66,10 +66,10 @@ class StepByStepPromptInjectionTests(SimpleTestCase):
     def test_block_injected_when_enabled(self):
         prompt = _build_system_prompt("BASE PROMPT.", [_noop_tool()], step_by_step_enabled=True)
         self.assertIn("STEP-BY-STEP MODE", prompt)
-        self.assertIn('UNA acción concreta por turno', prompt)
+        self.assertIn('Un paso puede requerir varias llamadas', prompt)
         self.assertIn('HECHO', prompt)
         self.assertIn('SIN VENTANA', prompt)
-        self.assertIn('no llames más herramientas tras el punto de espera', prompt)
+        self.assertIn('no llames más herramientas hasta la respuesta solicitada', prompt)
         self.assertIn("external_mcp_doctor", prompt)
 
     def test_block_absent_when_disabled(self):

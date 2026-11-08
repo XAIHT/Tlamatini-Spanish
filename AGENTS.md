@@ -4,6 +4,21 @@ Created by Angela López Mendoza · @angelahack1
 Tlamatini Author Banner — do not remove
 -->
 
+
+## Regla obligatoria de paridad — Angela, 2026-11-08
+
+**TLAMATINI-SPANISH DEBE EJECUTARSE COMPLETAMENTE Y DE FORMA DETERMINISTICA EN TODO DE FORMA IDENTICA QUE TLAMATINI-ENGLISH**
+Esta regla se aplica a prompts, agentes, herramientas, interfaces, instalación y
+flujos completos. Traducir no autoriza añadir esperas, confirmaciones, pasos,
+restricciones ni mecanismos distintos. Conserva las mismas acciones, orden,
+puntos de interacción y resultados. Solo adapta el idioma y la identidad propia
+de cada edición (rutas, ejecutable, puertos y sesión), sin cruzar instalaciones.
+Compara contra el comportamiento inglés y verifica visualmente los flujos
+interactivos afectados. Una prueba de clasificación o un lanzamiento aceptado no
+acreditan que la operación real haya terminado. No declares paridad completa si
+solo comprobaste una parte. Esta instrucción prevalece sobre preferencias de
+traducción anteriores que introduzcan diferencias de comportamiento.
+
 # Tlamatini instructions for Codex and every coding agent
 
 > Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.

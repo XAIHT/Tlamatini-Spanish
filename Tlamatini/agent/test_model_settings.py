@@ -69,7 +69,10 @@ class ModelSettingsTests(SimpleTestCase):
                         actual = check_model_loader(script, path)
                         for field in registry.FIELDS:
                             if field['agent'] == agent:
-                                self.assertEqual(nested(actual, field['path']), values[field['key']])
+                                shipped = yaml.safe_load((ROOT / 'agents' / agent / 'config.yaml').read_text(encoding='utf-8'))
+                                configured = nested(shipped, field['path'])
+                                expected = values[field['key']] if configured == '@config' else configured
+                                self.assertEqual(nested(actual, field['path']), expected)
                         # Literal per-agent choices, including optional blanks,
                         # must survive subsequent global edits and reloading.
                         path.write_text(yaml.safe_dump(actual), encoding='utf-8')
@@ -120,8 +123,9 @@ class ModelSettingsTests(SimpleTestCase):
                         actual = namespace['load_config']()
                         for field in registry.FIELDS:
                             if field['agent'] == agent:
-                                self.assertEqual(nested(actual, field['path']), values[field['key']])
-                                self.assertEqual(nested(template, field['path']), '@config')
+                                configured = nested(template, field['path'])
+                                expected = values[field['key']] if configured == '@config' else configured
+                                self.assertEqual(nested(actual, field['path']), expected)
             explicit = {'model': 'custom-voice-model', 'voice': 'jess', 'private': 'untouched'}
             self.assertEqual(registry.resolve_agent_models('talker', explicit, values), explicit)
 

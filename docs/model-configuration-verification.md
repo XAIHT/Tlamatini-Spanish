@@ -42,3 +42,33 @@ Rollback copies and a verified SQLite online backup are retained at:
 `C:\Tlamatini\Temp\runtime-implementation-1.63.0-backup`.
 
 At the end of the 2026-09-20 verification, the installed app served `http://127.0.0.1:8000/agent/agent/`. This is dated evidence, not a current process-health assertion. Local diagnostic logs are under repository `Temp/runtime-fix-*.log`; they are untracked operator artifacts, not release prerequisites. See [model configuration](model_configuration.md) for repeatable commands.
+
+
+## 2026-11-08 — Modelo inicial y verificación de ambas ediciones
+
+Se verificó el código fuente de English y Spanish en la consola visible de
+Angela. Los dos archivos `config.json` tienen 26 selecciones de texto en
+`deepseek-v4.1-flash:cloud`; Talker conserva
+`legraphista/Orpheus:3b-ft-q8`, sin descargar un modelo de voz nuevo.
+
+| Comprobación | English | Spanish |
+|---|---|---|
+| Regresiones de modelos, configuración, visión, voz y directorios | 182 aprobadas, 5 omitidas | 182 aprobadas, 5 omitidas |
+| Pruebas del verificador de datos privados | 143 aprobadas | 143 aprobadas |
+| Compilación de sintaxis Python y Ruff | 942 archivos; aprobado | 970 archivos; aprobado |
+| ESLint, máximo cero advertencias | Aprobado | Aprobado |
+| Comprobación de sintaxis JavaScript | 108 archivos; aprobado | 110 archivos; aprobado |
+
+En Spanish, el lanzador de `npm run lint` delegó en pnpm e intentó preparar
+`esbuild` antes de ejecutar ESLint. Se ejecutaron directamente el ESLint local
+y `scripts/check_js_parse.mjs`, con los mismos destinos y reglas del script
+del paquete. No se aprobaron scripts de dependencias ni se descargaron paquetes
+para el reintento. El archivo provisional `pnpm-workspace.yaml` creado por
+ese intento quedó fuera del repositorio activo, conservado como evidencia en
+`Temp/parity-127/pnpm-workspace.generated-by-lint.yaml`.
+
+Los registros y resultados están en `Temp/parity-127` de Tlamatini-Spanish:
+`verification-summary.json`, `final-check-results.json`,
+`javascript-local-results.json` y los logs por edición. Estas pruebas
+validan el código fuente y las regresiones indicadas; no acreditan la ejecución
+completa de los 127 prompts ni una nueva instalación compilada. No hubo commits.

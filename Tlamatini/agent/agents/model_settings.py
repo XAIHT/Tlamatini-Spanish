@@ -25,23 +25,23 @@ def _field(key, label, group, default, *, agent='', path='', kind='ollama',
 
 for key, label, default in (
     ('embeding-model', 'Embedding / memoria', 'Nomic-Embed-Text:latest'),
-    ('chained-model', 'Razonamiento encadenado', 'glm-5.3:cloud'),
-    ('access_aimed_prompt_model', 'Prompts orientados al acceso', 'glm-5.3:cloud'),
-    ('unified_agent_model', 'Unified / Multi-Turn', 'glm-5.3:cloud'),
-    ('mcp_files_search_model', 'Búsqueda de archivos de MCP', 'glm-5.3:cloud'),
-    ('internet_classifier_model', 'Clasificador de internet', 'glm-5.3:cloud'),
-    ('web_summarizer_model', 'Resúmenes de búsquedas web', 'glm-5.3:cloud'),
+    ('chained-model', 'Razonamiento encadenado', 'deepseek-v4.1-flash:cloud'),
+    ('access_aimed_prompt_model', 'Prompts orientados al acceso', 'deepseek-v4.1-flash:cloud'),
+    ('unified_agent_model', 'Unified / Multi-Turn', 'deepseek-v4.1-flash:cloud'),
+    ('mcp_files_search_model', 'Búsqueda de archivos de MCP', 'deepseek-v4.1-flash:cloud'),
+    ('internet_classifier_model', 'Clasificador de internet', 'deepseek-v4.1-flash:cloud'),
+    ('web_summarizer_model', 'Resúmenes de búsquedas web', 'deepseek-v4.1-flash:cloud'),
 ):
     _field(key, label, 'Principales', default)
 
 for agent, prefix, first, second in (
-    ('image_interpreter', 'image', 'mistral-large-3:675b-cloud', 'gemma4:cloud'),
-    ('video_analyzer', 'video', 'gemma4:cloud', 'mistral-large-3:675b-cloud'),
+    ('image_interpreter', 'image', 'mistral-large-4:cloud', 'gemma4:cloud'),
+    ('video_analyzer', 'video', 'gemma4:cloud', 'mistral-large-4:cloud'),
 ):
     for suffix, label, path, default in (
         ('interpreter_model', '· intérprete 1', 'interpreter_model_1', first),
         ('interpreter_model_2', '· intérprete 2', 'interpreter_model_2', second),
-        ('merging_model', '· combinador', 'merging_model', 'glm-5.3:cloud'),
+        ('merging_model', '· combinador', 'merging_model', 'deepseek-v4.1-flash:cloud'),
     ):
         _field(f'{prefix}_{suffix}', f'{prefix.title()} {label}', 'Visión', default,
                agent=agent, path=path, help_text='Se requiere un modelo con visión.' if 'interpreter' in suffix
@@ -59,7 +59,7 @@ _field('whisperer_model', 'Whisperer · modelo de voz local', 'Voz', 'base',
        agent='whisperer', path='model', kind='local', help_text='Tamaño de Whisper, ID de modelo de Hugging Face o directorio de un modelo local.')
 _field('whisperer_cloud_model', 'Whisperer · modelo de voz en la nube', 'Voz', '', optional=True,
        agent='whisperer', path='cloud_model', kind='provider', help_text='Opcional. Vacío usa el modelo predeterminado del proveedor de voz elegido; las credenciales se quedan en el agent.')
-_field('whisperer_cleanup_model', 'Whisperer · limpieza de la transcripción', 'Voz', 'glm-5.3:cloud',
+_field('whisperer_cleanup_model', 'Whisperer · limpieza de la transcripción', 'Voz', 'deepseek-v4.1-flash:cloud',
        agent='whisperer', path='cleanup_model', fallback='unified_agent_model',
        help_text='Sólo para el posprocesamiento en Ollama; esto no activa la limpieza ni envía el audio del micrófono a Ollama.')
 _field('video_transcription_model', 'Video-Analyzer · pistas de audio', 'Voz', 'base',
@@ -84,12 +84,34 @@ for agent, label, group, path in (
     ('instant_messaging_doctor', 'Instant-Messaging-Doctor', 'Monitoreo y mensajería', 'ollama.model'),
     ('teletlamatini', 'TeleTlamatini · revisión de completitud', 'Monitoreo y mensajería', 'completeness_check.model'),
 ):
-    _field(f'{agent}_model', label, group, 'glm-5.3:cloud', agent=agent, path=path,
+    _field(f'{agent}_model', label, group, 'deepseek-v4.1-flash:cloud', agent=agent, path=path,
            fallback='unified_agent_model', optional=agent == 'latexer',
            help_text='Opcional. Vacío desactiva la reparación con el modelo.' if agent == 'latexer' else '')
 
 BY_KEY = {field['key']: field for field in FIELDS}
 AGENTS = frozenset(field['agent'] for field in FIELDS if field['agent'])
+
+
+# Only this exact retired choice is redirected. Other models, namespaces,
+# voice settings and explicit blank values remain untouched.
+MODEL_TAG_REPLACEMENTS = {
+    'mistral-large-3:675b-cloud': 'mistral-large-4:cloud',
+}
+
+
+def current_model_tag(value):
+    if not isinstance(value, str):
+        return value
+    return MODEL_TAG_REPLACEMENTS.get(value.strip().lower(), value)
+
+
+def normalize_model_config(config):
+    """Resolve retired choices without rewriting credentials or the source file."""
+    result = dict(config)
+    for field in FIELDS:
+        if field['kind'] == 'ollama' and field['key'] in result:
+            result[field['key']] = current_model_tag(result[field['key']])
+    return result
 
 
 def values_for_dialog(config):
@@ -100,7 +122,7 @@ def values_for_dialog(config):
             value = config.get(field['fallback']) if field['fallback'] else None
             if value is None or not str(value).strip():
                 value = field['default']
-        values[field['key']] = str(value).strip()
+        values[field['key']] = str(current_model_tag(value) if field['kind'] == 'ollama' else value).strip()
     return values
 
 
@@ -122,7 +144,7 @@ def validate_values(payload):
         elif len(value) > 512 or any(ord(char) < 32 for char in value):
             errors[key] = 'debe ser un solo valor de 512 caracteres como máximo'
         else:
-            updates[key] = value
+            updates[key] = current_model_tag(value) if field['kind'] == 'ollama' else value
     return updates, errors
 
 
@@ -136,7 +158,7 @@ def read_app_config(agent_file=None):
         data = json.loads(path.read_text(encoding='utf-8-sig'))
         if not isinstance(data, dict):
             raise ValueError('expected a JSON object')
-        return data
+        return normalize_model_config(data)
     except (OSError, ValueError) as exc:
         logging.warning('MODELS: could not read %s (%s); using initial defaults', path, type(exc).__name__)
         return {}
@@ -163,4 +185,6 @@ def resolve_agent_models(agent, config, app_config=None, *, agent_file=None, for
             key = parts[-1]
             if force or key not in target or target[key] == INHERIT:
                 target[key] = values[field['key']]
+            elif field['kind'] == 'ollama':
+                target[key] = current_model_tag(target[key])
     return result

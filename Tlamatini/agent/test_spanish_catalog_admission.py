@@ -66,6 +66,13 @@ process.stdout.write(JSON.stringify(rows.map(row => {
         accepted = 0
         for row, request in zip(rows, requests):
             with self.subTest(prompt=row['idPrompt']):
+                if row['idPrompt'] == 8:
+                    # A directory-scope inventory is deliberately answered from
+                    # the active guard without consulting a probabilistic chain.
+                    answer = interface.ask_rag(Mock(), request)
+                    self.assertIn('Directorios disponibles', answer)
+                    accepted += 1
+                    continue
                 chain = Mock()
                 chain.invoke.return_value = 'CATALOG_REACHED_CHAIN'
                 # Model-dependent intent classification must not decide whether
@@ -83,11 +90,11 @@ process.stdout.write(JSON.stringify(rows.map(row => {
                 if row['idPrompt'] in (2, 3, 4, 5, 6, 7, 8, 20, 21, 22):
                     self.assertFalse(request['step_by_step_enabled'],
                                      'The common instance contract must not enable guided mode')
-                if row['idPrompt'] in (1, 19, 69, 70, 75, 82, 83, 84, 97, 104, 108, 121, 129):
+                if row['idPrompt'] in (1, 69, 70, 83, 84, 97, 104, 108, 121, 129):
                     self.assertTrue(request['step_by_step_enabled'])
                 if 'Torrenter' in row['promptContent']:
-                    self.assertTrue(request['multi_turn_enabled'])
-                    self.assertTrue(request['exec_report_enabled'])
+                    self.assertFalse(request['multi_turn_enabled'])
+                    self.assertFalse(request['exec_report_enabled'])
                 accepted += 1
         print(f'Catalog admission: {accepted}/{len(rows)} samples reached the chain.')
 
@@ -150,6 +157,9 @@ class SpanishAdmissionBoundaryTests(SimpleTestCase):
                 '¿Cómo funciona este código',
                 'Tlamatini: muestra la hora actual.',
                 'Tlamatini, please explain this code.',
+                'Usa Torrenter para listar mis descargas.',
+                'Por favor, utiliza Torrenter para consultar el estado.',
+                'Emplea Executer para mostrar la hora.',
             ):
                 with self.subTest(text=text):
                     self.assertTrue(interface.is_valid_prompt(text))

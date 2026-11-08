@@ -133,7 +133,8 @@ class SpanishCatalogMigrationTests(TestCase):
         self.assertEqual(len(rows), 127)
         for row in rows:
             with self.subTest(card=row.pk):
-                self.assertIn('ÁMBITO DE ESTA TARJETA: Tlamatini-Spanish', row.promptContent)
+                if row.pk != 8:  # Scope inventory is handled by the active guard, not an LLM.
+                    self.assertIn('ÁMBITO DE ESTA TARJETA: Tlamatini-Spanish', row.promptContent)
                 self.assertNotRegex(row.promptContent, r'\b(?:READY|DONE|NOWINDOW|TESTNOW|SKIP)\b')
                 self.assertNotIn('http://localhost:8000', row.promptContent)
                 self.assertNotIn('C:/Development/Tlamatini', row.promptContent)

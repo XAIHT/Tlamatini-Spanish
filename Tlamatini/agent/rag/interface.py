@@ -21,6 +21,7 @@ from .. import inet_determiner
 from .. import web_search_llm
 from ..path_guard import is_path_allowed, REJECTION_MESSAGE
 from .utils import _approx_tokens
+from .directory_listing import available_directories_reply
 
 try:
     import nltk
@@ -165,6 +166,7 @@ def is_valid_prompt(text: str) -> bool:
         'obtén', 'obten', 'consigue', 'programa', 'codifica', 'implementa', 'construye', 'desarrolla',
         'diseña', 'produce', 'dibuja', 'configura', 'agrega', 'añade', 'quita', 'limpia', 'reinicia',
         'apaga', 'enciende', 'activa', 'desactiva', 'continúa', 'continua', 'sigue', 'platícame',
+        'usa', 'usar', 'utiliza', 'utilizar', 'emplea', 'emplear',
     ]
 
     multiword_patterns = [
@@ -850,6 +852,13 @@ def _ask_rag_impl(rag_chain, question, chat_history=None, inet_enabled=False):
         global_state.set_state('rag_chain_ready', True)
         return str(response)
 
+    # A scope inventory has no filesystem target to supply. Answer it from
+    # the active path guard before an intent model can misclassify it as access.
+    directory_reply = available_directories_reply(raw_text)
+    if directory_reply is not None:
+        print("--- [DIRECTORY-INVENTORY] served the active allowed roots without an LLM ---")
+        return directory_reply
+
     # Both Multi-Turn and ACPX bypass the prompt-shape and access-validation
     # gates. The reasoning is identical for both: when the LLM has agentic
     # tooling bound (Multi-Turn's tool surface, or ACPX's external CLI
@@ -985,7 +994,7 @@ def _ask_rag_impl(rag_chain, question, chat_history=None, inet_enabled=False):
                 return "Se canceló la generación."
 
             response = rag_chain.invoke(payload)
-            
+
     except GenerationCancelledException:
         print("--- [CANCEL] Generation cancelled during streaming ---")
         global_state.set_state('rag_chain_ready', True)
@@ -997,7 +1006,7 @@ def _ask_rag_impl(rag_chain, question, chat_history=None, inet_enabled=False):
             global_state.set_state('rag_chain_ready', True)
             return "Se canceló la generación."
         raise
-    
+
     global_state.set_state('rag_chain_ready', True)
 
     # Per-request metadata handoff to the consumer (tool_calls_log for the Create-Flow
