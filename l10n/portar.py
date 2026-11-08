@@ -37,7 +37,10 @@ from base_ingles import originales_del_parche  # noqa: E402
 
 BASE = L10N / "BASE_INGLES.json"
 MEMORIA = L10N / "memoria"
-PROPIOS = ("l10n/",)  # rutas que sólo existen en la edición en español
+PROPIOS = ("l10n/", "Tlamatini/agent/migrations/0222_repair_prompt_catalog.py",
+           "Tlamatini/agent/migrations/0223_spanish_catalog_instance_contracts.py",
+           "Tlamatini/agent/test_spanish_catalog_admission.py",
+           "Tlamatini/agent/test_spanish_instance_contracts.py")
 
 
 def _git(ingles: Path, *args, binario=False):

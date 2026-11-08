@@ -2,58 +2,34 @@
  "archivo": "Tlamatini/agent/test_wizard_intent_guards.py",
  "segmentos": [
   {
-   "en": "\"I will type it only into the console\"",
-   "es": "\"la escribiré solamente en la ventana de consola\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 1
+   "en": "        for text in (\n            \"You will run Django's createsuperuser. I will type my password.\",\n            \"You should execute the installer. Let me type my email myself.\",\n        ):\n            with self.subTest(text=text):\n                self.assertEqual(guard.classify_message(text)[0], \"lift\")\n",
+   "es": "        for text in (\n            \"You will run Django's createsuperuser. I will type my password.\",\n            \"You should execute the installer. Let me type my email myself.\",\n            \"Tú ejecutas createsuperuser; yo completo los datos.\",\n            \"Tú vas a ejecutar el instalador. La contraseña va en la consola.\",\n            \"Tú puedes lanzar el programa; yo escribo mi correo.\",\n        ):\n            with self.subTest(text=text):\n                self.assertEqual(guard.classify_message(text)[0], \"lift\")\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"I explicitly request local graphical Notifier alerts\"",
-   "es": "\"Pido explícitamente alertas gráficas locales del Notifier\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 1
+   "en": "        guard.reset()\n        self.prompt = Prompt.objects.get(idPrompt=1).promptContent\n        self.assertIn(\"createsuperuser\", self.prompt)\n        self.assertIn(\"I will type it only into the console\", self.prompt)\n\n    def tearDown(self):\n        guard.reset()\n\n    def test_real_catalog_requests_local_checkpoints_without_premature_completion_debt(self):\n        self.assertFalse(_detect_completion_notification_request(self.prompt))\n        self.assertIn(\"I explicitly request local graphical Notifier alerts\", self.prompt)\n        for label in (\"Username needed\", \"Console input needed\", \"Error creating user\",\n                      \"Warning: console not visible\", \"User ready\"):\n            self.assertIn(\"target.search_strings='\" + label + \"'\", self.prompt)\n        self.assertIn(\"not email, Telegram, WhatsApp or other external messages\", self.prompt)\n        self.assertIn(\"a launched window or a typed command is not success\", self.prompt)\n\n    def test_historical_catalog_still_does_not_authorize_notifications(self):\n        self.assertFalse(_detect_completion_notification_request(wizard_migration.OLD_WIZARD_PROMPT))\n",
+   "es": "        guard.reset()\n        self.prompt = Prompt.objects.get(idPrompt=1).promptContent\n        self.assertIn(\"createsuperuser\", self.prompt)\n        self.assertIn(\"la escribiré solamente en la ventana de consola\", self.prompt)\n\n    def tearDown(self):\n        guard.reset()\n\n    def test_real_catalog_requests_local_checkpoints_without_premature_completion_debt(self):\n        self.assertFalse(_detect_completion_notification_request(self.prompt))\n        self.assertIn(\"Pido explícitamente alertas gráficas locales del Notifier\", self.prompt)\n        for label in (\"Falta el nombre de usuario\", \"Escribe en la consola\", \"Error al crear el usuario\",\n                      \"Aviso: la consola no se ve\", \"Usuario listo\"):\n            self.assertIn(\"target.search_strings='\" + label + \"'\", self.prompt)\n        self.assertIn(\"no correo, Telegram, WhatsApp ni otros mensajes externos\", self.prompt)\n        self.assertIn(\"una ventana abierta o un comando escrito no es éxito\", self.prompt)\n\n    def test_historical_catalog_still_does_not_authorize_notifications(self):\n        self.assertFalse(_detect_completion_notification_request(wizard_migration.OLD_WIZARD_PROMPT))\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"Username needed\"",
-   "es": "\"Falta el nombre de usuario\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 1
+   "en": "                def chat_agent_executer(request: str) -> str:\n                    \"\"\"Record a requested command without running it.\"\"\"\n                    calls.append(request)\n                    return json.dumps({\"status\": \"completed\", \"output\": (\n                        \"TLAMATINI_MODE=\" + runtime if len(calls) == 1 else \"Interactive console launched\"\n                    )})\n\n                @tool\n                def chat_agent_notifier(request: str) -> str:\n",
+   "es": "                def chat_agent_executer(request: str) -> str:\n                    \"\"\"Record a requested command without running it.\"\"\"\n                    calls.append(request)\n                    return json.dumps({\"status\": \"completed\", \"output\": \"Interactive console launched\"})\n\n                @tool\n                def chat_agent_notifier(request: str) -> str:\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"Console input needed\"",
-   "es": "\"Escribe en la consola\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 1
+   "en": "                    return json.dumps({\"status\": \"completed\", \"output\": \"Notification file created\"})\n\n                history = [{\"type\": \"human\", \"content\": THE_RUST_USER_SENTENCE}]\n                launch = ('\"%TLAMATINI_TEMP%\\\\..\\\\Tlamatini.exe\" createsuperuser' if runtime == \"FROZEN\"\n                          else 'python manage.py createsuperuser')\n                for message, request, answer in (\n                    (self.prompt, \"script='echo TLAMATINI_MODE'\", \"Detected the runtime. Ready for the next step.\"),\n                    (\"Continue\", f\"script='{launch}' and execute_forked_window=true and non_blocking=true\",\n                     \"Enter your password only in the console, then reply DONE. I will wait.\"),\n                ):\n                    script = [{\"calls\": [(\"chat_agent_executer\", {\"request\": request})]}]\n                    if message == \"Continue\":\n                        script.append({\"calls\": [(\"chat_agent_notifier\", {\"request\":\n                            \"target.mode='oneshot' and target.search_strings='Console input needed' \"\n                            \"and target.outcome_detail='Use the console, then confirm its success in chat.' \"\n                            \"and target.sound_enabled=true\"})]})\n                    script.append({\"content\": answer})\n                    llm = _ScriptedLLM(script)\n                    executor = MultiTurnToolAgentExecutor(\n",
+   "es": "                    return json.dumps({\"status\": \"completed\", \"output\": \"Notification file created\"})\n\n                history = [{\"type\": \"human\", \"content\": THE_RUST_USER_SENTENCE}]\n                launch = ('\"C:/Spanish/Tlamatini-Spanish.exe\" createsuperuser' if runtime == \"FROZEN\"\n                          else '\"C:/Spanish/python/python.exe\" \"C:/Spanish/Tlamatini/manage.py\" createsuperuser')\n                for message, request, answer in (\n                    (self.prompt, f\"script='{launch}' and execute_forked_window=true and non_blocking=true\",\n                     \"Completa la consola y responde HECHO solo cuando confirme la creación. Espero.\"),\n                ):\n                    script = [{\"calls\": [(\"chat_agent_executer\", {\"request\": request})]}]\n                    script.append({\"calls\": [(\"chat_agent_notifier\", {\"request\":\n                        \"target.mode='oneshot' and target.search_strings='Escribe en la consola' \"\n                        \"and target.outcome_detail='Completa la consola y confirma el resultado en el chat.' \"\n                        \"and target.sound_enabled=true\"})]})\n                    script.append({\"content\": answer})\n                    llm = _ScriptedLLM(script)\n                    executor = MultiTurnToolAgentExecutor(\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"Error creating user\"",
-   "es": "\"Error al crear el usuario\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 2
-  },
-  {
-   "en": "\"Warning: console not visible\"",
-   "es": "\"Aviso: la consola no se ve\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 2
-  },
-  {
-   "en": "\"User ready\"",
-   "es": "\"Usuario listo\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 3
-  },
-  {
-   "en": "\"not email, Telegram, WhatsApp or other external messages\"",
-   "es": "\"no correo, Telegram, WhatsApp ni otros mensajes externos\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 1
-  },
-  {
-   "en": "\"a launched window or a typed command is not success\"",
-   "es": "\"una ventana abierta o un comando escrito no es éxito\"",
-   "maquina": "la prueba busca frases y etiquetas de la tarjeta 1 y del parche 0219, que ahora están en español",
-   "n": 1
+   "en": "                    self.assertEqual(result[\"output\"], answer)\n                    self.assertTrue(result[\"exec_report_entries\"][0][\"success\"])\n                    history.extend([{\"type\": \"human\", \"content\": message}, {\"type\": \"ai\", \"content\": answer}])\n                self.assertEqual(len(calls), 2)\n                self.assertIn(\"createsuperuser\", calls[1])\n                self.assertEqual(len(notifications), 1)\n                self.assertNotIn(\"User ready\", notifications[0])\n\n    def test_local_checkpoint_calls_survive_error_nowindow_and_success_continuations(self):\n        for reply, label in (\n            (\"ERROR: The username is already taken.\", \"Error creating user\"),\n            (\"NOWINDOW\", \"Warning: console not visible\"),\n            (\"DONE: I saw Superuser created successfully in the console.\", \"User ready\"),\n        ):\n            with self.subTest(reply=reply):\n                alerts = []\n",
+   "es": "                    self.assertEqual(result[\"output\"], answer)\n                    self.assertTrue(result[\"exec_report_entries\"][0][\"success\"])\n                    history.extend([{\"type\": \"human\", \"content\": message}, {\"type\": \"ai\", \"content\": answer}])\n                self.assertEqual(len(calls), 1)\n                self.assertIn(\"createsuperuser\", calls[0])\n                self.assertEqual(len(notifications), 1)\n                self.assertNotIn(\"Usuario listo\", notifications[0])\n\n    def test_local_checkpoint_calls_survive_error_nowindow_and_success_continuations(self):\n        for reply, label in (\n            (\"ERROR: El nombre de usuario ya existe.\", \"Error al crear el usuario\"),\n            (\"SIN VENTANA\", \"Aviso: la consola no se ve\"),\n            (\"HECHO: Vi Superuser created successfully en la consola.\", \"Usuario listo\"),\n        ):\n            with self.subTest(reply=reply):\n                alerts = []\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": []

@@ -724,7 +724,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ("Límites", "La carga en frío del modelo, la latencia del proveedor y el hardware varían; no hay promesa de latencia cero."),
                 ("Guía detallada", "docs/chat-microphone-design.md registra la configuración, el protocolo y la evidencia."),
             ], deck="cards"),
-        Section("navbar", "NAVEGACIÓN", "La barra de menús en v1.92.3",
+        Section("navbar", "NAVEGACIÓN", f"La barra de menús en v{version}",
             "Vistas controla el espacio de trabajo, Paneles abre los editores de flows, y Config guarda la configuración.",
             table={"columns": ["Menú", "Qué encuentras ahí"], "widths": [0.20, 0.80], "rows": [
                 ["Abrir · Guardar", "Abre un archivo en el canvas; Guardar en el menú elige un destino con el Guardar como nativo."],

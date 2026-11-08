@@ -102,7 +102,7 @@
         try {
             const targetPage = page || detectCurrentPage();
             const cookieValue = `; ${document.cookie}`;
-            const parts = cookieValue.split('; csrftoken=');
+            const parts = cookieValue.split('; tlm_csrf_es_mx=');
             const csrf = parts.length === 2 ? (parts.pop().split(';').shift() || '') : '';
             const headers = { 'Content-Type': 'application/json' };
             if (csrf) headers['X-CSRFToken'] = csrf;

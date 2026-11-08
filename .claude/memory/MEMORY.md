@@ -1,6 +1,9 @@
 <!-- THE USER IS ANGELA, A WOMAN — always address her by name. -->
-> Última versión publicada: **[v1.92.3](../../docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](../../docs/changes/2026-11-08-v1.92.4.md)**.
 
+## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+
+El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](../../docs/changes/2026-11-08-v1.92.4.md).
 
 <!-- Unless noted, work is UNCOMMITTED in source; frozen needs build.py. Detail in topic files. -->
 - [Prompt Flow: static Commentary and runtime User Input](project_prompt_flow_commentary_input.md) — version 2 saves, version 1 migration, inline rich notes with a floating selection toolbar, mixed fonts/styles, all-border resizing and full-text containment; **no configuration dialog**; **no internal scrollbars**. Runtime reply/cancel stays unchanged. Run output has a 5–95% divider, independent scrolling and separate per-user layout storage.

@@ -2,21 +2,22 @@
  "archivo": "Tlamatini/tlamatini/settings.py",
  "segmentos": [
   {
-   "en": "LANGUAGE_CODE = 'en-us'",
-   "es": "LANGUAGE_CODE = 'es-mx'",
-   "n": 1
+   "en": "                'django.contrib.messages.context_processors.messages',\n                'tlamatini.context_processors.static_version',\n                'tlamatini.context_processors.app_version',\n            ],\n        },\n    },\n",
+   "es": "                'django.contrib.messages.context_processors.messages',\n                'tlamatini.context_processors.static_version',\n                'tlamatini.context_processors.app_version',\n                'tlamatini.context_processors.speech_pronunciation',\n            ],\n        },\n    },\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "STATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1-typing-250-1-torrenter-1'",
-   "es": "STATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1-spanish-names-1-typing-250-1-torrenter-1'",
+   "en": "# Internationalization\n# https://docs.djangoproject.com/en/5.2/topics/i18n/\n\nLANGUAGE_CODE = 'en-us'\nSESSION_COOKIE_NAME = 'tlm_session_' + LANGUAGE_CODE.replace('-', '_')\n\nTIME_ZONE = 'America/Mexico_City'\n\n",
+   "es": "# Internationalization\n# https://docs.djangoproject.com/en/5.2/topics/i18n/\n\nLANGUAGE_CODE = 'es-mx'\nSESSION_COOKIE_NAME = 'tlm_session_' + LANGUAGE_CODE.replace('-', '_')\nCSRF_COOKIE_NAME = 'tlm_csrf_' + LANGUAGE_CODE.replace('-', '_')\n\nTIME_ZONE = 'America/Mexico_City'\n\n",
    "n": 1,
-   "codigo": "Conservar los sufijos españoles de voz y velocidad junto con Torrenter."
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "                'tlamatini.context_processors.app_version',\n",
-   "es": "                'tlamatini.context_processors.app_version',\n                'tlamatini.context_processors.speech_pronunciation',\n",
+   "en": "\n# Version stamp for cache-busting of static assets in templates\n# Override via env var STATIC_VERSION when deploying\nSTATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1-typing-250-1-torrenter-1'\n\n# WhiteNoise configuration: dev vs release.\n# NOTE (speed batch, 2026-07-02): the old per-branch STATICFILES_STORAGE lines\n",
+   "es": "\n# Version stamp for cache-busting of static assets in templates\n# Override via env var STATIC_VERSION when deploying\nSTATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1-spanish-names-1-typing-250-1-torrenter-1-canvas-text-2-es-instance-1'\n\n# WhiteNoise configuration: dev vs release.\n# NOTE (speed batch, 2026-07-02): the old per-branch STATICFILES_STORAGE lines\n",
    "n": 1,
-   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

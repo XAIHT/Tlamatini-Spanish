@@ -2,129 +2,64 @@
  "archivo": "Tlamatini/agent/static/agent/js/agent_page_editing.js",
  "segmentos": [
   {
-   "en": "'Saving…'",
-   "es": "'Guardando…'",
-   "n": 1
+   "en": "    const normalize = value => String(value).replace(/\\r\\n?|\\n/g, '\\n');\n    const dirty = () => !!current && editor.getText() !== current.baseline;\n    const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value ||\n        decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('csrftoken='))?.slice(10) || '');\n\n    function beforeUnload(event) {\n        if (!dirty() && !saving) return;\n",
+   "es": "    const normalize = value => String(value).replace(/\\r\\n?|\\n/g, '\\n');\n    const dirty = () => !!current && editor.getText() !== current.baseline;\n    const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value ||\n        decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('tlm_csrf_es_mx='))?.slice('tlm_csrf_es_mx='.length) || '');\n\n    function beforeUnload(event) {\n        if (!dirty() && !saving) return;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Save'",
-   "es": "'Guardar'",
-   "n": 1
+   "en": "        const available = !!current || pdf;\n        const changed = dirty();\n        buttons.save.disabled = buttons['save-as'].disabled = !available || saving;\n        buttons.save.textContent = saving ? 'Saving…' : 'Save';\n        buttons.save.setAttribute('aria-busy', String(saving));\n        const history = current ? editor.historyState() : {};\n        buttons.undo.disabled = !current || !history.undo;\n",
+   "es": "        const available = !!current || pdf;\n        const changed = dirty();\n        buttons.save.disabled = buttons['save-as'].disabled = !available || saving;\n        buttons.save.textContent = saving ? 'Guardando…' : 'Guardar';\n        buttons.save.setAttribute('aria-busy', String(saving));\n        const history = current ? editor.historyState() : {};\n        buttons.undo.disabled = !current || !history.undo;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Saving file…'",
-   "es": "'Guardando el archivo…'",
-   "n": 1
+   "en": "        buttons.find.disabled = buttons.wrap.disabled = !current;\n        buttons.wrap.setAttribute('aria-pressed', String(wrap));\n        status.dataset.state = saving ? 'saving' : changed ? 'dirty' : 'saved';\n        const message = saving ? 'Saving file…' : notice || (current\n            ? `${changed ? '● Unsaved changes' : 'Saved content'} · ${current.format.label} · ${current.format.eol === '\\r\\n' ? 'CRLF' : current.format.eol === '\\r' ? 'CR' : 'LF'}`\n            : pdf ? 'PDF · original document (read only)' : 'Open a file to edit.');\n        if (status.textContent !== message) status.textContent = message;\n        window.removeEventListener('beforeunload', beforeUnload);\n        if (changed || saving) window.addEventListener('beforeunload', beforeUnload);\n",
+   "es": "        buttons.find.disabled = buttons.wrap.disabled = !current;\n        buttons.wrap.setAttribute('aria-pressed', String(wrap));\n        status.dataset.state = saving ? 'saving' : changed ? 'dirty' : 'saved';\n        const message = saving ? 'Guardando el archivo…' : notice || (current\n            ? `${changed ? '● Cambios sin guardar' : 'Contenido guardado'} · ${current.format.label} · ${current.format.eol === '\\r\\n' ? 'CRLF' : current.format.eol === '\\r' ? 'CR' : 'LF'}`\n            : pdf ? 'PDF · documento original (sólo lectura)' : 'Abre un archivo para editarlo.');\n        if (status.textContent !== message) status.textContent = message;\n        window.removeEventListener('beforeunload', beforeUnload);\n        if (changed || saving) window.addEventListener('beforeunload', beforeUnload);\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'● Unsaved changes'",
-   "es": "'● Cambios sin guardar'",
-   "n": 1
+   "en": "    }\n\n    async function decodeFile(file) {\n        if (file.size > MAX_BYTES) throw new Error('Text editing supports files up to 64 MiB.');\n        const bytes = new Uint8Array(await file.arrayBuffer());\n        let encoding = 'utf-8';\n        let offset = 0;\n        if ((bytes[0] === 0xff && bytes[1] === 0xfe && bytes[2] === 0 && bytes[3] === 0) ||\n            (bytes[0] === 0 && bytes[1] === 0 && bytes[2] === 0xfe && bytes[3] === 0xff)) {\n            throw new Error('UTF-32 is not editable here. Convert a copy to UTF-8 or UTF-16 first.');\n        }\n        if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) offset = 3;\n        else if (bytes[0] === 0xff && bytes[1] === 0xfe) { encoding = 'utf-16le'; offset = 2; }\n        else if (bytes[0] === 0xfe && bytes[1] === 0xff) { encoding = 'utf-16be'; offset = 2; }\n        let text;\n        try { text = new TextDecoder(encoding, { fatal: true, ignoreBOM: true }).decode(bytes.subarray(offset)); }\n        catch (cause) { throw new Error('This file is not valid UTF-8 or BOM-marked UTF-16. Convert a copy before editing so no characters are lost.', { cause }); }\n        for (let i = 0; i < text.length; i++) {\n            if (text.charCodeAt(i) < 32 && !'\\t\\n\\r\\f'.includes(text[i])) {\n                throw new Error('This is a binary file. Open it in its dedicated application.');\n            }\n        }\n        const format = inferFormat(text, bytes);\n        Object.assign(format, { encoding, bom: offset > 0,\n",
+   "es": "    }\n\n    async function decodeFile(file) {\n        if (file.size > MAX_BYTES) throw new Error('La edición de texto admite archivos de hasta 64 MiB.');\n        const bytes = new Uint8Array(await file.arrayBuffer());\n        let encoding = 'utf-8';\n        let offset = 0;\n        if ((bytes[0] === 0xff && bytes[1] === 0xfe && bytes[2] === 0 && bytes[3] === 0) ||\n            (bytes[0] === 0 && bytes[1] === 0 && bytes[2] === 0xfe && bytes[3] === 0xff)) {\n            throw new Error('Aquí no se puede editar UTF-32. Primero convierte una copia a UTF-8 o UTF-16.');\n        }\n        if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) offset = 3;\n        else if (bytes[0] === 0xff && bytes[1] === 0xfe) { encoding = 'utf-16le'; offset = 2; }\n        else if (bytes[0] === 0xfe && bytes[1] === 0xff) { encoding = 'utf-16be'; offset = 2; }\n        let text;\n        try { text = new TextDecoder(encoding, { fatal: true, ignoreBOM: true }).decode(bytes.subarray(offset)); }\n        catch (cause) { throw new Error('Este archivo no es UTF-8 válido ni UTF-16 con BOM. Convierte una copia antes de editarlo para no perder caracteres.', { cause }); }\n        // A stray BEL/backspace (for example, from PowerShell escaping a\n        // Markdown path) does not make a readable document binary. Keep those\n        // characters verbatim so opening and saving never silently repairs it.\n        // Like the drop router, use control density, after strict BOM-aware\n        // decoding; a NUL is still an unconditional binary signal.\n        let controls = 0;\n        for (let i = 0; i < text.length; i++) {\n            const code = text.charCodeAt(i);\n            if (code === 0) {\n                throw new Error('Es un archivo binario. Ábrelo en su aplicación correspondiente.');\n            }\n            if (code < 32 && !'\\t\\n\\r\\f\\v'.includes(text[i])) controls++;\n        }\n        if (controls > text.length * 0.3) {\n            throw new Error('Es un archivo binario. Ábrelo en su aplicación correspondiente.');\n        }\n        const format = inferFormat(text, bytes);\n        Object.assign(format, { encoding, bom: offset > 0,\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Saved content'",
-   "es": "'Contenido guardado'",
-   "n": 1
+   "en": "\n    async function confirmDiscard() {\n        if (saving) {\n            await window.tlmAlert('Wait for the current save to finish before replacing this document.', 'Saving file');\n            return false;\n        }\n        if (!dirty()) return true;\n        const state = current;\n        const value = editor.getText();\n        const confirmed = await window.tlmConfirm(`Discard unsaved changes to ${state.name}?`,\n            'Save first to keep your edits. Continue discards them; Cancel keeps the editor open.', 'Unsaved changes');\n        // An edit arriving while the confirmation is open was not approved.\n        return confirmed && state === current && value === editor.getText();\n    }\n",
+   "es": "\n    async function confirmDiscard() {\n        if (saving) {\n            await window.tlmAlert('Espera a que termine el guardado en curso antes de reemplazar este documento.', 'Guardando el archivo');\n            return false;\n        }\n        if (!dirty()) return true;\n        const state = current;\n        const value = editor.getText();\n        const confirmed = await window.tlmConfirm(`¿Quieres descartar los cambios sin guardar de ${state.name}?`,\n            'Primero guarda para conservar tus cambios. Continuar los descarta; Cancelar deja el editor abierto.', 'Cambios sin guardar');\n        // An edit arriving while the confirmation is open was not approved.\n        return confirmed && state === current && value === editor.getText();\n    }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'PDF · original document (read only)'",
-   "es": "'PDF · documento original (sólo lectura)'",
-   "n": 1
+   "en": "    async function post(url, form, signal) {\n        const response = await fetch(url, { method: 'POST', body: form, signal,\n            credentials: 'same-origin', headers: { 'X-CSRFToken': csrf() } });\n        if (response.redirected || response.status === 401) throw new Error('Your session expired. Sign in again before saving.');\n        if (!response.ok) {\n            const result = await response.json().catch(() => ({}));\n            throw new Error(result.error || `The file operation failed (${response.status}).`);\n        }\n        return response;\n    }\n",
+   "es": "    async function post(url, form, signal) {\n        const response = await fetch(url, { method: 'POST', body: form, signal,\n            credentials: 'same-origin', headers: { 'X-CSRFToken': csrf() } });\n        if (response.redirected || response.status === 401) throw new Error('Tu sesión expiró. Vuelve a iniciar sesión antes de guardar.');\n        if (!response.ok) {\n            const result = await response.json().catch(() => ({}));\n            throw new Error(result.error || `Error en la operación con el archivo (${response.status}).`);\n        }\n        return response;\n    }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Open a file to edit.'",
-   "es": "'Abre un archivo para editarlo.'",
-   "n": 1
+   "en": "            // handles never disclose an absolute path to the local server.\n            const permission = handle?.requestPermission\n                ? handle.requestPermission({ mode: 'readwrite' }) : null;\n            if (permission && await permission !== 'granted') throw new Error('Write access was not granted. Your edits are kept; use Save as… to choose a destination.');\n            let result, decoded;\n            if (handle?.createWritable && !pdf) {\n                decoded = await decodeFile(new File([blob], name));\n                if (!await sameBytes(await handle.getFile(), state.format.bytes)) {\n                    throw new Error('The file changed outside this editor. Use Save as… to keep your edits separately, or Refresh to review the disk version.');\n                }\n                const writable = await handle.createWritable();\n                try { await writable.write(blob); await writable.close(); }\n",
+   "es": "            // handles never disclose an absolute path to the local server.\n            const permission = handle?.requestPermission\n                ? handle.requestPermission({ mode: 'readwrite' }) : null;\n            if (permission && await permission !== 'granted') throw new Error('No se concedió el permiso de escritura. Tus cambios se conservan; usa Guardar como… para elegir un destino.');\n            let result, decoded;\n            if (handle?.createWritable && !pdf) {\n                decoded = await decodeFile(new File([blob], name));\n                if (!await sameBytes(await handle.getFile(), state.format.bytes)) {\n                    throw new Error('El archivo cambió fuera de este editor. Usa Guardar como… para conservar tus cambios por separado, o Actualizar para revisar la versión del disco.');\n                }\n                const writable = await handle.createWritable();\n                try { await writable.write(blob); await writable.close(); }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Text editing supports files up to 64 MiB.'",
-   "es": "'La edición de texto admite archivos de hasta 64 MiB.'",
-   "n": 1
+   "en": "                form.append('file', blob, name);\n                if (native) { form.append('token', native.token); form.append('revision', native.revision); }\n                result = await (await post('/agent/canvas/save/', form)).json();\n                if (!result.saved) { notice = 'Save cancelled. Your content is kept.'; return false; }\n                native = { token: result.token, revision: result.revision };\n                handle = null;\n            }\n",
+   "es": "                form.append('file', blob, name);\n                if (native) { form.append('token', native.token); form.append('revision', native.revision); }\n                result = await (await post('/agent/canvas/save/', form)).json();\n                if (!result.saved) { notice = 'Se canceló el guardado. Tu contenido se conserva.'; return false; }\n                native = { token: result.token, revision: result.revision };\n                handle = null;\n            }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'UTF-32 is not editable here. Convert a copy to UTF-8 or UTF-16 first.'",
-   "es": "'Aquí no se puede editar UTF-32. Primero convierte una copia a UTF-8 o UTF-16.'",
-   "n": 1
+   "en": "            const savedName = result.filename || name;\n            // PDF is a viewer, so saving exports a byte-identical copy. Its\n            // original identity, prepared context and live viewer remain intact.\n            if (pdf) { notice = `Saved PDF copy · ${savedName}`; return true; }\n            const file = new File([blob], savedName, { type: pdf ? 'application/pdf' : 'text/plain' });\n            const contextPending = !!source?.contextPending || (savedName !== name && canvasSettedAsContext);\n            if (savedName !== name && canvasSettedAsContext) unsetContextButton();\n",
+   "es": "            const savedName = result.filename || name;\n            // PDF is a viewer, so saving exports a byte-identical copy. Its\n            // original identity, prepared context and live viewer remain intact.\n            if (pdf) { notice = `Copia del PDF guardada · ${savedName}`; return true; }\n            const file = new File([blob], savedName, { type: pdf ? 'application/pdf' : 'text/plain' });\n            const contextPending = !!source?.contextPending || (savedName !== name && canvasSettedAsContext);\n            if (savedName !== name && canvasSettedAsContext) unsetContextButton();\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'This file is not valid UTF-8 or BOM-marked UTF-16. Convert a copy before editing so no characters are lost.'",
-   "es": "'Este archivo no es UTF-8 válido ni UTF-16 con BOM. Convierte una copia antes de editarlo para no perder caracteres.'",
-   "n": 1
-  },
-  {
-   "en": "'This is a binary file. Open it in its dedicated application.'",
-   "es": "'Es un archivo binario. Ábrelo en su aplicación correspondiente.'",
-   "n": 1
-  },
-  {
-   "en": "'Wait for the current save to finish before replacing this document.'",
-   "es": "'Espera a que termine el guardado en curso antes de reemplazar este documento.'",
-   "n": 1
-  },
-  {
-   "en": "'Saving file'",
-   "es": "'Guardando el archivo'",
-   "n": 1
-  },
-  {
-   "en": "`Discard unsaved changes to ${state.name}?`",
-   "es": "`¿Quieres descartar los cambios sin guardar de ${state.name}?`",
-   "n": 1
-  },
-  {
-   "en": "'Save first to keep your edits. Continue discards them; Cancel keeps the editor open.'",
-   "es": "'Primero guarda para conservar tus cambios. Continuar los descarta; Cancelar deja el editor abierto.'",
-   "n": 1
-  },
-  {
-   "en": "'Unsaved changes'",
-   "es": "'Cambios sin guardar'",
-   "n": 1
-  },
-  {
-   "en": "'Your session expired. Sign in again before saving.'",
-   "es": "'Tu sesión expiró. Vuelve a iniciar sesión antes de guardar.'",
-   "n": 1
-  },
-  {
-   "en": "`The file operation failed (${response.status}).`",
-   "es": "`Error en la operación con el archivo (${response.status}).`",
-   "n": 1
-  },
-  {
-   "en": "'Write access was not granted. Your edits are kept; use Save as… to choose a destination.'",
-   "es": "'No se concedió el permiso de escritura. Tus cambios se conservan; usa Guardar como… para elegir un destino.'",
-   "n": 1
-  },
-  {
-   "en": "'The file changed outside this editor. Use Save as… to keep your edits separately, or Refresh to review the disk version.'",
-   "es": "'El archivo cambió fuera de este editor. Usa Guardar como… para conservar tus cambios por separado, o Actualizar para revisar la versión del disco.'",
-   "n": 1
-  },
-  {
-   "en": "'Save cancelled. Your content is kept.'",
-   "es": "'Se canceló el guardado. Tu contenido se conserva.'",
-   "n": 2
-  },
-  {
-   "en": "`Saved PDF copy · ${savedName}`",
-   "es": "`Copia del PDF guardada · ${savedName}`",
-   "n": 1
-  },
-  {
-   "en": "'Saved the previous revision · newer edits are unsaved.'",
-   "es": "'Se guardó la revisión anterior · los cambios más recientes no están guardados.'",
-   "n": 1
-  },
-  {
-   "en": "`Saved · ${savedName}`",
-   "es": "`Guardado · ${savedName}`",
-   "n": 1
-  },
-  {
-   "en": "`Not saved · ${error.message}`",
-   "es": "`No se guardó · ${error.message}`",
-   "n": 1
+   "en": "                    else window.TlamatiniMarkdownCanvas?.open(savedName, editor.getText(), file);\n                } else window.TlamatiniMarkdownCanvas?.close();\n            }\n            notice = dirty() ? 'Saved the previous revision · newer edits are unsaved.' : `Saved · ${savedName}`;\n            return true;\n        } catch (error) {\n            notice = error.name === 'AbortError' ? 'Save cancelled. Your content is kept.' : `Not saved · ${error.message}`;\n            return false;\n        } finally {\n            saving = false;\n",
+   "es": "                    else window.TlamatiniMarkdownCanvas?.open(savedName, editor.getText(), file);\n                } else window.TlamatiniMarkdownCanvas?.close();\n            }\n            notice = dirty() ? 'Se guardó la revisión anterior · los cambios más recientes no están guardados.' : `Guardado · ${savedName}`;\n            return true;\n        } catch (error) {\n            notice = error.name === 'AbortError' ? 'Se canceló el guardado. Tu contenido se conserva.' : `No se guardó · ${error.message}`;\n            return false;\n        } finally {\n            saving = false;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

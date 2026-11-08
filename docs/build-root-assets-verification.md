@@ -1,9 +1,9 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Required runtime files: packaging repair and verification
 
-> Última versión publicada: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
 
-## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
+## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
 Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](changes/2026-11-01-v1.92.3.md).
 

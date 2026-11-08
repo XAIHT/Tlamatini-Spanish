@@ -1,5 +1,7 @@
 # Porteo de Torrenter · 31 de octubre de 2026
 
+> Última versión publicada: **[v1.92.4](../../docs/changes/2026-11-08-v1.92.4.md)**.
+
 Solicitud de Angela, conservada para la bitácora de cambios:
 
 > Now, deeply sweep every line changed in Tlamatini (english) and implement the corresponding changes in Tlamatini-Spanish *of course load all of the skills and every memory from Tlamatini-Spanish codebase in order to be sure you implement everything according to Tlamatini-Spanish design, so make a surgically GOD-LEVEL IMPLEMENTATION of Torrenter and everything related into Tlamatini-Spanish at 'c:\Development\XAIHT\Tlamatini-Spanish', go!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -71,8 +71,13 @@ class CreateSuperuserWizardPromptTests(TestCase):
 
     def test_runs_in_both_frozen_and_source(self):
         c = self._wizard().promptContent
-        self.assertIn('Tlamatini-Spanish.exe" createsuperuser', c)      # frozen branch
-        self.assertIn('python manage.py createsuperuser', c)    # source branch
+        self.assertIn('Tlamatini-Spanish.exe', c)
+        self.assertIn('management_argv', c)
+        self.assertIn('Tlamatini/manage.py', c)
         self.assertIn('execute_forked_window=true', c)          # visible console
         self.assertIn('non_blocking=true', c)                   # detached, returns
-        self.assertIn('reinicia', c.lower())                     # restart guidance
+        self.assertIn('sin reiniciar', c)
+        self.assertIn('MISMA dirección', c)
+        self.assertNotIn('http://localhost:8000', c)
+        self.assertIn('HECHO', c)
+        self.assertIn('SIN VENTANA', c)

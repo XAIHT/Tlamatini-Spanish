@@ -2,269 +2,124 @@
  "archivo": "Tlamatini/agent/static/agent/js/agent_page_canvas.js",
  "segmentos": [
   {
-   "en": "'Open a file to refresh its content.'",
-   "es": "'Abre un archivo para actualizar su contenido.'",
-   "n": 2
+   "en": "let canvasSource = null;\nlet canvasRefreshWork = null;\nlet canvasRefreshState = 'empty';\nlet canvasRefreshMessage = 'Open a file to refresh its content.';\nconst canvasRefreshStatus = document.getElementById('canvas-refresh-status');\nconst canvasRefreshCancel = document.getElementById('canvas-refresh-cancel');\n\n",
+   "es": "let canvasSource = null;\nlet canvasRefreshWork = null;\nlet canvasRefreshState = 'empty';\nlet canvasRefreshMessage = 'Abre un archivo para actualizar su contenido.';\nconst canvasRefreshStatus = document.getElementById('canvas-refresh-status');\nconst canvasRefreshCancel = document.getElementById('canvas-refresh-cancel');\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Refresh is available when the current operation finishes.'",
-   "es": "'Actualizar estará disponible cuando termine la operación en curso.'",
-   "n": 1
+   "en": "    const busy = !!canvasRefreshWork;\n    const locked = !openEnabled || !contextEnabled || inLongOperation;\n    const state = busy ? 'refreshing' : locked ? 'locked' : canvasRefreshState;\n    const message = locked && !busy ? 'Refresh is available when the current operation finishes.' : canvasRefreshMessage;\n    reopenOpenCanvasButton.disabled = busy || locked || !canvasSource?.read;\n    reopenOpenCanvasButton.textContent = busy ? 'Refreshing…'\n        : canvasRefreshState === 'permission' && canvasSource?.handle?.requestPermission ? 'Allow refresh' : 'Refresh';\n    reopenOpenCanvasButton.style.backgroundColor = reopenOpenCanvasButton.disabled ? '#808080' : 'darkgreen';\n    reopenOpenCanvasButton.title = message;\n    reopenOpenCanvasButton.dataset.state = state;\n",
+   "es": "    const busy = !!canvasRefreshWork;\n    const locked = !openEnabled || !contextEnabled || inLongOperation;\n    const state = busy ? 'refreshing' : locked ? 'locked' : canvasRefreshState;\n    const message = locked && !busy ? 'Actualizar estará disponible cuando termine la operación en curso.' : canvasRefreshMessage;\n    reopenOpenCanvasButton.disabled = busy || locked || !canvasSource?.read;\n    reopenOpenCanvasButton.textContent = busy ? 'Actualizando…'\n        : canvasRefreshState === 'permission' && canvasSource?.handle?.requestPermission ? 'Permitir actualizar' : 'Actualizar';\n    reopenOpenCanvasButton.style.backgroundColor = reopenOpenCanvasButton.disabled ? '#808080' : 'darkgreen';\n    reopenOpenCanvasButton.title = message;\n    reopenOpenCanvasButton.dataset.state = state;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Refreshing…'",
-   "es": "'Actualizando…'",
-   "n": 1
+   "en": "    if (work.contextPreparing) window.TlamatiniPdfProgress?.cancelPreparation();\n    canvasRefreshWork = null;\n    canvasRefreshFeedback(work.committed ? 'updated' : 'ready', work.committed\n        ? 'Canvas refreshed. Context update cancelled; Use as context to update chat context.'\n        : 'Refresh cancelled. The displayed content was kept.');\n}\n\nfunction forgetCanvasSource() {\n    cancelCanvasRefresh();\n    canvasSource = null;\n    canvasRefreshFeedback('empty', 'Open a file to refresh its content.');\n}\n\nfunction rememberCanvasSource(source) {\n    canvasSource = source;\n    canvasRefreshFeedback(source.read ? 'ready' : 'unavailable', source.read\n        ? 'Refresh reads the latest content of this file.'\n        : 'This browser supplied a copy without access to the original. Open the file in Chrome or Edge on localhost or HTTPS to enable Refresh.');\n}\n\nfunction localCanvasSource(file, access, text = null) {\n",
+   "es": "    if (work.contextPreparing) window.TlamatiniPdfProgress?.cancelPreparation();\n    canvasRefreshWork = null;\n    canvasRefreshFeedback(work.committed ? 'updated' : 'ready', work.committed\n        ? 'Se actualizó el canvas. Se canceló la actualización del contexto; haz clic en Usar como contexto para actualizar el contexto del chat.'\n        : 'Se canceló la actualización. Se conservó el contenido mostrado.');\n}\n\nfunction forgetCanvasSource() {\n    cancelCanvasRefresh();\n    canvasSource = null;\n    canvasRefreshFeedback('empty', 'Abre un archivo para actualizar su contenido.');\n}\n\nfunction rememberCanvasSource(source) {\n    canvasSource = source;\n    canvasRefreshFeedback(source.read ? 'ready' : 'unavailable', source.read\n        ? 'Actualizar vuelve a leer el contenido más reciente de este archivo.'\n        : 'Este browser entregó una copia sin acceso al original. Abre el archivo en Chrome o Edge en localhost o HTTPS para activar Actualizar.');\n}\n\nfunction localCanvasSource(file, access, text = null) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Allow refresh'",
-   "es": "'Permitir actualizar'",
-   "n": 1
+   "en": "        cache: 'no-store', credentials: 'same-origin', signal,\n    });\n    if (response.redirected || response.status === 401 || response.status === 403) {\n        throw new Error('Your session expired. Sign in again before refreshing.');\n    }\n    if (!response.ok) throw new Error(response.status === 404\n        ? 'The saved content is no longer available.' : `Could not read the saved content (${response.status}).`);\n    return response.text();\n}\n\n",
+   "es": "        cache: 'no-store', credentials: 'same-origin', signal,\n    });\n    if (response.redirected || response.status === 401 || response.status === 403) {\n        throw new Error('Tu sesión expiró. Vuelve a iniciar sesión antes de actualizar.');\n    }\n    if (!response.ok) throw new Error(response.status === 404\n        ? 'El contenido guardado ya no está disponible.' : `No se pudo leer el contenido guardado (${response.status}).`);\n    return response.text();\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Refresh'",
-   "es": "'Actualizar'",
-   "n": 1
+   "en": "        const state = window.TlamatiniTextEditor.inspect();\n        return state.document_id === expected.document_id && state.revision === expected.revision;\n    };\n    if (!matches() || editing.dirty || editing.busy || cancelled()) throw new Error('The canvas changed before the file could open. Its content was kept.');\n    if (/\\.(pdf|flw|fpmt)$/i.test(file.name)) throw new Error('Interactor opens text source files. Use the dedicated viewer for this file type.');\n    const decoded = await editing.decodeFile(file);\n    if (!matches() || editing.dirty || editing.busy || cancelled()) throw new Error('The canvas changed while the file was being read. Its content was kept.');\n    if (decoded.text.length > 262144) throw new Error('This file is too large for live tutoring; its content was not truncated.');\n    await cleanCanvas(true, true);\n    displayCanvasText(file.name, decoded.text, file, decoded.format);\n    const source = { name: file.name, file, text: decoded.text, native };\n",
+   "es": "        const state = window.TlamatiniTextEditor.inspect();\n        return state.document_id === expected.document_id && state.revision === expected.revision;\n    };\n    if (!matches() || editing.dirty || editing.busy || cancelled()) throw new Error('El canvas cambió antes de que se pudiera abrir el archivo. Se conservó su contenido.');\n    if (/\\.(pdf|flw|fpmt)$/i.test(file.name)) throw new Error('Interactor abre archivos de código fuente en texto. Usa el visor específico para este tipo de archivo.');\n    const decoded = await editing.decodeFile(file);\n    if (!matches() || editing.dirty || editing.busy || cancelled()) throw new Error('El canvas cambió mientras se leía el archivo. Se conservó su contenido.');\n    if (decoded.text.length > 262144) throw new Error('Este archivo es demasiado grande para la tutoría en vivo; su contenido no se recortó.');\n    await cleanCanvas(true, true);\n    displayCanvasText(file.name, decoded.text, file, decoded.format);\n    const source = { name: file.name, file, text: decoded.text, native };\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Canvas refreshed. Context update cancelled; Use as context to update chat context.'",
-   "es": "'Se actualizó el canvas. Se canceló la actualización del contexto; haz clic en Usar como contexto para actualizar el contexto del chat.'",
-   "n": 1
+   "en": "    } catch (error) {\n        if (generation !== canvasLoadGeneration) return false;\n        console.error('Error loading canvas:', error);\n        await window.tlmAlert(`Could not open ${filename}: ${error.message}\\nThe existing canvas content was kept.`, 'Open file');\n        return false;\n    }\n    if (generation !== canvasLoadGeneration || !contextEnabled) return false;\n",
+   "es": "    } catch (error) {\n        if (generation !== canvasLoadGeneration) return false;\n        console.error('Error loading canvas:', error);\n        await window.tlmAlert(`No se pudo abrir ${filename}: ${error.message}\\nSe conservó el contenido actual del canvas.`, 'Abrir archivo');\n        return false;\n    }\n    if (generation !== canvasLoadGeneration || !contextEnabled) return false;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Refresh cancelled. The displayed content was kept.'",
-   "es": "'Se canceló la actualización. Se conservó el contenido mostrado.'",
-   "n": 1
+   "en": "    enableCanvasButtons();\n    canvasSettedAsContext = false;\n    contextButtonClicked = false;\n    contextButton.textContent = \"Use as context\";\n    return true;\n}\n\n",
+   "es": "    enableCanvasButtons();\n    canvasSettedAsContext = false;\n    contextButtonClicked = false;\n    contextButton.textContent = \"Usar como contexto\";\n    return true;\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Refresh reads the latest content of this file.'",
-   "es": "'Actualizar vuelve a leer el contenido más reciente de este archivo.'",
-   "n": 1
+   "en": "        return false;\n    }\n\n    alert(`Please select the file: ${filename}\\n\\nIt should be located in the 'content_generated' directory.`);\n\n    return loadFileContent();\n}\n",
+   "es": "        return false;\n    }\n\n    alert(`Selecciona el archivo: ${filename}\\n\\nDebe estar en el directorio 'content_generated'.`);\n\n    return loadFileContent();\n}\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'This browser supplied a copy without access to the original. Open the file in Chrome or Edge on localhost or HTTPS to enable Refresh.'",
-   "es": "'Este browser entregó una copia sin acceso al original. Abre el archivo en Chrome o Edge en localhost o HTTPS para activar Actualizar.'",
-   "n": 1
+   "en": "    window.TlamatiniCanvasEditing?.open('context.txt', content);\n    filenameSpan.textContent = `<<< Context, tree of content. >>>`;\n    canvasLoaded = true;\n    canvasRefreshFeedback('unavailable', 'This canvas contains a context summary, not a refreshable file.');\n    enableCanvasButtons();\n    canvasSettedAsContext = false;\n    contextButtonClicked = false;\n    contextButton.textContent = \"Use as context\";\n    console.log(\"Successfully loaded file from parameter content.\");\n    console.log(\"...loadCanvasWithThisContent()\");\n}\n",
+   "es": "    window.TlamatiniCanvasEditing?.open('context.txt', content);\n    filenameSpan.textContent = `<<< Context, tree of content. >>>`;\n    canvasLoaded = true;\n    canvasRefreshFeedback('unavailable', 'Este canvas contiene un resumen del contexto, no un archivo que se pueda actualizar.');\n    enableCanvasButtons();\n    canvasSettedAsContext = false;\n    contextButtonClicked = false;\n    contextButton.textContent = \"Usar como contexto\";\n    console.log(\"Successfully loaded file from parameter content.\");\n    console.log(\"...loadCanvasWithThisContent()\");\n}\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Your session expired. Sign in again before refreshing.'",
-   "es": "'Tu sesión expiró. Vuelve a iniciar sesión antes de actualizar.'",
-   "n": 1
+   "en": "    const ownsCanvas = () => canvasSource === source && canvasRefreshWork === work &&\n        generation === canvasLoadGeneration && !work.signal.aborted && openEnabled && contextEnabled && !inLongOperation;\n    const permission = canvasRefreshState === 'permission';\n    canvasRefreshFeedback('refreshing', 'Reading the latest file content…');\n    try {\n        // Permission can only be requested from the explicit button gesture.\n        // Refresh never opens a file chooser, including after a refusal.\n        if (permission && source.handle?.requestPermission &&\n            await source.handle.requestPermission({ mode: 'read' }) !== 'granted') {\n            throw new DOMException('Read permission was not granted.', 'NotAllowedError');\n        }\n        const latest = await source.read(work.signal);\n        if (!ownsCanvas()) return;\n",
+   "es": "    const ownsCanvas = () => canvasSource === source && canvasRefreshWork === work &&\n        generation === canvasLoadGeneration && !work.signal.aborted && openEnabled && contextEnabled && !inLongOperation;\n    const permission = canvasRefreshState === 'permission';\n    canvasRefreshFeedback('refreshing', 'Leyendo el contenido más reciente del archivo…');\n    try {\n        // Permission can only be requested from the explicit button gesture.\n        // Refresh never opens a file chooser, including after a refusal.\n        if (permission && source.handle?.requestPermission &&\n            await source.handle.requestPermission({ mode: 'read' }) !== 'granted') {\n            throw new DOMException('No se concedió el permiso de lectura.', 'NotAllowedError');\n        }\n        const latest = await source.read(work.signal);\n        if (!ownsCanvas()) return;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'The saved content is no longer available.'",
-   "es": "'El contenido guardado ya no está disponible.'",
-   "n": 1
+   "en": "            work.contextPreparing = false;\n            if (!ownsCanvas()) return;\n            if (!sendChatSocketMessage(payload)) {\n                if (payload.context_token) window.TlamatiniPdfProgress?.fail('The live connection is unavailable. Reconnect and try again.');\n                throw new Error('The live connection is unavailable.');\n            }\n            source.contextPending = false;\n            setContextButton();\n",
+   "es": "            work.contextPreparing = false;\n            if (!ownsCanvas()) return;\n            if (!sendChatSocketMessage(payload)) {\n                if (payload.context_token) window.TlamatiniPdfProgress?.fail('La conexión en vivo no está disponible. Reconecta y vuelve a intentarlo.');\n                throw new Error('La conexión en vivo no está disponible.');\n            }\n            source.contextPending = false;\n            setContextButton();\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "`Could not read the saved content (${response.status}).`",
-   "es": "`No se pudo leer el contenido guardado (${response.status}).`",
-   "n": 1
+   "en": "            showPendingContextSelection(payload.message);\n        }\n        canvasRefreshFeedback(unchanged ? 'unchanged' : 'updated',\n            `${unchanged ? 'Up to date — no content changes found.' : 'Refreshed from the latest file content.'} Checked ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`);\n    } catch (error) {\n        if (canvasSource !== source || canvasRefreshWork !== work || work.signal.aborted) return;\n        if (committed || source.contextPending) {\n            unsetContextButton();\n            canvasRefreshFeedback('error', 'Canvas refreshed; chat context still uses the previous version. Use as context to update it.');\n        } else if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {\n            canvasRefreshFeedback('permission', source.handle?.requestPermission\n                ? 'Read access is needed. Allow refresh grants access to this same file.'\n                : 'Read access was denied. Restore access or use Open to select the file again.');\n        } else {\n            const reason = error.name === 'NotFoundError' ? 'The file was moved or deleted.'\n                : error.name === 'NotReadableError' ? 'The file is being written or is unreadable. Wait for the save to finish.'\n                : error.message;\n            canvasRefreshFeedback('error', `${reason} Displayed content was kept. Refresh to retry, or use Open to select a file.`);\n        }\n    } finally {\n        if (canvasRefreshWork === work) {\n",
+   "es": "            showPendingContextSelection(payload.message);\n        }\n        canvasRefreshFeedback(unchanged ? 'unchanged' : 'updated',\n            `${unchanged ? 'Está al día: no se encontraron cambios en el contenido.' : 'Se actualizó con el contenido más reciente del archivo.'} Última revisión: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`);\n    } catch (error) {\n        if (canvasSource !== source || canvasRefreshWork !== work || work.signal.aborted) return;\n        if (committed || source.contextPending) {\n            unsetContextButton();\n            canvasRefreshFeedback('error', 'Se actualizó el canvas; el contexto del chat todavía usa la versión anterior. Haz clic en Usar como contexto para actualizarlo.');\n        } else if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {\n            canvasRefreshFeedback('permission', source.handle?.requestPermission\n                ? 'Se necesita acceso de lectura. Permitir actualizar da acceso a este mismo archivo.'\n                : 'Se denegó el acceso de lectura. Restablece el acceso o usa Abrir para volver a elegir el archivo.');\n        } else {\n            const reason = error.name === 'NotFoundError' ? 'El archivo se movió o se eliminó.'\n                : error.name === 'NotReadableError' ? 'El archivo se está escribiendo o no se puede leer. Espera a que termine de guardarse.'\n                : error.message;\n            canvasRefreshFeedback('error', `${reason} Se conservó el contenido mostrado. Usa Actualizar para reintentar o Abrir para elegir un archivo.`);\n        }\n    } finally {\n        if (canvasRefreshWork === work) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'The canvas changed before the file could open. Its content was kept.'",
-   "es": "'El canvas cambió antes de que se pudiera abrir el archivo. Se conservó su contenido.'",
-   "n": 1
+   "en": "    disableCanvasButtons();\n    canvasSettedAsContext = false;\n    contextButtonClicked = false;\n    contextButton.textContent = \"Use as context\";\n    copyCanvasButton.textContent = \"Copy\";\n}\n\n/**\n",
+   "es": "    disableCanvasButtons();\n    canvasSettedAsContext = false;\n    contextButtonClicked = false;\n    contextButton.textContent = \"Usar como contexto\";\n    copyCanvasButton.textContent = \"Copiar\";\n}\n\n/**\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Interactor opens text source files. Use the dedicated viewer for this file type.'",
-   "es": "'Interactor abre archivos de código fuente en texto. Usa el visor específico para este tipo de archivo.'",
-   "n": 1
+   "en": "    navigator.clipboard.writeText(content).then(() => {\n        console.log(\"--- Canvas content copied to clipboard\");\n        const originalText = copyCanvasButton.textContent;\n        copyCanvasButton.textContent = \"Copied!\";\n        copyCanvasButton.style.backgroundColor = \"#55BBAA\";\n        setTimeout(() => {\n            if (generation !== canvasLoadGeneration) return;\n",
+   "es": "    navigator.clipboard.writeText(content).then(() => {\n        console.log(\"--- Canvas content copied to clipboard\");\n        const originalText = copyCanvasButton.textContent;\n        copyCanvasButton.textContent = \"¡Copiado!\";\n        copyCanvasButton.style.backgroundColor = \"#55BBAA\";\n        setTimeout(() => {\n            if (generation !== canvasLoadGeneration) return;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'The canvas changed while the file was being read. Its content was kept.'",
-   "es": "'El canvas cambió mientras se leía el archivo. Se conservó su contenido.'",
-   "n": 1
+   "en": "        }, 1500);\n    }).catch(err => {\n        console.error(\"Failed to copy canvas content:\", err);\n        alert(\"Failed to copy to clipboard\");\n    });\n}\n\n",
+   "es": "        }, 1500);\n    }).catch(err => {\n        console.error(\"Failed to copy canvas content:\", err);\n        alert(\"Error al copiar al portapapeles\");\n    });\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'This file is too large for live tutoring; its content was not truncated.'",
-   "es": "'Este archivo es demasiado grande para la tutoría en vivo; su contenido no se recortó.'",
-   "n": 1
+   "en": "    if (typeof window.showOpenFilePicker === 'function' && window.isSecureContext) {\n        try {\n            const [handle] = await window.showOpenFilePicker({ multiple: false, types: [{\n                description: 'Documents and source files',\n                accept: { 'application/octet-stream': SOURCE_CODE_ACCEPT.split(',').filter(value => value.startsWith('.')) },\n            }] });\n            if (!handle || generation !== canvasLoadGeneration) return;\n",
+   "es": "    if (typeof window.showOpenFilePicker === 'function' && window.isSecureContext) {\n        try {\n            const [handle] = await window.showOpenFilePicker({ multiple: false, types: [{\n                description: 'Documentos y archivos de código fuente',\n                accept: { 'application/octet-stream': SOURCE_CODE_ACCEPT.split(',').filter(value => value.startsWith('.')) },\n            }] });\n            if (!handle || generation !== canvasLoadGeneration) return;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "`Could not open ${filename}: ${error.message}\\nThe existing canvas content was kept.`",
-   "es": "`No se pudo abrir ${filename}: ${error.message}\\nSe conservó el contenido actual del canvas.`",
-   "n": 1
+   "en": "        } catch (error) {\n            if (error.name === 'AbortError') return;\n            if (!['SecurityError', 'NotSupportedError'].includes(error.name)) {\n                await window.tlmAlert(`Unable to open the file: ${error.message}`, 'Open file');\n                return;\n            }\n            // Insecure/embedded/unsupported browsers can still open a snapshot.\n",
+   "es": "        } catch (error) {\n            if (error.name === 'AbortError') return;\n            if (!['SecurityError', 'NotSupportedError'].includes(error.name)) {\n                await window.tlmAlert(`No se puede abrir el archivo: ${error.message}`, 'Abrir archivo');\n                return;\n            }\n            // Insecure/embedded/unsupported browsers can still open a snapshot.\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Open file'",
-   "es": "'Abrir archivo'",
-   "n": 2
+   "en": "/** Keep flow files out of chat context; reserve the tab before asynchronous work. */\nasync function openFlowEditor(file) {\n    const tab = window.open('about:blank', '_blank');\n    if (!tab) { await alert('Allow pop-ups for Tlamatini, then open the flow file again.'); return; }\n    tab.document.title = 'Opening flow · Tlamatini';\n    tab.document.body.textContent = 'Opening ' + file.name + '…';\n    tab.document.body.style.cssText = 'background:#24252f;color:#eee;font:18px system-ui;padding:48px';\n    tab.opener = null;\n    try {\n        if (file.size > 5 * 1024 * 1024) throw new Error('The flow file must be no larger than 5 MiB.');\n        const body = new FormData(); body.append('file', file);\n        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||\n            decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('csrftoken='))?.slice(10) || '');\n        const response = await fetch('/agent/flow_files/open/', {\n            method: 'POST', credentials: 'same-origin', headers: { 'X-CSRFToken': csrf }, body\n        });\n        if (response.redirected) throw new Error('Your session expired. Sign in, then open the file again.');\n        const result = await response.json();\n        if (!response.ok) throw new Error(result.error || 'The file could not be opened.');\n        if (!tab.closed) tab.location.replace(result.url);\n    } catch (error) {\n        if (!tab.closed) tab.close();\n        await alert('Could not open ' + file.name + ': ' + error.message);\n    }\n}\n\n",
+   "es": "/** Keep flow files out of chat context; reserve the tab before asynchronous work. */\nasync function openFlowEditor(file) {\n    const tab = window.open('about:blank', '_blank');\n    if (!tab) { await alert('Permite las ventanas emergentes para Tlamatini y vuelve a abrir el archivo del flow.'); return; }\n    tab.document.title = 'Abriendo el flow · Tlamatini';\n    tab.document.body.textContent = 'Abriendo ' + file.name + '…';\n    tab.document.body.style.cssText = 'background:#24252f;color:#eee;font:18px system-ui;padding:48px';\n    tab.opener = null;\n    try {\n        if (file.size > 5 * 1024 * 1024) throw new Error('El archivo del flow no puede pesar más de 5 MiB.');\n        const body = new FormData(); body.append('file', file);\n        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||\n            decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('tlm_csrf_es_mx='))?.slice('tlm_csrf_es_mx='.length) || '');\n        const response = await fetch('/agent/flow_files/open/', {\n            method: 'POST', credentials: 'same-origin', headers: { 'X-CSRFToken': csrf }, body\n        });\n        if (response.redirected) throw new Error('Tu sesión expiró. Inicia sesión y vuelve a abrir el archivo.');\n        const result = await response.json();\n        if (!response.ok) throw new Error(result.error || 'No se pudo abrir el archivo.');\n        if (!tab.closed) tab.location.replace(result.url);\n    } catch (error) {\n        if (!tab.closed) tab.close();\n        await alert('No se pudo abrir ' + file.name + ': ' + error.message);\n    }\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"Use as context\"",
-   "es": "\"Usar como contexto\"",
-   "n": 3
+   "en": "            return;\n        }\n        console.error('Error opening canvas file:', error);\n        alert(`Unable to load ${file.name}: ${error.message}`);\n    }\n}\n\n",
+   "es": "            return;\n        }\n        console.error('Error opening canvas file:', error);\n        alert(`No se puede cargar ${file.name}: ${error.message}`);\n    }\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "`Please select the file: ${filename}\\n\\nIt should be located in the 'content_generated' directory.`",
-   "es": "`Selecciona el archivo: ${filename}\\n\\nDebe estar en el directorio 'content_generated'.`",
-   "n": 1
-  },
-  {
-   "en": "'This canvas contains a context summary, not a refreshable file.'",
-   "es": "'Este canvas contiene un resumen del contexto, no un archivo que se pueda actualizar.'",
-   "n": 1
-  },
-  {
-   "en": "'Reading the latest file content…'",
-   "es": "'Leyendo el contenido más reciente del archivo…'",
-   "n": 1
-  },
-  {
-   "en": "'Read permission was not granted.'",
-   "es": "'No se concedió el permiso de lectura.'",
-   "n": 1
-  },
-  {
-   "en": "'The live connection is unavailable. Reconnect and try again.'",
-   "es": "'La conexión en vivo no está disponible. Reconecta y vuelve a intentarlo.'",
-   "n": 1
-  },
-  {
-   "en": "'The live connection is unavailable.'",
-   "es": "'La conexión en vivo no está disponible.'",
-   "n": 1
-  },
-  {
-   "en": "`${unchanged ? 'Up to date — no content changes found.' : 'Refreshed from the latest file content.'} Checked ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`",
-   "es": "`${unchanged ? 'Up to date — no content changes found.' : 'Refreshed from the latest file content.'} Última revisión: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`",
-   "n": 1
-  },
-  {
-   "en": "'Up to date — no content changes found.'",
-   "es": "'Está al día: no se encontraron cambios en el contenido.'",
-   "n": 1
-  },
-  {
-   "en": "'Refreshed from the latest file content.'",
-   "es": "'Se actualizó con el contenido más reciente del archivo.'",
-   "n": 1
-  },
-  {
-   "en": "'Canvas refreshed; chat context still uses the previous version. Use as context to update it.'",
-   "es": "'Se actualizó el canvas; el contexto del chat todavía usa la versión anterior. Haz clic en Usar como contexto para actualizarlo.'",
-   "n": 1
-  },
-  {
-   "en": "'Read access is needed. Allow refresh grants access to this same file.'",
-   "es": "'Se necesita acceso de lectura. Permitir actualizar da acceso a este mismo archivo.'",
-   "n": 1
-  },
-  {
-   "en": "'Read access was denied. Restore access or use Open to select the file again.'",
-   "es": "'Se denegó el acceso de lectura. Restablece el acceso o usa Abrir para volver a elegir el archivo.'",
-   "n": 1
-  },
-  {
-   "en": "'The file was moved or deleted.'",
-   "es": "'El archivo se movió o se eliminó.'",
-   "n": 1
-  },
-  {
-   "en": "'The file is being written or is unreadable. Wait for the save to finish.'",
-   "es": "'El archivo se está escribiendo o no se puede leer. Espera a que termine de guardarse.'",
-   "n": 1
-  },
-  {
-   "en": "`${reason} Displayed content was kept. Refresh to retry, or use Open to select a file.`",
-   "es": "`${reason} Se conservó el contenido mostrado. Usa Actualizar para reintentar o Abrir para elegir un archivo.`",
-   "n": 1
-  },
-  {
-   "en": "\"Copy\"",
-   "es": "\"Copiar\"",
-   "n": 1
-  },
-  {
-   "en": "\"Copied!\"",
-   "es": "\"¡Copiado!\"",
-   "n": 1
-  },
-  {
-   "en": "\"Failed to copy to clipboard\"",
-   "es": "\"Error al copiar al portapapeles\"",
-   "n": 1
-  },
-  {
-   "en": "'Documents and source files'",
-   "es": "'Documentos y archivos de código fuente'",
-   "n": 1
-  },
-  {
-   "en": "`Unable to open the file: ${error.message}`",
-   "es": "`No se puede abrir el archivo: ${error.message}`",
-   "n": 1
-  },
-  {
-   "en": "'Allow pop-ups for Tlamatini, then open the flow file again.'",
-   "es": "'Permite las ventanas emergentes para Tlamatini y vuelve a abrir el archivo del flow.'",
-   "n": 1
-  },
-  {
-   "en": "'Opening flow · Tlamatini'",
-   "es": "'Abriendo el flow · Tlamatini'",
-   "n": 1
-  },
-  {
-   "en": "'Opening '",
-   "es": "'Abriendo '",
-   "n": 1
-  },
-  {
-   "en": "'The flow file must be no larger than 5 MiB.'",
-   "es": "'El archivo del flow no puede pesar más de 5 MiB.'",
-   "n": 1
-  },
-  {
-   "en": "'Your session expired. Sign in, then open the file again.'",
-   "es": "'Tu sesión expiró. Inicia sesión y vuelve a abrir el archivo.'",
-   "n": 1
-  },
-  {
-   "en": "'The file could not be opened.'",
-   "es": "'No se pudo abrir el archivo.'",
-   "n": 1
-  },
-  {
-   "en": "'Could not open '",
-   "es": "'No se pudo abrir '",
-   "n": 1
-  },
-  {
-   "en": "`Unable to load ${file.name}: ${error.message}`",
-   "es": "`No se puede cargar ${file.name}: ${error.message}`",
-   "n": 1
-  },
-  {
-   "en": "'The canvas is busy right now \\u2014 drop the file again when Tlamatini has finished.'",
-   "es": "'El canvas está ocupado en este momento — vuelve a soltar el archivo cuando Tlamatini termine.'",
-   "n": 1
-  },
-  {
-   "en": "'The canvas changed while this drop was being read. Drop the file again.'",
-   "es": "'El canvas cambió mientras se leía el archivo que soltaste. Vuelve a soltarlo.'",
-   "n": 1
-  },
-  {
-   "en": "'Opened '",
-   "es": "'Se abrió '",
-   "n": 1
-  },
-  {
-   "en": "'; the canvas holds one document, so '",
-   "es": "'; el canvas contiene un solo documento, así que '",
-   "n": 1
-  },
-  {
-   "en": "' was not opened.'",
-   "es": "' no se abrió.'",
-   "n": 1
-  },
-  {
-   "en": "'Document (PDF, Markdown, code, JSON) \\u2192 opens in the canvas'",
-   "es": "'Documento (PDF, Markdown, código, JSON) → se abre en el canvas'",
-   "n": 1
+   "en": "if (window.TlamatiniFileDrop) {\n    window.TlamatiniFileDrop.register(['pdf', 'markdown', 'text'], async (files, items) => {\n        if (!openEnabled || !contextEnabled) {\n            return { ignored: files, note: 'The canvas is busy right now \\u2014 drop the file again when Tlamatini has finished.' };\n        }\n        const generation = canvasLoadGeneration;\n        const handle = await items?.[0]?.handlePromise;\n        if (generation !== canvasLoadGeneration) return { ignored: files, note: 'The canvas changed while this drop was being read. Drop the file again.' };\n        await loadSelectedCanvasFile(files[0], false, null, { handle, entry: items?.[0]?.entry });\n        const rest = files.slice(1);\n        return rest.length\n            ? { ignored: rest, note: 'Opened ' + files[0].name + '; the canvas holds one document, so ' + rest.map(file => file.name).join(', ') + ' was not opened.' }\n            : {};\n    }, { label: 'Document (PDF, Markdown, code, JSON) \\u2192 opens in the canvas' });\n}\n\n// Editor input / scroll sync\n",
+   "es": "if (window.TlamatiniFileDrop) {\n    window.TlamatiniFileDrop.register(['pdf', 'markdown', 'text'], async (files, items) => {\n        if (!openEnabled || !contextEnabled) {\n            return { ignored: files, note: 'El canvas está ocupado en este momento — vuelve a soltar el archivo cuando Tlamatini termine.' };\n        }\n        const generation = canvasLoadGeneration;\n        const handle = await items?.[0]?.handlePromise;\n        if (generation !== canvasLoadGeneration) return { ignored: files, note: 'El canvas cambió mientras se leía el archivo que soltaste. Vuelve a soltarlo.' };\n        await loadSelectedCanvasFile(files[0], false, null, { handle, entry: items?.[0]?.entry });\n        const rest = files.slice(1);\n        return rest.length\n            ? { ignored: rest, note: 'Se abrió ' + files[0].name + '; el canvas contiene un solo documento, así que ' + rest.map(file => file.name).join(', ') + ' no se abrió.' }\n            : {};\n    }, { label: 'Documento (PDF, Markdown, código, JSON) → se abre en el canvas' });\n}\n\n// Editor input / scroll sync\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

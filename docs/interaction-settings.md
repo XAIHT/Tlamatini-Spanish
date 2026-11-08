@@ -1,6 +1,8 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Configuración del Editor en vivo y Terminater
 
+> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
+
 Desde la v1.92.0, ambos controles admiten hasta 250 WPM. El Editor en vivo usa 100 WPM de forma predeterminada y Terminater usa 50.
 
 Abre **Config → Editor en vivo y Terminater** o pulsa Configuración en el editor o la terminal. El diálogo contiene las pestañas Editor en vivo, Terminater y Voz. Guardar aplica los cambios a la siguiente acción. Cancelar o Escape descartan el borrador. Abrir la configuración interrumpe la lección activa. El permiso de acceso al editor se aplica de inmediato en esa pestaña.

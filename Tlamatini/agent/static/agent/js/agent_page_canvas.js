@@ -579,7 +579,7 @@ async function openFlowEditor(file) {
         if (file.size > 5 * 1024 * 1024) throw new Error('El archivo del flow no puede pesar más de 5 MiB.');
         const body = new FormData(); body.append('file', file);
         const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
-            decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('csrftoken='))?.slice(10) || '');
+            decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('tlm_csrf_es_mx='))?.slice('tlm_csrf_es_mx='.length) || '');
         const response = await fetch('/agent/flow_files/open/', {
             method: 'POST', credentials: 'same-origin', headers: { 'X-CSRFToken': csrf }, body
         });

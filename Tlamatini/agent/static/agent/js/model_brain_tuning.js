@@ -54,7 +54,7 @@
     }
 
     function csrfToken() {
-        const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+        const match = document.cookie.match(/(?:^|;\s*)tlm_csrf_es_mx=([^;]+)/);
         return match ? decodeURIComponent(match[1]) : '';
     }
 

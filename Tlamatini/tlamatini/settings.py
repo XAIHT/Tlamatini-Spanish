@@ -219,6 +219,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-mx'
 SESSION_COOKIE_NAME = 'tlm_session_' + LANGUAGE_CODE.replace('-', '_')
+CSRF_COOKIE_NAME = 'tlm_csrf_' + LANGUAGE_CODE.replace('-', '_')
 
 TIME_ZONE = 'America/Mexico_City'
 
@@ -250,7 +251,7 @@ if getattr(sys, 'frozen', False):
 
 # Version stamp for cache-busting of static assets in templates
 # Override via env var STATIC_VERSION when deploying
-STATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1-spanish-names-1-typing-250-1-torrenter-1-canvas-text-2'
+STATIC_VERSION = (os.environ.get('STATIC_VERSION') or str(int(time.time()))) + '-agent-catalog-1-quality-cleanup-1-usage-status-2-terminater-3-canvas-edit-1-interactor-2-canvas-fit-1-interaction-settings-1-flow-title-1-spanish-names-1-typing-250-1-torrenter-1-canvas-text-2-es-instance-1'
 
 # WhiteNoise configuration: dev vs release.
 # NOTE (speed batch, 2026-07-02): the old per-branch STATICFILES_STORAGE lines

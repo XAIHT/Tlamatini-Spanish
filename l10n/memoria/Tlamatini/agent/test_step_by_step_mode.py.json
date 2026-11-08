@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/test_step_by_step_mode.py",
+ "segmentos": [
+  {
+   "en": "    def test_block_injected_when_enabled(self):\n        prompt = _build_system_prompt(\"BASE PROMPT.\", [_noop_tool()], step_by_step_enabled=True)\n        self.assertIn(\"STEP-BY-STEP MODE\", prompt)\n        self.assertIn(\"wait for the user's requested short reply\", prompt)\n        self.assertIn(\"bare username, DONE, ERROR, NOWINDOW\", prompt)\n        self.assertIn(\"external_mcp_doctor\", prompt)\n\n    def test_block_absent_when_disabled(self):\n",
+   "es": "    def test_block_injected_when_enabled(self):\n        prompt = _build_system_prompt(\"BASE PROMPT.\", [_noop_tool()], step_by_step_enabled=True)\n        self.assertIn(\"STEP-BY-STEP MODE\", prompt)\n        self.assertIn('UNA acción concreta por turno', prompt)\n        self.assertIn('HECHO', prompt)\n        self.assertIn('SIN VENTANA', prompt)\n        self.assertIn('no llames más herramientas tras el punto de espera', prompt)\n        self.assertIn(\"external_mcp_doctor\", prompt)\n\n    def test_block_absent_when_disabled(self):\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  }
+ ],
+ "conservar": []
+}

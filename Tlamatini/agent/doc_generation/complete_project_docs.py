@@ -443,7 +443,7 @@ def release_statements(rel: dict, version: str) -> tuple[list[str], list[list[st
         f"**La última versión publicada es {version}.** La aplicación, las guías, "
         "el dossier PDF y la presentación utilizan esta única versión.",
         f"Esta edición documenta el commit `{rel['head_short']}` y las funciones "
-        "de la versión completa, incluidas la cola de Torrenter y las correcciones de Executer.",
+        "de la versión completa: compilaciones coincidentes, dependencias aisladas y Markdown fiel.",
     ]
     points = [("Última versión publicada", version),
               ("Commit documentado", rel["head_short"]),

@@ -1,6 +1,8 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Nombres pronunciados en Tlamatini-Spanish
 
+> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
+
 Implementación de fuente, 28 de octubre de 2026. Exclusiva de este repositorio;
 no es una nueva aceptación de un instalador ni modifica la instalación existente.
 

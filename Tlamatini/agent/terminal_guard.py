@@ -121,6 +121,8 @@ _LIFTS: Tuple["re.Pattern[str]", ...] = tuple(re.compile(p, _FLAGS) for p in (
     r"\bi\s+(?:no\s+longer|don'?t)\s+(?:want|need)\s+to\s+(?:run|execute|type)\b",
     r"\b(?:the\s+)?(?:live\s+)?tutorial\s+is\s+(?:over|done|finished)\b",
     # Spanish
+    r"\bt[uú]\s+(?:(?:vas\s+a|debes|puedes)\s+(?:ejecutar|correr|lanzar)|"
+    r"ejecutas|corres|lanzas)\s+\S+",
     r"\bt[uú]\s+(?:los|las|lo|la)\s+(?:ejecutas|corres|escribes)\b",
     r"\bejec[uú]t(?:a|alo|alos|alas)\s+t[uú]\b",
     r"\bhazlo\s+t[uú]\b",

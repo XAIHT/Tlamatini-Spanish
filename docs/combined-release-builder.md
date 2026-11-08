@@ -1,5 +1,11 @@
 # Compilación conjunta de las ediciones inglesa y española
 
+> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
+
+## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+
+El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](changes/2026-11-08-v1.92.4.md).
+
 Creado para Angela López Mendoza · XAIHT
 
 El punto de entrada de esta estación de trabajo es

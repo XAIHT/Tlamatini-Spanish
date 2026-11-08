@@ -2,254 +2,142 @@
  "archivo": "Tlamatini/agent/mcp_agent.py",
  "segmentos": [
   {
-   "en": "\"answering\"",
-   "es": "\"respondiendo\"",
-   "n": 1
+   "en": "    if name in _POWERSHELL_TOOLS:\n        return \"PowerShell\"\n    if name in _PYTHON_TOOLS:\n        return \"Python interpreter\"\n    if name in _OS_SHELL_TOOLS:\n        return os_shell\n    if name == \"chat_agent_ssher\":\n        host = tool_input.get(\"host\") if isinstance(tool_input, dict) else None\n        return f\"Remote SSH shell{(' @ ' + str(host)) if host else ''}\"\n    if name == \"chat_agent_torrenter\":\n        return \"Tlachihuani Jobs authenticated local REST API\"\n    if name == \"chat_agent_terminater\":\n",
+   "es": "    if name in _POWERSHELL_TOOLS:\n        return \"PowerShell\"\n    if name in _PYTHON_TOOLS:\n        return \"Intérprete de Python\"\n    if name in _OS_SHELL_TOOLS:\n        return os_shell\n    if name == \"chat_agent_ssher\":\n        host = tool_input.get(\"host\") if isinstance(tool_input, dict) else None\n        return f\"Shell remota por SSH{(' @ ' + str(host)) if host else ''}\"\n    if name == \"chat_agent_torrenter\":\n        return \"Tlachihuani Jobs authenticated local REST API\"\n    if name == \"chat_agent_terminater\":\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"working on step {iteration + 1}\"",
-   "es": "f\"trabajando en el paso {iteration + 1}\"",
-   "n": 1
+   "en": "            kind = \"powershell\"\n        label = {\"cmd\": \"cmd.exe\", \"powershell\": \"Windows PowerShell\", \"pwsh\": \"PowerShell 7\"}.get(\n            kind, \"Windows PowerShell\")\n        return f\"{label} in a visible Terminater terminal (typed key by key)\"\n    if name == \"chat_agent_dockerer\":\n        return f\"Docker CLI via {os_shell}\"\n    if name == \"chat_agent_kuberneter\":\n        return f\"kubectl CLI via {os_shell}\"\n    if name == \"chat_agent_kalier\":\n        return \"Kali Linux (MCP-Kali-Server)\"\n    if name == \"chat_agent_stm32er\":\n",
+   "es": "            kind = \"powershell\"\n        label = {\"cmd\": \"cmd.exe\", \"powershell\": \"Windows PowerShell\", \"pwsh\": \"PowerShell 7\"}.get(\n            kind, \"Windows PowerShell\")\n        return f\"{label} en una terminal visible de Terminater (se escribe tecla por tecla)\"\n    if name == \"chat_agent_dockerer\":\n        return f\"CLI de Docker mediante {os_shell}\"\n    if name == \"chat_agent_kuberneter\":\n        return f\"CLI de kubectl mediante {os_shell}\"\n    if name == \"chat_agent_kalier\":\n        return \"Kali Linux (MCP-Kali-Server)\"\n    if name == \"chat_agent_stm32er\":\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"summarizing the results\"",
-   "es": "\"resumiendo los resultados\"",
-   "n": 1
+   "en": "            print(\"--- [LOCAL-TOOLCALL] Final answer echoed the INTERNAL correction \"\n                  \"- replacing it with a human-readable message.\")\n            return (\n                \"I could not complete that with the tools I have available right \"\n                \"now, so I don't want to guess at an answer. The local model I am \"\n                \"running on kept asking for a tool that does not exist. Please try \"\n                \"rephrasing, or switch to a stronger model in Config ▸ Models.\"\n            )\n        except Exception:  # pragma: no cover - totality guard\n            return answer\n",
+   "es": "            print(\"--- [LOCAL-TOOLCALL] Final answer echoed the INTERNAL correction \"\n                  \"- replacing it with a human-readable message.\")\n            return (\n                \"No pude completar eso con los tools que tengo disponibles en este \"\n                \"momento, y no quiero adivinar una respuesta. El modelo local con el que \"\n                \"estoy corriendo siguió pidiendo un tool que no existe. Intenta \"\n                \"reformular tu solicitud o cambia a un modelo más potente en Config ▸ Modelos.\"\n            )\n        except Exception:  # pragma: no cover - totality guard\n            return answer\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"wrapping up\"",
-   "es": "\"terminando\"",
-   "n": 1
+   "en": "            action = tool_input.get(\"action\") if isinstance(tool_input, dict) else None\n            args = tool_input.get(\"arguments\", {}) if isinstance(tool_input, dict) else {}\n            if not isinstance(action, str) or action not in FIELDS or not isinstance(args, dict):\n                return \"Torrenter (invalid arguments)\"\n            targets = [k+\"=\"+v for k,v in args.items() if k in (\"job_id\",\"operation_id\",\"inspection_id\",\"preview_id\")\n                       and isinstance(v,str) and ID.fullmatch(v)]\n            return \" \".join([\"Torrenter\", action, *targets])\n",
+   "es": "            action = tool_input.get(\"action\") if isinstance(tool_input, dict) else None\n            args = tool_input.get(\"arguments\", {}) if isinstance(tool_input, dict) else {}\n            if not isinstance(action, str) or action not in FIELDS or not isinstance(args, dict):\n                return \"Torrenter (argumentos no válidos)\"\n            targets = [k+\"=\"+v for k,v in args.items() if k in (\"job_id\",\"operation_id\",\"inspection_id\",\"preview_id\")\n                       and isinstance(v,str) and ID.fullmatch(v)]\n            return \" \".join([\"Torrenter\", action, *targets])\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"⛔ Execution interrupted. You denied the {denied_kind} \"",
-   "es": "f\"⛔ Ejecución interrumpida. Denegaste que el {denied_kind} \"",
-   "n": 1
+   "en": "            # Truthful: the user cancelled before a single agent had run. Do NOT claim\n            # the model \"became unreachable\" — that was the old wording and it lied.\n            return (\n                \"🛑 You cancelled this request. I stopped the run — nothing had been \"\n                \"executed yet, so nothing was left half-done.\"\n            )\n        why = (\"you cancelled\" if cancelled\n               else \"the model became unreachable and every recovery tactic was exhausted\")\n        lines = [\n            f\"⚠️ I stopped the model step because {why}, but your Multi-Turn run had \"\n            \"ALREADY executed its agents — nothing was lost and the run was NOT discarded. \"\n            \"Here is what actually ran this turn:\",\n            \"\",\n        ]\n        for e in ran:\n",
+   "es": "            # Truthful: the user cancelled before a single agent had run. Do NOT claim\n            # the model \"became unreachable\" — that was the old wording and it lied.\n            return (\n                \"🛑 Cancelaste esta solicitud. Detuve la ejecución; todavía no se había \"\n                \"ejecutado nada, así que nada quedó a medias.\"\n            )\n        why = (\"lo cancelaste\" if cancelled\n               else \"el modelo dejó de responder y se agotaron todas las tácticas de recuperación\")\n        lines = [\n            f\"⚠️ Detuve el paso del modelo porque {why}, pero tu ejecución de Multi-Turn \"\n            \"YA había ejecutado sus agents: no se perdió nada y la ejecución NO se descartó. \"\n            \"Esto es lo que de verdad se ejecutó en este turno:\",\n            \"\",\n        ]\n        for e in ran:\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"\\\"{denied_name}\\\" from running\"",
-   "es": "f\"\\\"{denied_name}\\\" se ejecutara\"",
-   "n": 1
+   "en": "            lines.append(f\"- {mark} {name}\")\n        if last_results:\n            lines.append(\"\")\n            lines.append(\"Most recent tool results:\")\n            lines.append(\"\\n---\\n\".join(reversed(last_results)))\n        lines.append(\"\")\n        lines.append(\n            f\"({len(ok)} of {len(ran)} tool call(s) succeeded — you can click \"\n            \"**Create Flow** to build a workflow from the successful agents.)\"\n        )\n        return \"\\n\".join(lines)\n\n",
+   "es": "            lines.append(f\"- {mark} {name}\")\n        if last_results:\n            lines.append(\"\")\n            lines.append(\"Resultados más recientes de los tools:\")\n            lines.append(\"\\n---\\n\".join(reversed(last_results)))\n        lines.append(\"\")\n        lines.append(\n            f\"({len(ok)} de {len(ran)} llamadas a tools terminaron bien; puedes hacer clic en \"\n            \"**Crear flow** para armar un workflow con los agents que funcionaron.)\"\n        )\n        return \"\\n\".join(lines)\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\". The Multi-Turn chain was halted at this step and no \"",
-   "es": "\". El chain de Multi-Turn se detuvo en este paso y no se \"",
-   "n": 1
+   "en": "\n        if not self.tools:\n            try:\n                response = self._model_step(self.llm, messages, label=\"answering\")\n            except ModelStepUnrecoverable as _step:\n                if _step.reason == \"user_cancelled\":\n                    return self._cancelled_result(messages)\n                return self._build_result_dict(\n                    \"⚠️ I could not reach the model for this request after trying every \"\n                    f\"recovery tactic ({_step.reason}). No tools were selected for this \"\n                    \"request, so nothing was executed — please try again.\"\n                )\n            answer = getattr(response, \"content\", \"\") or \"\"\n            if not str(answer).strip():\n                answer = \"The planner selected no tools for this request, and the model returned an empty response.\"\n            return self._build_result_dict(str(answer))\n\n        # --- Repetition tracking state ---\n",
+   "es": "\n        if not self.tools:\n            try:\n                response = self._model_step(self.llm, messages, label=\"respondiendo\")\n            except ModelStepUnrecoverable as _step:\n                if _step.reason == \"user_cancelled\":\n                    return self._cancelled_result(messages)\n                return self._build_result_dict(\n                    \"⚠️ No pude comunicarme con el modelo para esta solicitud después de probar todas \"\n                    f\"las tácticas de recuperación ({_step.reason}). No se eligió ningún tool para esta \"\n                    \"solicitud, así que no se ejecutó nada. Vuelve a intentarlo.\"\n                )\n            answer = getattr(response, \"content\", \"\") or \"\"\n            if not str(answer).strip():\n                answer = \"El planner no eligió ningún tool para esta solicitud y el modelo devolvió una respuesta vacía.\"\n            return self._build_result_dict(str(answer))\n\n        # --- Repetition tracking state ---\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"further tools were executed.\"",
-   "es": "\"ejecutaron más tools.\"",
-   "n": 1
+   "en": "                return self._cancelled_result(messages)\n            try:\n                response = self._model_step(\n                    self.bound_llm, messages, label=f\"working on step {iteration + 1}\"\n                )\n            except ModelStepUnrecoverable as _step:\n                # The model step could not be reached — either the USER cancelled,\n",
+   "es": "                return self._cancelled_result(messages)\n            try:\n                response = self._model_step(\n                    self.bound_llm, messages, label=f\"trabajando en el paso {iteration + 1}\"\n                )\n            except ModelStepUnrecoverable as _step:\n                # The model step could not be reached — either the USER cancelled,\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"Python interpreter\"",
-   "es": "\"Intérprete de Python\"",
-   "n": 1
+   "en": "                    )))\n                    try:\n                        retry_response = self._model_step(\n                            self.bound_llm, messages, label=\"summarizing the results\"\n                        )\n                    except ModelStepUnrecoverable as _step:\n                        # Do NOT swallow a user cancel here — the old code set\n",
+   "es": "                    )))\n                    try:\n                        retry_response = self._model_step(\n                            self.bound_llm, messages, label=\"resumiendo los resultados\"\n                        )\n                    except ModelStepUnrecoverable as _step:\n                        # Do NOT swallow a user cancel here — the old code set\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"Remote SSH shell{(' @ ' + str(host)) if host else ''}\"",
-   "es": "f\"Shell remota por SSH{(' @ ' + str(host)) if host else ''}\"",
-   "n": 1
+   "en": "                                    break\n                        if last_real_results:\n                            answer = (\n                                \"Here are the results from the executed tool calls:\\n\\n\"\n                                + \"\\n---\\n\".join(reversed(last_real_results))\n                            )\n                        else:\n                            answer = \"The tool-calling model returned an empty final response.\"\n                # The stashed deliverable (if any) is folded back in CENTRALLY by\n                # _build_result_dict, so EVERY terminal exit path preserves it —\n                # not just this clean-finish return (the repetition-breaker,\n",
+   "es": "                                    break\n                        if last_real_results:\n                            answer = (\n                                \"Estos son los resultados de las llamadas a tools que se ejecutaron:\\n\\n\"\n                                + \"\\n---\\n\".join(reversed(last_real_results))\n                            )\n                        else:\n                            answer = \"El modelo de tool calling devolvió una respuesta final vacía.\"\n                # The stashed deliverable (if any) is folded back in CENTRALLY by\n                # _build_result_dict, so EVERY terminal exit path preserves it —\n                # not just this clean-finish return (the repetition-breaker,\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"{label} in a visible Terminater terminal (typed key by key)\"",
-   "es": "f\"{label} en una terminal visible de Terminater (se escribe tecla por tecla)\"",
-   "n": 1
+   "en": "                # Give the model one more chance to produce a final answer.\n                try:\n                    final_response = self._model_step(\n                        self.bound_llm, messages, label=\"wrapping up\"\n                    )\n                except ModelStepUnrecoverable as _step:\n                    # Same as the nudge path above: a user cancel must STOP the run,\n",
+   "es": "                # Give the model one more chance to produce a final answer.\n                try:\n                    final_response = self._model_step(\n                        self.bound_llm, messages, label=\"terminando\"\n                    )\n                except ModelStepUnrecoverable as _step:\n                    # Same as the nudge path above: a user cancel must STOP the run,\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"Docker CLI via {os_shell}\"",
-   "es": "f\"CLI de Docker mediante {os_shell}\"",
-   "n": 1
+   "en": "                        _last_err = (self._last_failure_error or \"\").strip()\n                        if _last_err:\n                            answer = (\n                                \"I could not finish this request. A tool kept failing with the \"\n                                \"same error and repeating it would not help, so I stopped instead \"\n                                \"of looping. The error was:\\n\\n\" + _last_err + \"\\n\\n\"\n                                \"What you can try: rephrase the request, adjust the values \"\n                                \"involved, or check the target tool/app is set up correctly. \"\n                                \"The last raw tool results, for reference:\\n\\n\"\n                                + \"\\n---\\n\".join(reversed(last_real_results))\n                            )\n                        else:\n                            answer = (\n                                \"I stopped because the model kept repeating the same tool call \"\n                                \"without making progress. Here are the last tool results:\\n\\n\"\n                                + \"\\n---\\n\".join(reversed(last_real_results))\n                            )\n                return self._build_result_dict(str(answer))\n",
+   "es": "                        _last_err = (self._last_failure_error or \"\").strip()\n                        if _last_err:\n                            answer = (\n                                \"No pude terminar esta solicitud. Un tool siguió dando el \"\n                                \"mismo error y repetirlo no iba a servir, así que me detuve en lugar \"\n                                \"de quedarme en un ciclo. El error fue:\\n\\n\" + _last_err + \"\\n\\n\"\n                                \"Lo que puedes intentar: reformular la solicitud, ajustar los valores \"\n                                \"involucrados o revisar la configuración del tool o de la app de destino. \"\n                                \"Los últimos resultados en bruto de los tools, como referencia:\\n\\n\"\n                                + \"\\n---\\n\".join(reversed(last_real_results))\n                            )\n                        else:\n                            answer = (\n                                \"Me detuve porque el modelo siguió repitiendo la misma llamada a un tool \"\n                                \"sin avanzar. Estos son los últimos resultados de los tools:\\n\\n\"\n                                + \"\\n---\\n\".join(reversed(last_real_results))\n                            )\n                return self._build_result_dict(str(answer))\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"kubectl CLI via {os_shell}\"",
-   "es": "f\"CLI de kubectl mediante {os_shell}\"",
-   "n": 1
+   "en": "                    args = tool_call.get(\"args\")\n                    try:\n                        if not isinstance(args, dict) or set(args) - {\"action\", \"arguments\"}:\n                            raise TorrentError(\"Use the typed Torrenter action and arguments.\")\n                        validated(args.get(\"action\"), args.get(\"arguments\", {}))\n                    except TorrentError as exc:\n                        # Never echo unvalidated input into permission prompts, reports or .flw exports.\n",
+   "es": "                    args = tool_call.get(\"args\")\n                    try:\n                        if not isinstance(args, dict) or set(args) - {\"action\", \"arguments\"}:\n                            raise TorrentError(\"Usa los campos action y arguments del tool Torrenter.\")\n                        validated(args.get(\"action\"), args.get(\"arguments\", {}))\n                    except TorrentError as exc:\n                        # Never echo unvalidated input into permission prompts, reports or .flw exports.\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"I could not complete that with the tools I have available right \"",
-   "es": "\"No pude completar eso con los tools que tengo disponibles en este \"",
-   "n": 1
+   "en": "                        denied_name = denied.get(\"agent_display\") or tool_name\n                        denied_cmd = denied.get(\"command\", \"\")\n                        answer = (\n                            f\"⛔ Execution interrupted. You denied the {denied_kind} \"\n                            f\"\\\"{denied_name}\\\" from running\"\n                            + (f\": {denied_cmd}\" if denied_cmd else \"\")\n                            + \". The Multi-Turn chain was halted at this step and no \"\n                            \"further tools were executed.\"\n                        )\n                        return self._build_result_dict(answer)\n\n",
+   "es": "                        denied_name = denied.get(\"agent_display\") or tool_name\n                        denied_cmd = denied.get(\"command\", \"\")\n                        answer = (\n                            f\"⛔ Ejecución interrumpida. Denegaste que el {denied_kind} \"\n                            f\"\\\"{denied_name}\\\" se ejecutara\"\n                            + (f\": {denied_cmd}\" if denied_cmd else \"\")\n                            + \". El chain de Multi-Turn se detuvo en este paso y no se \"\n                            \"ejecutaron más tools.\"\n                        )\n                        return self._build_result_dict(answer)\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"now, so I don't want to guess at an answer. The local model I am \"",
-   "es": "\"momento, y no quiero adivinar una respuesta. El modelo local con el que \"",
-   "n": 1
+   "en": "                )\n\n        return self._build_result_dict(\n            \"The tool-calling loop hit its iteration limit before producing a final answer. \"\n            \"Summarize the latest observed tool state or refine the request.\"\n        )\n\n    def _merge_stashed_final_answer(self, answer: str) -> str:\n",
+   "es": "                )\n\n        return self._build_result_dict(\n            \"El loop de tool calling llegó a su límite de iteraciones antes de dar una respuesta final. \"\n            \"Pide un resumen del último estado de los tools o afina la solicitud.\"\n        )\n\n    def _merge_stashed_final_answer(self, answer: str) -> str:\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"running on kept asking for a tool that does not exist. Please try \"",
-   "es": "\"estoy corriendo siguió pidiendo un tool que no existe. Intenta \"",
-   "n": 1
+   "en": "\n_STEP_BY_STEP_SYSTEM_GUIDANCE = \"\"\"\n**STEP-BY-STEP MODE**:\n- The user explicitly asked for paced setup or troubleshooting. Do exactly one concrete step at a time, then stop and wait for the user's requested short reply, READY, screenshot, log, or command output before continuing.\n- Treat the user's next short reply as the answer to your previous Step-by-Step checkpoint. A bare username, DONE, ERROR, NOWINDOW, yes/no, path, or pasted output is continuation state, not a brand-new unrelated request.\n- Keep each step short enough for a non-expert to perform. Include the exact command, menu path, file path, or click target for that one step.\n- For new or unknown MCP setup, call `external_mcp_doctor` first. If it reports source/docs/repository URLs, investigate those through Crawler/Googler only when the next step is unclear.\n- To ADD an MCP the user names or pastes (e.g. \"add the redis MCP\"), call `external_mcp_import` with its JSON config, then `external_mcp_set_active` to connect it, then `external_mcp_wait('<key>', 120)` to BLOCK until it is ready (a first-run Docker image pull or npx/uvx download is slow — do NOT poll external_mcp_status in a loop and give up; wait, and if it times out call external_mcp_wait again with a bigger timeout). Do this YOURSELF with these tools — never claim you lack a file-writing/shell tool and never push the user to the dialog.\n- For MCP setup, inspect `external_mcp_status`; if tools are missing or a server is large, use `external_mcp_list_tools` before saying a tool is unavailable.\n- For any External MCP tool not directly selected, use `external_mcp_call` with the raw tool name discovered from `external_mcp_list_tools`.\n- Diagnose in layers: config JSON, required runtime (Docker/node/npx/uvx/python), process spawn, transport, initialize, tools/list, schema, then a small safe read/write test when appropriate.\n- Never dump a whole installation plan at once unless the user asks for the full plan. In normal Step-by-Step mode, end with a clear READY checkpoint.\n\"\"\"\n\n\n",
+   "es": "\n_STEP_BY_STEP_SYSTEM_GUIDANCE = \"\"\"\n**STEP-BY-STEP MODE**:\n- MODO PASO A PASO: realiza UNA acción concreta por turno. Explica qué harás, con qué herramienta, sobre qué destino y qué resultado comprobarás. Después DETENTE y ESPERA la respuesta solicitada; no llames más herramientas tras el punto de espera.\n- Usa puntos de espera en español: LISTO para continuar, HECHO para confirmar una acción terminada, ERROR para un fallo y SIN VENTANA si no apareció la consola. Acepta sí/no, un nombre de usuario, una ruta, un log o una captura como continuación del paso pendiente. Acepta también READY/DONE/NOWINDOW de conversaciones antiguas, pero no los solicites.\n- Una confirmación breve no prueba el éxito: comprueba la salida solicitada. Una ventana abierta, un proceso lanzado o un comando escrito no significan que la operación terminó. No repitas una creación, envío o lanzamiento si ya está pendiente; pregunta por su resultado.\n- Mantén cada paso breve y apto para principiantes, con rutas absolutas de ESTA instancia de Tlamatini-Spanish. Nunca deduzcas SOURCE/FROZEN por la existencia de un archivo. Usa la identidad operativa del proceso actual y conserva la dirección de la pestaña actual.\n- No pidas contraseñas, tokens ni claves en el chat. Se introducen en el campo privado de configuración o en la consola correspondiente. Conserva las claves y enums técnicos en su idioma original.\n- Para configurar un MCP desconocido, llama primero a external_mcp_doctor. Inspecciona external_mcp_status y external_mcp_list_tools antes de afirmar que falta una herramienta. Consulta documentación cuando el siguiente paso sea incierto.\n- Para agregar un MCP solicitado, divide external_mcp_import, external_mcp_set_active y external_mcp_wait en pasos separados con verificación y espera. Usa las claves devueltas; no inventes nombres. Un timeout no significa éxito ni justifica un bucle infinito.\n- Para una herramienta externa no seleccionada directamente, usa external_mcp_call con el nombre y esquema descubiertos mediante external_mcp_list_tools.\n- Diagnostica en orden: configuración, runtime necesario, proceso, transporte, inicialización, tools/list, esquema y prueba pequeña autorizada. Presenta solo el paso actual, salvo que el usuario pida el plan completo. Termina con «Responde LISTO» o el punto de espera específico en español.\n\"\"\"\n\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"rephrasing, or switch to a stronger model in Config ▸ Models.\"",
-   "es": "\"reformular tu solicitud o cambia a un modelo más potente en Config ▸ Modelos.\"",
-   "n": 1
+   "en": "    import platform\n    import sys as _sys\n    # Lazy import (avoids any rag<->mcp_agent import-cycle at module load).\n    from .rag.config import apply_conditional_rule_blocks, apply_self_modify_switch, self_modify_on\n\n    # The Self-modify switch (Angela, 2026-10-03): Tlamatini's self-knowledge\n    # is sent only while it is ON.  None = read the switch; the fitter passes\n",
+   "es": "    import platform\n    import sys as _sys\n    # Lazy import (avoids any rag<->mcp_agent import-cycle at module load).\n    from .rag.config import (apply_conditional_rule_blocks, apply_self_modify_switch,\n                             self_modify_on, runtime_instance_context,\n                             strip_runtime_instance_context)\n\n    # The Self-modify switch (Angela, 2026-10-03): Tlamatini's self-knowledge\n    # is sent only while it is ON.  None = read the switch; the fitter passes\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"🛑 You cancelled this request. I stopped the run — nothing had been \"",
-   "es": "\"🛑 Cancelaste esta solicitud. Detuve la ejecución; todavía no se había \"",
-   "n": 1
+   "en": "    if self_knowledge is None:\n        self_knowledge = self_modify_on()\n    preeliminary_prompt = apply_self_modify_switch(preeliminary_prompt, bool(self_knowledge))\n\n    # Keep the per-tool system-prompt list to ONE short line each. The model\n    # ALREADY receives every tool's full name / description / parameters through\n",
+   "es": "    if self_knowledge is None:\n        self_knowledge = self_modify_on()\n    preeliminary_prompt = apply_self_modify_switch(preeliminary_prompt, bool(self_knowledge))\n    preeliminary_prompt = strip_runtime_instance_context(preeliminary_prompt)\n    preeliminary_prompt += '\\n\\n' + runtime_instance_context()\n\n    # Keep the per-tool system-prompt list to ONE short line each. The model\n    # ALREADY receives every tool's full name / description / parameters through\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"executed yet, so nothing was left half-done.\"",
-   "es": "\"ejecutado nada, así que nada quedó a medias.\"",
-   "n": 1
+   "en": "# ---------------------------------------------------------------------------\n# Tool-surface token budgeting (Angela, 2026-06-19)\n# ---------------------------------------------------------------------------\n# Binding the FULL enabled surface (86 agents + active External-MCP tools) can\n# overflow the model context window. Observed live: \"prompt too long 273284 >\n# 262144\", which crashed Multi-Turn into a basic-LLM fallback (\"tool backend\n# unavailable\"). Instead of blindly binding everything OR starving the operator\n",
+   "es": "# ---------------------------------------------------------------------------\n# Tool-surface token budgeting (Angela, 2026-06-19)\n# ---------------------------------------------------------------------------\n# Binding the FULL enabled surface (all enabled agents + active External-MCP tools) can\n# overflow the model context window. Observed live: \"prompt too long 273284 >\n# 262144\", which crashed Multi-Turn into a basic-LLM fallback (\"tool backend\n# unavailable\"). Instead of blindly binding everything OR starving the operator\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"you cancelled\"",
-   "es": "\"lo cancelaste\"",
-   "n": 1
+   "en": "    hold.  Returns ``(prompt, info)``.\n    \"\"\"\n    import platform\n    text, info = compact_prompt(preeliminary_prompt, budget_chars, keep_placeholders=False,\n                                context_loaded=context_loaded)\n    os_name = platform.system()\n",
+   "es": "    hold.  Returns ``(prompt, info)``.\n    \"\"\"\n    import platform\n    from .rag.config import runtime_instance_context, strip_runtime_instance_context\n    preeliminary_prompt = strip_runtime_instance_context(preeliminary_prompt)\n    text, info = compact_prompt(preeliminary_prompt, budget_chars, keep_placeholders=False,\n                                context_loaded=context_loaded)\n    os_name = platform.system()\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"the model became unreachable and every recovery tactic was exhausted\"",
-   "es": "\"el modelo dejó de responder y se agotaron todas las tácticas de recuperación\"",
-   "n": 1
+   "en": "    step = _STEP_BY_STEP_SYSTEM_GUIDANCE if step_by_step_enabled else \"\"\n    rule = compact_tool_rule([getattr(t, \"name\", \"\") for t in tools], model=model,\n                             window_tokens=window_tokens, strict=strict)\n    prompt = text.rstrip() + \"\\n\\n\" + plat + \"\\n\" + (step.strip() + \"\\n\" if step else \"\") + \"\\n\" + rule + \"\\n\"\n    info[\"prompt_chars\"] = len(prompt)\n    return prompt, info\n\n",
+   "es": "    step = _STEP_BY_STEP_SYSTEM_GUIDANCE if step_by_step_enabled else \"\"\n    rule = compact_tool_rule([getattr(t, \"name\", \"\") for t in tools], model=model,\n                             window_tokens=window_tokens, strict=strict)\n    prompt = (text.rstrip() + \"\\n\\n\" + runtime_instance_context() + \"\\n\\n\" + plat\n              + \"\\n\" + (step.strip() + \"\\n\" if step else \"\") + \"\\n\" + rule + \"\\n\")\n    info[\"prompt_chars\"] = len(prompt)\n    return prompt, info\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "f\"⚠️ I stopped the model step because {why}, but your Multi-Turn run had \"",
-   "es": "f\"⚠️ Detuve el paso del modelo porque {why}, pero tu ejecución de Multi-Turn \"",
-   "n": 1
+   "en": "        # === MANDATE (Angela, 2026-06-16, refined 2026-06-19) ===\n        # Multi-Turn must let Tlamatini SEE the tools she needs — binding a tiny\n        # planner subset once starved the operator (\"no file/shell tool bound\").\n        # But blindly binding the FULL surface (86 agents + active External-MCP\n        # tools) overflowed the model window live (\"prompt too long 273284 >\n        # 262144\") and crashed the turn into a basic-LLM fallback. So we\n        # RANK-AND-BUDGET (_budget_select_tools, inside fit_request): when the\n",
+   "es": "        # === MANDATE (Angela, 2026-06-16, refined 2026-06-19) ===\n        # Multi-Turn must let Tlamatini SEE the tools she needs — binding a tiny\n        # planner subset once starved the operator (\"no file/shell tool bound\").\n        # But blindly binding the FULL surface (all enabled agents + active External-MCP\n        # tools) overflowed the model window live (\"prompt too long 273284 >\n        # 262144\") and crashed the turn into a basic-LLM fallback. So we\n        # RANK-AND-BUDGET (_budget_select_tools, inside fit_request): when the\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"ALREADY executed its agents — nothing was lost and the run was NOT discarded. \"",
-   "es": "\"YA había ejecutado sus agents: no se perdió nada y la ejecución NO se descartó. \"",
-   "n": 1
-  },
-  {
-   "en": "\"Here is what actually ran this turn:\"",
-   "es": "\"Esto es lo que de verdad se ejecutó en este turno:\"",
-   "n": 1
-  },
-  {
-   "en": "\"Most recent tool results:\"",
-   "es": "\"Resultados más recientes de los tools:\"",
-   "n": 1
-  },
-  {
-   "en": "f\"({len(ok)} of {len(ran)} tool call(s) succeeded — you can click \"",
-   "es": "f\"({len(ok)} de {len(ran)} llamadas a tools terminaron bien; puedes hacer clic en \"",
-   "n": 1
-  },
-  {
-   "en": "\"**Create Flow** to build a workflow from the successful agents.)\"",
-   "es": "\"**Crear flow** para armar un workflow con los agents que funcionaron.)\"",
-   "n": 1
-  },
-  {
-   "en": "\"⚠️ I could not reach the model for this request after trying every \"",
-   "es": "\"⚠️ No pude comunicarme con el modelo para esta solicitud después de probar todas \"",
-   "n": 1
-  },
-  {
-   "en": "f\"recovery tactic ({_step.reason}). No tools were selected for this \"",
-   "es": "f\"las tácticas de recuperación ({_step.reason}). No se eligió ningún tool para esta \"",
-   "n": 1
-  },
-  {
-   "en": "\"request, so nothing was executed — please try again.\"",
-   "es": "\"solicitud, así que no se ejecutó nada. Vuelve a intentarlo.\"",
-   "n": 1
-  },
-  {
-   "en": "\"The planner selected no tools for this request, and the model returned an empty response.\"",
-   "es": "\"El planner no eligió ningún tool para esta solicitud y el modelo devolvió una respuesta vacía.\"",
-   "n": 1
-  },
-  {
-   "en": "\"Here are the results from the executed tool calls:\\n\\n\"",
-   "es": "\"Estos son los resultados de las llamadas a tools que se ejecutaron:\\n\\n\"",
-   "n": 1
-  },
-  {
-   "en": "\"The tool-calling model returned an empty final response.\"",
-   "es": "\"El modelo de tool calling devolvió una respuesta final vacía.\"",
-   "n": 1
-  },
-  {
-   "en": "\"I could not finish this request. A tool kept failing with the \"",
-   "es": "\"No pude terminar esta solicitud. Un tool siguió dando el \"",
-   "n": 1
-  },
-  {
-   "en": "\"same error and repeating it would not help, so I stopped instead \"",
-   "es": "\"mismo error y repetirlo no iba a servir, así que me detuve en lugar \"",
-   "n": 1
-  },
-  {
-   "en": "\"of looping. The error was:\\n\\n\"",
-   "es": "\"de quedarme en un ciclo. El error fue:\\n\\n\"",
-   "n": 1
-  },
-  {
-   "en": "\"What you can try: rephrase the request, adjust the values \"",
-   "es": "\"Lo que puedes intentar: reformular la solicitud, ajustar los valores \"",
-   "n": 1
-  },
-  {
-   "en": "\"involved, or check the target tool/app is set up correctly. \"",
-   "es": "\"involucrados o revisar la configuración del tool o de la app de destino. \"",
-   "n": 1
-  },
-  {
-   "en": "\"The last raw tool results, for reference:\\n\\n\"",
-   "es": "\"Los últimos resultados en bruto de los tools, como referencia:\\n\\n\"",
-   "n": 1
-  },
-  {
-   "en": "\"I stopped because the model kept repeating the same tool call \"",
-   "es": "\"Me detuve porque el modelo siguió repitiendo la misma llamada a un tool \"",
-   "n": 1
-  },
-  {
-   "en": "\"without making progress. Here are the last tool results:\\n\\n\"",
-   "es": "\"sin avanzar. Estos son los últimos resultados de los tools:\\n\\n\"",
-   "n": 1
-  },
-  {
-   "en": "\"The tool-calling loop hit its iteration limit before producing a final answer. \"",
-   "es": "\"El loop de tool calling llegó a su límite de iteraciones antes de dar una respuesta final. \"",
-   "n": 1
-  },
-  {
-   "en": "\"Summarize the latest observed tool state or refine the request.\"",
-   "es": "\"Pide un resumen del último estado de los tools o afina la solicitud.\"",
-   "n": 1
-  },
-  {
-   "en": "\"⚠️ This conversation has grown very large, so I could not bind my \"",
-   "es": "\"⚠️ Esta conversación creció mucho, así que no pude conectar todos mis \"",
-   "n": 1
-  },
-  {
-   "en": "f\"full tool surface this turn — I kept only {len(selected_tools)} \"",
-   "es": "f\"tools en este turno: sólo conservé {len(selected_tools)} \"",
-   "n": 1
-  },
-  {
-   "en": "\"core tool(s). If a step needs an agent I no longer have, clear the \"",
-   "es": "\"tools básicos. Si un paso necesita un agent que ya no tengo, borra el \"",
-   "n": 1
-  },
-  {
-   "en": "\"chat history or start a new chat and my full surface comes back. \"",
-   "es": "\"historial del chat o empieza un chat nuevo y vuelvo a tener todos mis tools. \"",
-   "n": 1
-  },
-  {
-   "en": "\"I am telling you now rather than reporting work I cannot do.\"",
-   "es": "\"Te lo digo ahora en lugar de reportarte un trabajo que no puedo hacer.\"",
-   "n": 1
-  },
-  {
-   "en": "Use the typed Torrenter action and arguments.",
-   "es": "Usa los campos action y arguments del tool Torrenter.",
-   "n": 1
-  },
-  {
-   "en": "Torrenter (invalid arguments)",
-   "es": "Torrenter (argumentos no válidos)",
-   "n": 1
+   "en": "        # operator core anyway, and TELL HER — in the chat, not only here.\n        if not compact and fit.get(\"starved\"):\n            _starved_notice = (\n                \"⚠️ This conversation has grown very large, so I could not bind my \"\n                f\"full tool surface this turn — I kept only {len(selected_tools)} \"\n                \"core tool(s). If a step needs an agent I no longer have, clear the \"\n                \"chat history or start a new chat and my full surface comes back. \"\n                \"I am telling you now rather than reporting work I cannot do.\"\n            )\n            print(\n                \"--- CapabilityAwareToolAgentExecutor: TOOL SURFACE CAME BACK EMPTY \"\n",
+   "es": "        # operator core anyway, and TELL HER — in the chat, not only here.\n        if not compact and fit.get(\"starved\"):\n            _starved_notice = (\n                \"⚠️ Esta conversación creció mucho, así que no pude conectar todos mis \"\n                f\"tools en este turno: sólo conservé {len(selected_tools)} \"\n                \"tools básicos. Si un paso necesita un agent que ya no tengo, borra el \"\n                \"historial del chat o empieza un chat nuevo y vuelvo a tener todos mis tools. \"\n                \"Te lo digo ahora en lugar de reportarte un trabajo que no puedo hacer.\"\n            )\n            print(\n                \"--- CapabilityAwareToolAgentExecutor: TOOL SURFACE CAME BACK EMPTY \"\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

@@ -517,6 +517,8 @@ _FROZEN_TORRENTER_MODULES = (
 _FROZEN_PYWIN32_EXTENSIONS = ("win32cred", "win32crypt") if os.name == "nt" else ()
 
 _FROZEN_REQUIRED_AGENT_MODULES = (
+    "agent.migrations.0222_repair_prompt_catalog",
+    "agent.migrations.0223_spanish_catalog_instance_contracts",
     "agent.interactor", "agent.interactor.context", "agent.interactor.protocol",
     "agent.interaction_settings", "agent.interaction_narration",
     "agent.interactor.hub", "agent.interactor.consumer", "agent.interactor.files", "agent.interactor.tool",

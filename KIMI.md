@@ -12,7 +12,11 @@
 
 # ⛔ PRIVATE DATA GUARD — ABSOLUTE, NON-NEGOTIABLE, READ FIRST ⛔
 
-> Última versión publicada: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.
+
+## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+
+El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](docs/changes/2026-11-08-v1.92.4.md).
 
 ## Regla obligatoria de versión — todos los proyectos y sesiones, 2026-11-04
 
@@ -27,7 +31,7 @@ de dependencias, el historial de Git y las pruebas reales. Las operaciones de Gi
 y compilaciones de ejecutables requieren autorización. Esta regla sustituye
 cualquier consejo anterior que la contradiga.
 
-## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
+## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
 Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](docs/changes/2026-11-01-v1.92.3.md).
 
@@ -284,7 +288,7 @@ Every current count in this file was **re-verified against source on 2026-10-16 
 | SKILL.md packages | **29** | `agent/skills_pkg/` (confirmed live via `tlamatini_list_skills`) |
 | ACPX external CLI agent_ids | **14** | `agent/acpx/agent_registry.py` `DEFAULT_ACP_AGENTS` |
 | DB models | **21** | `agent/models.py` |
-| Migrations | **221** | Through `0221_torrenter.py` |
+| Migraciones | **222** | Hasta `0222_repair_prompt_catalog.py` |
 | Frontend JS modules | **64** | `agent/static/agent/js/*.js` |
 | Page templates / CSS files | **9 / 29** | `agent/templates/agent/*.html` and `agent/static/agent/css/*.css` |
 | HTTP routes / view functions | 183 / 214 | `agent/urls.py`, `agent/views.py` (12,906 lines) |
@@ -1183,7 +1187,7 @@ Hardcoded assumptions (know before changing these subsystems):
 9. Carried-Python media libs: Recorder/Camcorder/AudioPlayer/VideoPlayer/Whisperer run under the CARRIED Python (`<install>/python`), NOT the frozen exe — numpy + cv2 must exist in BOTH Pythons; `build.py` aborts otherwise. A dep pinned in `requirements.txt` but missing from the carried Python crashes the pool agent at runtime.
 10. Frontend `let`-not-`const` for cross-file mutable globals (§15, const-poison).
 Current worktree inventory, verified 2026-10-23: **86 agents, 67 wrapped chat agents,
-111 built-in Multi-Turn tools, 29 runtime skills, 221 migrations, 64 JS modules
+111 built-in Multi-Turn tools, 29 runtime skills, 222 migrations, 64 JS modules
 and 29 CSS files**. The JS/CSS added since v1.78.0 implement the Markdown canvas, the shared theme and the file-drop router. Historical
 counts below remain dated to their original inspections.
 

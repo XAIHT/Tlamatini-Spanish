@@ -2,15 +2,16 @@
  "archivo": "copy_source_assets.py",
  "segmentos": [
   {
-   "en": "REQUIRED_SNAPSHOT_FILES = (\n",
-   "es": "REQUIRED_SNAPSHOT_FILES = (\n    \"Tlamatini/agent/agents/talker/spanish_pronunciation.py\",\n    \"Tlamatini/agent/test_spanish_pronunciation.py\",\n    \"docs/spanish-name-pronunciation.md\",\n    \"scripts/spanish_names_visible.py\",\n    \"scripts/spanish_names_synthesis_visible.py\",\n",
+   "en": "# one raises rather than producing a quietly-incomplete self-modify tree.\n# Add the canonical file of any new always-present capability here.\nREQUIRED_SNAPSHOT_FILES = (\n    \"Tlamatini/agent/canvas_file_views.py\",\n    \"Tlamatini/agent/native_dialogs.py\",\n    \"Tlamatini/agent/test_canvas_file_views.py\",\n",
+   "es": "# one raises rather than producing a quietly-incomplete self-modify tree.\n# Add the canonical file of any new always-present capability here.\nREQUIRED_SNAPSHOT_FILES = (\n    \"Tlamatini/agent/migrations/0222_repair_prompt_catalog.py\",\n    \"Tlamatini/agent/migrations/0223_spanish_catalog_instance_contracts.py\",\n    \"Tlamatini/agent/test_spanish_catalog_admission.py\",\n    \"Tlamatini/agent/test_spanish_instance_contracts.py\",\n    \"Tlamatini/agent/agents/talker/spanish_pronunciation.py\",\n    \"Tlamatini/agent/test_spanish_pronunciation.py\",\n    \"docs/spanish-name-pronunciation.md\",\n    \"scripts/spanish_names_visible.py\",\n    \"scripts/spanish_names_synthesis_visible.py\",\n    \"Tlamatini/agent/canvas_file_views.py\",\n    \"Tlamatini/agent/native_dialogs.py\",\n    \"Tlamatini/agent/test_canvas_file_views.py\",\n",
    "n": 1,
-   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "Invalid localization source revision",
-   "es": "La revisión del código de localización no es válida",
-   "n": 1
+   "en": "        revision = localization.get(\"parche\")\n        if revision:\n            if not re.fullmatch(r\"[0-9a-f]{64}\", revision):\n                raise RuntimeError(\"Invalid localization source revision\")\n            inputs.add(\"l10n/bases/\" + revision + \".patch\")\n        inputs.update((\"l10n/BASE_INGLES.json\", \"l10n/portar.py\", \"l10n/herramientas/base_ingles.py\"))\n    carriers = {name: {destination} for name, destination in ROOT_SOURCES.items()}\n",
+   "es": "        revision = localization.get(\"parche\")\n        if revision:\n            if not re.fullmatch(r\"[0-9a-f]{64}\", revision):\n                raise RuntimeError(\"La revisión del código de localización no es válida\")\n            inputs.add(\"l10n/bases/\" + revision + \".patch\")\n        inputs.update((\"l10n/BASE_INGLES.json\", \"l10n/portar.py\", \"l10n/herramientas/base_ingles.py\"))\n    carriers = {name: {destination} for name, destination in ROOT_SOURCES.items()}\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": []

@@ -2,37 +2,16 @@
  "archivo": "Tlamatini/agent/test_createsuperuser_wizard.py",
  "segmentos": [
   {
-   "en": "'[[ TYPE THE USERNAME HERE'",
-   "es": "'[[ ESCRIBE AQUÍ EL NOMBRE DE USUARIO'",
-   "maquina": "la prueba busca frases de la tarjeta 1, que ahora está en español",
-   "llm": "una frase lleva el marcador {{ el nombre de usuario }} del texto del Catálogo de prompts, que llena el LLM",
-   "n": 1
+   "en": "        # The catalog moved to the standardized parameter grammar (migrations\n        # 0182-0185): `[[ ... ]]` marks a value the USER types. The old\n        # `----<set name here>----` marker no longer exists anywhere.\n        self.assertIn('[[ TYPE THE USERNAME HERE', p.promptContent)\n        # `{{ ... }}` marks a value TLAMATINI fills at runtime (the standardized\n        # grammar); the old `<USERNAME>` angle form is now a REPORT slot only.\n        self.assertIn('treat that reply as {{ the username }} and continue to Step 1',\n                      p.promptContent)\n\n    def test_catalog_preserves_ids_and_wizard_first(self):\n",
+   "es": "        # The catalog moved to the standardized parameter grammar (migrations\n        # 0182-0185): `[[ ... ]]` marks a value the USER types. The old\n        # `----<set name here>----` marker no longer exists anywhere.\n        self.assertIn('[[ ESCRIBE AQUÍ EL NOMBRE DE USUARIO', p.promptContent)\n        # `{{ ... }}` marks a value TLAMATINI fills at runtime (the standardized\n        # grammar); the old `<USERNAME>` angle form is now a REPORT slot only.\n        self.assertIn('toma esa respuesta como {{ el nombre de usuario }} y continúa al Paso 1',\n                      p.promptContent)\n\n    def test_catalog_preserves_ids_and_wizard_first(self):\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'treat that reply as {{ the username }} and continue to Step 1'",
-   "es": "'toma esa respuesta como {{ el nombre de usuario }} y continúa al Paso 1'",
-   "maquina": "la prueba busca frases de la tarjeta 1, que ahora está en español",
-   "llm": "una frase lleva el marcador {{ el nombre de usuario }} del texto del Catálogo de prompts, que llena el LLM",
-   "n": 1
-  },
-  {
-   "en": "'restart'",
-   "es": "'reinicia'",
-   "maquina": "la prueba busca frases de la tarjeta 1, que ahora está en español",
-   "llm": "una frase lleva el marcador {{ el nombre de usuario }} del texto del Catálogo de prompts, que llena el LLM",
-   "n": 1
-  },
-  {
-   "en": "        # -> Step-by-Step (hyphenated form + intent word; the spaced \"step by step\"\n        #    used elsewhere in the catalog must NOT trip the same detector).\n        self.assertRegex(c, r'[Ss]tep-by-[Ss]tep\\s+(?:setup|wizard|checkbox)')",
-   "es": "        # -> Step-by-Step (hyphenated form + intent word; the spaced \"step by step\"\n        #    used elsewhere in the catalog must NOT trip the same detector).\n        #    Spanish edition: the same detector also accepts \"wizard/casillas ... Paso a paso\".\n        self.assertRegex(\n            c,\n            r'[Ss]tep-by-[Ss]tep\\s+(?:setup|wizard|checkbox)'\n            r'|(?i:(?:casillas?|modo|wizard|asistente)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b)'\n            r'|(?i:\\bpaso\\s+a\\s+paso\\s+(?:wizard|asistente|mode|modo)\\b)'\n            r'|(?i:\\b(?:marca|activa)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b)',\n        )",
-   "codigo": "la prueba refleja el detector de tools_dialog.js, que en español también acepta «wizard/casillas … Paso a paso»",
-   "n": 1
-  },
-  {
-   "en": "Tlamatini.exe",
-   "es": "Tlamatini-Spanish.exe",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
+   "en": "        self.assertIn('chat_agent_executer', c)   # -> Multi-turn (operator tool)\n        # -> Step-by-Step (hyphenated form + intent word; the spaced \"step by step\"\n        #    used elsewhere in the catalog must NOT trip the same detector).\n        self.assertRegex(c, r'[Ss]tep-by-[Ss]tep\\s+(?:setup|wizard|checkbox)')\n        # Must NOT look like an ACPX prompt.\n        self.assertNotIn('acp_spawn', c)\n        self.assertNotIn('invoke_skill', c)\n\n    def test_runs_in_both_frozen_and_source(self):\n        c = self._wizard().promptContent\n        self.assertIn('Tlamatini.exe\" createsuperuser', c)      # frozen branch\n        self.assertIn('python manage.py createsuperuser', c)    # source branch\n        self.assertIn('execute_forked_window=true', c)          # visible console\n        self.assertIn('non_blocking=true', c)                   # detached, returns\n        self.assertIn('restart', c.lower())                     # restart guidance\n",
+   "es": "        self.assertIn('chat_agent_executer', c)   # -> Multi-turn (operator tool)\n        # -> Step-by-Step (hyphenated form + intent word; the spaced \"step by step\"\n        #    used elsewhere in the catalog must NOT trip the same detector).\n        #    Spanish edition: the same detector also accepts \"wizard/casillas ... Paso a paso\".\n        self.assertRegex(\n            c,\n            r'[Ss]tep-by-[Ss]tep\\s+(?:setup|wizard|checkbox)'\n            r'|(?i:(?:casillas?|modo|wizard|asistente)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b)'\n            r'|(?i:\\bpaso\\s+a\\s+paso\\s+(?:wizard|asistente|mode|modo)\\b)'\n            r'|(?i:\\b(?:marca|activa)\\b[^.\\n]{0,60}\\bpaso\\s+a\\s+paso\\b)',\n        )\n        # Must NOT look like an ACPX prompt.\n        self.assertNotIn('acp_spawn', c)\n        self.assertNotIn('invoke_skill', c)\n\n    def test_runs_in_both_frozen_and_source(self):\n        c = self._wizard().promptContent\n        self.assertIn('Tlamatini-Spanish.exe', c)\n        self.assertIn('management_argv', c)\n        self.assertIn('Tlamatini/manage.py', c)\n        self.assertIn('execute_forked_window=true', c)          # visible console\n        self.assertIn('non_blocking=true', c)                   # detached, returns\n        self.assertIn('sin reiniciar', c)\n        self.assertIn('MISMA dirección', c)\n        self.assertNotIn('http://localhost:8000', c)\n        self.assertIn('HECHO', c)\n        self.assertIn('SIN VENTANA', c)\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": []

@@ -2784,15 +2784,15 @@ _FIRMWARE_TEMPLATE_TOOL_NAMES = frozenset({
 
 _STEP_BY_STEP_SYSTEM_GUIDANCE = """
 **STEP-BY-STEP MODE**:
-- The user explicitly asked for paced setup or troubleshooting. Do exactly one concrete step at a time, then stop and wait for the user's requested short reply, READY, screenshot, log, or command output before continuing.
-- Treat the user's next short reply as the answer to your previous Step-by-Step checkpoint. A bare username, DONE, ERROR, NOWINDOW, yes/no, path, or pasted output is continuation state, not a brand-new unrelated request.
-- Keep each step short enough for a non-expert to perform. Include the exact command, menu path, file path, or click target for that one step.
-- For new or unknown MCP setup, call `external_mcp_doctor` first. If it reports source/docs/repository URLs, investigate those through Crawler/Googler only when the next step is unclear.
-- To ADD an MCP the user names or pastes (e.g. "add the redis MCP"), call `external_mcp_import` with its JSON config, then `external_mcp_set_active` to connect it, then `external_mcp_wait('<key>', 120)` to BLOCK until it is ready (a first-run Docker image pull or npx/uvx download is slow — do NOT poll external_mcp_status in a loop and give up; wait, and if it times out call external_mcp_wait again with a bigger timeout). Do this YOURSELF with these tools — never claim you lack a file-writing/shell tool and never push the user to the dialog.
-- For MCP setup, inspect `external_mcp_status`; if tools are missing or a server is large, use `external_mcp_list_tools` before saying a tool is unavailable.
-- For any External MCP tool not directly selected, use `external_mcp_call` with the raw tool name discovered from `external_mcp_list_tools`.
-- Diagnose in layers: config JSON, required runtime (Docker/node/npx/uvx/python), process spawn, transport, initialize, tools/list, schema, then a small safe read/write test when appropriate.
-- Never dump a whole installation plan at once unless the user asks for the full plan. In normal Step-by-Step mode, end with a clear READY checkpoint.
+- MODO PASO A PASO: realiza UNA acción concreta por turno. Explica qué harás, con qué herramienta, sobre qué destino y qué resultado comprobarás. Después DETENTE y ESPERA la respuesta solicitada; no llames más herramientas tras el punto de espera.
+- Usa puntos de espera en español: LISTO para continuar, HECHO para confirmar una acción terminada, ERROR para un fallo y SIN VENTANA si no apareció la consola. Acepta sí/no, un nombre de usuario, una ruta, un log o una captura como continuación del paso pendiente. Acepta también READY/DONE/NOWINDOW de conversaciones antiguas, pero no los solicites.
+- Una confirmación breve no prueba el éxito: comprueba la salida solicitada. Una ventana abierta, un proceso lanzado o un comando escrito no significan que la operación terminó. No repitas una creación, envío o lanzamiento si ya está pendiente; pregunta por su resultado.
+- Mantén cada paso breve y apto para principiantes, con rutas absolutas de ESTA instancia de Tlamatini-Spanish. Nunca deduzcas SOURCE/FROZEN por la existencia de un archivo. Usa la identidad operativa del proceso actual y conserva la dirección de la pestaña actual.
+- No pidas contraseñas, tokens ni claves en el chat. Se introducen en el campo privado de configuración o en la consola correspondiente. Conserva las claves y enums técnicos en su idioma original.
+- Para configurar un MCP desconocido, llama primero a external_mcp_doctor. Inspecciona external_mcp_status y external_mcp_list_tools antes de afirmar que falta una herramienta. Consulta documentación cuando el siguiente paso sea incierto.
+- Para agregar un MCP solicitado, divide external_mcp_import, external_mcp_set_active y external_mcp_wait en pasos separados con verificación y espera. Usa las claves devueltas; no inventes nombres. Un timeout no significa éxito ni justifica un bucle infinito.
+- Para una herramienta externa no seleccionada directamente, usa external_mcp_call con el nombre y esquema descubiertos mediante external_mcp_list_tools.
+- Diagnostica en orden: configuración, runtime necesario, proceso, transporte, inicialización, tools/list, esquema y prueba pequeña autorizada. Presenta solo el paso actual, salvo que el usuario pida el plan completo. Termina con «Responde LISTO» o el punto de espera específico en español.
 """
 
 
@@ -2801,7 +2801,9 @@ def _build_system_prompt(preeliminary_prompt: str, tools, step_by_step_enabled: 
     import platform
     import sys as _sys
     # Lazy import (avoids any rag<->mcp_agent import-cycle at module load).
-    from .rag.config import apply_conditional_rule_blocks, apply_self_modify_switch, self_modify_on
+    from .rag.config import (apply_conditional_rule_blocks, apply_self_modify_switch,
+                             self_modify_on, runtime_instance_context,
+                             strip_runtime_instance_context)
 
     # The Self-modify switch (Angela, 2026-10-03): Tlamatini's self-knowledge
     # is sent only while it is ON.  None = read the switch; the fitter passes
@@ -2809,6 +2811,8 @@ def _build_system_prompt(preeliminary_prompt: str, tools, step_by_step_enabled: 
     if self_knowledge is None:
         self_knowledge = self_modify_on()
     preeliminary_prompt = apply_self_modify_switch(preeliminary_prompt, bool(self_knowledge))
+    preeliminary_prompt = strip_runtime_instance_context(preeliminary_prompt)
+    preeliminary_prompt += '\n\n' + runtime_instance_context()
 
     # Keep the per-tool system-prompt list to ONE short line each. The model
     # ALREADY receives every tool's full name / description / parameters through
@@ -3226,6 +3230,8 @@ def _build_compact_system_prompt(preeliminary_prompt: str, tools, *, budget_char
     hold.  Returns ``(prompt, info)``.
     """
     import platform
+    from .rag.config import runtime_instance_context, strip_runtime_instance_context
+    preeliminary_prompt = strip_runtime_instance_context(preeliminary_prompt)
     text, info = compact_prompt(preeliminary_prompt, budget_chars, keep_placeholders=False,
                                 context_loaded=context_loaded)
     os_name = platform.system()
@@ -3237,7 +3243,8 @@ def _build_compact_system_prompt(preeliminary_prompt: str, tools, *, budget_char
     step = _STEP_BY_STEP_SYSTEM_GUIDANCE if step_by_step_enabled else ""
     rule = compact_tool_rule([getattr(t, "name", "") for t in tools], model=model,
                              window_tokens=window_tokens, strict=strict)
-    prompt = text.rstrip() + "\n\n" + plat + "\n" + (step.strip() + "\n" if step else "") + "\n" + rule + "\n"
+    prompt = (text.rstrip() + "\n\n" + runtime_instance_context() + "\n\n" + plat
+              + "\n" + (step.strip() + "\n" if step else "") + "\n" + rule + "\n")
     info["prompt_chars"] = len(prompt)
     return prompt, info
 

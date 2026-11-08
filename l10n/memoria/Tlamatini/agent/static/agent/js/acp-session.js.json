@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/acp-session.js",
+ "segmentos": [
+  {
+   "en": "}\n\nfunction getCsrfToken() {\n    return getCookie('csrftoken');\n}\n\nfunction buildSessionBeaconPayload() {\n",
+   "es": "}\n\nfunction getCsrfToken() {\n    return getCookie('tlm_csrf_es_mx');\n}\n\nfunction buildSessionBeaconPayload() {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  }
+ ],
+ "conservar": []
+}

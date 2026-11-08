@@ -150,7 +150,7 @@ function _styleCloseOnlyButton($dialog) {
 // ----------------------------------------------------------------
 
 function _csrfTokenForSkills() {
-    const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+    const m = document.cookie.match(/(?:^|; )tlm_csrf_es_mx=([^;]+)/);
     return m ? decodeURIComponent(m[1]) : '';
 }
 

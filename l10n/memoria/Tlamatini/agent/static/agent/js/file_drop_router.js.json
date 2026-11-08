@@ -2,384 +2,106 @@
  "archivo": "Tlamatini/agent/static/agent/js/file_drop_router.js",
  "segmentos": [
   {
-   "en": "'Your session expired. Sign in, then drop the file again.'",
-   "es": "'Tu sesión expiró. Inicia sesión y vuelve a soltar el archivo.'",
-   "n": 1
+   "en": "    }\n\n    function namesOf(files) {\n        return files.map(function (f) { return f && f.name ? f.name : 'file'; }).join(', ');\n    }\n\n    function csrfToken() {\n        const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);\n        if (m) return decodeURIComponent(m[1]);\n        const input = document.querySelector('[name=csrfmiddlewaretoken]');\n        return input ? input.value : '';\n",
+   "es": "    }\n\n    function namesOf(files) {\n        return files.map(function (f) { return f && f.name ? f.name : 'archivo'; }).join(', ');\n    }\n\n    function csrfToken() {\n        const m = document.cookie.match(/(?:^|; )tlm_csrf_es_mx=([^;]+)/);\n        if (m) return decodeURIComponent(m[1]);\n        const input = document.querySelector('[name=csrfmiddlewaretoken]');\n        return input ? input.value : '';\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'No MCP servers were found in '",
-   "es": "'No se encontraron servidores MCP en '",
-   "n": 1
+   "en": "        });\n        const type = (response.headers && response.headers.get('content-type')) || '';\n        if (response.redirected || !/json/i.test(type)) {\n            throw new Error('Your session expired. Sign in, then drop the file again.');\n        }\n        const data = await response.json();\n        if (!response.ok || !data.ok) throw new Error(data.error || ('HTTP ' + response.status));\n",
+   "es": "        });\n        const type = (response.headers && response.headers.get('content-type')) || '';\n        if (response.redirected || !/json/i.test(type)) {\n            throw new Error('Tu sesión expiró. Inicia sesión y vuelve a soltar el archivo.');\n        }\n        const data = await response.json();\n        if (!response.ok || !data.ok) throw new Error(data.error || ('HTTP ' + response.status));\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Add '",
-   "es": "'¿Agregar al catálogo '",
-   "n": 1
+   "en": "            Object.keys(found).forEach(function (k) { merged[k] = found[k]; });\n        });\n        const names = Object.keys(merged);\n        if (!names.length) return { note: 'No MCP servers were found in ' + namesOf(files) + '.' };\n        const plural = names.length === 1 ? '' : 's';\n        const from = files.length > 1 ? (' from ' + files.length + ' files') : '';\n        const proceed = await ask('Add ' + names.length + ' MCP server' + plural + ' to the catalog' + from + '?',\n            names.join(', ') + '  —  these entries can launch programs on this computer; import only ' +\n            'configurations you trust.', 'Import MCP servers');\n        if (!proceed) return { note: 'Nothing was imported.' };\n        let data;\n        try {\n            data = await importServers(merged);\n        } catch (error) {\n            await tell('Import failed: ' + (error && error.message ? error.message : error), 'Import failed');\n            return {};\n        }\n        try {\n",
+   "es": "            Object.keys(found).forEach(function (k) { merged[k] = found[k]; });\n        });\n        const names = Object.keys(merged);\n        if (!names.length) return { note: 'No se encontraron servidores MCP en ' + namesOf(files) + '.' };\n        const plural = names.length === 1 ? '' : 'es';\n        const from = files.length > 1 ? (' desde ' + files.length + ' archivos') : '';\n        const proceed = await ask('¿Agregar al catálogo ' + names.length + ' servidor' + plural + ' MCP' + from + '?',\n            names.join(', ') + '  —  estas entradas pueden ejecutar programas en esta computadora; importa sólo ' +\n            'configuraciones de confianza.', 'Importar servidores MCP');\n        if (!proceed) return { note: 'No se importó nada.' };\n        let data;\n        try {\n            data = await importServers(merged);\n        } catch (error) {\n            await tell('Error al importar: ' + (error && error.message ? error.message : error), 'Error al importar');\n            return {};\n        }\n        try {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "' MCP server'",
-   "es": "' servidor'",
-   "n": 1
+   "en": "        const updated = (data.updated || []).length;\n        const skipped = names.length - added - updated;\n        if (!added && !updated) {\n            await tell('Nothing was imported: none of the ' + names.length + ' entr' +\n                (names.length === 1 ? 'y has' : 'ies has') + ' a command or a url.', 'Nothing to import');\n            return {};\n        }\n        const summary = 'Catalog updated — ' + added + ' added, ' + updated + ' updated.' +\n            (skipped > 0 ? ' ' + skipped + ' skipped (no command or url).' : '');\n        if (typeof window.OpenExternalMcpsDialog === 'function') {\n            const open = await ask(summary, 'Open External ▸ MCPs now to activate them?', 'Import complete',\n                { confirmLabel: 'Open External ▸ MCPs', cancelLabel: 'Later' });\n            if (open) {\n                try { window.OpenExternalMcpsDialog(); } catch (e) { /* the menu entry still works */ }\n            }\n        } else {\n            await tell(summary + '  Open External ▸ MCPs in the Tlamatini chat page to activate them.',\n                'Import complete');\n        }\n        return {};\n    }\n",
+   "es": "        const updated = (data.updated || []).length;\n        const skipped = names.length - added - updated;\n        if (!added && !updated) {\n            await tell('No se importó nada: de ' + names.length + ' entr' +\n                (names.length === 1 ? 'ada, ninguna tiene' : 'adas, ninguna tiene') + ' un comando o una URL.', 'Nada que importar');\n            return {};\n        }\n        const summary = 'Catálogo actualizado — ' + added + ' agregado(s), ' + updated + ' actualizado(s).' +\n            (skipped > 0 ? ' ' + skipped + ' omitido(s) (sin comando ni URL).' : '');\n        if (typeof window.OpenExternalMcpsDialog === 'function') {\n            const open = await ask(summary, '¿Abrir Externos ▸ MCPs ahora para activarlos?', 'Importación completa',\n                { confirmLabel: 'Abrir Externos ▸ MCPs', cancelLabel: 'Más tarde' });\n            if (open) {\n                try { window.OpenExternalMcpsDialog(); } catch (e) { /* the menu entry still works */ }\n            }\n        } else {\n            await tell(summary + '  Abre Externos ▸ MCPs en la página del chat de Tlamatini para activarlos.',\n                'Importación completa');\n        }\n        return {};\n    }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "' to the catalog'",
-   "es": "' MCP'",
-   "n": 1
+   "en": "        try { tab = window.open('about:blank', '_blank'); } catch (e) { return null; }\n        if (!tab) return null;\n        try {\n            tab.document.title = 'Opening flow · Tlamatini';\n            tab.document.body.textContent = 'Opening ' + file.name + '…';\n            tab.document.body.style.cssText = 'background:#24252f;color:#eee;font:18px system-ui;padding:48px';\n            tab.opener = null;\n        } catch (e) { /* the placeholder is cosmetic */ }\n",
+   "es": "        try { tab = window.open('about:blank', '_blank'); } catch (e) { return null; }\n        if (!tab) return null;\n        try {\n            tab.document.title = 'Abriendo el flow · Tlamatini';\n            tab.document.body.textContent = 'Abriendo ' + file.name + '…';\n            tab.document.body.style.cssText = 'background:#24252f;color:#eee;font:18px system-ui;padding:48px';\n            tab.opener = null;\n        } catch (e) { /* the placeholder is cosmetic */ }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'  —  these entries can launch programs on this computer; import only '",
-   "es": "'  —  estas entradas pueden ejecutar programas en esta computadora; importa sólo '",
-   "n": 1
+   "en": "        const file = item.file;\n        const tab = item.tab;\n        if (!tab) {\n            toast('Allow pop-ups for Tlamatini, then drop ' + file.name + ' again.');\n            return;\n        }\n        try {\n            if (file.size > MAX_FLOW_BYTES) throw new Error('The flow file must be no larger than 5 MiB.');\n            const body = new FormData();\n            body.append('file', file);\n            const response = await fetch('/agent/flow_files/open/', {\n                method: 'POST', credentials: 'same-origin', headers: { 'X-CSRFToken': csrfToken() }, body: body\n            });\n            if (response.redirected) throw new Error('Your session expired. Sign in, then open the file again.');\n            const result = await response.json();\n            if (!response.ok) throw new Error(result.error || 'The file could not be opened.');\n            if (!tab.closed) tab.location.replace(result.url);\n        } catch (error) {\n            if (!tab.closed) tab.close();\n            await tell('Could not open ' + file.name + ': ' + (error && error.message ? error.message : error),\n                'Open flow');\n        }\n    }\n\n",
+   "es": "        const file = item.file;\n        const tab = item.tab;\n        if (!tab) {\n            toast('Permite las ventanas emergentes de Tlamatini y luego suelta ' + file.name + ' otra vez.');\n            return;\n        }\n        try {\n            if (file.size > MAX_FLOW_BYTES) throw new Error('El archivo del flow no puede pesar más de 5 MiB.');\n            const body = new FormData();\n            body.append('file', file);\n            const response = await fetch('/agent/flow_files/open/', {\n                method: 'POST', credentials: 'same-origin', headers: { 'X-CSRFToken': csrfToken() }, body: body\n            });\n            if (response.redirected) throw new Error('Tu sesión expiró. Inicia sesión y vuelve a abrir el archivo.');\n            const result = await response.json();\n            if (!response.ok) throw new Error(result.error || 'No se pudo abrir el archivo.');\n            if (!tab.closed) tab.location.replace(result.url);\n        } catch (error) {\n            if (!tab.closed) tab.close();\n            await tell('No se pudo abrir ' + file.name + ': ' + (error && error.message ? error.message : error),\n                'Abrir flow');\n        }\n    }\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'configurations you trust.'",
-   "es": "'configuraciones de confianza.'",
-   "n": 1
+   "en": "    }\n\n    const BUILTIN = {};\n    BUILTIN[MCP] = { fn: importMcpItems, label: 'MCP server config → added to the External MCP catalog' };\n    BUILTIN[FLOW_AGENT] = { fn: openFlowItems, label: 'Agent flow (.flw) → opens in the Agentic Control Panel' };\n    BUILTIN[FLOW_PROMPT] = { fn: openFlowItems, label: 'Prompt flow (.fpmt) → opens in the Prompt Flow Panel' };\n\n    function lookup(kind) { return handlers.get(kind) || BUILTIN[kind] || null; }\n\n",
+   "es": "    }\n\n    const BUILTIN = {};\n    BUILTIN[MCP] = { fn: importMcpItems, label: 'Configuración de servidor MCP → se agrega al catálogo de External MCPs' };\n    BUILTIN[FLOW_AGENT] = { fn: openFlowItems, label: 'Flow de agents (.flw) → se abre en Agentic Control Panel' };\n    BUILTIN[FLOW_PROMPT] = { fn: openFlowItems, label: 'Prompt flow (.fpmt) → se abre en Prompt Flow Panel' };\n\n    function lookup(kind) { return handlers.get(kind) || BUILTIN[kind] || null; }\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Import MCP servers'",
-   "es": "'Importar servidores MCP'",
-   "n": 1
+   "en": "    }\n\n    const NOT_USED = {\n        image: 'Images are not used on this page — drop them on the Tlamatini chat',\n        pdf: 'PDFs are not used on this page — drop them on the Tlamatini chat',\n        markdown: 'Markdown is not used on this page — drop it on the Tlamatini chat',\n        text: 'Text and code files are not used on this page — drop them on the Tlamatini chat'\n    };\n\n    function hintLines(guess) {\n",
+   "es": "    }\n\n    const NOT_USED = {\n        image: 'Las imágenes no se usan en esta página — suéltalas en el chat de Tlamatini',\n        pdf: 'Los PDF no se usan en esta página — suéltalos en el chat de Tlamatini',\n        markdown: 'Markdown no se usa en esta página — suéltalo en el chat de Tlamatini',\n        text: 'Los archivos de texto y de código no se usan en esta página — suéltalos en el chat de Tlamatini'\n    };\n\n    function hintLines(guess) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Nothing was imported.'",
-   "es": "'No se importó nada.'",
-   "n": 1
+   "en": "            if (kind === 'json') {\n                lines.push({ text: labelOf(MCP), off: false });\n                const other = labelOf(TEXT);\n                if (other) lines.push({ text: 'Any other JSON → ' + other.replace(/^.*?→\\s*/, ''), off: false });\n            } else if (kind === 'unknown') {\n                lines.push({ text: 'Flows, documents, images and MCP configs are recognised when you drop them', off: false });\n            } else {\n                const label = labelOf(kind);\n                lines.push(label ? { text: label, off: false } : { text: NOT_USED[kind] || '', off: true });\n            }\n        });\n        if (!lines.length) lines.push({ text: 'Release to let Tlamatini decide what to do with it', off: false });\n        return lines.filter(function (l) { return l.text; });\n    }\n\n",
+   "es": "            if (kind === 'json') {\n                lines.push({ text: labelOf(MCP), off: false });\n                const other = labelOf(TEXT);\n                if (other) lines.push({ text: 'Cualquier otro JSON → ' + other.replace(/^.*?→\\s*/, ''), off: false });\n            } else if (kind === 'unknown') {\n                lines.push({ text: 'Los flows, documentos, imágenes y configuraciones MCP se reconocen al soltarlos', off: false });\n            } else {\n                const label = labelOf(kind);\n                lines.push(label ? { text: label, off: false } : { text: NOT_USED[kind] || '', off: true });\n            }\n        });\n        if (!lines.length) lines.push({ text: 'Suelta para que Tlamatini decida qué hacer con esto', off: false });\n        return lines.filter(function (l) { return l.text; });\n    }\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Import failed: '",
-   "es": "'Error al importar: '",
-   "n": 1
+   "en": "            ensureUi();\n            const guess = guessFromItems(dt);\n            const lines = (IN_FRAME && frameApi() && frameApi().hintLines) ? frameApi().hintLines(guess) : hintLines(guess);\n            const title = guess.count > 1 ? 'Drop ' + guess.count + ' files' : 'Drop the file';\n            const signature = title + '|' + lines.map(function (l) { return l.text; }).join('|');\n            if (signature !== lastSignature) {\n                lastSignature = signature;\n",
+   "es": "            ensureUi();\n            const guess = guessFromItems(dt);\n            const lines = (IN_FRAME && frameApi() && frameApi().hintLines) ? frameApi().hintLines(guess) : hintLines(guess);\n            const title = guess.count > 1 ? 'Suelta ' + guess.count + ' archivos' : 'Suelta el archivo';\n            const signature = title + '|' + lines.map(function (l) { return l.text; }).join('|');\n            if (signature !== lastSignature) {\n                lastSignature = signature;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Import failed'",
-   "es": "'Error al importar'",
-   "n": 1
+   "en": "\n    function folderNote(folders) {\n        const where = document.getElementById('set-dir-context')\n            ? 'Use Context ▸ Set directory as context to load a folder.'\n            : 'Tlamatini loads folders from the chat page: Context ▸ Set directory as context.';\n        return 'Folders cannot be dropped (' + folders.map(function (f) { return f.name || 'folder'; }).join(', ') +\n            ') — the browser does not hand Tlamatini a folder path. ' + where;\n    }\n\n    function acceptedLabels() {\n",
+   "es": "\n    function folderNote(folders) {\n        const where = document.getElementById('set-dir-context')\n            ? 'Usa Contexto ▸ Usar un directorio como contexto para cargar una carpeta.'\n            : 'Tlamatini carga carpetas desde la página del chat: Contexto ▸ Usar un directorio como contexto.';\n        return 'No se pueden soltar carpetas (' + folders.map(function (f) { return f.name || 'carpeta'; }).join(', ') +\n            ') — el browser no le da a Tlamatini el path de una carpeta. ' + where;\n    }\n\n    function acceptedLabels() {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Nothing was imported: none of the '",
-   "es": "'No se importó nada: de '",
-   "n": 1
+   "en": "    }\n\n    function unhandledNote(items) {\n        const KIND_WORD = { image: 'image', pdf: 'PDF', markdown: 'Markdown', text: 'text file',\n            archive: 'archive', binary: 'binary file' };\n        const list = items.map(function (i) {\n            return i.file.name + ' (' + (KIND_WORD[i.kind] || i.kind) + ')';\n        }).join(', ');\n        const hints = [];\n        const kinds = items.map(function (i) { return i.kind; });\n        if (kinds.some(function (k) { return k === IMAGE; })) hints.push('images attach to a message on the Tlamatini chat page');\n        if (kinds.some(function (k) { return k === PDF || k === MARKDOWN || k === TEXT; })) hints.push('documents open in the chat canvas');\n        if (kinds.some(function (k) { return k === ARCHIVE || k === BINARY; })) hints.push('archives and binary files are not read');\n        const accepts = acceptedLabels();\n        return 'Skipped: ' + list + '.' + (hints.length ? ' (' + hints.join('; ') + ')' : '') +\n            (accepts.length ? '\\nThis page accepts: ' + accepts.join('  ·  ') : '');\n    }\n\n    async function runGroup(group, notes) {\n",
+   "es": "    }\n\n    function unhandledNote(items) {\n        const KIND_WORD = { image: 'imagen', pdf: 'PDF', markdown: 'Markdown', text: 'archivo de texto',\n            archive: 'archivo comprimido', binary: 'archivo binario' };\n        const list = items.map(function (i) {\n            return i.file.name + ' (' + (KIND_WORD[i.kind] || i.kind) + ')';\n        }).join(', ');\n        const hints = [];\n        const kinds = items.map(function (i) { return i.kind; });\n        if (kinds.some(function (k) { return k === IMAGE; })) hints.push('las imágenes se adjuntan a un mensaje en la página del chat de Tlamatini');\n        if (kinds.some(function (k) { return k === PDF || k === MARKDOWN || k === TEXT; })) hints.push('los documentos se abren en el canvas del chat');\n        if (kinds.some(function (k) { return k === ARCHIVE || k === BINARY; })) hints.push('los archivos comprimidos y binarios no se leen');\n        const accepts = acceptedLabels();\n        return 'Omitidos: ' + list + '.' + (hints.length ? ' (' + hints.join('; ') + ')' : '') +\n            (accepts.length ? '\\nEsta página acepta: ' + accepts.join('  ·  ') : '');\n    }\n\n    async function runGroup(group, notes) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'y has'",
-   "es": "'ada, ninguna tiene'",
-   "n": 1
+   "en": "            const result = await group.handler.fn(files, group.items);\n            if (result && result.note) notes.push(result.note);\n            else if (result && Array.isArray(result.ignored) && result.ignored.length) {\n                notes.push('Not used: ' + namesOf(result.ignored));\n            }\n        } catch (error) {\n            console.error('[file-drop] handler failed', error);\n            await tell('Could not handle ' + namesOf(files) + ': ' + (error && error.message ? error.message : error),\n                'File drop');\n        }\n    }\n\n",
+   "es": "            const result = await group.handler.fn(files, group.items);\n            if (result && result.note) notes.push(result.note);\n            else if (result && Array.isArray(result.ignored) && result.ignored.length) {\n                notes.push('No se usan: ' + namesOf(result.ignored));\n            }\n        } catch (error) {\n            console.error('[file-drop] handler failed', error);\n            await tell('No se pudo procesar ' + namesOf(files) + ': ' + (error && error.message ? error.message : error),\n                'Soltar archivos');\n        }\n    }\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'ies has'",
-   "es": "'adas, ninguna tiene'",
-   "n": 1
+   "en": "        const notes = [];\n        let list = entries.filter(function (e) { return e && (e.isDirectory || e.file); });\n        if (list.length > MAX_FILES) {\n            notes.push('Only the first ' + MAX_FILES + ' of ' + list.length + ' dropped items were considered.');\n            list = list.slice(0, MAX_FILES);\n        }\n        const folders = list.filter(function (e) { return e.isDirectory; });\n",
+   "es": "        const notes = [];\n        let list = entries.filter(function (e) { return e && (e.isDirectory || e.file); });\n        if (list.length > MAX_FILES) {\n            notes.push('Sólo se tomaron en cuenta los primeros ' + MAX_FILES + ' de ' + list.length + ' elementos soltados.');\n            list = list.slice(0, MAX_FILES);\n        }\n        const folders = list.filter(function (e) { return e.isDirectory; });\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "' a command or a url.'",
-   "es": "' un comando o una URL.'",
-   "n": 1
+   "en": "\n        plan.forEach(function (p) {\n            if (p.info && p.info.invalidJson && lookup(p.kind)) {\n                notes.push(p.file.name + ' is not valid JSON (' + p.info.invalidJson + ') — treated as plain text.');\n            }\n        });\n        if (unhandled.length) notes.push(unhandledNote(unhandled));\n",
+   "es": "\n        plan.forEach(function (p) {\n            if (p.info && p.info.invalidJson && lookup(p.kind)) {\n                notes.push(p.file.name + ' no es un JSON válido (' + p.info.invalidJson + ') — se trata como texto plano.');\n            }\n        });\n        if (unhandled.length) notes.push(unhandledNote(unhandled));\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Nothing to import'",
-   "es": "'Nada que importar'",
-   "n": 1
+   "en": "\n    function route(entries) {\n        if (!AUTHENTICATED) {\n            toast('Sign in first, then drop the file on the Tlamatini chat page.');\n            return Promise.resolve();\n        }\n        if (processing) {\n            toast('Still working on the previous drop — try again in a moment.');\n            return Promise.resolve();\n        }\n        processing = true;\n",
+   "es": "\n    function route(entries) {\n        if (!AUTHENTICATED) {\n            toast('Primero inicia sesión y luego suelta el archivo en la página del chat de Tlamatini.');\n            return Promise.resolve();\n        }\n        if (processing) {\n            toast('Todavía se está procesando lo que soltaste antes — vuelve a intentarlo en un momento.');\n            return Promise.resolve();\n        }\n        processing = true;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Catalog updated — '",
-   "es": "'Catálogo actualizado — '",
-   "n": 1
-  },
-  {
-   "en": "' skipped (no command or url).'",
-   "es": "' omitido(s) (sin comando ni URL).'",
-   "n": 1
-  },
-  {
-   "en": "'Open External ▸ MCPs now to activate them?'",
-   "es": "'¿Abrir Externos ▸ MCPs ahora para activarlos?'",
-   "n": 1
-  },
-  {
-   "en": "'Import complete'",
-   "es": "'Importación completa'",
-   "n": 2
-  },
-  {
-   "en": "'Open External ▸ MCPs'",
-   "es": "'Abrir Externos ▸ MCPs'",
-   "n": 1
-  },
-  {
-   "en": "'Later'",
-   "es": "'Más tarde'",
-   "n": 1
-  },
-  {
-   "en": "'  Open External ▸ MCPs in the Tlamatini chat page to activate them.'",
-   "es": "'  Abre Externos ▸ MCPs en la página del chat de Tlamatini para activarlos.'",
-   "n": 1
-  },
-  {
-   "en": "'Opening flow · Tlamatini'",
-   "es": "'Abriendo el flow · Tlamatini'",
-   "n": 1
-  },
-  {
-   "en": "'Opening '",
-   "es": "'Abriendo '",
-   "n": 1
-  },
-  {
-   "en": "'Allow pop-ups for Tlamatini, then drop '",
-   "es": "'Permite las ventanas emergentes de Tlamatini y luego suelta '",
-   "n": 1
-  },
-  {
-   "en": "'The flow file must be no larger than 5 MiB.'",
-   "es": "'El archivo del flow no puede pesar más de 5 MiB.'",
-   "n": 1
-  },
-  {
-   "en": "'Your session expired. Sign in, then open the file again.'",
-   "es": "'Tu sesión expiró. Inicia sesión y vuelve a abrir el archivo.'",
-   "n": 1
-  },
-  {
-   "en": "'The file could not be opened.'",
-   "es": "'No se pudo abrir el archivo.'",
-   "n": 1
-  },
-  {
-   "en": "'Could not open '",
-   "es": "'No se pudo abrir '",
-   "n": 1
-  },
-  {
-   "en": "'Open flow'",
-   "es": "'Abrir flow'",
-   "n": 1
-  },
-  {
-   "en": "'MCP server config → added to the External MCP catalog'",
-   "es": "'Configuración de servidor MCP → se agrega al catálogo de External MCPs'",
-   "n": 1
-  },
-  {
-   "en": "'Agent flow (.flw) → opens in the Agentic Control Panel'",
-   "es": "'Flow de agents (.flw) → se abre en Agentic Control Panel'",
-   "n": 1
-  },
-  {
-   "en": "'Prompt flow (.fpmt) → opens in the Prompt Flow Panel'",
-   "es": "'Prompt flow (.fpmt) → se abre en Prompt Flow Panel'",
-   "n": 1
-  },
-  {
-   "en": "'Images are not used on this page — drop them on the Tlamatini chat'",
-   "es": "'Las imágenes no se usan en esta página — suéltalas en el chat de Tlamatini'",
-   "n": 1
-  },
-  {
-   "en": "'PDFs are not used on this page — drop them on the Tlamatini chat'",
-   "es": "'Los PDF no se usan en esta página — suéltalos en el chat de Tlamatini'",
-   "n": 1
-  },
-  {
-   "en": "'Markdown is not used on this page — drop it on the Tlamatini chat'",
-   "es": "'Markdown no se usa en esta página — suéltalo en el chat de Tlamatini'",
-   "n": 1
-  },
-  {
-   "en": "'Text and code files are not used on this page — drop them on the Tlamatini chat'",
-   "es": "'Los archivos de texto y de código no se usan en esta página — suéltalos en el chat de Tlamatini'",
-   "n": 1
-  },
-  {
-   "en": "'Any other JSON → '",
-   "es": "'Cualquier otro JSON → '",
-   "n": 1
-  },
-  {
-   "en": "'Flows, documents, images and MCP configs are recognised when you drop them'",
-   "es": "'Los flows, documentos, imágenes y configuraciones MCP se reconocen al soltarlos'",
-   "n": 1
-  },
-  {
-   "en": "'Release to let Tlamatini decide what to do with it'",
-   "es": "'Suelta para que Tlamatini decida qué hacer con esto'",
-   "n": 1
-  },
-  {
-   "en": "'Drop '",
-   "es": "'Suelta '",
-   "n": 1
-  },
-  {
-   "en": "'Drop the file'",
-   "es": "'Suelta el archivo'",
-   "n": 1
-  },
-  {
-   "en": "'Use Context ▸ Set directory as context to load a folder.'",
-   "es": "'Usa Contexto ▸ Usar un directorio como contexto para cargar una carpeta.'",
-   "n": 1
-  },
-  {
-   "en": "'Tlamatini loads folders from the chat page: Context ▸ Set directory as context.'",
-   "es": "'Tlamatini carga carpetas desde la página del chat: Contexto ▸ Usar un directorio como contexto.'",
-   "n": 1
-  },
-  {
-   "en": "'Folders cannot be dropped ('",
-   "es": "'No se pueden soltar carpetas ('",
-   "n": 1
-  },
-  {
-   "en": "') — the browser does not hand Tlamatini a folder path. '",
-   "es": "') — el browser no le da a Tlamatini el path de una carpeta. '",
-   "n": 1
-  },
-  {
-   "en": "'text file'",
-   "es": "'archivo de texto'",
-   "n": 1
-  },
-  {
-   "en": "'binary file'",
-   "es": "'archivo binario'",
-   "n": 1
-  },
-  {
-   "en": "'images attach to a message on the Tlamatini chat page'",
-   "es": "'las imágenes se adjuntan a un mensaje en la página del chat de Tlamatini'",
-   "n": 1
-  },
-  {
-   "en": "'documents open in the chat canvas'",
-   "es": "'los documentos se abren en el canvas del chat'",
-   "n": 1
-  },
-  {
-   "en": "'archives and binary files are not read'",
-   "es": "'los archivos comprimidos y binarios no se leen'",
-   "n": 1
-  },
-  {
-   "en": "'Skipped: '",
-   "es": "'Omitidos: '",
-   "n": 1
-  },
-  {
-   "en": "'\\nThis page accepts: '",
-   "es": "'\\nEsta página acepta: '",
-   "n": 1
-  },
-  {
-   "en": "'Not used: '",
-   "es": "'No se usan: '",
-   "n": 1
-  },
-  {
-   "en": "'Could not handle '",
-   "es": "'No se pudo procesar '",
-   "n": 1
-  },
-  {
-   "en": "'File drop'",
-   "es": "'Soltar archivos'",
-   "n": 1
-  },
-  {
-   "en": "'Only the first '",
-   "es": "'Sólo se tomaron en cuenta los primeros '",
-   "n": 1
-  },
-  {
-   "en": "' dropped items were considered.'",
-   "es": "' elementos soltados.'",
-   "n": 1
-  },
-  {
-   "en": "' is not valid JSON ('",
-   "es": "' no es un JSON válido ('",
-   "n": 1
-  },
-  {
-   "en": "') — treated as plain text.'",
-   "es": "') — se trata como texto plano.'",
-   "n": 1
-  },
-  {
-   "en": "'Sign in first, then drop the file on the Tlamatini chat page.'",
-   "es": "'Primero inicia sesión y luego suelta el archivo en la página del chat de Tlamatini.'",
-   "n": 1
-  },
-  {
-   "en": "'Still working on the previous drop — try again in a moment.'",
-   "es": "'Todavía se está procesando lo que soltaste antes — vuelve a intentarlo en un momento.'",
-   "n": 1
-  },
-  {
-   "en": "'That drop could not be processed: '",
-   "es": "'No se pudo procesar lo que soltaste: '",
-   "n": 1
-  },
-  {
-   "en": "' from '",
-   "es": "' desde '",
-   "n": 1
-  },
-  {
-   "en": "' added, '",
-   "es": "' agregado(s), '",
-   "n": 1
-  },
-  {
-   "en": "' updated.'",
-   "es": "' actualizado(s).'",
-   "n": 1
-  },
-  {
-   "en": "' again.'",
-   "es": "' otra vez.'",
-   "n": 1
-  },
-  {
-   "en": "image: 'image'",
-   "es": "image: 'imagen'",
-   "n": 1
-  },
-  {
-   "en": "archive: 'archive'",
-   "es": "archive: 'archivo comprimido'",
-   "n": 1
-  },
-  {
-   "en": "' of '",
-   "es": "' de '",
-   "n": 1
-  },
-  {
-   "en": "'folder'",
-   "es": "'carpeta'",
-   "n": 1
-  },
-  {
-   "en": "'' : 's'",
-   "es": "'' : 'es'",
-   "n": 1
-  },
-  {
-   "en": "files.length + ' files'",
-   "es": "files.length + ' archivos'",
-   "n": 1
-  },
-  {
-   "en": "guess.count + ' files'",
-   "es": "guess.count + ' archivos'",
-   "n": 1
-  },
-  {
-   "en": "f.name : 'file'",
-   "es": "f.name : 'archivo'",
-   "n": 1
+   "en": "        }\n        return promise.catch(function (error) {\n            console.error('[file-drop] failed', error);\n            toast('That drop could not be processed: ' + (error && error.message ? error.message : error));\n        }).then(function () { processing = false; });\n    }\n\n",
+   "es": "        }\n        return promise.catch(function (error) {\n            console.error('[file-drop] failed', error);\n            toast('No se pudo procesar lo que soltaste: ' + (error && error.message ? error.message : error));\n        }).then(function () { processing = false; });\n    }\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

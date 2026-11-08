@@ -8,6 +8,8 @@
 -->
 # Guía de porteo: Tlamatini al español de México
 
+> Última versión publicada: **[v1.92.4](../docs/changes/2026-11-08-v1.92.4.md)**.
+
 Esta guía explica cómo se construye y cómo se mantiene **Tlamatini-Spanish** a partir de
 **Tlamatini** (inglés). Reúne el estilo, la terminología, el alcance, el método y el control
 de calidad. Se basa en la investigación del 22 de octubre de 2026 sobre cómo llegan al

@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/terminal_guard.py",
+ "segmentos": [
+  {
+   "en": "    r\"\\bi\\s+(?:no\\s+longer|don'?t)\\s+(?:want|need)\\s+to\\s+(?:run|execute|type)\\b\",\n    r\"\\b(?:the\\s+)?(?:live\\s+)?tutorial\\s+is\\s+(?:over|done|finished)\\b\",\n    # Spanish\n    r\"\\bt[uú]\\s+(?:los|las|lo|la)\\s+(?:ejecutas|corres|escribes)\\b\",\n    r\"\\bejec[uú]t(?:a|alo|alos|alas)\\s+t[uú]\\b\",\n    r\"\\bhazlo\\s+t[uú]\\b\",\n",
+   "es": "    r\"\\bi\\s+(?:no\\s+longer|don'?t)\\s+(?:want|need)\\s+to\\s+(?:run|execute|type)\\b\",\n    r\"\\b(?:the\\s+)?(?:live\\s+)?tutorial\\s+is\\s+(?:over|done|finished)\\b\",\n    # Spanish\n    r\"\\bt[uú]\\s+(?:(?:vas\\s+a|debes|puedes)\\s+(?:ejecutar|correr|lanzar)|\"\n    r\"ejecutas|corres|lanzas)\\s+\\S+\",\n    r\"\\bt[uú]\\s+(?:los|las|lo|la)\\s+(?:ejecutas|corres|escribes)\\b\",\n    r\"\\bejec[uú]t(?:a|alo|alos|alas)\\s+t[uú]\\b\",\n    r\"\\bhazlo\\s+t[uú]\\b\",\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  }
+ ],
+ "conservar": []
+}

@@ -121,7 +121,7 @@
     }
 
     function csrfToken() {
-        const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+        const m = document.cookie.match(/(?:^|; )tlm_csrf_es_mx=([^;]+)/);
         if (m) return decodeURIComponent(m[1]);
         const input = document.querySelector('[name=csrfmiddlewaretoken]');
         return input ? input.value : '';

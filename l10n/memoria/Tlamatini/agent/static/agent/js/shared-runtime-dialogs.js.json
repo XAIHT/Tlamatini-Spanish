@@ -2,64 +2,64 @@
  "archivo": "Tlamatini/agent/static/agent/js/shared-runtime-dialogs.js",
  "segmentos": [
   {
-   "en": "'Image/video analysis failures. Tlamatini remains active; its retry and recovery tactics continue.'",
-   "es": "'Errores en el análisis de imágenes o video. Tlamatini sigue activa; sus tácticas de reintento y recuperación continúan.'",
-   "n": 1
+   "en": "            fatalDialog = document.createElement('div');\n            fatalDialog.id = 'tlm-visual-fatal-errors';\n            const explanation = document.createElement('p');\n            explanation.textContent = 'Image/video analysis failures. Tlamatini remains active; its retry and recovery tactics continue.';\n            fatalDialog.appendChild(explanation);\n            const entries = document.createElement('ol');\n            entries.className = 'tlm-visual-fatal-error-list';\n",
+   "es": "            fatalDialog = document.createElement('div');\n            fatalDialog.id = 'tlm-visual-fatal-errors';\n            const explanation = document.createElement('p');\n            explanation.textContent = 'Errores en el análisis de imágenes o video. Tlamatini sigue activa; sus tácticas de reintento y recuperación continúan.';\n            fatalDialog.appendChild(explanation);\n            const entries = document.createElement('ol');\n            entries.className = 'tlm-visual-fatal-error-list';\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Dismiss'",
-   "es": "'Descartar'",
-   "n": 4
+   "en": "            document.body.appendChild(fatalDialog);\n            $(fatalDialog).dialog({\n                autoOpen: false, modal: false, width: 640, maxHeight: 600,\n                resizable: true, draggable: true, closeText: 'Dismiss',\n                dialogClass: 'notification-dialog-class notification-error',\n                buttons: { 'Dismiss': function () { $(this).dialog('close'); } },\n                position: { my: 'center', at: 'center', of: window }\n            });\n        }\n        const entry = document.createElement('li');\n        const heading = document.createElement('strong');\n        heading.textContent = `FATAL — ${error.source_agent || error.runtime_name || 'Image/video analysis'}`;\n        entry.appendChild(heading);\n        const detail = document.createElement('p');\n        detail.style.whiteSpace = 'pre-wrap';\n        detail.style.overflowWrap = 'anywhere';\n        detail.textContent = error.message || error.outcome_detail || 'The configured analysis failed.';\n        entry.appendChild(detail);\n        fatalDialog.querySelector('ol').appendChild(entry);\n        $(fatalDialog).dialog('option', 'title', `Fatal analysis errors (${fatalErrors.size})`);\n        $(fatalDialog).dialog('open');\n        flashTlamatiniWindow('notification');\n        try {\n",
+   "es": "            document.body.appendChild(fatalDialog);\n            $(fatalDialog).dialog({\n                autoOpen: false, modal: false, width: 640, maxHeight: 600,\n                resizable: true, draggable: true, closeText: 'Descartar',\n                dialogClass: 'notification-dialog-class notification-error',\n                buttons: { 'Descartar': function () { $(this).dialog('close'); } },\n                position: { my: 'center', at: 'center', of: window }\n            });\n        }\n        const entry = document.createElement('li');\n        const heading = document.createElement('strong');\n        heading.textContent = `FATAL — ${error.source_agent || error.runtime_name || 'Análisis de imágenes o video'}`;\n        entry.appendChild(heading);\n        const detail = document.createElement('p');\n        detail.style.whiteSpace = 'pre-wrap';\n        detail.style.overflowWrap = 'anywhere';\n        detail.textContent = error.message || error.outcome_detail || 'Error en el análisis configurado.';\n        entry.appendChild(detail);\n        fatalDialog.querySelector('ol').appendChild(entry);\n        $(fatalDialog).dialog('option', 'title', `Errores fatales de análisis (${fatalErrors.size})`);\n        $(fatalDialog).dialog('open');\n        flashTlamatiniWindow('notification');\n        try {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Image/video analysis'",
-   "es": "'Análisis de imágenes o video'",
-   "n": 1
+   "en": "        try {\n            const targetPage = page || detectCurrentPage();\n            const cookieValue = `; ${document.cookie}`;\n            const parts = cookieValue.split('; csrftoken=');\n            const csrf = parts.length === 2 ? (parts.pop().split(';').shift() || '') : '';\n            const headers = { 'Content-Type': 'application/json' };\n            if (csrf) headers['X-CSRFToken'] = csrf;\n",
+   "es": "        try {\n            const targetPage = page || detectCurrentPage();\n            const cookieValue = `; ${document.cookie}`;\n            const parts = cookieValue.split('; tlm_csrf_es_mx=');\n            const csrf = parts.length === 2 ? (parts.pop().split(';').shift() || '') : '';\n            const headers = { 'Content-Type': 'application/json' };\n            if (csrf) headers['X-CSRFToken'] = csrf;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'The configured analysis failed.'",
-   "es": "'Error en el análisis configurado.'",
-   "n": 1
+   "en": "        let severityColor = '#10B981';\n        let severityBgColor = 'rgba(16, 185, 129, 0.16)';\n        let severityTextColor = '#6EE7B7';\n        let dialogTitle = 'Pattern Detected';\n\n        if (hasError) {\n            severity = 'error';\n",
+   "es": "        let severityColor = '#10B981';\n        let severityBgColor = 'rgba(16, 185, 129, 0.16)';\n        let severityTextColor = '#6EE7B7';\n        let dialogTitle = 'Pattern detectado';\n\n        if (hasError) {\n            severity = 'error';\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "`Fatal analysis errors (${fatalErrors.size})`",
-   "es": "`Errores fatales de análisis (${fatalErrors.size})`",
-   "n": 1
+   "en": "            severityColor = '#DC2626';\n            severityBgColor = 'rgba(220, 38, 38, 0.18)';\n            severityTextColor = '#FCA5A5';\n            dialogTitle = 'Error Detected';\n        } else if (hasWarning) {\n            severity = 'warning';\n            severityIcon = '⚠️';\n            severityColor = '#F59E0B';\n            severityBgColor = 'rgba(245, 158, 11, 0.18)';\n            severityTextColor = '#FCD34D';\n            dialogTitle = 'Warning Detected';\n        }\n\n        if (soundEnabled) {\n",
+   "es": "            severityColor = '#DC2626';\n            severityBgColor = 'rgba(220, 38, 38, 0.18)';\n            severityTextColor = '#FCA5A5';\n            dialogTitle = 'Error detectado';\n        } else if (hasWarning) {\n            severity = 'warning';\n            severityIcon = '⚠️';\n            severityColor = '#F59E0B';\n            severityBgColor = 'rgba(245, 158, 11, 0.18)';\n            severityTextColor = '#FCD34D';\n            dialogTitle = 'Advertencia detectada';\n        }\n\n        if (soundEnabled) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Pattern Detected'",
-   "es": "'Pattern detectado'",
-   "n": 1
+   "en": "            : '';\n        dialogDiv.innerHTML = `\n            <p style=\"text-align: center; color: ${severityColor}; font-weight: bold; font-size: 1.1em;\">\n                ${dialogTitle}!\n            </p>\n            <p><strong>Agent:</strong> ${escapeHtmlShared(sourceAgent)}</p>\n            <p><strong>Found:</strong> <span style=\"background-color: ${severityBgColor}; padding: 2px 5px; border-radius: 3px; color: ${severityTextColor};\">${escapeHtmlShared(matches)}</span></p>\n            ${outcomeDetailHtml}\n            <p style=\"font-size: 0.8em; color: var(--tlm-dlg-muted);\">${escapeHtmlShared(timestamp)}</p>\n        `;\n",
+   "es": "            : '';\n        dialogDiv.innerHTML = `\n            <p style=\"text-align: center; color: ${severityColor}; font-weight: bold; font-size: 1.1em;\">\n                ¡${dialogTitle}!\n            </p>\n            <p><strong>Agent:</strong> ${escapeHtmlShared(sourceAgent)}</p>\n            <p><strong>Encontrado:</strong> <span style=\"background-color: ${severityBgColor}; padding: 2px 5px; border-radius: 3px; color: ${severityTextColor};\">${escapeHtmlShared(matches)}</span></p>\n            ${outcomeDetailHtml}\n            <p style=\"font-size: 0.8em; color: var(--tlm-dlg-muted);\">${escapeHtmlShared(timestamp)}</p>\n        `;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Error Detected'",
-   "es": "'Error detectado'",
-   "n": 1
+   "en": "            width: 350,\n            resizable: false,\n            draggable: true,\n            closeText: 'Dismiss',\n            dialogClass: `notification-dialog-class notification-${severity}`,\n            buttons: {\n                'Dismiss': function () { $(this).dialog('close'); }\n            },\n            close: function () {\n                $(this).dialog('destroy');\n",
+   "es": "            width: 350,\n            resizable: false,\n            draggable: true,\n            closeText: 'Descartar',\n            dialogClass: `notification-dialog-class notification-${severity}`,\n            buttons: {\n                'Descartar': function () { $(this).dialog('close'); }\n            },\n            close: function () {\n                $(this).dialog('destroy');\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Warning Detected'",
-   "es": "'Advertencia detectada'",
-   "n": 1
+   "en": "\n        const dialogDiv = document.createElement('div');\n        dialogDiv.id = dialogId;\n        dialogDiv.title = 'User Input Needed';\n        dialogDiv.innerHTML = `\n            <p style=\"text-align: center; font-size: 1.1em;\">\n                <strong>${escapeHtmlShared(identifier)}</strong> needs your input!\n            </p>\n            <p style=\"text-align: center;\">Choose a path to continue:</p>\n            <div style=\"display: flex; justify-content: space-around; margin-top: 15px; gap: 16px;\">\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-a-${identifier}\" class=\"asker-choice-btn\" style=\"background: #EF4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path A</button>\n",
+   "es": "\n        const dialogDiv = document.createElement('div');\n        dialogDiv.id = dialogId;\n        dialogDiv.title = 'Se necesita tu respuesta';\n        dialogDiv.innerHTML = `\n            <p style=\"text-align: center; font-size: 1.1em;\">\n                ¡<strong>${escapeHtmlShared(identifier)}</strong> necesita tu respuesta!\n            </p>\n            <p style=\"text-align: center;\">Elige un path para continuar:</p>\n            <div style=\"display: flex; justify-content: space-around; margin-top: 15px; gap: 16px;\">\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-a-${identifier}\" class=\"asker-choice-btn\" style=\"background: #EF4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path A</button>\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'User Input Needed'",
-   "es": "'Se necesita tu respuesta'",
-   "n": 1
+   "en": "        if (btnA) {\n            btnA.addEventListener('click', () => {\n                submittedAskerRequests.add(identifier);\n                btnA.textContent = 'Sending...';\n                btnA.disabled = true;\n                if (btnB) btnB.disabled = true;\n                Promise.resolve(sendChoice(identifier, 'A')).catch(err =>\n",
+   "es": "        if (btnA) {\n            btnA.addEventListener('click', () => {\n                submittedAskerRequests.add(identifier);\n                btnA.textContent = 'Enviando...';\n                btnA.disabled = true;\n                if (btnB) btnB.disabled = true;\n                Promise.resolve(sendChoice(identifier, 'A')).catch(err =>\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Sending...'",
-   "es": "'Enviando...'",
-   "n": 2
-  },
-  {
-   "en": "`\n            <p style=\"text-align: center; color: ${severityColor}; font-weight: bold; font-size: 1.1em;\">\n                ${dialogTitle}!\n            </p>\n            <p><strong>Agent:</strong> ${escapeHtmlShared(sourceAgent)}</p>\n            <p><strong>Found:</strong> <span style=\"background-color: ${severityBgColor}; padding: 2px 5px; border-radius: 3px; color: ${severityTextColor};\">${escapeHtmlShared(matches)}</span></p>\n            ${outcomeDetailHtml}\n            <p style=\"font-size: 0.8em; color: var(--tlm-dlg-muted);\">${escapeHtmlShared(timestamp)}</p>\n        `",
-   "es": "`\n            <p style=\"text-align: center; color: ${severityColor}; font-weight: bold; font-size: 1.1em;\">\n                ¡${dialogTitle}!\n            </p>\n            <p><strong>Agent:</strong> ${escapeHtmlShared(sourceAgent)}</p>\n            <p><strong>Encontrado:</strong> <span style=\"background-color: ${severityBgColor}; padding: 2px 5px; border-radius: 3px; color: ${severityTextColor};\">${escapeHtmlShared(matches)}</span></p>\n            ${outcomeDetailHtml}\n            <p style=\"font-size: 0.8em; color: var(--tlm-dlg-muted);\">${escapeHtmlShared(timestamp)}</p>\n        `",
-   "n": 1
-  },
-  {
-   "en": "`\n            <p style=\"text-align: center; font-size: 1.1em;\">\n                <strong>${escapeHtmlShared(identifier)}</strong> needs your input!\n            </p>\n            <p style=\"text-align: center;\">Choose a path to continue:</p>\n            <div style=\"display: flex; justify-content: space-around; margin-top: 15px; gap: 16px;\">\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-a-${identifier}\" class=\"asker-choice-btn\" style=\"background: #EF4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path A</button>\n                    ${safeA ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeA}</p>` : ''}\n                </div>\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-b-${identifier}\" class=\"asker-choice-btn\" style=\"background: #3B82F6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path B</button>\n                    ${safeB ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeB}</p>` : ''}\n                </div>\n            </div>\n        `",
-   "es": "`\n            <p style=\"text-align: center; font-size: 1.1em;\">\n                ¡<strong>${escapeHtmlShared(identifier)}</strong> necesita tu respuesta!\n            </p>\n            <p style=\"text-align: center;\">Elige un path para continuar:</p>\n            <div style=\"display: flex; justify-content: space-around; margin-top: 15px; gap: 16px;\">\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-a-${identifier}\" class=\"asker-choice-btn\" style=\"background: #EF4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path A</button>\n                    ${safeA ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeA}</p>` : ''}\n                </div>\n                <div style=\"display: flex; flex-direction: column; align-items: center; flex: 1;\">\n                    <button id=\"btn-choice-b-${identifier}\" class=\"asker-choice-btn\" style=\"background: #3B82F6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;\">Path B</button>\n                    ${safeB ? `<p style=\"margin: 8px 0 0; font-size: 0.85em; color: var(--tlm-dlg-body); text-align: center; word-wrap: break-word;\">${safeB}</p>` : ''}\n                </div>\n            </div>\n        `",
-   "n": 1
+   "en": "        if (btnB) {\n            btnB.addEventListener('click', () => {\n                submittedAskerRequests.add(identifier);\n                btnB.textContent = 'Sending...';\n                btnB.disabled = true;\n                if (btnA) btnA.disabled = true;\n                Promise.resolve(sendChoice(identifier, 'B')).catch(err =>\n",
+   "es": "        if (btnB) {\n            btnB.addEventListener('click', () => {\n                submittedAskerRequests.add(identifier);\n                btnB.textContent = 'Enviando...';\n                btnB.disabled = true;\n                if (btnA) btnA.disabled = true;\n                Promise.resolve(sendChoice(identifier, 'B')).catch(err =>\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

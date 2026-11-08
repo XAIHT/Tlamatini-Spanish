@@ -8,9 +8,13 @@
 -->
 # docs/claude/ — Tlamatini AI-Assistant Docs Index
 
-> Última versión publicada: **[v1.92.3](../changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
 
-## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
+## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+
+El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](../changes/2026-11-08-v1.92.4.md).
+
+## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
 Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](../changes/2026-11-01-v1.92.3.md).
 

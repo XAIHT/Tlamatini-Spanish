@@ -16,7 +16,7 @@ def editor_sections(section):
         section("interaction_settings", "CONFIGURACIÓN · v1.91.0", "Elige cómo escribe y cómo enseña",
                 "Config → Live Editor & Terminater abre un diálogo compartido en el chat y en los paneles de control.",
                 body=[
-                    "Live Editor controla de 40 a 160 WPM, una pausa de 0 a 3 segundos después de cada segmento, el detalle de la enseñanza, "
+                    "Live Editor controla de 40 a 250 WPM, una pausa de 0 a 3 segundos después de cada segmento, el detalle de la enseñanza, "
                     "las sugerencias de campos, texto fantasma contra opciones, y seguir el cursor que escribe. Desplazarte a "
                     "mano suspende el seguimiento en ese segmento. La fuente, los números de línea y el ajuste de líneas afectan "
                     "al editor real. El detalle de la enseñanza le da instrucciones al modelo; la redacción exacta todavía varía.",
@@ -24,7 +24,7 @@ def editor_sections(section):
                     "sin editar archivos ni ejecutar comandos. Guardar aplica el comportamiento a la siguiente acción. "
                     "Cancelar, Escape y Cerrar descartan el borrador. Detener, silenciar y el acceso al editor de la pestaña actual son inmediatos.",
                 ], points=[
-                    ("Ritmo", "Velocidades separadas o un ajuste ligado de 40 a 160 WPM; sin escribir de golpe."),
+                    ("Ritmo", "Velocidades separadas o un ajuste ligado de 40 a 250 WPM; sin escribir de golpe."),
                     ("Enseñanza", "Guía breve, equilibrada o detallada, con sugerencias locales opcionales."),
                     ("Apariencia", "La presentación del editor y de la terminal se guarda por cuenta/browser."),
                     ("Cuenta", "El comportamiento persiste en el servidor; los guardados simultáneos detectan conflictos de revisión."),
@@ -182,7 +182,47 @@ def wizard_section(section):
 
 def release_sections(section, facts):
     return [
-        section("release1923", "PUBLICADA · v1.92.3", "Qué incluye la versión 1.92.3",
+        section("release1924", f"PUBLICADA · v{facts['version']}", "Versiones coincidentes antes de compilar",
+                "Un mismo número previsto para ambas ediciones y una modalidad explícita en cada paquete.",
+                body=[
+                    "BuildTlamatinis.cmd consulta el resolvedor de cada repositorio y anticipa en memoria su "
+                    "generador de versión. Compara el número que informará el ejecutable, sin exigir una etiqueta "
+                    "en HEAD. Fija el valor común mediante --version antes de iniciar los generadores completos.",
+                    "La modalidad Privada o Pública ejecuta ambas ediciones en paralelo con --self-modify. Los "
+                    "ZIP nuevos se verifican por CRC y SHA-256 y se trasladan a carpetas por edición, modalidad "
+                    "y minuto de inicio. Cada edición correcta conserva su archivo aunque falle la otra; en ese "
+                    "caso el comando conjunto devuelve error.",
+                    "Los generadores incorporan release_type en el módulo de versión. El registro empieza con "
+                    "la versión y la modalidad Privada/Pública. Los modos de desarrollo y sin especificar se "
+                    "indican expresamente; no se deduce la modalidad de carpetas, variables ni credenciales.",
+                ], deck_points=[
+                    ("Anticipar", "Consultar los resolvedores reales antes del trabajo costoso."),
+                    ("Fijar", "Un mismo --version; compilaciones paralelas con --self-modify."),
+                    ("Entregar", "ZIP separados por edición y modalidad, con sus comprobantes."),
+                    ("Identificar", "Leer la modalidad incorporada al comienzo del registro."),
+                ]),
+        section("release1924_recovery", f"PUBLICADA · v{facts['version']}", "Recuperación aislada y Markdown legible",
+                "Las dependencias de compilación y la lectura fiel del texto forman parte del contrato.",
+                body=[
+                    "Las compilaciones independientes usan Temp/build-env de la aplicación; el lanzador "
+                    "combinado asigna cachés separadas bajo la carpeta de versiones. Si falla la preparación "
+                    "sin un entorno aislado válido, la compilación se detiene antes de limpiar NumPy o usar "
+                    "pip --user en el Python de la máquina. Una caché aislada válida puede reutilizarse.",
+                    "Los README.md legibles con controles aislados siguen siendo editables. La decodificación "
+                    "estricta reconoce la BOM y conserva los bytes. Un NUL decodificado, un exceso de controles "
+                    "o una codificación malformada siguen provocando el rechazo antes de sustituir el lienzo.",
+                    "Evidencia fechada: la campaña del 8 de noviembre verificó las cuatro compilaciones reales "
+                    "y sus ejecutables empaquetados con versión 1.92.3 y modalidades correctas. Pasaron la "
+                    "integridad, las auditorías de datos públicos, 26 pruebas de aislamiento y el lint específico. "
+                    "Esta actualización documental no renombra esos paquetes ni certifica otra instalación, "
+                    "reinicio o ejecución con modelos en vivo.",
+                ], deck_points=[
+                    ("Caché", "Entornos aislados de la aplicación; sin temporales en perfiles de usuario."),
+                    ("Fallo", "Detenerse antes de tocar el Python global si no hay caché válida."),
+                    ("Lienzo", "Conservar texto y bytes legibles; rechazar los binarios reales."),
+                    ("Evidencia", "Cuatro compilaciones del 8 de noviembre, con su identidad real 1.92.3."),
+                ]),
+        section("release1923", "CONSERVADO DE v1.92.3", "Descargas, escritura y distribución en Windows",
                 "Descargas, tecleo, actualizaciones y ejecución en Windows",
                 body=["Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.",
                       "Las compilaciones con dependencias distintas pueden coexistir. Un bloqueo del sistema operativo protege la preparación y toda la compilación. El paquete 1.92.3 entrega el desinstalador verificado y conserva la bóveda data.keys existente."], deck_points=[

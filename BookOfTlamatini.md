@@ -8,8 +8,11 @@
 -->
 # Tlamatini
 
-> Última versión publicada: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.
 
+## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+
+El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](docs/changes/2026-11-08-v1.92.4.md).
 
 ![Project Logo](Tlamatini.jpg)
 
@@ -999,7 +1002,7 @@ When the migrations finish and you have a superuser, run the server (chapter 7).
 
 ### Path B — Pre-built one-click installer (end users)
 
-Este libro documenta la **v1.92.3**. Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Obtén el paquete desde las [versiones de Tlamatini en español](https://github.com/XAIHT/Tlamatini-Spanish/releases) y comprueba su versión antes de instalarlo.
+Este libro documenta la **v1.92.4**. Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Obtén el paquete desde las [versiones de Tlamatini en español](https://github.com/XAIHT/Tlamatini-Spanish/releases) y comprueba su versión antes de instalarlo.
 
 1. Open the unzipped folder.
 2. Double-click **`Installer.exe`**.
@@ -2855,14 +2858,14 @@ Pre-releases use the standard SemVer suffixes — `2.0.0-alpha.1`, `2.0.0-beta.1
 
 ```powershell
 git status                                          # clean tree, on main
-git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH: <one-liner>"   # annotated tag, an unused version (1.92.3 is taken)
+git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH: <one-liner>"   # annotated tag, an unused version (1.92.4 is taken)
 git push origin vMAJOR.MINOR.PATCH
 python build.py
 python build_uninstaller.py
 python build_installer.py
 ```
 
-All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini-Spanish_Release_v1.92.3/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. The current version is `v1.91.1`, so the bare runtime version resolves to `1.91.1`. Tlamatini deliberately never puts a `.devN`, `+gSHA` or `.dirty` suffix into its version string — it always reports the base tag, which is the designed behaviour described in `VERSIONING.md`. That is exactly why the five commands above start with `git status` on a clean tree: a release cut from a dirty tree would ship a version number that says nothing about what is actually inside it.
+All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini-Spanish_Release_v1.92.4/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. La versión publicada es `1.92.4`; pasa `--version 1.92.4` a los generadores completos para fijar ese número. Tlamatini deliberately never puts a `.devN`, `+gSHA` or `.dirty` suffix into its version string — it always reports the base tag, which is the designed behaviour described in `VERSIONING.md`. That is exactly why the five commands above start with `git status` on a clean tree: a release cut from a dirty tree would ship a version number that says nothing about what is actually inside it.
 
 ### Where the version shows up in a running install
 

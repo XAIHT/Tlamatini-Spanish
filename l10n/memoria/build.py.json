@@ -2,40 +2,64 @@
  "archivo": "build.py",
  "segmentos": [
   {
-   "en": "product_name=\"Tlamatini\",",
-   "es": "product_name=\"Tlamatini-Spanish\",",
-   "codigo": "Identidad de Tlamatini-Spanish: VERSIONINFO del .exe (ProductName, FileDescription, OriginalFilename)",
-   "n": 1
-  },
-  {
-   "en": "Tlamatini.exe",
-   "es": "Tlamatini-Spanish.exe",
-   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
-   "n": 5
-  },
-  {
-   "en": "else \"Tlamatini\")",
-   "es": "else \"Tlamatini-Spanish\")",
-   "codigo": "Identidad de Tlamatini-Spanish: su programa se llama Tlamatini-Spanish.exe, no Tlamatini.exe",
-   "n": 1
-  },
-  {
-   "en": "    \"agent.chat_voice_settings\",\n",
-   "es": "    \"agent.chat_voice_settings\",\n    \"agent.agents.talker.spanish_pronunciation\",  # same names in browser and pool speech\n",
+   "en": "from versioning import (\n    emit_build_artifacts,\n    extract_cli_version,\n    resolve_build_version,\n)\n\n",
+   "es": "from versioning import (\n    emit_build_artifacts,\n    extract_cli_version,\n    extract_cli_release_type,\n    resolve_build_version,\n)\n\n",
    "n": 1,
-   "codigo": "Conservar la pronunciación mexicana y sus recursos existentes en la edición española."
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "_AGENT_RUNTIME_IMPORTS = (",
-   "es": "_AGENT_RUNTIME_IMPORTS = (\n    \"piper\",  # Motor de voz local de la edición española.",
+   "en": "# source of truth: referenced by the per-interpreter pip-verify (step 1b) AND the\n# isolated carried-tree verify at the end of bundle_carried_python.\n_AGENT_RUNTIME_IMPORTS = (\n    \"numpy\", \"cv2\",                         # numeric core (all media agents) + OpenCV (Camcorder / VideoPlayer)\n    \"mcp\", \"serial\",                        # STM32 MCP server (STM32er)\n    \"PyPDF2\", \"pypdf\", \"fitz\", \"odf\",       # PDF / ODF file backends\n",
+   "es": "# source of truth: referenced by the per-interpreter pip-verify (step 1b) AND the\n# isolated carried-tree verify at the end of bundle_carried_python.\n_AGENT_RUNTIME_IMPORTS = (\n    \"piper\",  # Motor de voz local de la edición española.\n    \"numpy\", \"cv2\",                         # numeric core (all media agents) + OpenCV (Camcorder / VideoPlayer)\n    \"mcp\", \"serial\",                        # STM32 MCP server (STM32er)\n    \"PyPDF2\", \"pypdf\", \"fitz\", \"odf\",       # PDF / ODF file backends\n",
    "n": 1,
-   "codigo": "Verifica Piper en el intérprete transportado de la edición española"
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "_FROZEN_POOL_ONLY_MODULES = (",
-   "es": "_FROZEN_POOL_ONLY_MODULES = (\n    \"piper\",  # Motor local ejecutado por el Python transportado.",
-   "codigo": "El motor de voz local pertenece al proceso Talker de la edición española.",
-   "n": 1
+   "en": "# Python. They must remain there; collecting them again in Django's interpreter\n# adds another browser driver and hundreds of MiB of unused media binaries.\n_FROZEN_POOL_ONLY_MODULES = (\n    \"cv2\", \"ffpyplayer\", \"av\", \"playwright\", \"faster_whisper\",\n    \"ctranslate2\", \"onnxruntime\",\n)\n",
+   "es": "# Python. They must remain there; collecting them again in Django's interpreter\n# adds another browser driver and hundreds of MiB of unused media binaries.\n_FROZEN_POOL_ONLY_MODULES = (\n    \"piper\",  # Motor local ejecutado por el Python transportado.\n    \"cv2\", \"ffpyplayer\", \"av\", \"playwright\", \"faster_whisper\",\n    \"ctranslate2\", \"onnxruntime\",\n)\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  },
+  {
+   "en": "_FROZEN_PYWIN32_EXTENSIONS = (\"win32cred\", \"win32crypt\") if os.name == \"nt\" else ()\n\n_FROZEN_REQUIRED_AGENT_MODULES = (\n    \"agent.interactor\", \"agent.interactor.context\", \"agent.interactor.protocol\",\n    \"agent.interaction_settings\", \"agent.interaction_narration\",\n    \"agent.interactor.hub\", \"agent.interactor.consumer\", \"agent.interactor.files\", \"agent.interactor.tool\",\n",
+   "es": "_FROZEN_PYWIN32_EXTENSIONS = (\"win32cred\", \"win32crypt\") if os.name == \"nt\" else ()\n\n_FROZEN_REQUIRED_AGENT_MODULES = (\n    \"agent.migrations.0222_repair_prompt_catalog\",\n    \"agent.migrations.0223_spanish_catalog_instance_contracts\",\n    \"agent.interactor\", \"agent.interactor.context\", \"agent.interactor.protocol\",\n    \"agent.interaction_settings\", \"agent.interaction_narration\",\n    \"agent.interactor.hub\", \"agent.interactor.consumer\", \"agent.interactor.files\", \"agent.interactor.tool\",\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  },
+  {
+   "en": "    \"agent.chat_voice_consumer\",\n    \"agent.chat_voice_runtime\",\n    \"agent.chat_voice_settings\",\n    \"agent.agents.model_settings\",  # compiled registry, independent of data paths\n    \"agent.services.flow_knowledge\",  # new/existing pool helper refresh\n    \"agent.management.commands.check_agent_runtimes\",  # executed release gate\n",
+   "es": "    \"agent.chat_voice_consumer\",\n    \"agent.chat_voice_runtime\",\n    \"agent.chat_voice_settings\",\n    \"agent.agents.talker.spanish_pronunciation\",  # same names in browser and pool speech\n    \"agent.agents.model_settings\",  # compiled registry, independent of data paths\n    \"agent.services.flow_knowledge\",  # new/existing pool helper refresh\n    \"agent.management.commands.check_agent_runtimes\",  # executed release gate\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  },
+  {
+   "en": "    ⚠️ WHERE THE PYZ ACTUALLY LIVES (measured, not assumed): under PyInstaller\n    6 in onedir mode there is NO loose ``_internal/PYZ-00.pyz``.  The PYZ is an\n    entry named ``PYZ.pyz`` INSIDE the executable's CArchive — verified against\n    the shipped C:/Tlamatini/Tlamatini.exe, whose CArchive holds 21 entries and\n    whose PYZ holds 15,061 modules.  A glob for ``PYZ-*.pyz`` finds nothing and\n    would have reported \"cannot verify\" forever, i.e. a check that never fails\n    and never proves anything — the same silence this whole item is about.\n",
+   "es": "    ⚠️ WHERE THE PYZ ACTUALLY LIVES (measured, not assumed): under PyInstaller\n    6 in onedir mode there is NO loose ``_internal/PYZ-00.pyz``.  The PYZ is an\n    entry named ``PYZ.pyz`` INSIDE the executable's CArchive — verified against\n    the shipped C:/Tlamatini/Tlamatini-Spanish.exe, whose CArchive holds 21 entries and\n    whose PYZ holds 15,061 modules.  A glob for ``PYZ-*.pyz`` finds nothing and\n    would have reported \"cannot verify\" forever, i.e. a check that never fails\n    and never proves anything — the same silence this whole item is about.\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  },
+  {
+   "en": "    # ── Resolve and emit version artefacts FIRST ─────────────────────\n    # Precedence: --version CLI flag > $TLAMATINI_VERSION > git describe.\n    # See VERSIONING.md for the full contract.\n    cli_version = extract_cli_version(sys.argv)\n    tlamatini_version = resolve_build_version(cli_version)\n    version_file_path = emit_build_artifacts(\n        tlamatini_version,\n        product_name=\"Tlamatini\",\n        original_filename=\"Tlamatini.exe\",\n    )\n    print(f\"Tlamatini version : {tlamatini_version}\")\n    print(f\"VERSIONINFO file  : {version_file_path}\")\n\n    # ── Self-modify packaging flag ───────────────────────────────────\n",
+   "es": "    # ── Resolve and emit version artefacts FIRST ─────────────────────\n    # Precedence: --version CLI flag > $TLAMATINI_VERSION > git describe.\n    # See VERSIONING.md for the full contract.\n    release_type = extract_cli_release_type(sys.argv)\n    cli_version = extract_cli_version(sys.argv)\n    tlamatini_version = resolve_build_version(cli_version)\n    version_file_path = emit_build_artifacts(\n        tlamatini_version,\n        product_name=\"Tlamatini-Spanish\",\n        original_filename=\"Tlamatini-Spanish.exe\",\n        release_type=release_type,\n    )\n    print(f\"Tlamatini version : {tlamatini_version}\")\n    print(f\"Release type     : {release_type.upper()}\")\n    print(f\"VERSIONINFO file  : {version_file_path}\")\n\n    # ── Self-modify packaging flag ───────────────────────────────────\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  },
+  {
+   "en": "        icon_args.append(f'--icon={icon_path}')\n        print(f\"Embedding application icon: {icon_path}\")\n    else:\n        print(f\"WARNING: {icon_path} not found — Tlamatini.exe will have no embedded icon.\")\n\n    # Self-knowledge (Tlamatini.md) ships ONLY under --self-modify, in lockstep\n    # with TlamatiniSourceCode/: a not-self-able-modify build carries neither her\n",
+   "es": "        icon_args.append(f'--icon={icon_path}')\n        print(f\"Embedding application icon: {icon_path}\")\n    else:\n        print(f\"WARNING: {icon_path} not found — Tlamatini-Spanish.exe will have no embedded icon.\")\n\n    # Self-knowledge (Tlamatini.md) ships ONLY under --self-modify, in lockstep\n    # with TlamatiniSourceCode/: a not-self-able-modify build carries neither her\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  },
+  {
+   "en": "\n            # 8d) Rename executable manage -> Tlamatini\n            try:\n                target_name = manage_exe.with_name(\"Tlamatini.exe\" if os.name == \"nt\" else \"Tlamatini\")\n                if target_name.exists():\n                    target_name.unlink()\n                manage_exe.rename(target_name)\n",
+   "es": "\n            # 8d) Rename executable manage -> Tlamatini\n            try:\n                target_name = manage_exe.with_name(\"Tlamatini-Spanish.exe\" if os.name == \"nt\" else \"Tlamatini-Spanish\")\n                if target_name.exists():\n                    target_name.unlink()\n                manage_exe.rename(target_name)\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  },
+  {
+   "en": "                # Port-unblock helper. When Windows/Hyper-V has RESERVED the\n                # configured web port, Daphne dies with WinError 10013 and the\n                # app never starts — so this recovery tool must sit next to\n                # Tlamatini.exe (it reads django_port from the config.json\n                # beside it and logs into the install's Temp).\n                \"freeingport8000.ps1\",\n                \"Tlamatini/cat_art.py\"\n",
+   "es": "                # Port-unblock helper. When Windows/Hyper-V has RESERVED the\n                # configured web port, Daphne dies with WinError 10013 and the\n                # app never starts — so this recovery tool must sit next to\n                # Tlamatini-Spanish.exe (it reads django_port from the config.json\n                # beside it and logs into the install's Temp).\n                \"freeingport8000.ps1\",\n                \"Tlamatini/cat_art.py\"\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": []

@@ -2,212 +2,94 @@
  "archivo": "Tlamatini/agent/static/agent/js/skills_dialog.js",
  "segmentos": [
   {
-   "en": "'Configure Skills'",
-   "es": "'Configurar Skills'",
-   "n": 2
+   "en": "        console.error('skills-configure-dialog: required DOM nodes missing');\n        return;\n    }\n    dlg.title = title || 'Configure Skills';\n    titleEl.innerText = title || 'Configure Skills';\n    bodyEl.innerText = body || 'Toggle SKILL.md packages on or off.';\n\n    // Build checkboxes from the in-memory skills[] cache populated by the\n    // 'type: skill' WebSocket establishment messages.\n",
+   "es": "        console.error('skills-configure-dialog: required DOM nodes missing');\n        return;\n    }\n    dlg.title = title || 'Configurar Skills';\n    titleEl.innerText = title || 'Configurar Skills';\n    bodyEl.innerText = body || 'Activa o desactiva los paquetes SKILL.md.';\n\n    // Build checkboxes from the in-memory skills[] cache populated by the\n    // 'type: skill' WebSocket establishment messages.\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Toggle SKILL.md packages on or off.'",
-   "es": "'Activa o desactiva los paquetes SKILL.md.'",
-   "n": 1
+   "en": "            // standardized teal-button CSS to Continue / Cancel at create\n            // time so the buttons match every other dialog in the app\n            // (Mcps, Tools, Agents, Backup-DB, Set-DB, Config-Models, ...).\n            $(this).parent().find('.ui-dialog-buttonpane button:contains(\"Continue\")').css(DIALOG_BUTTON_CSS);\n            $(this).parent().find('.ui-dialog-buttonpane button:contains(\"Cancel\")').css(DIALOG_BUTTON_CSS);\n        },\n        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancel)\n    });\n",
+   "es": "            // standardized teal-button CSS to Continue / Cancel at create\n            // time so the buttons match every other dialog in the app\n            // (Mcps, Tools, Agents, Backup-DB, Set-DB, Config-Models, ...).\n            $(this).parent().find('.ui-dialog-buttonpane button:contains(\"Continuar\")').css(DIALOG_BUTTON_CSS);\n            $(this).parent().find('.ui-dialog-buttonpane button:contains(\"Cancelar\")').css(DIALOG_BUTTON_CSS);\n        },\n        buttons: makeDialogButtons(callbackOnContinue, callbackOnCancel)\n    });\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Close'",
-   "es": "'Cerrar'",
-   "n": 1
+   "en": " */\nfunction _makeCloseOnlyButton() {\n    return [{\n        text: 'Close',\n        click: function () { $(this).dialog('close'); }\n    }];\n}\n\n/** Apply DIALOG_BUTTON_CSS to the single Close button of the active dialog. */\nfunction _styleCloseOnlyButton($dialog) {\n    $dialog.parent().find('.ui-dialog-buttonpane button:contains(\"Close\")').css(DIALOG_BUTTON_CSS);\n}\n\n// ----------------------------------------------------------------\n",
+   "es": " */\nfunction _makeCloseOnlyButton() {\n    return [{\n        text: 'Cerrar',\n        click: function () { $(this).dialog('close'); }\n    }];\n}\n\n/** Apply DIALOG_BUTTON_CSS to the single Close button of the active dialog. */\nfunction _styleCloseOnlyButton($dialog) {\n    $dialog.parent().find('.ui-dialog-buttonpane button:contains(\"Cerrar\")').css(DIALOG_BUTTON_CSS);\n}\n\n// ----------------------------------------------------------------\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Browse ACPX-Skills'",
-   "es": "'Explorar ACPX-Skills'",
-   "n": 1
+   "en": "// ----------------------------------------------------------------\n\nfunction _csrfTokenForSkills() {\n    const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);\n    return m ? decodeURIComponent(m[1]) : '';\n}\n\n",
+   "es": "// ----------------------------------------------------------------\n\nfunction _csrfTokenForSkills() {\n    const m = document.cookie.match(/(?:^|; )tlm_csrf_es_mx=([^;]+)/);\n    return m ? decodeURIComponent(m[1]) : '';\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<li class=\"skill-browse-loading\">Loading…</li>'",
-   "es": "'<li class=\"skill-browse-loading\">Cargando…</li>'",
-   "n": 1
+   "en": "        console.error('skills-browse-dialog: container missing');\n        return;\n    }\n    dlg.title = 'Browse ACPX-Skills';\n\n    const listEl = document.getElementById('skills-browse-list');\n    const countEl = document.getElementById('skills-browse-count');\n",
+   "es": "        console.error('skills-browse-dialog: container missing');\n        return;\n    }\n    dlg.title = 'Explorar ACPX-Skills';\n\n    const listEl = document.getElementById('skills-browse-list');\n    const countEl = document.getElementById('skills-browse-count');\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<div class=\"skill-detail-loading\">Loading…</div>'",
-   "es": "'<div class=\"skill-detail-loading\">Cargando…</div>'",
-   "n": 1
+   "en": "    const detailContent = document.getElementById('skills-browse-detail-content');\n    if (!listEl || !countEl || !searchEl || !detailEmpty || !detailContent) return;\n\n    listEl.innerHTML = '<li class=\"skill-browse-loading\">Loading…</li>';\n    countEl.textContent = '';\n    detailEmpty.style.display = '';\n    detailContent.style.display = 'none';\n",
+   "es": "    const detailContent = document.getElementById('skills-browse-detail-content');\n    if (!listEl || !countEl || !searchEl || !detailEmpty || !detailContent) return;\n\n    listEl.innerHTML = '<li class=\"skill-browse-loading\">Cargando…</li>';\n    countEl.textContent = '';\n    detailEmpty.style.display = '';\n    detailContent.style.display = 'none';\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<dt>Budget</dt><dd>'",
-   "es": "'<dt>Presupuesto</dt><dd>'",
-   "n": 1
+   "en": "    function loadSkillDetail(name) {\n        detailEmpty.style.display = 'none';\n        detailContent.style.display = '';\n        detailContent.innerHTML = '<div class=\"skill-detail-loading\">Loading…</div>';\n        fetch('/agent/skills/' + encodeURIComponent(name) + '/', {\n            credentials: 'same-origin'\n        }).then(r => r.json()).then(s => {\n",
+   "es": "    function loadSkillDetail(name) {\n        detailEmpty.style.display = 'none';\n        detailContent.style.display = '';\n        detailContent.innerHTML = '<div class=\"skill-detail-loading\">Cargando…</div>';\n        fetch('/agent/skills/' + encodeURIComponent(name) + '/', {\n            credentials: 'same-origin'\n        }).then(r => r.json()).then(s => {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<dt>Requires tools</dt><dd>'",
-   "es": "'<dt>Tools requeridos</dt><dd>'",
-   "n": 1
+   "en": "                return;\n            }\n            const enabledBadge = s.enabled\n                ? '<span class=\"skill-detail-badge on\">enabled</span>'\n                : '<span class=\"skill-detail-badge off\">disabled</span>';\n            const triggers = (s.triggers_keywords || []).map(t => '<code>' + t + '</code>').join(' ');\n            const reqTools = (s.requires_tools || []).map(t => '<code>' + t + '</code>').join(' ') || '<em>none</em>';\n            const reqMcps = (s.requires_mcps || []).map(t => '<code>' + t + '</code>').join(' ') || '<em>none</em>';\n            const inputs = (s.inputs || []).map(i => {\n                const req = i.required ? ' <span class=\"skill-detail-req\">required</span>' : '';\n                return '<li><code>' + (i.name || '') + '</code> <small>(' + (i.type || 'string') + ')</small>' + req + '</li>';\n            }).join('') || '<li><em>(none)</em></li>';\n            const outputs = (s.outputs || []).map(o => {\n                return '<li><code>' + (o.name || '') + '</code> <small>(' + (o.type || 'string') + ')</small></li>';\n            }).join('') || '<li><em>(none)</em></li>';\n            const safeBody = (s.body || '').replace(/[<>&]/g, ch => ({\n                '<': '&lt;', '>': '&gt;', '&': '&amp;'\n            })[ch]);\n",
+   "es": "                return;\n            }\n            const enabledBadge = s.enabled\n                ? '<span class=\"skill-detail-badge on\">activado</span>'\n                : '<span class=\"skill-detail-badge off\">desactivado</span>';\n            const triggers = (s.triggers_keywords || []).map(t => '<code>' + t + '</code>').join(' ');\n            const reqTools = (s.requires_tools || []).map(t => '<code>' + t + '</code>').join(' ') || '<em>ninguno</em>';\n            const reqMcps = (s.requires_mcps || []).map(t => '<code>' + t + '</code>').join(' ') || '<em>ninguno</em>';\n            const inputs = (s.inputs || []).map(i => {\n                const req = i.required ? ' <span class=\"skill-detail-req\">obligatorio</span>' : '';\n                return '<li><code>' + (i.name || '') + '</code> <small>(' + (i.type || 'string') + ')</small>' + req + '</li>';\n            }).join('') || '<li><em>(ninguno)</em></li>';\n            const outputs = (s.outputs || []).map(o => {\n                return '<li><code>' + (o.name || '') + '</code> <small>(' + (o.type || 'string') + ')</small></li>';\n            }).join('') || '<li><em>(ninguno)</em></li>';\n            const safeBody = (s.body || '').replace(/[<>&]/g, ch => ({\n                '<': '&lt;', '>': '&gt;', '&': '&amp;'\n            })[ch]);\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<dt>Requires MCPs</dt><dd>'",
-   "es": "'<dt>MCPs requeridos</dt><dd>'",
-   "n": 1
+   "en": "                '<p class=\"skill-detail-desc\">' + (s.description || '') + '</p>' +\n                '<dl class=\"skill-detail-meta\">' +\n                '<dt>Runtime</dt><dd>' + s.runtime + (s.acpx_agent ? ' (' + s.acpx_agent + ')' : '') + '</dd>' +\n                '<dt>Budget</dt><dd>' + s.max_iterations + ' iter · ' + s.max_seconds + ' s · ' + s.max_tokens + ' tokens</dd>' +\n                '<dt>Triggers</dt><dd>' + (triggers || '<em>none</em>') + '</dd>' +\n                '<dt>Requires tools</dt><dd>' + reqTools + '</dd>' +\n                '<dt>Requires MCPs</dt><dd>' + reqMcps + '</dd>' +\n                '<dt>Path</dt><dd><code class=\"skill-detail-path\">' + (s.skill_md_path || '') + '</code></dd>' +\n                '<dt>SHA-256</dt><dd><code>' + (s.body_sha256 || '').slice(0, 16) + '…</code></dd>' +\n                '</dl>' +\n                '<h5>Inputs</h5><ul class=\"skill-detail-io\">' + inputs + '</ul>' +\n                '<h5>Outputs</h5><ul class=\"skill-detail-io\">' + outputs + '</ul>' +\n                '<h5>Body</h5><pre class=\"skill-detail-body\">' + safeBody + '</pre>';\n        }).catch(err => {\n            detailContent.innerHTML = '<div class=\"skill-detail-error\">' + err + '</div>';\n        });\n",
+   "es": "                '<p class=\"skill-detail-desc\">' + (s.description || '') + '</p>' +\n                '<dl class=\"skill-detail-meta\">' +\n                '<dt>Runtime</dt><dd>' + s.runtime + (s.acpx_agent ? ' (' + s.acpx_agent + ')' : '') + '</dd>' +\n                '<dt>Presupuesto</dt><dd>' + s.max_iterations + ' iter · ' + s.max_seconds + ' s · ' + s.max_tokens + ' tokens</dd>' +\n                '<dt>Triggers</dt><dd>' + (triggers || '<em>ninguno</em>') + '</dd>' +\n                '<dt>Tools requeridos</dt><dd>' + reqTools + '</dd>' +\n                '<dt>MCPs requeridos</dt><dd>' + reqMcps + '</dd>' +\n                '<dt>Path</dt><dd><code class=\"skill-detail-path\">' + (s.skill_md_path || '') + '</code></dd>' +\n                '<dt>SHA-256</dt><dd><code>' + (s.body_sha256 || '').slice(0, 16) + '…</code></dd>' +\n                '</dl>' +\n                '<h5>Inputs</h5><ul class=\"skill-detail-io\">' + inputs + '</ul>' +\n                '<h5>Outputs</h5><ul class=\"skill-detail-io\">' + outputs + '</ul>' +\n                '<h5>Cuerpo</h5><pre class=\"skill-detail-body\">' + safeBody + '</pre>';\n        }).catch(err => {\n            detailContent.innerHTML = '<div class=\"skill-detail-error\">' + err + '</div>';\n        });\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<h5>Body</h5><pre class=\"skill-detail-body\">'",
-   "es": "'<h5>Cuerpo</h5><pre class=\"skill-detail-body\">'",
-   "n": 1
+   "en": "            allSkills = payload.skills || [];\n            applyFilter();\n            if (payload.orphan_db_rows && payload.orphan_db_rows.length) {\n                countEl.textContent += '  ·  ' + payload.orphan_db_rows.length + ' orphan DB rows';\n            }\n        }).catch(err => {\n            listEl.innerHTML = '<li class=\"skill-browse-error\">Load failed: ' + err + '</li>';\n        });\n\n    searchEl.value = '';\n",
+   "es": "            allSkills = payload.skills || [];\n            applyFilter();\n            if (payload.orphan_db_rows && payload.orphan_db_rows.length) {\n                countEl.textContent += '  ·  ' + payload.orphan_db_rows.length + ' filas huérfanas en la DB';\n            }\n        }).catch(err => {\n            listEl.innerHTML = '<li class=\"skill-browse-error\">Error al cargar: ' + err + '</li>';\n        });\n\n    searchEl.value = '';\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "' orphan DB rows'",
-   "es": "' filas huérfanas en la DB'",
-   "n": 1
+   "en": "function openSkillsDiagnosticsDialog() { // eslint-disable-line no-unused-vars\n    const dlg = document.getElementById('skills-diagnostics-dialog-message');\n    if (!dlg) return;\n    dlg.title = 'ACPX-Skills Diagnostics';\n\n    const summary = document.getElementById('skills-diagnostics-summary');\n    const sections = document.getElementById('skills-diagnostics-sections');\n    summary.innerHTML = '<em>Loading diagnostics…</em>';\n    sections.innerHTML = '';\n\n    fetch('/agent/skills/_/diagnostics/', { credentials: 'same-origin' })\n",
+   "es": "function openSkillsDiagnosticsDialog() { // eslint-disable-line no-unused-vars\n    const dlg = document.getElementById('skills-diagnostics-dialog-message');\n    if (!dlg) return;\n    dlg.title = 'Diagnóstico de ACPX-Skills';\n\n    const summary = document.getElementById('skills-diagnostics-summary');\n    const sections = document.getElementById('skills-diagnostics-sections');\n    summary.innerHTML = '<em>Cargando el diagnóstico…</em>';\n    sections.innerHTML = '';\n\n    fetch('/agent/skills/_/diagnostics/', { credentials: 'same-origin' })\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<li class=\"skill-browse-error\">Load failed: '",
-   "es": "'<li class=\"skill-browse-error\">Error al cargar: '",
-   "n": 1
+   "en": "            }\n            summary.innerHTML =\n                '<div class=\"skill-diag-summary-row\">' +\n                '<strong>' + d.skill_count + '</strong> skills on disk &nbsp;·&nbsp; ' +\n                '<strong>' + d.db_row_count + '</strong> DB rows &nbsp;·&nbsp; ' +\n                '<strong>' + d.tools_known + '</strong> Tools tracked &nbsp;·&nbsp; ' +\n                '<strong>' + d.mcps_known + '</strong> MCPs tracked &nbsp;·&nbsp; ' +\n                '<strong>' + d.acpx_agents_known + '</strong> ACPX agents tracked' +\n                '</div>';\n            const render = (title, rows, fn, emptyOk) => {\n                const ok = !rows || rows.length === 0;\n                if (ok && !emptyOk) return '';\n                const items = ok ? '<li><em>none — all good</em></li>'\n                    : rows.map(fn).join('');\n                return '<section class=\"skill-diag-section ' +\n                    (ok ? 'ok' : 'warn') + '\"><h5>' + title +\n",
+   "es": "            }\n            summary.innerHTML =\n                '<div class=\"skill-diag-summary-row\">' +\n                '<strong>' + d.skill_count + '</strong> skills en disco &nbsp;·&nbsp; ' +\n                '<strong>' + d.db_row_count + '</strong> filas en la DB &nbsp;·&nbsp; ' +\n                '<strong>' + d.tools_known + '</strong> Tools registrados &nbsp;·&nbsp; ' +\n                '<strong>' + d.mcps_known + '</strong> MCPs registrados &nbsp;·&nbsp; ' +\n                '<strong>' + d.acpx_agents_known + '</strong> agents de ACPX registrados' +\n                '</div>';\n            const render = (title, rows, fn, emptyOk) => {\n                const ok = !rows || rows.length === 0;\n                if (ok && !emptyOk) return '';\n                const items = ok ? '<li><em>ninguno: todo bien</em></li>'\n                    : rows.map(fn).join('');\n                return '<section class=\"skill-diag-section ' +\n                    (ok ? 'ok' : 'warn') + '\"><h5>' + title +\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'ACPX-Skills Diagnostics'",
-   "es": "'Diagnóstico de ACPX-Skills'",
-   "n": 1
+   "en": "                    items + '</ul></section>';\n            };\n            sections.innerHTML =\n                render('Missing tool dependencies', d.missing_tools, r =>\n                    '<li><strong>' + r.skill + '</strong> — disabled tools: ' +\n                    r.disabled_tools.map(t => '<code>' + t + '</code>').join(' ') + '</li>'\n                , true) +\n                render('Missing MCP dependencies', d.missing_mcps, r =>\n                    '<li><strong>' + r.skill + '</strong> — disabled MCPs: ' +\n                    r.disabled_mcps.map(t => '<code>' + t + '</code>').join(' ') + '</li>'\n                , true) +\n                render('Unknown ACPX agents', d.unknown_acpx_agents, r =>\n                    '<li><strong>' + r.skill + '</strong> requires <code>' +\n                    r.acpx_agent + '</code></li>'\n                , true) +\n                render('Orphan DB rows (no SKILL.md on disk)', d.orphan_db_rows, n =>\n                    '<li><code>' + n + '</code></li>'\n                , true);\n        }).catch(err => {\n            summary.innerHTML = '<div class=\"skill-diag-error\">Load failed: ' + err + '</div>';\n        });\n\n    $('#skills-diagnostics-dialog-message').dialog({\n",
+   "es": "                    items + '</ul></section>';\n            };\n            sections.innerHTML =\n                render('Dependencias de tools faltantes', d.missing_tools, r =>\n                    '<li><strong>' + r.skill + '</strong> — tools desactivados: ' +\n                    r.disabled_tools.map(t => '<code>' + t + '</code>').join(' ') + '</li>'\n                , true) +\n                render('Dependencias de MCPs faltantes', d.missing_mcps, r =>\n                    '<li><strong>' + r.skill + '</strong> — MCPs desactivados: ' +\n                    r.disabled_mcps.map(t => '<code>' + t + '</code>').join(' ') + '</li>'\n                , true) +\n                render('Agents de ACPX desconocidos', d.unknown_acpx_agents, r =>\n                    '<li><strong>' + r.skill + '</strong> requiere <code>' +\n                    r.acpx_agent + '</code></li>'\n                , true) +\n                render('Filas huérfanas en la DB (sin SKILL.md en disco)', d.orphan_db_rows, n =>\n                    '<li><code>' + n + '</code></li>'\n                , true);\n        }).catch(err => {\n            summary.innerHTML = '<div class=\"skill-diag-error\">Error al cargar: ' + err + '</div>';\n        });\n\n    $('#skills-diagnostics-dialog-message').dialog({\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'<em>Loading diagnostics…</em>'",
-   "es": "'<em>Cargando el diagnóstico…</em>'",
-   "n": 1
+   "en": "        }\n    }).then(r => r.json()).then(d => {\n        if (d.ok) {\n            const msg = 'Skill registry reloaded — ' + d.skills_loaded +\n                ' skill(s) on disk · ' + d.db_rows_after + ' DB row(s).';\n            console.log('--- ' + msg);\n            // Inject a system message into the chat stream so the user\n            // sees confirmation without opening another dialog.\n",
+   "es": "        }\n    }).then(r => r.json()).then(d => {\n        if (d.ok) {\n            const msg = 'Se recargó el registro de skills — ' + d.skills_loaded +\n                ' skill(s) en disco · ' + d.db_rows_after + ' fila(s) en la DB.';\n            console.log('--- ' + msg);\n            // Inject a system message into the chat stream so the user\n            // sees confirmation without opening another dialog.\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'</strong> skills on disk &nbsp;·&nbsp; '",
-   "es": "'</strong> skills en disco &nbsp;·&nbsp; '",
-   "n": 1
-  },
-  {
-   "en": "'</strong> DB rows &nbsp;·&nbsp; '",
-   "es": "'</strong> filas en la DB &nbsp;·&nbsp; '",
-   "n": 1
-  },
-  {
-   "en": "'</strong> Tools tracked &nbsp;·&nbsp; '",
-   "es": "'</strong> Tools registrados &nbsp;·&nbsp; '",
-   "n": 1
-  },
-  {
-   "en": "'</strong> MCPs tracked &nbsp;·&nbsp; '",
-   "es": "'</strong> MCPs registrados &nbsp;·&nbsp; '",
-   "n": 1
-  },
-  {
-   "en": "'</strong> ACPX agents tracked'",
-   "es": "'</strong> agents de ACPX registrados'",
-   "n": 1
-  },
-  {
-   "en": "'<li><em>none — all good</em></li>'",
-   "es": "'<li><em>ninguno: todo bien</em></li>'",
-   "n": 1
-  },
-  {
-   "en": "'Missing tool dependencies'",
-   "es": "'Dependencias de tools faltantes'",
-   "n": 1
-  },
-  {
-   "en": "'</strong> — disabled tools: '",
-   "es": "'</strong> — tools desactivados: '",
-   "n": 1
-  },
-  {
-   "en": "'Missing MCP dependencies'",
-   "es": "'Dependencias de MCPs faltantes'",
-   "n": 1
-  },
-  {
-   "en": "'</strong> — disabled MCPs: '",
-   "es": "'</strong> — MCPs desactivados: '",
-   "n": 1
-  },
-  {
-   "en": "'Unknown ACPX agents'",
-   "es": "'Agents de ACPX desconocidos'",
-   "n": 1
-  },
-  {
-   "en": "'Orphan DB rows (no SKILL.md on disk)'",
-   "es": "'Filas huérfanas en la DB (sin SKILL.md en disco)'",
-   "n": 1
-  },
-  {
-   "en": "'<div class=\"skill-diag-error\">Load failed: '",
-   "es": "'<div class=\"skill-diag-error\">Error al cargar: '",
-   "n": 1
-  },
-  {
-   "en": "'Skill registry reloaded — '",
-   "es": "'Se recargó el registro de skills — '",
-   "n": 1
-  },
-  {
-   "en": "' skill(s) on disk · '",
-   "es": "' skill(s) en disco · '",
-   "n": 1
-  },
-  {
-   "en": "' DB row(s).'",
-   "es": "' fila(s) en la DB.'",
-   "n": 1
-  },
-  {
-   "en": "'Reload failed: '",
-   "es": "'Error al recargar: '",
-   "n": 2
-  },
-  {
-   "en": "'unknown error'",
-   "es": "'error desconocido'",
-   "n": 1
-  },
-  {
-   "en": "'.ui-dialog-buttonpane button:contains(\"Continue\")'",
-   "es": "'.ui-dialog-buttonpane button:contains(\"Continuar\")'",
-   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
-   "n": 1
-  },
-  {
-   "en": "'.ui-dialog-buttonpane button:contains(\"Cancel\")'",
-   "es": "'.ui-dialog-buttonpane button:contains(\"Cancelar\")'",
-   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
-   "n": 1
-  },
-  {
-   "en": "'.ui-dialog-buttonpane button:contains(\"Close\")'",
-   "es": "'.ui-dialog-buttonpane button:contains(\"Cerrar\")'",
-   "maquina": "contrato de etiquetas de botón (GLOSARIO §5)",
-   "n": 1
-  },
-  {
-   "en": "'<span class=\"skill-detail-badge on\">enabled</span>'",
-   "es": "'<span class=\"skill-detail-badge on\">activado</span>'",
-   "n": 1
-  },
-  {
-   "en": "'<span class=\"skill-detail-badge off\">disabled</span>'",
-   "es": "'<span class=\"skill-detail-badge off\">desactivado</span>'",
-   "n": 1
-  },
-  {
-   "en": "'<em>none</em>'",
-   "es": "'<em>ninguno</em>'",
-   "n": 3
-  },
-  {
-   "en": "' <span class=\"skill-detail-req\">required</span>'",
-   "es": "' <span class=\"skill-detail-req\">obligatorio</span>'",
-   "n": 1
-  },
-  {
-   "en": "'<li><em>(none)</em></li>'",
-   "es": "'<li><em>(ninguno)</em></li>'",
-   "n": 2
-  },
-  {
-   "en": "'</strong> requires <code>'",
-   "es": "'</strong> requiere <code>'",
-   "n": 1
+   "en": "            } catch (e) { /* best-effort */ }\n            alert(msg);\n        } else {\n            alert('Reload failed: ' + (d.error || 'unknown error'));\n        }\n    }).catch(err => alert('Reload failed: ' + err));\n}\n",
+   "es": "            } catch (e) { /* best-effort */ }\n            alert(msg);\n        } else {\n            alert('Error al recargar: ' + (d.error || 'error desconocido'));\n        }\n    }).catch(err => alert('Error al recargar: ' + err));\n}\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

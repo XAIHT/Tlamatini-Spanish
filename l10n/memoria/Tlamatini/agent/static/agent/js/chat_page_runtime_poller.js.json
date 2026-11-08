@@ -1,0 +1,12 @@
+{
+ "archivo": "Tlamatini/agent/static/agent/js/chat_page_runtime_poller.js",
+ "segmentos": [
+  {
+   "en": "            if (typeof getCsrfToken === 'function') return getCsrfToken();\n        } catch (_e) { /* noop */ }\n        const cookieValue = `; ${document.cookie}`;\n        const parts = cookieValue.split('; csrftoken=');\n        if (parts.length === 2) return parts.pop().split(';').shift() || '';\n        return '';\n    }\n",
+   "es": "            if (typeof getCsrfToken === 'function') return getCsrfToken();\n        } catch (_e) { /* noop */ }\n        const cookieValue = `; ${document.cookie}`;\n        const parts = cookieValue.split('; tlm_csrf_es_mx=');\n        if (parts.length === 2) return parts.pop().split(';').shift() || '';\n        return '';\n    }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
+  }
+ ],
+ "conservar": []
+}

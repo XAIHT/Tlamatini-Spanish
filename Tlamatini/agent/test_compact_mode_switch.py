@@ -348,7 +348,7 @@ class CutWarningTests(SimpleTestCase):
         cut = cg.turn_cut(self.UID)
         self.assertEqual(cut["window"], 16386)
         html = cm.cut_warning_html(cut)
-        self.assertIn("CONTEXT-WINDOW exceeded", html)
+        self.assertIn("Se excedió mi CONTEXT-WINDOW", html)
         self.assertIn("16,386", html)
         self.assertIn("69,000", html)
         self.assertIn('class="tlm-cut-warning"', html)
@@ -387,19 +387,19 @@ class MessageAndPageTests(SimpleTestCase):
         from agent import constants
         msg = constants.ERROR_AGENT_NOT_READY
         # First person, to the user by name (Angela, 2026-10-09).
-        self.assertTrue(msg.startswith("I'm sorry, {name}, I can't process your requests right now. <br>"))
+        self.assertTrue(msg.startswith("Lo siento, {name}, ahorita no puedo procesar tus solicitudes. <br>"))
         self.assertTrue(constants.say(msg, "Angela").startswith(
-            "I'm sorry, Angela, I can't process your requests right now. <br>"))
+            "Lo siento, Angela, ahorita no puedo procesar tus solicitudes. <br>"))
         self.assertTrue(constants.say(msg, "").startswith(
-            "I'm sorry, I can't process your requests right now. <br>"))
-        self.assertIn("outside of the root directory", msg)
-        self.assertIn("CONTEXT WINDOW", msg)
-        self.assertIn("CONTEXT-WINDOW gauge", msg)
+            "Lo siento, ahorita no puedo procesar tus solicitudes. <br>"))
+        self.assertIn("fuera del directorio raíz", msg)
+        self.assertIn("CONTEXT-WINDOW", msg)
+        self.assertIn("medidor CONTEXT-WINDOW", msg)
         consumers = (AGENT_DIR / "consumers.py").read_text(encoding="utf-8")
         self.assertNotIn('not_ready_response = "', consumers)
         bridge = (AGENT_DIR / "agents" / "teletlamatini" / "teletlamatini.py").read_text(encoding="utf-8")
-        self.assertIn("i can't process your requests", bridge)
-        self.assertIn("i can't process your requests", msg.lower())
+        self.assertIn("no puedo procesar tus solicitudes", bridge)
+        self.assertIn("no puedo procesar tus solicitudes", msg.lower())
 
     def test_saving_a_dialog_no_longer_asks_for_a_restart(self):
         consumers = (AGENT_DIR / "consumers.py").read_text(encoding="utf-8")
@@ -414,10 +414,10 @@ class MessageAndPageTests(SimpleTestCase):
         from agent.consumers import AgentConsumer
         msg = AgentConsumer._toggles_summary(
             "Agents", "agent-1=ACPXer=false,agent-23=ESPHomer=true,agent-24=Executer=false,")
-        self.assertEqual(msg, "I've saved your Agents activation: 1 of 3 on (ESPHomer).")
+        self.assertEqual(msg, "Guardé la activación de tus Agents: 1 de 3 activados (ESPHomer).")
         many = ",".join(f"agent-{i}=A{i}=true" for i in range(1, 21))
-        self.assertIn("20 of 20 on", AgentConsumer._toggles_summary("Agents", many))
-        self.assertIn("and 5 more", AgentConsumer._toggles_summary("Agents", many))
+        self.assertIn("20 de 20 activados", AgentConsumer._toggles_summary("Agents", many))
+        self.assertIn("y 5 más", AgentConsumer._toggles_summary("Agents", many))
 
     def test_agent_choices_survive_a_restart(self):
         apps = (AGENT_DIR / "apps.py").read_text(encoding="utf-8")
@@ -447,7 +447,7 @@ class MessageAndPageTests(SimpleTestCase):
         js = (AGENT_DIR / "static" / "agent" / "js" / "context_gauge.js").read_text(encoding="utf-8")
         self.assertIn("'CONTEXT-WINDOW'", js)
         self.assertIn("const pctTrue = Math.max(0, ratio * 100);", js)
-        self.assertIn("'CUT · read '", js)
+        self.assertIn("'CUT · leyó '", js)
         self.assertIn("Math.round(pctTrue) + '%'", js)
 
     def test_no_template_comment_spans_two_lines(self):

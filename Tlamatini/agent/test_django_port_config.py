@@ -134,7 +134,7 @@ class ConfigJsonDjangoPortContractTests(unittest.TestCase):
         note = self.config.get('_section_django_port', '')
         self.assertTrue(note, "config.json must keep the '_section_django_port' explainer.")
         self.assertIn('10013', note)
-        self.assertIn('8000', note)
+        self.assertIn('8052', note)
 
 
 class ResolveDjangoPortTests(_PortHelperCase):

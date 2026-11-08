@@ -2,76 +2,34 @@
  "archivo": "Tlamatini/agent/test_django_port_config.py",
  "segmentos": [
   {
-   "en": "_DEFAULT_PORT = 8000",
-   "es": "_DEFAULT_PORT = 8052",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
+   "en": "_CONFIG_JSON = os.path.join(_PROJECT_DIR, 'agent', 'config.json')\n\n_WANTED_FUNCS = ('_resolve_config_path', '_resolve_django_port', '_apply_configured_port')\n_DEFAULT_PORT = 8000\n\n\ndef _read(path):\n",
+   "es": "_CONFIG_JSON = os.path.join(_PROJECT_DIR, 'agent', 'config.json')\n\n_WANTED_FUNCS = ('_resolve_config_path', '_resolve_django_port', '_apply_configured_port')\n_DEFAULT_PORT = 8052\n\n\ndef _read(path):\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "(default 8000).",
-   "es": "(default 8052).",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
+   "en": "\n    def test_django_port_key_present_and_valid(self):\n        self.assertIn('django_port', self.config,\n                      \"config.json must ship a 'django_port' key (default 8000).\")\n        port = self.config['django_port']\n        self.assertIsInstance(port, int)\n        self.assertTrue(1 <= port <= 65535)\n\n    def test_shipped_default_is_8000(self):\n        self.assertEqual(self.config['django_port'], _DEFAULT_PORT,\n                         \"The SHIPPED default must stay 8000 — users who never touch \"\n                         \"config.json must keep the documented http://127.0.0.1:8000/.\")\n\n    def test_section_note_explains_the_winerror_10013_case(self):\n        note = self.config.get('_section_django_port', '')\n        self.assertTrue(note, \"config.json must keep the '_section_django_port' explainer.\")\n        self.assertIn('10013', note)\n        self.assertIn('8000', note)\n\n\nclass ResolveDjangoPortTests(_PortHelperCase):\n",
+   "es": "\n    def test_django_port_key_present_and_valid(self):\n        self.assertIn('django_port', self.config,\n                      \"config.json must ship a 'django_port' key (default 8052).\")\n        port = self.config['django_port']\n        self.assertIsInstance(port, int)\n        self.assertTrue(1 <= port <= 65535)\n\n    def test_shipped_default_is_8052(self):\n        self.assertEqual(self.config['django_port'], _DEFAULT_PORT,\n                         \"The SHIPPED default must stay 8052 — users who never touch \"\n                         \"config.json must keep the documented http://127.0.0.1:8052/.\")\n\n    def test_section_note_explains_the_winerror_10013_case(self):\n        note = self.config.get('_section_django_port', '')\n        self.assertTrue(note, \"config.json must keep the '_section_django_port' explainer.\")\n        self.assertIn('10013', note)\n        self.assertIn('8052', note)\n\n\nclass ResolveDjangoPortTests(_PortHelperCase):\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "def test_shipped_default_is_8000",
-   "es": "def test_shipped_default_is_8052",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
+   "en": "        self._write_config(raw_text='﻿{\"django_port\": 9200}')\n        self.assertEqual(self._resolve(), 9200)\n\n    def test_missing_key_falls_back_to_8000(self):\n        self._write_config(chained_model='glm-5.3:cloud')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_missing_file_falls_back_to_8000(self):\n        os.environ['CONFIG_PATH'] = os.path.join(self._tmp.name, 'nope.json')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_unparseable_json_falls_back_to_8000(self):\n        self._write_config(raw_text='{ this is not json')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_non_numeric_port_falls_back_to_8000(self):\n        self._write_config(django_port='not-a-port')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_out_of_range_ports_fall_back_to_8000(self):\n        for bad in (0, -1, 65536, 999999):\n            with self.subTest(port=bad):\n                self._write_config(django_port=bad)\n",
+   "es": "        self._write_config(raw_text='﻿{\"django_port\": 9200}')\n        self.assertEqual(self._resolve(), 9200)\n\n    def test_missing_key_falls_back_to_8052(self):\n        self._write_config(chained_model='glm-5.3:cloud')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_missing_file_falls_back_to_8052(self):\n        os.environ['CONFIG_PATH'] = os.path.join(self._tmp.name, 'nope.json')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_unparseable_json_falls_back_to_8052(self):\n        self._write_config(raw_text='{ this is not json')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_non_numeric_port_falls_back_to_8052(self):\n        self._write_config(django_port='not-a-port')\n        self.assertEqual(self._resolve(), _DEFAULT_PORT)\n\n    def test_out_of_range_ports_fall_back_to_8052(self):\n        for bad in (0, -1, 65536, 999999):\n            with self.subTest(port=bad):\n                self._write_config(django_port=bad)\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "must stay 8000 —",
-   "es": "must stay 8052 —",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
+   "en": "                self.assertEqual(self._apply(argv), argv)\n\n    def test_a_broken_config_still_yields_a_startable_argv(self):\n        \"\"\"Fail-open, end to end: a corrupt config must still boot on 8000.\"\"\"\n        self._write_config(raw_text='{ broken')\n        self.assertEqual(self._apply(['manage.py', 'runserver']),\n                         ['manage.py', 'runserver', '8000'])\n\n\nclass ManagePyWiringTests(unittest.TestCase):\n",
+   "es": "                self.assertEqual(self._apply(argv), argv)\n\n    def test_a_broken_config_still_yields_a_startable_argv(self):\n        \"\"\"Fail-open, end to end: a corrupt config must still boot on 8052.\"\"\"\n        self._write_config(raw_text='{ broken')\n        self.assertEqual(self._apply(['manage.py', 'runserver']),\n                         ['manage.py', 'runserver', '8052'])\n\n\nclass ManagePyWiringTests(unittest.TestCase):\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "http://127.0.0.1:8000/.",
-   "es": "http://127.0.0.1:8052/.",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
-  },
-  {
-   "en": "falls_back_to_8000",
-   "es": "falls_back_to_8052",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 4
-  },
-  {
-   "en": "fall_back_to_8000",
-   "es": "fall_back_to_8052",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
-  },
-  {
-   "en": "must still boot on 8000.",
-   "es": "must still boot on 8052.",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
-  },
-  {
-   "en": "['manage.py', 'runserver', '8000']",
-   "es": "['manage.py', 'runserver', '8052']",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
-  },
-  {
-   "en": "\"'0.0.0.0:8000'\"",
-   "es": "\"'0.0.0.0:8052'\"",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
-  },
-  {
-   "en": "'\"0.0.0.0:8000\"'",
-   "es": "'\"0.0.0.0:8052\"'",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
-  },
-  {
-   "en": "'http://localhost:8000/'",
-   "es": "'http://localhost:8052/'",
-   "codigo": "Prueba de la identidad de Tlamatini-Spanish: fija los valores propios de esta edición",
-   "n": 1
+   "en": "        self.assertIn('sys.argv = _apply_configured_port(sys.argv)', self.src)\n\n    def test_no_hardcoded_bind_address_survives(self):\n        self.assertNotIn(\"'0.0.0.0:8000'\", self.src)\n        self.assertNotIn('\"0.0.0.0:8000\"', self.src)\n\n    def test_frozen_paths_resolve_the_port(self):\n        self.assertIn(\"f'0.0.0.0:{_resolve_django_port()}'\", self.src)\n\n    def test_browser_auto_open_uses_the_resolved_port(self):\n        self.assertIn(\"f'http://localhost:{_resolve_django_port()}/'\", self.src)\n        self.assertNotIn(\"_schedule_browser_open('http://localhost:8000/'\", self.src)\n\n    def test_config_path_resolution_honors_the_env_override(self):\n        self.assertIn(\"os.environ.get('CONFIG_PATH')\", self.src)\n",
+   "es": "        self.assertIn('sys.argv = _apply_configured_port(sys.argv)', self.src)\n\n    def test_no_hardcoded_bind_address_survives(self):\n        self.assertNotIn(\"'0.0.0.0:8052'\", self.src)\n        self.assertNotIn('\"0.0.0.0:8052\"', self.src)\n\n    def test_frozen_paths_resolve_the_port(self):\n        self.assertIn(\"f'0.0.0.0:{_resolve_django_port()}'\", self.src)\n\n    def test_browser_auto_open_uses_the_resolved_port(self):\n        self.assertIn(\"f'http://localhost:{_resolve_django_port()}/'\", self.src)\n        self.assertNotIn(\"_schedule_browser_open('http://localhost:8052/'\", self.src)\n\n    def test_config_path_resolution_honors_the_env_override(self):\n        self.assertIn(\"os.environ.get('CONFIG_PATH')\", self.src)\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": []

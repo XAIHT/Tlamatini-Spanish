@@ -6,7 +6,11 @@ Tlamatini Author Banner — do not remove
 
 # Tlamatini instructions for Codex and every coding agent
 
-> Última versión publicada: **[v1.92.3](docs/changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.
+
+## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+
+El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](docs/changes/2026-11-08-v1.92.4.md).
 
 ## Regla obligatoria de versión — todos los proyectos y sesiones, 2026-11-04
 
@@ -21,7 +25,7 @@ de dependencias, el historial de Git y las pruebas reales. Las operaciones de Gi
 y compilaciones de ejecutables requieren autorización. Esta regla sustituye
 cualquier consejo anterior que la contradiga.
 
-## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
+## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
 Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](docs/changes/2026-11-01-v1.92.3.md).
 
@@ -326,7 +330,7 @@ Contract: [CLAUDE.md](CLAUDE.md) → *Self-modify*,
 for every page: each dropped file is recognised by its bytes and sent to its own mechanism, so an MCP
 .json imports everywhere and never errors, opens as text or navigates away."* It was published on GitHub
 on 2026-10-14 ("Tlamatini Release v1.83.0 Win11x64", marked Latest), so self-update delivered `v1.83.0` then;
-that historical runtime version was `1.83.0`. La versión actual es `v1.92.3`. `v1.83.0` carried everything in `v1.82.0` plus the three
+that historical runtime version was `1.83.0`. La versión actual es `v1.92.4`. `v1.83.0` carried everything in `v1.82.0` plus the three
 changes below. `v1.83.0` added no migration after 0213 (0214 arrived in v1.87.0); the frontend has 60 JS modules and 26
 stylesheets, and the live `STATIC_VERSION` cache suffix is now `-agent-catalog-1-quality-cleanup-1-usage-status-2`.
 

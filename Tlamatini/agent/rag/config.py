@@ -166,6 +166,86 @@ def default_application_path() -> str:
     return _SOURCE_AGENT_DIR
 
 
+def runtime_instance_context(application_path=None, config=None) -> str:
+    """Minimal operational identity, independent of Self-modify and Compact.
+
+    Only an explicit allowlist leaves config.json; credentials never enter this
+    block. A CLI bind address takes precedence over the configured web port.
+    """
+    app = os.path.abspath(application_path or default_application_path())
+    frozen = bool(getattr(sys, 'frozen', False))
+    root = app if frozen else os.path.dirname(os.path.dirname(app))
+    config_path = os.path.join(app, 'config.json')
+    if config is None:
+        try:
+            with open(config_path, encoding='utf-8-sig') as source:
+                config = json.load(source)
+        except (OSError, ValueError):
+            config = {}
+
+    def port(key, default):
+        value = config.get(key, default)
+        try:
+            number = int(value)
+            return number if not isinstance(value, bool) and 1 <= number <= 65535 else None
+        except (ValueError, TypeError):
+            return None
+
+    web_port = port('django_port', 8052)
+    bind_source = 'config.json (comprobar la dirección de la pestaña actual)'
+    for command in ('runserver', 'runserver_plus'):
+        if command in sys.argv:
+            for arg in sys.argv[sys.argv.index(command) + 1:]:
+                if re.fullmatch(r'(?:[^\s]+:)?\d{1,5}', arg):
+                    candidate = int(arg.rsplit(':', 1)[-1])
+                    if 1 <= candidate <= 65535:
+                        web_port, bind_source = candidate, 'argumento de inicio del proceso actual'
+                        break
+            break
+    manage = [] if frozen else [os.path.join(root, 'Tlamatini', 'manage.py')]
+    python_path = os.path.join(root, 'python', 'python.exe') if frozen else os.path.abspath(sys.executable)
+    identity = {
+        'edition': 'Tlamatini-Spanish',
+        'runtime': 'FROZEN' if frozen else 'SOURCE',
+        'pid': os.getpid(),
+        'executable': os.path.abspath(sys.executable),
+        'python_executable': python_path if os.path.isfile(python_path) else None,
+        'application_root': root,
+        'config_path': config_path,
+        'management_cwd': app if frozen else os.path.join(root, 'Tlamatini'),
+        'management_argv': [os.path.abspath(sys.executable), *manage],
+        'temp_directory': os.path.join(root, 'Temp'),
+        'templates_directory': os.path.join(root, 'Templates'),
+        'django_port': web_port,
+        'web_port_source': bind_source,
+        'mcp_system_server_port': port('mcp_system_server_port', 8752),
+        'mcp_files_search_server_port': port('mcp_files_search_server_port', 50052),
+    }
+    return (
+        '<instancia_tlamatini_spanish>\n'
+        'IDENTIDAD OPERATIVA DE ESTA INSTANCIA (no concede permiso de automodificación):\n'
+        + json.dumps(identity, ensure_ascii=False, indent=2)
+        + '\nTrabaja con estas rutas y este proceso; no selecciones otra instalación por '
+        'su nombre, por PATH, por archivos encontrados ni por una variable heredada. '
+        'Tlamatini en inglés puede ejecutarse con la misma cuenta de Windows. '
+        'Conserva la dirección EXACTA de la pestaña actual para volver a iniciar sesión; '
+        '8052/8752/50052 son los valores predeterminados de esta edición, no pruebas de '
+        'que un servicio esté escuchando. Confirma el endpoint y su propietario antes '
+        'de actuar. No cierres procesos por nombre ni por un PID sin verificar su '
+        'identidad actual. No traduzcas nombres de tools, claves, enums, rutas ni '
+        'marcadores de protocolo. Para un wrapper chat_agent_* usa su esquema externo '
+        '(normalmente tool_input); dentro escribe únicamente claves y valores del '
+        'contrato del agente. Los mensajes y puntos de espera dirigidos al usuario '
+        'van en español. Nunca ejecutes un marcador sin resolver.\n'
+        '</instancia_tlamatini_spanish>'
+    )
+
+
+def strip_runtime_instance_context(prompt: str) -> str:
+    return re.sub(r'<instancia_tlamatini_spanish>.*?</instancia_tlamatini_spanish>\n?',
+                  '', prompt, flags=re.DOTALL)
+
+
 def is_source_checkout(application_path) -> bool:
     """True for a source (NOT frozen) run of THIS checkout - dev mode."""
     if getattr(sys, 'frozen', False):
@@ -327,6 +407,8 @@ def load_config_and_prompt(application_path: str) -> Tuple[Dict[str, Any], str, 
             _resolve_templates_directory_for_prompt(),
         )
 
+    identity = runtime_instance_context(application_path, config)
+    prompt_template += '\n\n' + identity.replace('{', '{{').replace('}', '}}')
     return config, prompt_template, config_file_path
 
 

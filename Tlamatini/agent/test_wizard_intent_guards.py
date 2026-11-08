@@ -46,6 +46,9 @@ class WizardIntentTests(SimpleTestCase):
         for text in (
             "You will run Django's createsuperuser. I will type my password.",
             "You should execute the installer. Let me type my email myself.",
+            "Tú ejecutas createsuperuser; yo completo los datos.",
+            "Tú vas a ejecutar el instalador. La contraseña va en la consola.",
+            "Tú puedes lanzar el programa; yo escribo mi correo.",
         ):
             with self.subTest(text=text):
                 self.assertEqual(guard.classify_message(text)[0], "lift")
@@ -140,9 +143,7 @@ class UserCreationCatalogGuardTests(TestCase):
                 def chat_agent_executer(request: str) -> str:
                     """Record a requested command without running it."""
                     calls.append(request)
-                    return json.dumps({"status": "completed", "output": (
-                        "TLAMATINI_MODE=" + runtime if len(calls) == 1 else "Interactive console launched"
-                    )})
+                    return json.dumps({"status": "completed", "output": "Interactive console launched"})
 
                 @tool
                 def chat_agent_notifier(request: str) -> str:
@@ -151,19 +152,17 @@ class UserCreationCatalogGuardTests(TestCase):
                     return json.dumps({"status": "completed", "output": "Notification file created"})
 
                 history = [{"type": "human", "content": THE_RUST_USER_SENTENCE}]
-                launch = ('"%TLAMATINI_TEMP%\\..\\Tlamatini.exe" createsuperuser' if runtime == "FROZEN"
-                          else 'python manage.py createsuperuser')
+                launch = ('"C:/Spanish/Tlamatini-Spanish.exe" createsuperuser' if runtime == "FROZEN"
+                          else '"C:/Spanish/python/python.exe" "C:/Spanish/Tlamatini/manage.py" createsuperuser')
                 for message, request, answer in (
-                    (self.prompt, "script='echo TLAMATINI_MODE'", "Detected the runtime. Ready for the next step."),
-                    ("Continue", f"script='{launch}' and execute_forked_window=true and non_blocking=true",
-                     "Enter your password only in the console, then reply DONE. I will wait."),
+                    (self.prompt, f"script='{launch}' and execute_forked_window=true and non_blocking=true",
+                     "Completa la consola y responde HECHO solo cuando confirme la creación. Espero."),
                 ):
                     script = [{"calls": [("chat_agent_executer", {"request": request})]}]
-                    if message == "Continue":
-                        script.append({"calls": [("chat_agent_notifier", {"request":
-                            "target.mode='oneshot' and target.search_strings='Console input needed' "
-                            "and target.outcome_detail='Use the console, then confirm its success in chat.' "
-                            "and target.sound_enabled=true"})]})
+                    script.append({"calls": [("chat_agent_notifier", {"request":
+                        "target.mode='oneshot' and target.search_strings='Escribe en la consola' "
+                        "and target.outcome_detail='Completa la consola y confirma el resultado en el chat.' "
+                        "and target.sound_enabled=true"})]})
                     script.append({"content": answer})
                     llm = _ScriptedLLM(script)
                     executor = MultiTurnToolAgentExecutor(
@@ -176,16 +175,16 @@ class UserCreationCatalogGuardTests(TestCase):
                     self.assertEqual(result["output"], answer)
                     self.assertTrue(result["exec_report_entries"][0]["success"])
                     history.extend([{"type": "human", "content": message}, {"type": "ai", "content": answer}])
-                self.assertEqual(len(calls), 2)
-                self.assertIn("createsuperuser", calls[1])
+                self.assertEqual(len(calls), 1)
+                self.assertIn("createsuperuser", calls[0])
                 self.assertEqual(len(notifications), 1)
                 self.assertNotIn("Usuario listo", notifications[0])
 
     def test_local_checkpoint_calls_survive_error_nowindow_and_success_continuations(self):
         for reply, label in (
-            ("ERROR: The username is already taken.", "Error al crear el usuario"),
-            ("NOWINDOW", "Aviso: la consola no se ve"),
-            ("DONE: I saw Superuser created successfully in the console.", "Usuario listo"),
+            ("ERROR: El nombre de usuario ya existe.", "Error al crear el usuario"),
+            ("SIN VENTANA", "Aviso: la consola no se ve"),
+            ("HECHO: Vi Superuser created successfully en la consola.", "Usuario listo"),
         ):
             with self.subTest(reply=reply):
                 alerts = []

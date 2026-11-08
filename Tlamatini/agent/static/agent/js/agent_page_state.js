@@ -30,7 +30,7 @@ function getCookie(name) {
 }
 
 function getCsrfToken() {
-    return getCookie('csrftoken');
+    return getCookie('tlm_csrf_es_mx');
 }
 
 function sendPostBeacon(url, fields = {}) {

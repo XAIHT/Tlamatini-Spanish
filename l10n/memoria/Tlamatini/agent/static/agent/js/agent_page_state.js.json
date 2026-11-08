@@ -2,39 +2,46 @@
  "archivo": "Tlamatini/agent/static/agent/js/agent_page_state.js",
  "segmentos": [
   {
-   "en": "'Send a message...'",
-   "es": "'Escribe un mensaje...'",
-   "n": 1
+   "en": "}\n\nfunction getCsrfToken() {\n    return getCookie('csrftoken');\n}\n\nfunction sendPostBeacon(url, fields = {}) {\n",
+   "es": "}\n\nfunction getCsrfToken() {\n    return getCookie('tlm_csrf_es_mx');\n}\n\nfunction sendPostBeacon(url, fields = {}) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Connection lost. Use Reconnect or refresh before continue.'",
-   "es": "'Se perdió la conexión. Usa Reconectar o actualiza la página antes de continuar.'",
-   "n": 1
+   "en": "// --- Core DOM references ---\nconst chatLog = document.getElementById('chat-log');\nconst connectionStatusBar = document.getElementById('connection-status');\nconst defaultChatInputPlaceholder = 'Send a message...';\n\nfunction buildAgentSocketUrl() {\n    const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n",
+   "es": "// --- Core DOM references ---\nconst chatLog = document.getElementById('chat-log');\nconst connectionStatusBar = document.getElementById('connection-status');\nconst defaultChatInputPlaceholder = 'Escribe un mensaje...';\n\nfunction buildAgentSocketUrl() {\n    const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Disconnected'",
-   "es": "'Desconectado'",
-   "n": 1
+   "en": "        chatInput.disabled = true;\n        chatInput.readOnly = true;\n        chatInput.style.backgroundColor = 'gray';\n        chatInput.placeholder = 'Connection lost. Use Reconnect or refresh before continue.';\n    }\n\n    if (chatSubmitButton) {\n        chatSubmitButton.disabled = true;\n        chatSubmitButton.textContent = 'Disconnected';\n    }\n\n    if (reConnectButton) {\n",
+   "es": "        chatInput.disabled = true;\n        chatInput.readOnly = true;\n        chatInput.style.backgroundColor = 'gray';\n        chatInput.placeholder = 'Se perdió la conexión. Usa Reconectar o actualiza la página antes de continuar.';\n    }\n\n    if (chatSubmitButton) {\n        chatSubmitButton.disabled = true;\n        chatSubmitButton.textContent = 'Desconectado';\n    }\n\n    if (reConnectButton) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Live connection lost. Use Reconnect or refresh before continuing.'",
-   "es": "'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.'",
-   "n": 1
+   "en": "    if (typeof restoreMenuControlsAfterOperation === 'function') {\n        restoreMenuControlsAfterOperation();\n    }\n    setConnectionStatus(message || 'Live connection lost. Use Reconnect or refresh before continuing.', 'warning');\n}\n\nfunction restoreConnectedSocketUi() {\n",
+   "es": "    if (typeof restoreMenuControlsAfterOperation === 'function') {\n        restoreMenuControlsAfterOperation();\n    }\n    setConnectionStatus(message || 'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.', 'warning');\n}\n\nfunction restoreConnectedSocketUi() {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Send'",
-   "es": "'Enviar'",
-   "n": 1
+   "en": "        chatInput.readOnly = false;\n        chatInput.style.backgroundColor = '#40414F';\n        chatSubmitButton.disabled = false;\n        chatSubmitButton.textContent = 'Send';\n    }\n}\n\n",
+   "es": "        chatInput.readOnly = false;\n        chatInput.style.backgroundColor = '#40414F';\n        chatSubmitButton.disabled = false;\n        chatSubmitButton.textContent = 'Enviar';\n    }\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Live connection lost. Use Reconnect or refresh before continue.'",
-   "es": "'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.'",
-   "n": 1
+   "en": "    return !!chatSocket && chatSocket.readyState === WebSocket.OPEN;\n}\n\nfunction sendChatSocketMessage(payload, disconnectedMessage = 'Live connection lost. Use Reconnect or refresh before continue.') {\n    if (!isChatSocketOpen()) {\n        console.error('WebSocket is not connected. Message not sent.', payload);\n        applyDisconnectedSocketUi(disconnectedMessage);\n",
+   "es": "    return !!chatSocket && chatSocket.readyState === WebSocket.OPEN;\n}\n\nfunction sendChatSocketMessage(payload, disconnectedMessage = 'Se perdió la conexión en vivo. Usa Reconectar o actualiza la página antes de continuar.') {\n    if (!isChatSocketOpen()) {\n        console.error('WebSocket is not connected. Message not sent.', payload);\n        applyDisconnectedSocketUi(disconnectedMessage);\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "\"Use as context\"",
-   "es": "\"Usar como contexto\"",
-   "n": 1
+   "en": "// --- Initial button state ---\ncontextButton.disabled = true;\ncontextButton.style.backgroundColor = \"#808080\";\ncontextButton.textContent = \"Use as context\";\n\n\n",
+   "es": "// --- Initial button state ---\ncontextButton.disabled = true;\ncontextButton.style.backgroundColor = \"#808080\";\ncontextButton.textContent = \"Usar como contexto\";\n\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

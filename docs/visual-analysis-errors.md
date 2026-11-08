@@ -1,6 +1,6 @@
 # Image and video failures, dialogs and recovery
 
-> Última versión publicada: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
 
 
 Created by Angela López Mendoza · @angelahack1 — Tlamatini.

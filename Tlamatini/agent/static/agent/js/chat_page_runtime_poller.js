@@ -35,7 +35,7 @@
             if (typeof getCsrfToken === 'function') return getCsrfToken();
         } catch (_e) { /* noop */ }
         const cookieValue = `; ${document.cookie}`;
-        const parts = cookieValue.split('; csrftoken=');
+        const parts = cookieValue.split('; tlm_csrf_es_mx=');
         if (parts.length === 2) return parts.pop().split(';').shift() || '';
         return '';
     }

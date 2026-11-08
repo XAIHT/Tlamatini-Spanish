@@ -8,9 +8,9 @@
 -->
 # Tlamatini — Multi-Turn Mode, Create Flow, Parametrizer Sections
 
-> Última versión publicada: **[v1.92.3](../changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
 
-## v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
+## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
 Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](../changes/2026-11-01-v1.92.3.md).
 
@@ -115,7 +115,8 @@ When **Multi-Turn is checked** in the toolbar:
 5. Wrapped agents have background launch paths in the product implementation. For every execution performed while working on this codebase, the mandatory visible-execution policy applies: explicitly request foreground consoles and headed browsers, and do not execute a path that cannot be made visible.
 6. The MultiTurnToolAgentExecutor **deduplicates wrapped chat-agent calls** with identical arguments (prevents the LLM from launching the same sub-agent twice in a single request)
 7. After the final answer, the frontend renders a **"Create Flow"** button whenever **at least one agent executed successfully** during the request; it converts **only the successfully-executed** tool calls into a downloadable `.flw` workflow (the failed executions are dropped). *(There is no whole-answer SUCCESS/FAILURE classifier — the old `services/answer_analizer.py` was removed 2026-07-06.)*
-8. **Every model step is self-healed.** Each `llm.invoke()` in the executor is wrapped by a per-request `SelfHealingInvoker` (`agent/self_healing.py`) that retries distinct recovery tactics under a per-attempt watchdog, so a transient model failure never hangs, never discards work already done, and never yields a silent/untruthful answer (see *Self-healing model steps* below).
+
+8. **Every model step is self-healed.** Each `llm.invoke()` in the executor is wrapped by a per-request `SelfHealingInvoker` (`agent/self_healing.py`) that retries distinct recovery tactics under a per-attempt watchdog, so a transient model failure never hangs, never discards work already done, and never yields a silent/untruthful answer (see *Self-healing model steps* below).
 
 When **unchecked**: legacy one-shot behavior is preserved exactly.
 

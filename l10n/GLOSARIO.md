@@ -8,6 +8,8 @@
 -->
 # Glosario de Tlamatini-Spanish
 
+> Última versión publicada: **[v1.92.4](../docs/changes/2026-11-08-v1.92.4.md)**.
+
 Terminología de la interfaz en español de México. La regla de fondo está en la
 [guía de porteo](GUIA_DE_PORTEO.md), sección 3: **el español pone la gramática y los
 verbos; el inglés pone el vocabulario técnico**. Ante la duda, el término técnico se queda

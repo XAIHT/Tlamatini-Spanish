@@ -8,7 +8,11 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> Última versión publicada: **[v1.92.3](../changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
+
+## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+
+El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](../changes/2026-11-08-v1.92.4.md).
 
 ## 2026-11-05 — Admisión del catálogo de prompts en español
 
@@ -39,7 +43,7 @@ Ruff pasó en los archivos Python modificados. Son comprobaciones del código fu
 y de admisión; no certifican que se hayan ejecutado las instalaciones, envíos,
 servicios externos o acciones de hardware descritas por las muestras.
 
-[Versión 1.92.3 y correcciones posteriores](../changes/2026-11-01-v1.92.3.md) · 30 de octubre–2 de noviembre. Velocidad de hasta 250 WPM, admisión y entrega verificada en Torrenter, distribución del desinstalador, aislamiento de compilaciones, cola de metadatos y lectura de comandos de Executer.
+[Versión 1.92.4 y correcciones posteriores](../changes/2026-11-08-v1.92.4.md) · 30 de octubre–2 de noviembre. Velocidad de hasta 250 WPM, admisión y entrega verificada en Torrenter, distribución del desinstalador, aislamiento de compilaciones, cola de metadatos y lectura de comandos de Executer.
 
 
 > **Carried from v1.88.0 (tagged 2026-10-20):** [Terminater](../terminater.md) (workflow agent #86 and the Terminals area) and a private release that carries the builder's own data. Counts: 86 workflow agents, 67 wrapped chat agents, 109 built-in tools, 217 migrations. See the [v1.88.0 release record](../changes/2026-10-20-v1.88.0.md) and the change records [Terminater](../changes/2026-10-19-terminater.md) and [private-release data](../changes/2026-10-19-private-release-data.md).

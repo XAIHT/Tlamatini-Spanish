@@ -1,8 +1,11 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza -->
 # Markdown in the chat canvas
 
-> Última versión publicada: **[v1.92.3](changes/2026-11-01-v1.92.3.md)**.
+> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
 
+## Archivos legibles con controles aislados — 1.92.4
+
+Un archivo Markdown legible no se rechaza sólo por contener un carácter de control aislado, como un timbre o retroceso introducido al escapar una ruta. Se conservan los bytes, la BOM y los finales de línea. La decodificación sigue siendo estricta: un NUL decodificado, contenido dominado por controles o una codificación malformada se rechaza antes de sustituir el lienzo. Consulta [edición y guardado](canvas-editing.md).
 
 **Views → Canvas** keeps this document and its viewer alive while hiding the pane. Opening a document shows the pane again. **Views → Reset layout** restores both panes and their sizes without clearing the document or context. See [v1.85.0](changes/2026-10-16-v1.85.0.md).
 

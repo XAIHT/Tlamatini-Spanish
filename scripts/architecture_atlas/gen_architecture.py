@@ -2190,7 +2190,7 @@ def sheet_live_editor():
 
 def sheet_torrenter():
     sh = new_sheet('Torrenter y entrega de la versión',
-                   'Última versión publicada: 1.92.3', "integration")
+                   f'Última versión publicada: {TAG}', "integration")
     box(sh.body, 12, TOP, 193, "Ltransport", "1. Inicia sesión y elige la cuenta", [
         "El chat, el panel agéntico y XT abren la cola de la misma cuenta. La migración 0221 registra Torrenter.",
         "Django autentica el navegador. El controlador obtiene una credencial de alcance limitado de Tlachihuani Jobs.",
@@ -2212,9 +2212,68 @@ def sheet_torrenter():
         "Distribuye el HTML, JavaScript y CSS del panel junto con el controlador. Inclúyelos en la copia para automodificación.",
     ], h=72, size=15, tsize=14)
     box(sh.body, 215, TOP - 164, 193, "Lplatform", "Compilar y ejecutar en Windows", [
-        "La versión 1.92.3 separa los entornos por la huella de dependencias. El bloqueo del sistema cubre la preparación y el uso.",
+        "Los entornos se separan por la huella de dependencias. El bloqueo del sistema cubre la preparación y el uso.",
         "Executer conserva asignaciones como PLAYWRIGHT_BROWSERS_PATH y aplica el tiempo de espera configurado.",
     ], h=72, size=15, tsize=14)
+    return sh
+
+
+def sheet_release_builds():
+    sh = new_sheet("Versiones coincidentes y compilaciones aisladas",
+                   f"Última versión publicada {TAG} — inglés y español", "build")
+    cards = [
+        [
+            "1. Anticipar antes de compilar",
+            "Lbuild",
+            [
+                "El lanzador consulta los resolvedores reales y anticipa en memoria sus generadores de versión.",
+                "Compara el número que informará la aplicación; no exige una etiqueta en HEAD. Fija un --version común."
+            ]
+        ],
+        [
+            "2. Compilar y archivar ambas ediciones",
+            "Lplatform",
+            [
+                "La modalidad Privada o Pública ejecuta ambos generadores completos en paralelo con --self-modify.",
+                "Verifica ZIP y SHA-256; archiva por edición/modalidad/minuto. Conserva la edición correcta si falla la otra."
+            ]
+        ],
+        [
+            "3. Identificar el paquete en su registro",
+            "Ltransport",
+            [
+                "El módulo generado incorpora release_type. Las primeras líneas muestran versión y modalidad Privada/Pública.",
+                "Desarrollo y sin especificar se indican expresamente; no se deducen de credenciales ni carpetas."
+            ]
+        ],
+        [
+            "4. Recuperación en cachés aisladas",
+            "Lpersistence",
+            [
+                "Usa Temp/build-env de la aplicación o cachés separadas por edición bajo la carpeta de versiones.",
+                "Si falla la preparación sin caché válida, detente antes de limpiar NumPy global o usar pip --user."
+            ]
+        ],
+        [
+            "5. Abrir Markdown legible fielmente",
+            "Lpresentation",
+            [
+                "Los controles aislados ya no convierten un README.md legible en binario. Se conservan los bytes originales.",
+                "La decodificación estricta reconoce BOM y rechaza NUL, exceso de controles y codificaciones malformadas."
+            ]
+        ],
+        [
+            "Evidencia fechada",
+            "Lquality",
+            [
+                "8 de noviembre: pasaron cuatro ZIP reales ingleses/españoles Privados/Públicos y sus ejecutables 1.92.3.",
+                "Pasaron integridad, auditorías públicas y 26 pruebas de aislamiento. Esto no certifica otra instalación."
+            ]
+        ]
+    ]
+    for i, (title, color, lines) in enumerate(cards):
+        box(sh.body, 12 if i % 2 == 0 else 215, TOP - 82 * (i // 2),
+            193, color, title, lines, h=72, size=15, tsize=14)
     return sh
 
 
@@ -2447,6 +2506,7 @@ sheet_lifecycle()
 sheet_live_editor()
 sheet_interaction_settings()
 sheet_torrenter()
+sheet_release_builds()
 autofit(sheet_intelligence, BOTTOM + 1.5)
 sheet_agents()
 autofit(sheet_integration, BOTTOM + 4.5)

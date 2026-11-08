@@ -2,174 +2,94 @@
  "archivo": "Tlamatini/agent/static/agent/js/contacts_dialog.js",
  "segmentos": [
   {
-   "en": "'1 contact. Click one to edit, or press “New”.'",
-   "es": "'1 contacto. Haz clic en uno para editarlo o presiona “Nuevo”.'",
-   "n": 1
+   "en": "let _contactsKeydownHandler = null;\n\nfunction _ctbCsrf() {\n    const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);\n    return m ? decodeURIComponent(m[1]) : '';\n}\n\n",
+   "es": "let _contactsKeydownHandler = null;\n\nfunction _ctbCsrf() {\n    const m = document.cookie.match(/(?:^|; )tlm_csrf_es_mx=([^;]+)/);\n    return m ? decodeURIComponent(m[1]) : '';\n}\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "' contacts. Click one to edit, or press “New”.'",
-   "es": "' contactos. Haz clic en uno para editarlo o presiona “Nuevo”.'",
-   "n": 1
+   "en": "    function renderLegend() {\n        const n = contacts.length;\n        legend.textContent = n === 1\n            ? '1 contact. Click one to edit, or press “New”.'\n            : n + ' contacts. Click one to edit, or press “New”.';\n    }\n\n    function listMessage(text) {\n",
+   "es": "    function renderLegend() {\n        const n = contacts.length;\n        legend.textContent = n === 1\n            ? '1 contacto. Haz clic en uno para editarlo o presiona “Nuevo”.'\n            : n + ' contactos. Haz clic en uno para editarlo o presiona “Nuevo”.';\n    }\n\n    function listMessage(text) {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'No contacts yet. Press “New” to add one.'",
-   "es": "'Todavía no hay contactos. Presiona “Nuevo” para agregar uno.'",
-   "n": 1
+   "en": "            if (!q || hay.includes(q)) shown.push(idx);\n        });\n        if (!contacts.length) {\n            listEl.appendChild(listMessage('No contacts yet. Press “New” to add one.'));\n            return;\n        }\n        if (!shown.length) {\n            listEl.appendChild(listMessage('No match.'));\n            return;\n        }\n        const fragment = document.createDocumentFragment();\n",
+   "es": "            if (!q || hay.includes(q)) shown.push(idx);\n        });\n        if (!contacts.length) {\n            listEl.appendChild(listMessage('Todavía no hay contactos. Presiona “Nuevo” para agregar uno.'));\n            return;\n        }\n        if (!shown.length) {\n            listEl.appendChild(listMessage('No hay coincidencias.'));\n            return;\n        }\n        const fragment = document.createDocumentFragment();\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'No match.'",
-   "es": "'No hay coincidencias.'",
-   "n": 1
+   "en": "                '<div class=\"ctb-info\"><div class=\"ctb-name\"></div>' +\n                (c.aliases ? '<div class=\"ctb-sub\"></div>' : '') +\n                '<div class=\"ctb-chanrow\"></div></div>' +\n                '<button type=\"button\" class=\"ctb-del\" title=\"Delete contact\">' +\n                '<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\">' +\n                '<path d=\"M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9zm4 2v8h2v-8h-2zm4 0v8h2v-8h-2z\"/>' +\n                '</svg></button>';\n            row.querySelector('.ctb-name').textContent = c.name || '(no name)';\n            const sub = row.querySelector('.ctb-sub');\n            if (sub) sub.textContent = 'aka ' + c.aliases;\n            const chans = row.querySelector('.ctb-chanrow');\n            if (c.telegram) appendChannel(chans, 'ctb-chan-tg', 'TG ' + c.telegram);\n            if (c.whatsapp) appendChannel(chans, 'ctb-chan-wa', 'WA ' + c.whatsapp);\n            if (c.email) appendChannel(chans, 'ctb-chan-em', '@ ' + c.email);\n            if (!c.telegram && !c.whatsapp && !c.email) {\n                appendChannel(chans, 'ctb-chan-em', 'no channels');\n            }\n            row.querySelector('.ctb-del')\n                .setAttribute('aria-label', 'Delete ' + (c.name || 'contact'));\n            fragment.appendChild(row);\n        }\n        listEl.appendChild(fragment);\n",
+   "es": "                '<div class=\"ctb-info\"><div class=\"ctb-name\"></div>' +\n                (c.aliases ? '<div class=\"ctb-sub\"></div>' : '') +\n                '<div class=\"ctb-chanrow\"></div></div>' +\n                '<button type=\"button\" class=\"ctb-del\" title=\"Eliminar contacto\">' +\n                '<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\">' +\n                '<path d=\"M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9zm4 2v8h2v-8h-2zm4 0v8h2v-8h-2z\"/>' +\n                '</svg></button>';\n            row.querySelector('.ctb-name').textContent = c.name || '(sin nombre)';\n            const sub = row.querySelector('.ctb-sub');\n            if (sub) sub.textContent = 'alias ' + c.aliases;\n            const chans = row.querySelector('.ctb-chanrow');\n            if (c.telegram) appendChannel(chans, 'ctb-chan-tg', 'TG ' + c.telegram);\n            if (c.whatsapp) appendChannel(chans, 'ctb-chan-wa', 'WA ' + c.whatsapp);\n            if (c.email) appendChannel(chans, 'ctb-chan-em', '@ ' + c.email);\n            if (!c.telegram && !c.whatsapp && !c.email) {\n                appendChannel(chans, 'ctb-chan-em', 'sin canales');\n            }\n            row.querySelector('.ctb-del')\n                .setAttribute('aria-label', 'Eliminar ' + (c.name || 'contacto'));\n            fragment.appendChild(row);\n        }\n        listEl.appendChild(fragment);\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'(no name)'",
-   "es": "'(sin nombre)'",
-   "n": 2
+   "en": "        if (!c) return;\n        editingIndex = idx;\n        fillForm(c);\n        editTitle.textContent = 'Editing: ' + (c.name || '(no name)');\n        renderList();\n        window.setTimeout(() => f.name.focus(), 0);\n    }\n",
+   "es": "        if (!c) return;\n        editingIndex = idx;\n        fillForm(c);\n        editTitle.textContent = 'Editando: ' + (c.name || '(sin nombre)');\n        renderList();\n        window.setTimeout(() => f.name.focus(), 0);\n    }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'no channels'",
-   "es": "'sin canales'",
-   "n": 1
+   "en": "    function newContact() {\n        editingIndex = -1;\n        fillForm(null);\n        editTitle.textContent = 'New contact';\n        renderList();\n        window.setTimeout(() => f.name.focus(), 0);\n    }\n",
+   "es": "    function newContact() {\n        editingIndex = -1;\n        fillForm(null);\n        editTitle.textContent = 'Contacto nuevo';\n        renderList();\n        window.setTimeout(() => f.name.focus(), 0);\n    }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Delete '",
-   "es": "'Eliminar '",
-   "n": 1
+   "en": "    function applyForm() {\n        const c = readForm();\n        if (!c.name) {\n            flash('A name is required.', true);\n            f.name.focus();\n            return;\n        }\n",
+   "es": "    function applyForm() {\n        const c = readForm();\n        if (!c.name) {\n            flash('El nombre es obligatorio.', true);\n            f.name.focus();\n            return;\n        }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Editing: '",
-   "es": "'Editando: '",
-   "n": 2
+   "en": "            editingIndex = contacts.length - 1;\n        }\n        dirty = true;\n        editTitle.textContent = 'Editing: ' + c.name;\n        renderAll();\n        flash('Applied “' + c.name + '” — press Save to persist.');\n    }\n\n    function removeContact(idx) {\n        const c = contacts[idx];\n        if (!c) return;\n        const label = c.name || 'this contact';\n        // Themed confirm (dialog_policy.js). Async by nature, so the removal\n        // moved INTO the callback — the old synchronous `confirm()` was the\n        // last native popup this dialog raised.\n        tlmConfirm('Delete “' + label + '” from the contacts book?',\n            'It is removed when you press Save.', 'Delete contact').then((ok) => {\n            if (!ok) return;\n            // Re-resolve: the list may have been re-rendered while the popup\n            // was open, so a stale index must never delete the wrong person.\n",
+   "es": "            editingIndex = contacts.length - 1;\n        }\n        dirty = true;\n        editTitle.textContent = 'Editando: ' + c.name;\n        renderAll();\n        flash('Se aplicó “' + c.name + '” — presiona Guardar para conservar el cambio.');\n    }\n\n    function removeContact(idx) {\n        const c = contacts[idx];\n        if (!c) return;\n        const label = c.name || 'este contacto';\n        // Themed confirm (dialog_policy.js). Async by nature, so the removal\n        // moved INTO the callback — the old synchronous `confirm()` was the\n        // last native popup this dialog raised.\n        tlmConfirm('¿Quieres eliminar “' + label + '” de la libreta de contactos?',\n            'Se elimina cuando presionas Guardar.', 'Eliminar contacto').then((ok) => {\n            if (!ok) return;\n            // Re-resolve: the list may have been re-rendered while the popup\n            // was open, so a stale index must never delete the wrong person.\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'New contact'",
-   "es": "'Contacto nuevo'",
-   "n": 1
+   "en": "                if (editingIndex > at) editingIndex -= 1;\n                renderAll();\n            }\n            flash('Removed “' + label + '” — press Save to persist.');\n        });\n    }\n\n",
+   "es": "                if (editingIndex > at) editingIndex -= 1;\n                renderAll();\n            }\n            flash('Se quitó “' + label + '” — presiona Guardar para conservar el cambio.');\n        });\n    }\n\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'A name is required.'",
-   "es": "'El nombre es obligatorio.'",
-   "n": 1
+   "en": "    function setSaving(next) {\n        isSaving = next;\n        saveBtn.disabled = next;\n        saveBtn.textContent = next ? 'Saving...' : 'Save';\n    }\n\n    function reallyCloseDialog() {\n",
+   "es": "    function setSaving(next) {\n        isSaving = next;\n        saveBtn.disabled = next;\n        saveBtn.textContent = next ? 'Guardando...' : 'Guardar';\n    }\n\n    function reallyCloseDialog() {\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Applied “'",
-   "es": "'Se aplicó “'",
-   "n": 1
+   "en": "        // close moved into the callback; discarding edits is destructive, so\n        // any other dismissal (X, Cancel) keeps the dialog open.\n        if (!dirty) { reallyCloseDialog(); return; }\n        tlmConfirm('Discard unsaved contact changes?',\n            'The contacts you added or edited will not be saved.',\n            'Unsaved changes').then((ok) => {\n            if (ok) reallyCloseDialog();\n        });\n    }\n",
+   "es": "        // close moved into the callback; discarding edits is destructive, so\n        // any other dismissal (X, Cancel) keeps the dialog open.\n        if (!dirty) { reallyCloseDialog(); return; }\n        tlmConfirm('¿Quieres descartar los cambios sin guardar de los contactos?',\n            'Los contactos que agregaste o editaste no se van a guardar.',\n            'Cambios sin guardar').then((ok) => {\n            if (ok) reallyCloseDialog();\n        });\n    }\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'” — press Save to persist.'",
-   "es": "'” — presiona Guardar para conservar el cambio.'",
-   "n": 2
+   "en": "            setSaving(false);\n            if (d.ok) {\n                dirty = false;\n                flash('Saved ' + d.count + (d.count === 1 ? ' contact.' : ' contacts.'));\n            } else {\n                flash('Save failed: ' + (d.error || 'unknown error'), true);\n            }\n        }).catch(err => { setSaving(false); flash('Save failed: ' + err, true); });\n    }\n\n    closeBtn.onclick = closeDialog;\n",
+   "es": "            setSaving(false);\n            if (d.ok) {\n                dirty = false;\n                flash('Se guardó la libreta: ' + d.count + (d.count === 1 ? ' contacto.' : ' contactos.'));\n            } else {\n                flash('Error al guardar: ' + (d.error || 'error desconocido'), true);\n            }\n        }).catch(err => { setSaving(false); flash('Error al guardar: ' + err, true); });\n    }\n\n    closeBtn.onclick = closeDialog;\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'this contact'",
-   "es": "'este contacto'",
-   "n": 1
+   "en": "    editingIndex = -1;\n    dirty = false;\n    fillForm(null);\n    editTitle.textContent = 'Pick a contact, or press “New”';\n    listEl.innerHTML = '';\n    listEl.appendChild(listMessage('Loading...'));\n    warn.textContent = '';\n    setSaving(false);\n    legend.textContent = '';\n",
+   "es": "    editingIndex = -1;\n    dirty = false;\n    fillForm(null);\n    editTitle.textContent = 'Elige un contacto o presiona “Nuevo”';\n    listEl.innerHTML = '';\n    listEl.appendChild(listMessage('Cargando...'));\n    warn.textContent = '';\n    setSaving(false);\n    legend.textContent = '';\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'Delete “'",
-   "es": "'¿Quieres eliminar “'",
-   "n": 1
+   "en": "            if (!payload || payload.ok === false) {\n                listEl.innerHTML = '';\n                listEl.appendChild(listMessage(\n                    'Load failed: ' + ((payload && payload.error) || 'unknown error')));\n                return;\n            }\n            contacts = (payload.contacts || []).map(c => Object.assign({}, c));\n",
+   "es": "            if (!payload || payload.ok === false) {\n                listEl.innerHTML = '';\n                listEl.appendChild(listMessage(\n                    'Error al cargar: ' + ((payload && payload.error) || 'error desconocido')));\n                return;\n            }\n            contacts = (payload.contacts || []).map(c => Object.assign({}, c));\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   },
   {
-   "en": "'” from the contacts book?'",
-   "es": "'” de la libreta de contactos?'",
-   "n": 1
-  },
-  {
-   "en": "'It is removed when you press Save.'",
-   "es": "'Se elimina cuando presionas Guardar.'",
-   "n": 1
-  },
-  {
-   "en": "'Delete contact'",
-   "es": "'Eliminar contacto'",
-   "n": 1
-  },
-  {
-   "en": "'Removed “'",
-   "es": "'Se quitó “'",
-   "n": 1
-  },
-  {
-   "en": "'Saving...'",
-   "es": "'Guardando...'",
-   "n": 1
-  },
-  {
-   "en": "'Save'",
-   "es": "'Guardar'",
-   "n": 1
-  },
-  {
-   "en": "'Discard unsaved contact changes?'",
-   "es": "'¿Quieres descartar los cambios sin guardar de los contactos?'",
-   "n": 1
-  },
-  {
-   "en": "'The contacts you added or edited will not be saved.'",
-   "es": "'Los contactos que agregaste o editaste no se van a guardar.'",
-   "n": 1
-  },
-  {
-   "en": "'Unsaved changes'",
-   "es": "'Cambios sin guardar'",
-   "n": 1
-  },
-  {
-   "en": "'Saved '",
-   "es": "'Se guardó la libreta: '",
-   "n": 1
-  },
-  {
-   "en": "'Save failed: '",
-   "es": "'Error al guardar: '",
-   "n": 2
-  },
-  {
-   "en": "'unknown error'",
-   "es": "'error desconocido'",
-   "n": 2
-  },
-  {
-   "en": "'Pick a contact, or press “New”'",
-   "es": "'Elige un contacto o presiona “Nuevo”'",
-   "n": 1
-  },
-  {
-   "en": "'Loading...'",
-   "es": "'Cargando...'",
-   "n": 1
-  },
-  {
-   "en": "'Load failed: '",
-   "es": "'Error al cargar: '",
-   "n": 2
-  },
-  {
-   "en": "'<button type=\"button\" class=\"ctb-del\" title=\"Delete contact\">'",
-   "es": "'<button type=\"button\" class=\"ctb-del\" title=\"Eliminar contacto\">'",
-   "n": 1
-  },
-  {
-   "en": "'aka '",
-   "es": "'alias '",
-   "n": 1
-  },
-  {
-   "en": "'contact'",
-   "es": "'contacto'",
-   "n": 1
-  },
-  {
-   "en": "' contact.'",
-   "es": "' contacto.'",
-   "n": 1
-  },
-  {
-   "en": "' contacts.'",
-   "es": "' contactos.'",
-   "n": 1
+   "en": "        })\n        .catch(err => {\n            listEl.innerHTML = '';\n            listEl.appendChild(listMessage('Load failed: ' + err));\n        });\n}\n",
+   "es": "        })\n        .catch(err => {\n            listEl.innerHTML = '';\n            listEl.appendChild(listMessage('Error al cargar: ' + err));\n        });\n}\n",
+   "n": 1,
+   "codigo": "Contrato operativo de la edición española, puntos de espera y regresiones; conserva la lógica y traducciones existentes fuera de los cambios declarados."
   }
  ],
  "conservar": [

@@ -28,7 +28,7 @@
     const normalize = value => String(value).replace(/\r\n?|\n/g, '\n');
     const dirty = () => !!current && editor.getText() !== current.baseline;
     const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
-        decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('csrftoken='))?.slice(10) || '');
+        decodeURIComponent(document.cookie.split('; ').find(v => v.startsWith('tlm_csrf_es_mx='))?.slice('tlm_csrf_es_mx='.length) || '');
 
     function beforeUnload(event) {
         if (!dirty() && !saving) return;

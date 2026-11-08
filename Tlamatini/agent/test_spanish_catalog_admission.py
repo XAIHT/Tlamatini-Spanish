@@ -80,6 +80,11 @@ process.stdout.write(JSON.stringify(rows.map(row => {
                 self.assertEqual(payload['input'], row['promptContent'])
                 for key in ('multi_turn_enabled', 'acpx_enabled', 'step_by_step_enabled'):
                     self.assertEqual(payload[key], request[key])
+                if row['idPrompt'] in (2, 3, 4, 5, 6, 7, 8, 20, 21, 22):
+                    self.assertFalse(request['step_by_step_enabled'],
+                                     'The common instance contract must not enable guided mode')
+                if row['idPrompt'] in (1, 19, 69, 70, 75, 82, 83, 84, 97, 104, 108, 121, 129):
+                    self.assertTrue(request['step_by_step_enabled'])
                 if 'Torrenter' in row['promptContent']:
                     self.assertTrue(request['multi_turn_enabled'])
                     self.assertTrue(request['exec_report_enabled'])
@@ -111,7 +116,9 @@ process.stdout.write(JSON.stringify(rows.map(row => {
                 self.assertNotIn('chat_agent_window_present', row.promptContent)
                 self.assertRegex(row.promptContent, r'window_present(?:\*\* \(| con )title=')
                 # Window-management agents still use their own window_title key.
-                self.assertIn("window_title='Notepad'", row.promptContent)
+                self.assertIn("match_mode='exact'", row.promptContent)
+                self.assertIn('window_title={{ título COMPLETO devuelto }}', row.promptContent)
+                self.assertNotIn('input_sequence="alt+n"', row.promptContent)
 
     def test_repairs_preserve_custom_edits_and_order_and_are_idempotent(self):
         migration = import_module('agent.migrations.0222_repair_prompt_catalog')

@@ -25,7 +25,7 @@
 let _contactsKeydownHandler = null;
 
 function _ctbCsrf() {
-    const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+    const m = document.cookie.match(/(?:^|; )tlm_csrf_es_mx=([^;]+)/);
     return m ? decodeURIComponent(m[1]) : '';
 }
 
