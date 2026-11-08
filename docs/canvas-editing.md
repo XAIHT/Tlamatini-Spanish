@@ -55,6 +55,12 @@ line terminators are retained by line, and additional lines use the first
 original terminator (LF for a file without one). Empty files can be saved. Text
 editing and native saves have a 64 MiB limit.
 
+Desde la corrección del 2026-11-07, un carácter de control aislado (por ejemplo,
+BEL o retroceso dentro de un README generado desde PowerShell) no convierte
+todo el documento en binario. Después de decodificar estrictamente, el editor
+rechaza NUL y contenido con más de un 30 % de controles no blancos. Los controles
+aislados se conservan, no se eliminan ni se «reparan» al abrir o guardar.
+
 ## Implementation and safeguards
 
 `agent_page_canvas.js` retains document loading, refresh, context and generation
@@ -140,6 +146,35 @@ replacement recovery. Full JavaScript lint and parsing (99 files), targeted
 Python Ruff checks and `git diff --check` passed. Collected static assets were
 refreshed before the regression run. Evidence is retained in
 `Temp/canvas-editing-visible/final-validation-transcript.txt`.
+
+## Regresión de Markdown y caracteres de control (2026-11-07)
+
+Desde una consola visible y en primer plano, ejecuta
+`node --test Tests/test_canvas_text_decoding.cjs`. Comprueba UTF-8, UTF-8 con
+BOM, UTF-16 LE/BE, conservación exacta al guardar y rechazo de archivos binarios
+o mal codificados. `npm test` incluye esta regresión. Las comprobaciones del
+router de archivos ahora verifican los mensajes reales en español.
+
+Para revisar el canvas visualmente, ejecuta
+`python -u scripts/canvas_text_decoding_visible.py --file C:\proyecto\README.md`
+en esa consola. El harness abre Chrome visible, usa el selector nativo y deja
+la ventana abierta al terminar. Su base de datos, perfil de Chrome y evidencia
+quedan aislados dentro de `Temp/canvas-text-decoding-visible` del repositorio.
+No modifica el documento original ni la base de datos de la aplicación instalada.
+
+Verificación del 2026-11-07 desde consola visible: **13/13** pruebas del decoder
+y guardado, **138/138** comprobaciones del router, lint JavaScript y análisis de
+**110** archivos JavaScript correctos. La revisión completa de Python compiló
+y pasó Ruff para **960** archivos propios, incluido el pase de nombres no
+definidos. Evidencia compartida de ambas ediciones:
+`C:\Development\XAIHT\Tlamatini\Temp\canvas-readme-parity\lint-results.json`.
+El wrapper local de `npm` se detuvo al solicitar aprobación de un script de
+dependencia; ESLint se ejecutó directamente con las dependencias ya instaladas,
+sin cambiar esa aprobación ni la configuración del gestor de paquetes.
+
+La prueba visual de siete pasos del README de Ruster se realizó en la edición
+inglesa; no constituye una aceptación visual de la edición española ni de un
+ejecutable recompilado. Angela realizará la compilación y la prueba instalada.
 
 ## Editor appearance and tutoring settings (v1.91.0)
 

@@ -78,10 +78,21 @@
         let text;
         try { text = new TextDecoder(encoding, { fatal: true, ignoreBOM: true }).decode(bytes.subarray(offset)); }
         catch (cause) { throw new Error('Este archivo no es UTF-8 válido ni UTF-16 con BOM. Convierte una copia antes de editarlo para no perder caracteres.', { cause }); }
+        // A stray BEL/backspace (for example, from PowerShell escaping a
+        // Markdown path) does not make a readable document binary. Keep those
+        // characters verbatim so opening and saving never silently repairs it.
+        // Like the drop router, use control density, after strict BOM-aware
+        // decoding; a NUL is still an unconditional binary signal.
+        let controls = 0;
         for (let i = 0; i < text.length; i++) {
-            if (text.charCodeAt(i) < 32 && !'\t\n\r\f'.includes(text[i])) {
+            const code = text.charCodeAt(i);
+            if (code === 0) {
                 throw new Error('Es un archivo binario. Ábrelo en su aplicación correspondiente.');
             }
+            if (code < 32 && !'\t\n\r\f\v'.includes(text[i])) controls++;
+        }
+        if (controls > text.length * 0.3) {
+            throw new Error('Es un archivo binario. Ábrelo en su aplicación correspondiente.');
         }
         const format = inferFormat(text, bytes);
         Object.assign(format, { encoding, bom: offset > 0,

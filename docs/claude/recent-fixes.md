@@ -53,6 +53,22 @@ servicios externos o acciones de hardware descritas por las muestras.
 
 ---
 
+## 2026-11-07 — Markdown legible rechazado como archivo binario
+
+`agent_page_editing.js::decodeFile` rechazaba un archivo completo por un solo
+control C0 no blanco. El README UTF-8 de Ruster contiene dos BEL y un retroceso
+entre texto Markdown legible. Ahora, después de la decodificación estricta con
+BOM, se rechazan NUL y contenido con más de un 30 % de controles no blancos;
+los controles aislados se conservan exactamente. No restaures el rechazo por
+un solo control ni uses la extensión `.md` para omitir la validación.
+
+La corrección conserva los mensajes en español y actualiza el sufijo de caché
+`-canvas-text-2`. Las pruebas de `Tests/test_canvas_text_decoding.cjs` verifican
+apertura y guardado sin pérdidas en cuatro codificaciones y el rechazo de
+contenido binario o mal codificado. El router de archivos conserva su lógica;
+sus pruebas ahora esperan los mensajes españoles, no los de la edición inglesa.
+Consulta [la guía y los límites de la verificación](../canvas-editing.md).
+
 ## 2026-10-28 — Spanish names across avatar, Orpheus and Piper (Spanish source)
 
 `spanish_pronunciation.py` is the shared name catalog; account names are separate

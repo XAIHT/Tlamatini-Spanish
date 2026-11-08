@@ -460,3 +460,14 @@ until v1.83.0 replaced it on 2026-10-14). The two tags before it, `v1.79.0`
 published release, and **no `v1.81.0` tag exists** — a skipped number is allowed;
 SemVer only requires that versions increase. Read `gh release list` for
 publication, and the frozen code itself when it matters whether a change shipped.
+
+## Tipo de distribución y compilador conjunto — 2026-11-07
+
+Los scripts completos privados/públicos integran su tipo en `agent._version`.
+El registro `tlamatini.log` comienza con la versión y `PRIVADA (Private)` o
+`PUBLICA (Public)`; el código fuente muestra `DESARROLLO`. El lanzador conjunto
+anticipa la versión final mediante el resolvedor y emisor real de cada edición,
+compara los números que mostrarán las aplicaciones antes de compilar y fija un
+único `--version` para ambas. Respeta la variable de entorno y no exige etiquetas
+en HEAD. `--Override_versioning X.Y.Z` permite elegir un número común.
+Consulta la [guía del compilador conjunto](docs/combined-release-builder.md).

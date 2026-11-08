@@ -233,15 +233,15 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
     const t = boot({ fetchImpl: async () => jsonResponse({ ok: true, added: ['fs', 'web'], updated: [] }) });
     await t.api.dropEntries([entry(makeFile('c.json', MCP_JSON))]);
     eq(t.log.confirms.length, 1, 'the import is confirmed first');
-    ok(t.log.confirms[0].primary.indexOf('2 MCP servers') !== -1, 'the confirm counts the servers');
+    ok(t.log.confirms[0].primary.indexOf('2 servidores MCP') !== -1, 'the confirm counts the servers');
     ok(t.log.confirms[0].secondary.indexOf('fs, web') !== -1, 'and names them');
-    ok(t.log.confirms[0].secondary.indexOf('launch programs') !== -1, 'and warns they can run programs');
+    ok(t.log.confirms[0].secondary.indexOf('ejecutar programas') !== -1, 'and warns they can run programs');
     eq(t.log.fetches.length, 1, 'one import request');
     eq(t.log.fetches[0][0], '/agent/external_mcps/import/', 'to the import endpoint');
     eq(t.log.fetches[0][1].headers['X-CSRFToken'], 'tok', 'with the CSRF token');
     eq(JSON.parse(t.log.fetches[0][1].body).mcpServers.fs.command, 'npx', 'carrying the servers');
     eq(t.log.dispatched[0].type, 'tlm:external-mcps-imported', 'the External MCPs dialog is told to refresh');
-    ok(t.log.alerts.some((a) => a.title === 'Import complete'), 'the result is reported');
+    ok(t.log.alerts.some((a) => a.title === 'Importación completa'), 'the result is reported');
 }
 
 // ═══ 7. cancel, failure, session expiry ═══
@@ -250,30 +250,30 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
     t.ctl.confirm = false;
     await t.api.dropEntries([entry(makeFile('c.json', MCP_JSON))]);
     eq(t.log.fetches.length, 0, 'Cancel imports nothing');
-    ok(t.toastText().indexOf('Nothing was imported') !== -1, 'and says so');
+    ok(t.toastText().indexOf('No se importó nada') !== -1, 'and says so');
 }
 {
     const t = boot({ fetchImpl: async () => jsonResponse({ ok: false, error: 'disk full' }, { ok: false, status: 500 }) });
     await t.api.dropEntries([entry(makeFile('c.json', MCP_JSON))]);
-    ok(t.log.alerts.some((a) => a.title === 'Import failed' && a.message.indexOf('disk full') !== -1), 'a server error is shown');
+    ok(t.log.alerts.some((a) => a.title === 'Error al importar' && a.message.indexOf('disk full') !== -1), 'a server error is shown');
 }
 {
     const t = boot({ fetchImpl: async () => jsonResponse('<html>', { redirected: true, type: 'text/html' }) });
     await t.api.dropEntries([entry(makeFile('c.json', MCP_JSON))]);
-    ok(t.log.alerts.some((a) => a.message.indexOf('session expired') !== -1), 'an expired session is explained');
+    ok(t.log.alerts.some((a) => a.message.indexOf('sesión expiró') !== -1), 'an expired session is explained');
 }
 {
     const t = boot({ fetchImpl: async () => jsonResponse({ ok: true, added: [], updated: [] }) });
     await t.api.dropEntries([entry(makeFile('c.json', MCP_JSON))]);
-    ok(t.log.alerts.some((a) => a.title === 'Nothing to import'), 'importing zero servers is not called a success');
+    ok(t.log.alerts.some((a) => a.title === 'Nada que importar'), 'importing zero servers is not called a success');
 }
 
-// ═══ 8. after an import, the chat page offers to activate ═══
+// ═══ 8. after an import, the página del chat offers to activate ═══
 {
     const t = boot({ openDialog: true, fetchImpl: async () => jsonResponse({ ok: true, added: ['fs'], updated: [] }) });
     await t.api.dropEntries([entry(makeFile('c.json', '{"command":"npx"}'))]);
     eq(t.log.confirms.length, 2, 'a second question follows the import');
-    eq(t.log.confirms[1].options.cancelLabel, 'Later', 'activation can wait');
+    eq(t.log.confirms[1].options.cancelLabel, 'Más tarde', 'activation can wait');
     ok(t.log.calls.indexOf('dialog-opened') !== -1, 'confirming opens External > MCPs');
 }
 
@@ -288,7 +288,7 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
         entry(makeFile('doc.pdf', ascii('%PDF-1.4'))),
         entry(makeFile('m.json', MCP_JSON))
     ]);
-    eq(t.log.calls.filter((c) => c !== 'confirm:Import complete'), ['confirm:Import MCP servers', 'image:p.png', 'docs:a.py,doc.pdf'],
+    eq(t.log.calls.filter((c) => c !== 'confirm:Importación completa'), ['confirm:Importar servidores MCP', 'image:p.png', 'docs:a.py,doc.pdf'],
         'MCP first, then the image, then ONE call for the documents in drop order');
 }
 
@@ -299,7 +299,7 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
     t.api.register(['pdf', 'markdown', 'text'], (files) => { seen.push(...files.map((f) => f.name)); }, { label: 'Document -> canvas' });
     await t.api.dropEntries([entry(makeFile('package.json', '{"name":"x"}')), entry(makeFile('bad.json', '{"mcpServers": {'))]);
     eq(seen, ['package.json', 'bad.json'], 'JSON that is not an MCP config opens as a document');
-    ok(t.toastText().indexOf('bad.json is not valid JSON') !== -1, 'and broken JSON is reported');
+    ok(t.toastText().indexOf('bad.json no es un JSON válido') !== -1, 'and broken JSON is reported');
 }
 
 // ═══ 11. what a page cannot use is explained, never garbage ═══
@@ -307,22 +307,22 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
     const t = boot();
     await t.api.dropEntries([entry(makeFile('p.png', bytes(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A))), entry(makeFile('a.zip', bytes(0x50, 0x4B, 0x03, 0x04)))]);
     const text = t.toastText();
-    ok(text.indexOf('Skipped') !== -1, 'skipped files are announced');
-    ok(text.indexOf('p.png (image)') !== -1 && text.indexOf('a.zip (archive)') !== -1, 'with their kind');
-    ok(text.indexOf('chat page') !== -1, 'and where images can go');
-    ok(text.indexOf('This page accepts') !== -1, 'and what this page does accept');
+    ok(text.indexOf('Omitidos') !== -1, 'skipped files are announced');
+    ok(text.indexOf('p.png (imagen)') !== -1 && text.indexOf('a.zip (archivo comprimido)') !== -1, 'with their kind');
+    ok(text.indexOf('página del chat') !== -1, 'and where images can go');
+    ok(text.indexOf('Esta página acepta') !== -1, 'and what this page does accept');
 }
 {
     const t = boot();
     await t.api.dropEntries([{ file: { name: 'project' }, isDirectory: true }]);
-    ok(t.toastText().indexOf('Folders cannot be dropped') !== -1, 'a folder is explained');
+    ok(t.toastText().indexOf('No se pueden soltar carpetas') !== -1, 'a folder is explained');
 }
 
 // ═══ 12. the login page: never navigate, never import ═══
 {
     const t = boot({ auth: 'none', fetchImpl: async () => { throw new Error('must not fetch'); } });
     await t.api.dropEntries([entry(makeFile('c.json', MCP_JSON))]);
-    ok(t.toastText().indexOf('Sign in first') !== -1, 'asks the user to sign in');
+    ok(t.toastText().indexOf('Primero inicia sesión') !== -1, 'asks the user to sign in');
     eq(t.log.confirms.length + t.log.fetches.length, 0, 'and does nothing else');
 }
 
@@ -338,7 +338,7 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
 {
     const t = boot({ popups: false });
     await t.api.dropEntries([entry(makeFile('x.fpmt', '{}'))]);
-    ok(t.toastText().indexOf('Allow pop-ups') !== -1, 'a blocked pop-up is explained');
+    ok(t.toastText().indexOf('Permite las ventanas emergentes') !== -1, 'a blocked pop-up is explained');
 }
 {
     const t = boot();
@@ -354,7 +354,7 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
     const t = boot();
     t.api.register('text', () => { throw new Error('boom'); }, { label: 'x' });
     await t.api.dropEntries([entry(makeFile('a.py', 'x'))]);
-    ok(t.log.alerts.some((a) => a.title === 'File drop' && a.message.indexOf('boom') !== -1), 'the failure is shown');
+    ok(t.log.alerts.some((a) => a.title === 'Soltar archivos' && a.message.indexOf('boom') !== -1), 'the failure is shown');
     let ran = false;
     t.api.register('text', () => { ran = true; }, { label: 'x' });
     await t.api.dropEntries([entry(makeFile('b.py', 'x'))]);
@@ -369,7 +369,7 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
     const first = t.api.dropEntries([entry(makeFile('a.py', 'x'))]);
     await settle();
     await t.api.dropEntries([entry(makeFile('b.py', 'x'))]);
-    ok(t.toastText().indexOf('Still working') !== -1, 'a second drop during the first is told to wait');
+    ok(t.toastText().indexOf('Todavía se está procesando') !== -1, 'a second drop during the first is told to wait');
     release();
     await first;
     let ran = false;
@@ -441,15 +441,15 @@ const MCP_JSON = '{"mcpServers":{"fs":{"command":"npx","args":["-y","fs-server"]
 {
     const t = boot();
     const json = t.api.hintLines({ count: 1, kinds: ['json'] });
-    ok(json[0].text.indexOf('MCP server config') === 0 && !json[0].off, 'JSON: the MCP import is announced everywhere');
-    ok(!json.some((l) => l.text.indexOf('Any other JSON') === 0), 'with no document handler there is no "other JSON" line');
+    ok(json[0].text.indexOf('Configuración de servidor MCP') === 0 && !json[0].off, 'JSON: the MCP import is announced everywhere');
+    ok(!json.some((l) => l.text.indexOf('Cualquier otro JSON') === 0), 'with no document handler there is no "other JSON" line');
     const image = t.api.hintLines({ count: 1, kinds: ['image'] });
-    ok(image[0].off && image[0].text.indexOf('Images are not used') === 0, 'images are marked unused on a page that cannot take them');
+    ok(image[0].off && image[0].text.indexOf('Las imágenes no se usan') === 0, 'images are marked unused on a page that cannot take them');
     t.api.register(['pdf', 'markdown', 'text'], () => {}, { label: 'Document -> opens in the canvas' });
     t.api.register('image', () => {}, { label: 'Image -> attached' });
-    ok(t.api.hintLines({ count: 1, kinds: ['json'] }).some((l) => l.text.indexOf('Any other JSON') === 0), 'with a canvas, other JSON is announced too');
+    ok(t.api.hintLines({ count: 1, kinds: ['json'] }).some((l) => l.text.indexOf('Cualquier otro JSON') === 0), 'with a canvas, other JSON is announced too');
     eq(t.api.hintLines({ count: 1, kinds: ['image'] })[0].text, 'Image -> attached', 'a registered label is what the user reads');
-    eq(t.api.hintLines({ count: 0, kinds: [] })[0].text.indexOf('Release to let Tlamatini decide'), 0, 'an unknown drag still gets a hint');
+    eq(t.api.hintLines({ count: 0, kinds: [] })[0].text.indexOf('Suelta para que Tlamatini decida'), 0, 'an unknown drag still gets a hint');
 }
 
 console.log('FILE_DROP_ROUTER_CASES_OK ' + checks);

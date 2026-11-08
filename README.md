@@ -303,6 +303,7 @@ Elige una puerta de entrada y profundiza tanto como lo necesite tu proyecto.
 | [Atlas de arquitectura · PDF](Tlamatini-Architecture.pdf) | Un mapa visual del sistema y el inventario registrado de su repositorio. |
 | [Dossier del proyecto · PDF](tlamatini_app_summary.pdf) · [Deck técnico · PowerPoint](Tlamatini_eXtended_Artificial_Intelligence_Humanly_Tempered.pptx) | Resúmenes del proyecto que puedes descargar. |
 | [Documentación para contribuidores](docs/claude/INDEX.md) · [Versioning](VERSIONING.md) | Contratos de ingeniería e historia de releases. |
+| [Compilación conjunta](docs/combined-release-builder.md) | Versiones privadas/públicas en paralelo, etiquetas coincidentes y registros de inicio. |
 
 <details>
 <summary><b>Por dentro</b></summary>
