@@ -16,6 +16,11 @@ carries the exact keywords the catalog classifier (static/agent/js/tools_dialog.
 ::classifyPromptModes) keys on to badge it Multi-turn + Step-by-Step + Exec-report
 (and NOT ACPX) and to run createsuperuser in both frozen and source modes.
 """
+from importlib import import_module
+from types import SimpleNamespace
+
+from django.apps import apps
+from django.db import connection
 from django.test import TestCase
 
 from agent.models import Prompt
@@ -34,9 +39,9 @@ class CreateSuperuserWizardPromptTests(TestCase):
         # 0182-0185): `[[ ... ]]` marks a value the USER types. The old
         # `----<set name here>----` marker no longer exists anywhere.
         self.assertIn('[[ ESCRIBE AQUÍ EL NOMBRE DE USUARIO', p.promptContent)
-        # `{{ ... }}` marks a value TLAMATINI fills at runtime (the standardized
-        # grammar); the old `<USERNAME>` angle form is now a REPORT slot only.
-        self.assertIn('toma esa respuesta como {{ el nombre de usuario }} y continúa al Paso 1',
+        # The closed handler accepts the next contextual reply as the username;
+        # the model does not need to expand a command or execute a tool.
+        self.assertIn('Toma mi siguiente respuesta con el nombre como la contestación',
                       p.promptContent)
 
     def test_catalog_preserves_ids_and_wizard_first(self):
@@ -54,7 +59,7 @@ class CreateSuperuserWizardPromptTests(TestCase):
         # three toolbar checkboxes on click.
         c = self._wizard().promptContent
         self.assertIn('Multi-Turn', c)            # -> Multi-turn (+ Exec-report)
-        self.assertIn('chat_agent_executer', c)   # -> Multi-turn (operator tool)
+        self.assertIn('Exec report', c)          # explicit catalog toolbar mode
         # -> Step-by-Step (hyphenated form + intent word; the spaced "step by step"
         #    used elsewhere in the catalog must NOT trip the same detector).
         #    Spanish edition: the same detector also accepts "wizard/casillas ... Paso a paso".
@@ -71,13 +76,88 @@ class CreateSuperuserWizardPromptTests(TestCase):
 
     def test_runs_in_both_frozen_and_source(self):
         c = self._wizard().promptContent
-        self.assertIn('Tlamatini-Spanish.exe', c)
-        self.assertIn('management_argv', c)
+        self.assertIn('En desarrollo, usa el Python exacto del proceso', c)
         self.assertIn('Tlamatini/manage.py', c)
-        self.assertIn('execute_forked_window=true', c)          # visible console
-        self.assertIn('non_blocking=true', c)                   # detached, returns
+        self.assertIn('En una instalación, usa el ejecutable propio de esta instancia', c)
+        self.assertIn('comando integrado createuserconsole', c)
+        self.assertIn('consola interactiva visible y devuelve el control inmediatamente', c)
         self.assertIn('sin reiniciar', c)
         self.assertIn('MISMA dirección', c)
         self.assertNotIn('http://localhost:8000', c)
         self.assertIn('HECHO', c)
         self.assertIn('SIN VENTANA', c)
+
+    def test_current_card_uses_native_handoff_without_tool_or_shell_claims(self):
+        text = self._wizard().promptContent
+        self.assertIn('sin pedir a un modelo que construya una orden ni invocar agentes auxiliares', text)
+        self.assertIn('Nunca interpoles el nombre ni la contraseña como código de shell', text)
+        for obsolete in ('Notifier', 'notifier', 'CMD', '.bat', 'chat_agent_executer',
+                         'target.sound_enabled', 'execute_forked_window'):
+            with self.subTest(obsolete=obsolete):
+                self.assertNotIn(obsolete, text)
+
+    def test_interactive_console_handoff_does_not_wait_for_vision(self):
+        text = self._wizard().promptContent
+        self.assertIn('devuelve el control inmediatamente', text)
+        self.assertIn('No captures la consola de credenciales', text)
+        self.assertIn('no ejecutes Image-Interpreter', text)
+        self.assertIn('no consultes agentes ni abras otra consola mientras esta siga abierta', text)
+        self.assertIn('ERROR: conserva la consola existente', text)
+        self.assertIn('SIN VENTANA: intenta traer al frente la consola', text)
+        self.assertIn('Un lanzamiento solicitado no confirma por sí mismo', text)
+
+    def test_console_repair_is_reversible_idempotent_and_preserves_metadata(self):
+        migration = import_module('agent.migrations.0227_create_superuser_console_handoff')
+        editor = SimpleNamespace(connection=connection)
+        row = self._wizard()
+        metadata = (row.promptName, row.category, row.sort_rank, row.hidden)
+        self.assertEqual(row.promptContent, migration.WIZARD_PROMPT)
+        migration.reverse(apps, editor)
+        row.refresh_from_db()
+        self.assertEqual(row.promptContent, migration.OLD_WIZARD_PROMPT)
+        migration.repair(apps, editor)
+        migration.repair(apps, editor)
+        row.refresh_from_db()
+        self.assertEqual(row.promptContent, migration.WIZARD_PROMPT)
+        self.assertEqual((row.promptName, row.category, row.sort_rank, row.hidden), metadata)
+
+    def test_console_repair_preserves_customized_cards(self):
+        migration = import_module('agent.migrations.0227_create_superuser_console_handoff')
+        editor = SimpleNamespace(connection=connection)
+        row = self._wizard()
+        custom = migration.OLD_WIZARD_PROMPT + '\nMi instrucción propia.'
+        row.promptContent = custom
+        row.hidden = True
+        row.sort_rank = 999
+        row.save()
+        migration.repair(apps, editor)
+        migration.reverse(apps, editor)
+        row.refresh_from_db()
+        self.assertEqual(row.promptContent, custom)
+        self.assertTrue(row.hidden)
+        self.assertEqual(row.sort_rank, 999)
+
+    def test_console_repair_refreshes_exact_legacy_0227_card_only(self):
+        migration = import_module('agent.migrations.0227_create_superuser_console_handoff')
+        editor = SimpleNamespace(connection=connection)
+        row = self._wizard()
+        row.promptContent = migration.LEGACY_WIZARD_PROMPT
+        row.save(update_fields=['promptContent'])
+        migration.repair(apps, editor)
+        row.refresh_from_db()
+        self.assertEqual(row.promptContent, migration.WIZARD_PROMPT)
+        # A user's extension to that earlier card is not an exact shipped default.
+        custom = migration.LEGACY_WIZARD_PROMPT + '\nMi instrucción propia.'
+        row.promptContent = custom
+        row.save(update_fields=['promptContent'])
+        migration.repair(apps, editor)
+        row.refresh_from_db()
+        self.assertEqual(row.promptContent, custom)
+
+    def test_legacy_0227_card_remains_recognized_by_native_handler(self):
+        from agent.user_creation_wizard import catalog_request
+        migration = import_module('agent.migrations.0227_create_superuser_console_handoff')
+        legacy = migration.LEGACY_WIZARD_PROMPT.replace(
+            '[[ ESCRIBE AQUÍ EL NOMBRE DE USUARIO — OBLIGATORIO ]]', 'angela_qa', 1,
+        )
+        self.assertEqual(catalog_request(legacy), (True, 'angela_qa'))

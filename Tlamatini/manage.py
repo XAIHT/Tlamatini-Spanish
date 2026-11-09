@@ -86,7 +86,13 @@ def _brand_console_window():
         user32 = ctypes.windll.user32
 
         # 1. Window title — works under any host (conhost / WT / future).
-        kernel32.SetConsoleTitleW("Tlamatini-Spanish")
+        title = "Tlamatini-Spanish"
+        if len(sys.argv) > 1 and sys.argv[1] == 'createuserconsole':
+            title += " - Create administrative user"
+            wizard_id = os.environ.get('TLAMATINI_USER_WIZARD_ID', '')
+            if wizard_id.isalnum() and len(wizard_id) <= 64:
+                title += " [" + wizard_id + "]"
+        kernel32.SetConsoleTitleW(title)
 
         # 2. Window icon — locate Tlamatini.ico next to the .exe (frozen) or
         # at the project root (source mode).
@@ -800,6 +806,10 @@ def _print_version_banner():
 
 def _setup_log_tee():
     """Redirect stdout and stderr to both the console and tlamatini.log."""
+    # An account console belongs to the already-running instance. Never truncate
+    # its server log or record interactive account input in that shared log.
+    if len(sys.argv) > 1 and sys.argv[1] in {'createsuperuser', 'createuserconsole'}:
+        return
     if getattr(sys, 'frozen', False):
         log_dir = os.path.dirname(sys.executable)
     else:

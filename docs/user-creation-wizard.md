@@ -1,99 +1,139 @@
 <!-- Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 -->
-# Create a Tlamatini login account
+# Crear una cuenta administrativa en Tlamatini-Spanish
 
 > Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
 
-Versión actual: **v1.92.4** (`689cb28`); last inspected at `a771d27c` on `main` on 2026-10-23
-(tag `ebc5c3b4`; migration 0219 lands after it).
-This guide describes the existing catalog wizard and the corrected intent
-guards; it does not assert that a particular installed binary has been updated.
+El asistente integrado abre la consola real de cuentas de Django de esta
+instancia. Devuelve el control al chat mientras introduces los datos. La
+contraseña se escribe exclusivamente en la consola; un lanzamiento aceptado
+no demuestra que la cuenta ya exista.
 
-## Use the catalog wizard
+## Uso desde el catálogo
 
-1. Open Catalog of prompts and choose the NEW user/login-account wizard. Enter
-   the desired username in its placeholder. The card enables Multi-Turn,
-   Exec Report and Step-by-Step.
-2. Tlamatini uses **Executer** to determine source versus installed mode, then
-   opens Django's interactive `createsuperuser` command in a visible console.
-   The launch uses `execute_forked_window=true` and `non_blocking=true`.
-3. Read the username shown by the actual console. Enter the intended username
-   if its default differs; email is optional. Type and confirm the password
-   only in that console, never in chat. The command creates an administrative
-   superuser account; this is not a restricted ordinary-user invitation.
-4. Wait for the console's actual success message, then reply **DONE** in chat.
-   Reply **ERROR** with the non-secret error text if it fails, or **NOWINDOW**
-   if no console appeared. Tlamatini should wait at this boundary.
-5. Follow the wizard's restart/login instructions for the detected runtime and
-   configured web port. Do not infer success merely because a command was typed
-   or a window opened.
+1. Abre **Catálogo de prompts**, elige la primera tarjeta de creación de cuentas
+   y escribe el nombre deseado. Mantén Multi-Turn, Exec report y Paso a paso.
+2. Envía la tarjeta. Con el nombre disponible, el asistente abre la consola en
+   el mismo turno. Si falta el nombre o es inválido, lo solicita y admite tu
+   corrección sin enviar ese intercambio a un modelo.
+3. Introduce el nombre deseado, el correo opcional, la contraseña y su repetición
+   en la consola. Se crea un superusuario administrativo, no una cuenta ordinaria
+   con permisos restringidos.
+4. Cuando Django confirme realmente la creación, responde **HECHO**. Usa **ERROR**
+   con el error sin secretos si falla, o **SIN VENTANA** si la consola no es
+   visible. También se aceptan DONE y NOWINDOW por compatibilidad.
+5. HECHO comprueba en la base de datos de esta instancia que el superusuario
+   indicado está activo y fue creado durante este asistente. Una vez confirmado,
+   cierra sesión y entra con esa cuenta en la misma dirección del navegador.
+   No es necesario reiniciar el servidor.
 
-The frozen command is `<install>/Tlamatini.exe createsuperuser`; source uses
-`python manage.py createsuperuser` from the Django project directory. The
-catalog derives its location from the parent of `TLAMATINI_TEMP`. It retains
-a manual fallback when a window cannot be opened. It does not ask a model to
-collect, generate or transmit the password through chat.
+La tarjeta predeterminada no espera a que esté listo el modelo, incluso cuando
+un cambio de las opciones del chat provoca su reconstrucción. El chat ordinario
+conserva sus comprobaciones normales de disponibilidad del modelo. El asistente
+no pide a un modelo generar órdenes de shell, no ejecuta Image-Interpreter,
+no captura la consola de credenciales y no consulta agentes mientras escribes.
 
-## Local pop-up checkpoints (migration 0219)
+## Permisos, conversación y procesos
 
-Migration 0219 (commit `939acf6b`, on `main` after the `v1.90.0` tag) adds one
-explicit request to the catalog card: Tlamatini shows a **local Notifier
-pop-up** (an in-browser dialog with sound) at each checkpoint. These are not
-email, Telegram, WhatsApp or any other external message, and the optional
-email field still authorizes none. The card's own explicit sentence is what
-permits these pop-ups; the guard rules below still apply to every other wording.
+Se requiere una cuenta con sesión activa. **Ask Execs** sigue solicitando
+permiso antes del lanzamiento: la denegación, la ausencia del mecanismo de
+aprobación o la cancelación impiden abrir otra consola. Se vuelve a comprobar
+la cancelación después de recibir la aprobación.
 
-| Checkpoint | When it appears |
+La respuesta de nombre o estado debe continuar la respuesta inmediatamente
+anterior de este asistente. Una conversación diferente no reactiva una solicitud
+vieja. Un nombre inválido se vuelve a solicitar. La confirmación de creación
+retira este contexto de conversación, pero conserva el identificador del proceso
+vivo que pertenece al asistente para protegerlo del recolector de huérfanos y
+del supervisor de comandos hasta que cierre la consola.
+
+Reenviar la tarjeta mientras esa consola siga abierta reutiliza la misma.
+SIN VENTANA intenta traerla al frente sin crear otra. Si ya se cerró, reenviar
+la tarjeta es un reintento explícito. ERROR no declara éxito ni repite
+automáticamente la creación. La consola permanece abierta después del comando
+para que puedas leer el resultado; pulsa Intro para cerrarla.
+
+## Selección de la instancia y de la base de datos
+
+El lanzador utiliza el ejecutable del proceso actual y la ruta absoluta de su
+proyecto Django. No selecciona otro entorno mediante PATH, una búsqueda global,
+una variable temporal heredada ni una orden proporcionada en el chat.
+
+| Modo | Comando integrado |
 | --- | --- |
-| Username needed | The card still shows `[[ ]]` instead of a username. |
-| Console input needed | The console launch succeeded; finish the prompts there. |
-| Error creating user | You reply ERROR, or the launch tool reports an error. |
-| Warning: console not visible | You reply NOWINDOW. |
-| User ready | You reply DONE after seeing `Superuser created successfully`. |
+| Desarrollo | Python exacto de la instancia + ruta absoluta a `Tlamatini/manage.py createuserconsole` |
+| Instalado | `Tlamatini-Spanish.exe createuserconsole` de esta instalación |
 
-Each checkpoint shows one pop-up; a later Continue does not repeat it. No
-success pop-up appears before you confirm the console's success message. A
-Notifier error is reported in chat, without claiming delivery and without
-re-running the account command. After an ERROR the wizard no longer reopens a
-console by itself: it checks whether the existing one still accepts input and
-offers one retry only after you confirm.
+`createuserconsole` es una subclase específica del comando real
+`createsuperuser` de Django. Conserva las comprobaciones de modelos y
+migraciones, nombres duplicados y validación de contraseñas. Las comprobaciones
+de direcciones web ajenas a la creación de cuentas no retrasan la entrada de
+datos. El nombre y la contraseña nunca se interpolan como código de shell.
 
-The pop-ups need the Notifier agent enabled in Config ▸ Configure Agents (and
-ticked, while Compact mode is on). The migration replaces the card only while
-it still matches the shipped text, so a card you edited is left alone;
-reversing the migration restores the previous text. Tests in
-`agent/test_wizard_intent_guards.py` cover the card, the migration in both
-directions and one Notifier call per wizard reply.
+La consola utiliza la base de datos de esta edición y los directorios de la
+aplicación. Su inicio no trunca el `tlamatini.log` del servidor y los datos
+privados introducidos no se copian a ese registro. El asistente no crea archivos
+temporales bajo un perfil de usuario de Windows.
 
-## The two guard corrections
+## Compatibilidad del catálogo y avisos locales
 
-The installed log on 2026-10-22 showed Executer selected correctly and then
-blocked. “I will type it” referred to the password, but enabled a sticky mode
-that reserved all command execution for the user. Tlamatini consequently
-switched to Terminater with Enter disabled. The second guard combined
-completion wording anywhere in the request with the optional email field and
-forced a notification, diverting the answer again.
+La migración **0227_create_superuser_console_handoff** reemplaza sólo la tarjeta
+predeterminada anterior conocida. Conserva las tarjetas personalizadas y sus
+metadatos. El controlador integrado también reconoce las tarjetas históricas
+completas conocidas cuando se ha sustituido únicamente el nombre. Los ejemplos
+citados, las explicaciones y las demás instrucciones personalizadas permanecen
+como solicitudes normales; no autorizan por sí mismos abrir una consola.
 
-The corrected terminal guard requires a command object for typing/entering
-ownership; ambiguous typing alone is neutral. An explicit instruction to have
-Tlamatini run a named program lifts a prior terminal lesson. Real “I will run
-the commands” requests still block general runners and force Terminater to
-type without pressing Enter.
+El asistente integrado comunica la espera, los errores y la confirmación
+**directamente en el chat**. No invoca Notifier, no reproduce sus sonidos ni
+muestra sus antiguos diálogos de puntos de control. La migración 0219 introdujo
+esos diálogos para el flujo anterior con Executer/Notifier. Esa redacción
+histórica no describe el comportamiento de la ruta integrada actual. Las
+solicitudes personalizadas que invoquen Notifier expresamente conservan las
+reglas de sus herramientas y permisos.
 
-The notification guard now requires an affirmative outbound instruction in
-the same sentence as the completion condition. Email fields, explanations in
-chat, quoted examples, negative requests and the user's DONE reply do not
-authorize a notification. These runtime rules are also stated in `prompt.pmt`.
+## Verificación visible de fuentes — 2026-11-09
 
-## Diagnose an older installation
+Las siguientes ejecuciones utilizaron navegadores reales, consolas reales de
+Django y bases de datos aisladas de prueba de fuentes. Crearon cuentas
+interactivamente y comprobaron su autenticación en la página real de inicio de
+sesión. No sustituyeron respuestas de herramientas ni inyectaron cookies de
+sesión.
 
-If the execution report says `NOT run - live-tutorial mode` during this wizard,
-inspect the matched phrase in the application log. If the response claims a
-completion notification was requested, check for `Notification-debt guard
-fired`. Preserve the request and non-secret error evidence. Updating only a
-Markdown guide or copying a `.py` file beside an EXE does not replace its frozen
-modules; delivery needs a package containing the corrected source.
+| Edición | Cuentas reales creadas y autenticadas | Comprobaciones aprobadas | Envío → campo de nombre legible | Envío → primer plano real |
+| --- | --- | --- | --- | --- |
+| Inglés | 10/10 | 130/130 | 2,351–3,961 segundos | 2,356–3,966 segundos |
+| Español | 10/10 | 130/130 | 2,241–3,153 segundos | 2,245–3,156 segundos |
 
-The focused correction passed 179 tests on 2026-10-22. It includes the real
-migrated catalog row, previous tutorial history, source/frozen command choices,
-real executor-loop checks with controlled tools, and a replay of the exact
-installed request. These tests created no real user and sent no message.
+Los grupos finales verificaron DONE/HECHO contra cada cuenta recién persistida
+y después la autenticaron mediante el formulario real de acceso. Las 20 consolas
+ya estaban al frente antes de cualquier solicitud de enfoque del verificador;
+ninguna necesitó esa ayuda. Las comprobaciones emparejadas del asistente
+tuvieron **0 diferencias de aprobación o fallo en 130 comparaciones**.
+
+El [informe fechado de verificación](user-creation-verification-2026-11-09.md)
+incluye los tiempos individuales, la distinción entre primer plano automático
+y asistido, pruebas unitarias, lint, intentos fallidos anteriores y límites
+exactos. Evidencia final:
+
+- `C:\Development\XAIHT\Tlamatini-Spanish\Temp\wizard-repair-20261109\visible-en-20261109-161020\result.json`
+- `C:\Development\XAIHT\Tlamatini-Spanish\Temp\wizard-repair-20261109\visible-es-20261109-160742\result.json`
+
+Las 20 cuentas finales son distintas de los grupos anteriores de QA y del
+operador de prueba; no representan el total de cuentas de esas bases.
+Los resultados corresponden a instancias de fuentes, no a un ejecutable
+congelado ni a un paquete instalado. Se mide desde el envío en el navegador,
+no desde un lanzamiento aceptado. Los casos unitarios con operaciones del
+sistema simuladas no cuentan como creaciones reales adicionales.
+
+## Actualización de una instalación existente
+
+Modificar las fuentes o esta guía no actualiza un ejecutable congelado.
+Reconstruye e instala un paquete que incluya los módulos y las migraciones
+corregidos antes de comprobar esa instalación. Mantén su evidencia separada de
+las pruebas de fuentes anteriores. Esta verificación enfocada del asistente de
+cuentas no acredita todos los demás prompts del catálogo.
+
+Antecedente conservado: el 2026-10-22, la corrección de las reglas de intención
+superó 179 pruebas enfocadas sin crear una cuenta real ni enviar mensajes
+externos. Ese resultado fechado no constituye evidencia del nuevo asistente
+integrado.

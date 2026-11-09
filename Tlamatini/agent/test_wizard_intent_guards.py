@@ -85,11 +85,15 @@ class WizardIntentTests(SimpleTestCase):
 
 
 class UserCreationCatalogGuardTests(TestCase):
-    """Exercise the migrated catalog request through the real tool loop, without OS/account changes."""
+    """Keep legacy/custom tool guards; current native-card tests live separately."""
 
     def setUp(self):
         guard.reset()
-        self.prompt = Prompt.objects.get(idPrompt=1).promptContent
+        # The native handler now owns the current card. Preserve the earlier
+        # Executer/Notifier tool-loop contract without pretending it tests the
+        # direct handler; test_user_creation_wizard covers that native path.
+        self.prompt = importlib.import_module(
+            'agent.migrations.0227_create_superuser_console_handoff').LEGACY_WIZARD_PROMPT
         self.assertIn("createsuperuser", self.prompt)
         self.assertIn("la escribiré solamente en la ventana de consola", self.prompt)
 

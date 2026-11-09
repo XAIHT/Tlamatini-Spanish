@@ -18,12 +18,15 @@ class CatalogExecutionParityTests(TestCase):
         followup = import_module('agent.migrations.0225_align_catalog_execution_modes')
         latest = {number: new for number, old, new in followup.REPAIRS}
         model_upgrade = import_module('agent.migrations.0226_replace_mistral_large3')
+        wizard_upgrade = import_module('agent.migrations.0227_create_superuser_console_handoff')
         self.assertEqual(len(migration.REPAIRS), 127)
         for number, old, new in migration.REPAIRS:
             with self.subTest(card=number):
                 expected = latest.get(number, new)
                 for retired, replacement in model_upgrade.MODEL_REPLACEMENTS.items():
                     expected = expected.replace(retired, replacement)
+                if number == 1:
+                    expected = wizard_upgrade.WIZARD_PROMPT
                 self.assertEqual(Prompt.objects.get(pk=number).promptContent, expected)
                 self.assertIn('aunque una lista agrupe varias llamadas', old)
                 self.assertNotIn('aunque una lista agrupe varias llamadas', new)
@@ -52,21 +55,24 @@ class CatalogExecutionParityTests(TestCase):
 
     def test_wizard_opens_before_waiting_for_console_input(self):
         text = Prompt.objects.get(pk=1).promptContent
-        self.assertIn('abre createsuperuser EN ESTE MISMO TURNO', text)
-        self.assertIn('sin pausa independiente', text)
+        self.assertIn('Con el nombre disponible, ábrela en este mismo turno', text)
+        self.assertIn('no me pidas confirmar la identidad de la instancia', text)
         self.assertNotIn('ESPERA LISTO', text)
-        self.assertIn('execute_forked_window=true', text)
-        self.assertIn('non_blocking=true', text)
-        self.assertIn('Si falta la identidad, DETENTE', text)
+        self.assertIn('consola interactiva visible y devuelve el control inmediatamente', text)
+        self.assertIn('ejecutable canónico de esta instancia', text)
         self.assertIn('Si falta el nombre, pide solo ese dato', text)
-        self.assertIn('La contraseña no va en el chat', text)
-        self.assertIn('Un lanzamiento no acredita la creación', text)
+        self.assertIn('La contraseña la escribiré solamente en la ventana de consola, nunca en el chat', text)
+        self.assertIn('Un lanzamiento solicitado no confirma por sí mismo', text)
+        self.assertIn('comando integrado createuserconsole', text)
+        self.assertIn('no consultes agentes ni abras otra consola', text)
 
     def test_forward_migration_is_carried_by_both_release_paths(self):
         root = Path(__file__).resolve().parents[2]
         self.assertIn('agent.migrations.0224_restore_catalog_execution_parity', (root/'build.py').read_text(encoding='utf-8'))
+        self.assertIn('agent.migrations.0227_create_superuser_console_handoff', (root/'build.py').read_text(encoding='utf-8'))
         source = (root/'copy_source_assets.py').read_text(encoding='utf-8')
         self.assertIn('Tlamatini/agent/migrations/0224_restore_catalog_execution_parity.py', source)
+        self.assertIn('Tlamatini/agent/migrations/0227_create_superuser_console_handoff.py', source)
         self.assertIn('Tlamatini/agent/test_catalog_execution_parity.py', source)
 
 

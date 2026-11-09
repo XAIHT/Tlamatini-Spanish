@@ -131,6 +131,12 @@ class AgentConfig(AppConfig):
         RUN_MAIN gate below makes plain `runserver` (reloader ON) start it in the
         worker only, so the two MCP helper ports are never double-bound.
         """
+        # Account entry needs Django's auth/model initialization only. Importing
+        # the chat/MCP stack here delays the first input field unnecessarily.
+        import sys
+        if len(sys.argv) > 1 and sys.argv[1] in {'createsuperuser', 'createuserconsole'}:
+            return
+
         # ── Companion-app discovery (Tlamatini-FlowPills) ──────────────
         # Scheduled FIRST — before ANY optional-subsystem import below — on its own
         # daemon thread with a dedicated idempotency gate, so an import or startup
