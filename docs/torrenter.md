@@ -22,7 +22,17 @@ El controlador prepara únicamente la carpeta de salida de esa cuenta y concede 
 
 Un manifiesto con `verified=true` acredita la copia publicada. Si Windows rechaza Descargas, Jobs intenta usar `content_generated/Torrenter/<cuenta>/<trabajo>/` de esta edición. Si ambos destinos fallan, el panel muestra el error y se conserva el original privado. El servicio señala las copias modificadas o ausentes. Si la versión instalada solo conoce su almacén privado, el panel pide actualizar Jobs.
 
-Al seleccionar una transferencia se abre su panel de detalles. Puedes ajustar su altura en Preferencias. La cola aprovecha el espacio disponible de la ventana. Las solicitudes de credenciales usan comunicación interna de Windows sin abrir consolas. Los cambios en el controlador Python se distribuyen con el ejecutable de Tlamatini.
+Al seleccionar una transferencia se abre su panel de detalles. Puedes ajustar su altura en **Columns & view → Details pane height**. La cola aprovecha el espacio disponible de la ventana. Las solicitudes de credenciales usan comunicación interna de Windows sin abrir consolas. Los cambios en el controlador Python se distribuyen con el ejecutable de Tlamatini.
+
+## Ordenar, filtrar y personalizar la tabla
+
+Todas las columnas de datos se pueden ordenar; **Select** permanece fija. Haz clic en una cabecera para alternar entre orden ascendente y descendente. Mayús+clic añade otra prioridad de ordenación. Las flechas y sus números indican el orden activo. Los valores numéricos y las fechas se comparan por su valor real; los desconocidos quedan al final. Seeds / peers compara primero las semillas y después los pares. **Reset sorting** restaura el orden ascendente por nombre.
+
+La búsqueda combina todas las palabras entre nombres, categorías, etiquetas, hosts de trackers, rutas e identificadores. Puedes combinarla con los filtros laterales y un intervalo de porcentaje de avance. **Clear filters** restaura la cola completa. Se leen todas las páginas de la API antes de ordenar o filtrar, incluidas las transferencias posteriores a la posición 250.
+
+**Columns & view** permite mostrar u ocultar columnas, cambiar su orden y anchura mínima, compactar las filas y ajustar la altura de los detalles. Select no se puede ocultar y debe permanecer visible al menos una columna de datos. La vista, la ordenación y el tamaño de página se guardan por cuenta y navegador. **Restore default view** restablece la presentación sin modificar transferencias; **Preferences** conserva los valores predeterminados de descarga.
+
+Elige 25, 50, 100, 250 o todas las filas. La casilla de la cabecera selecciona solamente la página actual; una franja indica cuántas selecciones están fuera de ella después de filtrar o cambiar de página. **Clear selection** desmarca todo. Haz clic en una fila o pulsa Intro para abrir los detalles, aunque Name esté oculta.
 
 ## Iniciar una transferencia
 
