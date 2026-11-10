@@ -10,6 +10,20 @@
 
 > Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
 
+## 2026-11-10 — Recuperación de Torrenter y evidencia de archivos
+
+Lee el [registro de recuperación](../changes/2026-11-10-torrenter-recovery.md)
+antes de diagnosticar una descarga detenida o fallida. La terminación y la
+intención de la sesión de pares son distintas: conserva `completed_at` y
+`desired_state`, separa `previous_error` y elige Start, Resume o Recheck según el
+estado y la revisión actual. Las semillas reportadas no demuestran pares
+conectados. Mantén idénticos los archivos del panel en ambas ediciones y traduce
+la orientación de recuperación. Los cambios del planificador y de la pausa de
+disco requieren actualizar Jobs por separado; las pruebas de código no acreditan
+una instalación actualizada. Evidencia: 64 comprobaciones automáticas, 48 en
+navegador visible y 432 archivos existentes de Descargas con hashes coincidentes.
+Sin compilaciones ni commits.
+
 ## 2026-11-08 — Modelo inicial DeepSeek y actualización de visión
 
 Angela eligió `deepseek-v4.1-flash:cloud` como modelo inicial para la

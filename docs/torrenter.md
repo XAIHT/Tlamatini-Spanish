@@ -51,6 +51,44 @@ Si los cuatro espacios de consulta de metadatos están ocupados, Jobs puede resp
 
 ## Acciones
 
+### Recuperar una descarga incompleta
+
+Consulta el trabajo y su revisión actual antes de enviar una acción. **Start**
+continúa una descarga incompleta detenida; **Resume** reanuda una pausada;
+**Recheck** verifica las piezas conservadas y reintenta una descarga fallida.
+Las semillas reportadas no equivalen a semillas conectadas. Reiniciar no garantiza
+que vuelvan los pares ausentes; no repitas Stop/Recheck solo porque la tasa sea cero.
+
+El panel habilita únicamente las acciones aplicables. Una selección mixta conserva
+los trabajos no elegibles e informa cuántos omitió. Una descarga terminada sigue
+mostrando **completed** cuando su sesión de pares está detenida; no ofrece Start ni
+Cancel. `desired_state` conserva la intención de detener esa sesión. Usa **Reseed**
+para compartir de nuevo o **Recheck** para comprobar la integridad.
+Los controles de selección de archivos y fuentes siguen disponibles cuando el
+trabajo terminado está detenido.
+
+El cliente informa `download_complete`, `restart_action` y `recovery_note` al
+consultar el estado o la lista. Separa `previous_error`, procedente de un servicio
+anterior, de un error vigente. Nunca presenta un fallo de entrega como un guardado
+correcto: el manifiesto verificado y la ruta efectiva siguen acreditando la entrega.
+
+Una respuesta de sesión vacía o truncada se reintenta hasta dos veces antes de
+mostrar el error de reconexión. Este reintento nunca repite escrituras de torrents.
+
+La corrección coordinada del código de Jobs cede un espacio tras 180 segundos sin
+progreso de descarga **solo si hay trabajos elegibles bloqueados en la cola**.
+Conserva los archivos parciales y la intención de ejecutar. El reintento espera al
+menos 60 segundos y queda detrás de los trabajos en espera; aparece como
+`queued · retry scheduled`. No rota trabajos con progreso, en comprobación o
+verificación, ni los que el usuario detuvo o pausó. Antes de calcular hashes, Jobs
+espera la confirmación de libtorrent de que la pausa terminó sus operaciones de disco.
+
+Estos cambios del motor requieren actualizar Tlachihuani Jobs, instalado por
+separado. Actualizar solo Tlamatini mejora los mensajes y controles, pero no
+sustituye Jobs. Las pruebas de código del 10 de noviembre no compilaron ni
+instalaron aplicaciones ni alteraron la cola real. Consulta el
+[registro de verificación](changes/2026-11-10-torrenter-recovery.md).
+
 En Agentic Control Panel, **Esperar a que termine la descarga** tiene el valor inicial **No**. El nodo devuelve su recibo y activa los agents conectados cuando Jobs admite la transferencia. Elige **Sí** para esperar hasta que Jobs publique el manifiesto verificado de los archivos seleccionados. Pausar conserva la espera. Detener, cancelar o fallar la descarga termina la espera con un error. En YAML usa `wait_for_completion: true` o `false`.
 
 Haz clic derecho en el nodo Torrenter y abre su log para ver los nombres, archivos seleccionados, tamaños, magnet completo, rutas verificadas y hashes. Los metadatos cargados tienen un magnet generado. El archivo de actividad pertenece al flow de esa cuenta. El chat recibe un comprobante por separado.
