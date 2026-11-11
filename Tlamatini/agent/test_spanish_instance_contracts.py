@@ -107,7 +107,7 @@ class SpanishInstanceIdentityTests(SimpleTestCase):
         names = ('agent_page_editing.js','external_mcps_dialog.js','agent_page_canvas.js',
                  'acp-session.js','agent_page_state.js','chat_page_runtime_poller.js',
                  'contacts_dialog.js','skills_dialog.js','model_brain_tuning.js',
-                 'file_drop_router.js','shared-runtime-dialogs.js')
+                 'file_drop_router.js','shared-runtime-dialogs.js','voice_runtime.js')
         for name in names:
             with self.subTest(script=name):
                 source = (scripts/name).read_text(encoding='utf-8')
