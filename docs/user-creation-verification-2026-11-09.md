@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 -->
 # Verificación del asistente de cuentas — 2026-11-09
 
-Última versión publicada: **1.92.4**. [Guía del asistente](user-creation-wizard.md).
+Versión registrada durante la verificación del 2026-11-09: **1.92.4**. [Guía del asistente](user-creation-wizard.md).
 
 ## Grupo final de aceptación visible
 

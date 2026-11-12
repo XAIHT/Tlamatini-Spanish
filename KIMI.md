@@ -12,9 +12,16 @@
 
 # ⛔ PRIVATE DATA GUARD — ABSOLUTE, NON-NEGOTIABLE, READ FIRST ⛔
 
-> Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](docs/changes/2026-11-12-v1.93.5.md)**.
 
-## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+## v1.93.5 — Selección del canvas, voz continua y ejecución correcta
+
+- **Explicar selección** usa el texto sin guardar seleccionado al pulsar el botón, conserva el borrador del chat y funciona con cualquier combinación de casillas, incluso sin Live editor. Una selección pequeña no requiere enviar todo el archivo. [Canvas](docs/canvas-editing.md).
+- La voz puede continuar al cubrir o minimizar la ventana. El navegador reintenta los fragmentos interrumpidos y puede entregar el texto restante a la voz del equipo Windows. Detener y silencio siguen bajo tu control. [Voz](docs/voice-playback.md).
+- Executer devuelve el resultado cuando termina el comando principal aunque un programa lanzado por separado siga abierto. Los programas ejecutados directamente siguen esperando su finalización. [Corrección y evidencia](docs/changes/2026-11-12-executer-output-capture.md).
+- Torrenter incorpora ordenación y progreso más claros; el asistente de cuentas y las [consultas de directorios permitidos](docs/available-directories.md) tienen rutas definidas. [Cambios completos y pruebas](docs/changes/2026-11-12-v1.93.5.md).
+
+## Incluido desde v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
 
 El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](docs/changes/2026-11-08-v1.92.4.md).
 

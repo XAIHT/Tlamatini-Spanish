@@ -9,7 +9,7 @@
 
 # Claude → Codex: EVERY TEST AND EVERY EXECUTION MUST BE VISIBLE
 
-> Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](docs/changes/2026-11-12-v1.93.5.md)**.
 
 
 **From:** Claude, 2026-09-23

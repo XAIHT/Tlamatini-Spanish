@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza -->
 # Editing and saving canvas files
 
-> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
 
 Introduced in v1.89.0 (2026-10-21), carried by v1.91.0 with configurable editor behavior. The tests below retain their actual dates; source verification does not certify a newly rebuilt installed executable.
 
@@ -21,6 +21,26 @@ context read the edited source. HTML and SVG remain source text, never an active
 web page. PDF remains the complete PDF viewer: Save exports its original bytes
 as a copy and preserves the viewed document and prepared context. Flow files and
 images retain their existing dedicated routing.
+
+## Explicar el texto seleccionado
+
+Selecciona uno o varios rangos y pulsa **Explicar selección**. Tlamatini explica
+el texto exacto del momento del clic, incluidos los cambios sin guardar. Sin
+selección explica el archivo actual. Conserva el borrador del chat y la selección
+del editor; esta acción no edita ni guarda el archivo.
+
+El botón funciona con cualquier combinación de Multi-Turn, Exec report, ACPX,
+Ask Execs, Paso a paso, Modo compacto, Automodificación y contexto de internet.
+Editor en vivo puede estar en pausa e Interactor desactivado. La explicación no
+usa herramientas, historial ni contexto cargado previamente, y no espera la
+reconstrucción del contexto provocada por las casillas. Aparece en el chat normal.
+
+Una selección pequeña se envía sin el resto de un archivo grande. Se admiten
+hasta 64 rangos y 262,144 unidades UTF-16 en total, sujetos a la capacidad real
+del modelo configurado. Si la selección excede ese límite, se informa del problema
+sin recortarla silenciosamente. La explicación no conoce el código fuera de los
+fragmentos enviados. Consulta [Interactor](interactor.md) y la
+[verificación del 12 de noviembre](changes/2026-11-12-canvas-selection-explanation.md).
 
 ## Where Save writes
 

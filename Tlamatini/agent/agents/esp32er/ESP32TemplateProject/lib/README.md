@@ -1,6 +1,6 @@
 # `lib/` — private project libraries
 
-> Última versión publicada: **[v1.92.4](../../../../../../docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../../../../../../docs/changes/2026-11-12-v1.93.5.md)**.
 
 
 Each subdirectory here is compiled as its own static library and linked in

@@ -1134,7 +1134,7 @@ class ChapterOpener(FullPage):
         y = y - 16 - gh - 40
         titles = [s.title for s in ch.sections]
         if ch.key == "release":
-            titles = [s.title for s in ch.sections if s.key in {"release1923", "release1911", "release191", "release190", "lineage", "identity_release"}]
+            titles = [s.title for s in ch.sections if s.key in {"release1935_selection", "release1935_execution", "release1935_voice", "release1935_downloads", "release1935_requests", "lineage", "identity_release"}]
         if titles:
             draw_text(canv, 64, y, "EN ESTE CAPÍTULO", "sans-semibold", 7.4, "gold", space=2.2)
             y -= 12
@@ -1434,7 +1434,7 @@ def about_flow(facts, st: Styles) -> list:
         "Nada aquí se escribió de memoria. Los conteos, las versiones, los commits, el inventario de lenguajes y el árbol "
         "de archivos se derivaron de Git y de los archivos del source cuando se generó esta edición, y el generador "
         "luego volvió a abrir este documento para probar que ningún texto se desborda ni se recorta y que el árbol de archivos "
-        "coincide con el alcance declarado de la aplicación. La historia de la base de datos se resume; los valores de configuración, las credenciales y las direcciones privadas nunca se "
+        "coincide con todas las rutas seguidas por Git, incluidas las migraciones; los valores de configuración, las credenciales y las direcciones privadas nunca se "
         "reproducen.",
     ]:
         flow.append(para(text, st.body, "sans"))
@@ -1479,7 +1479,7 @@ def build_pdf(facts: dict, chapters, output) -> int:
     from dossier_content import Chapter
 
     appendix = Chapter("tree", "A", "El árbol de archivos de la aplicación",
-                       f"{facts['tree_count']:,} archivos de la aplicación, con {facts['tree_history_count']} archivos de la historia de la base de datos resumidos. "
+                       f"{facts['tree_count']:,} archivos seguidos por Git, incluidas las migraciones. "
                        "Los directorios se muestran en jade.", [], accent="gold")
     story += [NextPageTemplate("dark"), PageBreak(),
               ChapterOpener(appendix, st, "appendix_tree", "Apéndice A  ·  El árbol de archivos de la aplicación"),

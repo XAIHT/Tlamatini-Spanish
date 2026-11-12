@@ -1,6 +1,6 @@
 # Model configuration
 
-> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
 
 
 Config → Models manages **38 model, engine and voice settings** for core services
@@ -358,3 +358,7 @@ or all agents' external actions (89 then; 85 since the 2026-10-18 pruning) were 
 ## Image/video error reporting and recovery (2026-09-26)
 
 Image/video model failures accumulate in one shared, themed, non-modal fatal-error dialog with an audible notification. Tlamatini keeps running: preserve its retry/tactic ladder, cancellation controls and configured flow recovery routes. Keep the configured model identities; never report a surviving observer or raw concatenation as successful analysis. Dismiss hides the dialog while retaining its history; new failures reopen it. See [the shared behavior and verification contract](visual-analysis-errors.md).
+
+## Consultas que no necesitan clasificación de un modelo
+
+Una consulta independiente de directorios disponibles devuelve directamente las raíces del control de rutas activo. No explora el disco, concede permisos ni pide a un modelo que infiera una ruta. Las solicitudes mixtas conservan las comprobaciones normales. Consulta [Directorios disponibles](available-directories.md).

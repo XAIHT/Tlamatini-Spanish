@@ -8,7 +8,7 @@
 -->
 # ACPX & Skills in Tlamatini — A complete guide for dummies
 
-> Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](docs/changes/2026-11-12-v1.93.5.md)**.
 
 ## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
@@ -89,7 +89,7 @@ Contracts and evidence: [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), [Canvas e
 >
 > **Compact mode (2026-10-01, shipped in v1.74.0; the switch 2026-10-02, shipped in v1.75.0):** when the configured model's real window cannot hold Tlamatini's complete request, that request runs in Compact mode. As tagged in v1.74.0, ACPX was switched off for it and the ACPX checkbox was locked, so the 12 ACPX/Skill tools were not bound at all. **Since 2026-10-02 (shipped in v1.75.0, tag at `f7eb53ff`) that ACPX lock is GONE:** Compact mode is a real toolbar switch that unticks the Configure rows (all but System-Metrics, Files-Search and Current-Time) and binds exactly what the user ticks back, so an ACPX/Skill tool rides along only when its row is ticked **and** the toolbar's ACPX box is on. A small model locks the Compact mode box ON; while the box is OFF, a model that holds everything activated gets the complete request byte for byte. See `docs/claude/architecture.md` → *Compact mode* and `docs/claude/multi-turn.md` → *Multi-Turn on a small model — Compact mode*.
 
-> **Última versión publicada: Tlamatini 1.92.4.** Incluye Torrenter, configuración de 250 WPM, distribución verificada del desinstalador y entornos de compilación aislados. ACPX conserva sus 12 herramientas de ACPX/habilidades y su modelo de permisos.
+> **Última versión publicada: Tlamatini 1.93.5.** Incluye Torrenter, configuración de 250 WPM, distribución verificada del desinstalador y entornos de compilación aislados. ACPX conserva sus 12 herramientas de ACPX/habilidades y su modelo de permisos.
 
 ---
 

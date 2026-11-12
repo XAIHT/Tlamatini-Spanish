@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.92.4"><img src="https://img.shields.io/badge/RELEASE-v1.92.4-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini versión de lanzamiento v1.92.4" /></a>
+  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.93.5"><img src="https://img.shields.io/badge/RELEASE-v1.93.5-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini versión de lanzamiento v1.93.5" /></a>
   <a href="#installation"><img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-14B8A6?style=for-the-badge&labelColor=101827" alt="Windows 10 and 11" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/OPEN%20SOURCE-MIT-E9C46A?style=for-the-badge&labelColor=101827" alt="MIT open source" /></a>
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-818CF8?style=for-the-badge&labelColor=101827&logo=discord&logoColor=white" alt="Join the community on Discord" /></a>
@@ -31,7 +31,7 @@
   <a href="https://xaiht.org">Sitio web</a> ·
   <a href="BookOfTlamatini.md">Guía completa</a> ·
   <a href="Tlamatini-Architecture.pdf">Atlas de arquitectura</a> ·
-  <a href="docs/changes/2026-11-08-v1.92.4.md">Novedades</a>
+  <a href="docs/changes/2026-11-12-v1.93.5.md">Novedades</a>
 </p>
 
 > > [!IMPORTANT]
@@ -39,7 +39,7 @@
 
 <p align="center">
   <b>87 workflow agents</b> &nbsp;·&nbsp; <b>68 agents que se invocan desde el chat</b> &nbsp;·&nbsp; <b>111 tools integrados</b><br />
-  <sub>Inventario de desarrollo con Torrenter. Los 111 tools incluyen los 68 wrappers de chat. Los servidores MCP externos activos agregan sus propios tools.</sub>
+  <sub>Inventario de la versión publicada con Torrenter. Los 111 tools incluyen los 68 wrappers de chat. Los servidores MCP externos activos agregan sus propios tools.</sub>
 </p>
 
 <p align="center">
@@ -52,9 +52,16 @@
 </p>
 
 
-> Última versión publicada: **[v1.92.4](docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](docs/changes/2026-11-12-v1.93.5.md)**.
 
-## v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
+## v1.93.5 — Selección del canvas, voz continua y ejecución correcta
+
+- **Explicar selección** usa el texto sin guardar seleccionado al pulsar el botón, conserva el borrador del chat y funciona con cualquier combinación de casillas, incluso sin Live editor. Una selección pequeña no requiere enviar todo el archivo. [Canvas](docs/canvas-editing.md).
+- La voz puede continuar al cubrir o minimizar la ventana. El navegador reintenta los fragmentos interrumpidos y puede entregar el texto restante a la voz del equipo Windows. Detener y silencio siguen bajo tu control. [Voz](docs/voice-playback.md).
+- Executer devuelve el resultado cuando termina el comando principal aunque un programa lanzado por separado siga abierto. Los programas ejecutados directamente siguen esperando su finalización. [Corrección y evidencia](docs/changes/2026-11-12-executer-output-capture.md).
+- Torrenter incorpora ordenación y progreso más claros; el asistente de cuentas y las [consultas de directorios permitidos](docs/available-directories.md) tienen rutas definidas. [Cambios completos y pruebas](docs/changes/2026-11-12-v1.93.5.md).
+
+## Incluido desde v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
 
 El compilador combinado anticipa el número que informará cada edición antes de compilar, fija una versión común, ejecuta las parejas Privada/Pública en paralelo con `--self-modify` y archiva los ZIP verificados por edición, modalidad y minuto. El registro identifica la modalidad incorporada en el paquete. La preparación de dependencias usa cachés aisladas dentro de ubicaciones de la aplicación y se detiene si no existe un entorno válido. El Markdown legible con controles aislados se abre conservando sus bytes; el contenido binario sigue rechazándose. Consulta las [notas de 1.92.4](docs/changes/2026-11-08-v1.92.4.md).
 
@@ -75,7 +82,7 @@ El compilador combinado anticipa el número que informará cada edición antes d
 
 ## Edita, aprende, ejecuta
 
-El desarrollo más reciente acerca a Tlamatini al trabajo mismo: **un canvas editable, una tutora que lee tu texto en vivo y terminales reales que puedes ver.**
+La versión 1.93.5 acerca a Tlamatini al trabajo mismo: **un canvas editable, una tutora que lee tu texto en vivo y terminales reales que puedes ver.**
 
 ### ✍️ Edita el archivo junto a la conversación
 
@@ -113,13 +120,13 @@ segmento de enseñanza, elige qué dice y cuándo, y deja que la voz termine ant
 teclear. Los presets **Estándar** y **Aprendizaje guiado** te dan un punto de partida;
 la Vista previa te deja probar el borrador antes de guardar. [Explora la configuración →](docs/interaction-settings.md)
 
-**Versión de lanzamiento [1.92.4](docs/changes/2026-11-08-v1.92.4.md).** Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.
+**Versión de lanzamiento [1.93.5](docs/changes/2026-11-12-v1.93.5.md).** Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.
 
 **Desde [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración
 compartido controla el comportamiento real del editor y de la terminal en el chat y en ambos
-paneles de control. Esta configuración está incluida en la versión de lanzamiento **1.92.4**.
+paneles de control. Esta configuración está incluida en la versión de lanzamiento **1.93.5**.
 
-**Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El [registro de 1.92.4](docs/changes/2026-11-08-v1.92.4.md) describe la versión de lanzamiento completa.
+**Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El [registro de 1.93.5](docs/changes/2026-11-12-v1.93.5.md) describe la versión de lanzamiento completa.
 
 ## Habla y escucha
 
@@ -127,7 +134,7 @@ paneles de control. Esta configuración está incluida en la versión de lanzami
 
 | Tú hablas | Tlamatini habla |
 | :--- | :--- |
-| Haz clic en **Mic** junto a Enviar, espera a **Listening** y habla. Whisperer transcribe tus palabras en el chat. | El **avatar del chat** lee las respuestas con la síntesis de voz del browser, que se configura en **Config ▸ Voz**. |
+| Haz clic en **Mic** junto a Enviar, espera a **Listening** y habla. Whisperer transcribe tus palabras en el chat. | El **avatar del chat** lee las respuestas con el reproductor de voz compartido de **Config ▸ Voz**. La reproducción del equipo Windows puede continuar al cubrir o minimizar la ventana. |
 | El status de la grabación, el nivel de input y el tiempo transcurrido aparecen en el chat. La ventana de silencio predeterminada es de **3.5 segundos**. | **Talker** genera voz basada en modelos por separado. Su modelo y sus ajustes de voz están en **Config ▸ Modelos**. |
 | En **Config ▸ Micrófono**, elige **Enviar automáticamente** o **Dejar en el input del chat** para revisar primero la transcripción. | Explora la sección **Voice Commands** al inicio del Catálogo de prompts para ver ejemplos guiados. |
 
@@ -298,7 +305,7 @@ Elige una puerta de entrada y profundiza tanto como lo necesite tu proyecto.
 | :--- | :--- |
 | [Book of Tlamatini](BookOfTlamatini.md) | La guía completa, la arquitectura, los workflows y la historia del desarrollo. |
 | [Todos los agents](agents_descriptions.md) | El catálogo de especialistas y el rol de cada agent. |
-| [Registro de la versión v1.92.4](docs/changes/2026-11-08-v1.92.4.md) | El patch release actual: qué corrige y dónde. |
+| [Registro de la versión v1.93.5](docs/changes/2026-11-12-v1.93.5.md) | El patch release actual: qué corrige y dónde. |
 | [Registro del release v1.91.0](docs/changes/2026-10-23-v1.91.0.md) | Desarrollos recientes, inventario del código fuente y evidencia de verificación fechada. |
 | [Edición en el canvas](docs/canvas-editing.md) · [Interactor](docs/interactor.md) · [Terminater](docs/terminater.md) | Edita, aprende y ejecuta con control directo. |
 | [Configuración de Editor en vivo y Terminater](docs/interaction-settings.md) | Tecleo, enseñanza, narración, comportamiento de la terminal, presets y apariencia. |

@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Configuración del Editor en vivo y Terminater
 
-> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
 
 Desde la v1.92.0, ambos controles admiten hasta 250 WPM. El Editor en vivo usa 100 WPM de forma predeterminada y Terminater usa 50.
 
@@ -137,3 +137,7 @@ your choices again. Invalid values reveal their tab and field. Save failure reta
 the draft; it does not silently report success. Behavioral settings affect subsequent
 actions, shell/advisor defaults affect new terminals, and appearance updates existing
 views. See [the v1.91.0 release record](changes/2026-10-23-v1.91.0.md).
+
+## Voz fuera de la página enfocada
+
+Cubrir o minimizar el navegador ya no pausa deliberadamente la voz compartida. Si falla la voz del navegador, el texto restante puede pasar a la voz de Windows del equipo que ejecuta Tlamatini, con las mismas preferencias. La narración de interacciones conserva su cancelación y propiedad de pestaña; cerrar la página no la convierte en voz independiente del chat. Consulta [Reproducción de voz](voice-playback.md) para conocer los controles, requisitos y límites.

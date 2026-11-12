@@ -730,7 +730,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ["Abrir · Guardar", "Abre un archivo en el canvas; Guardar en el menú elige un destino con el Guardar como nativo."],
                 ["Vistas", "Muestra Canvas o Terminals; Restablecer distribución restaura el espacio de trabajo."],
                 ["Contexto", "Carga un directorio o archivo como contexto, y fija las omisiones por tipo de archivo."],
-                ["Paneles", "Agentic Control Panel, Prompt Flow Panel y, para el staff, el Admin Panel. "
+                ["Paneles", "Agentic Control Panel, Prompt Flow Panel, Fuentes de Torrenter, Descargas de Torrenter y, para el personal autorizado, Admin Panel. "
                  "Se puede usar mientras ella está ocupada."],
                 ["ACPX-Skills", "Examina, configura, diagnostica y recarga el catálogo de skills."],
                 ["Externos", "El diálogo de External MCPs: catálogo, activación y disponibilidad de runtimes."],
@@ -1803,19 +1803,19 @@ def build_chapters(f: dict) -> list[Chapter]:
     ])
 
     release = Chapter("release", "VIII", "Release actual",
-        f"Última versión publicada: {f['version']} — descargas, edición, actualizaciones y ejecución en Windows.",
+        f"Última versión publicada: {f['version']} — selecciones, captura de ejecución, voz, descargas y solicitudes directas.",
         accent="gold", sections=[
         Section("release188", "HEREDADO DE v1.88.0", "Terminales a la vista y un release privado con tus datos",
             "Tlamatini v1.88.0 introdujo Terminater; su tag se creó el 20 de octubre.",
             body=[
-                f"Terminater es el agent de workflow número {f['agents']}. Abre terminales reales de CMD y PowerShell en una nueva "
+                "Terminater es el agent de workflow número 86. Abre terminales reales de CMD y PowerShell en una nueva "
                 "área Terminals (Vistas → Terminals, o Ctrl+`) en las páginas del chat, del Agentic Control Panel y del Prompt Flow Panel"
                 ". Tlamatini teclea cada tecla como una persona, unas 50 palabras por minuto y nunca pegando, espera el "
                 "comando, lee todo su output y reporta el código de salida. Esc toma el teclado; un comando te lo puede pasar "
                 "a propósito con <<USER:hint>>.",
                 f"Un comando que deja de responder se marca como colgado y se puede detener sin perder la terminal; uno que "
                 f"sale con error es una fila roja del Exec Report aunque la terminal haya funcionado. Un solo hub en el proceso de Django "
-                f"es dueño de los shells, así que cerrar una página nunca cierra uno. Es el agent de chat wrapped número {f['wrapped']}, "
+                f"es dueño de los shells, así que cerrar una página nunca cierra uno. Es el agent de chat wrapped número 67, "
                 f"la octava operación del Prompt Flow Panel, y tiene tres tarjetas seguras en el Catálogo de prompts.",
                 "Ahora el build lo prueba dentro de la app congelada: check_terminater maneja un PowerShell real, un cmd.exe real, "
                 "el agent del pool incluido con el Python incluido y un viaje de ida y vuelta por WebSocket, y el empaquetado se detiene si "

@@ -829,7 +829,7 @@ def agenda_slide(deck: Deck, chapters):
     deck.header(sc, "CONTENTS", "Lo que cubre este dossier",
                 "Nueve capítulos de la identidad al inventario, y el árbol de archivos de la aplicación al final.")
     items = [(ch.numeral, ch.title, ch.tagline, ch.accent) for ch in chapters]
-    items.append(("A", "El árbol de archivos de la aplicación", "Archivos de la aplicación; la historia de la base de datos se resume.", "gold"))
+    items.append(("A", "El árbol de archivos de la aplicación", "Todos los archivos seguidos por Git, incluidas las migraciones.", "gold"))
     cols = 2
     per_col = math.ceil(len(items) / cols)
     gap = 0.4
@@ -1107,7 +1107,7 @@ def tree_slides(deck: Deck, tree_text: str):
         text(sc, MX, 0.42, 9.5, 0.36, one(f"APÉNDICE A  ·  ÁRBOL DE ARCHIVOS DE LA APLICACIÓN  ·  {page + 1} / {total}",
                                           "sans-semibold", 11, "copper", spacing=2.0), label="tree kicker")
         text(sc, MX, 0.80, CONTENT_W, 0.42, one(f"{deck.facts['tree_count']:,} archivos listados en el commit "
-                                                f"{deck.facts['head_short']}; {deck.facts['tree_history_count']} archivos de la historia de la base de datos resumidos.",
+                                                f"{deck.facts['head_short']}; incluye las migraciones de la base de datos.",
                                                 "sans", 13, "light_muted"), label="tree lede")
         for col in range(TREE_COLS):
             part = chunk[col * per_col:(col + 1) * per_col]
@@ -1184,7 +1184,7 @@ def build_pptx(facts: dict, chapters, output) -> int:
     from dossier_content import Chapter
 
     appendix = Chapter("tree", "A", "El árbol de archivos de la aplicación",
-                       f"{facts['tree_count']:,} archivos de la aplicación, con {facts['tree_history_count']} archivos de la historia de la base de datos resumidos.", [],
+                       f"{facts['tree_count']:,} archivos seguidos por Git, incluidas las migraciones.", [],
                        accent="gold")
     sc = divider_slide(deck, appendix)
     deck.chrome(sc, "Apéndice A")

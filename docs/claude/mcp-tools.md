@@ -8,7 +8,7 @@
 -->
 # Tlamatini — Creating a New MCP or Tool
 
-> Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
 
 ## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 

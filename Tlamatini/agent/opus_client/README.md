@@ -8,7 +8,7 @@
 -->
 # Claude Opus 4.5 Python Client
 
-> Última versión publicada: **[v1.92.4](../../../docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../../../docs/changes/2026-11-12-v1.93.5.md)**.
 
 
 A comprehensive, production-ready Python client for interacting with Claude Opus 4.5 via the Anthropic API. Supports text, images, PDFs, tools/functions, streaming, and conversation management.

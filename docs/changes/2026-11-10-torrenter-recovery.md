@@ -1,6 +1,6 @@
 # Recuperación y estados fiables de Torrenter — 10 de noviembre de 2026
 
-La última versión publicada sigue siendo **1.92.4**. Este registro documenta
+Versión registrada para este cambio del 2026-11-10: **1.92.4**. Este registro documenta
 correcciones de desarrollo y sus pruebas; no certifica un paquete recién instalado.
 
 ## Cambios

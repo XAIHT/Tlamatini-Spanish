@@ -1,6 +1,6 @@
 # PDFer: the signature collection
 
-> Última versión publicada: **[v1.92.4](../../../../docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../../../../docs/changes/2026-11-12-v1.93.5.md)**.
 
 
 PDFer now offers **24 selectable visual identities alongside its 20 existing

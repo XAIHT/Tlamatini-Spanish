@@ -8,7 +8,13 @@
 -->
 # Tlamatini — Frontend Architecture
 
-> Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
+
+## Selección y voz en 1.93.5
+
+**Explicar selección** captura los rangos y el texto vigente del editor al pulsar el botón. Su evento dedicado conserva el borrador del compositor y no depende de Multi-Turn, ACPX, Compact, Self-modify, Ask Execs, Exec report, Step-by-Step, Internet ni Live editor. La respuesta explica la captura de solo lectura; no pide leer de nuevo el archivo completo por una herramienta. Consulta [canvas](../canvas-editing.md) e [Interactor](../interactor.md).
+
+La voz del avatar y la narración comparten el controlador de [reproducción de voz](../voice-playback.md), con reproducción del navegador y entrega al equipo Windows. Ocultar o minimizar la ventana no equivale a detener la voz; detener y silencio son acciones explícitas. Esto no cambia la pausa de seguridad de las mutaciones del editor oculto.
 
 ## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 

@@ -7,7 +7,7 @@ metadata:
   originSessionId: 69614274-24d6-4daa-92af-01a874c256f6
   modified: 2026-07-26T22:07:01.779Z
 ---
-> Última versión publicada: **[v1.92.4](../../docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../../docs/changes/2026-11-12-v1.93.5.md)**.
 
 
 

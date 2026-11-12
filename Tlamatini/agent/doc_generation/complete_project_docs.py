@@ -443,7 +443,8 @@ def release_statements(rel: dict, version: str) -> tuple[list[str], list[list[st
         f"**La última versión publicada es {version}.** La aplicación, las guías, "
         "el dossier PDF y la presentación utilizan esta única versión.",
         f"Esta edición documenta el commit `{rel['head_short']}` y las funciones "
-        "de la versión completa: compilaciones coincidentes, dependencias aisladas y Markdown fiel.",
+        "de la versión completa: explicación de selecciones, captura de Executer, voz persistente, "
+        "descargas verificadas y creación nativa de cuentas.",
     ]
     points = [("Última versión publicada", version),
               ("Commit documentado", rel["head_short"]),
@@ -470,9 +471,8 @@ def collect_facts() -> dict:
     tracked = tracked_paths()
     untracked = untracked_paths()
     inventory = sorted(set(tracked) | set(untracked))
-    # Database history remains executable for upgrades, but public documentation
-    # summarizes it rather than republishing obsolete product catalog entries.
-    tree_paths = [path for path in tracked if not path.startswith("Tlamatini/agent/migrations/")]
+    # Inventory history as files without presenting retired catalog entries as active.
+    tree_paths = list(tracked)
     languages, files, binary, missing = line_inventory(inventory)
     agents = workflow_agents()
     names = display_names(agents)

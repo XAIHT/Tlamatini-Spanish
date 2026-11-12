@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Acceptance matrix
 
-> Última versión publicada: **[v1.92.4](../../../../docs/changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../../../../docs/changes/2026-11-12-v1.93.5.md)**.
 
 
 Apply this to the current build, using actual UI labels and endpoints found in

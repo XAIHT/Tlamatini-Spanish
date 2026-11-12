@@ -1,6 +1,6 @@
 # Torrenter
 
-> Última versión publicada: **[v1.92.4](changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
 
 Torrenter es un agent de flow de Tlamatini y se puede invocar desde el chat con `chat_agent_torrenter`. Controla las descargas del servicio de Windows Tlachihuani Jobs, que se instala por separado y expone su API en `http://127.0.0.1:12064/api/v1`. Jobs administra la transferencia, sus archivos y el registro de operaciones. Puedes cerrar el chat, Agentic Control Panel o el browser y volver al mismo job.
 
@@ -89,11 +89,33 @@ sustituye Jobs. Las pruebas de código del 10 de noviembre no compilaron ni
 instalaron aplicaciones ni alteraron la cola real. Consulta el
 [registro de verificación](changes/2026-11-10-torrenter-recovery.md).
 
-En Agentic Control Panel, **Esperar a que termine la descarga** tiene el valor inicial **No**. El nodo devuelve su recibo y activa los agents conectados cuando Jobs admite la transferencia. Elige **Sí** para esperar hasta que Jobs publique el manifiesto verificado de los archivos seleccionados. Pausar conserva la espera. Detener, cancelar o fallar la descarga termina la espera con un error. En YAML usa `wait_for_completion: true` o `false`.
+En Agentic Control Panel, **Esperar a que termine la descarga** tiene el valor inicial **No**. El nodo devuelve su recibo y activa los agents conectados cuando Jobs admite la transferencia. Elige **Sí** para esperar hasta que Jobs publique el manifiesto verificado de los archivos seleccionados. Pausar, detener, cancelar o fallar una descarga incompleta termina esta espera con un error. En YAML usa `wait_for_completion: true` o `false`.
+
+### Espera de finalización y recuperación
+
+El nodo que espera la finalización termina cuando recibe el manifiesto de entrega
+verificado. Durante esa espera, reintenta una caída temporal de Jobs hasta por
+10 minutos y renueva una credencial vencida; un rechazo explícito se devuelve.
+Si falla la entrega, concede hasta 3 minutos para que Jobs la repare. Si durante
+2 horas no cambia la fase, el conteo de bytes ni el estado de entrega, y tampoco
+se informa tráfico de descarga, el agente termina su espera con el ID del trabajo
+y la orientación para revisarlo.
+
+Estos límites terminan la espera del agente; no cancelan la transferencia ni
+borran sus archivos en Jobs. Revisa el trabajo existente en el panel antes de
+decidir el siguiente paso. Pausar una descarga incompleta termina la espera para
+no mantener abierto el flujo. Una descarga verificada cuya publicación falló no
+se presenta como un archivo guardado.
+
+Las operaciones del panel generan un UUID criptográficamente aleatorio incluso
+cuando el navegador no ofrece `crypto.randomUUID` en el origen actual. Se conservan
+las comprobaciones de revisión e idempotencia; la alternativa no omite la
+autenticación.
+
 
 Haz clic derecho en el nodo Torrenter y abre su log para ver los nombres, archivos seleccionados, tamaños, magnet completo, rutas verificadas y hashes. Los metadatos cargados tienen un magnet generado. El archivo de actividad pertenece al flow de esa cuenta. El chat recibe un comprobante por separado.
 
-Envía al tool del chat una `action` y un objeto `arguments`. En un nodo del canvas, escribe el mismo objeto JSON en el campo **arguments**. Cada invocación hace una solicitud lógica a Jobs. La espera consulta el job por un máximo de 30 segundos. Usa su ID para seguir consultándolo.
+Envía al tool del chat una `action` y un objeto `arguments`. En un nodo del canvas, escribe el mismo objeto JSON en el campo **arguments**. La acción `wait` consulta el job por un máximo de 30 segundos. Usa su ID para seguir consultándolo. Esta consulta breve es distinta de un nodo de descarga de ACP con `wait_for_completion: true`.
 
 | Objetivo | Acciones | Campos y comportamiento |
 |---|---|---|

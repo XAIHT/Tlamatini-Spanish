@@ -32,7 +32,7 @@ def editor_sections(section):
         section("terminal_settings", "CONFIGURACIÓN DE TERMINATER", "Un comando sigue los controles de quien aprende",
                 "Un solo TerminalHub resuelve las preferencias de la cuenta en el chat, el ACP, el Prompt Flow y las acciones del browser.",
                 body=[
-                    "Elige de 20 a 160 WPM, un shell predeterminado disponible, el asesor para terminales nuevas, una ventana de espera "
+                    "Elige de 20 a 250 WPM, un shell predeterminado disponible, el asesor para terminales nuevas, una ventana de espera "
                     "del comando, un umbral sin output y una espera para entregar el teclado al usuario. Los valores predeterminados de shell y asesor afectan "
                     "a las terminales nuevas. Agotar una espera no mata el proceso. Los cambios de distribución, fuente y cursor "
                     "se aplican a las vistas existentes; los prompts redimensionados conservan una lectura honesta basada en la pantalla.",
@@ -41,7 +41,7 @@ def editor_sections(section):
                     "Los archivos de flow más viejos conservan sus valores explícitos. El Enter manual y la narración siguen siendo elecciones de la cuenta, "
                     "y el chat tecleado respeta un shell que la tarea pidió explícitamente.",
                 ], points=[
-                    ("Escribir", "Una tecla a la vez, de 20 a 160 WPM; sin pegar ni escribir de golpe."),
+                    ("Escribir", "Una tecla a la vez, de 20 a 250 WPM; sin pegar ni escribir de golpe."),
                     ("Enviar", "Ejecución controlada por la tarea o Enter sólo del usuario, que el hub hace cumplir."),
                     ("Esperar", "Las ventanas de comando, sin output y de entrega del teclado tienen significados distintos."),
                     ("Heredar", "use_my_defaults aplica las preferencias de la cuenta sin reescribir flows más viejos."),
@@ -111,10 +111,10 @@ def editor_sections(section):
                     "path, new crea un archivo vacío en Temp/interactor/<account>/<random>/ con el nombre de archivo "
                     "pedido. Los archivos existentes nunca se sobrescriben. Tlamatini escribe un segmento corto conocido, y luego "
                     "guide le entrega el siguiente campo a quien aprende e impide más cambios en ese turno.",
-                    "Continuar envía una nueva solicitud normal al chat y vuelve a leer antes de revisar la respuesta de quien "
-                    "aprende. Otra pista y Explicar selección también usan el chat normal sin reemplazar un borrador "
-                    "existente. Escribir no guarda ni ejecuta código. El snapshot normal de Usar como contexto es aparte "
-                    "de la lectura fresca que hace Interactor del texto sin guardar.",
+                    "Continuar y Otra pista envían solicitudes normales de tutoría al chat. Explicar selección usa "
+                    "una solicitud separada de sólo lectura: captura los intervalos sin guardar sin depender de "
+                    "las casillas ni del Editor en vivo, y conserva el borrador. Escribir no guarda ni ejecuta "
+                    "código. Usar como contexto conserva su instantánea separada de las lecturas de Interactor.",
                 ], points=[
                     ("Leer", "Texto y selección exactos sin guardar, nunca un sustituto viejo del disco."),
                     ("Escribir", "Un pequeño segmento visible de enseñanza; una edición que se puede deshacer."),
@@ -158,30 +158,136 @@ def bridge_section(section):
 
 
 def wizard_section(section):
-    return section("wizard_intent", "PROTECCIONES DE INTENCIÓN · v1.90.0", "Un aviso de contraseña no debe desviar al asistente",
-                   "El asistente de cuentas lanza createsuperuser por medio de Executer y espera el input en su consola.",
+    return section("wizard_intent", "ASISTENTE DE CUENTAS", "Crear la cuenta en esta instancia",
+                   "La tarjeta conocida usa un controlador nativo de consola, sin generar comandos con un modelo.",
                    body=[
-                       "El log instalado mostró dos falsos positivos independientes. 'I will type it' se refería a una "
-                       "contraseña pero reservaba todos los comandos para el usuario. Una frase de término más el campo opcional "
-                       "de email creaban por error una deuda de notificación. Estas protecciones del runtime anularon una selección "
-                       "inicialmente correcta de Executer y desviaron al asistente.",
-                       "La propiedad de escribir/teclear ahora exige un objeto de comando; el input ambiguo es neutral. Un "
-                       "lanzamiento explícito, por la asistente, de un programa con nombre levanta una lección anterior. Los tutoriales genuinos "
-                       "donde el usuario ejecuta siguen rechazando los ejecutores de comandos y mantienen desactivado el Enter de Terminater.",
-                       "Una notificación de término exige una instrucción positiva de envío ligada al término "
-                       "en la misma oración. Los campos de email, las explicaciones normales del chat, los ejemplos citados, las negaciones "
-                       "y la respuesta DONE del usuario no autorizan el envío. Las contraseñas se quedan fuera del chat. El asistente "
-                       "del catálogo crea un superusuario administrativo, no una cuenta común restringida.",
+                       "El controlador lanza createuserconsole, una subclase acotada de createsuperuser de Django, "
+                       "con el entorno y la base de datos actuales y shell=False. Conserva la validación normal "
+                       "de cuentas, nombres duplicados y contraseñas. Las tarjetas personalizadas se conservan.",
+                       "El chat cede el turno mientras se introducen usuario, correo opcional y contraseña en "
+                       "la consola propia. Las contraseñas no pasan por el chat ni por argumentos de comandos. "
+                       "Se mantienen autenticación, Preguntar ejecuciones, cancelación e identidad del proceso.",
+                       "HECHO/DONE verifica una nueva cuenta administrativa persistida antes de informar éxito. "
+                       "Las consultas de usuario y estado pertenecen sólo a esa conversación; la finalización "
+                       "retira su estado. El campo de correo o la respuesta de finalización no autorizan notificaciones.",
+                       "El 9 de noviembre, las cohortes visibles finales crearon y autenticaron diez cuentas "
+                       "en inglés y diez en español, con las 260 comprobaciones correctas. Son pruebas del "
+                       "código fuente, separadas de la aceptación de paquetes instalados.",
                    ], points=[
-                       ("Lanzar", "Executer abre el comando interactivo de source o congelado en una consola visible."),
-                       ("Input", "El nombre de usuario, el email opcional y la contraseña pertenecen a la interacción del usuario con la consola."),
-                       ("Esperar", "DONE / ERROR / NOWINDOW manejan el siguiente paso; sin afirmar éxito automáticamente."),
-                       ("Notificar", "Sólo una solicitud explícita de envío crea una deuda de notificación de término."),
+                       ("Lanzar", "Tarjeta conocida, entorno y base de datos actuales; sin comandos del modelo."),
+                       ("Introducir", "Usuario, correo opcional y contraseña en la consola propia."),
+                       ("Confirmar", "Verificar la cuenta administrativa nueva después de HECHO/DONE."),
+                       ("Autorizar", "Conservar confirmación y cancelación; notificar requiere otra petición."),
                    ])
 
 
 def release_sections(section, facts):
     return [
+        section("release1935_selection", f"PUBLICADA · v{facts['version']}", "Explica exactamente la selección",
+                "El botón del lienzo funciona independientemente de las casillas del chat y del Editor en vivo.",
+                body=[
+                    "Explicar selección captura todos los intervalos seleccionados del editor sin guardar "
+                    "al hacer clic. Sin selección, explica el archivo completo actual. Conserva el borrador "
+                    "del chat, las selecciones, el documento y las casillas.",
+                    "La solicitud autenticada va directamente al modelo configurado sin herramientas, historial, "
+                    "contexto cargado, internet, compactación ni instrucciones de automodificación. Sigue disponible "
+                    "mientras se reconstruyen las herramientas del chat normal. La cancelación, la entrega "
+                    "de mensajes y el registro de uso conservan los servicios normales de la aplicación.",
+                    "Admite hasta 64 intervalos y 262.144 unidades UTF-16, sujetos a la capacidad real del modelo. "
+                    "El resto del archivo no consume el límite de la selección y ningún fragmento se trunca "
+                    "silenciosamente. La tutoría de Interactor conserva su contrato separado de documento completo.",
+                    "El 12 de noviembre pasaron 58 regresiones y las 256 combinaciones de casillas en cada "
+                    "edición. El modelo configurado explicó el valor seleccionado sin guardar en ambos idiomas "
+                    "sin herramientas. Estas pruebas de código no certifican un nuevo ejecutable instalado.",
+                ], deck_points=[
+                    ("Seleccionar", "Capturar los intervalos sin guardar; sin selección, el archivo completo."),
+                    ("Explicar", "Sin dependencia de casillas, herramientas, historial ni contexto cargado."),
+                    ("Conservar", "Mantener borrador, documento, selección y preferencias."),
+                    ("Límites", "64 intervalos; 262.144 unidades UTF-16; capacidad real del modelo."),
+                ]),
+        section("release1935_execution", f"PUBLICADA · v{facts['version']}", "Responder al terminar el script lanzador",
+                "Executer deja de esperar tuberías de salida heredadas por un proceso hijo separado.",
+                body=[
+                    "Un comando start de Windows lanzó el cubo original de Rust durante 90 segundos, pero la "
+                    "salida llegó después de cerrarse: la captura esperaba el fin de una tubería que seguía "
+                    "abierta en el hijo separado aunque el script exterior ya había terminado.",
+                    "La ruta de scripts bloqueantes dirige stdout y stderr a archivos únicos conservados en "
+                    "el directorio aislado, espera al script directo y lee una instantánea acotada con "
+                    "manejadores de lectura separados. Los comandos directos siguen bloqueando; los hijos "
+                    "separados explícitamente pueden continuar. No se añadió un límite de ciclos ni una "
+                    "decisión de progreso basada en modelos.",
+                    "La reproducción del 12 de noviembre usó el mismo ejecutable y sus shaders incorporados "
+                    "mediante llamadas MCP reales a Executer, Windower y Shoter. El tiempo observado pasó de "
+                    "100,50 segundos a 5,05 en inglés y 5,06 en español, con el cubo aún vivo. Pasaron las "
+                    "65 regresiones seleccionadas en cada edición.",
+                    "El bloqueo posterior de entrega de la respuesta final del registro original sigue sin "
+                    "diagnóstico concluyente. Esta corrección no determina su causa ni promete resolver toda "
+                    "tarea repetida. El registro de cambios de Executer del 12 de noviembre conserva pruebas y límites.",
+                ], deck_points=[
+                    ("Causa", "Los manejadores heredados retrasaban la salida tras terminar el script."),
+                    ("Corrección", "Captura en archivos; esperar al script directo y leer la instantánea."),
+                    ("Prueba", "Mismos recursos: 100,50 segundos antes; 5,05/5,06 después."),
+                    ("Alcance", "65 pruebas por edición; la entrega final conserva un incidente sin resolver."),
+                ]),
+        section("release1935_voice", f"PUBLICADA · v{facts['version']}", "Seguir hablando al cambiar de ventana",
+                "Una página cubierta, oculta o minimizada ya no pausa la voz ni limita el mensaje a 100 segundos.",
+                body=[
+                    "La cola compartida reintenta un fragmento fallido y puede transferir el texto restante "
+                    "a la voz de Windows cuando el navegador no puede continuar. Cerrar o recargar la página "
+                    "transfiere la voz pendiente del chat normal; la narración interactiva no usa esa transferencia.",
+                    "La voz del equipo usa ajustes y controles de la cuenta, conserva la política de voces "
+                    "femeninas y el idioma español de esta edición, y no abre otra consola. Modo silencioso, "
+                    "Escape, clic en el avatar y cancelación siguen deteniendo la voz explícitamente.",
+                    "Tlamatini debe seguir ejecutándose y disponer de una voz adecuada. Un reintento puede "
+                    "repetir parte de un fragmento; la solicitud al equipo conserva el límite de 20.000 "
+                    "caracteres. La guía de reproducción de voz detalla la recuperación y sus límites.",
+                ], deck_points=[
+                    ("Continuar", "Hablar con la página cubierta, oculta o minimizada."),
+                    ("Recuperar", "Reintentar fragmentos; transferir el resto a la voz de Windows."),
+                    ("Controlar", "Silencio, Escape, clic en el avatar y cancelación siguen disponibles."),
+                    ("Límites", "La aplicación y el audio deben estar disponibles; el texto está acotado."),
+                ]),
+        section("release1935_downloads", f"PUBLICADA · v{facts['version']}", "Seguir descargas con estados fieles",
+                "Vistas ordenables por cuenta, orientación de recuperación y esperas acotadas muestran el progreso.",
+                body=[
+                    "El espacio de trabajo ofrece ordenación por varias columnas, filtros, paginación y vistas "
+                    "guardadas por cuenta. Una descarga verificada sigue completada aunque se detenga su sesión "
+                    "de pares. Se separan los errores históricos de los actuales; las acciones afectan sólo "
+                    "selecciones aptas e informan de los trabajos omitidos.",
+                    "La espera de finalización termina al pausar, detener o cancelar. Tolera hasta 600 segundos "
+                    "sin API, concede 180 segundos de recuperación a un fallo de entrega, renueva credenciales "
+                    "caducadas y deja de esperar tras dos horas sin progreso. Terminar la espera no cancela "
+                    "la transferencia subyacente de Jobs.",
+                    "Las lecturas JSON vacías o truncadas tienen reintentos acotados; las modificaciones de "
+                    "torrents nunca se repiten automáticamente. Antes de recuperar, lee la revisión actual y "
+                    "verifica la ruta y el SHA-256 de entrega. Las correcciones de planificación y escritura "
+                    "del motor requieren actualizar por separado el servicio Tlachihuani Jobs.",
+                ], deck_points=[
+                    ("Inspeccionar", "Ordenar, filtrar y paginar la cola; conservar vistas por cuenta."),
+                    ("Confiar", "Mantener completado; distinguir errores antiguos de fallos actuales."),
+                    ("Esperar", "Pausa, parada o cancelación terminan la espera, sin cancelar la transferencia."),
+                    ("Verificar", "Revisiones y hashes actuales; la actualización del servicio es aparte."),
+                ]),
+        section("release1935_requests", f"PUBLICADA · v{facts['version']}", "Resolver solicitudes concretas directamente",
+                "La creación de cuentas y las preguntas puras sobre directorios usan contratos explícitos.",
+                body=[
+                    "La tarjeta conocida del catálogo lanza createuserconsole con el entorno y la base de datos "
+                    "de esta instancia. El chat cede el turno para introducir datos privados en la consola; "
+                    "conserva Preguntar ejecuciones y cancelación. HECHO/DONE verifica una cuenta administrativa "
+                    "nueva persistida antes de informar éxito. Las tarjetas personalizadas se conservan.",
+                    "Una pregunta pura sobre directorios permitidos lee la instantánea actual de path_guard, "
+                    "sin clasificador ni exploración del disco y sin conceder permisos. Una petición mixta "
+                    "continúa por el procesamiento normal, sin convertirse en una lista de directorios.",
+                    "Los valores centrales usan deepseek-v4.1-flash:cloud para texto y mistral-large-4:cloud "
+                    "junto con gemma4:cloud para visión; las elecciones configuradas siguen siendo la autoridad. "
+                    "Orpheus 3b-ft-q8 sigue siendo el modelo de voz. Las cohortes visibles del 9 de noviembre "
+                    "crearon y autenticaron 20 cuentas con 260 comprobaciones entre ambas ediciones.",
+                ], deck_points=[
+                    ("Crear", "La tarjeta conocida usa el entorno actual y entrada privada en consola."),
+                    ("Confirmar", "Verificar la cuenta nueva persistida antes de anunciar el resultado."),
+                    ("Listar", "Consultar las raíces permitidas, sin explorar ni conceder permisos."),
+                    ("Configurar", "Los valores centrales respetan los ajustes explícitos de modelos."),
+                ]),
         section("release1924", f"PUBLICADA · v{facts['version']}", "Versiones coincidentes antes de compilar",
                 "Un mismo número previsto para ambas ediciones y una modalidad explícita en cada paquete.",
                 body=[
@@ -246,8 +352,8 @@ def release_sections(section, facts):
                     ("Historial", "Cada ejecución y cada usuario leen sólo su propia conversación."),
                     ("Decisiones", "'## YES - ...' es igual a YES; 'Yesterday' no."),
                     ("Enrutamiento", "'Using the bot' envía como el bot; los nombres cortos de tools siguen funcionando."),
-                    ("Inventario", f"{facts['agents']} agents; {facts['tools']} tools; {facts['migrations']} migraciones; "
-                     f"{facts['js']} módulos JS; {facts['css']} hojas de estilo."),
+                    ("Inventario de esa versión", "86 agents; 110 tools; 220 migraciones; "
+                     "64 módulos JS; 29 hojas de estilo."),
                 ]),
         section("release191", "HEREDADO DE v1.91.0", "Configuraciones reales para el comportamiento del editor y de la terminal",
                 "Tag a771d27c, con fecha del 23 de octubre de 2026, y publicado en GitHub ese día.",
@@ -265,8 +371,8 @@ def release_sections(section, facts):
                     ("Diálogo", "Ritmo, enseñanza, comportamiento de la terminal, narración, apariencia y vistas previas del borrador."),
                     ("Runtime", "Snapshots reales de la configuración, revisiones de la revisión y recibos de narración cancelables."),
                     ("Compatibilidad", "Los flows heredados con valores explícitos los conservan; los flows nuevos pueden heredar los valores predeterminados."),
-                    ("Inventario", f"{facts['agents']} agents; {facts['tools']} tools; {facts['migrations']} migraciones; "
-                     f"{facts['js']} módulos JS; {facts['css']} hojas de estilo."),
+                    ("Inventario de esa versión", "86 agents; 110 tools; 220 migraciones; "
+                     "64 módulos JS; 29 hojas de estilo."),
                 ]),
         section("release190", "HEREDADO DE v1.90.0", "Editar, enseñar y conservar el control de quien aprende",
                 "v1.89.0 introdujo la edición y el guardado nativo; v1.90.0 lleva Interactor y las correcciones de intención.",
@@ -281,8 +387,8 @@ def release_sections(section, facts):
                     ("Edición", "Guardar como nativo, source exacto, historial de deshacer y persistencia que detecta conflictos."),
                     ("Enseñanza", "Lecturas frescas sin guardar, segmentos cortos de escritura, campos para quien aprende y sugerencias locales."),
                     ("Recuperación", "Pausas acotadas por visibilidad de la pestaña y una distribución usable con el canvas angosto."),
-                    ("Inventario", f"{facts['agents']} agents; {facts['wrapped']} wrapped; {facts['tools']} tools integrados; "
-                     f"{facts['migrations']} migraciones. Los conteos describen el source inspeccionado."),
+                    ("Inventario de esa versión", "86 agents; 67 wrapped; 110 tools integrados; "
+                     "219 migraciones. Conteos de la revisión de octubre de 2026."),
                 ]),
         section("editor_evidence", "VERIFICACIÓN FECHADA", "Mantén separadas las evidencias del source, del modelo y del congelado",
                 "Son ejecuciones registradas del 21 al 22 de octubre, no pruebas que la generación de la documentación vuelve a correr en silencio.",

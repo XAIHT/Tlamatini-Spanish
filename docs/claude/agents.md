@@ -8,7 +8,11 @@
 -->
 # Tlamatini — Agents (Creation, Catalog, FlowCreator, FlowHypervisor)
 
-> Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
+
+## Executer en 1.93.5
+
+La captura de salida usa archivos únicos del runtime y devuelve una captura cuando termina el comando principal. Un hijo separado que conserve stdout/stderr ya no retrasa ese resultado. Ejecutar un programa directamente conserva su espera normal. La evidencia exacta y los límites están en [la corrección de captura](../changes/2026-11-12-executer-output-capture.md).
 
 ## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 

@@ -65,7 +65,7 @@ def n2(x):
 
 # ----------------------------------------------------------------------------- inventory
 ALL_FILES = sorted([f for f in git("ls-files", "-z").split("\0") if f], key=lambda p: p.lower())
-FILES = [f for f in ALL_FILES if not f.startswith(A + "migrations/")]
+FILES = list(ALL_FILES)
 PATHSET = set(FILES)
 HEAD = git("rev-parse", "--short", "HEAD").strip()
 # Angela's requested release is authoritative, even before packaging/tagging.
@@ -2201,7 +2201,7 @@ def sheet_torrenter():
     ], h=72, size=15, tsize=14)
     box(sh.body, 12, TOP - 82, 193, "Lintelligence", "3. Envía la solicitud y sigue el trabajo", [
         "Envía los IDs seleccionados y la revisión de metadatos. Reutiliza la clave de operación si no se confirmó el envío.",
-        "Un nodo del panel puede continuar al admitirse la operación o esperar la entrega verificada. Una pausa conserva la espera.",
+        "Un nodo puede esperar la entrega. Pausar/detener la descarga termina la espera; los plazos no cancelan Jobs.",
     ], h=72, size=15, tsize=14)
     box(sh.body, 215, TOP - 82, 193, "Lpersistence", "4. Comprueba la copia entregada", [
         "Lee la ruta y el SHA-256 del manifiesto publicado. El destino es Descargas de Windows o la carpeta content_generated de la edición.",
@@ -2215,6 +2215,65 @@ def sheet_torrenter():
         "Los entornos se separan por la huella de dependencias. El bloqueo del sistema cubre la preparación y el uso.",
         "Executer conserva asignaciones como PLAYWRIGHT_BROWSERS_PATH y aplica el tiempo de espera configurado.",
     ], h=72, size=15, tsize=14)
+    return sh
+
+
+def sheet_current_release():
+    sh = new_sheet("Canvas, voz y ejecución",
+                   f"Última versión publicada {TAG}", "presentation")
+    cards = [
+    [
+        "Explicar selección",
+        "Lpresentation",
+        [
+            "El botón captura los rangos actuales sin guardar. Ninguna combinación de casillas del chat desactiva esta explicación.",
+            "Una selección pequeña excluye el resto de un documento grande. Se conservan el borrador del chat y la selección."
+        ]
+    ],
+    [
+        "Captura de salida de Executer",
+        "Lplatform",
+        [
+            "El script bloqueante captura stdout/stderr en archivos únicos y espera únicamente al proceso directo del script.",
+            "Los hijos START pueden seguir activos. Los comandos directos siguen bloqueando. El resultado es fijo; los archivos reciben escrituras posteriores."
+        ]
+    ],
+    [
+        "Voz al minimizar",
+        "Ltransport",
+        [
+            "La voz del navegador continúa con la página cubierta o minimizada; Windows recibe el texto si el navegador falla.",
+            "Detener y silenciar cancelan la cola de la cuenta. Cerrar la página transfiere el chat pendiente, no la narración didáctica."
+        ]
+    ],
+    [
+        "Estado y entrega de descargas",
+        "Lintegration",
+        [
+            "Jobs permite ordenar, seguir el progreso y consultar rutas verificadas. La reconexión sigue el mismo trabajo.",
+            "Pausar/detener la descarga termina la espera. Los plazos solo terminan la espera; se recuperan credenciales y fallos transitorios."
+        ]
+    ],
+    [
+        "Directorios y creación de cuentas",
+        "Lintelligence",
+        [
+            "Una pregunta exclusiva por directorios disponibles devuelve las raíces autorizadas sin explorar el disco ni consultar un clasificador.",
+            "La tarjeta conocida abre createuserconsole con esta instancia; HECHO verifica la cuenta administrativa nueva persistida."
+        ]
+    ],
+    [
+        "Verificación registrada",
+        "Lquality",
+        [
+            "12 de noviembre: 58 pruebas de canvas y 256 combinaciones de casillas por edición; 65 pruebas relacionadas con Executer por edición.",
+            "Mismo ejecutable Rust: resultado en unos 5 segundos con el cubo activo. La entrega posterior de la respuesta sigue sin diagnóstico."
+        ]
+    ]
+]
+    for i, (title, color, lines) in enumerate(cards):
+        box(sh.body, 12 if i % 2 == 0 else 215, TOP - 82 * (i // 2),
+            193, color, title, lines, h=72, size=14, tsize=14)
     return sh
 
 
@@ -2506,6 +2565,7 @@ sheet_lifecycle()
 sheet_live_editor()
 sheet_interaction_settings()
 sheet_torrenter()
+sheet_current_release()
 sheet_release_builds()
 autofit(sheet_intelligence, BOTTOM + 1.5)
 sheet_agents()
@@ -2538,7 +2598,7 @@ def fill_cover():
     text_node(o, 14, 238, r"Atlas de arquitectura", size=26, color="black!80")
     text_node(o, 14, 226.5, r"\itshape eXtended Artificial Intelligence, Humanly Tempered \textperiodcentered{} ``one who knows''", size=12, color="black!65")
     text_node(o, 14, 218, r"Creado por \textbf{Angela L\'opez Mendoza} \textperiodcentered{} XAIHT", size=11.5, color="black!75")
-    text_node(o, 14, 211, esc("Release %s \u00b7 commit %s (%s) \u00b7 atlas generated %s from application files tracked in git; database history is summarized" % (TAG, HEAD, COMMIT_DATE, TODAY)), size=8, color="black!60")
+    text_node(o, 14, 211, esc("Release %s \u00b7 commit %s (%s) \u00b7 atlas generated %s from every file tracked in git, including migration history" % (TAG, HEAD, COMMIT_DATE, TODAY)), size=8, color="black!60")
     kpis = [
         ("{:,}".format(len(FILES)), "archivos de aplicación"),
         ("{:,}".format(TOTAL_LOC), "líneas de texto"),

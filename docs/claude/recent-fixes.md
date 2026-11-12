@@ -8,7 +8,13 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> Última versión publicada: **[v1.92.4](../changes/2026-11-08-v1.92.4.md)**.
+> Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
+
+## 2026-11-12 — Explicación y captura de salida
+
+La [versión publicada 1.93.5](../changes/2026-11-12-v1.93.5.md) incorpora la explicación de selecciones independiente de las casillas y la [corrección de Executer](../changes/2026-11-12-executer-output-capture.md). Ejecutar un programa separado con START puede dejar abiertos los handles de salida heredados después de que termine el CMD principal. Capturar con pipes esperaba su EOF; ahora los archivos de captura y sus lectores independientes permiten devolver la captura al terminar el proceso principal sin mover la posición de escritura del hijo. Los comandos directos siguen bloqueando normalmente. Las pruebas con el mismo ejecutable Rust devolvieron el resultado en aproximadamente cinco segundos mientras el cubo permanecía abierto. No se añadió un límite genérico de repeticiones ni se declaró resuelto el bloqueo separado de entrega de respuesta final.
+
+La reproducción de voz incorporada el 11 de noviembre continúa en ventanas cubiertas o minimizadas; consulta el [contrato de voz](../voice-playback.md).
 
 ## 2026-11-10 — Recuperación de Torrenter y evidencia de archivos
 
