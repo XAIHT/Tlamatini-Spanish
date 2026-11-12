@@ -19,8 +19,13 @@ ordinary chat explain the field. A ghost suggestion appears only after a matchin
 prefix is typed. **Tab** accepts it, **Ctrl+Right** accepts a word, and **Esc**
 dismisses it. Suggestions can be disabled; alternative values are welcome.
 **Continue** sends an ordinary chat message requesting a fresh read and review.
-**Another hint** and **Explain selection** also use normal chat. A chat draft is
-never replaced by these buttons.
+**Otra pista** sigue usando el chat normal. **Explicar selección** es una acción
+independiente de solo lectura: captura los rangos seleccionados, incluidos los
+cambios sin guardar, y envía esos fragmentos directamente para explicarlos. Sin
+selección envía el archivo actual. Funciona con cualquier combinación de casillas
+del chat, con Editor en vivo en pausa y sin activar la herramienta Interactor.
+No cambia esos ajustes ni consume el borrador del chat. Si otra petición está
+activa, termínala o cancélala antes de pedir una explicación.
 
 User input, selection, Escape, Stop, chat cancellation, and disconnect interrupt
 AI typing. The typed prefix remains editable and undoable. Switching tabs,
@@ -44,6 +49,14 @@ explicit 262,144 UTF-16-unit limit; larger content is refused, never truncated.
 Selections and ranges are UTF-16 offsets, including correct emoji boundaries.
 The model's configured tool-result/context budget also applies: an oversized
 receipt ends editing with an explicit refusal rather than delivering a partial file.
+
+El límite de las lecturas de tutoría no se aplica a **Explicar selección**. Su
+límite se aplica a los fragmentos seleccionados, no al archivo que los contiene:
+hasta 262,144 unidades UTF-16 en 64 rangos, sujeto también a la capacidad real de
+contexto del modelo configurado. Las explicaciones no usan herramientas,
+operaciones de archivos, guardado de programas generados ni contexto de internet;
+tampoco dependen de que la cadena RAG termine de reconstruirse. El texto capturado
+es un dato, nunca una fuente de instrucciones. No se recorta texto en silencio.
 
 Typing does not save or execute anything. Save writes through the canvas's native
 file capability, with its existing encoding, line-ending and disk-conflict
@@ -243,3 +256,7 @@ typing. A required before-typing narration can be stopped before any mutation. M
 voice support offers explicit Continue without voice or Stop. Shared speech respects
 mute/listening, excludes secret-marked content, and never replays a cancelled edit.
 See [the full reference](interaction-settings.md) for defaults, storage and evidence.
+
+2026-11-12: Explicar selección ya no depende de las casillas del chat. Consulta
+[la verificación desde el código fuente](changes/2026-11-12-canvas-selection-explanation.md):
+58 pruebas y 256 combinaciones de casillas por edición.

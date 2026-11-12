@@ -107,7 +107,7 @@ class TwoUnnamedBlocksEndToEndTests(TestCase):
         self.assertEqual(len(set(names)), 2,
                          "the two blocks must NOT share one name - that is the bug")
 
-        linked = re.findall(r"---Load in canvas: ([^-]+)---", final)
+        linked = re.findall(r"---Cargar en el canvas: ([^-]+)---", final)
         self.assertEqual(len(set(linked)), 2,
                          "each link must point at its OWN row, not both at the first")
         self.assertEqual(set(linked), set(names))

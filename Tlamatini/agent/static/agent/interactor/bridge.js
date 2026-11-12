@@ -27,6 +27,7 @@
     }
 
     function render() {
+        if (!inLongOperation && lastMessage === 'Explicando el texto seleccionado…') lastMessage = '';
         const guide = editor.interactor.guide();
         if (guided && !guide && lastMessage === 'Tu turno · llena el campo marcado') lastMessage = 'Se cerró el campo guiado · tus cambios se conservan';
         guided = !!guide;
@@ -37,7 +38,7 @@
             : lastMessage || (!enabled ? 'Editor en vivo en pausa' : clientId ? 'Editor en vivo conectado' : 'Conectando con el editor en vivo…');
         if (ui.status.textContent !== status) ui.status.textContent = status;
         ui.stop.disabled = !active && !guide;
-        ui.explain.disabled = !editor.active || !enabled || !clientId || !!inLongOperation;
+        ui.explain.disabled = !editor.active || !!inLongOperation || !!active || !!window.TlamatiniCanvasEditing?.busy;
         ui.card.hidden = !guide;
         if (!guide) return;
         ui.label.textContent = `Tu turno · ${guide.label}`;
@@ -268,7 +269,18 @@
         send({ t: 'access', enabled }); render();
     });
     ui.stop.addEventListener('click', () => stop('Tutor detenido. El contenido de tu editor se conserva.', true));
-    ui.explain.addEventListener('click', () => ask('Por favor, lee el contenido sin guardar más reciente de tu editor de texto y explícame mi selección (o el archivo actual si no hay nada seleccionado). Guíame sin cambiarlo.'));
+    ui.explain.addEventListener('click', () => {
+        if (ui.explain.disabled) return;
+        try {
+            const selection = { ...editor.explanationSnapshot(), dirty: !!window.TlamatiniCanvasEditing?.dirty };
+            if (!selection.excerpts.some(excerpt => excerpt.text.trim())) {
+                throw new Error('Selecciona texto o abre un archivo con contenido para explicarlo.');
+            }
+            if (window.TlamatiniChat?.explainCanvas(selection)) lastMessage = 'Explicando el texto seleccionado…';
+            else lastMessage = 'La conexión del chat no está disponible. Reconecta y pulsa Explicar selección de nuevo.';
+        } catch (error) { lastMessage = error.message; }
+        render();
+    });
     ui.ask.addEventListener('click', () => {
         const guide = editor.interactor.guide();
         if (guide) ask(`Lee mi editor en vivo y dame otra pista para “${guide.label}”. No lo llenes por mí.`);

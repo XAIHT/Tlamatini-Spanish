@@ -32,8 +32,11 @@ guides the next learner-controlled field and waits. Typing does not save or run.
 COMPLETIONS AND CONTROL
 Suggestions use choices prepared for the current field, matched locally.
 Tab accepts; Ctrl+Right accepts one word; Esc dismisses. Suggestions are optional.
-Continue asks for a fresh read in a new chat turn. Another hint and Explain
-selection also use normal chat and preserve your existing message draft.
+Continue y Otra pista siguen usando el chat normal. Explicar selección envía
+los fragmentos seleccionados sin guardar directamente para explicarlos, con
+cualquier combinación de casillas, incluso con Editor en vivo en pausa. Conserva
+el borrador del chat. Sin selección envía el archivo completo. No modifica el
+texto, ejecuta herramientas ni guarda programas.
 User typing, selection, Esc, Stop tutor or chat cancellation interrupts AI typing.
 A temporary hidden tab pauses/resumes once, with up to two extra minutes of
 grace. Timeout never automatically replays a partial edit. Explicit Preview or
@@ -42,6 +45,8 @@ canvas hiding returns control to the learner.
 LIMITS AND FIDELITY
 Text editing/native saves: 64 MiB. Live tutoring: 262,144 UTF-16 units; the
 model's tool-result/context budget can impose a smaller limit. No silent truncation.
+Explicar selección: hasta 262,144 unidades UTF-16 en 64 rangos, según la capacidad
+del modelo; el tamaño del resto del archivo no consume ese límite.
 Strict UTF-8 and BOM-marked UTF-16 support; encoding/BOM and line endings retained.
 Save before closing: an unsaved canvas buffer is in memory, not a recovery file.
 Use as context refreshes ordinary loaded context. Interactor read is live and
