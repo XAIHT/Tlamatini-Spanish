@@ -29,6 +29,23 @@ traducción anteriores que introduzcan diferencias de comportamiento.
 
 > Última versión publicada: **[v1.93.5](docs/changes/2026-11-12-v1.93.5.md)**.
 
+## Integración con Remote-Controller · 13 de noviembre de 2026
+
+Angela autorizó explícitamente ambas aplicaciones principales. Conserva la paridad
+de comportamiento entre inglés y español, las identidades inmutables por edición
+y cuenta, y la independencia de Torrenter. La página local exige autenticación,
+conexión de bucle local, POST del mismo origen, CSRF y la contraseña actual para
+habilitar el acceso. El chat remoto reutiliza AgentConsumer con cancelación propia
+y consentimiento ligado a la solicitud exacta; no debe tomar el intermediario de
+otra pestaña ni permitir ejecuciones superpuestas de escritorio y RC en una cuenta.
+Mantén el ayudante nativo interno sin interacción y la consola principal normal.
+
+Lee [Remote-Controller](docs/remote-controller.md) para conocer la implementación,
+el empaquetado de módulos/migración y los límites de las pruebas fechadas. Siguen
+pendientes el transporte por red, la distribución con confianza independiente,
+la voz y la aceptación integral instalada. No ejecutes el compilador destructivo
+ni cambies la mecánica de respaldo/restauración de la base de datos.
+
 ## v1.93.5 — Selección del canvas, voz continua y ejecución correcta
 
 - **Explicar selección** usa el texto sin guardar seleccionado al pulsar el botón, conserva el borrador del chat y funciona con cualquier combinación de casillas, incluso sin Live editor. Una selección pequeña no requiere enviar todo el archivo. [Canvas](docs/canvas-editing.md).

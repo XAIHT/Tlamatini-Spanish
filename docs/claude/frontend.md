@@ -10,6 +10,21 @@
 
 > Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
 
+## Página de cuenta de Remote-Controller · 13 de noviembre de 2026
+
+**Paneles → Tlachihuani · Remote-Controller** abre la página local autenticada en
+otra pestaña y permanece disponible mientras el chat está ocupado. Su plantilla
+y estilos delimitados usan los tokens compartidos, con `dialog_theme.css` al final.
+Habilitar exige la contraseña actual; Deshabilitar guarda primero la denegación
+local, solicita la revocación del servicio e informa de los reintentos pendientes.
+Mantén visibles la cuenta y la edición. Esta página no controla SCM ni aprueba
+dispositivos; esos controles permanecen en XT. Consulta
+[el contrato de integración](../remote-controller.md).
+Conserva `Referrer-Policy: same-origin`: los formularios normales necesitan la
+información del mismo origen para sus comprobaciones explícitas de origen y CSRF.
+La política general `no-referrer` hizo que formularios reales enviaran
+`Origin: null` y fueran rechazados.
+
 ## Selección y voz en 1.93.5
 
 **Explicar selección** captura los rangos y el texto vigente del editor al pulsar el botón. Su evento dedicado conserva el borrador del compositor y no depende de Multi-Turn, ACPX, Compact, Self-modify, Ask Execs, Exec report, Step-by-Step, Internet ni Live editor. La respuesta explica la captura de solo lectura; no pide leer de nuevo el archivo completo por una herramienta. Consulta [canvas](../canvas-editing.md) e [Interactor](../interactor.md).

@@ -28,6 +28,31 @@ class PromptShapeSentenceTests(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertTrue(self.validate(text))
 
+    def test_spanish_text_transformations_without_english_pos_tagger(self):
+        for text in (
+            'Devuelve la segunda palabra de: rojo verde azul',
+            'Por favor, devuélveme el resultado.',
+            'Devolver la palabra central de uno dos tres.',
+            'Extrae la primera palabra de este texto.',
+            'Selecciona el valor mayor entre dos y siete.',
+            'Ordena banana, apple y cherry.',
+            'Invierte las letras de abcdef.',
+            'Reemplaza los guiones por barras.',
+            'Separa las palabras con comas.',
+            'Une norte y estrella con un guion bajo.',
+            'Repite el token indicado.',
+            'Resuelve la operación de suma.',
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(self.validate(text))
+
+    def test_labeled_spanish_request_reaches_shape_admission(self):
+        text = ('Aceptación ES016. Devuelve la segunda palabra de: rojo verde azul '
+                'Responde solo con el resultado solicitado. '
+                'No uses herramientas, comandos, archivos ni servicios externos.')
+        self.assertTrue(self.validate(text))
+        self.assertTrue(self.validate('Contexto previo. Devuelve únicamente la palabra central.'))
+
     def test_incomplete_fragments_still_need_clarification(self):
         for text in ('', '   ', 'please', 'README.md located in the project home, then summary', 'Some background. Nothing else.', None):
             with self.subTest(text=text):

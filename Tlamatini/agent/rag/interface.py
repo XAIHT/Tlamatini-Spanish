@@ -167,6 +167,12 @@ def is_valid_prompt(text: str) -> bool:
         'diseña', 'produce', 'dibuja', 'configura', 'agrega', 'añade', 'quita', 'limpia', 'reinicia',
         'apaga', 'enciende', 'activa', 'desactiva', 'continúa', 'continua', 'sigue', 'platícame',
         'usa', 'usar', 'utiliza', 'utilizar', 'emplea', 'emplear',
+        # Text transformations are valid one-shot instructions too. English POS
+        # tagging cannot reliably recognize Spanish imperatives or infinitives.
+        'devuelve', 'devuélveme', 'devuelveme', 'devolver', 'retorna', 'retornar',
+        'extrae', 'extraer', 'selecciona', 'seleccionar', 'ordena', 'ordenar',
+        'invierte', 'invertir', 'reemplaza', 'reemplazar', 'separa', 'separar',
+        'une', 'unir', 'repite', 'repetir', 'resuelve', 'resolver',
     ]
 
     multiword_patterns = [

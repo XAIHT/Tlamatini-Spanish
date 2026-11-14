@@ -245,6 +245,17 @@ KEEP_PATH_GLOBS = (
 # one raises rather than producing a quietly-incomplete self-modify tree.
 # Add the canonical file of any new always-present capability here.
 REQUIRED_SNAPSHOT_FILES = (
+    "docs/remote-controller.md",
+    "Tlamatini/agent/test_remote_controller_runtime.py",
+    "Tlamatini/agent/test_remote_controller_bridge.py",
+    "Tlamatini/agent/remote_controller_views.py",
+    "Tlamatini/agent/remote_controller_bridge.py",
+    "Tlamatini/agent/remote_controller_runtime.py",
+    "Tlamatini/agent/remote_controller_guard.py",
+    "Tlamatini/agent/migrations/0224_remote_controller.py",
+    "Tlamatini/agent/templates/agent/remote_controller.html",
+    "Tlamatini/agent/static/agent/css/remote_controller.css",
+    "Tlamatini/agent/test_remote_controller_views.py",
     "Tlamatini/agent/migrations/0222_repair_prompt_catalog.py",
     "Tlamatini/agent/migrations/0223_spanish_catalog_instance_contracts.py",
     "Tlamatini/agent/migrations/0224_restore_catalog_execution_parity.py",
