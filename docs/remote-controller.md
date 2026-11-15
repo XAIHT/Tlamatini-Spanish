@@ -147,9 +147,9 @@ propiedad en `remote_controller_guard.py`. El chat remoto transmite los seis mod
 seleccionados: **Multiturn, Exec-Report, ACPX, Self-Modify, Ask Execs y Step by step**.
 Su disponibilidad procede de la edición activa; se conservan los límites del
 modelo y el consentimiento. El recibo registra los valores efectivos.
-El canal propietario conserva la respuesta original antes del formato enriquecido,
-manteniendo las etiquetas literales como texto inerte junto con los informes y
-avisos de denegación. El mensaje enriquecido normal no cambia.
+El canal propietario conserva texto de respaldo y transmite el mismo HTML
+preparado que utiliza el historial principal. RC elimina contenido ejecutable
+y conserva la presentación de la respuesta y su informe de ejecución separado.
 Solo se reenvía la salida del consumidor propio. El empaquetado debe incluir estos
 módulos, `services/response_parser.py`, la migración, la página, los estilos y esta guía.
 
@@ -195,3 +195,26 @@ el rechazo de instrucciones de una sola vuelta como «Devuelve»; sus **247/247
 pruebas de código** aprobaron. La prueba instalada ES016 devolvió `verde` con
 los seis modos desactivados. El registro de aceptación anterior contiene la
 procedencia exacta y los límites de la validación; el trabajo de red sigue pendiente.
+
+## Respuestas con formato y descargas de RC · 14 de noviembre de 2026
+
+RC muestra el mismo contenido con formato que el historial del chat principal,
+tanto en las respuestas nuevas como al cargar la conversación. Pulsa **Guardar
+archivo** para descargar un adjunto al dispositivo mediante el navegador. Esta
+acción también sustituye **Load in canvas** en el espacio móvil completo. Si una
+descarga falla, puedes reintentar; cargar la conversación reciente renueva los
+enlaces caducados. El límite de descarga es 64 MiB.
+
+La migración 0225_remote_response_files añade registros de adjuntos propios de
+cada mensaje. Los programas y fragmentos generados, y las herramientas compatibles
+que terminan correctamente, registran la identidad y SHA-256 de sus archivos.
+Un enlace o nombre escrito por el modelo no concede acceso. Los adjuntos antiguos
+sin estos registros deben generarse de nuevo. Se rechazan archivos modificados
+después de la respuesta. Torrenter y los mecanismos de copia/restauración de la
+base de datos conservan su funcionamiento.
+
+Empaqueta remote_response_files.py, la migración, el analizador de respuestas,
+los recibos de herramientas y los recursos coincidentes de Tlachihuani RC.
+Recompila e instala las aplicaciones principales en inglés/español antes del
+controlador correspondiente. Evidencia de desarrollo:
+C:/Development/XAIHT/repo/Tlachihuani/docs/verification/2026-11-14-rc-rich-responses.md.

@@ -33,7 +33,7 @@ TEXT = {
     "pending": "El acceso remoto está deshabilitado aquí. La revocación del servicio terminará cuando Remote-Controller esté disponible.",
     "enabled_help": "Los dispositivos aprobados pueden usar los permisos que otorgues en XT. El chat remoto usa el historial y las aprobaciones de ejecución de esta cuenta.",
     "disabled_help": "Habilita esta cuenta antes de crear una invitación para un dispositivo en XT.",
-    "password": "Confirma tu contraseña actual de Tlamatini", "enable": "Habilitar esta cuenta",
+    "password": "<REDACTED>", "enable": "Habilitar esta cuenta",
     "disable": "Deshabilitar acceso remoto", "retry": "Reintentar revocación del servicio",
     "consent": "Al habilitarla, esta cuenta estará disponible en XT. Esto no aprueba dispositivos ni inicia servicios.",
     "disable_help": "Al deshabilitarla, se cancela su trabajo remoto y se revoca el acceso de sus dispositivos. Tlamatini permanece abierto.",
