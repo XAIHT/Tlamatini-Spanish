@@ -20,8 +20,10 @@ Los observadores de imágenes y video conservan modelos con visión:
 `mistral-large-4:cloud` y `gemma4:cloud`. Las selecciones antiguas de
 Mistral Large 3 se resuelven al modelo Large 4; la migración del catálogo
 actualiza las referencias antiguas de Mistral y GLM sin borrar las tarjetas.
-Los modelos de embeddings y reconocimiento de voz no cambian. Talker conserva
-**`legraphista/Orpheus:3b-ft-q8`**: este cambio no descarga otro modelo de voz.
+Los modelos de embeddings y reconocimiento de voz no cambian. Desde el
+16 de noviembre de 2026, el modelo predeterminado de Talker es
+**`legraphista/Orpheus:latest`**. Cambiar el ajuste no descarga el modelo;
+descárgalo una vez con `ollama pull legraphista/Orpheus:latest`.
 
 Puedes seleccionar otro modelo disponible desde **Config → Models**. El cambio
 de modelo inicial no bloquea GLM ni reemplaza automáticamente una elección
@@ -101,7 +103,7 @@ saving a dedicated value means later Unified model changes do not override it.
 
 | Global key / label | Agent YAML path | Initial default | Kind / fallback |
 |---|---|---|---|
-| `talker_model` — Talker · speech generation | `talker.model` | `legraphista/Orpheus:3b-ft-q8` | ollama |
+| `talker_model` — Talker · speech generation | `talker.model` | `legraphista/Orpheus:latest` | ollama |
 | `talker_voice` — Talker · voice | `talker.voice` | `tara` | choice |
 | `whisperer_engine` — Whisperer · recognition engine | `whisperer.engine` | `faster-whisper` | choice |
 | `whisperer_model` — Whisperer · local speech model | `whisperer.model` | `base` | local |

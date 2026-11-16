@@ -176,14 +176,14 @@ nativo y una campaña de 14 verificaciones aisladas bajo SCM. Las pruebas y camb
 agregados después esperan su propia ejecución completa; estas cifras no certifican
 las modificaciones más recientes. Las pruebas reales con navegador visible y la
 aceptación integral instalada siguen siendo etapas separadas. El registro autoritativo es
-`C:\Development\XAIHT\repo\Tlachihuani\docs\verification\2026-11-13-remote-controller.md`.
+`docs/verification/2026-11-13-remote-controller.md` en el repositorio de Tlachihuani.
 
 La validación posterior de conservación de respuestas aprobó **242/242 pruebas
 de código por edición**. El par compilado `20261114-0255` se instaló con todos los
 hashes verificados y sin cambiar los bytes de base de datos o configuración.
 Los resultados instalados de prompts, interfaz móvil y ciclo de vida, incluidos
 los fallos de formato de respuesta, se registran en
-`C:\Development\XAIHT\repo\Tlachihuani\docs\verification\2026-11-13-installed-rc-acceptance.md`.
+`docs/verification/2026-11-13-installed-rc-acceptance.md` en el repositorio de Tlachihuani.
 
 La aceptación local instalada final completó **50 prompts en inglés y 50 en
 español**, con **99/100 verificaciones de respuesta exacta**, **170/170 pruebas
@@ -205,7 +205,7 @@ acción también sustituye **Load in canvas** en el espacio móvil completo. Si 
 descarga falla, puedes reintentar; cargar la conversación reciente renueva los
 enlaces caducados. El límite de descarga es 64 MiB.
 
-La migración 0225_remote_response_files añade registros de adjuntos propios de
+La migración 0225_response_files añade registros de adjuntos propios de
 cada mensaje. Los programas y fragmentos generados, y las herramientas compatibles
 que terminan correctamente, registran la identidad y SHA-256 de sus archivos.
 Un enlace o nombre escrito por el modelo no concede acceso. Los adjuntos antiguos
@@ -216,5 +216,58 @@ base de datos conservan su funcionamiento.
 Empaqueta remote_response_files.py, la migración, el analizador de respuestas,
 los recibos de herramientas y los recursos coincidentes de Tlachihuani RC.
 Recompila e instala las aplicaciones principales en inglés/español antes del
-controlador correspondiente. Evidencia de desarrollo:
-C:/Development/XAIHT/repo/Tlachihuani/docs/verification/2026-11-14-rc-rich-responses.md.
+controlador correspondiente. Evidencia de desarrollo en el repositorio de
+Tlachihuani: `docs/verification/2026-11-14-rc-rich-responses.md`.
+
+## Correcciones · 15 de noviembre de 2026
+
+- La página de la cuenta vuelve a mostrar la etiqueta de la contraseña e indica
+  un solo lugar para administrar el servidor: **clic derecho en el icono XT →
+  Remote-Controller**.
+- Al habilitar una cuenta cuya revocación anterior no llegó al servicio, primero
+  se completa esa revocación para que no regresen los permisos antiguos de los
+  dispositivos. Si el servicio no responde, la página pide iniciar
+  Remote-Controller e intentarlo de nuevo.
+- Una cuenta de Tlamatini desactivada se revoca una sola vez y se borra su
+  vínculo. Después de reactivarla, debe habilitar de nuevo el acceso remoto.
+- El adaptador consulta una cuenta inactiva cada 3 segundos y una conversación
+  activa cada segundo. Mientras el servicio sigue fallando, espera 2, 4, 8 y luego
+  15 segundos entre intentos; los reintentos de revocación usan los mismos tiempos.
+- El estado indica que Tlamatini está listo en cuanto termina de cargar. Una
+  conversación remota crea su propia cadena aunque no haya un chat de escritorio
+  abierto.
+- RC envía Self-Modify solo después de que cambias esa casilla en el
+  dispositivo, y el interruptor del escritorio solo se reescribe cuando la
+  elección cambia de verdad.
+- Paso a paso requiere Multiturno, igual que en el escritorio.
+- Si falla el registro de adjuntos, la respuesta se guarda de todos modos.
+- Los mensajes del teléfono y los errores de las solicitudes usan el idioma de la
+  edición, y la puerta de enlace del teléfono ya no reenvía la API local de
+  Terminater.
+- El modo de anexar de File-Creator informa `appended`, un estado de trabajo
+  completado.
+
+La siguiente migración debe depender de la última migración actual,
+`0225_response_files`. `Tests/test_migration_graph.py` falla cuando el grafo
+tiene más de una hoja de agent.
+
+## Sincronización de aprobaciones · 15 de noviembre de 2026
+
+Cada aprobación de ejecución se identifica por su ID de solicitud. Cuando el
+usuario responde en RC o en una pestaña del chat principal, el intermediario
+acepta una sola vez la primera respuesta y envía exec-permission-resolved a las
+pestañas de esa cuenta. La aprobación, denegación, cancelación, finalización
+del intermediario y continuación automática retiran el diálogo correspondiente
+sin recargar la página. Una respuesta antigua no cierra un diálogo más reciente.
+El adaptador RC conserva la misma identidad en el progreso de la aprobación.
+
+Si se pierde la conexión del chat, se cierra el diálogo inutilizable y permanece
+la indicación de desconexión. Esto no confirma que la ejecución haya terminado.
+Al reconectar se deben conservar la identidad de la operación y los resultados
+aún desconocidos, sin repetir automáticamente el comando.
+
+Recompila ambas ediciones y Tlachihuani para las pruebas instaladas. Con Ask Execs
+activo, aprueba en RC un comando de solo lectura mientras el diálogo principal
+está visible: debe desaparecer automáticamente. Repite en sentido contrario y
+prueba denegación, cancelación y respuestas desde varias pestañas. Las regresiones
+están en agent/test_exec_permission_sync.py y rc_approval_browser.mjs del controlador.

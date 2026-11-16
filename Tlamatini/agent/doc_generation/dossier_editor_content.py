@@ -280,7 +280,8 @@ def release_sections(section, facts):
                     "continúa por el procesamiento normal, sin convertirse en una lista de directorios.",
                     "Los valores centrales usan deepseek-v4.1-flash:cloud para texto y mistral-large-4:cloud "
                     "junto con gemma4:cloud para visión; las elecciones configuradas siguen siendo la autoridad. "
-                    "Orpheus 3b-ft-q8 sigue siendo el modelo de voz. Las cohortes visibles del 9 de noviembre "
+                    "legraphista/Orpheus:latest es el modelo de voz predeterminado. Las cohortes visibles "
+                    "del 9 de noviembre "
                     "crearon y autenticaron 20 cuentas con 260 comprobaciones entre ambas ediciones.",
                 ], deck_points=[
                     ("Crear", "La tarjeta conocida usa el entorno actual y entrada privada en consola."),

@@ -28,12 +28,12 @@ TEXT = {
     "back": "Volver al chat", "refresh": "Actualizar estado",
     "service": "Servicio Remote-Controller", "ready": "En ejecución", "unavailable": "Sin conexión",
     "setup": "Requiere configuración", "stopping": "Deteniéndose",
-    "service_help": "Abre XT → Show panel → Services → Remote-Controller para iniciar, detener o reiniciar el servidor.",
+    "service_help": "Haz clic derecho en el icono XT → Remote-Controller para iniciar, detener o reiniciar el servidor.",
     "account": "Tu cuenta", "enabled": "Acceso remoto habilitado", "disabled": "Acceso remoto deshabilitado",
     "pending": "El acceso remoto está deshabilitado aquí. La revocación del servicio terminará cuando Remote-Controller esté disponible.",
     "enabled_help": "Los dispositivos aprobados pueden usar los permisos que otorgues en XT. El chat remoto usa el historial y las aprobaciones de ejecución de esta cuenta.",
     "disabled_help": "Habilita esta cuenta antes de crear una invitación para un dispositivo en XT.",
-    "password": "<REDACTED>", "enable": "Habilitar esta cuenta",
+    "password_label": "Confirma tu contraseña actual de Tlamatini", "enable": "Habilitar esta cuenta",
     "disable": "Deshabilitar acceso remoto", "retry": "Reintentar revocación del servicio",
     "consent": "Al habilitarla, esta cuenta estará disponible en XT. Esto no aprueba dispositivos ni inicia servicios.",
     "disable_help": "Al deshabilitarla, se cancela su trabajo remoto y se revoca el acceso de sus dispositivos. Tlamatini permanece abierto.",
@@ -48,6 +48,7 @@ TEXT = {
     "request_error": "No se pudo aceptar esta solicitud. Actualiza la página e inténtalo de nuevo.",
     "local_error": "Abre esta página en la PC que ejecuta Tlamatini para administrar el acceso remoto.",
     "service_error": "Remote-Controller no está disponible o rechazó el cambio. Revisa su pestaña Runtime en XT e inténtalo de nuevo.",
+    "revoke_first": "Esta cuenta aún tiene acceso de dispositivos que Remote-Controller no ha revocado. Inicia Remote-Controller desde el icono XT y vuelve a habilitar la cuenta.",
     "inactive_error": "Esta cuenta de Tlamatini está inactiva.",
 }
 
@@ -140,6 +141,18 @@ def account(request):
         if action == "enable":
             if profile is None:
                 profile, _ = RemoteControllerProfile.objects.get_or_create(user=request.user)
+            if not profile.enabled and profile.binding_id:
+                # A disable whose service revocation never finished must finish
+                # first. Binding again could otherwise restore the old device
+                # grants that disabling promised to revoke.
+                try:
+                    unbind_profile(profile)
+                except RcBridgeError as exc:
+                    if exc.code != "not_found":
+                        logger.warning("Remote-Controller re-enable is waiting for a pending revocation")
+                        return _page(request, error=TEXT["revoke_first"], status=503)
+                profile.binding_id = ""
+                profile.save(update_fields=["binding_id"])
             try:
                 binding = bind_profile(profile)
                 binding_id = binding.get("id", "")

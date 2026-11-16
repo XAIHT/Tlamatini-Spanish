@@ -49,7 +49,7 @@ for agent, prefix, first, second in (
 _field('claude_image_model', 'Análisis de imágenes con Claude', 'Visión', 'claude-opus-4-5-20251101',
        kind='provider', help_text='ID del modelo de Anthropic; requiere tus credenciales actuales de la API de Claude.')
 
-_field('talker_model', 'Talker · generación de voz', 'Voz', 'legraphista/Orpheus:3b-ft-q8',
+_field('talker_model', 'Talker · generación de voz', 'Voz', 'legraphista/Orpheus:latest',
        agent='talker', path='model', help_text='Modelo de tokens de audio compatible con Orpheus; los modelos de chat comunes no pueden hablar.')
 _field('talker_voice', 'Talker · voz', 'Voz', 'tara', agent='talker', path='voice',
        kind='choice', choices=('tara', 'leah', 'jess', 'mia', 'zoe'), help_text='Usa una voz femenina de Orpheus compatible.')

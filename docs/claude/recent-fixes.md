@@ -10,6 +10,22 @@
 
 > Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
 
+## 2026-11-16 — El modelo de voz predeterminado de Talker es `legraphista/Orpheus:latest`
+
+Angela pidió reemplazar `legraphista/Orpheus:3b-ft-q8` por `legraphista/Orpheus:latest` como
+valor predeterminado en ambas ediciones. Se cambiaron juntos: `agent/config.json`,
+el valor predeterminado de `talker_model` en `agent/agents/model_settings.py`,
+los valores alternativos del código de Talker y los comentarios de su
+`config.yaml`, la descripción de la herramienta de chat, los textos de
+FlowCreator y FlowHypervisor, las descripciones del catálogo, la memoria de
+traducción, las pruebas y la documentación. Una elección ya guardada en el
+`config.json` de una instalación se conserva; el registro no la reescribe y
+`agent/test_model_tag_upgrade.py` lo comprueba. No se descarga ningún modelo:
+ejecuta `ollama pull legraphista/Orpheus:latest` una vez antes de que Talker lo use.
+En esta edición Talker usa Piper de forma predeterminada; Orpheus aplica cuando
+`tts_engine` es `orpheus`. Los registros fechados (notas de versión, evidencia
+de verificación, la entrada del 2026-11-08) conservan la etiqueta que registraron.
+
 ## 2026-11-12 — Explicación y captura de salida
 
 La [versión publicada 1.93.5](../changes/2026-11-12-v1.93.5.md) incorpora la explicación de selecciones independiente de las casillas y la [corrección de Executer](../changes/2026-11-12-executer-output-capture.md). Ejecutar un programa separado con START puede dejar abiertos los handles de salida heredados después de que termine el CMD principal. Capturar con pipes esperaba su EOF; ahora los archivos de captura y sus lectores independientes permiten devolver la captura al terminar el proceso principal sin mover la posición de escritura del hijo. Los comandos directos siguen bloqueando normalmente. Las pruebas con el mismo ejecutable Rust devolvieron el resultado en aproximadamente cinco segundos mientras el cubo permanecía abierto. No se añadió un límite genérico de repeticiones ni se declaró resuelto el bloqueo separado de entrega de respuesta final.
@@ -44,7 +60,8 @@ La visión utiliza `mistral-large-4:cloud` junto con `gemma4:cloud`. El
 registro reconoce la selección retirada de Mistral Large 3, y la migración
 0226 actualiza las referencias del catálogo después de las reparaciones de
 paridad. No cambiar `legraphista/Orpheus:3b-ft-q8` a `latest`: Angela
-retiró esa petición por su conexión de datos limitada. No descargar modelos
+retiró esa petición por su conexión de datos limitada (sustituido el 2026-11-16: el
+valor predeterminado ahora es `legraphista/Orpheus:latest`). No descargar modelos
 de voz como parte de este cambio. Las pruebas están en
 `agent/test_model_tag_upgrade.py`; la guía es
 [configuración de modelos](../model_configuration.md).

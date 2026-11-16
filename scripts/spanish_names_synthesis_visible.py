@@ -55,7 +55,7 @@ def main():
         started = time.monotonic()
         print('START REAL VOICE', engine, voice, flush=True)
         config = dict(input_text=text, tts_engine=engine, voice=voice, language='es-MX',
-                      model='legraphista/Orpheus:3b-ft-q8', play_audio=False, seed=42,
+                      model='legraphista/Orpheus:latest', play_audio=False, seed=42,
                       request_timeout=300, output_dir=str(OUT / voice),
                       piper_voices_dir=str(OUT / 'piper-models'), piper_auto_install=False)
         try:

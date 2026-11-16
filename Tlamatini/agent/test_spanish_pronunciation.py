@@ -86,7 +86,7 @@ class TalkerSpanishNamesTests(unittest.TestCase):
 
     def test_real_orpheus_payload_uses_accents_without_fake_language_tag(self):
         from agent.test_talker_agent import _FakeResp, _ndjson
-        config = {'voice': 'tara', 'model': 'legraphista/Orpheus:3b-ft-q8', 'language': 'es-MX'}
+        config = {'voice': 'tara', 'model': 'legraphista/Orpheus:latest', 'language': 'es-MX'}
         prompt = self.talker.build_orpheus_prompt(config, 'Hola Angela, Jose y Sofia.')
         self.assertEqual(prompt, 'tara: Hola Ángela, José y Sofía.')
         with patch.object(self.talker.urllib.request, 'urlopen', return_value=_FakeResp(_ndjson({'response': '', 'done': True}))) as call:
@@ -103,7 +103,7 @@ class TalkerSpanishNamesTests(unittest.TestCase):
             for spelling in ('angela', 'Angela', 'angéla', 'Angéla', 'Ángela'):
                 with self.subTest(voice=voice, name=spelling):
                     prompt = self.talker.build_orpheus_prompt(
-                        {'voice': voice, 'model': 'legraphista/Orpheus:3b-ft-q8', 'language': 'es'}, spelling)
+                        {'voice': voice, 'model': 'legraphista/Orpheus:latest', 'language': 'es'}, spelling)
                     self.assertEqual(prompt, voice + ': ' + accent_name(spelling))
 
     def test_piper_receives_same_normalized_text_without_mutating_input(self):
