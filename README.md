@@ -151,7 +151,7 @@ paneles de control. Esta configuración está incluida en la versión de lanzami
 | :--- | :--- |
 | Haz clic en **Mic** junto a Enviar, espera a **Listening** y habla. Whisperer transcribe tus palabras en el chat. | El **avatar del chat** lee las respuestas con el reproductor de voz compartido de **Config ▸ Voz**. La reproducción del equipo Windows puede continuar al cubrir o minimizar la ventana. |
 | El status de la grabación, el nivel de input y el tiempo transcurrido aparecen en el chat. La ventana de silencio predeterminada es de **3.5 segundos**. | **Talker** genera voz basada en modelos por separado. Su modelo y sus ajustes de voz están en **Config ▸ Modelos**. |
-| En **Config ▸ Micrófono**, elige **Enviar automáticamente** o **Dejar en el input del chat** para revisar primero la transcripción. | Explora la sección **Voice Commands** al inicio del Catálogo de prompts para ver ejemplos guiados. |
+| En **Config ▸ Micrófono**, elige **Enviar automáticamente** o **Dejar en el input del chat** para revisar primero la transcripción. | Abre el **Catálogo de prompts** para ver ejemplos guiados, empezando por Primeros pasos. |
 
 El dictado directo usa el micrófono de la **computadora donde corre Tlamatini**. Mantiene el status en el chat y no abre una consola de grabación aparte. Haz clic en Mic otra vez o presiona Escape para cancelar; un reconocimiento vacío o fallido no envía ningún prompt. [Configuración y controles de voz →](docs/chat-microphone-design.md)
 
