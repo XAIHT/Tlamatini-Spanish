@@ -8,7 +8,17 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
+
+## 2026-11-21 — Comandos de voz sale del Catálogo de prompts (v1.96.1)
+
+El botón de micrófono junto a Enviar sustituyó la sección Comandos de voz del
+catálogo. `views.PROMPT_CATEGORY_ORDER` ya no incluye `voice_commands`, y la
+migración 0228 oculta los prompts 121 y 122 (`hidden=True`) en lugar de
+borrarlos, así que ningún id se renumera. `test_known_section_openers` ya no
+espera la sección y `agent/test_voice_commands_catalog.py` comprueba que siga
+retirada. No vuelvas a añadir la sección. Publicada como
+[v1.96.1](../changes/2026-11-21-v1.96.1.md).
 
 ## 2026-11-16 — El modelo de voz predeterminado de Talker es `legraphista/Orpheus:latest`
 

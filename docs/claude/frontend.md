@@ -8,7 +8,7 @@
 -->
 # Tlamatini — Frontend Architecture
 
-> Última versión publicada: **[v1.93.5](../changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
 
 ## Página de cuenta de Remote-Controller · 13 de noviembre de 2026
 

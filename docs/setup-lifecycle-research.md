@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Windows setup: research and implementation decisions
 
-> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
 
 
 Research date: 2026-10-11. This is a custom EXE installer, not an MSI package;

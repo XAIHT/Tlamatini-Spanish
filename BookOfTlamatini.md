@@ -8,7 +8,7 @@
 -->
 # Tlamatini
 
-> Última versión publicada: **[v1.93.5](docs/changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](docs/changes/2026-11-21-v1.96.1.md)**.
 
 ## Integración con Remote-Controller · 13 de noviembre de 2026
 
@@ -19,7 +19,13 @@ sigue siendo independiente. La conexión es local; el transporte por red, la voz
 de RC y la aceptación instalada final siguen pendientes. Consulta
 [la guía de cuenta y conexión](docs/remote-controller.md).
 
-## v1.93.5 — Selección del canvas, voz continua y ejecución correcta
+## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+
+- La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
+- Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](docs/remote-controller.md).
+- El modelo predeterminado de Talker es `legraphista/Orpheus:latest`. [Cambios completos](docs/changes/2026-11-21-v1.96.1.md).
+
+## Incluido desde v1.93.5 — Selección del canvas, voz continua y ejecución correcta
 
 - **Explicar selección** usa el texto sin guardar seleccionado al pulsar el botón, conserva el borrador del chat y funciona con cualquier combinación de casillas, incluso sin Live editor. Una selección pequeña no requiere enviar todo el archivo. [Canvas](docs/canvas-editing.md).
 - La voz puede continuar al cubrir o minimizar la ventana. El navegador reintenta los fragmentos interrumpidos y puede entregar el texto restante a la voz del equipo Windows. Detener y silencio siguen bajo tu control. [Voz](docs/voice-playback.md).
@@ -1018,7 +1024,7 @@ When the migrations finish and you have a superuser, run the server (chapter 7).
 
 ### Path B — Pre-built one-click installer (end users)
 
-Este libro documenta la **v1.93.5**. Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Obtén el paquete desde las [versiones de Tlamatini en español](https://github.com/XAIHT/Tlamatini-Spanish/releases) y comprueba su versión antes de instalarlo.
+Este libro documenta la **v1.96.1**. Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Obtén el paquete desde las [versiones de Tlamatini en español](https://github.com/XAIHT/Tlamatini-Spanish/releases) y comprueba su versión antes de instalarlo.
 
 1. Open the unzipped folder.
 2. Double-click **`Installer.exe`**.
@@ -2860,7 +2866,7 @@ Requires `pkg.zip` and `Uninstaller.exe` from steps 1 and 2. Builds `install.py`
 
 ## 48. Versioning
 
-Tlamatini sigue [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH`. La última versión publicada es **1.93.5**. Mantén sincronizados la documentación actual y los manifiestos con esa única versión; la compilación resuelve el mismo número a partir de una opción explícita o de la etiqueta Git y lo incorpora en los tres artefactos descritos en §47.
+Tlamatini sigue [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH`. La última versión publicada es **1.96.1**. Mantén sincronizados la documentación actual y los manifiestos con esa única versión; la compilación resuelve el mismo número a partir de una opción explícita o de la etiqueta Git y lo incorpora en los tres artefactos descritos en §47.
 
 ### What the three numbers mean
 
@@ -2874,14 +2880,14 @@ Pre-releases use the standard SemVer suffixes — `2.0.0-alpha.1`, `2.0.0-beta.1
 
 ```powershell
 git status                                          # clean tree, on main
-git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH: <one-liner>"   # annotated tag, an unused version (1.93.5 is taken)
+git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH: <one-liner>"   # annotated tag, an unused version (1.96.1 is taken)
 git push origin vMAJOR.MINOR.PATCH
 python build.py
 python build_uninstaller.py
 python build_installer.py
 ```
 
-All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini-Spanish_Release_v1.93.5/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. La versión publicada es `1.93.5`; pasa `--version 1.93.5` a los generadores completos para fijar ese número. Tlamatini deliberately never puts a `.devN`, `+gSHA` or `.dirty` suffix into its version string — it always reports the base tag, which is the designed behaviour described in `VERSIONING.md`. That is exactly why the five commands above start with `git status` on a clean tree: a release cut from a dirty tree would ship a version number that says nothing about what is actually inside it.
+All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini-Spanish_Release_v1.96.1/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. La versión publicada es `1.96.1`; pasa `--version 1.96.1` a los generadores completos para fijar ese número. Tlamatini deliberately never puts a `.devN`, `+gSHA` or `.dirty` suffix into its version string — it always reports the base tag, which is the designed behaviour described in `VERSIONING.md`. That is exactly why the five commands above start with `git status` on a clean tree: a release cut from a dirty tree would ship a version number that says nothing about what is actually inside it.
 
 ### Where the version shows up in a running install
 
@@ -2889,8 +2895,8 @@ The build computes the version once and bakes it into four surfaces:
 
 - **`Tlamatini/agent/_version.py`** — generated at build time, gitignored, read at runtime by `agent.version.get_version()`. This is what every in-process surface reads.
 - **Win32 `VERSIONINFO`** — `Tlamatini.exe`, `Installer.exe`, and `Uninstaller.exe` all carry the version in their resource fork. Right-click the file → Properties → Details → ProductVersion.
-- **Release folder name** — `dist/Tlamatini-Spanish_Release_v1.93.5/`.
-- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.93.5` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.93.5","commit":"abc1234","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
+- **Release folder name** — `dist/Tlamatini-Spanish_Release_v1.96.1/`.
+- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.96.1` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.96.1","commit":"abc1234","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
 
 If the four surfaces ever disagree, your build was run with a stale `$env:TLAMATINI_VERSION` or against an out-of-date `_version.py` — clear them and re-run `build.py`.
 

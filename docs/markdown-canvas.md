@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza -->
 # Markdown in the chat canvas
 
-> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
 
 ## Archivos legibles con controles aislados — 1.92.4
 

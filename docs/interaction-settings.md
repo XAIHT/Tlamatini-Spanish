@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Configuración del Editor en vivo y Terminater
 
-> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
 
 Desde la v1.92.0, ambos controles admiten hasta 250 WPM. El Editor en vivo usa 100 WPM de forma predeterminada y Terminater usa 50.
 

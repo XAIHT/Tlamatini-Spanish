@@ -1,6 +1,6 @@
 # Compilación conjunta de las ediciones inglesa y española
 
-> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
 
 ## Incluido desde v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
 

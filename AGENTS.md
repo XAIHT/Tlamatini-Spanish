@@ -21,9 +21,15 @@ traducción anteriores que introduzcan diferencias de comportamiento.
 
 # Tlamatini instructions for Codex and every coding agent
 
-> Última versión publicada: **[v1.93.5](docs/changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](docs/changes/2026-11-21-v1.96.1.md)**.
 
-## v1.93.5 — Selección del canvas, voz continua y ejecución correcta
+## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+
+- La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
+- Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](docs/remote-controller.md).
+- El modelo predeterminado de Talker es `legraphista/Orpheus:latest`. [Cambios completos](docs/changes/2026-11-21-v1.96.1.md).
+
+## Incluido desde v1.93.5 — Selección del canvas, voz continua y ejecución correcta
 
 - **Explicar selección** usa el texto sin guardar seleccionado al pulsar el botón, conserva el borrador del chat y funciona con cualquier combinación de casillas, incluso sin Live editor. Una selección pequeña no requiere enviar todo el archivo. [Canvas](docs/canvas-editing.md).
 - La voz puede continuar al cubrir o minimizar la ventana. El navegador reintenta los fragmentos interrumpidos y puede entregar el texto restante a la voz del equipo Windows. Detener y silencio siguen bajo tu control. [Voz](docs/voice-playback.md).
@@ -352,7 +358,7 @@ Contract: [CLAUDE.md](CLAUDE.md) → *Self-modify*,
 for every page: each dropped file is recognised by its bytes and sent to its own mechanism, so an MCP
 .json imports everywhere and never errors, opens as text or navigates away."* It was published on GitHub
 on 2026-10-14 ("Tlamatini Release v1.83.0 Win11x64", marked Latest), so self-update delivered `v1.83.0` then;
-that historical runtime version was `1.83.0`. La versión actual es `v1.93.5`. `v1.83.0` carried everything in `v1.82.0` plus the three
+that historical runtime version was `1.83.0`. La versión actual es `v1.96.1`. `v1.83.0` carried everything in `v1.82.0` plus the three
 changes below. `v1.83.0` added no migration after 0213 (0214 arrived in v1.87.0); the frontend has 60 JS modules and 26
 stylesheets, and the live `STATIC_VERSION` cache suffix is now `-agent-catalog-1-quality-cleanup-1-usage-status-2`.
 

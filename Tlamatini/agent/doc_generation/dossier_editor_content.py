@@ -183,6 +183,21 @@ def wizard_section(section):
 
 def release_sections(section, facts):
     return [
+        section("release1961_catalog", f"PUBLICADA · v{facts['version']}", "La voz pasa al micrófono",
+                "El Catálogo de prompts ya no tiene la sección Comandos de voz.",
+                body=[
+                    "El botón de micrófono junto a Enviar graba, transcribe y envía un prompt directamente, así que "
+                    "las dos tarjetas de Comandos de voz (prompts 121 y 122) salieron del Catálogo de prompts. "
+                    "La migración 0228 las oculta sin renumerar y el catálogo empieza ahora por Primeros pasos.",
+                    "Esta versión también incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y "
+                    "v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. El modelo "
+                    "predeterminado de Talker es legraphista/Orpheus:latest.",
+                ], deck_points=[
+                    ("Hablar", "Usa el botón de micrófono junto a Enviar."),
+                    ("Catálogo", "Sin Comandos de voz; el catálogo empieza por Primeros pasos."),
+                    ("Datos", "La migración 0228 oculta los prompts 121 y 122 sin renumerar."),
+                    ("Remoto", "Incluye las versiones de Tlamatini-RC v1.94.0 a v1.96.0."),
+                ]),
         section("release1935_selection", f"PUBLICADA · v{facts['version']}", "Explica exactamente la selección",
                 "El botón del lienzo funciona independientemente de las casillas del chat y del Editor en vivo.",
                 body=[

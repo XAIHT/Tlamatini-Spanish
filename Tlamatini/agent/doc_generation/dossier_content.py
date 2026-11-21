@@ -1054,10 +1054,8 @@ def build_chapters(f: dict) -> list[Chapter]:
             f"El Catálogo de prompts se abre con {sections_count} secciones; cada una empieza con un asistente guiado "
             f"Paso a paso y crece de lo simple a lo avanzado.",
             body=[
-                f"Secciones: {catalog_names}. VOICE COMMANDS va primero, porque hablar es la forma más corta "
-                f"de usarla: tú hablas, Whisperer transcribe y la transcripción se vuelve el prompt. "
-                "Estos workflows del catálogo usan el tool wrapped mediado por el modelo y los modos propios de cada tarjeta; "
-                "son distintos del botón directo de micrófono junto a Enviar.",
+                f"Secciones: {catalog_names}. Para hablar un prompt, usa el botón de micrófono junto a Enviar: "
+                "Whisperer transcribe lo que dices y la transcripción se vuelve el prompt.",
                 "Las insignias de modo de cada tarjeta se derivan del texto mismo del prompt, y hacer clic en una tarjeta pone "
                 "los interruptores de la barra de herramientas exactamente en esos modos. Todos los prompts usan una sola gramática, así que siempre "
                 "queda claro de quién es cada espacio en blanco.",
@@ -1068,7 +1066,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ["< … >", "Espacio del reporte", "Donde se imprime una respuesta; nunca es un input."],
             ]}, deck="split",
             deck_points=[
-                ("Secciones", f"{sections_count}, empezando con VOICE COMMANDS."),
+                ("Secciones", f"{sections_count}, empezando con Primeros pasos."),
                 ("Aperturas", "Cada sección empieza con un asistente guiado Paso a paso."),
                 ("Insignias", "Derivadas del texto del prompt; un clic pone los modos."),
                 ("Gramática", "[[ tú ]], {{ runtime }}, < espacio del reporte >."),
@@ -1427,9 +1425,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 "La transcripción corre localmente con faster-whisper, en una GPU cuando hay y en el CPU si no, "
                 "o por medio de un proveedor de Whisper en la nube. Talker habla con un modelo compatible con Orpheus en una "
                 "voz femenina: tara, leah, jess, mia o zoe. Una voz masculina se rechaza por diseño.",
-                "La primera sección del catálogo, VOICE COMMANDS, convierte el micrófono en el teclado: ella transcribe "
-                "tu instrucción, te la lee de vuelta, y sólo entonces actúa. Cualquier cosa irreversible sigue necesitando tu "
-                "confirmación por escrito según esas instrucciones del catálogo. Config > Micrófono elige el envío automático "
+                "El botón de micrófono junto a Enviar convierte el micrófono en el teclado. Config > Micrófono elige el envío automático "
                 "o un borrador editable. El envío real usa la voz del browser para confirmar, y respeta el modo Silencio.",
             ], deck="list",
             deck_points=[

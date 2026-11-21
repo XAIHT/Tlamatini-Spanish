@@ -1,6 +1,6 @@
 # Proposal — Widen STM32er to the ENTIRE ST 32-bit line (Blue Pill → STM32N6)
 
-> Última versión publicada: **[v1.93.5](changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
 
 
 **Author:** prepared for Angela López Mendoza, creator of Tlamatini

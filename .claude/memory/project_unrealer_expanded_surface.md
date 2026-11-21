@@ -15,7 +15,7 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Última versión publicada: **[v1.93.5](../../docs/changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](../../docs/changes/2026-11-21-v1.96.1.md)**.
 
 
 2026-05-24: Expanded the **Unrealer** agent to track the improved Unreal MCP fork.

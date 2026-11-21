@@ -15,7 +15,7 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Última versión publicada: **[v1.93.5](../../docs/changes/2026-11-12-v1.93.5.md)**.
+> Última versión publicada: **[v1.96.1](../../docs/changes/2026-11-21-v1.96.1.md)**.
 
 
 2026-05-21: Playwrighter closed the browser the instant the last step returned
