@@ -35,6 +35,10 @@ function Reconnect(e) { // eslint-disable-line no-unused-vars
         console.log("Reconnect is not allowed at this moment...");
         return;
     }
+    if (window.TlamatiniCanvasTabs?.contextPending) {
+        void window.tlmAlert('Espera a que termine la actualización del contexto del lienzo antes de reconectar.', 'Actualización del contexto');
+        return;
+    }
     if (!isChatSocketOpen()) {
         console.log("--- WebSocket is closed, reloading page to rebuild the live session.");
         window.location.reload();
@@ -96,6 +100,7 @@ function Reconnect(e) { // eslint-disable-line no-unused-vars
     }))) {
         return;
     }
+    window.TlamatiniCanvasTabs?.clearContext();
     clearContextEnabled = false;
     clearContextButton.setAttribute("style", "display: none !important;");
     contextDataSpan.innerText = "<<<" + "..." + ">>>  ";
@@ -616,6 +621,7 @@ window.onload = () => {
             }
 
             const callback2SetFileAsContext = () => {
+                if (window.TlamatiniCanvasTabs) return window.TlamatiniCanvasTabs.changeContext();
                 const type = "set-canvas-as-context";
                 const codeRegex = /<<< (.+?) >>>/s;
                 const result = filenameSpan.textContent.match(codeRegex);
@@ -1919,4 +1925,3 @@ async function _saveSetDb() {
     _showSetDbLoadedNextSessionWarning();
     return true;
 }
-

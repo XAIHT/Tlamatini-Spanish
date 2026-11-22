@@ -1,26 +1,102 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza -->
-# Editing and saving canvas files
+# Editar y guardar documentos del Canvas
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 Introduced in v1.89.0 (2026-10-21), carried by v1.91.0 with configurable editor behavior. The tests below retain their actual dates; source verification does not certify a newly rebuilt installed executable.
 
-Open a text or source file in the chat canvas and edit it directly. The filename
-bar provides **Save**, **Save as…**, **Undo**, **Redo**, **Find** (including replace),
-and **Wrap**, alongside Copy, Refresh, Clear canvas and Use as context. The status
-shows unsaved changes and the text encoding/line endings. Ctrl/Cmd+S saves;
-Ctrl/Cmd+Shift+S chooses another destination. Tab remains keyboard navigation;
-use Ctrl+[ / Ctrl+] to change indentation. No code is executed by the editor.
+Abre documentos de texto, código, Markdown y PDF en pestañas separadas del
+Canvas del chat. Cada pestaña conserva su documento, estado de edición e
+identidad de archivo. La barra ofrece **Guardar**, **Guardar como…**,
+**Deshacer**, **Rehacer**, **Buscar** (con reemplazo) y **Ajustar**, junto a
+Copiar, Actualizar, Limpiar canvas y Usar como contexto. El estado indica los
+cambios sin guardar, la codificación y los finales de línea. Ctrl/Cmd+S guarda;
+Ctrl/Cmd+Shift+S elige otro destino. Tab conserva la navegación por teclado;
+Ctrl+[ / Ctrl+] cambia la sangría. El editor no ejecuta código.
 
-The source editor is CodeMirror 6, bundled locally with its languages and
-licenses. Source code, JSON, configuration files and plain text share the same
-editing model. Unknown text extensions remain editable without syntax coloring.
-Markdown retains sanitized **Preview** and editable **Source** views over the same
-document; switching views preserves edits and undo history. Copy and Use as
-context read the edited source. HTML and SVG remain source text, never an active
-web page. PDF remains the complete PDF viewer: Save exports its original bytes
-as a copy and preserves the viewed document and prepared context. Flow files and
-images retain their existing dedicated routing.
+El editor de código es CodeMirror 6, distribuido localmente con sus lenguajes y
+licencias. Código, JSON, configuración y texto plano comparten el mismo modelo
+de edición. Las extensiones de texto desconocidas siguen siendo editables, sin
+coloreado de sintaxis. Markdown conserva **Vista previa** saneada y **Source**
+editable sobre un mismo documento; cambiar de vista conserva los cambios y el
+historial de deshacer. Copiar y Usar como contexto leen el texto editado. HTML y
+SVG permanecen como código, nunca como páginas activas. PDF conserva su visor
+completo: Guardar exporta una copia de los bytes originales sin cambiar el
+documento mostrado ni su contexto preparado. Los flujos y las imágenes mantienen
+sus rutas especializadas.
+
+## Trabajar con varios documentos
+
+Abre o suelta otro documento compatible para añadir una pestaña sin sustituir
+las que ya están abiertas. Puedes mantener hasta **32 pestañas**. Pulsa una
+para volver a ella: el texto conserva sus cambios, historial de deshacer,
+selección y posición de desplazamiento. Markdown conserva su vista Previa o
+Source. Cada PDF conserva su visor, estado de navegación y contexto preparado;
+no se convierte en un editor de texto. La barra actúa sobre el documento activo;
+**Limpiar canvas** cierra esa pestaña.
+
+Con el foco dentro del Canvas o su barra de pestañas, **Alt+PageUp / Alt+PageDown**
+cambia de documento. Ctrl+Tab / Ctrl+Shift+Tab también funciona si el navegador
+entrega esas teclas a la página. Chrome normalmente reserva Ctrl+Tab para sus
+propias pestañas: usa los atajos con Alt o pulsa una pestaña del Canvas. Estos
+atajos no cambian documentos cuando el foco está en el chat, una terminal o un
+diálogo abierto.
+
+El **asterisco (*)** de una pestaña indica cambios aún no guardados en disco.
+Abrir o cambiar de pestaña no los descarta. Guardar un documento no elimina el
+asterisco de otro. Espera a que termine un guardado antes de cambiar de documento;
+si falla o se cancela, los cambios se conservan. Cerrar una pestaña modificada
+pide confirmación antes de descartarla. La protección al abandonar la página
+comprueba **todas las pestañas**, incluidas las inactivas y los guardados pendientes.
+El navegador controla la advertencia final y aun así puede cerrarse o fallar:
+guarda todo antes de salir. No se garantiza recuperar pestañas sin guardar
+después de recargar la página.
+
+Editor en vivo e [Interactor](interactor.md) identifican el documento sobre el
+que trabajan. Cambiar de documento cancela el tecleo en curso para impedir que
+continúe en la siguiente pestaña. Interactor puede seleccionar otro documento
+abierto para continuar una explicación; abrirlo no lo añade al contexto del chat.
+
+Para ello usa `read`, consulta los metadatos con `documents` y activa un
+`target_document_id` exacto mediante `activate`. La respuesta verificada identifica
+el destino y su revisión; no se reutiliza la identidad de la sesión del navegador
+como identidad del archivo. El historial y la selección de las otras pestañas
+permanecen separados. Los PDF no admiten tecleo de Interactor.
+
+## Elegir exactamente qué documentos serán contexto
+
+**Abrir no significa usar como contexto.** Pulsa **Usar como contexto** en cada
+documento que deba usar el chat normal. Por ejemplo, abre `notas.md`, `main.py`
+y `manual.pdf`, y selecciona sólo `notas.md` y `manual.pdf`: `main.py` permanece
+como pestaña del editor y no se incluye en ese conjunto de contexto. Preparar
+un PDF sigue preguntando si deseas procesar imágenes; la opción predeterminada
+utiliza únicamente el texto seleccionable.
+
+La franja **Contexto del chat** enumera las capturas aceptadas. Sus pestañas
+también muestran la insignia **Contexto**. Una selección sólo cambia cuando el
+servidor acepta el conjunto completo; si rechaza la actualización, conserva el
+contexto anterior. Una cuenta no puede sustituir el contexto mientras su chat
+está ejecutándose. Se admiten hasta 32 documentos y 32 MiB de texto UTF-8
+preparado, incluidos los separadores. Un exceso se rechaza sin recortarlo en
+silencio; la capacidad de contexto del modelo es un límite adicional.
+
+Editar un documento seleccionado muestra **Contexto · anterior** y cambia el
+botón a **Actualizar contexto**. El modelo conserva la captura anterior hasta
+que pulses ese botón y la sustitución termine correctamente. **Guardar no
+actualiza el contexto; seleccionar contexto no guarda el archivo original.**
+Una captura vigente ofrece **Quitar del contexto**, y cada etiqueta de la franja
+permite quitar su captura. Cerrar una pestaña conserva su captura seleccionada
+en esa franja: cerrar una vista no cambia silenciosamente lo que puede leer el
+chat. Quita la etiqueta expresamente cuando ya no deba ser contexto. Elegir otro
+archivo o carpeta como contexto sustituye la selección del Canvas mediante los
+controles de contexto existentes.
+
+**Actualizar** vuelve a leer únicamente el archivo de la pestaña activa y no
+sustituye su captura de contexto. Si la conexión se pierde durante una selección,
+desaparecen las insignias no confirmadas y se pide reconectar para verificar el
+estado. Una respuesta tardía de otra petición no cambia la selección ni desbloquea
+un trabajo nuevo. La reconexión espera a que termine una actualización pendiente.
+Consulta el [registro de esta mejora y sus comprobaciones](changes/2026-11-21-canvas-document-tabs.md).
 
 ## Explicar el texto seleccionado
 
@@ -42,33 +118,37 @@ sin recortarla silenciosamente. La explicación no conoce el código fuera de lo
 fragmentos enviados. Consulta [Interactor](interactor.md) y la
 [verificación del 12 de noviembre](changes/2026-11-12-canvas-selection-explanation.md).
 
-## Where Save writes
+## Dónde se guarda
 
-**Save** writes back to a browser-granted writable file handle, after permission
-and a complete byte comparison with the loaded version. Otherwise it asks for a
-destination. **Save as…** and the navbar **Save** open a native Windows Save As
-dialog when using Tlamatini locally. Choose any writable folder, including your
-project directory; the Downloads directory is not required. After native Save
-As, Save writes to that destination without another picker. Refresh reads it.
-PDF exports remain copies, so another export asks for a destination again.
+**Guardar** escribe en el archivo autorizado por el navegador después de
+comprobar el permiso y comparar todos sus bytes con la versión cargada. Si no
+existe ese acceso, pide un destino. **Guardar como…** y **Guardar** en la barra
+principal abren el diálogo nativo de Windows al usar Tlamatini localmente.
+Elige cualquier carpeta con permiso de escritura, incluida la de tu proyecto;
+no es obligatorio usar Descargas. Después de Guardar como nativo, Guardar usa
+ese destino sin abrir otro selector y Actualizar lo vuelve a leer. Cada
+exportación de PDF es una copia y vuelve a pedir destino.
 
-Remote browsers with File System Access use their own Save As picker, on their
-own computer. Unsupported native/browser combinations report the limitation;
-the app never silently substitutes a download or claims a file was saved.
+Los navegadores remotos con File System Access usan su propio selector, en su
+equipo. Las combinaciones no compatibles informan de la limitación; la
+aplicación no sustituye en silencio el guardado por una descarga ni declara
+guardado un archivo que no lo está.
 
-Cancellation, denied permissions and disk errors keep the document and its
-unsaved marker. If another program changes a destination, Save refuses to
-overwrite it; use Save as… to preserve your edits separately or Refresh to
-review the disk version. Open, Clear and Refresh ask before discarding edits.
-Edits made while a save is in progress remain unsaved after that snapshot is
-written. Edits made during a pending load invalidate that replacement. A dirty
-document also uses the browser's page-departure warning; closing a page discards
-its in-memory document, so save work before closing.
+Cancelar, rechazar permisos o sufrir un error de disco conserva el documento y
+su marcador. Si otro programa cambia el destino, Guardar rechaza sobrescribirlo;
+usa Guardar como para conservar tus cambios aparte o Actualizar para leer la
+versión en disco. Cerrar una pestaña, Limpiar canvas y Actualizar piden permiso
+antes de descartar sus cambios; abrir otro documento añade una pestaña. Los
+cambios realizados durante un guardado siguen pendientes después de escribir
+esa captura. Editar durante una carga pendiente invalida esa sustitución.
+Un documento modificado en cualquier pestaña activa también la advertencia al
+abandonar la página; guarda antes de cerrar para no perder sus documentos en
+memoria.
 
-Editing context does not silently update the model's already loaded context.
-Use as context makes the current source available again; the pending context
-replacement state survives Save. Saving under a new name does not falsely mark
-that new name as already loaded context.
+Editar no actualiza silenciosamente el contexto ya cargado por el modelo.
+**Actualizar contexto** entrega el texto actual del documento seleccionado;
+Guardar conserva la indicación de contexto pendiente. Guardar con otro nombre
+no declara ese nombre como contexto ya cargado.
 
 UTF-8, UTF-8 BOM and BOM-marked UTF-16 LE/BE decode strictly. Unsupported or
 malformed encodings and binary content are refused before replacing the canvas.
@@ -84,6 +164,14 @@ rechaza NUL y contenido con más de un 30 % de controles no blancos. Los control
 aislados se conservan, no se eliminan ni se «reparan» al abrir o guardar.
 
 ## Implementation and safeguards
+
+`agent_page_canvas_tabs.js` administra las identidades de las pestañas, el estado
+suspendido de cada documento y la selección explícita de contexto.
+`canvas_documents_context.py` valida cada conjunto completo, resuelve los tokens
+PDF para el usuario autenticado y escribe un paquete separado dentro de la
+aplicación. Publicar es una operación atómica: un fallo conserva la selección
+anterior. Una reserva de ejecución por cuenta impide que un chat u otra
+sustitución de contexto compita con esa publicación.
 
 `agent_page_canvas.js` retains document loading, refresh, context and generation
 ownership. `agent_page_editing.js` owns the editable snapshot, saved baseline,
@@ -137,6 +225,34 @@ startup and installed use require no npm or CDN.
   [Python replacement semantics](https://docs.python.org/3/library/os.html#os.replace),
   [Marked sanitization warning](https://marked.js.org/): request authorization,
   same-volume write staging and safe preview rendering.
+
+## Verificación de varios documentos (2026-11-21)
+
+Desde una consola de desarrollo visible y en primer plano, ejecuta
+`python -B -u scripts/canvas_tabs_visible.py` en la raíz de esta edición.
+La prueba usa Chrome visible, una cuenta/base de datos aislada, diálogos nativos
+Abrir/Guardar y archivos en `Temp/canvas-tabs-visible`. Revisa
+`browser-waiting.png` antes de crear allí `browser-visible-confirmed`.
+Cada `run-N/SUMMARY.html` contiene los pasos y capturas del escritorio completo.
+Crea `close.confirmed` para cerrar el navegador de prueba o `rerun.confirmed`
+para repetir las comprobaciones.
+
+La ejecución completa inglesa pasó 28 comprobaciones; una prueba posterior
+también verificó que Interactor abre texto desde una pestaña PDF activa.
+La ejecución completa española pasó las 29 comprobaciones. Cada edición pasó
+46 pruebas de transacciones de contexto, 40 de protocolo/propiedad de Interactor
+y el lint dirigido de Python/JavaScript. Se verifican A+B seleccionados con C
+excluido, contexto anterior o rechazado, deshacer/guardado independientes,
+carreras con guardados y lecturas demorados, aviso al salir por pestañas inactivas
+sin guardar, estado PDF conservado y entrada real del teclado de Windows.
+
+La prueba del navegador captura el WebSocket del chat normal e inyecta
+explícitamente sus confirmaciones de contexto. El enrutamiento, la propiedad
+por cuenta, la persistencia y la reversión del backend se prueban por separado,
+sustituyendo las fronteras de modelo/red. Estos resultados no certifican la
+ingesta con un modelo real ni un ejecutable instalado recompilado. El guardado
+nativo, la preparación de texto PDF y las acciones autenticadas de Interactor
+usan sus implementaciones locales reales.
 
 ## Verification
 

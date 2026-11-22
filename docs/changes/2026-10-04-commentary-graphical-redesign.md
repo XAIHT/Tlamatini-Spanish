@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # 2026-10-04 — Graphical rich-text User Commentary
 
-> Última versión publicada: **[v1.96.1](2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](2026-11-21-v1.97.0.md)**.
 
 
 ## User requirements, verbatim excerpts

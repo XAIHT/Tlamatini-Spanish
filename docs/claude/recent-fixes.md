@@ -8,7 +8,24 @@
 -->
 # Tlamatini — Recent Fixes / Gotchas (archived fix log)
 
-> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../changes/2026-11-21-v1.97.0.md)**.
+
+## 2026-11-21 — Canvas con varios documentos y contexto explícito
+
+Hasta 32 pestañas conservan estado del editor o visor PDF, historial y destino
+de guardado independientes. El contexto admite varias capturas elegidas por el
+usuario y distingue contenido anterior, actualización y eliminación. Abrir,
+guardar, refrescar o cerrar una pestaña no cambia esa selección por implicación.
+Interactor puede enumerar y activar documentos con revisión verificada; el
+cambio manual interrumpe su escritura. El cierre contempla documentos inactivos
+sin guardar y operaciones pendientes, dentro de las posibilidades del navegador.
+
+Se documentan la recuperación tras desconexión, los resultados tardíos, la copia
+íntegra de PDF y los atajos limitados al Canvas, publicados en la versión 1.97.0.
+El [registro de implementación y evidencia](../changes/2026-11-21-canvas-document-tabs.md)
+distingue las 46 comprobaciones de contexto y 40 de Interactor de los recorridos
+visibles de ambas ediciones y de sus confirmaciones de contexto inyectadas. No
+equivale a certificar una instalación o una conversación completa con el modelo.
 
 ## 2026-11-21 — Comandos de voz sale del Catálogo de prompts (v1.96.1)
 

@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 -->
 # Consultar los directorios disponibles
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 Pregunta **«Muéstrame los directorios disponibles»** o
 **«Show me the available directories»**. Tlamatini responde con las raíces

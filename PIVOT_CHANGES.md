@@ -8,9 +8,75 @@
 -->
 # Tlamatini — Change Pivot / Rollback Log
 
-> Última versión publicada: **[v1.96.1](docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](docs/changes/2026-11-21-v1.97.0.md)**.
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## 2026-11-21 — Autorización de commit y etiqueta local 1.97.0
+
+Petición literal de Angela:
+
+> Finally tag both Tlamatini's as 1.97.0 version, and commit, by now, pleasse.
+
+Esta instrucción autoriza los commits y las etiquetas locales `v1.97.0` en ambas
+ediciones. La verificación sigue en curso al registrar esta autorización; no se
+presenta como una operación ya realizada. Los archivos de configuración privados
+y sus cambios ajenos a esta tarea quedan excluidos. No se solicitó ningún push.
+
+## 2026-11-21 — Documentación del Canvas con varios documentos
+
+Petición literal de Angela:
+
+> Now update every document, .pdf, .md, .pptx, .\* everywhere where it must be talked about the multi-document posibility!!!!!!!!!!!!!!, go!
+
+Esta entrada corresponde al pase documental posterior a la implementación.
+La versión publicada es **1.97.0**, conforme a la petición posterior de Angela.
+La petición documental original no autorizaba commits; la autorización posterior
+se registra arriba. El código de
+ejecución, los cambios previos de la sesión y los archivos de configuración
+privados quedan fuera de este registro documental.
+
+- **Antes:** las guías vigentes combinaban un Canvas de un solo documento con
+  las primeras notas de pestañas. Actualizar desde disco se describía como una
+  sustitución automática del contexto, y abrir otro Markdown como liberación de
+  sus recursos. Faltaban reglas conjuntas de identidad, guardado y desconexión.
+- **Después:** README, BookOfTlamatini, `Tlamatini/agent/Tlamatini.md`, la referencia
+  TXT y las guías de edición, actualización, Markdown, PDF, Interactor y ajustes
+  explican las 32 pestañas, el estado independiente y el contexto explícito.
+  El cierre conserva las capturas seleccionadas; guardar o refrescar no las
+  actualiza. Se documentan los límites reales del navegador y de la tutoría.
+- **Mantenimiento:** AGENTS, CLAUDE, GEMINI, KIMI y las guías `docs/claude/`
+  incluyen identidad, cancelación, respuestas tardías, atajos y pruebas. Las
+  guías de distribución identifican los recursos que deben viajar juntos.
+  Los registros históricos conservan su fecha, versión y resultados.
+- **Registro completo:** [contrato y evidencia del Canvas](docs/changes/2026-11-21-canvas-document-tabs.md).
+  Distingue pruebas de protocolo, contexto, guardado nativo y recorridos visibles;
+  no declara una nueva compilación instalada.
+
+Para revisar o revertir solo este pase, las copias byte a byte anteriores a cada
+edición están en `Temp/canvas-docs-20261121/before/`, dentro de esta aplicación.
+`Temp/canvas-docs-20261121/write-doc-patch.py` genera
+`spanish-documentation.patch` y `spanish-documentation-manifest.json` con el
+antes/después exacto, rutas y SHA-256 de cada documento. Este inventario se toma
+contra esas copias, no contra Git HEAD, para no mezclar cambios previos del usuario.
+El manifiesto marca la nota nueva como archivo sin versión anterior.
+
+### Ampliación solicitada: versión publicada 1.97.0
+
+Peticiones literales:
+
+> And please bump everywhere as the latest version 1.97.0 in both Tlamatinis!!, please.
+
+> Remember our golden rule assume the release has been already published completelly as 1.97.0!!!!!!!!
+
+Se actualizaron las referencias vigentes de versión, los enlaces de publicación,
+las instrucciones de autoconocimiento, los ejemplos actuales de distribución y
+las cabeceras de documentación, habilidades y memorias. El
+[registro de 1.97.0](docs/changes/2026-11-21-v1.97.0.md) es el registro vigente;
+1.96.1 y los demás registros anteriores conservan sus hechos históricos. Las
+copias anteriores incluyen también estos archivos y el manifiesto registra las
+dos notas nuevas. No se consultó la publicación para decidir el nombre de versión;
+no se crearon etiquetas, commits ni compilaciones por esta petición documental.
+
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](docs/remote-controller.md).

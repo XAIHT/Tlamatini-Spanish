@@ -8,9 +8,36 @@
 -->
 # Tlamatini — Gotchas, Build/Lint, Roadmap, Work Style
 
-> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../changes/2026-11-21-v1.97.0.md)**.
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## Evitar regresiones del Canvas con varios documentos
+
+- Abrir o activar no significa seleccionar contexto. Guardar y Actualizar desde
+  disco tampoco reemplazan una captura seleccionada; conserva su indicador de
+  anterior hasta que se acepte **Actualizar contexto**.
+- Limpiar canvas cierra la pestaña activa y pregunta por sus cambios sin guardar.
+  Cerrar una pestaña no quita su captura de la franja de contexto. La eliminación
+  de contexto debe ser explícita.
+- El documento activo no es el único que puede estar sin guardar. Comprueba
+  todas las pestañas y guardados pendientes al salir; el navegador decide cómo
+  mostrar su advertencia y no garantiza recuperar memoria tras una recarga.
+- Chrome reserva Ctrl+Tab. Conserva Alt+PageUp/PageDown dentro del Canvas y el
+  reenvío validado del iframe PDF; no robes teclas a otros paneles.
+- Un resultado tardío necesita comprobar identidad, revisión/generación y
+  petición. No apliques una respuesta de PDF, guardado, actualización o Interactor
+  al documento que esté activo por casualidad.
+- La pérdida de una confirmación de contexto no prueba éxito ni fracaso.
+  Retira indicadores ambiguos, informa al usuario y no aceptes confirmaciones
+  ajenas como permiso para desbloquear otra operación.
+- `documents` devuelve metadatos, no el texto de todas las pestañas. `activate`
+  utiliza un `target_document_id` conocido, verifica el origen y confirma el
+  destino. Mantén separadas identidad de documento y sesión de navegador.
+
+Los contratos y resultados actuales están en el
+[registro de pestañas del Canvas](../changes/2026-11-21-canvas-document-tabs.md);
+no reinterpretar los resultados históricos inferiores como pruebas nuevas.
+
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](../remote-controller.md).

@@ -102,7 +102,7 @@
             ? 'Terminó el procesamiento del PDF. Cargando su texto y los análisis de imágenes en el contexto de Tlamatini…'
             : 'Terminó la extracción del texto del PDF. Cargando su texto en el contexto de Tlamatini…'));
     }
-    function finish(token, success) {
+    function finish(token, success, detail = '') {
         if (token !== expectedToken) return;
         expectedToken = null;
         setTitleBusy(false, 'pdf-context');
@@ -112,7 +112,7 @@
         if (success) {
             update('rag', 1, 1, 'El contexto de tu PDF está listo. Ya puedes preguntarle a Tlamatini sobre el documento.');
             dialog.close();
-        } else fail('El PDF se procesó, pero hubo un error al cargar el contexto. Vuelve a intentarlo y, si el problema sigue, revisa el servicio de modelos configurado.');
+        } else fail(detail || 'El PDF se procesó, pero hubo un error al cargar el contexto. Vuelve a intentarlo y, si el problema sigue, revisa el servicio de modelos configurado.');
     }
     function fail(detail) {
         if (processImages.checked && !failureReported) {

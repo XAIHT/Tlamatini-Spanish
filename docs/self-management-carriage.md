@@ -1,6 +1,28 @@
 # Self-modify and self-update carriage review
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
+
+## Distribución actual del Canvas con varios documentos
+
+La implementación de hasta 32 pestañas viaja como una sola capacidad: gestor
+`agent_page_canvas_tabs.js`, estilos `canvas_tabs.css`, adaptadores del editor,
+Markdown y PDF, puente de Interactor, plantilla del chat y protocolo de contexto
+`agent/canvas_documents_context.py`. El estado suspendido del editor depende
+también de `scripts/canvas_editor_entry.mjs` y de su paquete estático regenerado.
+Copiar solamente el gestor de pestañas deja incompletos el guardado, el contexto
+y el cambio de documento durante una explicación.
+
+`build_runtime_assets.py` exige el gestor y sus estilos; `build.py` incluye el
+módulo de contexto entre sus importaciones congeladas. `copy_source_assets.py`
+conserva estos archivos, las pruebas de contexto y
+`scripts/canvas_tabs_visible.py` en la carga de fuentes para Self-modify.
+Mantén juntas estas listas y los recursos ya existentes de PDF e Interactor.
+La capacidad no añade un agente, herramienta independiente ni migración.
+
+La verificación de fuentes y navegador no certifica por sí sola un ejecutable
+instalado. El [registro del Canvas](changes/2026-11-21-canvas-document-tabs.md)
+separa los resultados del protocolo, del guardado nativo y de las pruebas visibles;
+esta actualización documental corresponde a la versión publicada 1.97.0.
 
 ## Incluido desde v1.92.4 — Versiones coincidentes, identidad explícita y Markdown legible
 

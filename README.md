@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.96.1"><img src="https://img.shields.io/badge/RELEASE-v1.96.1-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini versión de lanzamiento v1.96.1" /></a>
+  <a href="https://github.com/XAIHT/Tlamatini-Spanish/releases/tag/v1.97.0"><img src="https://img.shields.io/badge/RELEASE-v1.97.0-38BDF8?style=for-the-badge&labelColor=101827" alt="Tlamatini versión de lanzamiento v1.97.0" /></a>
   <a href="#installation"><img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-14B8A6?style=for-the-badge&labelColor=101827" alt="Windows 10 and 11" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/OPEN%20SOURCE-MIT-E9C46A?style=for-the-badge&labelColor=101827" alt="MIT open source" /></a>
   <a href="https://discord.gg/WFQsrskgc"><img src="https://img.shields.io/badge/DISCORD-JOIN%20US-818CF8?style=for-the-badge&labelColor=101827&logo=discord&logoColor=white" alt="Join the community on Discord" /></a>
@@ -31,7 +31,7 @@
   <a href="https://xaiht.org">Sitio web</a> ·
   <a href="BookOfTlamatini.md">Guía completa</a> ·
   <a href="Tlamatini-Architecture.pdf">Atlas de arquitectura</a> ·
-  <a href="docs/changes/2026-11-21-v1.96.1.md">Novedades</a>
+  <a href="docs/changes/2026-11-21-v1.97.0.md">Novedades</a>
 </p>
 
 > > [!IMPORTANT]
@@ -52,7 +52,7 @@
 </p>
 
 
-> Última versión publicada: **[v1.96.1](docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](docs/changes/2026-11-21-v1.97.0.md)**.
 
 ## Integración con Remote-Controller · 13 de noviembre de 2026
 
@@ -63,7 +63,14 @@ sigue siendo independiente. La conexión es local; el transporte por red, la voz
 de RC y la aceptación instalada final siguen pendientes. Consulta
 [la guía de cuenta y conexión](docs/remote-controller.md).
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## v1.97.0 — Trabaja con varios documentos en el Canvas
+
+Hasta **32 pestañas**, con edición, historial y guardado independientes. Elige
+qué documentos forman el contexto del chat y deja otros abiertos para consultar.
+Interactor puede pasar entre archivos durante una explicación; tú conservas el
+control de los cambios y del guardado. [Conoce la versión 1.97.0 →](docs/changes/2026-11-21-v1.97.0.md)
+
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](docs/remote-controller.md).
@@ -97,7 +104,7 @@ El compilador combinado anticipa el número que informará cada edición antes d
 
 ## Edita, aprende, ejecuta
 
-La versión 1.96.1 acerca a Tlamatini al trabajo mismo: **un canvas editable, una tutora que lee tu texto en vivo y terminales reales que puedes ver.**
+La versión 1.97.0 acerca a Tlamatini al trabajo mismo: **un canvas editable, una tutora que lee tu texto en vivo y terminales reales que puedes ver.**
 
 ### ✍️ Edita el archivo junto a la conversación
 
@@ -108,11 +115,24 @@ Abre o suelta un archivo de código, un JSON, un archivo de configuración o un 
 - **PDF:** se leen en el visor integrado; Guardar copia el PDF original.
 - **Cambios en disco:** una edición externa en conflicto se rechaza en vez de sobrescribirse en silencio.
 
-El marcador de cambios sin guardar te dice qué falta guardar. **Guarda antes de cerrar la página**: los buffers sin guardar viven en memoria. Usar como contexto es un snapshot; úsalo otra vez después de editar para actualizar el contexto normal del chat. [Explora el editor →](docs/canvas-editing.md)
+**Mantén varios documentos abiertos en pestañas del Canvas.** Cada pestaña conserva sus cambios y su vista, incluidas Vista previa/Source de Markdown y el visor de PDF. Un asterisco indica cambios sin guardar; la protección al abandonar la página comprueba también las pestañas inactivas. Con el foco en el Canvas, usa **Alt+PageUp / Alt+PageDown** para cambiar de documento (Chrome reserva Ctrl+Tab para las pestañas del navegador).
+
+**Elige el contexto expresamente, documento por documento.** Abrir una pestaña no la añade al contexto del chat. Las capturas seleccionadas aparecen en la franja **Contexto del chat** y en sus pestañas; **Contexto · anterior** indica que debes actualizar después de editar. Cerrar una pestaña conserva su captura hasta que la quites del contexto. **Guarda antes de cerrar la página**: los cambios sin guardar viven en memoria y guardar archivos no actualiza el contexto. [Explora el editor →](docs/canvas-editing.md)
+
+Hasta **32 pestañas**, con historial de deshacer, selección, desplazamiento y
+destino de guardado independientes. **Limpiar canvas** cierra la pestaña activa;
+un guardado pendiente bloquea el cambio de documento. Actualizar desde disco
+conserva las capturas del contexto hasta que elijas **Actualizar contexto**.
+Una desconexión muestra que la selección necesita verificarse, sin confirmar
+un resultado desconocido. [Detalles y comprobaciones de las pestañas →](docs/changes/2026-11-21-canvas-document-tabs.md)
 
 ### 🧠 Aprende haciendo con Interactor
 
 Pídele a Tlamatini que te enseñe dentro de su editor. **Interactor lee el buffer exacto sin guardar**, escribe un segmento corto, te explica el siguiente campo y te lo pasa. Tú lo completas; **Continuar** inicia un turno nuevo para que ella pueda leer tu trabajo y guiarte en el siguiente paso.
+
+La explicación puede pasar entre documentos abiertos: Interactor consulta sus
+metadatos y activa el archivo exacto antes de continuar. Si tú cambias de pestaña,
+el tecleo pendiente se detiene. Abrir o activar un documento no lo añade al contexto.
 
 > > Ayúdame a crear un Dockerfile para una aplicación de servlets de Java usando tu editor de texto. Enséñame un paso a la vez.
 
@@ -135,13 +155,13 @@ segmento de enseñanza, elige qué dice y cuándo, y deja que la voz termine ant
 teclear. Los presets **Estándar** y **Aprendizaje guiado** te dan un punto de partida;
 la Vista previa te deja probar el borrador antes de guardar. [Explora la configuración →](docs/interaction-settings.md)
 
-**Versión de lanzamiento [1.96.1](docs/changes/2026-11-21-v1.96.1.md).** Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.
+**Versión de lanzamiento [1.97.0](docs/changes/2026-11-21-v1.97.0.md).** Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias.
 
 **Desde [v1.91.0](docs/changes/2026-10-23-v1.91.0.md):** el diálogo de configuración
 compartido controla el comportamiento real del editor y de la terminal en el chat y en ambos
-paneles de control. Esta configuración está incluida en la versión de lanzamiento **1.96.1**.
+paneles de control. Esta configuración está incluida en la versión de lanzamiento **1.97.0**.
 
-**Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El [registro de 1.96.1](docs/changes/2026-11-21-v1.96.1.md) describe la versión de lanzamiento completa.
+**Historial de releases:** la edición en el canvas llegó con la v1.89.0; la tutoría del editor en vivo encabeza la [v1.90.0](docs/changes/2026-10-22-v1.90.0.md), junto con las terminales visibles que se presentaron en la [v1.88.0](docs/changes/2026-10-20-v1.88.0.md). El [registro de 1.97.0](docs/changes/2026-11-21-v1.97.0.md) describe la versión de lanzamiento completa.
 
 ## Habla y escucha
 
@@ -320,7 +340,7 @@ Elige una puerta de entrada y profundiza tanto como lo necesite tu proyecto.
 | :--- | :--- |
 | [Book of Tlamatini](BookOfTlamatini.md) | La guía completa, la arquitectura, los workflows y la historia del desarrollo. |
 | [Todos los agents](agents_descriptions.md) | El catálogo de especialistas y el rol de cada agent. |
-| [Registro de la versión v1.96.1](docs/changes/2026-11-21-v1.96.1.md) | El patch release actual: qué corrige y dónde. |
+| [Registro de la versión v1.97.0](docs/changes/2026-11-21-v1.97.0.md) | Canvas con varios documentos, contexto explícito y funciones conservadas. |
 | [Registro del release v1.91.0](docs/changes/2026-10-23-v1.91.0.md) | Desarrollos recientes, inventario del código fuente y evidencia de verificación fechada. |
 | [Edición en el canvas](docs/canvas-editing.md) · [Interactor](docs/interactor.md) · [Terminater](docs/terminater.md) | Edita, aprende y ejecuta con control directo. |
 | [Configuración de Editor en vivo y Terminater](docs/interaction-settings.md) | Tecleo, enseñanza, narración, comportamiento de la terminal, presets y apariencia. |

@@ -8,7 +8,37 @@
 -->
 # Tlamatini — Frontend Architecture
 
-> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../changes/2026-11-21-v1.97.0.md)**.
+
+## Canvas con varios documentos: estado y controles actuales
+
+`agent_page_canvas_tabs.js` y `canvas_tabs.css` añaden la barra de hasta 32
+pestañas a `agent_page.html`. El gestor conserva por documento el estado real de
+CodeMirror, deshacer/rehacer, selección, desplazamiento, codificación, finales de
+línea, destino nativo de guardado y revisión. Los adaptadores de Markdown y PDF
+conservan vista, recursos y visor propios. No sustituyas estos estados por una
+copia del texto del elemento de compatibilidad oculto.
+
+La barra de herramientas actúa sobre la pestaña activa; el asterisco de cambios
+sin guardar y el indicador de contexto son independientes. Un guardado pendiente
+impide cambiar de pestaña. El cierre de la página comprueba todos los documentos
+y guardados, pero la advertencia final pertenece al navegador. No se promete
+persistencia del texto sin guardar tras recargar. Las preparaciones PDF y las
+respuestas de actualización deben comprobar documento y generación antes de
+aplicar sus resultados.
+
+La franja de contexto muestra únicamente las capturas aceptadas y sus controles
+de actualización/eliminación. Guardar o refrescar una pestaña no reemplaza esas
+capturas. Ante desconexión se cancela la preparación visual pendiente, se restaura
+la cabecera y se señala la incertidumbre; una confirmación tardía no desbloquea
+una petición distinta. El puente de Interactor publica `multi_document`, lista
+metadatos y activa el destino exacto; un cambio manual cancela su escritura.
+
+Los atajos se limitan al foco del Canvas: Ctrl+Tab cuando llega a la página y
+Alt+PageUp/PageDown como alternativa en Chrome. El iframe PDF solo reenvía
+peticiones tipadas desde el marco activo, del mismo origen y con foco. No captures
+atajos del chat, de los terminales ni de los diálogos. Véase
+[contrato y pruebas](../changes/2026-11-21-canvas-document-tabs.md).
 
 ## Página de cuenta de Remote-Controller · 13 de noviembre de 2026
 

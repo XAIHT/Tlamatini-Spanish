@@ -1,13 +1,23 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Configuración del Editor en vivo y Terminater
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 Desde la v1.92.0, ambos controles admiten hasta 250 WPM. El Editor en vivo usa 100 WPM de forma predeterminada y Terminater usa 50.
 
 Abre **Config → Editor en vivo y Terminater** o pulsa Configuración en el editor o la terminal. El diálogo contiene las pestañas Editor en vivo, Terminater y Voz. Guardar aplica los cambios a la siguiente acción. Cancelar o Escape descartan el borrador. Abrir la configuración interrumpe la lección activa. El permiso de acceso al editor se aplica de inmediato en esa pestaña.
 
 Los preajustes Estándar y Aprendizaje guiado rellenan el borrador. Restablecer recupera los valores iniciales de la pestaña. Vista previa reproduce una muestra en el diálogo sin guardar cambios en la cuenta.
+
+Las pestañas de este diálogo no son las pestañas de documentos del Canvas. El
+Canvas mantiene hasta 32 documentos con texto, historial, selección y destinos
+de guardado independientes. Las preferencias de comportamiento siguen siendo
+de la cuenta; cambiar de documento no crea otra cuenta ni otro permiso. Los
+ajustes de apariencia se aplican al editor que se muestra sin alterar sus bytes
+ni marcar el archivo como modificado. Interactor verifica la identidad y revisión
+del documento al activarlo y cancela el tecleo si el usuario cambia de pestaña.
+La selección explícita de contexto es independiente de estos ajustes.
+[Guía del Canvas](canvas-editing.md) · [Interactor](interactor.md).
 
 ## Ajustes de la cuenta y del navegador
 

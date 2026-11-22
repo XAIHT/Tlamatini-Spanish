@@ -1,3 +1,4 @@
+/* exported cleanCanvas */
 /*
  * ═══════════════════════════════════════════════════════════════════
  *   ✦  T L A M A T I N I  ✦   —   "one who knows"
@@ -217,11 +218,12 @@ function replaceCodeElement(langClass, content) {
     updateLineNumbers();
 }
 
-function displayCanvasText(filename, content, file = null, format = null) {
+function displayCanvasText(filename, content, file = null, format = null, options = {}) {
+    const previous = window.TlamatiniTextEditor?.inspect();
     const markdown = /\.(md|markdown)$/i.test(filename);
     replaceCodeElement(markdown ? 'language-markdown' : getLanguageClass(extractExtension(filename)), content);
     if (markdown) window.TlamatiniMarkdownCanvas?.open(filename, content, file);
-    window.TlamatiniCanvasEditing?.open(filename, content, file, format);
+    window.TlamatiniCanvasEditing?.open(filename, content, file, format, { ...options, previous });
 }
 
 // Interactor is allowed to open its requested file while the model is working.
@@ -230,15 +232,15 @@ function displayCanvasText(filename, content, file = null, format = null) {
 async function openNativeCanvasFile(file, native, path, expected, cancelled) {
     const editing = window.TlamatiniCanvasEditing;
     const matches = () => {
-        const state = window.TlamatiniTextEditor.inspect();
+        const state = window.TlamatiniCanvasTabs?.list().find(doc => doc.active) || window.TlamatiniTextEditor.inspect();
         return state.document_id === expected.document_id && state.revision === expected.revision;
     };
-    if (!matches() || editing.dirty || editing.busy || cancelled()) throw new Error('El canvas cambió antes de que se pudiera abrir el archivo. Se conservó su contenido.');
+    if (!matches() || editing.busy || cancelled()) throw new Error('El canvas cambió antes de que se pudiera abrir el archivo. Se conservó su contenido.');
     if (/\.(pdf|flw|fpmt)$/i.test(file.name)) throw new Error('Interactor abre archivos de código fuente en texto. Usa el visor específico para este tipo de archivo.');
     const decoded = await editing.decodeFile(file);
-    if (!matches() || editing.dirty || editing.busy || cancelled()) throw new Error('El canvas cambió mientras se leía el archivo. Se conservó su contenido.');
+    if (!matches() || editing.busy || cancelled()) throw new Error('El canvas cambió mientras se leía el archivo. Se conservó su contenido.');
     if (decoded.text.length > 262144) throw new Error('Este archivo es demasiado grande para la tutoría en vivo; su contenido no se recortó.');
-    await cleanCanvas(true, true);
+    window.TlamatiniCanvasTabs?.beginOpen('interactor');
     displayCanvasText(file.name, decoded.text, file, decoded.format);
     const source = { name: file.name, file, text: decoded.text, native };
     source.read = signal => editing.nativeRead(source, signal);
@@ -248,45 +250,31 @@ async function openNativeCanvasFile(file, native, path, expected, cancelled) {
     canvasLoaded = true;
     enableCanvasButtons();
     window.TlamatiniMarkdownCanvas?.selectView(false);
+    window.TlamatiniCanvasTabs?.commitOpen('text');
     window.TlamatiniTextEditor.focus();
 }
 
 async function loadCanvas(filename) { // eslint-disable-line no-unused-vars
     window.TlamatiniViews?.setCanvasVisible(true);
-    if (contextEnabled === false) {
-        console.error("Lading canvas is not allowed while Tlamatini is processing a request, function will return false...");
-        return false;
-    }
-    if (!await canvasMayReplace()) return false;
-    // Reading a generated file is preparation, not a replacement. Retain the
-    // current source, edited document and context until the new content arrives.
+    if (!contextEnabled || window.TlamatiniCanvasEditing?.busy) return false;
     cancelCanvasRefresh();
     const generation = ++canvasLoadGeneration;
-    let content;
     try {
-        content = await fetchCanvasSource(filename);
+        const content = await fetchCanvasSource(filename);
+        if (generation !== canvasLoadGeneration || !contextEnabled) return false;
+        window.TlamatiniCanvasTabs?.beginOpen();
+        displayCanvasText(filename, content, null, null, { persisted: true });
+        filenameSpan.textContent = `<<< ${filename} >>>`;
+        filenameSpan.title = filename;
+        canvasLoaded = true;
+        rememberCanvasSource({ name: filename, text: content, read: signal => fetchCanvasSource(filename, signal) });
+        enableCanvasButtons();
+        window.TlamatiniCanvasTabs?.commitOpen('text');
+        return true;
     } catch (error) {
-        if (generation !== canvasLoadGeneration) return false;
-        console.error('Error loading canvas:', error);
-        await window.tlmAlert(`No se pudo abrir ${filename}: ${error.message}\nSe conservó el contenido actual del canvas.`, 'Abrir archivo');
+        await window.tlmAlert(error.message, 'Canvas');
         return false;
     }
-    if (generation !== canvasLoadGeneration || !contextEnabled) return false;
-    const previousContext = canvasSettedAsContext ? getCanvasContextFilename() : null;
-    displayCanvasText(filename, content);
-    forgetCanvasSource();
-    filenameSpan.textContent = `<<< ${filename} >>>`;
-    filenameSpan.title = filename;
-    canvasLoaded = true;
-    rememberCanvasSource({ name: filename, text: content, read: signal => fetchCanvasSource(filename, signal) });
-    if (previousContext && !previousContext.includes('...')) {
-        sendChatSocketMessage(JSON.stringify({ type: 'unset-canvas-as-context', message: previousContext }));
-    }
-    enableCanvasButtons();
-    canvasSettedAsContext = false;
-    contextButtonClicked = false;
-    contextButton.textContent = "Usar como contexto";
-    return true;
 }
 
 async function loadCanvasFromFileInContentGenerated(filename) { // eslint-disable-line no-unused-vars
@@ -301,20 +289,17 @@ async function loadCanvasFromFileInContentGenerated(filename) { // eslint-disabl
 }
 
 async function loadCanvasWithThisContent(content) {
-    if (!await canvasMayReplace()) return false;
-    console.log("loadCanvasWithThisContent()...");
+    if (window.TlamatiniCanvasEditing?.busy) return false;
+    window.TlamatiniCanvasTabs?.beginOpen();
     forgetCanvasSource();
     replaceCodeElement('language-text', content);
-    window.TlamatiniCanvasEditing?.open('context.txt', content);
-    filenameSpan.textContent = `<<< Context, tree of content. >>>`;
+    window.TlamatiniCanvasEditing?.open('context.txt', content, null, null, { persisted: false });
+    filenameSpan.textContent = '<<< context.txt >>>';
+    filenameSpan.title = 'context.txt';
     canvasLoaded = true;
-    canvasRefreshFeedback('unavailable', 'Este canvas contiene un resumen del contexto, no un archivo que se pueda actualizar.');
     enableCanvasButtons();
-    canvasSettedAsContext = false;
-    contextButtonClicked = false;
-    contextButton.textContent = "Usar como contexto";
-    console.log("Successfully loaded file from parameter content.");
-    console.log("...loadCanvasWithThisContent()");
+    window.TlamatiniCanvasTabs?.commitOpen('text');
+    return true;
 }
 
 function openCanvas() {
@@ -354,7 +339,7 @@ async function refreshCanvas() {
         const content = isPdf ? null : decoded ? decoded.text : isFile ? await latest.text() : latest;
         if (!ownsCanvas()) return;
         const unchanged = !isPdf && source.text === content && !window.TlamatiniCanvasEditing?.dirty;
-        const wasContext = canvasSettedAsContext || source.contextPending;
+        const wasContext = !window.TlamatiniCanvasTabs && (canvasSettedAsContext || source.contextPending);
         if (!unchanged) {
             if (isPdf) {
                 // PDF remains range-backed. No whole-file scan/hash just to
@@ -362,11 +347,12 @@ async function refreshCanvas() {
                 await window.TlamatiniPdfCanvas.refresh(latest, work.signal);
                 if (!ownsCanvas()) return;
                 canvasLoadGeneration++;
+                window.TlamatiniCanvasTabs?.pdfRefreshed();
             } else {
                 const scroll = { top: textEditorPre.scrollTop, left: textEditorPre.scrollLeft };
                 const sourceView = window.TlamatiniTextEditor?.snapshot();
                 const markdown = window.TlamatiniMarkdownCanvas?.snapshot();
-                displayCanvasText(source.name, content, isFile ? latest : null, decoded?.format);
+                displayCanvasText(source.name, content, isFile ? latest : null, decoded?.format, { persisted: true });
                 if (markdown) window.TlamatiniMarkdownCanvas.restore(markdown);
                 if (sourceView) window.TlamatiniTextEditor?.restore(sourceView);
                 textEditorPre.scrollTop = scroll.top;
@@ -384,7 +370,7 @@ async function refreshCanvas() {
             if (source.native && latest.canvasRevision) source.native.revision = latest.canvasRevision;
             window.TlamatiniMarkdownCanvas?.updateFile(latest);
         }
-        if (source.contextPending) {
+        if (source.contextPending && !window.TlamatiniCanvasTabs) {
             // The backend keeps its old context until the new package is ready.
             // Never enqueue an empty-context rebuild before its replacement.
             unsetContextButton();
@@ -432,7 +418,8 @@ async function canvasMayReplace() {
     return !window.TlamatiniCanvasEditing || window.TlamatiniCanvasEditing.confirmDiscard();
 }
 
-async function cleanCanvas(preserveContext = false, confirmed = false) {
+async function cleanCanvas(preserveContext = false, confirmed = false, internal = false) {
+    if (!internal && window.TlamatiniCanvasTabs) return window.TlamatiniCanvasTabs.close();
     if (!confirmed && !await canvasMayReplace()) return false;
     forgetCanvasSource();
     const codeRegex = /<<<\s*(.+?)\s*>>>/s;
@@ -528,7 +515,7 @@ if (copyCanvasButton) {
 const loadFileContent = async (reOpened = false, callback = null) => {
     if (!openEnabled || !contextEnabled) return;
     // Keep the native browser picker in the original user gesture when clean.
-    if ((window.TlamatiniCanvasEditing?.dirty || window.TlamatiniCanvasEditing?.busy) && !await canvasMayReplace()) return;
+    if (window.TlamatiniCanvasEditing?.busy) return;
     const generation = canvasLoadGeneration;
     if (typeof window.showOpenFilePicker === 'function' && window.isSecureContext) {
         try {
@@ -594,54 +581,40 @@ async function openFlowEditor(file) {
 }
 
 async function loadSelectedCanvasFile(file, reOpened = false, callback = null, access = null) {
-    if (!openEnabled || !contextEnabled) return;
-    if (/\.(flw|fpmt)$/i.test(file.name)) { await openFlowEditor(file); return; }
-    if (access?.discardGeneration !== canvasLoadGeneration && !await canvasMayReplace()) return;
+    if (!openEnabled || !contextEnabled || window.TlamatiniCanvasEditing?.busy) return false;
+    if (/\.(flw|fpmt)$/i.test(file.name)) { await openFlowEditor(file); return false; }
     window.TlamatiniViews?.setCanvasVisible(true);
-    // Setting file context replaces it directly, avoiding an overlapping background
-    // rebuild of empty context while the replacement document loads.
-    let generation = canvasLoadGeneration;
-    const isPdf = file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+    const generation = ++canvasLoadGeneration;
+    const isPdf = /\.pdf$/i.test(file.name) || file.type === 'application/pdf';
     try {
-        // Decode before discarding the old document, so malformed/binary input
-        // cannot destroy the user's currently displayed file.
-        const decoded = !isPdf && window.TlamatiniCanvasEditing
-            ? await window.TlamatiniCanvasEditing.decodeFile(file) : null;
-        const content = isPdf ? null : decoded ? decoded.text : await file.text();
-        if (generation !== canvasLoadGeneration) return;
-        await cleanCanvas(reOpened && callback !== null, true);
-        generation = canvasLoadGeneration;
+        const decoded = !isPdf ? await window.TlamatiniCanvasEditing.decodeFile(file) : null;
+        if (generation !== canvasLoadGeneration) return false;
+        window.TlamatiniCanvasTabs.beginOpen();
         if (isPdf) {
+            replaceCodeElement('language-text', '');
             filenameSpan.textContent = `<<< ${file.name} >>>`;
             filenameSpan.title = file.name;
-            // Keep Clear available during loading and password entry.
             canvasLoaded = true;
-            enableCanvasButtons();
-            const loaded = await window.TlamatiniPdfCanvas.open(file);
-            if (!loaded || generation !== canvasLoadGeneration) return;
             rememberCanvasSource(localCanvasSource(file, access));
-            window.TlamatiniCanvasEditing?.sync();
+            const ready = window.TlamatiniPdfCanvas.open(file);
+            const id = window.TlamatiniCanvasTabs.commitOpen('pdf');
+            enableCanvasButtons();
+            if (!await ready || id !== window.TlamatiniCanvasTabs.activeId()) return false;
+            window.TlamatiniCanvasEditing.sync();
         } else {
-            if (generation !== canvasLoadGeneration) return;
-            displayCanvasText(file.name, content, file, decoded?.format);
-            generation = canvasLoadGeneration;
+            displayCanvasText(file.name, decoded.text, file, decoded.format);
             filenameSpan.textContent = `<<< ${file.name} >>>`;
             filenameSpan.title = file.name;
             canvasLoaded = true;
-            rememberCanvasSource(localCanvasSource(file, access, content));
+            rememberCanvasSource(localCanvasSource(file, access, decoded.text));
             enableCanvasButtons();
+            window.TlamatiniCanvasTabs.commitOpen(/\.(md|markdown)$/i.test(file.name) ? 'markdown' : 'text');
         }
         if (reOpened && callback) await callback();
+        return true;
     } catch (error) {
-        // Closing/replacing a PDF cancels pending work without reopening it.
-        if (generation !== canvasLoadGeneration) return;
-        if (error.name === 'AbortError') return;
-        if (isPdf && window.TlamatiniPdfProgress) {
-            window.TlamatiniPdfProgress.fail(error.message);
-            return;
-        }
-        console.error('Error opening canvas file:', error);
-        alert(`No se puede cargar ${file.name}: ${error.message}`);
+        if (error.name !== 'AbortError') await window.tlmAlert(error.message, 'Canvas');
+        return false;
     }
 }
 
@@ -657,14 +630,15 @@ if (window.TlamatiniFileDrop) {
         if (!openEnabled || !contextEnabled) {
             return { ignored: files, note: 'El canvas está ocupado en este momento — vuelve a soltar el archivo cuando Tlamatini termine.' };
         }
-        const generation = canvasLoadGeneration;
-        const handle = await items?.[0]?.handlePromise;
-        if (generation !== canvasLoadGeneration) return { ignored: files, note: 'El canvas cambió mientras se leía el archivo que soltaste. Vuelve a soltarlo.' };
-        await loadSelectedCanvasFile(files[0], false, null, { handle, entry: items?.[0]?.entry });
-        const rest = files.slice(1);
-        return rest.length
-            ? { ignored: rest, note: 'Se abrió ' + files[0].name + '; el canvas contiene un solo documento, así que ' + rest.map(file => file.name).join(', ') + ' no se abrió.' }
-            : {};
+        const ignored = [];
+        for (let index = 0; index < files.length; index++) {
+            const generation = canvasLoadGeneration;
+            const handle = await items?.[index]?.handlePromise;
+            if (generation !== canvasLoadGeneration) { ignored.push(...files.slice(index)); break; }
+            if (!await loadSelectedCanvasFile(files[index], false, null, { handle, entry: items?.[index]?.entry })) ignored.push(files[index]);
+        }
+        return { ignored };
+
     }, { label: 'Documento (PDF, Markdown, código, JSON) → se abre en el canvas' });
 }
 

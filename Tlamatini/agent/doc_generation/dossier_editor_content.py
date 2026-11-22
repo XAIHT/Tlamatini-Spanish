@@ -4,6 +4,7 @@
 
 def editor_sections(section):
     return [
+        *canvas_document_sections(section),
         section("torrent_workspace", "TORRENTER", "Del magnet a los archivos verificados",
                 "El chat, el panel agéntico y XT comparten la cola de Jobs de cada cuenta.",
                 body=["Inspecciona los metadatos y selecciona los archivos por ID. El recibo permite volver al trabajo. En un flujo, activa la espera de descarga si los nodos siguientes necesitan los archivos.",
@@ -63,7 +64,7 @@ def editor_sections(section):
                     ("Momento", "Antes/durante/después; opcionalmente, terminar antes de escribir."),
                     ("Control", "Escape detiene la voz; Ctrl+Shift+M activa o desactiva el silencio global."),
                 ]),
-        section("canvas_edit", "EDITOR DEL CANVAS · v1.89.0", "Edita el documento del que estás hablando",
+        section("canvas_edit", "EDITOR DEL CANVAS · v1.97.0", "Edita el documento del que estás hablando",
                 "Un editor CodeMirror 6 local mantiene editables el texto, el código, el JSON y el Source de Markdown en el canvas del chat.",
                 body=[
                     "Abre o suelta un archivo, haz un cambio y usa la barra del nombre del archivo: Guardar, Guardar como, Deshacer, Rehacer, "
@@ -72,11 +73,12 @@ def editor_sections(section):
                     "La Vista previa de Markdown se sanitiza con el renderizador existente de Marked/DOMPurify. Source y Vista previa "
                     "comparten un buffer y un historial de deshacer. HTML y SVG se quedan como texto, nunca como una página web activa. Los PDFs "
                     "siguen siendo visores de sólo lectura y exportan sus bytes originales; los flows y las imágenes conservan sus propios caminos.",
-                    "La marca de cambios sin guardar sobrevive a los guardados con error o cancelados. Abrir, Limpiar y Actualizar preguntan antes de "
-                    "descartar ediciones. El texto sin guardar vive en memoria, así que guarda antes de cerrar. El tamaño automático "
+                    "Abrir y soltar archivos agrega documentos sin reemplazar los demás. La marca de cambios sin guardar "
+                    "sobrevive a errores y cancelaciones; cerrar o actualizar documentos editados pide confirmación. "
+                    "El texto sin guardar vive en memoria, así que guarda antes de cerrar. El tamaño automático "
                     "reserva 320 píxeles de CSS para el canvas y acomoda los controles; las divisiones manuales siguen siendo elección del usuario.",
                 ], points=[
-                    ("Un solo documento", "El código, la configuración y el texto plano comparten la misma autoridad de edición."),
+                    ("Documentos independientes", "Cada pestaña conserva su texto, historial, revisión y destino de guardado."),
                     ("Markdown", "El source editable y la vista previa sanitizada conservan el historial de deshacer."),
                     ("Controles", "Guardar, Guardar como, Deshacer/Rehacer, Buscar/reemplazar y Ajustar líneas."),
                     ("Distribución", "Un ancho reservado para el canvas y un editor que llena su altura disponible."),
@@ -129,7 +131,7 @@ def editor_sections(section):
                     "quien aprende puede escribir un valor alternativo. Es apoyo de enseñanza con contexto, no una afirmación "
                     "de autocompletado predictivo sin límites ni de la latencia de benchmarks de proveedores.",
                     "El input del usuario, la selección, Detener, Escape, la cancelación del chat y la desconexión interrumpen la escritura de la IA. "
-                    "El prefijo escrito sigue siendo editable. Una pestaña oculta o tapada temporalmente pausa la misma acción "
+                    "El prefijo escrito sigue siendo editable. Una pestaña del navegador oculta o tapada temporalmente pausa la misma acción "
                     "hasta dos minutos extra y continúa exactamente en el siguiente carácter cuando es visible. Agotar el tiempo "
                     "nunca repite una edición parcial. Cambiar Markdown a Vista previa u ocultar el canvas regresa el control.",
                     "La enseñanza en vivo acepta a lo más 262,144 unidades UTF-16 y revisa el documento/la revisión antes de "
@@ -144,13 +146,114 @@ def editor_sections(section):
     ]
 
 
+def canvas_document_sections(section):
+    return [
+        section("canvas_documents", "CANVAS MULTIDOCUMENTO · v1.97.0", "Mantén toda la tarea junto a la conversación",
+                "Abre hasta 32 documentos en un Canvas; cambiar de pestaña no cambia el contexto del chat.",
+                body=[
+                    "Abrir, soltar archivos y cargar texto generado agrega pestañas. Cada documento conserva "
+                    "su texto, historial de deshacer/rehacer, selección, desplazamiento, codificación, revisión "
+                    "y destino autorizado. Dos archivos con el mismo nombre siguen siendo documentos distintos. "
+                    "Guardar afecta al archivo activo; las demás pestañas modificadas conservan su asterisco.",
+                    "Markdown conserva su vista de código fuente o vista previa. Cada PDF mantiene su visor, "
+                    "página, zoom, rotación y desplazamiento. Los PDF son de sólo lectura y Guardar como exporta "
+                    "los bytes originales. Abrir un documento no lo guarda ni lo incluye en la conversación.",
+                    "Una respuesta de guardado tardía no puede borrar la marca de ediciones posteriores. Un "
+                    "guardado pendiente bloquea el cambio de documento; un error o cancelación conserva los "
+                    "cambios. El texto generado empieza sin guardar. Las pestañas viven en memoria: no son "
+                    "recuperación ante fallos ni restauración de sesiones del navegador.",
+                ], points=[
+                    ("32 pestañas", "Texto, código y PDF juntos, sin reemplazar los documentos abiertos."),
+                    ("Por documento", "Historial, selección, vista y destino de guardado independientes."),
+                    ("Guardar", "Escribe el archivo activo; conserva las marcas de los demás."),
+                    ("PDF", "Retiene la vista y exporta los bytes originales sin cambios."),
+                ]),
+        section("canvas_context_set", "CONTEXTO EXPLÍCITO", "Elige las fuentes que guían la respuesta",
+                "Usar como contexto selecciona una instantánea confirmada, independiente del documento activo.",
+                body=[
+                    "Abre A, B y C. Selecciona Usar como contexto en A y después en B: el conjunto contiene "
+                    "A y B; abrir o activar C no lo agrega. Las insignias de las pestañas y la franja de "
+                    "contexto identifican las fuentes seleccionadas. Cerrar una pestaña del editor conserva "
+                    "su instantánea seleccionada hasta que la retires explícitamente.",
+                    "Editar una fuente, renombrar texto mediante Guardar como o actualizar un PDF marca la instantánea "
+                    "como anterior. Actualizar contexto la reemplaza explícitamente. Puedes retirar una fuente "
+                    "sin descartar las demás. La preparación de PDF pregunta por las imágenes, desactivadas "
+                    "de forma predeterminada, y usa un token ligado a la cuenta; leer un PDF no prepara contexto.",
+                    "El servidor acepta hasta 32 instantáneas de forma atómica, con un presupuesto compartido "
+                    "de 32 MiB en UTF-8 que incluye las etiquetas. Un rechazo conserva el último conjunto "
+                    "confirmado. Una desconexión elimina "
+                    "las marcas de confirmación e indica incertidumbre, pero conserva los documentos; una "
+                    "respuesta tardía no confirma otra selección. Revisa el contexto restaurado antes de usarlo.",
+                ], points=[
+                    ("Elegir", "Sólo las selecciones explícitas entran al paquete de contexto."),
+                    ("Reconocer", "Las insignias y la franja muestran las fuentes confirmadas."),
+                    ("Actualizar", "La instantánea anterior permanece hasta confirmar su actualización."),
+                    ("Retirar", "Quitar una fuente y cerrar su editor son acciones diferentes."),
+                ]),
+        section("canvas_context_example", "TRES DOCUMENTOS, DOS FUENTES", "Abrir no equivale a seleccionar contexto",
+                "Mantén notes.md, main.py y manual.pdf abiertos; sólo notes.md y manual.pdf guían este chat.",
+                body=[
+                    "Pulsa Usar como contexto en notes.md; después prepara manual.pdf sin procesar imágenes "
+                    "y confirma. Espera la respuesta del servidor para considerar activo el nuevo conjunto. "
+                    "Cambiar a main.py permite editarlo sin agregarlo al contexto seleccionado.",
+                    "Editar notes.md marca su instantánea como anterior. La versión confirmada sigue vigente "
+                    "hasta que Actualizar contexto termina correctamente; retirar manual.pdf sólo quita esa fuente.",
+                ], visual="steps", visual_data={"steps": [
+                    ("Abre tres", "notes.md + main.py + manual.pdf conservan pestañas y vistas independientes."),
+                    ("Elige dos", "notes.md + manual.pdf entran al conjunto de contexto después de la confirmación."),
+                    ("Edita", "main.py sigue abierto sin seleccionar. Editar notes.md marca su contexto como anterior."),
+                    ("Actualiza", "Actualiza notes.md para reemplazar su instantánea, o retira manual.pdf sin quitar notes.md."),
+                ]}, deck="visual"),
+        section("canvas_navigation", "NAVEGACIÓN Y CAMBIOS SIN GUARDAR", "Cambia de documento sin perder el aviso de salida",
+                "Los atajos del Canvas actúan dentro de él; el navegador mantiene el control de sus propios atajos.",
+                body=[
+                    "Pulsa una pestaña, o usa Alt+RePág y Alt+AvPág con el foco dentro del Canvas, incluido "
+                    "su visor PDF activo. Ctrl+Tab y Ctrl+Mayús+Tab funcionan sólo si el navegador entrega "
+                    "esas teclas a la página. Chrome en Windows reserva Ctrl+Tab físico para sus pestañas: "
+                    "en ese caso usa el atajo con Alt.",
+                    "Un asterisco identifica cada documento sin guardar, incluso los inactivos. Cerrar una "
+                    "pestaña modificada pide confirmación. Salir o recargar solicita el aviso estándar del "
+                    "navegador si cualquier pestaña tiene cambios o hay un guardado pendiente. El navegador "
+                    "decide si muestra el aviso y el usuario todavía puede salir o forzar el cierre.",
+                    "Guarda cada archivo editado en almacenamiento persistente antes de salir. Una página "
+                    "no puede garantizar recuperación tras un fallo, un cierre forzado o un aviso descartado. "
+                    "Las teclas fuera del Canvas y los mensajes de visores PDF ocultos no cambian sus documentos.",
+                ], points=[
+                    ("Navegar", "Pulsa pestañas o usa Alt+RePág / Alt+AvPág dentro del Canvas."),
+                    ("Límite del navegador", "No es posible quitarle a Chrome su Ctrl+Tab de navegación."),
+                    ("Asterisco", "Cada pestaña sin guardar lo muestra, aunque esté en segundo plano."),
+                    ("Salir con cuidado", "Guarda los archivos; el navegador controla el aviso final de salida."),
+                ]),
+        section("interactor_documents", "EDITOR EN VIVO ENTRE DOCUMENTOS", "Enseña en un archivo y continúa en otro",
+                "Interactor separa la conexión de la cuenta de la identidad de cada documento del Canvas.",
+                body=[
+                    "documents enumera identificadores, nombres, revisiones, tipo y estado activo/modificado/"
+                    "contexto; no expone contenido, rutas del equipo ni permisos de escritura. read obtiene "
+                    "el documento activo y su revisión. activate recibe un target_document_id exacto y "
+                    "devuelve una instantánea verificada del destino antes de que type pueda editarlo.",
+                    "Cambiar conserva los cambios del origen. Interactor puede abrir o crear texto mientras "
+                    "un PDF está activo; el PDF y las demás pestañas permanecen abiertos. La activación "
+                    "solicitada por la herramienta continúa la lección. Un cambio manual devuelve el control "
+                    "al usuario e interrumpe la escritura; una orden antigua no cruza documentos ni revisiones.",
+                    "Explicar selección lee los intervalos exactos sin guardar del documento activo, "
+                    "independientemente de las instantáneas elegidas para el chat. El permiso del Editor en "
+                    "vivo, Detener, cancelar, Ask Execs y la autorización nativa conservan sus responsabilidades.",
+                ], points=[
+                    ("Descubrir", "documents enumera metadatos; read captura la revisión activa."),
+                    ("Activar", "Elige el ID exacto y verifica el documento de destino."),
+                    ("Continuar", "Escribe en ese destino y conserva los demás documentos."),
+                    ("Tomar el control", "Un cambio manual interrumpe la escritura y conserva lo escrito."),
+                ]),
+    ]
+
+
 def bridge_section(section):
-    return section("interactor_architecture", "PUENTE DEL LIVE EDITOR", "Una pestaña autenticada, un buffer exacto",
-                   "El editor del browser y el ciclo síncrono de tools comparten un puente ligado a la cuenta/sesión.",
+    return section("interactor_architecture", "PUENTE DEL EDITOR EN VIVO", "Una conexión, identidades de documento distintas",
+                   "La conexión autenticada del navegador transporta el ID y la revisión exactos de cada acción.",
                    points=[
-                       ("Browser", "CodeMirror es la autoridad; bridge.js envía recibos/acceso/detener, no comandos con paths del host."),
+                       ("Navegador", "Las pestañas retienen editores y visores PDF independientes; el documento activo produce el recibo."),
                        ("Transporte", "ws/interactor/ autentica la sesión y el Origin/Host exactos; el servidor asigna la identidad de la pestaña."),
-                       ("Contexto del tool", "ContextVar lleva la identidad de pestaña/cuenta/sesión a los workers; read obtiene el buffer vivo."),
+                       ("Herramienta", "ContextVar lleva conexión/cuenta/sesión; documents/read/activate eligen documentos exactos."),
                        ("Hub", "Colas acotadas, IDs de comandos, plazos, revisiones de la revisión y verificación del buffer completo."),
                        ("Persistencia", "Ask Execs controla new/save; el acceso al host por loopback usa las protecciones existentes de paths y de capacidades de archivo."),
                        ("Transporte al release", "Migración 0218, tool_gate_table, reglas del prompt, módulos congelados e inventarios sin conexión de source/estáticos."),
@@ -183,6 +286,28 @@ def wizard_section(section):
 
 def release_sections(section, facts):
     return [
+        section("release1970_canvas", f"PUBLICADO · v{facts['version']}", "Varios documentos, contexto explícito y cambios seguros",
+                "Los Canvas en inglés y español comparten el modelo de documentos y ofrecen controles localizados.",
+                body=[
+                    "Hasta 32 pestañas conservan el estado independiente de textos y PDF. La selección "
+                    "explícita de varias fuentes tiene insignias, avisos de instantáneas anteriores, "
+                    "actualización y eliminación. Interactor puede enumerar y activar documentos sin perder ediciones.",
+                    "Verificado el 21 de noviembre de 2026: la ejecución completa en inglés pasó 28 controles "
+                    "más una prueba específica de Interactor al abrir texto desde un PDF; la ejecución completa "
+                    "en español pasó 29 controles. Cada edición pasó 46 pruebas de transacciones de contexto, "
+                    "40 de protocolo/pertenencia de Interactor y lint dirigido de Python/JavaScript. Se "
+                    "comprobó texto realmente renderizado y visible en los visores PDF de ambas ediciones.",
+                    "Las confirmaciones del contexto se inyectaron explícitamente en el navegador; pertenencia "
+                    "y persistencia atómica se probaron por separado sustituyendo las fronteras de modelo/red. "
+                    "Las escrituras nativas, la preparación de texto PDF y las acciones autenticadas de Interactor "
+                    "usaron sus implementaciones locales reales. Es evidencia del código fuente, no de ingestión "
+                    "con un modelo real ni de aceptación de un ejecutable instalado.",
+                ], deck_points=[
+                    ("Documentos", "32 pestañas con texto, historial y vistas PDF independientes."),
+                    ("Contexto", "A+B seleccionados, C sólo abierto; actualizar y retirar explícitamente."),
+                    ("Enseñanza", "Interactor descubre y activa identificadores exactos."),
+                    ("Evidencia", "Resultados fechados del navegador, servidor y lint, con sus límites."),
+                ]),
         section("release1961_catalog", f"PUBLICADA · v{facts['version']}", "La voz pasa al micrófono",
                 "El Catálogo de prompts ya no tiene la sección Comandos de voz.",
                 body=[

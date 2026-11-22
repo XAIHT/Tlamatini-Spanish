@@ -8,7 +8,25 @@
 -->
 # Tlamatini — Creating a New MCP or Tool
 
-> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../changes/2026-11-21-v1.97.0.md)**.
+
+## Interactor y los documentos del Canvas
+
+El cambio de documento amplía la herramienta Interactor existente: no añade un
+agente de flujo, un MCP externo ni una herramienta independiente. Usa `read` para
+obtener el documento activo y su revisión; `documents` devuelve solo metadatos
+de las pestañas; `activate(target_document_id=...)` verifica el origen y devuelve
+una lectura verificada del destino. No inventes el identificador a partir de una
+ruta o del `client_id` del navegador. Enumerar documentos no sustituye la lectura
+que protege las mutaciones de revisiones obsoletas.
+
+El cambio manual de pestaña interrumpe la escritura pendiente. Después, vuelve a
+leer antes de proponer otro cambio. Los PDF pueden activarse, pero no se presentan
+como texto editable. Ninguna de estas acciones selecciona contexto ni guarda el
+archivo; se mantienen los controles existentes de ejecución para `new` y `save`.
+La [guía de Interactor](../interactor.md) y el
+[contrato de pestañas](../changes/2026-11-21-canvas-document-tabs.md) describen la
+separación entre lectura en vivo, capturas de contexto y persistencia en disco.
 
 ## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 

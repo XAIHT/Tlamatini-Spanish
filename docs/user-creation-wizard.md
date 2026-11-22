@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Created by Angela López Mendoza · @angelahack1 -->
 # Crear una cuenta administrativa en Tlamatini-Spanish
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 El asistente integrado abre la consola real de cuentas de Django de esta
 instancia. Devuelve el control al chat mientras introduces los datos. La

@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
-# Interactor: teaching in the live canvas editor
+# Interactor: enseñanza en el editor en vivo del Canvas
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 Interactor is a module, not a workflow agent. It connects the existing chat and
 CodeMirror editor without another process or terminal. Enable **Multi-Turn** and
@@ -28,7 +28,7 @@ No cambia esos ajustes ni consume el borrador del chat. Si otra petición está
 activa, termínala o cancélala antes de pedir una explicación.
 
 User input, selection, Escape, Stop, chat cancellation, and disconnect interrupt
-AI typing. The typed prefix remains editable and undoable. Switching tabs,
+AI typing. The typed prefix remains editable and undoable. Switching browser tabs,
 minimizing, or covering the browser temporarily pauses the same action instead
 of refusing it. Returning resumes from the exact next character, without another
 chat request or duplicated text. Each visual action has up to two additional
@@ -39,6 +39,45 @@ Markdown to Preview or hiding the canvas during typing still hands control back.
 The model must finish its chat turn after a guide; further tool mutations in that
 turn are refused. Continue starts a new turn. A changed document/revision refuses
 an outdated edit instead of moving the user's caret or overwriting new text.
+
+## Pestañas de documentos del lienzo
+
+Hasta 32 pestañas conservan cada una su identidad, revisión, texto sin guardar, historial
+de deshacer, selección y destino de guardado. Las pestañas PDF conservan el estado
+del visor y siguen siendo de solo lectura para Interactor. Un asterisco indica
+cambios sin guardar. Abrir o activar una pestaña no incorpora su contenido al
+contexto del chat: el usuario elige explícitamente **Usar como contexto**, y la
+pestaña muestra esa selección por separado.
+
+Para explicar varios archivos, primero usa `read` sobre el documento actual y
+después `documents` para consultar los metadatos de las pestañas abiertas. Llama
+a `activate` con el `target_document_id` exacto de esa lista. La activación verifica
+el documento y la revisión de origen, conserva las demás pestañas y devuelve una
+lectura verificada del destino. Las ediciones siguientes corresponden a ese
+destino. La lista no lee el contenido de los documentos ni sustituye la última
+lectura verificada. La identidad del documento es distinta de la identidad de
+sesión del navegador. Si el usuario cambia de pestaña durante la escritura, se
+detienen las ediciones pendientes; vuelve a leer antes de continuar.
+
+Con el foco dentro del lienzo, **Ctrl+Tab** y **Ctrl+Mayús+Tab** cambian de documento
+cuando el navegador entrega esos atajos a la página. **Alt+AvPág** y **Alt+RePág**
+son alternativas cuando el navegador reserva Ctrl+Tab. El visor PDF solo reenvía
+estas peticiones desde su marco activo con el foco. Al cerrar un documento con
+cambios se pide confirmar que se descarten; cancela y guarda antes para conservarlos.
+La protección al cerrar el
+navegador considera los documentos sin guardar de todas las pestañas y los
+guardados pendientes; el navegador controla la confirmación final. El contenido
+sin guardar permanece en memoria: no se promete recuperarlo tras una recarga.
+
+La lectura verificada de Interactor y el contexto del chat son mecanismos
+distintos. Una captura seleccionada como contexto no sustituye `read`, y ni
+`documents` ni `activate` seleccionan archivos como contexto. Editar, renombrar o
+actualizar desde disco puede dejar una captura anterior: usa **Actualizar
+contexto** para sustituirla. Cerrar la pestaña conserva esa captura hasta quitarla
+de la franja de contexto. Una desconexión que pierde la confirmación deja el
+resultado sin confirmar; se retiran los indicadores ambiguos y se informa al
+usuario. Las respuestas tardías no activan otro documento ni desbloquean una
+operación posterior. Consulta el [contrato completo y su evidencia](changes/2026-11-21-canvas-document-tabs.md).
 
 ## Files and saving
 

@@ -1072,7 +1072,7 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ("Gramática", "[[ tú ]], {{ runtime }}, < espacio del reporte >."),
             ]),
         Section("pdfcanvas", "CANVAS DE PDF", "Lee un PDF y luego dale el documento completo",
-            "Abre un PDF junto al chat en un visor Mozilla PDF.js incluido, y luego úsalo como contexto.",
+            "Abre un PDF en su propia pestaña del Canvas con Mozilla PDF.js incluido; el contexto se elige explícitamente.",
             body=[
                 "Leer no sube nada ni llama a ningún modelo: el visor lee rangos de bytes directo de tu "
                 "disco, así que del lado de Tlamatini no hay límite de tamaño ni de páginas. La selección de texto, la navegación, el zoom, "
@@ -1083,19 +1083,23 @@ def build_chapters(f: dict) -> list[Chapter]:
                 "también renderiza cada página y analiza cada imagen incrustada con Image-Interpreter. El progreso es "
                 "honesto, Cancelar de verdad cancela, y los errores parciales de imágenes se reportan, no se esconden. Una "
                 "contraseña de PDF se usa sólo en memoria: nunca se escribe a disco, al texto del contexto ni al log.",
+                "Cambiar de documento conserva la página, el zoom, la rotación y el desplazamiento. Una "
+                "actualización correcta aumenta la revisión del PDF y marca su contexto seleccionado como "
+                "anterior; Actualizar contexto prepara y confirma una nueva instantánea. Cerrar el visor "
+                "no retira el contexto seleccionado.",
                 "Una segunda cuenta que inicia sesión desde el mismo browser toma todas las pestañas abiertas, mientras que un chat abierto "
                 "conserva su primera cuenta, así que la carga se rechaza. Desde v1.76.0 el mensaje nombra esa causa y "
                 "el arreglo, recargar con F5; el encabezado regresa y el diálogo de progreso marca el paso con error.",
             ], deck="list",
             deck_points=[
                 ("Lectura privada", "Rangos de bytes de tu disco; no se sube nada ni se llama a ningún modelo."),
-                ("Visor", "Mozilla PDF.js 6.3.289, incluido bajo Apache-2.0; sin CDN."),
+                ("Visor", "Página, zoom, rotación y desplazamiento conservados; PDF.js 6.3.289 local, sin CDN."),
                 ("Usar como contexto", "Sólo texto de forma predeterminada; imágenes sólo cuando marcas la casilla."),
                 ("Progreso honesto", "Cuatro filas de progreso, un Cancelar real, errores reportados."),
                 ("Contraseñas", "Se usan sólo en memoria; nunca se guardan ni van al log."),
             ]),
         Section("mdcanvas", "CANVAS DE MARKDOWN", "El Markdown se abre como página y sigue siendo tu source",
-            "Abre o suelta un archivo .md y el canvas lo renderiza; Source abre el documento editable.",
+            "Abre o suelta un .md en su propia pestaña; la vista previa y el código fuente comparten su texto editable.",
             body=[
                 "Abrir, Actualizar, un archivo soltado, un link a un archivo generado y Contexto ▸ Usar archivo como contexto "
                 "reconocen .md y .markdown. La vista previa renderiza CommonMark y Markdown al estilo GitHub: "
@@ -1809,10 +1813,10 @@ def build_chapters(f: dict) -> list[Chapter]:
                 ". Tlamatini teclea cada tecla como una persona, unas 50 palabras por minuto y nunca pegando, espera el "
                 "comando, lee todo su output y reporta el código de salida. Esc toma el teclado; un comando te lo puede pasar "
                 "a propósito con <<USER:hint>>.",
-                f"Un comando que deja de responder se marca como colgado y se puede detener sin perder la terminal; uno que "
-                f"sale con error es una fila roja del Exec Report aunque la terminal haya funcionado. Un solo hub en el proceso de Django "
-                f"es dueño de los shells, así que cerrar una página nunca cierra uno. Es el agent de chat wrapped número 67, "
-                f"la octava operación del Prompt Flow Panel, y tiene tres tarjetas seguras en el Catálogo de prompts.",
+                "Un comando que deja de responder se marca como colgado y se puede detener sin perder la terminal; uno que "
+                "sale con error es una fila roja del Exec Report aunque la terminal haya funcionado. Un solo hub en el proceso de Django "
+                "es dueño de los shells, así que cerrar una página nunca cierra uno. Es el agent de chat wrapped número 67, "
+                "la octava operación del Prompt Flow Panel, y tiene tres tarjetas seguras en el Catálogo de prompts.",
                 "Ahora el build lo prueba dentro de la app congelada: check_terminater maneja un PowerShell real, un cmd.exe real, "
                 "el agent del pool incluido con el Python incluido y un viaje de ida y vuelta por WebSocket, y el empaquetado se detiene si "
                 "falla. El 19 de octubre pasaron 774 pruebas unitarias, y 1,668 pasaron después de la revisión de la documentación. Las "

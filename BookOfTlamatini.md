@@ -8,7 +8,38 @@
 -->
 # Tlamatini
 
-> Última versión publicada: **[v1.96.1](docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](docs/changes/2026-11-21-v1.97.0.md)**.
+
+## Pestañas del Canvas y contexto seleccionado
+
+Mantén hasta **32 documentos** de texto, Markdown y PDF en pestañas independientes del
+Canvas. Cada pestaña conserva su estado de edición o visor; un asterisco indica
+cambios sin guardar. La protección de guardado comprueba todas las pestañas,
+incluidas las inactivas. Con el foco en el Canvas, usa **Alt+PageUp / Alt+PageDown**;
+navegadores como Chrome reservan Ctrl+Tab para sus propias pestañas.
+
+Un documento abierto sólo pasa al contexto del chat al elegir **Usar como
+contexto**. Puedes seleccionar varios y dejar otros abiertos como referencia.
+La franja **Contexto del chat** enumera las capturas aceptadas; **Contexto ·
+anterior** indica cambios todavía no reflejados en el contexto. Guardar y
+actualizar contexto son acciones separadas. Cerrar una pestaña conserva su
+captura seleccionada hasta que quites su etiqueta de contexto. Guarda antes de
+salir: una advertencia del navegador no garantiza recuperar documentos después
+de cerrar la página o sufrir un fallo. Consulta la [guía del Canvas](docs/canvas-editing.md)
+para PDF, Editor en vivo, Interactor y guardado de cada documento.
+
+La barra actúa sobre el documento activo y **Limpiar canvas** cierra esa pestaña.
+Cada documento conserva su historial de deshacer, selección, desplazamiento,
+codificación y destino de guardado; los PDF conservan su propio visor. Un guardado
+pendiente impide cambiar de pestaña. Las capturas elegidas como contexto admiten
+hasta 32 documentos y 32 MiB de texto preparado, sujetos también al presupuesto
+del modelo. Actualizar desde disco tampoco sustituye automáticamente una captura.
+
+Para explicar varios archivos, Interactor usa `read`, `documents` y `activate`
+con la identidad exacta del destino. Su lectura verificada no es la captura del
+contexto: puede incluir cambios sin guardar. Un cambio manual de pestaña detiene
+el tecleo y requiere leer de nuevo antes de continuar. Una desconexión no confirma
+una selección de contexto pendiente. [Contrato y comprobaciones](docs/changes/2026-11-21-canvas-document-tabs.md).
 
 ## Integración con Remote-Controller · 13 de noviembre de 2026
 
@@ -19,7 +50,7 @@ sigue siendo independiente. La conexión es local; el transporte por red, la voz
 de RC y la aceptación instalada final siguen pendientes. Consulta
 [la guía de cuenta y conexión](docs/remote-controller.md).
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](docs/remote-controller.md).
@@ -284,9 +315,9 @@ The buttons above the canvas keep the meanings they always had:
 | Button | What it does to a PDF |
 |---|---|
 | **Copy** | Lifts the selectable text out of *every* page. If the file is a scan with no text layer, it says so and explains that OCR is needed — it does not hand you an empty string and let you think the document was blank. |
-| **Save As** | Writes the **original PDF bytes** back out, untouched. |
-| **Refresh** | Rereads the open document without a chooser. Unchanged text stays in place; changed content replaces it after preparation. Failure or cancellation keeps the previous document/context. |
-| **Clear canvas** | Puts the document away and shuts down its background worker. |
+| **Guardar / Guardar como** | Exporta una copia de los **bytes originales del PDF**, sin cambiar el documento ni sustituir su visor. |
+| **Actualizar** | Vuelve a leer el PDF activo. Un fallo o cancelación conserva su visor anterior. No actualiza la captura elegida como contexto; usa **Actualizar contexto** cuando corresponda. |
+| **Limpiar canvas** | Cierra solo la pestaña activa y termina su visor y trabajador. Las demás pestañas permanecen abiertas; su captura seleccionada como contexto permanece hasta quitarla expresamente. |
 
 ### Nothing leaves your machine just because you opened it
 
@@ -298,7 +329,14 @@ And **no AI model is called merely because a PDF is on the screen.** Opening one
 
 ### “Use as context” — the button that changes what she knows
 
-The canvas has always had a **Use as context** button. On a PDF it means what you would hope: Tlamatini takes in the **whole document** — not the page you are looking at, not a snippet — and can answer questions about it for the rest of the conversation.
+**Usar como contexto** prepara el PDF completo, no solo la página visible, y añade
+su captura al conjunto elegido junto a otros documentos. Abrir el PDF no lo
+selecciona. Se admiten hasta 32 capturas y 32 MiB de texto UTF-8 preparado con sus
+separadores; el modelo puede imponer un presupuesto menor. Un exceso se rechaza
+sin recortar contenido. Tras editar o actualizar el archivo, **Actualizar contexto**
+sustituye su captura anterior; guardar o cerrar la pestaña no cambia esa selección.
+La [guía de pestañas](docs/changes/2026-11-21-canvas-document-tabs.md) explica las
+insignias, la eliminación explícita y la recuperación después de una desconexión.
 
 Press it and a dialog opens before anything happens. It shows the filename, the size, an elapsed clock, and asks you exactly one question: **Process images?**
 
@@ -488,7 +526,14 @@ Two smaller honesty repairs travelled with it. The reported recording length use
 
 ## Edit and save a canvas file
 
-Open or drop text, source code, JSON or Markdown into the chat canvas. The filename bar now has **Save**, **Save as**, **Undo**, **Redo**, **Find/replace** and **Wrap**. The dirty marker means the current buffer differs from its saved baseline. Ctrl/Cmd+S saves; Ctrl/Cmd+Shift+S chooses a destination. Copy and Use as context take the edited source. Tab normally moves focus; Ctrl+[ and Ctrl+] indent.
+Abre o suelta texto, código, JSON o Markdown para añadir documentos al Canvas,
+hasta 32 pestañas. Cada una conserva su historial, selección, desplazamiento y
+destino de guardado. La barra actúa sobre la pestaña activa y ofrece **Guardar**,
+**Guardar como**, **Deshacer**, **Rehacer**, **Buscar/reemplazar** y **Ajustar**.
+El asterisco indica diferencias respecto al último guardado. Ctrl/Cmd+S guarda;
+Ctrl/Cmd+Shift+S elige un destino. Copiar y Usar como contexto toman el texto
+editado, pero abrir o cambiar de pestaña no selecciona contexto. Tab mueve el
+foco; Ctrl+[ y Ctrl+] cambian la sangría.
 
 | File kind | Editing and saving |
 |---|---|
@@ -502,7 +547,15 @@ On a local connection, **Save as** and the navbar **Save** open a native Windows
 
 Saving compares the disk revision and refuses external modifications instead of overwriting them. Save As can preserve a separate copy. A save captures one buffer revision: if you keep typing, later edits remain dirty. Unedited files retain exact bytes; edited files retain encoding/BOM and existing line terminators. New lines use the original first terminator. UTF-8 and BOM-marked UTF-16 are supported strictly; malformed text and binary files are refused. The text/native-save limit is 64 MiB.
 
-Open, Clear and Refresh ask before discarding edits. Unsaved buffers are held in memory: save before closing the page. Refresh reloads an accessible source; it does not merge changes. Use as context is a snapshot, so use it again after editing when you need to update ordinary chat context.
+Abrir otro documento conserva los anteriores. Limpiar canvas cierra la pestaña
+activa; cerrar y Actualizar piden confirmar antes de descartar cambios. Un
+guardado pendiente impide cambiar de documento. Los cambios sin guardar viven
+en memoria: el cierre comprueba todas las pestañas, pero el navegador decide su
+advertencia final y no se promete recuperación tras una recarga. Actualizar
+vuelve a leer la fuente accesible, sin fusionar cambios ni sustituir las capturas
+de contexto. Usa **Actualizar contexto** para reemplazar una captura anterior.
+Con el foco en el Canvas, Alt+PageUp/PageDown cambia documentos; Ctrl+Tab funciona
+solo cuando el navegador no lo reserva para sus propias pestañas.
 
 ## Learn in the editor with Interactor
 
@@ -1021,7 +1074,7 @@ When the migrations finish and you have a superuser, run the server (chapter 7).
 
 ### Path B — Pre-built one-click installer (end users)
 
-Este libro documenta la **v1.96.1**. Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Obtén el paquete desde las [versiones de Tlamatini en español](https://github.com/XAIHT/Tlamatini-Spanish/releases) y comprueba su versión antes de instalarlo.
+Este libro documenta la **v1.97.0**. Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Obtén el paquete desde las [versiones de Tlamatini en español](https://github.com/XAIHT/Tlamatini-Spanish/releases) y comprueba su versión antes de instalarlo.
 
 1. Open the unzipped folder.
 2. Double-click **`Installer.exe`**.
@@ -1206,7 +1259,7 @@ Most of the time, you want the bot to answer questions about *your* code, not ge
 |---|---|
 | **Set directory as context** | Loads a folder. Tlamatini reads every text file in it, splits them into chunks, embeds them, builds a hybrid FAISS+BM25 index, and grounds every answer in those files. |
 | **Set file as context** | Loads a single file (smaller scope, faster). |
-| **Set canvas as context** | Uses the code currently shown in the right-hand canvas as context (handy for iterative editing). |
+| **Usar el Canvas como contexto** | Añade una captura explícita del documento activo al conjunto elegido. Abrir otras pestañas no las selecciona; **Actualizar contexto** sustituye una captura anterior. |
 | **Clear context** | Removes the current context and rebuilds the chain empty. |
 
 > **PDFs take a different door.** A PDF is not loaded from this menu: you open it in the canvas with **Open** and then press the canvas's own **Use as context** button, which reads the whole document (and, if you ask, looks at its pictures). See *Reading a PDF: open it in the canvas, then hand her the whole document* near the front of this book.
@@ -2863,7 +2916,7 @@ Requires `pkg.zip` and `Uninstaller.exe` from steps 1 and 2. Builds `install.py`
 
 ## 48. Versioning
 
-Tlamatini sigue [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH`. La última versión publicada es **1.96.1**. Mantén sincronizados la documentación actual y los manifiestos con esa única versión; la compilación resuelve el mismo número a partir de una opción explícita o de la etiqueta Git y lo incorpora en los tres artefactos descritos en §47.
+Tlamatini sigue [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH`. La última versión publicada es **1.97.0**. Mantén sincronizados la documentación actual y los manifiestos con esa única versión; la compilación resuelve el mismo número a partir de una opción explícita o de la etiqueta Git y lo incorpora en los tres artefactos descritos en §47.
 
 ### What the three numbers mean
 
@@ -2877,14 +2930,14 @@ Pre-releases use the standard SemVer suffixes — `2.0.0-alpha.1`, `2.0.0-beta.1
 
 ```powershell
 git status                                          # clean tree, on main
-git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH: <one-liner>"   # annotated tag, an unused version (1.96.1 is taken)
+git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH: <one-liner>"   # annotated tag, an unused version (1.97.0 is taken)
 git push origin vMAJOR.MINOR.PATCH
 python build.py
 python build_uninstaller.py
 python build_installer.py
 ```
 
-All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini-Spanish_Release_v1.96.1/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. La versión publicada es `1.96.1`; pasa `--version 1.96.1` a los generadores completos para fijar ese número. Tlamatini deliberately never puts a `.devN`, `+gSHA` or `.dirty` suffix into its version string — it always reports the base tag, which is the designed behaviour described in `VERSIONING.md`. That is exactly why the five commands above start with `git status` on a clean tree: a release cut from a dirty tree would ship a version number that says nothing about what is actually inside it.
+All three build scripts pick the tag up from `git describe --tags` automatically. The final artefact lands in `dist/Tlamatini-Spanish_Release_v1.97.0/`, named for the version so the file you hand to a user is unambiguous before they even unzip it. La versión publicada es `1.97.0`; pasa `--version 1.97.0` a los generadores completos para fijar ese número. Tlamatini deliberately never puts a `.devN`, `+gSHA` or `.dirty` suffix into its version string — it always reports the base tag, which is the designed behaviour described in `VERSIONING.md`. That is exactly why the five commands above start with `git status` on a clean tree: a release cut from a dirty tree would ship a version number that says nothing about what is actually inside it.
 
 ### Where the version shows up in a running install
 
@@ -2892,8 +2945,8 @@ The build computes the version once and bakes it into four surfaces:
 
 - **`Tlamatini/agent/_version.py`** — generated at build time, gitignored, read at runtime by `agent.version.get_version()`. This is what every in-process surface reads.
 - **Win32 `VERSIONINFO`** — `Tlamatini.exe`, `Installer.exe`, and `Uninstaller.exe` all carry the version in their resource fork. Right-click the file → Properties → Details → ProductVersion.
-- **Release folder name** — `dist/Tlamatini-Spanish_Release_v1.96.1/`.
-- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.96.1` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.96.1","commit":"abc1234","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
+- **Release folder name** — `dist/Tlamatini-Spanish_Release_v1.97.0/`.
+- **Runtime surfaces** — the About dialog renders `Tlamatini v{{ version }}` (Django context processor); after the release tag/build, the startup banner prints `--- [VERSION] Tlamatini 1.97.0` to both the console and `tlamatini.log`; `GET /agent/version/` returns `{"version":"1.97.0","commit":"abc1234","date":"…","source":"generated"}` as an **open** endpoint suitable for a health-check.
 
 If the four surfaces ever disagree, your build was run with a stale `$env:TLAMATINI_VERSION` or against an out-of-date `_version.py` — clear them and re-run `build.py`.
 

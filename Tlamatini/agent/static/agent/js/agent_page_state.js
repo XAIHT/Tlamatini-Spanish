@@ -95,6 +95,7 @@ function clearConnectionStatus() {
 }
 
 function applyDisconnectedSocketUi(message) {
+    window.TlamatiniCanvasTabs?.connectionLost();
     window.TlamatiniPdfProgress?.connectionLost();
     if (typeof setTitleBusy === 'function') {
         setTitleBusy(false);
@@ -491,5 +492,3 @@ let installedApps = [];
 contextButton.disabled = true;
 contextButton.style.backgroundColor = "#808080";
 contextButton.textContent = "Usar como contexto";
-
-

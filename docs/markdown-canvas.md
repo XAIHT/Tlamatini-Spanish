@@ -1,7 +1,7 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza -->
-# Markdown in the chat canvas
+# Markdown en las pestañas del Canvas
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 ## Archivos legibles con controles aislados — 1.92.4
 
@@ -34,15 +34,27 @@ remain on the device. Linked Markdown retains that folder selection, including
 parent-relative paths. External web links open separately. Relative URLs never
 navigate to application endpoints. Remote images load with no referrer.
 
-Copy and Use as context take the Markdown source, not flattened preview text.
+Copiar y Usar como contexto leen el código Markdown, no el texto aplanado de la
+vista previa. La selección de contexto es explícita y puede combinar este
+documento con otros; abrirlo o activarlo no envía automáticamente su contenido.
 Since the 2026-10-21 source change, Source is editable with undo/redo and search;
 Preview reflects the edits through the existing sanitizer. Save writes the edited
 source with the original encoding/BOM and line endings, while unedited files keep
 their exact bytes. Native Save As can choose a folder outside Downloads. See
 [canvas editing](canvas-editing.md).
-Generated Markdown saves as UTF-8. Loading another file or clearing the canvas
-releases image object URLs. Plain text, source code, PDF and flow routing retain
-their dedicated behavior.
+El Markdown generado se guarda como UTF-8. Cada pestaña conserva Vista previa o
+Source, su selección, historial de deshacer, posición y recursos autorizados.
+Cambiar de pestaña libera las URL de imágenes de la vista suspendida y las vuelve
+a crear a partir de sus recursos conservados al regresar; no descarga de nuevo
+archivos locales ni pierde la carpeta elegida. Abrir otro documento conserva la
+pestaña anterior. **Limpiar canvas** cierra solo la activa y pide confirmación
+si contiene cambios sin guardar.
+
+Editar o Actualizar desde disco deja la captura de contexto anterior hasta pulsar
+**Actualizar contexto**; Guardar no la cambia. Cerrar la pestaña tampoco elimina
+una captura seleccionada: quítala en la franja **Contexto del chat**.
+Texto, código, PDF y flujos conservan sus rutas especializadas. Consulta
+[edición y contexto](canvas-editing.md) y [el contrato de pestañas](changes/2026-11-21-canvas-document-tabs.md).
 
 `agent_page_markdown.js` uses locally vendored Marked 18.1.0 and DOMPurify 3.4.16.
 The sanitizer allowlists HTML and attributes, scopes IDs, removes document classes

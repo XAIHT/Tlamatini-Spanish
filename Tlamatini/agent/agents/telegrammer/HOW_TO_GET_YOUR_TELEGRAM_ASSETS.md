@@ -8,7 +8,7 @@
 -->
 # Telegrammer Setup: Send A Telegram Message From Tlamatini
 
-> Última versión publicada: **[v1.96.1](../../../../docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../../../../docs/changes/2026-11-21-v1.97.0.md)**.
 
 
 This guide is for absolute beginners. Do one numbered step, then the next. No guessing, no third-party services, no numeric contact-book requirement.

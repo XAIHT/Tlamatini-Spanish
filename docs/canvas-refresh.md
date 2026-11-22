@@ -1,16 +1,18 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza -->
-# Refresh the open canvas file
+# Actualizar desde disco un documento del Canvas
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 
 ## Canvas, Views and avatar in v1.85.0
 
-**Open** chooses a document. **Refresh** reads that same document again without a
-file picker. It reports unchanged content, reloads changed content and retains
-the previous document when a read fails. Markdown keeps Preview/Source and its
-resources; PDF keeps page, zoom, rotation and scroll mode. Snapshot-only sources
-explain why Refresh is unavailable. See [Canvas Refresh](canvas-refresh.md).
+**Abrir** añade un documento a sus propias pestañas del Canvas. **Actualizar**
+vuelve a leer únicamente el archivo de la pestaña activa sin abrir un selector.
+Informa cuando el contenido no cambió y conserva la vista anterior si falla la
+lectura. Markdown mantiene Vista previa/Source y sus recursos; PDF mantiene
+página, zoom, rotación y modo de desplazamiento. Si el navegador solo entregó
+una copia sin acceso al original, se explica por qué Actualizar no está disponible.
+Las otras pestañas conservan su estado y sus destinos de guardado.
 
 **Views → Canvas** hides or shows the canvas. Hiding makes chat full width while
 keeping the document, refresh handle, PDF viewer, draft, chat history and context.
@@ -68,13 +70,18 @@ PDFs remain range-backed with no whole-file scan/hash, page-count cutoff or
 automatic whole-document prefetch. A PDF is always reloaded on Refresh; an
 unchanged-content claim is only made for text/Markdown, where it was compared.
 
-When the canvas is already chat context, a changed document follows the existing
-context replacement path, after the new content is ready. There is no intervening
-empty-context rebuild. PDF context retains its existing text/image options and
-cancellation. An unavailable connection or cancelled preparation leaves the old
-backend context intact and explains that the displayed version still needs
-**Use as context**. Clear, opening another document, a new chat operation and
-Cancel invalidate pending reads so late results cannot resurrect a document.
+Actualizar un documento seleccionado como contexto **no sustituye su captura**.
+Cuando cambia, la pestaña indica **Contexto · anterior** y ofrece **Actualizar
+contexto**. El modelo sigue usando la captura aceptada hasta que esa selección
+explícita termine correctamente. Guardar y Actualizar tampoco incorporan otras
+pestañas abiertas al contexto. PDF conserva sus opciones de texto e imágenes y
+su cancelación. Una preparación fallida conserva el contexto anterior; una
+desconexión deja la confirmación pendiente de verificar al reconectar.
+
+Cambiar de pestaña, cerrarla, iniciar otro trabajo o cancelar invalida las lecturas
+pendientes: una respuesta tardía no sustituye un documento distinto. El contenido
+sin guardar requiere confirmación antes de recargarlo y se conserva si la lectura
+falla. [Edición y contexto](canvas-editing.md) · [Contrato de pestañas](changes/2026-11-21-canvas-document-tabs.md).
 
 ## Verification
 

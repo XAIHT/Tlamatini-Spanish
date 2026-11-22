@@ -442,16 +442,17 @@ def release_statements(rel: dict, version: str) -> tuple[list[str], list[list[st
     statements = [
         f"**La última versión publicada es {version}.** La aplicación, las guías, "
         "el dossier PDF y la presentación utilizan esta única versión.",
-        f"Esta edición documenta el commit `{rel['head_short']}` y las funciones "
-        "de la versión completa: la retirada de Comandos de voz del Catálogo de prompts, el control "
+        f"Esta guía documenta el árbol de trabajo revisado a partir del commit `{rel['head_short']}` y las funciones "
+        "de la versión completa: Canvas multidocumento, instantáneas explícitas de contexto, navegación "
+        "de Interactor entre documentos, la retirada de Comandos de voz del Catálogo de prompts, el control "
         "remoto de Tlamatini-RC y los cambios de canvas, voz y ejecución de 1.93.5.",
     ]
     points = [("Última versión publicada", version),
-              ("Commit documentado", rel["head_short"]),
+              ("Commit base inspeccionado", rel["head_short"]),
               ("Documentación", "Aplicación, guías, PDF y PowerPoint")]
     rows = [
         ["Última versión publicada", version],
-        ["Commit documentado", rel["head_short"]],
+        ["Commit base inspeccionado", rel["head_short"]],
         ["Alcance", "Funciones, arquitectura, uso e inventario"],
     ]
     return statements, rows, points

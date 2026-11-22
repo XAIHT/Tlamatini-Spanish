@@ -8,9 +8,21 @@
 -->
 # docs/claude/ — Tlamatini AI-Assistant Docs Index
 
-> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../changes/2026-11-21-v1.97.0.md)**.
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## Ruta actual: Canvas con varios documentos
+
+El [contrato de pestañas](../changes/2026-11-21-canvas-document-tabs.md) reúne
+identidad, guardado, contexto explícito y evidencia sin cambiar la versión.
+Para modificarlo, lee [frontend](frontend.md), [arquitectura](architecture.md)
+y [riesgos conocidos](gotchas.md). Para usarlo, consulta
+[editar el Canvas](../canvas-editing.md), [Markdown](../markdown-canvas.md),
+[PDF](../pdf-canvas.md), [actualizar desde disco](../canvas-refresh.md) e
+[Interactor](../interactor.md). Los registros históricos inferiores conservan
+los contratos y resultados de su fecha; el contrato actual admite hasta 32
+documentos y separa expresamente las pestañas abiertas del contexto elegido.
+
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](../remote-controller.md).

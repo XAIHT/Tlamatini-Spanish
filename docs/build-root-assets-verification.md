@@ -1,7 +1,25 @@
 <!-- Tlamatini Author Banner — Angela López Mendoza · @angelahack1 -->
 # Required runtime files: packaging repair and verification
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
+
+## Comprobaciones actuales para las pestañas del Canvas
+
+Comprueba como conjunto `agent_page_canvas_tabs.js`, `canvas_tabs.css`, la
+plantilla del chat, los adaptadores de texto/Markdown/PDF, el paquete del editor
+generado desde `scripts/canvas_editor_entry.mjs` y el puente de Interactor.
+`build_runtime_assets.py` exige los dos recursos nuevos; `build.py` incluye
+`agent.canvas_documents_context`. `copy_source_assets.py` lleva también el
+módulo Python, las pruebas de contexto y el recorrido visible de pestañas.
+
+Una revisión de inventario debe comprobar tanto los recursos servidos como las
+fuentes que podrá editar Self-modify. Después de modificar el editor, no basta
+con llevar su fuente y omitir el paquete JavaScript regenerado. Los recorridos
+deben verificar documentos independientes, guardado en el destino correcto,
+contexto explícito de varias pestañas e Interactor sobre la identidad correcta.
+Conserva separados el resultado de las pruebas de fuentes y el de una instalación
+real: el [registro del Canvas](changes/2026-11-21-canvas-document-tabs.md) no
+declara que se haya compilado o instalado un nuevo paquete durante esta tarea.
 
 ## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 

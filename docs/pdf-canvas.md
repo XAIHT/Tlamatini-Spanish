@@ -1,15 +1,16 @@
-# PDF canvas and document context
+# PDF en las pestañas del Canvas y su contexto
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 
 **Views → Canvas** keeps this document and its viewer alive while hiding the pane. Opening a document shows the pane again. **Views → Reset layout** restores both panes and their sizes without clearing the document or context. See [v1.85.0](changes/2026-10-16-v1.85.0.md).
 
-The Agent Page **Open** native file picker accepts `.pdf` and
-`application/pdf`. A PDF opens inside the existing canvas with its original
-filename in the existing header. Copy, Refresh, Clear canvas and Use as context
-keep the shared button styling. Since v1.85.0,
-[Refresh](canvas-refresh.md) rereads the same file without another selection.
+El selector nativo **Abrir** acepta `.pdf` y `application/pdf`. Cada PDF se abre
+en su propia pestaña, con su nombre original. Copiar, Actualizar, Limpiar canvas
+y Usar como contexto actúan sobre la pestaña activa. Puedes conservar varios
+PDF junto a texto y Markdown, hasta el límite de 32 documentos. Cada visor
+mantiene su navegación y preparación de contexto al cambiar de pestaña.
+[Actualizar](canvas-refresh.md) vuelve a leer su archivo sin otra selección.
 
 The chat/canvas divider keeps pointer capture while resizing across the PDF
 frame. Release, cancelled touch input, lost capture and window focus loss end
@@ -27,17 +28,26 @@ passwords produce visible errors. PDF scripts are not executed.
 - **Copy** reads selectable text from every page. Scans without selectable text
   explain that OCR is required; Use as context can perform visual interpretation
   when Process images is enabled.
-- **Save As** downloads the original PDF bytes with a PDF extension.
-- **Use as context** processes the complete original document as described below.
-  Its existing toggle removes the selected context normally.
-- **Refresh** stages a new viewer from the latest file before replacing the old
-  viewer, preserving page/zoom/rotation/scroll mode. Failed reads or invalid PDFs
-  keep the previous display. If the canvas was already context, it prepares the
-  replacement before rebuilding context. Cancelling preparation leaves the
-  previous backend context available.
-- **Clear canvas**, text-file selection and generated text remove the PDF frame,
-  terminate its worker and invalidate outstanding reads. Generation checks stop
-  an earlier asynchronous file read from overwriting a newer selection.
+- **Guardar / Guardar como…** exporta una copia de los bytes originales con
+  extensión PDF y el destino elegido, sin sustituir el PDF mostrado.
+- **Usar como contexto** prepara el documento completo como se explica abajo.
+  Su captura puede coexistir con otras seleccionadas expresamente. Abrir el PDF
+  no añade ninguna captura. **Quitar del contexto** elimina solo la seleccionada.
+- **Actualizar** prepara un visor nuevo antes de sustituir el anterior y conserva
+  página, zoom, rotación y modo de desplazamiento. Los errores mantienen el visor
+  anterior. Una captura de contexto ya seleccionada permanece sin cambios y se
+  indica como anterior hasta que el usuario elija **Actualizar contexto**.
+- **Cambiar de pestaña** conserva el visor y sus recursos. Cancela una preparación
+  de contexto aún en curso para impedir que su resultado se aplique a otro archivo.
+  Las respuestas tardías se comprueban contra la identidad del documento activo.
+- **Limpiar canvas** cierra la pestaña activa, elimina su marco y termina su
+  trabajador. La captura ya aceptada permanece en la franja **Contexto del chat**
+  hasta quitarla explícitamente. Abrir texto u otro PDF conserva las otras pestañas.
+
+Los atajos del Canvas funcionan también dentro del visor: **Alt+PageUp /
+Alt+PageDown**, y Ctrl+Tab cuando el navegador lo entrega. Solo el marco PDF
+actual con el foco puede solicitar el cambio; los marcos ocultos no lo hacen.
+El PDF sigue siendo de solo lectura para Interactor. [Contrato de pestañas](changes/2026-11-21-canvas-document-tabs.md).
 
 Opening and reading use local browser file ranges and do not upload the PDF.
 There is no application file-size or page-count cutoff. The viewer reads

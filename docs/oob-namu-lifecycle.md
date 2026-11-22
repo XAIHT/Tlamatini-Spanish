@@ -1,6 +1,6 @@
-# OOB_shift_reaper y NAMU — Tlamatini 1.96.1
+# OOB_shift_reaper y NAMU — Tlamatini 1.97.0
 
-> Última versión publicada: **[v1.96.1](changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](changes/2026-11-21-v1.97.0.md)**.
 
 Creado por Angela López Mendoza · @angelahack1.
 Revisado contra la fuente a771d27c, 2026-10-23; el tag v1.91.0 resuelve al mismo commit.

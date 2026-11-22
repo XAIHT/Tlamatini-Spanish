@@ -1,7 +1,7 @@
 <!-- THE USER IS ANGELA, A WOMAN — always address her by name. -->
-> Última versión publicada: **[v1.96.1](../../docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../../docs/changes/2026-11-21-v1.97.0.md)**.
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](../../docs/remote-controller.md).

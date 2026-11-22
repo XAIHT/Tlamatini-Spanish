@@ -12,9 +12,32 @@
 
 # ⛔ PRIVATE DATA GUARD — ABSOLUTE, NON-NEGOTIABLE, READ FIRST ⛔
 
-> Última versión publicada: **[v1.96.1](docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](docs/changes/2026-11-21-v1.97.0.md)**.
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## Contrato actual del Canvas con varios documentos
+
+- Mantener hasta 32 pestañas con identidad y revisión propias; conservar texto,
+  deshacer/rehacer, selección, desplazamiento, codificación, destino de guardado
+  y estado del visor. La identidad del documento no es la sesión del navegador.
+- Abrir o activar no selecciona contexto. Solo las capturas elegidas y aceptadas
+  entran al conjunto; editar o Actualizar deja una captura anterior hasta una
+  actualización explícita. Guardar no cambia contexto y cerrar la pestaña conserva
+  su captura hasta quitarla de la franja.
+- Comprobar cambios sin guardar y guardados pendientes en todas las pestañas.
+  El navegador decide la advertencia final; no prometer impedir el cierre ni
+  recuperar trabajo sin guardar. Ctrl+Tab puede pertenecer al navegador;
+  Alt+PageUp/PageDown es la alternativa limitada al Canvas.
+- Interactor usa `read`, `documents` y `activate` con revisión de origen y destino
+  exacto. Un cambio manual detiene la escritura. Conservar cancelación, rechazo
+  de resultados tardíos y aislamiento de cuenta; no aplicar texto a otra pestaña.
+- Incluir gestor, estilos, adaptadores y `canvas_documents_context.py` en recursos
+  estáticos, importaciones y copia del código. No añadir agentes ni migraciones
+  por este módulo. Versión actual publicada: **1.97.0**.
+
+Contrato y comprobaciones: [pestañas del Canvas](docs/changes/2026-11-21-canvas-document-tabs.md)
+y [guía de edición](docs/canvas-editing.md).
+
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](docs/remote-controller.md).

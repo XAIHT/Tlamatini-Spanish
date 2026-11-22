@@ -1,62 +1,82 @@
-TLAMATINI - CANVAS EDITOR AND INTERACTOR QUICK REFERENCE
-Created by Angela López Mendoza - @angelahack1
-Source release: v1.90.0. Documentation baseline: 2026-10-22, d274f89c.
+TLAMATINI - REFERENCIA RÁPIDA DEL CANVAS E INTERACTOR
+Creada por Angela López Mendoza - @angelahack1
+Última versión publicada: 1.97.0. Actualización documental: 2026-11-21.
+Base histórica de esta referencia: v1.90.0, 2026-10-22, d274f89c.
 
-EDIT A FILE
-Open or drop text/code/JSON/Markdown into the chat canvas. Markdown has Preview
-and editable Source views. HTML and SVG stay source text. PDF is a viewer and
-exports original bytes; images and workflow files keep their dedicated routes.
+ABRIR VARIOS DOCUMENTOS
+Abre o suelta texto, código, JSON, Markdown o PDF en el Canvas del chat.
+Hasta 32 pestañas conservan texto, historial, selección, posición y destino de
+guardado independientes. Markdown conserva Vista previa/Source y sus recursos;
+PDF conserva su visor y exporta los bytes originales. HTML y SVG siguen siendo
+código. Las imágenes y los flujos mantienen sus rutas especializadas.
 
-Filename bar: Save | Save as... | Undo | Redo | Find/replace | Wrap | Copy |
-Refresh | Clear canvas | Use as context.
-Ctrl/Cmd+S saves. Ctrl/Cmd+Shift+S chooses a destination. Ctrl+[ and Ctrl+]
-change indentation. Tab normally navigates; during an offered tutor completion,
-Tab accepts that suggestion. A dirty marker means changes are not yet saved.
+Barra del archivo activo: Guardar | Guardar como... | Deshacer | Rehacer |
+Buscar/reemplazar | Ajustar | Copiar | Actualizar | Limpiar canvas | Usar como contexto.
+Ctrl/Cmd+S guarda; Ctrl/Cmd+Shift+S elige otro destino. Ctrl+[ y Ctrl+] cambian la
+sangría. Alt+PageUp/PageDown cambia documentos solo con el foco en el Canvas.
+Ctrl+Tab funciona si el navegador entrega la tecla; Chrome suele reservarla.
+Un asterisco marca cambios sin guardar. Limpiar canvas cierra la pestaña activa.
 
-SAVE TO A PROJECT FOLDER
-Local Save As and navbar Save open the native Windows picker. Choose any
-writable folder; Downloads is not required. Toolbar Save uses the authorized
-destination or asks for one. Permission, cancellation and disk errors preserve
-your buffer. A conflicting external edit is refused; Save As preserves your
-version separately. Refresh asks before discarding unsaved changes.
-Remote browsers need their own supported browser file-access picker.
+GUARDAR EN LA CARPETA DEL PROYECTO
+Guardar como local y Guardar del menú abren el selector nativo de Windows.
+Elige cualquier carpeta con permiso; Descargas no es obligatoria. Guardar usa
+el destino autorizado o pide uno. Un error o cancelación conserva el texto.
+Los cambios externos incompatibles se rechazan; Guardar como conserva tu versión
+aparte. Actualizar pide confirmación antes de descartar cambios sin guardar.
+Un guardado pendiente impide cambiar de pestaña. Los navegadores remotos necesitan
+su propio selector compatible. Guardar PDF exporta una copia sin cambiar el visor.
 
-LEARN WITH TLAMATINI
-Enable Multi-Turn, Interactor in Configure MCPs/Tools, and Live editor.
-Example: Help me create a Dockerfile for a Java servlet app using your text
-editor. Teach one step at a time and let me choose the values.
-Without a path, a new empty file goes into Temp/interactor/<account>/<random>/.
-Tlamatini reads the exact unsaved buffer, types a short known segment, then
-guides the next learner-controlled field and waits. Typing does not save or run.
+ELEGIR EL CONTEXTO
+Abrir o activar no añade un documento al contexto. Usa Usar como contexto en
+cada archivo elegido; deja otros abiertos sin seleccionar. La franja Contexto
+del chat enumera las capturas aceptadas. Contexto · anterior indica cambios que
+requieren Actualizar contexto. Guardar y Actualizar desde disco no sustituyen
+esas capturas. Cerrar una pestaña conserva su captura: quítala expresamente en
+la franja. Quitar del contexto elimina solo esa selección. Los fallos conservan
+el conjunto anterior; tras una desconexión, reconecta para verificar su estado.
 
-COMPLETIONS AND CONTROL
-Suggestions use choices prepared for the current field, matched locally.
-Tab accepts; Ctrl+Right accepts one word; Esc dismisses. Suggestions are optional.
-Continue y Otra pista siguen usando el chat normal. Explicar selección envía
+APRENDER CON TLAMATINI
+Activa Multi-Turn, Interactor en Configurar MCPs/Tools y Editor en vivo.
+Ejemplo: Ayúdame a crear un Dockerfile para una aplicación de servlets de Java
+usando tu editor. Enséñame paso a paso y déjame elegir los valores.
+Sin una ruta indicada, el archivo vacío se crea en Temp/interactor/<cuenta>/<azar>/.
+Tlamatini lee el texto sin guardar, escribe un segmento breve y guía el siguiente
+campo. Teclear no guarda ni ejecuta. read lee el documento activo; documents
+lista solo metadatos; activate usa el target_document_id exacto después de leer
+el origen. La respuesta verifica el destino y su revisión; no selecciona contexto.
+
+SUGERENCIAS Y CONTROL
+Las sugerencias del campo se comparan localmente: Tab acepta, Ctrl+Right acepta
+una palabra y Esc descarta. Son opcionales. Continuar y Otra pista usan el chat.
+Explicar selección envía
 los fragmentos seleccionados sin guardar directamente para explicarlos, con
 cualquier combinación de casillas, incluso con Editor en vivo en pausa. Conserva
 el borrador del chat. Sin selección envía el archivo completo. No modifica el
 texto, ejecuta herramientas ni guarda programas.
-User typing, selection, Esc, Stop tutor or chat cancellation interrupts AI typing.
-A temporary hidden tab pauses/resumes once, with up to two extra minutes of
-grace. Timeout never automatically replays a partial edit. Explicit Preview or
-canvas hiding returns control to the learner.
+Escribir, seleccionar, Escape, Detener tutor o cancelar el chat interrumpe el
+tecleo. Cambiar de documento también lo detiene: nunca continúa en otra pestaña.
+Ocultar temporalmente la pestaña del navegador pausa la acción con hasta dos
+minutos adicionales; el vencimiento no repite ediciones parciales. Elegir Vista
+previa u ocultar el Canvas devuelve el control al usuario.
 
-LIMITS AND FIDELITY
-Text editing/native saves: 64 MiB. Live tutoring: 262,144 UTF-16 units; the
-model's tool-result/context budget can impose a smaller limit. No silent truncation.
+LÍMITES Y FIDELIDAD
+Texto y guardados nativos: 64 MiB. Tutoría: 262,144 unidades UTF-16, sujetas al
+presupuesto de herramientas/contexto del modelo. No se recorta en silencio.
+Contexto seleccionado: 32 documentos y 32 MiB UTF-8 preparado con separadores;
+el presupuesto del modelo puede ser menor.
 Explicar selección: hasta 262,144 unidades UTF-16 en 64 rangos, según la capacidad
 del modelo; el tamaño del resto del archivo no consume ese límite.
-Strict UTF-8 and BOM-marked UTF-16 support; encoding/BOM and line endings retained.
-Save before closing: an unsaved canvas buffer is in memory, not a recovery file.
-Use as context refreshes ordinary loaded context. Interactor read is live and
-does not depend on that saved/context snapshot.
+UTF-8 estricto y UTF-16 con BOM; se conservan codificación, BOM y finales de línea.
+Guarda antes de cerrar: se comprueban todas las pestañas y guardados pendientes,
+pero el navegador controla la advertencia final. El texto sin guardar vive en
+memoria; no se promete recuperarlo tras recargar o un fallo. La lectura de
+Interactor es en vivo y no depende de las capturas seleccionadas como contexto.
 
-ACCOUNT-CREATION WIZARD
-The catalog uses Executer to open interactive createsuperuser. Enter passwords
-only in its console. DONE/ERROR/NOWINDOW are chat handoffs, not permission to
-send notifications. Password input is not ownership of all command execution.
-This wizard creates an administrative superuser, not a limited ordinary account.
+ASISTENTE DE CREACIÓN DE CUENTAS
+El catálogo usa Executer para abrir createsuperuser interactivo. Escribe las
+contraseñas solo en su consola. DONE/ERROR/NOWINDOW son relevos del chat, no
+permiso para enviar notificaciones. Introducir la contraseña no implica asumir
+toda la ejecución. El asistente crea un superusuario administrativo, no limitado.
 
 EVIDENCE
 2026-10-21: final source editor/runtime 19/19 visible checks; 136 passed and
@@ -65,3 +85,8 @@ hidden-tab and narrow-layout checks. Those results do not certify a new build.
 2026-10-22: wizard guard suite 179 passed; exact installed request replay passed.
 See docs/canvas-editing.md, docs/interactor.md, docs/user-creation-wizard.md,
 and docs/changes/2026-10-22-v1.90.0.md for contracts and verification limits.
+
+EVIDENCIA ACTUAL
+El registro docs/changes/2026-11-21-canvas-document-tabs.md distingue pruebas
+del contexto, Interactor y recorridos visibles de las dos ediciones. No acredita
+una nueva compilación instalada ni una conversación completa con el modelo.

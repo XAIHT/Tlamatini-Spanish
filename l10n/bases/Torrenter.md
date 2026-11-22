@@ -1,6 +1,6 @@
 # Porteo de Torrenter · 31 de octubre de 2026
 
-> Última versión publicada: **[v1.96.1](../../docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../../docs/changes/2026-11-21-v1.97.0.md)**.
 
 Solicitud de Angela, conservada para la bitácora de cambios:
 

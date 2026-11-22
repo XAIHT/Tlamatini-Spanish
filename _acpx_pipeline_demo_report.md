@@ -8,7 +8,7 @@
 -->
 # ACPX Pipeline Demo Report
 
-> Última versión publicada: **[v1.96.1](docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](docs/changes/2026-11-21-v1.97.0.md)**.
 
 
 ## Session Metadata

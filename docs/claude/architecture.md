@@ -8,9 +8,35 @@
 -->
 # Tlamatini — Architecture & Core Systems
 
-> Última versión publicada: **[v1.96.1](../changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../changes/2026-11-21-v1.97.0.md)**.
 
-## v1.96.1 — Comandos de voz sale del Catálogo de prompts
+## Arquitectura actual del Canvas con varios documentos
+
+`TlamatiniCanvasTabs` gestiona hasta 32 documentos dentro de una página de chat.
+Cada documento tiene identidad y revisión propias; la identidad autenticada del
+cliente de Interactor sigue identificando la pestaña del navegador. No deben
+intercambiarse. El gestor suspende y restaura el estado del editor o del visor
+PDF; abrir otro archivo no destruye el texto sin guardar ni el historial previo.
+Los guardados, lecturas y preparaciones PDF se vinculan al documento y a su
+generación para que una respuesta tardía no modifique otro archivo.
+
+`canvas_documents_context.py` trata la selección de contexto como una operación
+del conjunto completo, limitada por cuenta y sesión, con hasta 32 documentos y
+32 MiB UTF-8 preparados, incluidos separadores. El presupuesto del modelo puede
+ser menor. La selección se confirma después de su aceptación; un rechazo conserva
+la anterior. Un resultado perdido por desconexión queda sin confirmar y no deja
+indicadores que afirmen una selección desconocida. No se permite reconectar
+desde el botón mientras esa operación sigue pendiente.
+
+Abrir, activar, guardar y actualizar desde disco no seleccionan ni actualizan
+automáticamente el contexto. El usuario añade capturas, sustituye las anteriores
+con **Actualizar contexto** y las quita expresamente; cerrar su pestaña conserva
+la captura elegida. Un contexto de archivo o directorio por la ruta anterior
+sustituye la selección de documentos del Canvas. Interactor conserva su lectura
+en vivo y verificación de revisión independientemente de estas capturas.
+Consulta [contrato y evidencia](../changes/2026-11-21-canvas-document-tabs.md).
+
+## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
 - Incluye el trabajo de Tlamatini-RC publicado como v1.94.0, v1.95.0 y v1.96.0: control remoto alojado, sincronización de aprobaciones y endurecimiento. [Remote-Controller](../remote-controller.md).

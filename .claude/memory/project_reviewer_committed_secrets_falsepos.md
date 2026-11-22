@@ -15,7 +15,7 @@ metadata:
 ═══════════════════════════════════════════════════════════════════
 -->
 
-> Última versión publicada: **[v1.96.1](../../docs/changes/2026-11-21-v1.96.1.md)**.
+> Última versión publicada: **[v1.97.0](../../docs/changes/2026-11-21-v1.97.0.md)**.
 
 
 2026-05-20: The Reviewer agent and `code-review` skill were falsely reporting "API keys and passwords are committed."
