@@ -90,3 +90,7 @@ EVIDENCIA ACTUAL
 El registro docs/changes/2026-11-21-canvas-document-tabs.md distingue pruebas
 del contexto, Interactor y recorridos visibles de las dos ediciones. No acredita
 una nueva compilación instalada ni una conversación completa con el modelo.
+
+REMOTE-CONTROLLER / XAIHT.ORG — 2026-11-23
+
+Las pestañas del Canvas, sus buffers y los indicadores de contexto siguen en el navegador local. La ruta del sitio transmite instrucciones, estados, permisos y respuestas de la cuenta autorizada; no promete replicar las pestañas ni usar el micrófono del teléfono. Ask Execs es selectivo; Netstat está exento. Consulta docs/changes/2026-11-23-hosted-remote-prompts.md.

@@ -10,6 +10,17 @@
 
 > Última versión publicada: **[v1.97.0](../changes/2026-11-21-v1.97.0.md)**.
 
+## Conversaciones desde el teléfono · revisión del 23 de noviembre
+
+El sitio **xaiht.org → Tlamatini-RC** envía instrucciones a una cuenta local
+autorizada y lista mediante XT y Remote-Controller; conserva recibos y respuestas
+al recargar. El sitio no inicia aplicaciones ni captura el micrófono del teléfono.
+**Ask Execs es selectivo**: Monitor Netstat no pide autorización. HTTPS protege el
+transporte, pero el sitio procesa el contenido; no hay cifrado de extremo a extremo
+ni poscuántico en esta ruta. La instrucción/respuesta, recarga y aparición de permiso
+se comprobaron en un teléfono con la cuenta inglesa; denegación y cancelación
+siguen pendientes. Consulta [uso, límites y evidencia](../changes/2026-11-23-hosted-remote-prompts.md).
+
 ## Conservado de v1.92.3 — Descargas, actualizaciones y aislamiento de compilaciones
 
 Torrenter permite gestionar las descargas de cada cuenta desde el chat y el panel de control agéntico. El Editor en vivo y Terminater admiten hasta 250 WPM. El actualizador distribuye el desinstalador y conserva la bóveda. Cada compilación mantiene un bloqueo sobre el entorno de Python correspondiente a sus dependencias. Consulta el [registro de v1.92.3](../changes/2026-11-01-v1.92.3.md).

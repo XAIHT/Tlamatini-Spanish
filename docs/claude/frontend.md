@@ -625,3 +625,7 @@ announces focus/visibility, handles narration receipts and applies terminal appe
 `agent_page_editing.js` applies editor preferences; the offline CodeMirror entry uses
 an appearance compartment and retains preferences on remount. Do not read the hidden
 compatibility textarea instead of the real editor. See [the contract](../interaction-settings.md).
+
+## Remote-Controller · 2026-11-23
+
+[Contrato remoto, permisos y evidencia](../changes/2026-11-23-hosted-remote-prompts.md). Las pestañas locales no se replican por el simple envío de una instrucción desde el sitio.

@@ -10,14 +10,73 @@ aprobaciones de ejecución, cancelación y el inicio de la aplicación instalada
 Las ediciones en inglés y español tienen el mismo comportamiento y mantienen
 identidades de cuenta separadas.
 
-El perfil actual funciona **solo en esta PC**, normalmente en
-`http://127.0.0.1:12481`. El acceso por red, el transporte poscuántico, la distribución
-de un cliente nativo con confianza independiente y la captura del micrófono del
-teléfono siguen sin estar disponibles. Las pruebas del código fuente no
-certifican un paquete instalado actualizado ni todo el diseño de acceso remoto
-aprobado. Usa compilaciones compatibles que incluyan ambas integraciones.
+El cliente RC directo utiliza una conexión local, normalmente en
+`http://127.0.0.1:12481`. La **página Tlamatini-RC de xaiht.org** también transmite
+instrucciones y respuestas mediante la conexión autorizada de XT con el sitio.
+Así, el teléfono puede utilizar una cuenta de Tlamatini que ya está abierta sin
+exponer su servidor web local a Internet. Usa versiones compatibles del sitio,
+XT, Remote-Controller y Tlamatini.
 
-## Habilitar tu cuenta y conectar un dispositivo
+La conexión con el sitio utiliza HTTPS. El servidor intermediario procesa el
+contenido de las instrucciones y respuestas: esta ruta **no ofrece cifrado de
+extremo a extremo ni poscuántico**. Esta integración de texto no incorpora la
+captura del micrófono del teléfono ni la distribución de un cliente nativo con
+confianza independiente. Las pruebas del código fuente y del modelo real son
+distintas de la aceptación de un paquete instalado y un teléfono físico.
+
+## Alcance de Ask Execs y evidencia actual
+
+Ask Execs conserva una política selectiva, no una confirmación para todas las
+herramientas. Monitor Netstat y Netstat directo son consultas exentas. También
+existen excepciones deliberadas para escritorio/hardware y mensajería. La página
+publicada anteriormente puede conservar la etiqueta antigua; la corrección del
+texto está en el código fuente y su candidata no se desplegó. Consulta el
+[registro del 23 de noviembre](changes/2026-11-23-hosted-remote-prompts.md) para
+distinguir pruebas de código, producción, teléfono y comprobaciones pendientes.
+
+## Enviar instrucciones desde el sitio en tu teléfono
+
+1. Inicia Tlamatini normalmente en la computadora e inicia sesión en la cuenta
+   deseada. Inicia **Remote-Controller** en XT y habilita la cuenta en
+   **Paneles → Tlachihuani · Remote-Controller** con su contraseña actual.
+2. Inicia sesión en [Tlamatini-RC de xaiht.org](https://xaiht.org/tlamatini-rc),
+   agrega la computadora y crea su clave de conexión. En la computadora, abre
+   **XT → Services → xaiht.org → Connect…** para guardar esa clave del sitio.
+   Una computadora que ya está conectada puede conservar su conexión existente.
+3. En **XT → Services → xaiht.org → Accounts…**, autoriza explícitamente las
+   cuentas locales de Tlamatini que podrá utilizar esa conexión. Compartir el
+   nombre visible no vincula cuentas automáticamente. Inglés y español mantienen
+   sus identidades separadas.
+4. En el teléfono, elige la computadora y selecciona expresamente la cuenta
+   deseada en **Habla con Tlamatini**. El envío permanece deshabilitado hasta
+   seleccionar una cuenta autorizada y lista. El sitio no inicia Tlamatini ni
+   sus servicios.
+5. Escribe una instrucción y pulsa **Enviar instrucción**. **Multi-Turn**,
+   **Pedir permiso antes de acciones protegidas** e **Informe de ejecución**
+   conservan el comportamiento normal de Tlamatini. Revisa las acciones pendientes
+   antes de aprobarlas o rechazarlas; **Cancelar instrucción** solicita detener
+   esa operación concreta.
+
+La página distingue el envío en cola, la aceptación, la ejecución y la finalización.
+Conserva las solicitudes recientes del sitio y sus respuestas para la cuenta
+seleccionada. Al recargar consulta el recibo existente; reintentar una entrega
+conserva su identificador y evita crear otra instrucción. Un resultado desconocido
+no demuestra que el trabajo terminó: revísalo antes de enviar otra solicitud.
+
+Las respuestas largas muestran una vista previa explícita y **Obtener respuesta
+completa**. La recuperación utiliza el permiso firmado original vinculado a la
+cuenta y comprueba la respuesta completa recibida por fragmentos antes de
+mostrarla. Si falta el contenido o caducó su permiso, se indica el error en lugar
+de presentar la vista previa como respuesta completa. El sitio muestra las
+respuestas como texto que no ejecuta código.
+
+Mantén XT abierto para conservar la conexión saliente con el sitio. Retira la
+autorización de una cuenta en **Accounts…**, desconecta el sitio o deshabilita
+el acceso remoto de la cuenta local para revocar su autoridad. Siguen vigentes
+las reglas de cancelación y pertenencia de cada operación; revocar el acceso no
+deshace acciones ya completadas.
+
+## Habilitar tu cuenta y conectar el cliente RC directo
 
 1. Abre **XT → Show panel → Services → Remote-Controller** e inicia el servicio.
    La instalación lo deja con inicio Manual y detenido. Torrenter conserva sus
@@ -38,8 +97,10 @@ aprobado puede reconectarse con su clave de firma sin otra invitación. El nombr
 visible es una etiqueta: la autorización utiliza identificadores inmutables y la
 edición. Una cuenta en inglés y otra en español con el mismo nombre son distintas.
 
-La dirección anterior es local: abrirla en un teléfono apunta al propio teléfono.
-Esta implementación no hace que la PC sea accesible por la red local o Internet.
+La dirección del cliente directo es local: abrirla en un teléfono apunta al propio
+teléfono. Para enviar instrucciones mediante el sitio, utiliza la página de
+xaiht.org y la conexión saliente de XT descritas arriba; no expongas públicamente
+la dirección local.
 
 ## Conversación y control de ejecución
 
@@ -67,7 +128,7 @@ trabajo terminó es un resultado separado; cancelar no deshace acciones completa
 El adaptador conserva la propiedad hasta que termina el trabajo activo, de modo
 que otra solicitud no pueda apropiarse de una conversación que sigue ejecutándose.
 
-## Iniciar Tlamatini desde el cliente RC
+## Iniciar Tlamatini desde el cliente RC directo
 
 Otorga **Start Tlamatini** al crear la invitación del dispositivo. La bandeja XT
 normal debe estar abierta en la sesión iniciada del usuario de Windows delegado,

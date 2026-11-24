@@ -450,3 +450,7 @@ per-model history is currently website-only; local model graphs cover measured
 Tlamatini main-chat calls since recording began. Cloud and Tlamatini accounts
 are different identities. Keep account checks and stale timestamps.
 See [Usage](../usage-dashboard.md). Shipped in `v1.78.0` (2026-10-10).
+
+## Remote-Controller · 2026-11-23
+
+[Contrato remoto, permisos y evidencia](../changes/2026-11-23-hosted-remote-prompts.md). Las pestañas locales no se replican por el simple envío de una instrucción desde el sitio.

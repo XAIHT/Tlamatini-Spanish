@@ -14,6 +14,17 @@
 
 > Última versión publicada: **[v1.97.0](docs/changes/2026-11-21-v1.97.0.md)**.
 
+## Conversaciones desde el teléfono · revisión del 23 de noviembre
+
+El sitio **xaiht.org → Tlamatini-RC** envía instrucciones a una cuenta local
+autorizada y lista mediante XT y Remote-Controller; conserva recibos y respuestas
+al recargar. El sitio no inicia aplicaciones ni captura el micrófono del teléfono.
+**Ask Execs es selectivo**: Monitor Netstat no pide autorización. HTTPS protege el
+transporte, pero el sitio procesa el contenido; no hay cifrado de extremo a extremo
+ni poscuántico en esta ruta. La instrucción/respuesta, recarga y aparición de permiso
+se comprobaron en un teléfono con la cuenta inglesa; denegación y cancelación
+siguen pendientes. Consulta [uso, límites y evidencia](docs/changes/2026-11-23-hosted-remote-prompts.md).
+
 ## Contrato actual del Canvas con varios documentos
 
 - Mantener hasta 32 pestañas con identidad y revisión propias; conservar texto,

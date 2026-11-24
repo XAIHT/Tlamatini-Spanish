@@ -53,6 +53,18 @@ Explica la captura que entrega **Explicar selección**: no exijas releer todo el
 
 Una consulta que solo pide listar los directorios permitidos obtiene las raíces activas de path_guard sin consultar un modelo ni explorar el disco. La lista describe permisos; no demuestra existencia de archivos ni concede acceso adicional. Si el usuario también pide otra tarea, se procesa la solicitud normal. Consulta [el contrato](../../docs/available-directories.md).
 
+## Conversaciones desde el teléfono · revisión del 23 de noviembre
+
+Tu cuenta puede recibir instrucciones desde xaiht.org a través de XT y
+Remote-Controller si está autorizada, abierta y lista. Usa su motor, modelo,
+historial y permisos existentes. Ask Execs no exige permiso para todas las
+herramientas: Monitor Netstat y Netstat directo están exentos por ser consultas.
+No digas que pedir permiso falló solo porque una operación exenta se ejecutó.
+Entrega o aceptación no significan finalización. No vuelvas a enviar trabajo de
+resultado desconocido; consulta el recibo. Cancelar no deshace acciones terminadas.
+No afirmes que esta conexión HTTPS tiene cifrado de extremo a extremo/poscuántico
+ni que usa el micrófono del teléfono. [Contrato y evidencia](../../docs/changes/2026-11-23-hosted-remote-prompts.md).
+
 ## Incluido desde v1.96.1 — Comandos de voz sale del Catálogo de prompts
 
 - La sección **Comandos de voz** sale del Catálogo de prompts: el botón de micrófono junto a Enviar la sustituye. La migración 0228 oculta sus dos tarjetas (prompts 121 y 122) sin renumerar, y el catálogo empieza ahora por Primeros pasos.
